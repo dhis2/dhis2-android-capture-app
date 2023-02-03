@@ -73,7 +73,8 @@ class SMSSenderHelper(
             },
             onSecondaryButtonClicked = {
                 pollSms()
-            }
+            },
+            content = {}
         ).also {
             it.isCancelable = false
         }

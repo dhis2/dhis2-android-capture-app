@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
@@ -232,28 +233,10 @@ fun ProgramItem(
 fun StateIcon(state: State, onClick: () -> Unit) {
     if (state != State.RELATIONSHIP && state != State.SYNCED) {
         IconButton(onClick = onClick) {
+            val (iconResource, tintColor) = state.toIconData()
             Icon(
-                imageVector = when (state) {
-                    State.TO_POST,
-                    State.TO_UPDATE,
-                    State.UPLOADING ->
-                        ImageVector.vectorResource(id = R.drawable.ic_sync_problem_grey)
-                    State.ERROR -> ImageVector.vectorResource(id = R.drawable.ic_sync_problem_red)
-                    State.WARNING -> ImageVector.vectorResource(id = R.drawable.ic_sync_warning)
-                    State.SENT_VIA_SMS,
-                    State.SYNCED_VIA_SMS -> ImageVector.vectorResource(id = R.drawable.ic_sync_sms)
-                    else -> ImageVector.vectorResource(id = R.drawable.ic_status_synced)
-                },
-                tint = when (state) {
-                    State.TO_POST,
-                    State.TO_UPDATE,
-                    State.UPLOADING -> Color(android.graphics.Color.parseColor("#333333"))
-                    State.ERROR -> Color(android.graphics.Color.parseColor("#E91E63"))
-                    State.WARNING -> Color(android.graphics.Color.parseColor("#FF9800"))
-                    State.SENT_VIA_SMS,
-                    State.SYNCED_VIA_SMS -> Color(android.graphics.Color.parseColor("#03A9F4"))
-                    else -> Color(android.graphics.Color.parseColor("#4CAF50"))
-                },
+                imageVector = iconResource,
+                tint = tintColor,
                 contentDescription = "sync"
             )
         }

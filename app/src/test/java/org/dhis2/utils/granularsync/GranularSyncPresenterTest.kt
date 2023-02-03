@@ -68,7 +68,7 @@ class GranularSyncPresenterTest {
     @Test
     fun simplePresenterTest() {
         // GIVEN
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -97,7 +97,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun `should return tracker program error state`() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -140,7 +140,7 @@ class GranularSyncPresenterTest {
                 .byDataSetUid().eq("data_set_uid").blockingGet()
         ) doReturn getMockedCompleteRegistrations(State.ERROR)
 
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -178,7 +178,7 @@ class GranularSyncPresenterTest {
                 .byDataSetUid().eq("data_set_uid").blockingGet()
         ) doReturn getMockedCompleteRegistrations(State.TO_POST)
 
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -216,7 +216,7 @@ class GranularSyncPresenterTest {
                 .byDataSetUid().eq("data_set_uid").blockingGet()
         ) doReturn arrayListOf()
 
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -238,7 +238,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun `Should get list of sync errors order by date`() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -300,7 +300,7 @@ class GranularSyncPresenterTest {
             smsSyncProvider.isSMSEnabled(any())
         ) doReturn true
         val result = ConflictType.values().associate {
-            val enable = GranularSyncPresenterImpl(
+            val enable = GranularSyncPresenter(
                 d2,
                 programUtils,
                 trampolineSchedulerProvider,
@@ -326,7 +326,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun shouldSmsSyncUsingPlayServices() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -358,7 +358,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun shouldUnregisterReceiverIfSmsNotSent() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -381,7 +381,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun shouldInitDefaultSmsSync() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -419,7 +419,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun shouldSetSmsSent() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -447,7 +447,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun shouldWaitForSMSResponse() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -472,7 +472,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun shouldConfirmSmsReceived() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,
@@ -498,7 +498,7 @@ class GranularSyncPresenterTest {
 
     @Test
     fun shouldInformSmsWasNotReceived() {
-        val presenter = GranularSyncPresenterImpl(
+        val presenter = GranularSyncPresenter(
             d2,
             programUtils,
             trampolineSchedulerProvider,

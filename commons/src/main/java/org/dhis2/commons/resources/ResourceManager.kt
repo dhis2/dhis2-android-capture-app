@@ -11,6 +11,9 @@ class ResourceManager(val context: Context) {
 
     fun getString(@StringRes stringResource: Int) = getWrapperContext().getString(stringResource)
 
+    fun getString(@StringRes stringResource: Int, vararg arguments: String) =
+        getWrapperContext().getString(stringResource).format(*arguments)
+
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"

@@ -8,7 +8,7 @@ import org.dhis2.usescases.sms.StatusText
 
 class SyncStatusDialogUiConfig(
     private val resources: Resources,
-    private val presenter: GranularSyncContracts.Presenter,
+    private val presenter: GranularSyncPresenter,
     private val inputArguments: InputArguments
 ) {
 

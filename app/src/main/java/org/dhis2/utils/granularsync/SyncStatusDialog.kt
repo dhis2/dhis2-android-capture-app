@@ -12,8 +12,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -30,7 +36,12 @@ import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.databinding.SyncBottomDialogBinding
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUi
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.ui.items.SyncStatusItem
 import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
 import org.dhis2.usescases.sms.SmsSendingService
@@ -50,7 +61,7 @@ private const val SMS_APP_REQ_ID = 103
 class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
     @Inject
-    lateinit var presenter: GranularSyncContracts.Presenter
+    lateinit var presenter: GranularSyncPresenter
 
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
@@ -173,6 +184,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         (context.applicationContext as App).serverComponent()!!.plus(
             GranularSyncModule(
                 requireContext(),
+                this,
                 conflictType,
                 recordUid,
                 orgUnitDataValue,
@@ -182,22 +194,59 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         ).inject(this)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, org.dhis2.ui.R.style.CustomBottomSheetDialogTheme)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.sync_bottom_dialog, container, false)
-        adapter = SyncConflictAdapter(ArrayList()) { showErrorLog() }
-        val layoutManager = LinearLayoutManager(context)
-        binding!!.synsStatusRecycler.layoutManager = layoutManager
-        binding!!.synsStatusRecycler.adapter = adapter
-
-        presenter.configure(this)
-
-        retainInstance = true
-
-        return binding!!.root
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val syncState by presenter.currentState.collectAsState()
+                syncState?.let { syncUiState ->
+                    BottomSheetDialogUi(
+                        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                            title = syncUiState.title,
+                            subtitle = syncUiState.lastSyncDate.date.toDateSpan(requireContext()),
+                            message = syncUiState.message,
+                            iconResource = R.drawable.ic_sync_warning,
+                            mainButton = syncUiState.mainActionLabel?.let {
+                                DialogButtonStyle.MainButtonLabel(it)
+                            },
+                            secondaryButton = syncUiState.secondaryActionLabel?.let {
+                                DialogButtonStyle.SecondaryButtonLabel(it)
+                            }
+                        ),
+                        onMainButtonClicked = {},
+                        onSecondaryButtonClicked = { dismiss() },
+                        icon = {
+                            SyncStateIcon(state = syncUiState.syncState)
+                        }
+                    ) {
+                        LazyColumn(
+                            verticalArrangement = spacedBy(8.dp)
+                        ) {
+                            items(syncUiState.content) { item ->
+                                SyncStatusItem(
+                                    title = item.displayName,
+                                    subtitle = item.description,
+                                    onClick = {
+                                        // TODO() onSyncItemClick(item)
+                                    }
+                                ) {
+                                    SyncStateIcon(state = item.state)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun showErrorLog() {

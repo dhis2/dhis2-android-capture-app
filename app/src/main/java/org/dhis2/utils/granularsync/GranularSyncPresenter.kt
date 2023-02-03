@@ -34,6 +34,10 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
@@ -42,6 +46,7 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PERIOD_ID
 import org.dhis2.commons.Constants.UID
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.commons.sync.ConflictType
@@ -64,8 +69,10 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import timber.log.Timber
 
-class GranularSyncPresenterImpl(
+class GranularSyncPresenter(
     val d2: D2,
+    private val view: GranularSyncContracts.View,
+    private val repository: GranularSyncRepository,
     private val dhisProgramUtils: DhisProgramUtils,
     val schedulerProvider: SchedulerProvider,
     private val conflictType: ConflictType,
@@ -76,35 +83,161 @@ class GranularSyncPresenterImpl(
     private val workManagerController: WorkManagerController,
     private val errorMapper: ErrorModelMapper,
     private val preferenceProvider: PreferenceProvider,
-    private val smsSyncProvider: SMSSyncProvider
-) : GranularSyncContracts.Presenter {
+    private val smsSyncProvider: SMSSyncProvider,
+    private val resourceManager: ResourceManager
+) {
 
     private var disposable: CompositeDisposable = CompositeDisposable()
-    private lateinit var view: GranularSyncContracts.View
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
     private lateinit var statesList: ArrayList<SmsSendingService.SendingStatus>
 
-    override fun configure(view: GranularSyncContracts.View) {
-        this.view = view
+    private val _currentState = MutableStateFlow<SyncUiState?>(null)
+    val currentState: StateFlow<SyncUiState?> = _currentState
 
+    init {
         disposable.add(
-            getTitle()
-                .defaultSubscribe(
-                    schedulerProvider,
-                    { title ->
-                        if (title.isNotEmpty()) {
-                            view.showTitle(title)
-                        } else {
-                            view.showRefreshTitle()
-                        }
-                    },
-                    { error ->
-                        Timber.e(error)
-                        view.closeDialog()
-                    }
+            Single.zip(
+                getState(),
+                getLastSynced()
+            ) { state, lastSync ->
+                SyncUiState(
+                    syncState = state,
+                    title = getTitleForState(state),
+                    lastSyncDate = lastSync,
+                    message = getMessageForState(state),
+                    mainActionLabel = getMainActionLabel(state),
+                    secondaryActionLabel = getSecondaryActionLabel(state),
+                    content = getContent(state)
                 )
+            }.defaultSubscribe(
+                schedulerProvider,
+                { newState ->
+                    _currentState.update { newState }
+                },
+                {
+                    Timber.e(it)
+                }
+            )
         )
+    }
 
+    private fun getTitleForState(state: State): String {
+        return when (state) {
+            State.TO_POST,
+            State.TO_UPDATE -> resourceManager.getString(R.string.sync_dialog_title_not_synced)
+            State.ERROR -> resourceManager.getString(R.string.sync_dialog_title_error)
+            State.RELATIONSHIP,
+            State.SYNCED -> resourceManager.getString(R.string.sync_dialog_title_synced)
+            State.WARNING -> resourceManager.getString(R.string.sync_dialog_title_warning)
+            State.UPLOADING -> resourceManager.getString(R.string.sync_dialog_title_syncing)
+            State.SENT_VIA_SMS,
+            State.SYNCED_VIA_SMS -> resourceManager.getString(R.string.sync_dialog_title_sms_syced)
+        }
+    }
+
+    private fun getMessageForState(state: State): String? {
+        return when (state) {
+            State.TO_POST,
+            State.TO_UPDATE -> getNotSyncedMessage()
+            State.SYNCED -> getSyncedMessage()
+            State.SENT_VIA_SMS,
+            State.SYNCED_VIA_SMS -> getSmsSyncedMessage()
+            State.ERROR,
+            State.WARNING,
+            State.RELATIONSHIP,
+            State.UPLOADING -> null
+        }
+    }
+
+    private fun getNotSyncedMessage(): String? {
+        return when (conflictType) {
+            ALL -> resourceManager.getString(R.string.sync_dialog_message_not_synced_all)
+            DATA_SET,
+            DATA_VALUES,
+            PROGRAM -> resourceManager.getString(R.string.sync_dialog_message_not_synced_program, getMessageArgument())
+            TEI, EVENT -> resourceManager.getString(R.string.sync_dialog_message_not_synced_tei, getMessageArgument())
+        }
+    }
+
+    private fun getSyncedMessage(): String? {
+        return when (conflictType) {
+            ALL -> resourceManager.getString(R.string.sync_dialog_message_synced_all)
+            DATA_SET,
+            DATA_VALUES,
+            PROGRAM -> resourceManager.getString(R.string.sync_dialog_message_synced_program, getMessageArgument())
+            TEI, EVENT -> resourceManager.getString(R.string.sync_dialog_message_synced_tei, getMessageArgument())
+        }
+    }
+
+    private fun getSmsSyncedMessage(): String? {
+        return when (conflictType) {
+            ALL,
+            DATA_SET,
+            PROGRAM -> null
+            DATA_VALUES,
+            TEI,
+            EVENT -> resourceManager.getString(R.string.sync_dialog_message_sms_synced)
+        }
+    }
+
+    private fun getMessageArgument(): String {
+        return getTitle().blockingGet()
+    }
+
+    private fun getMainActionLabel(state: State): String? {
+        return when (state) {
+            State.TO_POST,
+            State.SENT_VIA_SMS,
+            State.SYNCED_VIA_SMS,
+            State.TO_UPDATE -> resourceManager.getString(R.string.sync_dialog_action_send)
+            State.ERROR,
+            State.SYNCED,
+            State.WARNING -> resourceManager.getString(R.string.sync_dialog_action_refresh)
+            State.UPLOADING,
+            State.RELATIONSHIP -> null
+        }
+    }
+
+    private fun getSecondaryActionLabel(state: State): String? {
+        return when (state) {
+            State.UPLOADING,
+            State.RELATIONSHIP -> null
+            State.TO_POST,
+            State.TO_UPDATE,
+            State.ERROR,
+            State.SYNCED,
+            State.SENT_VIA_SMS,
+            State.SYNCED_VIA_SMS,
+            State.WARNING -> resourceManager.getString(R.string.sync_dialog_action_not_now)
+        }
+    }
+
+    private fun getContent(state: State): List<SyncStatusItem> {
+        return when (state) {
+            State.TO_POST,
+            State.TO_UPDATE -> getContentItems(State.TO_POST, State.TO_UPDATE)
+            State.ERROR -> getContentItems(State.ERROR, State.WARNING, State.TO_UPDATE, State.TO_POST)
+            State.WARNING -> getContentItems(State.WARNING, State.TO_POST, State.TO_UPDATE)
+            State.UPLOADING,
+            State.RELATIONSHIP,
+            State.SYNCED,
+            State.SENT_VIA_SMS,
+            State.SYNCED_VIA_SMS -> emptyList()
+        }
+    }
+
+    private fun getContentItems(vararg states: State): List<SyncStatusItem> {
+        return when (conflictType) {
+            ALL -> repository.getHomeItemsWithStates(*states)
+            PROGRAM -> TODO()/*repository.getProgramItemsWithStates(states)*/
+            TEI -> TODO()/*repository.getTeiItemsWithStates(states)*/
+            EVENT -> TODO()/*repository.getEventItemsWithStates(states)*/
+            DATA_SET -> TODO()
+            DATA_VALUES -> TODO()
+        }
+    }
+
+    fun configure() {
         disposable.add(
             Single.zip(
                 getState(),
@@ -136,11 +269,11 @@ class GranularSyncPresenterImpl(
         )
     }
 
-    override fun isSMSEnabled(showSms: Boolean): Boolean {
+    fun isSMSEnabled(showSms: Boolean): Boolean {
         return smsSyncProvider.isSMSEnabled(conflictType == TEI) && showSms
     }
 
-    override fun canSendSMS(): Boolean {
+    fun canSendSMS(): Boolean {
         return when (conflictType) {
             ALL,
             PROGRAM,
@@ -151,7 +284,7 @@ class GranularSyncPresenterImpl(
         }
     }
 
-    override fun initGranularSync(): LiveData<List<WorkInfo>> {
+    fun initGranularSync(): LiveData<List<WorkInfo>> {
         var conflictTypeData: ConflictType? = null
         var dataToDataValues: Data? = null
         when (conflictType) {
@@ -202,7 +335,7 @@ class GranularSyncPresenterImpl(
     }
 
     // NO PLAY SERVICES
-    override fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {
+    fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {
         statesList = ArrayList()
         states = MutableLiveData()
 
@@ -250,7 +383,7 @@ class GranularSyncPresenterImpl(
         return states
     }
 
-    override fun restartSmsSender() {
+    fun restartSmsSender() {
         smsSyncProvider.restartSmsSender()
     }
 
@@ -275,7 +408,7 @@ class GranularSyncPresenterImpl(
         )
     }
 
-    override fun sendSMS() {
+    fun sendSMS() {
         disposable.add(
             smsSyncProvider.sendSms(
                 doOnNext = { sendingStatus: SmsSendingService.SendingStatus ->
@@ -316,7 +449,7 @@ class GranularSyncPresenterImpl(
         )
     }
 
-    override fun onSmsNotAccepted() {
+    fun onSmsNotAccepted() {
         updateStateList(
             smsSyncProvider.onSmsNotAccepted()
         )
@@ -348,13 +481,13 @@ class GranularSyncPresenterImpl(
         states.postValue(statesList)
     }
 
-    override fun onSmsNotManuallySent(context: Context) {
+    fun onSmsNotManuallySent(context: Context) {
         view.logSmsNotSent()
         smsSyncProvider.unregisterSMSReceiver(context)
         restartSmsSender()
     }
 
-    override fun onSmsSyncClick(
+    fun onSmsSyncClick(
         callback: (LiveData<List<SmsSendingService.SendingStatus>>) -> Unit
     ) {
         if (smsSyncProvider.isPlayServicesEnabled()) {
@@ -365,7 +498,7 @@ class GranularSyncPresenterImpl(
         }
     }
 
-    override fun onSmsManuallySent(
+    fun onSmsManuallySent(
         context: Context,
         confirmationCallback: (LiveData<Boolean?>) -> Unit
     ) {
@@ -390,7 +523,7 @@ class GranularSyncPresenterImpl(
         }
     }
 
-    override fun onConfirmationMessageStateChanged(messageReceived: Boolean?) {
+    fun onConfirmationMessageStateChanged(messageReceived: Boolean?) {
         messageReceived?.let {
             when (it) {
                 true -> {
@@ -426,8 +559,7 @@ class GranularSyncPresenterImpl(
                     d2.eventModule().events().uid(recordUid).blockingGet().programStage()
                 ).get().map { it.displayName() }
             DATA_SET, DATA_VALUES ->
-                d2.dataSetModule().dataSets().withDataSetElements()
-                    .uid(recordUid).get()
+                d2.dataSetModule().dataSets().uid(recordUid).get()
                     .map { it.displayName() }
         }
     }
@@ -576,14 +708,14 @@ class GranularSyncPresenterImpl(
             .map { UidsHelper.getUidsList(it) }
     }
 
-    override fun onDettach() {
+    fun onDettach() {
         disposable.clear()
     }
 
-    override fun displayMessage(message: String?) {
+    fun displayMessage(message: String?) {
     }
 
-    override fun syncErrors(): List<ErrorViewModel> {
+    fun syncErrors(): List<ErrorViewModel> {
         return arrayListOf<ErrorViewModel>().apply {
             addAll(
                 errorMapper.mapD2Error(
@@ -606,7 +738,7 @@ class GranularSyncPresenterImpl(
         }
     }
 
-    override fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String? {
+    fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String? {
         return d2.enrollmentModule().enrollments()
             .uid(enrollmentUid)
             .get().flatMap { enrollment ->

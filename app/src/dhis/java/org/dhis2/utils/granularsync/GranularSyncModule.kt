@@ -41,6 +41,7 @@ import org.hisp.dhis.android.core.D2
 @Module
 class GranularSyncModule(
     private val context: Context,
+    private val view: GranularSyncContracts.View,
     private val conflictType: ConflictType,
     private val recordUid: String,
     private val dvOrgUnit: String?,
@@ -55,10 +56,14 @@ class GranularSyncModule(
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController,
         preferenceProvider: PreferenceProvider,
-        smsSyncProvider: SMSSyncProvider
-    ): GranularSyncContracts.Presenter {
-        return GranularSyncPresenterImpl(
+        smsSyncProvider: SMSSyncProvider,
+        resourceManager: ResourceManager,
+        repository: GranularSyncRepository,
+    ): GranularSyncPresenter {
+        return GranularSyncPresenter(
             d2,
+            view,
+            repository,
             DhisProgramUtils(d2),
             schedulerProvider,
             conflictType,
@@ -69,9 +74,17 @@ class GranularSyncModule(
             workManagerController,
             ErrorModelMapper(context.getString(R.string.fk_message)),
             preferenceProvider,
-            smsSyncProvider
+            smsSyncProvider,
+            resourceManager
         )
     }
+
+    @Provides
+    fun granularSyncRepository(
+        d2:D2,
+        dhisProgramUtils: DhisProgramUtils
+    ):GranularSyncRepository =
+        GranularSyncRepository(d2, dhisProgramUtils)
 
     @Provides
     fun smsSyncProvider(d2: D2): SMSSyncProvider {
