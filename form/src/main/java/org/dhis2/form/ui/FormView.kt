@@ -76,6 +76,7 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.signature.SignatureDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
@@ -429,17 +430,24 @@ class FormView : Fragment() {
     }
 
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
-        resultDialogUiProvider?.provideDataEntryUiModel(result)?.let {
-            BottomSheetDialog(
-                bottomSheetDialogUiModel = it,
-                onSecondaryButtonClicked = {
-                    if (result.allowDiscard) {
-                        viewModel.discardChanges()
+        resultDialogUiProvider?.provideDataEntryUiModel(result)
+            ?.let { (uiModel, fieldsWithIssues) ->
+                BottomSheetDialog(
+                    bottomSheetDialogUiModel = uiModel,
+                    onSecondaryButtonClicked = {
+                        if (result.allowDiscard) {
+                            viewModel.discardChanges()
+                        }
+                        onFinishDataEntry?.invoke()
+                    },
+                    content = { bottomSheetDialog ->
+                        ErrorFieldList(
+                            fieldsWithIssues = fieldsWithIssues,
+                            onItemClick = { bottomSheetDialog.dismiss() }
+                        )
                     }
-                    onFinishDataEntry?.invoke()
-                }
-            ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
-        }
+                ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+            }
     }
 
     private fun showLoopWarning() {

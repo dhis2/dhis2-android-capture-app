@@ -42,12 +42,6 @@ class ConfigureEventCompletionDialog(
             title = getTitle(dialogType),
             subtitle = getSubtitle(dialogType),
             iconResource = getIcon(dialogType),
-            fieldsWithIssues = getFieldsWithIssues(
-                errorFields = errorFields,
-                mandatoryFields = mandatoryFields.keys.toList(),
-                warningFields = warningFields,
-                onCompleteField = getOnCompleteMessage(canComplete, onCompleteMessage)
-            ),
             mainButton = mainButton.buttonStyle,
             secondaryButton = secondaryButton.buttonStyle
         )
@@ -55,7 +49,13 @@ class ConfigureEventCompletionDialog(
         return EventCompletionDialog(
             bottomSheetDialogUiModel = bottomSheetDialogUiModel,
             mainButtonAction = mainButton.action,
-            secondaryButtonAction = secondaryButton.action
+            secondaryButtonAction = secondaryButton.action,
+            fieldsWithIssues = getFieldsWithIssues(
+                errorFields = errorFields,
+                mandatoryFields = mandatoryFields.keys.toList(),
+                warningFields = warningFields,
+                onCompleteField = getOnCompleteMessage(canComplete, onCompleteMessage)
+            )
         )
     }
 
