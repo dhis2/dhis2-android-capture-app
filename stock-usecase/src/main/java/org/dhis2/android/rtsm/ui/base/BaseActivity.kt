@@ -1,25 +1,17 @@
 package org.dhis2.android.rtsm.ui.base
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.speech.SpeechRecognizer
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.RecyclerView
-import com.journeyapps.barcodescanner.ScanIntentResult
-import com.journeyapps.barcodescanner.ScanOptions
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
@@ -27,13 +19,11 @@ import org.dhis2.android.rtsm.commons.Constants.AUDIO_RECORDING_REQUEST_CODE
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_MESSAGE
 import org.dhis2.android.rtsm.data.SpeechRecognitionState
 import org.dhis2.android.rtsm.data.TransactionType
-import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
 import org.dhis2.android.rtsm.utils.ActivityManager.Companion.checkPermission
 import org.dhis2.android.rtsm.utils.ActivityManager.Companion.showErrorMessage
 import org.dhis2.android.rtsm.utils.ActivityManager.Companion.showInfoMessage
 import org.dhis2.android.rtsm.utils.ActivityManager.Companion.showToast
 import org.dhis2.android.rtsm.utils.LocaleManager
-import org.dhis2.android.rtsm.utils.NetworkUtils.Companion.isOnline
 import timber.log.Timber
 
 /**
@@ -148,8 +138,6 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     open fun getCustomTheme(viewModel: ViewModel): Int? = null
 
-    fun getViewModel(): ViewModel = viewModel
-
     fun getViewBinding(): ViewDataBinding = binding
 
     private fun setupToolbar(toolbar: Toolbar) {
@@ -169,14 +157,6 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     open fun getToolBar(): Toolbar? = null
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if (showMoreOptions()) {
-            menuInflater.inflate(R.menu.more_options, menu)
-            return true
-        }
-        return true
-    }
-
     /**
      * Indicates if the more options menu should be shown
      */
@@ -195,33 +175,6 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleManager.setLocale(newBase))
-    }
-
-    open fun scanBarcode(launcher: ActivityResultLauncher<ScanOptions>) {
-        val scanOptions = ScanOptions()
-            .setBeepEnabled(true)
-            .setCaptureActivity(ScannerActivity::class.java)
-        launcher.launch(scanOptions)
-    }
-
-    open fun crossFade(view: View, show: Boolean, duration: Long) {
-        if (show) {
-            view.alpha = 0f
-            view.visibility = View.VISIBLE
-            view.animate()
-                .alpha(1f)
-                .setDuration(duration)
-                .setListener(null)
-        } else {
-            view.animate()
-                .alpha(0f)
-                .setDuration(duration)
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        view.visibility = View.GONE
-                    }
-                })
-        }
     }
 
     override fun onRequestPermissionsResult(
@@ -313,25 +266,5 @@ abstract class BaseActivity : AppCompatActivity() {
             TransactionType.DISCARD ->
                 setTitle(R.string.discard)
         }
-    }
-
-    fun isConnectedToNetwork(): Boolean {
-        val networkIsAvailable = isOnline(this)
-        if (!networkIsAvailable) {
-            displayError(binding.root, R.string.no_network_available)
-        }
-        return networkIsAvailable
-    }
-
-    open fun onScanCompleted(
-        result: ScanIntentResult,
-        textInput: EditText,
-        stockItemList: RecyclerView
-    ) {
-        val data = result.contents
-        textInput.setText(data)
-
-        // TODO: Automatically activating the microphone after a successful scan
-//        stockItemList.requestFocus();
     }
 }
