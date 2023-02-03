@@ -20,11 +20,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun IconTextButton(
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onClick: () -> Unit,
     painter: Painter,
-    text: String,
-    modifier: Modifier = Modifier
+    text: String
 ) {
     Button(
         modifier = modifier,
@@ -54,12 +54,12 @@ fun IconTextButton(
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
-fun ReopenButtonPreview() {
+fun IconTextButtonPreview() {
     IconTextButton(
+        modifier = Modifier.fillMaxWidth(),
         enabled = true,
         onClick = {},
-        painterResource(id = R.drawable.ic_add_image),
-        "Add image",
-        Modifier.fillMaxWidth()
+        painter = painterResource(id = R.drawable.ic_add_image),
+        text = "Add image"
     )
 }

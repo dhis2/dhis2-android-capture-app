@@ -154,7 +154,7 @@ fun SignatureDialogUi(
 }
 
 fun Rect.captureBitmap(view: View): Bitmap? {
-    val rect = deflate(1.5f)
+    val rect = deflate(2f)
     val imageBitmap = Bitmap.createBitmap(
         rect.width.roundToInt(),
         rect.height.roundToInt(),

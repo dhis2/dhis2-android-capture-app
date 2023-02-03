@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -35,7 +36,7 @@ fun SignatureCanvas(modifier: Modifier = Modifier, drawing: MutableState<Offset?
                     }
                 }
                 true
-            }
+            }.graphicsLayer { clip = true }
     ) {
         drawing.value?.let {
             drawPath(
