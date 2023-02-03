@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -17,7 +18,9 @@ class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     var onMainButtonClicked: () -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
-    var onMessageClick: () -> Unit = {}
+    var onMessageClick: () -> Unit = {},
+    val content: @Composable
+        (org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) ->  Unit
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +37,7 @@ class BottomSheetDialog(
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    BottomSheetDialogContent(
+                    BottomSheetDialogUi(
                         bottomSheetDialogUiModel = bottomSheetDialogUiModel,
                         onMainButtonClicked = {
                             onMainButtonClicked.invoke()
@@ -44,9 +47,10 @@ class BottomSheetDialog(
                             onSecondaryButtonClicked.invoke()
                             dismiss()
                         },
-                        onIssueItemClicked = { dismiss() },
                         onMessageClick = onMessageClick
-                    )
+                    ){
+                        content(this@BottomSheetDialog)
+                    }
                 }
             }
         }
