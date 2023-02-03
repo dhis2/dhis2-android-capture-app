@@ -25,26 +25,10 @@
 
 package org.dhis2.utils.granularsync
 
-import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.imports.TrackerImportConflict
-
 class GranularSyncContracts {
 
     interface View {
-        fun showTitle(displayName: String)
-        fun closeDialog()
-        fun setState(state: State, conflicts: MutableList<TrackerImportConflict>)
-        fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
-        fun setLastUpdated(result: SyncDate)
-        fun showRefreshTitle()
-        fun logWaitingForServerResponse()
-        fun logSmsReachedServer()
-        fun logSmsReachedServerError()
-        fun logSmsSent()
-        fun logSmsNotSent()
         fun checkSmsPermission(): Boolean
-        fun logOpeningSmsApp()
         fun openSmsApp(message: String, smsToNumber: String)
-        fun updateState(state: State)
     }
 }

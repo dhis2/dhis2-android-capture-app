@@ -8,4 +8,6 @@ data class BottomSheetDialogUiModel(
     var iconResource: Int,
     var mainButton: DialogButtonStyle?=null,
     var secondaryButton: DialogButtonStyle? = null
-)
+) {
+    fun hasButtons() = mainButton != null || secondaryButton != null
+}

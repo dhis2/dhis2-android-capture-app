@@ -5,7 +5,7 @@ import org.hisp.dhis.android.core.common.State
 data class SyncUiState(
     val syncState: State,
     val title: String,
-    val lastSyncDate: SyncDate,
+    val lastSyncDate: SyncDate?,
     val message: String?,
     val mainActionLabel: String?,
     val secondaryActionLabel: String?,

@@ -66,7 +66,9 @@ fun BottomSheetDialogUi(
     ) {
         Column(
             horizontalAlignment = CenterHorizontally,
-            modifier = Modifier.wrapContentHeight()
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
         ) {
             icon?.invoke() ?: Icon(
                 painter = painterResource(bottomSheetDialogUiModel.iconResource),
@@ -137,47 +139,49 @@ fun BottomSheetDialogUi(
             it.invoke()
         }
 
-        Divider()
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
-                shape = if (
-                    bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
-                ) {
-                    RoundedCornerShape(24.dp)
-                } else {
-                    RoundedCornerShape(0.dp)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    disabledContainerColor = Color.White
-                ),
-                elevation = if (
-                    bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
-                ) {
-                    ButtonDefaults.buttonElevation(2.dp)
-                } else {
-                    ButtonDefaults.buttonElevation(0.dp)
-                },
-                onClick = { onSecondaryButtonClicked() },
-                content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
-                enabled = bottomSheetDialogUiModel.secondaryButton != null
-            )
-            Button(
-                modifier = Modifier.testTag(MAIN_BUTTON_TAG),
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = bottomSheetDialogUiModel.mainButton?.backgroundColor
-                        ?: colorPrimary,
-                    contentColor = Color.White
-                ),
-                onClick = { onMainButtonClicked() },
-                content = provideButtonContent(bottomSheetDialogUiModel.mainButton),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
-            )
+        if(bottomSheetDialogUiModel.hasButtons()) {
+            Divider()
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
+                    shape = if (
+                        bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
+                    ) {
+                        RoundedCornerShape(24.dp)
+                    } else {
+                        RoundedCornerShape(0.dp)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        disabledContainerColor = Color.White
+                    ),
+                    elevation = if (
+                        bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
+                    ) {
+                        ButtonDefaults.buttonElevation(2.dp)
+                    } else {
+                        ButtonDefaults.buttonElevation(0.dp)
+                    },
+                    onClick = { onSecondaryButtonClicked() },
+                    content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
+                    enabled = bottomSheetDialogUiModel.secondaryButton != null
+                )
+                Button(
+                    modifier = Modifier.testTag(MAIN_BUTTON_TAG),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = bottomSheetDialogUiModel.mainButton?.backgroundColor
+                            ?: colorPrimary,
+                        contentColor = Color.White
+                    ),
+                    onClick = { onMainButtonClicked() },
+                    content = provideButtonContent(bottomSheetDialogUiModel.mainButton),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
+                )
+            }
         }
     }
 }
