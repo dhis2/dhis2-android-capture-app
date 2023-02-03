@@ -914,4 +914,20 @@
     <string name="program_description">Program description</string>
     <string name="wrong_pin">Wrong pin</string>
     <string name="enrolledIn">Enrolled in:</string>
+    <string name="sync_dialog_title_not_synced">Sync needed</string>
+    <string name="sync_dialog_title_error">Sync error</string>
+    <string name="sync_dialog_title_synced">Synced</string>
+    <string name="sync_dialog_title_warning">Sync warning</string>
+    <string name="sync_dialog_title_syncing">Syncing</string>
+    <string name="sync_dialog_title_sms_syced">SMS sent</string>
+    <string name="sync_dialog_message_not_synced_all">Do you want to send all your changes?</string>
+    <string name="sync_dialog_message_not_synced_program">Do you want to send your changes for %s?</string>
+    <string name="sync_dialog_message_not_synced_tei">Do you want to send your changes for this %s</string>
+    <string name="sync_dialog_message_synced_all">Do you want to check for updates?</string>
+    <string name="sync_dialog_message_synced_program">Do you want to check for updates on %s?</string>
+    <string name="sync_dialog_message_synced_tei">Do you want to check for updates for this %s?</string>
+    <string name="sync_dialog_message_sms_synced">Do you want to send the SMS again?</string>
+    <string name="sync_dialog_action_send">Send</string>
+    <string name="sync_dialog_action_refresh">Refresh</string>
+    <string name="sync_dialog_action_not_now">Not now</string>
 </resources>
