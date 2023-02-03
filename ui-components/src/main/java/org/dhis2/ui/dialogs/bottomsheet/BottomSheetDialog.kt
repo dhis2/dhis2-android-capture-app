@@ -51,7 +51,9 @@ class BottomSheetDialog(
                         extraContent = content?.let {
                             { it.invoke(this@BottomSheetDialog) }
                         }
-                    )
+                    ){
+                        content(this@BottomSheetDialog)
+                    }
                 }
             }
         }
