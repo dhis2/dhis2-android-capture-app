@@ -100,7 +100,7 @@ fun MainContent(
                     .background(Color.White, shape = CircleShape)
                     .padding(end = 16.dp)
                     .shadow(
-                        elevation = 4.dp,
+                        elevation = 3.dp,
                         shape = RoundedCornerShape(30.dp),
                         clip = false
                     )
