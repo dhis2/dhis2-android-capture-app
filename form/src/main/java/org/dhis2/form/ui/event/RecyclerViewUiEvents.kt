@@ -93,4 +93,9 @@ sealed class RecyclerViewUiEvents {
     data class OpenFile(
         val field: FieldUiModel
     ) : RecyclerViewUiEvents()
+
+    data class OpenChooserIntent(
+        val action: String,
+        val value: String?
+    ) : RecyclerViewUiEvents()
 }

@@ -154,9 +154,10 @@
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:enabled="@{item.editable}"
                     android:padding="10dp"
-                    android:visibility="@{item.style.descriptionIcon != null ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{() -> item.invokeUiEvent(UiEventType.EMAIL)}"
                     app:iconResource="@{item.style.descriptionIcon}"
                     app:icon_color="@{item.style}"
+                    app:iconIsClickable="@{item}"
                     tools:ignore="ContentDescription"
                     tools:src="@drawable/ic_form_email"
                     tools:visibility="visible" />

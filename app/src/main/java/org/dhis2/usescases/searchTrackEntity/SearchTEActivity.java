@@ -333,6 +333,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 })
                 .onFieldItemsRendered(isEmpty -> Unit.INSTANCE)
                 .needToForceUpdate(true)
+                .setActionIconsActivation(false)
                 .factory(getSupportFragmentManager())
                 .setRecords(new SearchRecords(
                         initialProgram,

@@ -15,5 +15,7 @@ enum class UiEventType {
     OPTION_SET,
     ADD_SIGNATURE,
     ADD_FILE,
-    OPEN_FILE
+    OPEN_FILE,
+    EMAIL,
+    PHONE_NUMBER
 }
