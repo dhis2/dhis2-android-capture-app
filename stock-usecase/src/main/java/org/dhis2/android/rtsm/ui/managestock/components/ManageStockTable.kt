@@ -37,7 +37,8 @@ fun ManageStockTable(
             TableTheme(
                 tableColors = null,
                 tableDimensions = TableDimensions(
-                    defaultRowHeaderWidth = with(LocalDensity.current) { 200.dp.toPx() }.toInt()
+                    defaultRowHeaderWidth = with(LocalDensity.current) { 200.dp.toPx() }.toInt(),
+                    tableBottomPadding = 16.dp
                 )
             ) {
                 DataSetTableScreen(

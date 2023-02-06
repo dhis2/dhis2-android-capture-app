@@ -98,6 +98,7 @@ fun MainContent(
                 onValueChange = manageStockViewModel::onSearchQueryChanged,
                 modifier = Modifier
                     .background(Color.White, shape = CircleShape)
+                    .padding(end = 16.dp)
                     .shadow(
                         elevation = 4.dp,
                         shape = RoundedCornerShape(30.dp),
