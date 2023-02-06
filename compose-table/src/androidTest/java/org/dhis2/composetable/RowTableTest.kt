@@ -8,6 +8,8 @@ import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableConfiguration
+import org.dhis2.composetable.ui.TableTheme
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -103,17 +105,22 @@ class RowTableTest {
 
     private fun initTable(fakeModel: List<TableModel>) {
         composeTestRule.setContent {
-            primaryColor = MaterialTheme.colors.primary
-            DataSetTableScreen(
-                tableScreenState = TableScreenState(
-                    tables = fakeModel,
-                    selectNext = false
-                ),
-                onCellClick = { _, _, _-> null },
-                onEdition = {},
-                onCellValueChange = {},
-                onSaveValue = { _, _ -> }
-            )
+            TableTheme(
+                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableConfiguration = TableConfiguration(headerActionsEnabled = false)
+            ) {
+                primaryColor = MaterialTheme.colors.primary
+                DataSetTableScreen(
+                    tableScreenState = TableScreenState(
+                        tables = fakeModel,
+                        selectNext = false
+                    ),
+                    onCellClick = { _, _, _ -> null },
+                    onEdition = {},
+                    onCellValueChange = {},
+                    onSaveValue = { _, _ -> }
+                )
+            }
         }
     }
 }
