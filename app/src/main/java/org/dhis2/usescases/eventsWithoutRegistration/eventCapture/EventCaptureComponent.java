@@ -17,7 +17,7 @@ public interface EventCaptureComponent {
     void inject(EventCaptureActivity activity);
 
 // TODO: reversed
-    // void inject(TeiDashboardMobileActivity teiDashboardMobileActivity);
+//     void inject(TeiDashboardMobileActivity teiDashboardMobileActivity);
 
     EventCaptureFormComponent plus(EventCaptureFormModule formModule);
 

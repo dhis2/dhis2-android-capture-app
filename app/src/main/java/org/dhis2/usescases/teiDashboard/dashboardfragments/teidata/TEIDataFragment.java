@@ -380,8 +380,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     .collect(Collectors.toList());
 
             if (currentSectionEvents.size() > 0 && OrientationUtilsKt.isLandscape()) {
+
+                System.out.println("i do get in here ");
+
                 ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
+
             }else {
+
+                System.out.println("i do not get in here ");
 
                 for (EventViewModel eventViewModel : events) {
                     if (eventViewModel.getType() == EventViewModelType.EVENT) {

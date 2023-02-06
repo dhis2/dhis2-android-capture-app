@@ -132,10 +132,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
 
-        System.out.println("#######################################################");
-        System.out.println(teiUid);
-        System.out.println(enrollmentUid);
-
         setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
 
 
@@ -158,7 +154,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         if (OrientationUtilsKt.isLandscape(this)) {
 
-            System.out.println("helloooosssss::::::");
             dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
             getSupportFragmentManager().beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid)).commitAllowingStateLoss();
@@ -337,11 +332,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
 
     public void executeRules(){
-        System.out.println("executing rules");
 
         EventTeiDetailsFragment fragement = (EventTeiDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.tei_column);
-
-        System.out.println(fragement);
 
         fragement.onResume();
 

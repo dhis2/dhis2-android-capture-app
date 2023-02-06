@@ -43,8 +43,8 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
     private SectionSelectorFragmentBinding binding;
     private FormView formView;
 
-    public static EventCaptureFormFragment newInstance(String eventUid) {
-        EventCaptureFormFragment fragment = new EventCaptureFormFragment();
+    public static TeiEventCaptureFormFragment newInstance(String eventUid) {
+        TeiEventCaptureFormFragment fragment = new TeiEventCaptureFormFragment();
         Bundle args = new Bundle();
         args.putString(Constants.EVENT_UID, eventUid);
         fragment.setArguments(args);
@@ -55,17 +55,25 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.activity = (TeiDashboardMobileActivity) context;
+
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        System.out.println(getArguments().getString(Constants.EVENT_UID));
+        System.out.println(this);
 //        TODO: reversed
-//        activity.teiDashboardComponent.plus(
-//                new EventCaptureFormModule(
-//                        this,
-//                        getArguments().getString(Constants.EVENT_UID))
-//        ).inject(this);
-//        setRetainInstance(true);
+        activity.teiDashboardComponent.plus(
+                new EventCaptureFormModule(
+                        this,
+                        getArguments().getString(Constants.EVENT_UID))
+        ).inject(this);
+        setRetainInstance(true);
     }
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+
+        System.out.println("whats happening humu?");
+        System.out.println(locationProvider);
+
         formView = new FormView.Builder()
                 .locationProvider(locationProvider)
                 .onLoadingListener(loading -> {

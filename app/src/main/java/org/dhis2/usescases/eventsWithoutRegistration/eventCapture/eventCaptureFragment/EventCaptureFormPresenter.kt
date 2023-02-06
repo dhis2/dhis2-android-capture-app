@@ -14,12 +14,12 @@ import javax.inject.Inject
 
 class EventCaptureFormPresenter(
     private val view: EventCaptureFormView,
-//    private val activityPresenter: EventCaptureContract.Presenter,
+    private val activityPresenter: EventCaptureContract.Presenter,
     private val d2: D2,
     private val eventUid: String
 ) {
 
-    private lateinit var activityPresenter: EventCaptureContract.Presenter
+//    private lateinit var activityPresenter: EventCaptureContract.Presenter
 
     fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
         when (result) {
