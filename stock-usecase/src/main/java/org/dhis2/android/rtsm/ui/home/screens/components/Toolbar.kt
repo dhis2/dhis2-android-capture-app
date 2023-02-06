@@ -19,8 +19,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,7 +35,7 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun Toolbar(
     title: String,
@@ -48,6 +50,7 @@ fun Toolbar(
     hasDestinationSelected: Boolean?
 ) {
     val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
     TopAppBar(
         title = {
             Column(
@@ -143,6 +146,7 @@ fun Toolbar(
                         if (backdropState.isConcealed) {
                             scope.launch { backdropState.reveal() }
                         } else scope.launch { backdropState.conceal() }
+                        keyboardController?.hide()
                     }
                 ) {
                     Icon(
