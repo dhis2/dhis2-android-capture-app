@@ -81,7 +81,9 @@ fun BottomSheetDialogContent(
                 )
             } else {
                 ClickableText(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .testTag(CLICKABLE_TEXT_TAG)
+                        .fillMaxWidth(),
                     text = buildAnnotatedString {
                         val originalText = bottomSheetDialogUiModel.subtitle
                         val clickableWord = bottomSheetDialogUiModel.clickableWord!!
@@ -287,5 +289,6 @@ fun DialogPreview4() {
     )
 }
 
+const val CLICKABLE_TEXT_TAG = "CLICKABLE_TEXT_TAG"
 const val SECONDARY_BUTTON_TAG = "SECONDARY_BUTTON_TAG"
 const val MAIN_BUTTON_TAG = "MAIN_BUTTON_TAG"
