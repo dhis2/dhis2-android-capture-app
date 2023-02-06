@@ -82,6 +82,13 @@ fun D2.enrollment(uid: String): Enrollment =
         .uid(uid)
         .blockingGet()
 
+fun D2.enrollmentInProgram(teiUid: String, programUid: String, states: List<State>): Enrollment? =
+    enrollmentModule().enrollments()
+        .byTrackedEntityInstance().eq(teiUid)
+        .byProgram().eq(programUid)
+        .byAggregatedSyncState().`in`(states)
+        .blockingGet().firstOrNull()
+
 fun D2.enrollmentImportConflicts(enrollmentUid: String): List<TrackerImportConflict> =
     importModule().trackerImportConflicts()
         .byEnrollmentUid().eq(enrollmentUid)
