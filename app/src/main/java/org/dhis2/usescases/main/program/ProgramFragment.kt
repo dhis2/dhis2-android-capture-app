@@ -248,7 +248,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun showSyncDialog(program: ProgramViewModel) {
-        val dialog = SyncStatusDialog.Builder()
+        SyncStatusDialog.Builder()
+            .withContext(this)
             .setConflictType(
                 if (program.programType.isNotEmpty()) {
                     ConflictType.PROGRAM
@@ -264,10 +265,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                             presenter.updateProgramQueries()
                         }
                     }
-                })
-            .build()
-
-        dialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
+                }).show(FRAGMENT_TAG)
     }
 
     fun sharedView() = binding.drawerLayout

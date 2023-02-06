@@ -58,6 +58,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -219,6 +220,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.syncButton.setOnClickListener(v -> {
             openSyncDialog();
         });
+
+        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+            openSyncDialog();
+        }
     }
 
     @Override
@@ -258,7 +263,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void openSyncDialog() {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+       new SyncStatusDialog.Builder()
+                .withContext(this)
                 .setConflictType(ConflictType.TEI)
                 .setUid(enrollmentUid)
                 .onDismissListener(hasChanged -> {
@@ -268,9 +274,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
-                })
-                .build();
-        syncDialog.show(getSupportFragmentManager(), TEI_SYNC);
+                }).show(TEI_SYNC);
     }
 
     private void setViewpagerAdapter() {

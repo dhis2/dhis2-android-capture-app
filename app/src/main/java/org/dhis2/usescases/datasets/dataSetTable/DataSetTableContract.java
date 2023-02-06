@@ -25,9 +25,7 @@ public class DataSetTableContract {
 
         String getDataSetUid();
 
-        String getOrgUnitName();
-
-        void renderDetails(DataSet dataSet, String catcomboName, Period period, boolean isComplete);
+        void renderDetails(DataSetRenderDetails dataSetRenderDetails);
 
         Observable<Object> observeSaveButtonClicks();
 
@@ -62,13 +60,9 @@ public class DataSetTableContract {
 
         void onBackClick();
 
-        void init(String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
+        void init(String orgUnitUid, String catCombo, String periodId);
 
         String getOrgUnitUid();
-
-        String getPeriodTypeName();
-
-        String getPeriodFinalDate();
 
         String getCatCombo();
 

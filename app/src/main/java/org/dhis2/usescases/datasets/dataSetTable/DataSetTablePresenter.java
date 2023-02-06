@@ -1,21 +1,26 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.work.Data;
 
 import org.dhis2.commons.data.tuples.Pair;
-import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.matomo.Actions;
 import org.dhis2.commons.matomo.Categories;
 import org.dhis2.commons.matomo.Labels;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.validationrules.ValidationRuleResult;
+import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
@@ -35,10 +40,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private final List<DataSetSection> sections = new ArrayList<>();
     private DataSetTableContract.View view;
     public CompositeDisposable disposable;
-
+    private DhisPeriodUtils periodUtils;
     private String orgUnitUid;
-    private String periodTypeName;
-    private String periodFinalDate;
     private String catCombo;
     private String periodId;
     private FlowableProcessor<Boolean> validationProcessor;
@@ -47,11 +50,13 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     public DataSetTablePresenter(
             DataSetTableContract.View view,
             DataSetTableRepositoryImpl dataSetTableRepository,
+            DhisPeriodUtils periodUtils,
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper,
             FlowableProcessor<Unit> updateProcessor) {
         this.view = view;
         this.tableRepository = dataSetTableRepository;
+        this.periodUtils = periodUtils;
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
         this.validationProcessor = PublishProcessor.create();
@@ -60,11 +65,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void init(String orgUnitUid, String periodTypeName, String catCombo,
-                     String periodFinalDate, String periodId) {
+    public void init(String orgUnitUid, String catCombo, String periodId) {
         this.orgUnitUid = orgUnitUid;
-        this.periodTypeName = periodTypeName;
-        this.periodFinalDate = periodFinalDate;
         this.catCombo = catCombo;
         this.periodId = periodId;
 
@@ -83,14 +85,15 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 Flowable.zip(
                                 tableRepository.getDataSet().toFlowable(),
                                 tableRepository.getCatComboName(catCombo),
-                                tableRepository.getPeriod().toFlowable(),
+                                tableRepository.getPeriod().map(period -> periodUtils.getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())).toFlowable(),
+                                tableRepository.getOrgUnit().toFlowable(),
                                 tableRepository.isComplete().toFlowable(),
-                                Quartet::create
+                                this::renderDetails
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                data -> view.renderDetails(data.val0(), data.val1(), data.val2(), data.val3()),
+                                data -> view.renderDetails(data),
                                 Timber::e
                         )
         );
@@ -118,6 +121,22 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribe(
                                 o -> handleSaveClick(),
                                 Timber::e));
+    }
+
+    private DataSetRenderDetails renderDetails(
+            DataSet dataSet,
+            String attrOptionComboName,
+            String periodLabel,
+            OrganisationUnit organisationUnit,
+            Boolean isComplete
+    ){
+        return new DataSetRenderDetails(
+                dataSet.displayName(),
+                organisationUnit.displayName(),
+                periodLabel,
+                attrOptionComboName,
+                isComplete
+        );
     }
 
     @VisibleForTesting
@@ -173,14 +192,6 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     public String getOrgUnitUid() {
         return orgUnitUid;
-    }
-
-    public String getPeriodTypeName() {
-        return periodTypeName;
-    }
-
-    public String getPeriodFinalDate() {
-        return periodFinalDate;
     }
 
     public String getPeriodId() {

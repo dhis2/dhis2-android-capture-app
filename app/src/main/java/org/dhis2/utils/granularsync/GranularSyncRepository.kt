@@ -15,6 +15,7 @@ import org.dhis2.metadata.usecases.sdkextensions.dataSetInstancesBy
 import org.dhis2.metadata.usecases.sdkextensions.dataValueConflicts
 import org.dhis2.metadata.usecases.sdkextensions.enrollment
 import org.dhis2.metadata.usecases.sdkextensions.enrollmentImportConflicts
+import org.dhis2.metadata.usecases.sdkextensions.enrollmentInProgram
 import org.dhis2.metadata.usecases.sdkextensions.event
 import org.dhis2.metadata.usecases.sdkextensions.eventImportConflictsBy
 import org.dhis2.metadata.usecases.sdkextensions.eventsBy
@@ -87,8 +88,18 @@ class GranularSyncRepository(
                 val trackedEntityTypeName =
                     d2.trackedEntityType(tei.trackedEntityType()!!).displayName()
 
+                val activeEnrollmentInProgram = d2.enrollmentInProgram(
+                    teiUid = tei.uid(),
+                    programUid = programUid,
+                    states = states.toList()
+                )
+
                 SyncStatusItem(
-                    type = SyncStatusType.TrackedEntity(tei.uid(), null),
+                    type = SyncStatusType.TrackedEntity(
+                        teiUid = tei.uid(),
+                        programUid = programUid,
+                        enrollmentUid = activeEnrollmentInProgram?.uid()
+                    ),
                     displayName = trackedEntityTypeName!!,
                     description = description,
                     state = tei.aggregatedSyncState()!!
@@ -109,7 +120,11 @@ class GranularSyncRepository(
                 val stageName = d2.programStage(event.programStage()!!).displayName()
 
                 SyncStatusItem(
-                    type = SyncStatusType.Event(event.uid(), event.programStage()),
+                    type = SyncStatusType.Event(
+                        event.uid(),
+                        programUid,
+                        event.programStage()
+                    ),
                     displayName = stageName!!,
                     description = description,
                     state = event.aggregatedSyncState()!!
@@ -149,6 +164,7 @@ class GranularSyncRepository(
                         SyncStatusItem(
                             type = SyncStatusType.TrackedEntity(
                                 enrollment.trackedEntityInstance()!!,
+                                enrollment.program(),
                                 trackerImportConflict.enrollment()!!
                             ),
                             displayName = attribute.displayFormName() ?: attribute.uid(),
@@ -163,6 +179,7 @@ class GranularSyncRepository(
                         SyncStatusItem(
                             type = SyncStatusType.TrackedEntity(
                                 enrollment.trackedEntityInstance()!!,
+                                enrollment.program(),
                                 trackerImportConflict.enrollment()!!
                             ),
                             displayName = "Enrollment in ${program.displayName()}",
@@ -189,8 +206,9 @@ class GranularSyncRepository(
                             d2.teiAttribute(trackerImportConflict.trackedEntityAttribute()!!)
                         SyncStatusItem(
                             type = SyncStatusType.TrackedEntity(
-                                enrollment.trackedEntityInstance()!!,
-                                trackerImportConflict.enrollment()!!
+                                teiUid = enrollment.trackedEntityInstance()!!,
+                                programUid = enrollment.program(),
+                                enrollmentUid = trackerImportConflict.enrollment()!!
                             ),
                             displayName = attribute.displayFormName() ?: attribute.uid(),
                             description = trackerImportConflict.displayDescription() ?: "",
@@ -203,6 +221,7 @@ class GranularSyncRepository(
                         SyncStatusItem(
                             type = SyncStatusType.TrackedEntity(
                                 enrollment.trackedEntityInstance()!!,
+                                enrollment.program(),
                                 null
                             ),
                             displayName = "Error in TEI",
@@ -240,6 +259,7 @@ class GranularSyncRepository(
         return SyncStatusItem(
             type = SyncStatusType.Event(
                 eventUid = event.uid(),
+                programUid = event.program()!!,
                 programStageUid = event.programStage()
             ),
             displayName = dataElement?.displayFormName() ?: stage.displayName() ?: event.uid(),
@@ -251,12 +271,12 @@ class GranularSyncRepository(
     fun getEventItemsWithStates(eventUid: String, vararg states: State): List<SyncStatusItem> {
         return if (states.contains(State.ERROR) || states.contains(State.WARNING)) {
             d2.eventImportConflictsBy(eventUid).map { trackerImportConflict ->
-                    mapEventToSyncStatusItem(
-                        trackerImportConflict.event()!!,
-                        trackerImportConflict.dataElement(),
-                        trackerImportConflict.displayDescription() ?: ""
-                    )
-                }
+                mapEventToSyncStatusItem(
+                    trackerImportConflict.event()!!,
+                    trackerImportConflict.dataElement(),
+                    trackerImportConflict.displayDescription() ?: ""
+                )
+            }
         } else {
             emptyList()
         }
@@ -270,28 +290,28 @@ class GranularSyncRepository(
             dataSetUid = dataSetUid,
             states = states.toList()
         ).map { dataSetInstance ->
-                if (dataSetInstance.state() == State.ERROR || dataSetInstance.state() == State.WARNING) {
-                    val conflictNumber = d2.dataValueConflicts(
-                        dataSetUid = dataSetUid,
-                        periodId = dataSetInstance.period(),
-                        orgUnitUid = dataSetInstance.organisationUnitUid(),
-                        attrOptionComboUid = dataSetInstance.attributeOptionComboUid()
-                    )
-                    SyncStatusItem(
-                        type = SyncStatusType.DataSet(dataSetUid),
-                        displayName = "${dataSetInstance.organisationUnitDisplayName()} ${dataSetInstance.period()} ${dataSetInstance.attributeOptionComboDisplayName()}",
-                        description = "$conflictNumber errors",
-                        state = dataSetInstance.state()!!
-                    )
-                } else {
-                    SyncStatusItem(
-                        type = SyncStatusType.DataSet(dataSetUid),
-                        displayName = "${dataSetInstance.organisationUnitDisplayName()} ${dataSetInstance.period()} ${dataSetInstance.attributeOptionComboDisplayName()}",
-                        description = "Sync needed",
-                        state = dataSetInstance.state()!!
-                    )
-                }
-            }.sortedByState()
+            if (dataSetInstance.state() == State.ERROR || dataSetInstance.state() == State.WARNING) {
+                val conflictNumber = d2.dataValueConflicts(
+                    dataSetUid = dataSetUid,
+                    periodId = dataSetInstance.period(),
+                    orgUnitUid = dataSetInstance.organisationUnitUid(),
+                    attrOptionComboUid = dataSetInstance.attributeOptionComboUid()
+                )
+                SyncStatusItem(
+                    type = SyncStatusType.DataSet(dataSetUid),
+                    displayName = "${dataSetInstance.organisationUnitDisplayName()} ${dataSetInstance.period()} ${dataSetInstance.attributeOptionComboDisplayName()}",
+                    description = "$conflictNumber errors",
+                    state = dataSetInstance.state()!!
+                )
+            } else {
+                SyncStatusItem(
+                    type = SyncStatusType.DataSet(dataSetUid),
+                    displayName = "${dataSetInstance.organisationUnitDisplayName()} ${dataSetInstance.period()} ${dataSetInstance.attributeOptionComboDisplayName()}",
+                    description = "Sync needed",
+                    state = dataSetInstance.state()!!
+                )
+            }
+        }.sortedByState()
     }
 
     private fun getDataSetInstanceItemsWithStates(
@@ -315,7 +335,12 @@ class GranularSyncRepository(
                         }
                     val dataElementLabel = dataElement.displayFormName() ?: dataElement.uid()
                     SyncStatusItem(
-                        type = SyncStatusType.DataSetInstance(dataSetUid),
+                        type = SyncStatusType.DataSetInstance(
+                            dataSetUid = dataSetUid,
+                            orgUnitUid = dataValueConflict.orgUnit()!!,
+                            periodId = dataValueConflict.period()!!,
+                            attrOptComboUid = dataValueConflict.attributeOptionCombo()!!
+                        ),
                         displayName = "$dataElementLabel | $catOptComboLabel",
                         description = dataValueConflict.displayDescription() ?: "",
                         state = dataValueConflict.status()?.toState() ?: State.ERROR
@@ -326,7 +351,12 @@ class GranularSyncRepository(
                         d2.categoryOptionCombo(dataValueConflict.categoryOptionCombo()!!)
                     val catOptComboLabel = catOptCombo.displayName() ?: catOptCombo.uid()
                     SyncStatusItem(
-                        type = SyncStatusType.DataSetInstance(dataSetUid),
+                        type = SyncStatusType.DataSetInstance(
+                            dataSetUid = dataSetUid,
+                            orgUnitUid = dataValueConflict.orgUnit()!!,
+                            periodId = dataValueConflict.period()!!,
+                            attrOptComboUid = dataValueConflict.attributeOptionCombo()!!
+                        ),
                         displayName = catOptComboLabel,
                         description = dataValueConflict.displayDescription() ?: "",
                         state = dataValueConflict.status()?.toState() ?: State.ERROR

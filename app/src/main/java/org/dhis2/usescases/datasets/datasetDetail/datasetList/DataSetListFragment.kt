@@ -111,7 +111,8 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     }
 
     private fun showSyncDialog(dataSet: DataSetDetailModel) {
-        val dialog = SyncStatusDialog.Builder()
+        SyncStatusDialog.Builder()
+            .withContext(this)
             .setConflictType(ConflictType.DATA_VALUES)
             .setUid(dataSetUid)
             .setOrgUnit(dataSet.orgUnitUid())
@@ -123,8 +124,7 @@ class DataSetListFragment : FragmentGlobalAbstract() {
                         viewModel.updateData()
                     }
                 }
-            }).build()
-        dialog.show(activity.supportFragmentManager, FRAGMENT_TAG)
+            }).show(FRAGMENT_TAG)
     }
 
     companion object {

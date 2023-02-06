@@ -16,6 +16,7 @@ class SyncStatusDialogProvider : SyncComponentProvider {
         dismissListener: OnDismissListener?
     ) {
         val syncBuilder = SyncStatusDialog.Builder()
+            .withContext(activity)
             .setUid(recordUid)
             .setConflictType(conflictType)
 
@@ -26,7 +27,6 @@ class SyncStatusDialogProvider : SyncComponentProvider {
             dismissListener?.let { onDismissListener(it) }
         }
         syncBuilder
-            .build()
-            .show(activity.supportFragmentManager, conflictType.name)
+            .show(conflictType.name)
     }
 }

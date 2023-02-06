@@ -632,17 +632,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showSyncDialog(String uid) {
-        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
+        new SyncStatusDialog.Builder()
+                .withContext(this)
                 .setConflictType(ConflictType.TEI)
                 .setUid(uid)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged)
                         FilterManager.getInstance().publishData();
 
-                })
-                .build();
-
-        dialog.show(getChildFragmentManager(), uid);
+                }).show(uid);
     }
 
     @Override

@@ -16,6 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -49,6 +52,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     lateinit var networkUtils: NetworkUtils
 
     var dismissListenerDialog: OnDismissListener? = null
+
+    var syncStatusDialogNavigator: SyncStatusDialogNavigator? = null
 
     private var syncing: Boolean = false
 
@@ -147,7 +152,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                                                 title = item.displayName,
                                                 subtitle = item.description,
                                                 onClick = {
-                                                    // TODO() onSyncItemClick(item)
+                                                    syncStatusDialogNavigator?.navigateTo(item)
                                                 }
                                             ) {
                                                 SyncStateIcon(state = item.state)
@@ -169,7 +174,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         when {
             networkUtils.isOnline() -> syncGranular()
             viewModel.canSendSMS() &&
-                viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
+                    viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
         }
     }
 
@@ -316,12 +321,29 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     }
 
     class Builder {
+        private var context: Context? = null
+        private var fm: FragmentManager? = null
+        private var navigator: SyncStatusDialogNavigator? = null
         private lateinit var recordUid: String
         private lateinit var conflictType: ConflictType
         private var orgUnitDataValue: String? = null
         private var attributeComboDataValue: String? = null
         private var periodIdDataValue: String? = null
         private var dismissListener: OnDismissListener? = null
+
+        fun withContext(context: FragmentActivity): Builder {
+            this.context = context
+            this.navigator = SyncStatusDialogNavigator(context)
+            this.fm = context.supportFragmentManager
+            return this
+        }
+
+        fun withContext(fragment: Fragment): Builder {
+            this.context = fragment.context
+            this.navigator = SyncStatusDialogNavigator(fragment.requireActivity())
+            this.fm = fragment.childFragmentManager
+            return this
+        }
 
         fun setUid(uid: String): Builder {
             this.recordUid = uid
@@ -353,13 +375,13 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return this
         }
 
-        fun build(): SyncStatusDialog {
+        private fun build(): SyncStatusDialog {
             if (conflictType == ConflictType.DATA_VALUES &&
                 (
-                    orgUnitDataValue == null ||
-                        attributeComboDataValue == null ||
-                        periodIdDataValue == null
-                    )
+                        orgUnitDataValue == null ||
+                                attributeComboDataValue == null ||
+                                periodIdDataValue == null
+                        )
             ) {
                 throw NullPointerException(
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
@@ -371,8 +393,21 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 conflictType,
                 orgUnitDataValue,
                 attributeComboDataValue,
-                periodIdDataValue
-            ).apply { dismissListenerDialog = dismissListener }
+                periodIdDataValue,
+            ).apply {
+                dismissListenerDialog = dismissListener
+                syncStatusDialogNavigator = navigator
+            }
+        }
+
+        fun show(tag: String) {
+            if (fm != null) {
+                build().show(fm!!, tag)
+            } else {
+                throw NullPointerException(
+                    "Required non null fragment manager. Use withContext builder method."
+                )
+            }
         }
     }
 }

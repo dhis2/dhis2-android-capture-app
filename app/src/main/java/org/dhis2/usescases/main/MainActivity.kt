@@ -235,6 +235,7 @@ class MainActivity :
 
     override fun showGranularSync() {
         SyncStatusDialog.Builder()
+            .withContext(this)
             .setConflictType(ConflictType.ALL)
             .setUid("")
             .onDismissListener(
@@ -245,7 +246,7 @@ class MainActivity :
                         }
                     }
                 })
-            .build().show(supportFragmentManager, "ALL_SYNC")
+            .show("ALL_SYNC")
     }
 
     override fun goToLogin(accountsCount: Int, isDeletion: Boolean) {

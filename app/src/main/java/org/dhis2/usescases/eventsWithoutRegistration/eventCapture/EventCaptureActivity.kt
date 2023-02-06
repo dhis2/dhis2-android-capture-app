@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -50,6 +51,7 @@ import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 
 class EventCaptureActivity :
     ActivityGlobalAbstract(),
@@ -99,6 +101,10 @@ class EventCaptureActivity :
         presenter!!.initNoteCounter()
         presenter!!.init()
         binding?.syncButton?.setOnClickListener { view: View? -> showSyncDialog() }
+
+        if (intent.shouldLaunchSyncDialog()) {
+            showSyncDialog()
+        }
     }
 
     private fun setUpViewPagerAdapter() {
@@ -419,15 +425,14 @@ class EventCaptureActivity :
     }
 
     private fun showSyncDialog() {
-        val syncDialog = SyncStatusDialog.Builder()
+        SyncStatusDialog.Builder()
+            .withContext(this)
             .setConflictType(ConflictType.EVENT)
             .setUid(eventUid!!)
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                 }
-            })
-            .build()
-        syncDialog.show(supportFragmentManager, "EVENT_SYNC")
+            }).show("EVENT_SYNC")
     }
 
     companion object {
@@ -440,6 +445,17 @@ class EventCaptureActivity :
             bundle.putString(Constants.PROGRAM_UID, programUid)
             bundle.putSerializable(Constants.EVENT_MODE, eventMode)
             return bundle
+        }
+
+        fun intent(
+            context: Context,
+            eventUid: String,
+            programUid: String,
+            eventMode: EventMode
+        ): Intent {
+            return Intent(context, EventCaptureActivity::class.java).apply {
+                putExtras(getActivityBundle(eventUid, programUid, eventMode))
+            }
         }
     }
 }

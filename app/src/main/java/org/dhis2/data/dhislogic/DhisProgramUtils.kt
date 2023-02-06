@@ -23,7 +23,8 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
         ).distinct()
 
         return when {
-            states.contains(State.ERROR) or states.contains(State.WARNING) -> State.WARNING
+            states.contains(State.ERROR) -> State.ERROR
+            states.contains(State.WARNING) -> State.WARNING
             states.contains(State.TO_POST) -> State.TO_POST
             states.contains(State.TO_UPDATE) -> State.TO_UPDATE
             states.contains(State.SENT_VIA_SMS) or states.contains(State.SYNCED_VIA_SMS) ->

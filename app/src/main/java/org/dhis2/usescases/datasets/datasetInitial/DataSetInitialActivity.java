@@ -252,9 +252,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         Bundle bundle = DataSetTableActivity.getBundle(
                 dataSetUid,
                 selectedOrgUnit.uid(),
-                selectedOrgUnit.name(),
-                getPeriodType(),
-                periodUtils.getPeriodUIString(binding.getDataSetModel().periodType(), selectedPeriod, Locale.getDefault()),
                 periodId,
                 catOptionCombo
         );
