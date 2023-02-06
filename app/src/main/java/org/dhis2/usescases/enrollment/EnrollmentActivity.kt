@@ -77,9 +77,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             intent.putExtra(PROGRAM_UID_EXTRA, programUid)
             intent.putExtra(MODE_EXTRA, enrollmentMode.name)
             intent.putExtra(FOR_RELATIONSHIP, forRelationship)
-            if (forRelationship == true) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-            }
             return intent
         }
     }
