@@ -1,5 +1,6 @@
 package org.dhis2.metadata.usecases.sdkextensions
 
+import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
@@ -10,6 +11,7 @@ import org.hisp.dhis.android.core.datavalue.DataValueConflict
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
+import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
@@ -21,6 +23,9 @@ fun D2.programs(): List<Program> =
 
 fun D2.program(programUid: String): Program =
     programModule().programs().uid(programUid).blockingGet()
+
+fun D2.observeProgram(programUid: String): Single<Program> =
+    programModule().programs().uid(programUid).get()
 
 fun D2.dataSetInstanceSummaries(): List<DataSetInstanceSummary> =
     dataSetModule().dataSetInstanceSummaries().blockingGet()
@@ -40,6 +45,10 @@ fun D2.trackedEntityType(uid: String): TrackedEntityType =
 fun D2.tei(teiUid: String): TrackedEntityInstance =
     trackedEntityModule().trackedEntityInstances()
         .uid(teiUid).blockingGet()
+
+fun D2.observeTei(teiUid: String): Single<TrackedEntityInstance> =
+    trackedEntityModule().trackedEntityInstances()
+        .uid(teiUid).get()
 
 fun D2.teisBy(
     programs: List<String>? = null,
@@ -104,6 +113,9 @@ fun D2.programStage(uid: String): ProgramStage =
 fun D2.event(uid: String): Event = eventModule().events()
     .uid(uid).blockingGet()
 
+fun D2.observeEvent(uid: String): Single<Event> = eventModule().events()
+    .uid(uid).get()
+
 fun D2.eventsBy(
     programUid: String? = null,
     enrollmentUid: String? = null,
@@ -142,6 +154,26 @@ fun D2.dataSetInstancesBy(
     return repository.blockingGet()
 }
 
+fun D2.observeDataSetInstancesBy(
+    dataSetUid: String? = null,
+    orgUnitUid: String? = null,
+    periodId: String? = null,
+    attrOptionComboUid: String? = null,
+    states: List<State>? = null
+): Single<List<DataSetInstance>> {
+    var repository = dataSetModule().dataSetInstances()
+    repository = dataSetUid?.let { repository.byDataSetUid().eq(dataSetUid) } ?: repository
+    repository = states?.let {
+        repository.byState().`in`(states)
+    } ?: repository
+    repository = orgUnitUid?.let { repository.byOrganisationUnitUid().eq(orgUnitUid) } ?: repository
+    repository = periodId?.let { repository.byPeriod().eq(periodId) } ?: repository
+    repository = attrOptionComboUid?.let {
+        repository.byAttributeOptionComboUid().eq(attrOptionComboUid)
+    } ?: repository
+    return repository.get()
+}
+
 fun D2.dataValueConflicts(
     dataSetUid: String,
     periodId: String,
@@ -152,4 +184,21 @@ fun D2.dataValueConflicts(
     .byPeriod().eq(periodId)
     .byOrganisationUnitUid().eq(orgUnitUid)
     .byAttributeOptionCombo().eq(attrOptionComboUid)
+    .blockingGet()
+
+fun D2.countDataValueConflicts(
+    dataSetUid: String,
+    periodId: String,
+    orgUnitUid: String,
+    attrOptionComboUid: String
+): Int = dataValueModule().dataValueConflicts()
+    .byDataSet(dataSetUid)
+    .byPeriod().eq(periodId)
+    .byOrganisationUnitUid().eq(orgUnitUid)
+    .byAttributeOptionCombo().eq(attrOptionComboUid)
+    .blockingCount()
+
+fun D2.period(periodId: String): Period = periodModule().periods()
+    .byPeriodId().eq(periodId)
+    .one()
     .blockingGet()

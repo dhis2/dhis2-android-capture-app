@@ -1,12 +1,15 @@
 package org.dhis2.utils.granularsync
 
 import io.reactivex.Single
+import java.util.Locale
 import org.dhis2.R
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.metadata.usecases.sdkextensions.categoryOptionCombo
+import org.dhis2.metadata.usecases.sdkextensions.countDataValueConflicts
 import org.dhis2.metadata.usecases.sdkextensions.countEventImportConflicts
 import org.dhis2.metadata.usecases.sdkextensions.countTeiImportConflicts
 import org.dhis2.metadata.usecases.sdkextensions.dataElement
@@ -19,6 +22,11 @@ import org.dhis2.metadata.usecases.sdkextensions.enrollmentInProgram
 import org.dhis2.metadata.usecases.sdkextensions.event
 import org.dhis2.metadata.usecases.sdkextensions.eventImportConflictsBy
 import org.dhis2.metadata.usecases.sdkextensions.eventsBy
+import org.dhis2.metadata.usecases.sdkextensions.observeDataSetInstancesBy
+import org.dhis2.metadata.usecases.sdkextensions.observeEvent
+import org.dhis2.metadata.usecases.sdkextensions.observeProgram
+import org.dhis2.metadata.usecases.sdkextensions.observeTei
+import org.dhis2.metadata.usecases.sdkextensions.period
 import org.dhis2.metadata.usecases.sdkextensions.program
 import org.dhis2.metadata.usecases.sdkextensions.programStage
 import org.dhis2.metadata.usecases.sdkextensions.programs
@@ -29,6 +37,7 @@ import org.dhis2.metadata.usecases.sdkextensions.teisBy
 import org.dhis2.metadata.usecases.sdkextensions.trackedEntityType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramType
 
@@ -41,9 +50,85 @@ class GranularSyncRepository(
     private val dvPeriodId: String?,
     private val preferenceProvider: PreferenceProvider,
     private val dhisProgramUtils: DhisProgramUtils,
+    private val periodUtils: DhisPeriodUtils,
     private val resourceManager: ResourceManager
 ) {
-    fun getHomeItemsWithStates(vararg states: State): List<SyncStatusItem> {
+
+    fun getUiState(forcedState: State? = null): SyncUiState {
+        return Single.zip(
+            getState(),
+            getLastSynced(),
+        ) { state, lastSync ->
+            buildUiState(
+                forcedState.takeIf { it != null } ?: state,
+                lastSync
+            )
+        }.blockingGet()
+    }
+
+    private fun getState(): Single<State> {
+        return when (conflictType) {
+            ConflictType.PROGRAM ->
+                d2.observeProgram(recordUid).map { dhisProgramUtils.getProgramState(it) }
+            ConflictType.TEI -> {
+                val enrollment = d2.enrollment(recordUid)
+                d2.observeTei(enrollment.trackedEntityInstance()!!).map { it.aggregatedSyncState() }
+            }
+            ConflictType.EVENT ->
+                d2.observeEvent(recordUid).map { it.aggregatedSyncState() }
+            ConflictType.DATA_SET ->
+                d2.observeDataSetInstancesBy(recordUid)
+                    .map { dataSetInstances ->
+                        getStateFromCanditates(dataSetInstances.map { it.state() }.toMutableList())
+                    }
+            ConflictType.DATA_VALUES ->
+                d2.observeDataSetInstancesBy(
+                    dataSetUid = recordUid,
+                    orgUnitUid = dvOrgUnit,
+                    periodId = dvPeriodId,
+                    attrOptionComboUid = dvAttrCombo
+                ).map { dataSetInstance ->
+                    getStateFromCanditates(dataSetInstance.map { it.state() }.toMutableList())
+                }
+            ConflictType.ALL -> Single.just(dhisProgramUtils.getServerState())
+        }
+    }
+
+    private fun getLastSynced(): Single<SyncDate> {
+        return when (conflictType) {
+            ConflictType.PROGRAM ->
+                d2.observeProgram(recordUid).map { SyncDate(it.lastUpdated()) }
+            ConflictType.TEI -> {
+                val enrollment = d2.enrollment(recordUid)
+                d2.observeTei(enrollment.trackedEntityInstance()!!)
+                    .map { SyncDate(it.lastUpdated()) }
+            }
+            ConflictType.EVENT ->
+                d2.observeEvent(recordUid).map { SyncDate(it.lastUpdated()) }
+            ConflictType.DATA_SET ->
+                d2.dataSetModule().dataSets()
+                    .uid(recordUid).get()
+                    .map { dataSet -> SyncDate(dataSet.lastUpdated()) }
+            ConflictType.DATA_VALUES ->
+                d2.observeDataSetInstancesBy(
+                    dataSetUid = recordUid,
+                    orgUnitUid = dvOrgUnit,
+                    periodId = dvPeriodId,
+                    attrOptionComboUid = dvAttrCombo
+                ).map { dataSetInstance ->
+                    dataSetInstance.sortedBy { it.lastUpdated() }
+                    SyncDate(
+                        dataSetInstance.apply {
+                            sortedBy { it.lastUpdated() }
+                        }.first().lastUpdated()
+                    )
+                }
+            ConflictType.ALL ->
+                Single.just(SyncDate(preferenceProvider.lastSync()))
+        }
+    }
+
+    private fun getHomeItemsWithStates(vararg states: State): List<SyncStatusItem> {
         val programList = d2.programs().filter {
             states.contains(dhisProgramUtils.getProgramState(it))
         }.map { program ->
@@ -71,7 +156,10 @@ class GranularSyncRepository(
         return (programList + dataSetList).sortedByState()
     }
 
-    fun getProgramItemsWithStates(programUid: String, vararg states: State): List<SyncStatusItem> {
+    private fun getProgramItemsWithStates(
+        programUid: String,
+        vararg states: State
+    ): List<SyncStatusItem> {
         val program = d2.program(programUid)
         return if (program.programType() == ProgramType.WITH_REGISTRATION) {
             d2.teisBy(
@@ -142,7 +230,7 @@ class GranularSyncRepository(
         return d2.countEventImportConflicts(eventUid)
     }
 
-    fun getEnrollmentItemsWithStates(
+    private fun getEnrollmentItemsWithStates(
         enrollmentUid: String,
         vararg states: State
     ): List<SyncStatusItem> {
@@ -208,7 +296,7 @@ class GranularSyncRepository(
                             type = SyncStatusType.TrackedEntity(
                                 teiUid = enrollment.trackedEntityInstance()!!,
                                 programUid = enrollment.program(),
-                                enrollmentUid = trackerImportConflict.enrollment()!!
+                                enrollmentUid = trackerImportConflict.enrollment()
                             ),
                             displayName = attribute.displayFormName() ?: attribute.uid(),
                             description = trackerImportConflict.displayDescription() ?: "",
@@ -268,7 +356,10 @@ class GranularSyncRepository(
         )
     }
 
-    fun getEventItemsWithStates(eventUid: String, vararg states: State): List<SyncStatusItem> {
+    private fun getEventItemsWithStates(
+        eventUid: String,
+        vararg states: State
+    ): List<SyncStatusItem> {
         return if (states.contains(State.ERROR) || states.contains(State.WARNING)) {
             d2.eventImportConflictsBy(eventUid).map { trackerImportConflict ->
                 mapEventToSyncStatusItem(
@@ -291,7 +382,7 @@ class GranularSyncRepository(
             states = states.toList()
         ).map { dataSetInstance ->
             if (dataSetInstance.state() == State.ERROR || dataSetInstance.state() == State.WARNING) {
-                val conflictNumber = d2.dataValueConflicts(
+                val conflictNumber = d2.countDataValueConflicts(
                     dataSetUid = dataSetUid,
                     periodId = dataSetInstance.period(),
                     orgUnitUid = dataSetInstance.organisationUnitUid(),
@@ -299,19 +390,39 @@ class GranularSyncRepository(
                 )
                 SyncStatusItem(
                     type = SyncStatusType.DataSet(dataSetUid),
-                    displayName = "${dataSetInstance.organisationUnitDisplayName()} ${dataSetInstance.period()} ${dataSetInstance.attributeOptionComboDisplayName()}",
+                    displayName = getDataSetInstanceLabel(dataSetInstance),
                     description = "$conflictNumber errors",
                     state = dataSetInstance.state()!!
                 )
             } else {
                 SyncStatusItem(
                     type = SyncStatusType.DataSet(dataSetUid),
-                    displayName = "${dataSetInstance.organisationUnitDisplayName()} ${dataSetInstance.period()} ${dataSetInstance.attributeOptionComboDisplayName()}",
+                    displayName = getDataSetInstanceLabel(dataSetInstance),
                     description = "Sync needed",
                     state = dataSetInstance.state()!!
                 )
             }
         }.sortedByState()
+    }
+
+    private fun getDataSetInstanceLabel(dataSetInstance: DataSetInstance): String {
+        val dataSetInstanceLabelData = mutableListOf<String>().apply {
+            add(dataSetInstance.organisationUnitDisplayName())
+            dataSetInstance.period().let { periodId ->
+                val period = d2.period(periodId)
+                add(
+                    periodUtils.getPeriodUIString(
+                        period.periodType(),
+                        period.startDate()!!,
+                        Locale.getDefault()
+                    )
+                )
+            }
+            dataSetInstance.attributeOptionComboDisplayName().takeIf { it != "default" }?.let {
+                add(it)
+            }
+        }
+        return dataSetInstanceLabelData.joinToString(" | ")
     }
 
     private fun getDataSetInstanceItemsWithStates(
@@ -368,18 +479,6 @@ class GranularSyncRepository(
         }
     }
 
-    fun getUiState(forcedState: State? = null): SyncUiState {
-        return Single.zip(
-            getState(),
-            getLastSynced(),
-        ) { state, lastSync ->
-            buildUiState(
-                forcedState.takeIf { it != null } ?: state,
-                lastSync
-            )
-        }.blockingGet()
-    }
-
     private fun buildUiState(state: State, lastSync: SyncDate): SyncUiState {
         return SyncUiState(
             syncState = state,
@@ -392,40 +491,6 @@ class GranularSyncRepository(
         )
     }
 
-    private fun getState(): Single<State> {
-        return when (conflictType) {
-            ConflictType.PROGRAM ->
-                d2.programModule().programs().uid(recordUid).get()
-                    .map {
-                        dhisProgramUtils.getProgramState(it)
-                    }
-            ConflictType.TEI -> {
-                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
-                d2.trackedEntityModule().trackedEntityInstances()
-                    .uid(enrollment.trackedEntityInstance()).get()
-                    .map { it.aggregatedSyncState() }
-            }
-            ConflictType.EVENT ->
-                d2.eventModule().events().uid(recordUid).get()
-                    .map { it.aggregatedSyncState() }
-            ConflictType.DATA_SET ->
-                d2.dataSetModule().dataSetInstances()
-                    .byDataSetUid().eq(recordUid).get()
-                    .map { dataSetInstances ->
-                        getStateFromCanditates(dataSetInstances.map { it.state() }.toMutableList())
-                    }
-            ConflictType.DATA_VALUES ->
-                d2.dataSetModule().dataSetInstances()
-                    .byOrganisationUnitUid().eq(dvOrgUnit)
-                    .byPeriod().eq(dvPeriodId)
-                    .byAttributeOptionComboUid().eq(dvAttrCombo)
-                    .byDataSetUid().eq(recordUid).get()
-                    .map { dataSetInstance ->
-                        getStateFromCanditates(dataSetInstance.map { it.state() }.toMutableList())
-                    }
-            ConflictType.ALL -> Single.just(dhisProgramUtils.getServerState())
-        }
-    }
 
     private fun getStateFromCanditates(stateCandidates: MutableList<State?>): State {
         if (conflictType == ConflictType.DATA_SET) {
@@ -459,46 +524,6 @@ class GranularSyncRepository(
         }
     }
 
-    private fun getLastSynced(): Single<SyncDate> {
-        return when (conflictType) {
-            ConflictType.PROGRAM ->
-                d2.programModule().programs().uid(recordUid).get()
-                    .map {
-                        SyncDate(it.lastUpdated())
-                    }
-            ConflictType.TEI -> {
-                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
-                d2.trackedEntityModule().trackedEntityInstances()
-                    .uid(enrollment.trackedEntityInstance()).get()
-                    .map { SyncDate(it.lastUpdated()) }
-            }
-            ConflictType.EVENT ->
-                d2.eventModule().events().uid(recordUid).get()
-                    .map { SyncDate(it.lastUpdated()) }
-            ConflictType.DATA_SET ->
-                d2.dataSetModule().dataSets()
-                    .uid(recordUid).get()
-                    .map { dataSet ->
-                        SyncDate(dataSet.lastUpdated())
-                    }
-            ConflictType.DATA_VALUES ->
-                d2.dataSetModule().dataSetInstances()
-                    .byOrganisationUnitUid().eq(dvOrgUnit)
-                    .byPeriod().eq(dvPeriodId)
-                    .byAttributeOptionComboUid().eq(dvAttrCombo)
-                    .byDataSetUid().eq(recordUid).get()
-                    .map { dataSetInstance ->
-                        dataSetInstance.sortBy { it.lastUpdated() }
-                        SyncDate(
-                            dataSetInstance.apply {
-                                sortBy { it.lastUpdated() }
-                            }.first().lastUpdated()
-                        )
-                    }
-            ConflictType.ALL ->
-                Single.just(SyncDate(preferenceProvider.lastSync()))
-        }
-    }
 
     private fun getTitleForState(state: State): String {
         return when (state) {
@@ -528,7 +553,7 @@ class GranularSyncRepository(
         }
     }
 
-    private fun getNotSyncedMessage(): String? {
+    private fun getNotSyncedMessage(): String {
         return when (conflictType) {
             ConflictType.ALL -> resourceManager.getString(R.string.sync_dialog_message_not_synced_all)
             ConflictType.DATA_SET,
@@ -544,7 +569,7 @@ class GranularSyncRepository(
         }
     }
 
-    private fun getSyncedMessage(): String? {
+    private fun getSyncedMessage(): String {
         return when (conflictType) {
             ConflictType.ALL -> resourceManager.getString(R.string.sync_dialog_message_synced_all)
             ConflictType.DATA_SET,
@@ -660,8 +685,20 @@ class GranularSyncRepository(
 }
 
 fun List<SyncStatusItem>.sortedByState(): List<SyncStatusItem> {
-    return sortedWith { item1, item2 ->
-        item1.state.priority().compareTo(item2.state.priority())
+    return sortedWith(
+        compareBy<SyncStatusItem> { it.state.priority() }
+            .thenBy { it.priority() }
+    )
+}
+
+fun SyncStatusItem.priority(): Int {
+    return when (this.type) {
+        is SyncStatusType.DataSet,
+        is SyncStatusType.EventProgram,
+        is SyncStatusType.TrackerProgram -> 1
+        is SyncStatusType.DataSetInstance,
+        is SyncStatusType.Event,
+        is SyncStatusType.TrackedEntity -> 2
     }
 }
 

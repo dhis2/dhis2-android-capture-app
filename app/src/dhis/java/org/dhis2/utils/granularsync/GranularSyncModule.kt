@@ -33,6 +33,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.form.model.DispatcherProvider
@@ -83,6 +84,7 @@ class GranularSyncModule(
     fun granularSyncRepository(
         d2: D2,
         dhisProgramUtils: DhisProgramUtils,
+        periodUtils: DhisPeriodUtils,
         preferenceProvider: PreferenceProvider,
         resourceManager: ResourceManager
     ): GranularSyncRepository = GranularSyncRepository(
@@ -94,6 +96,7 @@ class GranularSyncModule(
         dvPeriodId,
         preferenceProvider,
         dhisProgramUtils,
+        periodUtils,
         resourceManager
     )
 
