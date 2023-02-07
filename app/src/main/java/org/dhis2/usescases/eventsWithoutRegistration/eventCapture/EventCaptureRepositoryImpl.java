@@ -317,6 +317,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
+    public String getProgramStageUid(){
+        return getCurrentEvent().programStage();
+    }
+
+
+    @Override
     public boolean getAccessDataWrite() {
         return d2.eventModule().eventService().blockingHasDataWriteAccess(eventUid);
     }

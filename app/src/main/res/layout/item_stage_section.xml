@@ -6,8 +6,8 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:rippleColor="@color/rippleColor"
         app:cardElevation="0dp"
+        app:rippleColor="@color/rippleColor"
         tools:background="@color/form_field_background">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,19 +17,32 @@
             android:background="@color/white"
             app:layout_constraintTop_toBottomOf="@id/shadow_bottom">
 
+            <LinearLayout
+                android:id="@+id/sectionSelectedMark"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_width="6dp"
+                android:layout_height="match_parent"
+                android:background="@color/primaryAlpha"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/startGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_begin="@dimen/padding_16"/>
+                app:layout_constraintGuide_begin="@dimen/padding_16" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/endGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_end="@dimen/padding_16"/>
+                app:layout_constraintGuide_end="@dimen/padding_16" />
 
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/composeProgramStageIcon"
@@ -37,7 +50,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/startGuideline"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/programStageName"
@@ -45,17 +58,17 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:ellipsize="end"
                 android:gravity="bottom"
                 android:lines="1"
                 android:textColor="@color/textPrimary"
                 android:textSize="14sp"
-                android:ellipsize="end"
                 android:translationY="3.71sp"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/lastUpdatedEvent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/composeProgramStageIcon"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constrainedWidth="true"
                 tools:text="Program stage name" />
 
             <TextView

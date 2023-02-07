@@ -19,7 +19,6 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
@@ -311,6 +310,21 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public boolean getCompletionPercentageVisibility() {
         return eventCaptureRepository.showCompletionPercentage();
+    }
+
+    @Override
+    public void programStageUid() {
+        compositeDisposable.add(eventCaptureRepository.programStage().subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        result -> view.preselectStage(result),
+                        Timber::e
+                ));
+    }
+
+    @Override
+    public String getProgramStageUidString(){
+      return  eventCaptureRepository.getProgramStageUid();
     }
 
     private EventStatus getEventStatus() {

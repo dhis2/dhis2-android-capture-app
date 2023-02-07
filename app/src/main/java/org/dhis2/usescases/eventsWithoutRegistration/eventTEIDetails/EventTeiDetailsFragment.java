@@ -135,13 +135,15 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     String teiUid;
     String programUid;
     String enrollmentUid;
+    String programStageUid;
 
-    public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid, Set<String> attributeNames) {
+    public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid, String eventUid, String stageUid, Set<String> attributeNames) {
         EventTeiDetailsFragment fragment = new EventTeiDetailsFragment();
         Bundle args = new Bundle();
         args.putString("PROGRAM_UID", programUid);
         args.putString("TEI_UID", teiUid);
         args.putString("ENROLLMENT_UID", enrollmentUid);
+        args.putString(Constants.PROGRAM_STAGE_UID, stageUid);
         ArrayList<String> x = new ArrayList<>(attributeNames);
         args.putStringArrayList("ATTRIBUTE_NAMES", x);
 
@@ -157,6 +159,10 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         this.teiUid = getArguments().getString("TEI_UID");
         this.enrollmentUid = getArguments().getString("ENROLLMENT_UID");
         this.programUid = getArguments().getString("PROGRAM_UID");
+        this.programStageUid = getArguments().getString(Constants.PROGRAM_STAGE_UID);
+
+        System.out.println("on the tei summary . . . ");
+        System.out.println(this.programStageUid);
 
         super.onAttach(context);
         this.context = context;
@@ -266,9 +272,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void onResume() {
         super.onResume();
-
         presenter.init();
-
         dashboardViewModel.dashboardModel().observe(this, this::setData);
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
 
@@ -348,10 +352,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
 
-        System.out.println("1111111111111111111111111111111111111111111111");
-        System.out.println(nprogram);
-        System.out.println(nprogram.getCurrentEnrollment());
-
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             binding.dialFabLayout.setFabVisible(true);
             presenter.setDashboardProgram(this.dashboardModel);
@@ -410,11 +410,17 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
+
+        System.out.println("on observe stage selection");
+
         if (adapter == null) {
-            adapter = new EventAdapter(presenter, currentProgram);
+            adapter = new EventAdapter(presenter, currentProgram, programStageUid, activity.eventUid);
             adapter.setEnrollment(currentEnrollment);
+
             binding.teiRecycler.setAdapter(adapter);
+
         }
+
         return adapter.stageSelector();
     }
 
@@ -589,8 +595,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public void displayGenerateEvent(String eventUid) {
-        System.out.println("on display general evend");
-
         if (eventUid != null) {
             presenter.displayGenerateEvent(eventUid);
             dashboardViewModel.updateEventUid(null);
@@ -679,8 +683,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
 
-        System.out.println("event initial class on new fragment");
-
         Intent intent = new Intent(activity, EventInitialActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, this.programUid);
@@ -698,7 +700,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             System.out.println(attributeNames);
             ArrayList<String> x = new ArrayList<>(attributeNames);
 
-            bundle.putStringArrayList("ATTRIBUTE_NAMES", x);
         }
         bundle.putString(ENROLLMENT_UID, this.enrollmentUid);
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());

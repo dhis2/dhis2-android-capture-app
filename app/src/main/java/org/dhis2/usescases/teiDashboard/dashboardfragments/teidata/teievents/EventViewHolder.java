@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -45,9 +46,11 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private final Function2<String, View, Unit> onScheduleClick;
     private final Function4<String, String, EventStatus, View, Unit> onEventSelected;
     private ItemEventBinding binding;
+    private String selectedEvent;
 
     public EventViewHolder(ItemEventBinding binding,
                            Program program,
+                           String eventSelected,
                            Function1<String, Unit> syncClick,
                            Function2<String, View, Unit> scheduleClick,
                            Function4<String, String, EventStatus, View, Unit> onEventSelected
@@ -58,6 +61,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onSyncClick = syncClick;
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
+        this.selectedEvent = eventSelected;
         MetadataIconKt.handleComposeDispose(binding.composeStageIcon);
     }
 
@@ -69,6 +73,15 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.setEnrollment(enrollment);
         binding.setProgram(program);
         binding.executePendingBindings();
+
+        System.out.println("bind called????");
+        System.out.println(event.uid());
+        System.out.println(this.selectedEvent);
+
+        if(event.uid().equals(this.selectedEvent)){
+            System.out.println("condition passed????");
+            binding.sharedView.setBackgroundColor(Color.rgb(234,245,253));
+        }
 
         if (eventModel.getGroupedByStage()) {
             binding.eventCard.setCardBackgroundColor(

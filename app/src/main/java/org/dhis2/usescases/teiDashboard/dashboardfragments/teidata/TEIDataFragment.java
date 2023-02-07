@@ -354,7 +354,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 
         if (adapter == null) {
-            adapter = new EventAdapter(presenter, currentProgram);
+            adapter = new EventAdapter(presenter, currentProgram, "", "");
             adapter.setEnrollment(currentEnrollment);
             binding.teiRecycler.setAdapter(adapter);
         }
@@ -391,13 +391,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     .map(EventViewModel::getEvent)
                     .collect(Collectors.toList());
 
+            // TODO: work on showing event form on tei activity page
+            /*
             if (currentSectionEvents.size() > 0 && OrientationUtilsKt.isLandscape()) {
 
                 System.out.println("i do get in here ");
 
                 ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
 
-            } else {
+            } else { */
 
                 System.out.println("i do not get in here ");
 
@@ -420,7 +422,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                             presenter.setDefaultCatOptCombToEvent(event.uid());
                     }
                 }
-            }
+//            }
         }
         showLoadingProgress(false);
     }

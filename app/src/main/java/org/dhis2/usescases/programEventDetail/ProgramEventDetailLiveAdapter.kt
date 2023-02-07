@@ -21,6 +21,7 @@ class ProgramEventDetailLiveAdapter(
         return EventViewHolder(
             binding,
             program,
+                null,
             { eventUid ->
                 eventViewModel.eventSyncClicked.value = eventUid
             },

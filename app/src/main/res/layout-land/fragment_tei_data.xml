@@ -70,6 +70,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <LinearLayout
+                    android:id="@+id/sectionSelectedMark"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/primaryAlpha"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+
                 <include
                     android:id="@+id/card_front"
                     layout="@layout/fragment_tei_data_card_front"

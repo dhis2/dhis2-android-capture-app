@@ -18,7 +18,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContra
 internal class StageViewHolder(
         private val binding: ItemStageSectionBinding,
         private val stageSelector: FlowableProcessor<StageSection>,
-        private val presenter: TEIDataContracts.Presenter
+        private val presenter: TEIDataContracts.Presenter,
+        private val stageSelected: String
 ) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -76,6 +77,12 @@ internal class StageViewHolder(
         itemView.setOnClickListener {
 
             System.out.println("stage selection called " + stage.displayName())
+            stageSelector.onNext(StageSection(stage.uid(), false))
+        }
+
+        if (stageSelected == stage.uid()) {
+            System.out.println("pre show events and mark");
+            binding.sectionSelectedMark.visibility = View.VISIBLE;
             stageSelector.onNext(StageSection(stage.uid(), false))
         }
 

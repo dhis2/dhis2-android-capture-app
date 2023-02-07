@@ -11,7 +11,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.Date;
@@ -40,6 +39,8 @@ public class EventCaptureContract {
         void restartDataEntry();
 
         void finishDataEntry();
+
+        void preselectStage(String programStageUid);
 
         void SaveAndFinish();
 
@@ -103,6 +104,10 @@ public class EventCaptureContract {
         void showProgress();
 
         boolean getCompletionPercentageVisibility();
+
+        void programStageUid();
+
+        String getProgramStageUidString();
     }
 
     public interface EventCaptureRepository {
@@ -146,6 +151,8 @@ public class EventCaptureContract {
         Observable<Boolean> rescheduleEvent(Date time);
 
         Observable<String> programStage();
+
+        String getProgramStageUid();
 
         boolean getAccessDataWrite();
 

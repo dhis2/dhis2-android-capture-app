@@ -341,6 +341,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         System.out.println(attributeNames);
 
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
+            Event event = d2.eventModule().events().uid(uid).blockingGet();
+
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
             intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid, attributeNames));
             view.openEventCapture(intent);

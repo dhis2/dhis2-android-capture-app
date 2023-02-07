@@ -46,6 +46,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+
         <LinearLayout
             android:id="@+id/cardLayout"
             android:layout_width="match_parent"
@@ -53,14 +55,18 @@
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent">
 
+
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/tei_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardElevation="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
+
+
 
                 <include
                     android:id="@+id/card_front"

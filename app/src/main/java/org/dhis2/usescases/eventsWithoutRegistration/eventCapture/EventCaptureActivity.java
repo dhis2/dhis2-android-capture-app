@@ -82,6 +82,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private Boolean isEventCompleted = false;
     private EventMode eventMode;
     public EventCaptureComponent eventCaptureComponent;
+    public String programStageUid;
     public String programUid;
     public String eventUid;
     public String enrollmentUid;
@@ -132,8 +133,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
 
-        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+        programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
 
+        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+        System.out.println(programStageUid);
+
+        // TODO: fails due to lack of dynamism
+        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
 
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(new EventCaptureModule(this, eventUid, OrientationUtilsKt.isPortrait(this)));
 
@@ -147,6 +153,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         binding.setPresenter(presenter);
 
+        presenter.programStageUid();
 
         setUpNavigationBar();
 
@@ -154,11 +161,17 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         if (OrientationUtilsKt.isLandscape(this)) {
 
+            String stageUid = presenter.getProgramStageUidString();
+
+            if(stageUid != null){
+                programStageUid = stageUid;
+            }
+
             dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
             getSupportFragmentManager().beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid)).commitAllowingStateLoss();
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, setOfAttributeNames)).commitAllowingStateLoss();
+            getSupportFragmentManager().beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, eventUid, programStageUid, setOfAttributeNames)).commitAllowingStateLoss();
 
         }
 
@@ -331,7 +344,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
 
-    public void executeRules(){
+    public void executeRules() {
 
         EventTeiDetailsFragment fragement = (EventTeiDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.tei_column);
 
@@ -395,6 +408,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public void preselectStage(String programStageUid) {
+        System.out.println("whataaaaaaa?????");
+        System.out.println(programStageUid);
     }
 
     @Override
