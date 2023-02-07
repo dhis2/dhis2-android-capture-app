@@ -1,10 +1,9 @@
 package org.dhis2.ui.theme
 
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
-
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -37,7 +36,6 @@ private val LightColors = lightColorScheme(
     outlineVariant = md_theme_light_outlineVariant,
     scrim = md_theme_light_scrim
 )
-
 
 private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
@@ -73,9 +71,8 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun Dhis2Theme(
-    content: @Composable () -> Unit
+    content: @Composable
+    () -> Unit
 ) {
-    Mdc3Theme(
-        content = content
-    )
+    Mdc3Theme(content = content)
 }
