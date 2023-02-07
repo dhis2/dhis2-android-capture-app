@@ -2,7 +2,6 @@ package org.dhis2.composetable.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,7 +16,6 @@ import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -31,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -42,7 +39,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DataSetTableScreen(
     tableScreenState: TableScreenState,
@@ -54,7 +51,13 @@ fun DataSetTableScreen(
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
-    onRowHeaderResize: (widthDpValue: Float) -> Unit = {},
+    onTableWidthChanged: (width: Int) -> Unit = {},
+    onRowHeaderResize: (tableId: String, newValue: Float) -> Unit = { _, _ -> },
+    onColumnHeaderResize: (tableId: String, column: Int, newValue: Float) -> Unit =
+        { _, _, _ -> },
+    onTableDimensionResize: (tableId: String, newValue: Float) -> Unit =
+        { _, _ -> },
+    onTableDimensionReset: (tableId: String) -> Unit = {},
     bottomContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
@@ -66,11 +69,6 @@ fun DataSetTableScreen(
     var displayDescription by remember { mutableStateOf<TableDialogModel?>(null) }
     val coroutineScope = rememberCoroutineScope()
     var tableSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
-
-    val tableColors = TableColors(
-        primary = MaterialTheme.colors.primary,
-        primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-    )
 
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -168,12 +166,12 @@ fun DataSetTableScreen(
             finishEdition()
         }
     }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetState,
         sheetContent = {
             TextInput(
                 textInputModel = currentInputType,
-                tableColors = tableColors,
                 onTextChanged = { textInputModel ->
                     currentInputType = textInputModel
                     currentCell = currentCell?.copy(
@@ -194,13 +192,15 @@ fun DataSetTableScreen(
                         if (tableCell.error == null) {
                             onSaveValue(tableCell, true)
                         } else {
-                            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-                                val currentTable =
-                                    tableScreenState.tables.first { it.id == cellSelected.tableId }
-                                currentTable.getNextCell(cellSelected, true)?.let {
-                                    selectNextCell(it, cellSelected)
-                                } ?: collapseBottomSheet(finish = true)
-                            }
+                            (tableSelection as? TableSelection.CellSelection)
+                                ?.let { cellSelected ->
+                                    val currentTable = tableScreenState.tables.first {
+                                        it.id == cellSelected.tableId
+                                    }
+                                    currentTable.getNextCell(cellSelected, true)?.let {
+                                        selectNextCell(it, cellSelected)
+                                    } ?: collapseBottomSheet(finish = true)
+                                }
                         }
                     }
                 },
@@ -227,22 +227,12 @@ fun DataSetTableScreen(
                 CircularProgressIndicator()
             }
         }
-        CompositionLocalProvider(OnTextChange provides { currentCell }) {
+        CompositionLocalProvider(
+            OnTextChange provides { currentCell },
+            LocalTableSelection provides tableSelection
+        ) {
             DataTable(
                 tableList = tableScreenState.tables,
-                editable = true,
-                tableColors = tableColors,
-                tableDimensions = tableScreenState.overwrittenRowHeaderWidth?.let {
-                    TableDimensions(
-                        cellVerticalPadding = 11.dp,
-                        defaultRowHeaderWidth = with(LocalDensity.current) {
-                            tableScreenState.overwrittenRowHeaderWidth.dp.roundToPx()
-                        }
-                    )
-                } ?: TableDimensions(
-                    cellVerticalPadding = 11.dp
-                ),
-                tableSelection = tableSelection,
                 tableInteractions = object : TableInteractions {
                     override fun onSelectionChange(newTableSelection: TableSelection) {
                         tableSelection = newTableSelection
@@ -261,17 +251,18 @@ fun DataSetTableScreen(
                             tableCell
                         ) { updateCellValue(it) }?.let { inputModel ->
                             currentCell = tableCell
-                            currentInputType = inputModel.copy(currentValue = currentCell?.value)
+                            currentInputType =
+                                inputModel.copy(currentValue = currentCell?.value)
                             startEdition()
                             focusRequester.requestFocus()
                         } ?: collapseBottomSheet()
                     }
 
-                    override fun onRowHeaderSizeChanged(widthDpValue: Float) {
-                        onRowHeaderResize(widthDpValue)
-                    }
-
-                    override fun onOptionSelected(cell: TableCell, code: String, label: String) {
+                    override fun onOptionSelected(
+                        cell: TableCell,
+                        code: String,
+                        label: String
+                    ) {
                         currentCell = cell.copy(
                             value = label,
                             error = null
@@ -279,6 +270,30 @@ fun DataSetTableScreen(
                             onCellValueChange(it)
                             onSaveValue(cell.copy(value = code), false)
                         }
+                    }
+
+                    override fun onTableSizeChanged(width: Int) {
+                        onTableWidthChanged(width)
+                    }
+
+                    override fun onRowHeaderSizeChanged(tableId: String, newValue: Float) {
+                        onRowHeaderResize(tableId, newValue)
+                    }
+
+                    override fun onColumnHeaderSizeChanged(
+                        tableId: String,
+                        column: Int,
+                        newValue: Float
+                    ) {
+                        onColumnHeaderResize(tableId, column, newValue)
+                    }
+
+                    override fun onTableWidthReset(tableId: String) {
+                        onTableDimensionReset(tableId)
+                    }
+
+                    override fun onTableWidthChanged(tableId: String, newValue: Float) {
+                        onTableDimensionResize(tableId, newValue)
                     }
                 }
             )

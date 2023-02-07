@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts.ui
 
 import android.view.Gravity
+import android.view.View.GONE
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.Observable
 import androidx.recyclerview.widget.RecyclerView
@@ -54,6 +55,7 @@ class ChartViewHolder(
             visible = chart.observableChartType.get() == ChartType.TABLE && !chart.hideChart()
         )
         if (chart.observableChartType.get() != ChartType.TABLE) {
+            binding.resetDimensions.visibility = GONE
             val chartView = chart.graph.toChartBuilder()
                 .withType(chart.observableChartType.get()!!)
                 .withGraphData(chart.graph)
@@ -73,6 +75,7 @@ class ChartViewHolder(
                     chart.graph.toChartBuilder()
                         .withType(chart.observableChartType.get()!!)
                         .withGraphData(chart.graph)
+                        .withResetDimensions(binding.resetDimensions)
                         .build().getComposeChart()
                 }
             }

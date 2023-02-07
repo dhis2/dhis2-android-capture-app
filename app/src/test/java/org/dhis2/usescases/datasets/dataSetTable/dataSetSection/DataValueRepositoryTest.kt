@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -34,7 +33,6 @@ class DataValueRepositoryTest {
 
     private lateinit var repository: DataValueRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val prefs: PreferenceProvider = mock()
     private val dataSetUid = "dataSetUid"
     private val sectionUid = "sectionUid"
     private val orgUnitUid = "orgUnitUid"
@@ -49,8 +47,7 @@ class DataValueRepositoryTest {
             sectionUid,
             orgUnitUid,
             periodId,
-            attrOptionCombo,
-            prefs
+            attrOptionCombo
         )
     }
 
@@ -409,8 +406,7 @@ class DataValueRepositoryTest {
             sectionName,
             orgUnitUid,
             periodId,
-            attrOptionCombo,
-            prefs
+            attrOptionCombo
         )
 
         val testObserver = repositoryNoSection.getGreyFields().test()

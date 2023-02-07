@@ -11,16 +11,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.roundToInt
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.commons.Constants.ACCESS_DATA
@@ -31,6 +39,11 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
+import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
+import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableConfiguration
+import org.dhis2.composetable.ui.TableDimensions
+import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
@@ -94,27 +107,99 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    val screenState by presenterFragment.currentState().collectAsState()
+                    val localDensity = LocalDensity.current
+                    val conf = LocalConfiguration.current
+                    val tableConfState by presenterFragment.currentTableConfState().collectAsState()
 
-                    DataSetTableScreen(
-                        tableScreenState = screenState,
-                        onCellClick = { _, cell, updateCellValue ->
-                            presenterFragment.onCellClick(
-                                cell = cell,
-                                updateCellValue = updateCellValue
+                    var dimensions by remember {
+                        mutableStateOf(
+                            TableDimensions(
+                                cellVerticalPadding = 11.dp,
+                                maxRowHeaderWidth = with(localDensity) {
+                                    (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
+                                        .roundToInt()
+                                },
+                                extraWidths = with(localDensity) {
+                                    tableConfState.overwrittenTableWidth?.mapValues { (_, width) ->
+                                        width.dp.roundToPx()
+                                    }
+                                } ?: emptyMap(),
+                                rowHeaderWidths = with(localDensity) {
+                                    tableConfState.overwrittenRowHeaderWidth
+                                        ?.mapValues { (_, width) ->
+                                            width.dp.roundToPx()
+                                        }
+                                } ?: emptyMap(),
+                                columnWidth = with(localDensity) {
+                                    tableConfState.overwrittenColumnWidth?.mapValues { (_, value) ->
+                                        value.mapValues { (_, width) ->
+                                            width.dp.roundToPx()
+                                        }
+                                    }
+                                } ?: emptyMap()
                             )
-                        },
-                        onEdition = { isEditing ->
-                            presenter.editingCellValue(isEditing)
-                        },
-                        onCellValueChange = { },
-                        onSaveValue = { cell, selectNext ->
-                            presenterFragment.onSaveValueChange(cell, selectNext)
-                        },
-                        onRowHeaderResize = { widthDpValue ->
-                            presenterFragment.saveWidth(widthDpValue)
-                        }
-                    )
+                        )
+                    }
+
+                    TableTheme(
+                        tableColors = TableColors(
+                            primary = MaterialTheme.colors.primary,
+                            primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                        ),
+                        tableDimensions = dimensions,
+                        tableConfiguration = TableConfiguration()
+                    ) {
+                        val screenState by presenterFragment.currentState().collectAsState()
+
+                        DataSetTableScreen(
+                            tableScreenState = screenState,
+                            onCellClick = { _, cell, updateCellValue ->
+                                presenterFragment.onCellClick(
+                                    cell = cell,
+                                    updateCellValue = updateCellValue
+                                )
+                            },
+                            onEdition = { isEditing ->
+                                presenter.editingCellValue(isEditing)
+                            },
+                            onCellValueChange = { },
+                            onSaveValue = { cell, selectNext ->
+                                presenterFragment.onSaveValueChange(cell, selectNext)
+                            },
+                            onTableWidthChanged = { width ->
+                                dimensions = dimensions.copy(totalWidth = width)
+                            },
+                            onRowHeaderResize = { tableId, newValue ->
+                                with(localDensity) {
+                                    dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+                                    val widthDpValue =
+                                        dimensions.rowHeaderWidths[tableId]!!.toDp().value
+                                    presenterFragment.saveWidth(tableId, widthDpValue)
+                                }
+                            },
+                            onColumnHeaderResize = { tableId, column, newValue ->
+                                with(localDensity) {
+                                    dimensions =
+                                        dimensions.updateColumnWidth(tableId, column, newValue)
+                                    val widthDpValue =
+                                        dimensions.columnWidth[tableId]!![column]!!.toDp().value
+                                    presenterFragment.saveColumnWidth(tableId, column, widthDpValue)
+                                }
+                            },
+                            onTableDimensionResize = { tableId, newValue ->
+                                with(localDensity) {
+                                    dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                                    val widthDpValue =
+                                        dimensions.extraWidths[tableId]!!.toDp().value
+                                    presenterFragment.saveTableWidth(tableId, widthDpValue)
+                                }
+                            },
+                            onTableDimensionReset = { tableId ->
+                                dimensions = dimensions.resetWidth(tableId)
+                                presenterFragment.resetTableDimensions(tableId)
+                            }
+                        )
+                    }
                 }
             }
         }

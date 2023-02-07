@@ -2,6 +2,7 @@ package org.dhis2.composetable
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,7 @@ import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
 import org.dhis2.composetable.ui.InfoIconId
 import org.dhis2.composetable.ui.IsBlocked
+import org.dhis2.composetable.ui.LocalTableSelection
 import org.dhis2.composetable.ui.MANDATORY_ICON_TEST_TAG
 import org.dhis2.composetable.ui.MainLabel
 import org.dhis2.composetable.ui.RowBackground
@@ -90,16 +92,18 @@ class TableRobot(
                 mutableStateOf<TableSelection>(TableSelection.Unselected())
             }
 
-            DataTable(
-                tableList = fakeModel,
-                tableColors = tableColors,
-                tableSelection = tableSelection,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
+            CompositionLocalProvider(
+                LocalTableSelection provides tableSelection
+            ) {
+                DataTable(
+                    tableList = fakeModel,
+                    tableInteractions = object : TableInteractions {
+                        override fun onSelectionChange(newTableSelection: TableSelection) {
+                            tableSelection = newTableSelection
+                        }
                     }
-                }
-            )
+                )
+            }
         }
         return fakeModel
     }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
@@ -30,6 +31,7 @@ class DataValuePresenter(
     private val view: DataValueContract.View,
     private val repository: DataValueRepository,
     private val valueStore: ValueStore,
+    private val tableDimensionStore: TableDimensionStore,
     private val schedulerProvider: SchedulerProvider,
     private val mapper: TableDataToTableModelMapper,
     private val dispatcherProvider: DispatcherProvider
@@ -38,10 +40,17 @@ class DataValuePresenter(
     private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
         TableScreenState(
             emptyList(),
-            false,
-            overwrittenRowHeaderWidth = repository.getWidthForSection()
+            false
         )
     )
+    private val tableConfigurationState = MutableStateFlow(
+        TableConfigurationState(
+            overwrittenTableWidth = tableDimensionStore.getTableWidth(),
+            overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
+            overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null)
+        )
+    )
+
     private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val dataSetInfo = repository.getDataSetInfo()
@@ -63,8 +72,7 @@ class DataValuePresenter(
             }.map {
                 TableScreenState(
                     tables = it,
-                    selectNext = false,
-                    overwrittenRowHeaderWidth = repository.getWidthForSection()
+                    selectNext = false
                 )
             }
                 .subscribeOn(schedulerProvider.io())
@@ -124,6 +132,7 @@ class DataValuePresenter(
     }
 
     fun currentState(): StateFlow<TableScreenState> = screenState
+    fun currentTableConfState(): StateFlow<TableConfigurationState> = tableConfigurationState
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun mutableTableData() = screenState
@@ -230,7 +239,19 @@ class DataValuePresenter(
             }
         }
 
-    fun saveWidth(widthDpValue: Float) {
-        repository.saveWidthForSection(widthDpValue)
+    fun saveWidth(tableId: String, widthDpValue: Float) {
+        tableDimensionStore.saveWidthForSection(tableId, widthDpValue)
+    }
+
+    fun saveColumnWidth(tableId: String, column: Int, widthDpValue: Float) {
+        tableDimensionStore.saveColumnWidthForSection(tableId, column, widthDpValue)
+    }
+
+    fun resetTableDimensions(tableId: String) {
+        tableDimensionStore.resetTable(tableId)
+    }
+
+    fun saveTableWidth(tableId: String, widthDpValue: Float) {
+        tableDimensionStore.saveTableWidth(tableId, widthDpValue)
     }
 }

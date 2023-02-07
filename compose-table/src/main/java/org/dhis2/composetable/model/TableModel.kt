@@ -8,6 +8,7 @@ import org.dhis2.composetable.ui.TableSelection
 @Serializable
 data class TableModel(
     val id: String? = null,
+    val title: String = "",
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
     val overwrittenValues: Map<Int, TableCell> = emptyMap()
