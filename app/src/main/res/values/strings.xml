@@ -15,8 +15,6 @@
     <string name="error_wrong_credentials">Wrong credentials</string>
     <string name="error_unexpected_error">Unexpected error</string>
     <string name="error_internal_server_error">Internal server error</string>
-    <string name="yes">yes</string>
-    <string name="no">no</string>
     <string name="no_value">no value</string>
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
     <string name="no_reserved_values_connection">There are no more reserved values. Connect to the network to refill them</string>
@@ -503,8 +501,9 @@
     <string name="org_unit_selection_warning">At least one organisation unit must be selected</string>
     <string name="send_user_name_title">Send data</string>
     <string name="send_user_name_mesage">Help DHIS2 improve this app by sharing error logs associated to your user id.</string>
-    <string name="analytics_crash_name_message">This application will send error logs associated to your user id in order to improve its performance and untraceable statistics to improve the user experience.</string>
-    <string name="send_user_privacy_policy">For more information check our privacy policy</string>
+    <string name="improve_app_msg_title">Do you want to help us improve this app?</string>
+    <string name="improve_app_msg_text">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.\n\nFor further details, please refer to our privacy policy.</string>
+    <string name="improve_app_msg_clickable_word">privacy policy</string>
     <string name="check_mandatory_field">Check fields</string>
     <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
     <string name="action_agree">Agree</string>

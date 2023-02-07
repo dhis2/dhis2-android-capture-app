@@ -8,7 +8,5 @@ interface CrashReportController {
 
     fun trackError(exception: Exception, message: String?)
 
-    fun logMessage(message: String)
-
     fun addBreadCrumb(category: String, message: String)
 }

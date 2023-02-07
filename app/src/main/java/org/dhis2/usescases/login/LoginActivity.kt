@@ -2,31 +2,22 @@ package org.dhis2.usescases.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.util.Patterns
 import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -53,6 +44,9 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.accounts.AccountsActivity
@@ -326,45 +320,35 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showCrashlyticsDialog() {
-        val spannable = SpannableString(
-            getString(R.string.analytics_crash_name_message) + " " +
-                getString(R.string.send_user_privacy_policy)
-        )
-
-        val clickableSpan = object : ClickableSpan() {
-            override fun onClick(p0: View) {
+        BottomSheetDialog(
+            BottomSheetDialogUiModel(
+                title = getString(R.string.improve_app_msg_title),
+                subtitle = getString(R.string.improve_app_msg_text),
+                clickableWord = getString(R.string.improve_app_msg_clickable_word),
+                iconResource = R.drawable.ic_line_chart,
+                mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.no)
+            ),
+            onMainButtonClicked = {
+                onAnalyticsPermission(true)
+            },
+            onSecondaryButtonClicked = {
+                onAnalyticsPermission(false)
+            },
+            onMessageClick = {
                 navigateToPrivacyPolicy()
             }
+        ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
+    }
 
-            override fun updateDrawState(ds: TextPaint) {
-                ds.color = ContextCompat.getColor(context, R.color.colorPrimary)
-                ds.isUnderlineText = true
-            }
-        }
-        spannable.setSpan(
-            clickableSpan,
-            spannable.length - 14,
-            spannable.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setTitle(title)
-            .setCancelable(false)
-            .setMessage(spannable)
-            .setPositiveButton(getString(R.string.action_continue)) { _: DialogInterface, _: Int ->
-                sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
-                    .apply()
-                sharedPreferences.edit()
-                    .putString(Constants.USER, binding.userName.editText?.text.toString())
-                    .apply()
-                showLoginProgress(true)
-            }
-            .show()
-            .also { dialog ->
-                dialog.findViewById<TextView>(android.R.id.message)?.apply {
-                    movementMethod = LinkMovementMethod.getInstance()
-                }
-            }
+    private fun onAnalyticsPermission(granted: Boolean) {
+        presenter.updateAnalytics(granted)
+        sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
+            .apply()
+        sharedPreferences.edit()
+            .putString(USER, binding.userName.editText?.text.toString())
+            .apply()
+        showLoginProgress(true)
     }
 
     override fun onUnlockClick(android: View) {
@@ -599,7 +583,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    fun navigateToPrivacyPolicy() {
+    private fun navigateToPrivacyPolicy() {
         activity?.let {
             startActivity(Intent(it, PolicyView::class.java))
         }

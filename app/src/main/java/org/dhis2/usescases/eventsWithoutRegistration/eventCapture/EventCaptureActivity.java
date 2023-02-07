@@ -190,6 +190,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             BottomSheetDialogUiModel bottomSheetDialogUiModel = new BottomSheetDialogUiModel(
                     getString(R.string.title_delete_go_back),
                     getString(R.string.discard_go_back),
+                    null,
                     R.drawable.ic_alert,
                     Collections.emptyList(),
                     new DialogButtonStyle.MainButton(R.string.keep_editing),
@@ -201,7 +202,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     () -> {
                         presenter.deleteEvent();
                         return Unit.INSTANCE;
-                    }
+                    },
+                    ()-> Unit.INSTANCE
             );
             dialog.show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
         } else {
@@ -232,7 +234,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     () -> {
                         setAction(eventCompletionDialog.getSecondaryButtonAction());
                         return Unit.INSTANCE;
-                    }
+                    },
+                    ()-> Unit.INSTANCE
             );
             dialog.show(getSupportFragmentManager(), SHOW_OPTIONS);
         }

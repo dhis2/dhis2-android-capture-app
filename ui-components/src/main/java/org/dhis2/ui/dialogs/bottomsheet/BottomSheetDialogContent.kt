@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
@@ -27,7 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,7 +45,8 @@ fun BottomSheetDialogContent(
     bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     onMainButtonClicked: () -> Unit,
     onSecondaryButtonClicked: () -> Unit = {},
-    onIssueItemClicked: () -> Unit = {}
+    onIssueItemClicked: () -> Unit = {},
+    onMessageClick: () -> Unit = {}
 ) {
     val modifier = Modifier
         .padding(24.dp)
@@ -66,13 +71,42 @@ fun BottomSheetDialogContent(
                 color = textPrimary,
                 modifier = Modifier.padding(16.dp)
             )
-            Text(
-                text = bottomSheetDialogUiModel.subtitle,
-                style = MaterialTheme.typography.body2,
-                color = textSecondary,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (bottomSheetDialogUiModel.clickableWord == null) {
+                Text(
+                    text = bottomSheetDialogUiModel.subtitle,
+                    style = MaterialTheme.typography.body2,
+                    color = textSecondary,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                ClickableText(
+                    modifier = Modifier
+                        .testTag(CLICKABLE_TEXT_TAG)
+                        .fillMaxWidth(),
+                    text = buildAnnotatedString {
+                        val originalText = bottomSheetDialogUiModel.subtitle
+                        val clickableWord = bottomSheetDialogUiModel.clickableWord!!
+                        val clickableWordIndex = originalText.indexOf(clickableWord)
+                        append(originalText)
+                        addStyle(
+                            style = SpanStyle(
+                                color = colorPrimary,
+                                textDecoration = TextDecoration.Underline
+                            ),
+                            start = clickableWordIndex,
+                            end = clickableWordIndex + clickableWord.length
+                        )
+                    },
+                    style = MaterialTheme.typography.body2.copy(
+                        color = textSecondary,
+                        textAlign = TextAlign.Start
+                    ),
+                    onClick = {
+                        onMessageClick()
+                    }
+                )
+            }
         }
         Divider(Modifier.padding(horizontal = 24.dp))
         if (bottomSheetDialogUiModel.fieldsWithIssues.isNotEmpty()) {
@@ -255,5 +289,6 @@ fun DialogPreview4() {
     )
 }
 
+const val CLICKABLE_TEXT_TAG = "CLICKABLE_TEXT_TAG"
 const val SECONDARY_BUTTON_TAG = "SECONDARY_BUTTON_TAG"
 const val MAIN_BUTTON_TAG = "MAIN_BUTTON_TAG"

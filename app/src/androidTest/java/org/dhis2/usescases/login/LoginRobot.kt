@@ -1,5 +1,8 @@
 package org.dhis2.usescases.login
 
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.clearText
@@ -16,6 +19,8 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
 import org.dhis2.common.viewactions.clickClickableSpan
+import org.dhis2.ui.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
+import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
@@ -114,8 +119,12 @@ class LoginRobot : BaseRobot() {
         onView(withId(android.R.id.content)).check(matches(isDisplayed()))
     }
 
-    fun clickOnPrivacyPolicy() {
-        onView(withId(android.R.id.message)).perform(clickClickableSpan("privacy policy"))
+    fun clickOnPrivacyPolicy(composeTestRule: ComposeContentTestRule) {
+        composeTestRule.onNodeWithTag(CLICKABLE_TEXT_TAG).performClick()
+    }
+
+    fun acceptTrackerDialog(composeTestRule: ComposeContentTestRule){
+        composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
     }
 
     fun checkPrivacyViewIsOpened() {

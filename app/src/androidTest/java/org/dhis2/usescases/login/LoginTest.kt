@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -31,6 +32,9 @@ class LoginTest : BaseTest() {
     @get:Rule
     val mainRule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     override fun setUp() {
         super.setUp()
         setupMockServer()
@@ -52,7 +56,7 @@ class LoginTest : BaseTest() {
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clickLoginButton()
-            acceptGenericDialog()
+            acceptTrackerDialog(composeTestRule)
         }
 
         cleanDatabase()
@@ -70,7 +74,7 @@ class LoginTest : BaseTest() {
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clickLoginButton()
-            acceptGenericDialog()
+            acceptTrackerDialog(composeTestRule)
             checkAuthErrorAlertIsVisible()
         }
     }
@@ -171,7 +175,7 @@ class LoginTest : BaseTest() {
             typePassword(PASSWORD)
             clickLoginButton()
             checkShareDataDialogIsDisplayed()
-            clickOnPrivacyPolicy()
+            clickOnPrivacyPolicy(composeTestRule)
             checkPrivacyViewIsOpened()
         }
     }
