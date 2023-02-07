@@ -41,6 +41,14 @@
             name="canAddEvents"
             type="java.lang.Boolean" />
 
+        <variable
+            name="highRisk"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="lowRisk"
+            type="java.lang.Boolean" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,6 +77,8 @@
                     app:enrollment="@{enrollment}"
                     app:followup="@{followup}"
                     app:presenter="@{presenter}"
+                    app:highRisk="@{highRisk}"
+                    app:lowRisk="@{lowRisk}"
                     app:program="@{program}"
                     app:trackEntity="@{trackEntity}" />
             </androidx.cardview.widget.CardView>

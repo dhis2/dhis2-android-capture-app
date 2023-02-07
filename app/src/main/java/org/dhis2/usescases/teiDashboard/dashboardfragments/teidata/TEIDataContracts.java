@@ -84,6 +84,8 @@ public class TEIDataContracts {
         void setEnrollment(Enrollment enrollment);
 
         void showSyncDialog(String uid);
+
+        void setRiskColor(String risk);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

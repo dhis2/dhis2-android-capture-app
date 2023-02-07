@@ -12,6 +12,14 @@
             type="org.hisp.dhis.android.core.enrollment.Enrollment" />
 
         <variable
+            name="highRisk"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="lowRisk"
+            type="java.lang.Boolean" />
+
+        <variable
             name="trackEntity"
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
 
@@ -57,32 +65,54 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent=".5" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_625"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".625" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_6875"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".6875" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_75"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".75" />
+
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/detailsButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/data_layout"
             android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toStartOf="@id/guideline_625"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/data_layout" />
 
-<!--        <androidx.compose.ui.platform.ComposeView-->
-<!--            android:id="@+id/followupButton"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/data_layout"-->
-<!--            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"-->
-<!--            app:layout_constraintEnd_toStartOf="@id/lockButton"/>-->
 
-<!--        <androidx.compose.ui.platform.ComposeView-->
-<!--            android:id="@+id/lockButton"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/data_layout"-->
-<!--            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/followupButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toStartOf="@id/lockButton"
+            app:layout_constraintStart_toStartOf="@id/guideline_6875"
+            app:layout_constraintTop_toBottomOf="@id/data_layout" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/lockButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/followupButton"
+            app:layout_constraintTop_toBottomOf="@id/data_layout" />
 
         <ImageView
             android:id="@+id/follow_up"
@@ -149,14 +179,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/tei_image"
+
+            <LinearLayout
+                android:id="@+id/tei_image_back_ground"
+                android:background="@{highRisk? @drawable/tei_image_background_high_risk: lowRisk? @drawable/tei_image_background_low_risk: null }"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+            <ImageView
+                android:id="@+id/tei_image"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
                 android:background="@drawable/photo_temp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription" />
+            </LinearLayout>
 
 
             <TextView
@@ -164,11 +203,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
+                android:text='@{ dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
                 android:textColor="@color/text_black_4d4d4d"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/tei_image"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Sarah Thompson" />
 
@@ -181,7 +220,7 @@
                 android:textColor="@color/text_black_333"
                 android:textSize="12sp"
                 android:visibility="@{dashboardModel.trackedEntityAttributeValues.size()>2 ? View.VISIBLE : View.GONE}"
-                app:layout_constraintStart_toEndOf="@id/tei_image"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
                 app:layout_constraintTop_toBottomOf="@id/main_attributes"
                 tools:text="26dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>

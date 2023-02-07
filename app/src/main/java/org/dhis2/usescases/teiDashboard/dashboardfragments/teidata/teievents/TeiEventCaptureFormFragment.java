@@ -60,11 +60,11 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
         System.out.println(getArguments().getString(Constants.EVENT_UID));
         System.out.println(this);
 //        TODO: reversed
-        activity.teiDashboardComponent.plus(
-                new EventCaptureFormModule(
-                        this,
-                        getArguments().getString(Constants.EVENT_UID))
-        ).inject(this);
+//        activity.teiDashboardComponent.plus(
+//                new EventCaptureFormModule(
+//                        this,
+//                        getArguments().getString(Constants.EVENT_UID))
+//        ).inject(this);
         setRetainInstance(true);
     }
 

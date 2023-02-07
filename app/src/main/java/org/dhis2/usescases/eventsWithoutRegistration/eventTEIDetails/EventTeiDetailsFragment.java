@@ -766,6 +766,11 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     }
 
     @Override
+    public void setRiskColor(String risk) {
+
+    }
+
+    @Override
     public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
         presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }

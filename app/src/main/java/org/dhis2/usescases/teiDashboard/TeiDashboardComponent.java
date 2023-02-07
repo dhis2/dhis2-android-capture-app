@@ -24,7 +24,9 @@ import dagger.Subcomponent;
  * Created by ppajuelo on 30/11/2017.
  */
 @PerActivity
-@Subcomponent(modules = {TeiDashboardModule.class, TeiEventCaptureModule.class})
+@Subcomponent(modules = {TeiDashboardModule.class
+//        , TeiEventCaptureModule.class
+})
 public interface TeiDashboardComponent {
 
     @NonNull
@@ -36,8 +38,8 @@ public interface TeiDashboardComponent {
     @NonNull
     TEIDataComponent plus(TEIDataModule teiDataModule);
 //    TODO: reversed
-    @NonNull
-    EventCaptureFormComponent plus (EventCaptureFormModule eventCaptureFormModule);
+//    @NonNull
+//    EventCaptureFormComponent plus (EventCaptureFormModule eventCaptureFormModule);
 
     void inject(TeiDashboardMobileActivity mobileActivity);
 }

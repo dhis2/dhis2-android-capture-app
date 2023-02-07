@@ -172,6 +172,11 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 followpuSet = true;
                 onSetSpecificFollowup(this.dashboardModel, followpuSet);
 
+                view.setRiskColor("High Risk");
+//                TODO: add checks for output of
+//                view.setRiskColor("Low Risk");
+
+
             }
 
         }

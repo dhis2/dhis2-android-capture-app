@@ -42,6 +42,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.usescases.teiDashboard.ui.FollowupButtonKt;
+import org.dhis2.usescases.teiDashboard.ui.LockButtonKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.resources.ObjectStyleUtils;
@@ -304,6 +306,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 }
         );
 
+        FollowupButtonKt.setFollowupButtonContent(binding.cardFront.followupButton, activity.presenter.getTEType(), () -> {
+            presenter.onFollowUp(dashboardModel);
+            return Unit.INSTANCE;
+        });
+
+        LockButtonKt.setLockButtonContent(binding.cardFront.lockButton, activity.presenter.getTEType(), () -> {
+            presenter.onFollowUp(dashboardModel);
+            return Unit.INSTANCE;
+        });
+
         binding.executePendingBindings();
 
         if (getSharedPreferences().getString(PREF_COMPLETED_EVENT, null) != null) {
@@ -385,7 +397,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
                 ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
 
-            }else {
+            } else {
 
                 System.out.println("i do not get in here ");
 
@@ -730,6 +742,27 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 .build();
 
         dialog.show(getChildFragmentManager(), uid);
+    }
+
+    @Override
+    public void setRiskColor(String risk) {
+
+        System.out.println("999999999999999999999999999999999");
+        System.out.println(risk);
+
+        if(risk == "High Risk"){
+            System.out.println("High");
+            binding.setHighRisk(true);
+            binding.setLowRisk(false);
+        }
+
+        if(risk == "Low Risk"){
+
+            System.out.println("Low");
+            binding.setLowRisk(true);
+            binding.setHighRisk(false);
+        }
+
     }
 
     @Override
