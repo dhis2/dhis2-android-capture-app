@@ -21,6 +21,8 @@ import org.dhis2.ui.dialogs.signature.SignatureDialog;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.D2Manager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,6 +55,18 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadFeatureConfig();
         loadTable();
         loadSignature();
+        loadConflicts();
+    }
+
+    private void loadConflicts() {
+        binding.addConflicts.setOnClickListener(view-> {
+            D2 d2 = D2Manager.getD2();
+            new ConflictGenerator(d2).generate();
+        });
+        binding.clearConflicts.setOnClickListener(view -> {
+            D2 d2 = D2Manager.getD2();
+            new ConflictGenerator(d2).clear();
+        });
     }
 
     private void loadAnalyticsDevTools() {
