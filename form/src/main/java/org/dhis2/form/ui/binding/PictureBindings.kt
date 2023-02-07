@@ -7,7 +7,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.databinding.BindingAdapter
-import com.google.android.material.composethemeadapter.MdcTheme
 import java.io.File
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
@@ -16,6 +15,7 @@ import org.dhis2.form.model.UiRenderType
 import org.dhis2.ui.inputs.AddButtonData
 import org.dhis2.ui.inputs.FormInputBox
 import org.dhis2.ui.inputs.PictureInput
+import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.ui.theme.errorColor
 import org.dhis2.ui.theme.textSecondary
 import org.dhis2.ui.theme.warningColor
@@ -26,7 +26,7 @@ fun ComposeView.setPicture(fieldUiModel: FieldUiModel) {
         setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
         )
-        MdcTheme {
+        Dhis2Theme {
             FormInputBox(
                 labelText = fieldUiModel.label,
                 helperText = fieldUiModel.error ?: fieldUiModel.warning,
