@@ -27,8 +27,10 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -236,8 +238,7 @@ class MainActivity :
     override fun showGranularSync() {
         SyncStatusDialog.Builder()
             .withContext(this)
-            .setConflictType(ConflictType.ALL)
-            .setUid("")
+            .withSyncContext(SyncContext.Global())
             .onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {

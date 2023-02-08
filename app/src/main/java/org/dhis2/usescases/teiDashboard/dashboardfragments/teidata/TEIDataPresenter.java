@@ -465,8 +465,8 @@ public class TEIDataPresenter {
                 new HashMap<>());
     }
 
-    public void onSyncDialogClick() {
-        view.showSyncDialog(enrollmentUid);
+    public void onSyncDialogClick(String eventUid) {
+        view.showSyncDialog(eventUid, enrollmentUid);
     }
 
     public boolean enrollmentOrgUnitInCaptureScope(String enrollmentOrgUnit) {

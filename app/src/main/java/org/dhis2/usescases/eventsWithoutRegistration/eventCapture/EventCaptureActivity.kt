@@ -26,8 +26,8 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.popupmenu.AppMenuHelper
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.ThemeManager
@@ -52,6 +52,8 @@ import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
+
+const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
 
 class EventCaptureActivity :
     ActivityGlobalAbstract(),
@@ -94,6 +96,12 @@ class EventCaptureActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
         binding?.presenter = presenter
+        binding?.navigationInitialPage =
+            if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
+                0
+            } else {
+                1
+            }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter()
         setUpNavigationBar()
@@ -117,17 +125,9 @@ class EventCaptureActivity :
             pageConfigurator!!.displayRelationships()
         )
         binding!!.eventViewPager.adapter = adapter
-        binding!!.eventViewPager.setCurrentItem(binding!!.navigationBar.initialPage, false)
+        binding!!.eventViewPager.setCurrentItem(binding!!.navigationInitialPage ?: 0, false)
         binding!!.eventViewPager.clipWithRoundedCorners(16.dp)
         binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-            }
-
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 if (position == 0 && eventMode !== EventMode.NEW) {
@@ -135,10 +135,9 @@ class EventCaptureActivity :
                 } else {
                     binding!!.syncButton.visibility = View.GONE
                 }
-            }
-
-            override fun onPageScrollStateChanged(state: Int) {
-                super.onPageScrollStateChanged(state)
+                if (position != 1) {
+                    hideProgress()
+                }
             }
         })
     }
@@ -427,8 +426,7 @@ class EventCaptureActivity :
     private fun showSyncDialog() {
         SyncStatusDialog.Builder()
             .withContext(this)
-            .setConflictType(ConflictType.EVENT)
-            .setUid(eventUid!!)
+            .withSyncContext(SyncContext.Event(eventUid!!))
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                 }
@@ -451,10 +449,14 @@ class EventCaptureActivity :
             context: Context,
             eventUid: String,
             programUid: String,
+            openDetailsAsFirstPage: Boolean,
             eventMode: EventMode
         ): Intent {
             return Intent(context, EventCaptureActivity::class.java).apply {
-                putExtras(getActivityBundle(eventUid, programUid, eventMode))
+                putExtra(Constants.EVENT_UID, eventUid)
+                putExtra(Constants.PROGRAM_UID, programUid)
+                putExtra(EXTRA_DETAILS_AS_FIRST_PAGE, openDetailsAsFirstPage)
+                putExtra(Constants.EVENT_MODE, eventMode)
             }
         }
     }

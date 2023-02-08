@@ -45,6 +45,7 @@ import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -265,8 +266,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private void openSyncDialog() {
        new SyncStatusDialog.Builder()
                 .withContext(this)
-                .setConflictType(ConflictType.TEI)
-                .setUid(enrollmentUid)
+               .withSyncContext(
+                       new SyncContext.Enrollment(enrollmentUid)
+               )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged && !restartingActivity) {
                         restartingActivity = true;

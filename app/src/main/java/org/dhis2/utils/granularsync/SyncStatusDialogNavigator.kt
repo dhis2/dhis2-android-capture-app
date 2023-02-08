@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
+import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
@@ -23,15 +24,26 @@ class SyncStatusDialogNavigator(
             is SyncStatusType.EventProgram -> navigateToEventProgram(syncStatusItem.type)
             is SyncStatusType.TrackedEntity -> navigateToTeiDashboard(syncStatusItem.type)
             is SyncStatusType.TrackerProgram -> navigateToSearchScreen(syncStatusItem.type)
-        }.launchSyncDialog()
+            is SyncStatusType.Enrollment -> navigateToEnrollmentFormScreen(syncStatusItem.type)
+        }
         context.startActivity(intent)
+    }
+
+    private fun navigateToEnrollmentFormScreen(enrollmentSyncItem: SyncStatusType.Enrollment): Intent {
+        return EnrollmentActivity.getIntent(
+            context,
+            enrollmentSyncItem.enrollmentUid,
+            enrollmentSyncItem.programUid,
+            EnrollmentActivity.EnrollmentMode.CHECK
+        )
     }
 
     private fun navigateToSearchScreen(trackerProgramSyncItem: SyncStatusType.TrackerProgram): Intent {
         return SearchTEActivity.intent(
             context,
-            trackerProgramSyncItem.programUid
-        )
+            trackerProgramSyncItem.programUid,
+            trackerProgramSyncItem.trackedEntityTypeUid
+        ).launchSyncDialog()
     }
 
     private fun navigateToTeiDashboard(teiSyncType: SyncStatusType.TrackedEntity): Intent {
@@ -40,23 +52,29 @@ class SyncStatusDialogNavigator(
             teiSyncType.teiUid,
             teiSyncType.programUid,
             teiSyncType.enrollmentUid
-        )
+        ).launchSyncDialog()
     }
 
     private fun navigateToEventProgram(eventProgramSyncItem: SyncStatusType.EventProgram): Intent {
         return ProgramEventDetailActivity.intent(
             context,
             eventProgramSyncItem.programUid
-        )
+        ).launchSyncDialog()
     }
 
     private fun navigateToEvent(eventSyncItem: SyncStatusType.Event): Intent {
-        return EventCaptureActivity.intent(
+        val intent = EventCaptureActivity.intent(
             context,
             eventSyncItem.eventUid,
             eventSyncItem.programUid,
+            eventSyncItem.hasNullDataElementConflict,
             EventMode.CHECK
         )
+        return if (eventSyncItem.hasNullDataElementConflict) {
+            intent.launchSyncDialog()
+        } else {
+            intent
+        }
     }
 
     private fun navigateToDataSetInstanceTable(tableSyncItem: SyncStatusType.DataSetInstance): Intent {
@@ -66,14 +84,14 @@ class SyncStatusDialogNavigator(
             tableSyncItem.orgUnitUid,
             tableSyncItem.periodId,
             tableSyncItem.attrOptComboUid
-        )
+        ).launchSyncDialog()
     }
 
     private fun navigateToDataSetInstances(dataSetSyncItem: SyncStatusType.DataSet): Intent {
         return DataSetDetailActivity.intent(
             context,
             dataSetSyncItem.dataSetUid
-        )
+        ).launchSyncDialog()
     }
 
     private fun Intent.launchSyncDialog(): Intent {

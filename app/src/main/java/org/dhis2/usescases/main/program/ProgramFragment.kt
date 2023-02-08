@@ -31,6 +31,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -250,14 +251,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun showSyncDialog(program: ProgramViewModel) {
         SyncStatusDialog.Builder()
             .withContext(this)
-            .setConflictType(
-                if (program.programType.isNotEmpty()) {
-                    ConflictType.PROGRAM
-                } else {
-                    ConflictType.DATA_SET
+            .withSyncContext(
+                when (program.programType) {
+                    "WITH_REGISTRATION" -> SyncContext.GlobalTrackerProgram(program.uid)
+                    "WITHOUT_REGISTRATION" -> SyncContext.GlobalEventProgram(program.uid)
+                    else -> SyncContext.GlobalDataSet(program.uid)
                 }
             )
-            .setUid(program.uid)
             .onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {

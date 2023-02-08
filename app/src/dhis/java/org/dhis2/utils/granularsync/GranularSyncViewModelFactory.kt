@@ -3,7 +3,7 @@ package org.dhis2.utils.granularsync
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.form.model.DispatcherProvider
 import org.hisp.dhis.android.core.D2
@@ -15,11 +15,7 @@ class GranularSyncViewModelFactory(
     private val repository: GranularSyncRepository,
     private val schedulerProvider: SchedulerProvider,
     private val dispatcher: DispatcherProvider,
-    private val conflictType: ConflictType,
-    private val recordUid: String,
-    private val dvOrgUnit: String?,
-    private val dvAttrCombo: String?,
-    private val dvPeriodId: String?,
+    private val syncContext: SyncContext,
     private val workManagerController: WorkManagerController,
     private val smsSyncProvider: SMSSyncProvider,
 ) : ViewModelProvider.Factory {
@@ -30,7 +26,7 @@ class GranularSyncViewModelFactory(
             repository,
             schedulerProvider,
             dispatcher,
-            conflictType, recordUid, dvOrgUnit, dvAttrCombo, dvPeriodId,
+            syncContext,
             workManagerController,
             smsSyncProvider
         ) as T

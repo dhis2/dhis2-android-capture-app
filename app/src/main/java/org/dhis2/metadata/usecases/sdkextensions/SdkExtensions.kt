@@ -2,6 +2,7 @@ package org.dhis2.metadata.usecases.sdkextensions
 
 import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -11,12 +12,15 @@ import org.hisp.dhis.android.core.datavalue.DataValueConflict
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute
 
 fun D2.programs(): List<Program> =
     programModule().programs().blockingGet()
@@ -26,6 +30,15 @@ fun D2.program(programUid: String): Program =
 
 fun D2.observeProgram(programUid: String): Single<Program> =
     programModule().programs().uid(programUid).get()
+
+fun D2.dataSetSummaryBy(
+    dataSetUid: String,
+    syncState: List<State>?
+): DataSetInstanceSummary {
+    return dataSetModule().dataSetInstanceSummaries()
+        .blockingGet()
+        .find { it.dataSetUid() == dataSetUid }!!
+}
 
 fun D2.dataSetInstanceSummaries(): List<DataSetInstanceSummary> =
     dataSetModule().dataSetInstanceSummaries().blockingGet()
@@ -91,11 +104,10 @@ fun D2.enrollment(uid: String): Enrollment =
         .uid(uid)
         .blockingGet()
 
-fun D2.enrollmentInProgram(teiUid: String, programUid: String, states: List<State>): Enrollment? =
+fun D2.enrollmentInProgram(teiUid: String, programUid: String): Enrollment? =
     enrollmentModule().enrollments()
         .byTrackedEntityInstance().eq(teiUid)
         .byProgram().eq(programUid)
-        .byAggregatedSyncState().`in`(states)
         .blockingGet().firstOrNull()
 
 fun D2.enrollmentImportConflicts(enrollmentUid: String): List<TrackerImportConflict> =
@@ -103,9 +115,40 @@ fun D2.enrollmentImportConflicts(enrollmentUid: String): List<TrackerImportConfl
         .byEnrollmentUid().eq(enrollmentUid)
         .blockingGet()
 
-fun D2.teiAttribute(uid: String): TrackedEntityAttribute =
+fun D2.teiAttribute(attributeUid: String): TrackedEntityAttribute =
     trackedEntityModule().trackedEntityAttributes()
-        .uid(uid).blockingGet()
+        .uid(attributeUid).blockingGet()
+
+fun D2.teiMainAttributes(teiUid: String, programUid: String?): List<Pair<String, String>> {
+    val attributeValues = trackedEntityModule().trackedEntityAttributeValues()
+        .byTrackedEntityInstance().eq(teiUid)
+        .blockingGet()
+    val attributeUids = if (programUid == null) {
+        trackedEntityTypeMainAttributes(teiUid).mapNotNull { it.trackedEntityAttribute()?.uid() }
+    } else {
+        programMainAttributes(programUid).mapNotNull { it.trackedEntityAttribute()?.uid() }
+    }
+    return attributeUids.mapNotNull { attributeUid ->
+        val attrValue = attributeValues.find { it.trackedEntityAttribute() == attributeUid }
+        attrValue?.value()?.let { value ->
+            val attribute = teiAttribute(attributeUid)
+            Pair(attribute.displayFormName() ?: attribute.uid(), value)
+        }
+    }
+}
+
+fun D2.trackedEntityTypeMainAttributes(teiTypeUid: String): List<TrackedEntityTypeAttribute> =
+    trackedEntityModule().trackedEntityTypeAttributes()
+        .byTrackedEntityTypeUid().eq(teiTypeUid)
+        .byDisplayInList().isTrue
+        .blockingGet()
+
+fun D2.programMainAttributes(programUid: String): List<ProgramTrackedEntityAttribute> =
+    programModule().programTrackedEntityAttributes()
+        .byProgram().eq(programUid)
+        .byDisplayInList().isTrue
+        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+        .blockingGet()
 
 fun D2.programStage(uid: String): ProgramStage =
     programModule().programStages().uid(uid).blockingGet()
@@ -142,6 +185,10 @@ fun D2.eventImportConflictsBy(
     return repository.blockingGet()
 }
 
+fun D2.organisationUnit(uid: String): OrganisationUnit =
+    organisationUnitModule().organisationUnits()
+        .uid(uid).blockingGet()
+
 fun D2.dataSetInstancesBy(
     dataSetUid: String? = null,
     states: List<State>? = null
@@ -172,6 +219,14 @@ fun D2.observeDataSetInstancesBy(
         repository.byAttributeOptionComboUid().eq(attrOptionComboUid)
     } ?: repository
     return repository.get()
+}
+
+fun D2.dataValueConflictsBy(
+    dataSetUid: String
+): List<DataValueConflict> {
+    return dataValueModule().dataValueConflicts()
+        .byDataSet(dataSetUid)
+        .blockingGet()
 }
 
 fun D2.dataValueConflicts(

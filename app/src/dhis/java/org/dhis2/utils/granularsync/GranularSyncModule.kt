@@ -32,7 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
@@ -43,11 +43,7 @@ import org.hisp.dhis.android.core.D2
 class GranularSyncModule(
     private val context: Context,
     private val view: GranularSyncContracts.View,
-    private val conflictType: ConflictType,
-    private val recordUid: String,
-    private val dvOrgUnit: String?,
-    private val dvAttrCombo: String?,
-    private val dvPeriodId: String?
+    private val syncContext: SyncContext
 ) {
 
     @Provides
@@ -70,11 +66,7 @@ class GranularSyncModule(
 
                 override fun ui() = Dispatchers.Main
             },
-            conflictType,
-            recordUid,
-            dvOrgUnit,
-            dvAttrCombo,
-            dvPeriodId,
+            syncContext,
             workManagerController,
             smsSyncProvider
         )
@@ -89,11 +81,7 @@ class GranularSyncModule(
         resourceManager: ResourceManager
     ): GranularSyncRepository = GranularSyncRepository(
         d2,
-        conflictType,
-        recordUid,
-        dvOrgUnit,
-        dvAttrCombo,
-        dvPeriodId,
+        syncContext,
         preferenceProvider,
         dhisProgramUtils,
         periodUtils,
@@ -104,11 +92,7 @@ class GranularSyncModule(
     fun smsSyncProvider(d2: D2): SMSSyncProvider {
         return SMSSyncProviderImpl(
             d2,
-            conflictType,
-            recordUid,
-            dvOrgUnit,
-            dvAttrCombo,
-            dvPeriodId,
+            syncContext,
             ResourceManager(context)
         )
     }

@@ -36,22 +36,18 @@ import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.sync.ConflictType;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailFragment;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
-import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -149,7 +145,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         openSection(presenter.getFirstSection());
         binding.syncButton.setOnClickListener(view -> showGranularSync());
 
-        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+        if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
             showGranularSync();
         }
     }
@@ -178,11 +174,14 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         presenter.onClickSyncStatus();
         new SyncStatusDialog.Builder()
                 .withContext(this)
-                .setConflictType(ConflictType.DATA_VALUES)
-                .setUid(dataSetUid)
-                .setPeriodId(periodId)
-                .setOrgUnit(orgUnitUid)
-                .setAttributeOptionCombo(catOptCombo)
+                .withSyncContext(
+                        new SyncContext.DataSetInstance(
+                                dataSetUid,
+                                periodId,
+                                orgUnitUid,
+                                catOptCombo
+                        )
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) presenter.updateData();
                 }).show(DATAVALUE_SYNC);

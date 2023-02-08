@@ -31,6 +31,7 @@ import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragmen
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -90,7 +91,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.filterLayout.setAdapter(filtersAdapter);
         configureBottomNavigation();
 
-        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+        if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
             showGranularSync();
         }
     }
@@ -230,10 +231,9 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void showGranularSync() {
         presenter.trackDataSetGranularSync();
-       new SyncStatusDialog.Builder()
+        new SyncStatusDialog.Builder()
                 .withContext(this)
-                .setConflictType(ConflictType.DATA_SET)
-                .setUid(dataSetUid)
+                .withSyncContext(new SyncContext.DataSet(dataSetUid))
                 .onDismissListener(hasChanged -> presenter.refreshList())
                 .show("DATASET_SYNC");
     }

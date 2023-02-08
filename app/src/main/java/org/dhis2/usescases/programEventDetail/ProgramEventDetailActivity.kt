@@ -29,6 +29,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -184,8 +185,7 @@ class ProgramEventDetailActivity :
     private fun showSyncDialogProgram() {
         SyncStatusDialog.Builder()
             .withContext(this)
-            .setConflictType(ConflictType.PROGRAM)
-            .setUid(programUid)
+            .withSyncContext(SyncContext.EventProgram(programUid))
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
@@ -362,8 +362,7 @@ class ProgramEventDetailActivity :
     override fun showSyncDialog(uid: String) {
         SyncStatusDialog.Builder()
             .withContext(this)
-            .setConflictType(ConflictType.EVENT)
-            .setUid(uid)
+            .withSyncContext(SyncContext.Event(uid))
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()

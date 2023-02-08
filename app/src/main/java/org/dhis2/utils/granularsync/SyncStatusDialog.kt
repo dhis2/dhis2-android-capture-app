@@ -30,8 +30,8 @@ import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUi
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -65,26 +65,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private val viewModel: GranularSyncPresenter by viewModels { viewModelFactory }
 
     companion object {
-        private const val RECORD_UID = "RECORD_UID"
-        private const val CONFLICT_TYPE = "CONFLICT_TYPE"
-        private const val ORG_UNIT_DATA_VALUE = "ORG_UNIT_DATA_VALUE"
-        private const val PERIOD_ID_DATA_VALUE = "PERIOD_ID_DATA_VALUE"
-        private const val ATTRIBUTE_COMBO_DATA_VALUE = "ATTRIBUTE_COMBO_DATA_VALUE"
+        private const val SYNC_CONTEXT = "SYNC_CONTEXT"
 
         @JvmStatic
         fun newInstance(
-            recordUid: String,
-            conflictType: ConflictType,
-            orgUnitDataValue: String? = null,
-            attributeComboDataValue: String? = null,
-            periodIdDataValue: String? = null
+            syncContext: SyncContext,
         ) = SyncStatusDialog().apply {
             Bundle().apply {
-                putString(RECORD_UID, recordUid)
-                putSerializable(CONFLICT_TYPE, conflictType)
-                putString(ORG_UNIT_DATA_VALUE, orgUnitDataValue)
-                putString(PERIOD_ID_DATA_VALUE, periodIdDataValue)
-                putString(ATTRIBUTE_COMBO_DATA_VALUE, attributeComboDataValue)
+                putParcelable(SYNC_CONTEXT, syncContext)
             }.also { arguments = it }
         }
     }
@@ -95,11 +83,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             GranularSyncModule(
                 requireContext(),
                 this,
-                arguments?.getSerializable(CONFLICT_TYPE) as ConflictType,
-                arguments?.getString(RECORD_UID) ?: "",
-                arguments?.getString(ORG_UNIT_DATA_VALUE),
-                arguments?.getString(ATTRIBUTE_COMBO_DATA_VALUE),
-                arguments?.getString(PERIOD_ID_DATA_VALUE)
+                arguments?.getParcelable(SYNC_CONTEXT)
+                    ?: throw NullPointerException("Missing sync context")
             )
         ).inject(this)
     }
@@ -168,6 +153,11 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshContent()
     }
 
     private fun onSyncClick() {
@@ -324,11 +314,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         private var context: Context? = null
         private var fm: FragmentManager? = null
         private var navigator: SyncStatusDialogNavigator? = null
-        private lateinit var recordUid: String
-        private lateinit var conflictType: ConflictType
-        private var orgUnitDataValue: String? = null
-        private var attributeComboDataValue: String? = null
-        private var periodIdDataValue: String? = null
+        private lateinit var syncContext: SyncContext
         private var dismissListener: OnDismissListener? = null
 
         fun withContext(context: FragmentActivity): Builder {
@@ -345,28 +331,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return this
         }
 
-        fun setUid(uid: String): Builder {
-            this.recordUid = uid
-            return this
-        }
-
-        fun setConflictType(conflictType: ConflictType): Builder {
-            this.conflictType = conflictType
-            return this
-        }
-
-        fun setOrgUnit(orgUnit: String): Builder {
-            this.orgUnitDataValue = orgUnit
-            return this
-        }
-
-        fun setAttributeOptionCombo(attributeOptionCombo: String): Builder {
-            this.attributeComboDataValue = attributeOptionCombo
-            return this
-        }
-
-        fun setPeriodId(periodId: String): Builder {
-            this.periodIdDataValue = periodId
+        fun withSyncContext(syncContext: SyncContext): Builder {
+            this.syncContext = syncContext
             return this
         }
 
@@ -376,25 +342,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         }
 
         private fun build(): SyncStatusDialog {
-            if (conflictType == ConflictType.DATA_VALUES &&
-                (
-                        orgUnitDataValue == null ||
-                                attributeComboDataValue == null ||
-                                periodIdDataValue == null
-                        )
-            ) {
-                throw NullPointerException(
-                    "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
-                )
-            }
-
-            return newInstance(
-                recordUid,
-                conflictType,
-                orgUnitDataValue,
-                attributeComboDataValue,
-                periodIdDataValue,
-            ).apply {
+            return newInstance(syncContext).apply {
                 dismissListenerDialog = dismissListener
                 syncStatusDialogNavigator = navigator
             }

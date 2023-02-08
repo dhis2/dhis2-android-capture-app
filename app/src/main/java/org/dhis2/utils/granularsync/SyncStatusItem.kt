@@ -10,16 +10,25 @@ data class SyncStatusItem(
 )
 
 sealed class SyncStatusType {
-    data class TrackerProgram(val programUid: String) : SyncStatusType()
+    data class TrackerProgram(val programUid: String, val trackedEntityTypeUid: String) : SyncStatusType()
     data class TrackedEntity(
         val teiUid: String,
         val programUid: String?,
         val enrollmentUid: String?
     ) : SyncStatusType()
 
+    data class Enrollment(
+        val enrollmentUid: String,
+        val programUid: String
+    ) : SyncStatusType()
+
     data class EventProgram(val programUid: String) : SyncStatusType()
-    data class Event(val eventUid: String, val programUid: String, val programStageUid: String?) :
-        SyncStatusType()
+    data class Event(
+        val eventUid: String,
+        val programUid: String,
+        val programStageUid: String?,
+        val hasNullDataElementConflict: Boolean = false
+    ) : SyncStatusType()
 
     data class DataSet(val dataSetUid: String) : SyncStatusType()
     data class DataSetInstance(

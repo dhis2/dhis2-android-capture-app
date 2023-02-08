@@ -30,6 +30,7 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
@@ -125,7 +126,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         Bundle extras = new Bundle();
         extras.putBoolean("FROM_RELATIONSHIP", fromRelationship);
         extras.putString("FROM_RELATIONSHIP_TEI", teiUid);
-        extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
+        extras.putString(Extra.TEI_UID.key, teiTypeToAdd);
         extras.putString(Extra.PROGRAM_UID.key, programUid);
         intent.putExtras(extras);
         return intent;
@@ -320,8 +321,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void openSyncDialog() {
         new SyncStatusDialog.Builder()
                 .withContext(this)
-                .setConflictType(ConflictType.PROGRAM)
-                .setUid(initialProgram)
+                .withSyncContext(
+                        new SyncContext.TrackerProgram(initialProgram)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
                 }).show("PROGRAM_SYNC");
@@ -523,11 +525,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void showSyncDialog(String teiUid) {
+    public void showSyncDialog(String enrollmentUid) {
         new SyncStatusDialog.Builder()
                 .withContext(this)
-                .setConflictType(ConflictType.TEI)
-                .setUid(teiUid)
+                .withSyncContext(
+                        new SyncContext.TrackerProgramTei(enrollmentUid)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
                 }).show("TEI_SYNC");

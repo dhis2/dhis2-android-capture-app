@@ -55,6 +55,7 @@ import org.dhis2.commons.sync.ConflictType.DATA_VALUES
 import org.dhis2.commons.sync.ConflictType.EVENT
 import org.dhis2.commons.sync.ConflictType.PROGRAM
 import org.dhis2.commons.sync.ConflictType.TEI
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -71,11 +72,7 @@ class GranularSyncPresenter(
     private val repository: GranularSyncRepository,
     val schedulerProvider: SchedulerProvider,
     private val dispatcher: DispatcherProvider,
-    private val conflictType: ConflictType,
-    private val recordUid: String,
-    private val dvOrgUnit: String?,
-    private val dvAttrCombo: String?,
-    private val dvPeriodId: String?,
+    private val syncContext: SyncContext,
     private val workManagerController: WorkManagerController,
     private val smsSyncProvider: SMSSyncProvider
 ) : ViewModel() {
@@ -87,10 +84,6 @@ class GranularSyncPresenter(
     private val _currentState = MutableStateFlow<SyncUiState?>(null)
     val currentState: StateFlow<SyncUiState?> = _currentState
 
-    init {
-        loadSyncInfo()
-    }
-
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
             val result = async {
@@ -100,12 +93,16 @@ class GranularSyncPresenter(
         }
     }
 
+    fun refreshContent() {
+        loadSyncInfo()
+    }
+
     fun isSMSEnabled(showSms: Boolean): Boolean {
-        return smsSyncProvider.isSMSEnabled(conflictType == TEI) && showSms
+        return smsSyncProvider.isSMSEnabled(syncContext.conflictType() == TEI) && showSms
     }
 
     fun canSendSMS(): Boolean {
-        return when (conflictType) {
+        return when (syncContext.conflictType()) {
             ALL,
             PROGRAM,
             DATA_SET -> false
@@ -118,35 +115,39 @@ class GranularSyncPresenter(
     fun initGranularSync(): LiveData<List<WorkInfo>> {
         var conflictTypeData: ConflictType? = null
         var dataToDataValues: Data? = null
-        when (conflictType) {
+        when (syncContext.conflictType()) {
             PROGRAM -> conflictTypeData = PROGRAM
             TEI -> conflictTypeData = TEI
             EVENT -> conflictTypeData = EVENT
             DATA_SET -> conflictTypeData = DATA_SET
             DATA_VALUES ->
-                dataToDataValues = Data.Builder().putString(UID, recordUid)
-                    .putString(CONFLICT_TYPE, DATA_VALUES.name)
-                    .putString(ORG_UNIT, dvOrgUnit)
-                    .putString(PERIOD_ID, dvPeriodId)
-                    .putString(ATTRIBUTE_OPTION_COMBO, dvAttrCombo)
-                    .putStringArray(
-                        CATEGORY_OPTION_COMBO,
-                        getDataSetCatOptCombos().blockingGet().toTypedArray()
-                    )
-                    .build()
+                with(syncContext as SyncContext.DataSetInstance) {
+                    dataToDataValues = Data.Builder().putString(UID, recordUid())
+                        .putString(CONFLICT_TYPE, DATA_VALUES.name)
+                        .putString(ORG_UNIT, orgUnitUid)
+                        .putString(PERIOD_ID, periodId)
+                        .putString(ATTRIBUTE_OPTION_COMBO, attributeOptionComboUid)
+                        .putStringArray(
+                            CATEGORY_OPTION_COMBO,
+                            getDataSetCatOptCombos().blockingGet().toTypedArray()
+                        )
+                        .build()
+                }
             ALL -> {
             }
         }
         var workName: String
-        if (conflictType != ALL) {
-            workName = recordUid
+        if (syncContext.conflictType() != ALL) {
+            workName = syncContext.recordUid()
             if (dataToDataValues == null) {
                 dataToDataValues = Data.Builder()
-                    .putString(UID, recordUid)
+                    .putString(UID, syncContext.recordUid())
                     .putString(CONFLICT_TYPE, conflictTypeData!!.name)
                     .build()
             } else {
-                workName = dvOrgUnit + "_" + dvPeriodId + "_" + dvAttrCombo
+                workName = with(syncContext as SyncContext.DataSetInstance) {
+                    orgUnitUid + "_" + periodId + "_" + attributeOptionComboUid
+                }
             }
 
             val workerItem =
@@ -362,7 +363,8 @@ class GranularSyncPresenter(
     }
 
     private fun getDataSetCatOptCombos(): Single<List<String>> {
-        return d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
+        return d2.dataSetModule().dataSets().withDataSetElements().uid(syncContext.recordUid())
+            .get()
             .map {
                 it.dataSetElements()?.map { dataSetElement ->
                     if (dataSetElement.categoryCombo() != null) {
