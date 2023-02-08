@@ -10,7 +10,11 @@ data class SyncStatusItem(
 )
 
 sealed class SyncStatusType {
-    data class TrackerProgram(val programUid: String, val trackedEntityTypeUid: String) : SyncStatusType()
+    data class TrackerProgram(
+        val programUid: String,
+        val trackedEntityTypeUid: String
+    ) : SyncStatusType()
+
     data class TrackedEntity(
         val teiUid: String,
         val programUid: String?,

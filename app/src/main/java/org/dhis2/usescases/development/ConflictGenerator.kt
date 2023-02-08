@@ -33,8 +33,9 @@ class ConflictGenerator(private val d2: D2) {
     }
 
     fun clear() {
-        d2.importModule().trackerImportConflicts().byConflict().like("Generated%").blockingGet()
-            .forEach { trackerImportConflict ->
+        d2.importModule().trackerImportConflicts()
+            .byConflict().like("Generated%")
+            .blockingGet().forEach { trackerImportConflict ->
                 trackerImportConflict.apply {
                     trackedEntityInstance()?.let { teiUid ->
                         val cv = d2.tei(teiUid).toBuilder().syncState(State.SYNCED)
@@ -60,7 +61,10 @@ class ConflictGenerator(private val d2: D2) {
                         val cv = d2.event(eventUid).toBuilder().syncState(State.SYNCED)
                             .aggregatedSyncState(State.SYNCED).build().toContentValues()
                         d2.databaseAdapter().update(
-                            EventTableInfo.TABLE_INFO.name(), cv, "uid = '$eventUid'", emptyArray()
+                            EventTableInfo.TABLE_INFO.name(),
+                            cv,
+                            "uid = '$eventUid'",
+                            emptyArray()
                         )
                     }
                 }
@@ -72,8 +76,9 @@ class ConflictGenerator(private val d2: D2) {
                 )
             }
 
-        d2.dataValueModule().dataValueConflicts().byConflict().like("Generated%").blockingGet()
-            .forEach { dataValueConflict ->
+        d2.dataValueModule().dataValueConflicts()
+            .byConflict().like("Generated%")
+            .blockingGet().forEach { dataValueConflict ->
                 val dataValue = d2.dataValueModule().dataValues().value(
                     dataValueConflict.period(),
                     dataValueConflict.orgUnit(),
@@ -126,12 +131,10 @@ class ConflictGenerator(private val d2: D2) {
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
             enrollmentUid?.let {
-                d2.databaseAdapter()
-                    .execSQL("UPDATE Enrollment SET syncState = 'ERROR', aggregatedSyncState = 'ERROR' where uid = '$enrollmentUid'")
+                d2.databaseAdapter().execSQL(updateEnrollment(enrollmentUid))
             }
             teiUid?.let {
-                d2.databaseAdapter()
-                    .execSQL("UPDATE TrackedEntityInstance SET aggregatedSyncState = 'ERROR' where uid = '$teiUid'")
+                d2.databaseAdapter().execSQL(updateTei(teiUid))
             }
         } catch (e: Exception) {
             Timber.e(e)
@@ -158,7 +161,8 @@ class ConflictGenerator(private val d2: D2) {
         val teiUid = enrollment?.trackedEntityInstance()
 
         val build =
-            TrackerImportConflict.builder().conflict("Generated error conflict in data element")
+            TrackerImportConflict.builder()
+                .conflict("Generated error conflict in data element")
                 .value(attributeValue.value()).event(attributeValue.event())
                 .dataElement(attributeValue.dataElement()).trackedEntityInstance(teiUid)
                 .enrollment(enrollmentUid)
@@ -168,16 +172,13 @@ class ConflictGenerator(private val d2: D2) {
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
             attributeValue.event()?.let { eventUid ->
-                d2.databaseAdapter()
-                    .execSQL("UPDATE Event SET aggregatedSyncState = 'ERROR' where uid = '$eventUid'")
+                d2.databaseAdapter().execSQL(updateEvent(eventUid))
             }
             enrollmentUid.let {
-                d2.databaseAdapter()
-                    .execSQL("UPDATE Enrollment SET syncState = 'ERROR', aggregatedSyncState = 'ERROR' where uid = '$enrollmentUid'")
+                d2.databaseAdapter().execSQL(updateEnrollment(enrollmentUid))
             }
             teiUid?.let {
-                d2.databaseAdapter()
-                    .execSQL("UPDATE TrackedEntityInstance SET aggregatedSyncState = 'ERROR' where uid = '$teiUid'")
+                d2.databaseAdapter().execSQL(updateTei(teiUid))
             }
         } catch (e: Exception) {
             Timber.e(e)
@@ -187,15 +188,15 @@ class ConflictGenerator(private val d2: D2) {
 
     private fun generateConflictInEventForEnrollment(eventUid: String) {
         val build =
-            TrackerImportConflict.builder().conflict("Generated error conflict in enrollment event")
+            TrackerImportConflict.builder()
+                .conflict("Generated error conflict in enrollment event")
                 .event(eventUid)
                 .displayDescription("Generated error description in enrollment event")
                 .status(ImportStatus.ERROR).build()
         val cv = build.toContentValues()
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
-            d2.databaseAdapter()
-                .execSQL("UPDATE Event SET aggregatedSyncState = 'ERROR' where uid = '$eventUid'")
+            d2.databaseAdapter().execSQL(updateEvent(eventUid))
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -211,11 +212,9 @@ class ConflictGenerator(private val d2: D2) {
         val cv = build.toContentValues()
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
-            d2.databaseAdapter()
-                .execSQL("UPDATE Enrollment SET syncState = 'ERROR', aggregatedSyncState = 'ERROR' where uid = '$enrollmentUid'")
+            d2.databaseAdapter().execSQL(updateEnrollment(enrollmentUid))
             enrollment.trackedEntityInstance()?.let {
-                d2.databaseAdapter()
-                    .execSQL("UPDATE TrackedEntityInstance SET aggregatedSyncState = 'ERROR' where uid = '$it'")
+                d2.databaseAdapter().execSQL(updateTei(it))
             }
         } catch (e: Exception) {
             Timber.e(e)
@@ -233,8 +232,7 @@ class ConflictGenerator(private val d2: D2) {
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
             enrollment.trackedEntityInstance()?.let {
-                d2.databaseAdapter()
-                    .execSQL("UPDATE TrackedEntityInstance SET aggregatedSyncState = 'ERROR' where uid = '$it'")
+                d2.databaseAdapter().execSQL(updateTei(it))
             }
         } catch (e: Exception) {
             Timber.e(e)
@@ -263,8 +261,7 @@ class ConflictGenerator(private val d2: D2) {
         val cv = build.toContentValues()
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
-            d2.databaseAdapter()
-                .execSQL("UPDATE Event SET aggregatedSyncState = 'ERROR' where uid = '${event.uid()}'")
+            d2.databaseAdapter().execSQL(updateEvent(event.uid()))
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -278,8 +275,7 @@ class ConflictGenerator(private val d2: D2) {
         val cv = build.toContentValues()
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
-            d2.databaseAdapter()
-                .execSQL("UPDATE Event SET aggregatedSyncState = 'ERROR' where uid = '$eventUid'")
+            d2.databaseAdapter().execSQL(updateEvent(eventUid))
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -313,4 +309,14 @@ class ConflictGenerator(private val d2: D2) {
             Timber.e(e)
         }
     }
+
+    private fun updateEnrollment(enrollmentUid: String): String =
+        "UPDATE Enrollment SET syncState = 'ERROR'," +
+            " aggregatedSyncState = 'ERROR' where uid = '$enrollmentUid'"
+
+    private fun updateTei(teiUid: String) =
+        "UPDATE TrackedEntityInstance SET aggregatedSyncState = 'ERROR' where uid = '$teiUid'"
+
+    private fun updateEvent(eventUid: String) =
+        "UPDATE Event SET aggregatedSyncState = 'ERROR' where uid = '$eventUid'"
 }

@@ -69,7 +69,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
         @JvmStatic
         fun newInstance(
-            syncContext: SyncContext,
+            syncContext: SyncContext
         ) = SyncStatusDialog().apply {
             Bundle().apply {
                 putParcelable(SYNC_CONTEXT, syncContext)
@@ -108,7 +108,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                                 title = syncUiState.title,
-                                subtitle = syncUiState.lastSyncDate?.date?.toDateSpan(requireContext()),
+                                subtitle = syncUiState.lastSyncDate?.date?.toDateSpan(
+                                    requireContext()
+                                ),
                                 message = syncUiState.message,
                                 iconResource = R.drawable.ic_sync_warning,
                                 mainButton = syncUiState.mainActionLabel?.let {
@@ -164,7 +166,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         when {
             networkUtils.isOnline() -> syncGranular()
             viewModel.canSendSMS() &&
-                    viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
+                viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
         }
     }
 

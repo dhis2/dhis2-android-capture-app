@@ -29,7 +29,9 @@ class SyncStatusDialogNavigator(
         context.startActivity(intent)
     }
 
-    private fun navigateToEnrollmentFormScreen(enrollmentSyncItem: SyncStatusType.Enrollment): Intent {
+    private fun navigateToEnrollmentFormScreen(
+        enrollmentSyncItem: SyncStatusType.Enrollment
+    ): Intent {
         return EnrollmentActivity.getIntent(
             context,
             enrollmentSyncItem.enrollmentUid,
@@ -38,7 +40,9 @@ class SyncStatusDialogNavigator(
         )
     }
 
-    private fun navigateToSearchScreen(trackerProgramSyncItem: SyncStatusType.TrackerProgram): Intent {
+    private fun navigateToSearchScreen(
+        trackerProgramSyncItem: SyncStatusType.TrackerProgram
+    ): Intent {
         return SearchTEActivity.intent(
             context,
             trackerProgramSyncItem.programUid,
@@ -77,7 +81,9 @@ class SyncStatusDialogNavigator(
         }
     }
 
-    private fun navigateToDataSetInstanceTable(tableSyncItem: SyncStatusType.DataSetInstance): Intent {
+    private fun navigateToDataSetInstanceTable(
+        tableSyncItem: SyncStatusType.DataSetInstance
+    ): Intent {
         return DataSetTableActivity.intent(
             context,
             tableSyncItem.dataSetUid,

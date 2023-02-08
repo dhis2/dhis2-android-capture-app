@@ -14,7 +14,9 @@ import org.dhis2.ui.dialogs.bottomsheet.IssueType
 
 class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
 
-    fun provideDataEntryUiModel(result: DataIntegrityCheckResult): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>? {
+    fun provideDataEntryUiModel(
+        result: DataIntegrityCheckResult
+    ): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>? {
         with(resourceManager) {
             return when (result) {
                 is FieldsWithErrorResult -> {

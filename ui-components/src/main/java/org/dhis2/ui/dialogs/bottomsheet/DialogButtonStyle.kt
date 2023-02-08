@@ -6,14 +6,14 @@ import org.dhis2.ui.theme.colorPrimary
 import org.dhis2.ui.theme.warningColor
 
 sealed class DialogButtonStyle(
-    open val textLabel:String?=null,
-    open val textResource: Int=-1,
+    open val textLabel: String? = null,
+    open val textResource: Int = -1,
     val colorResource: Color? = null,
     val iconResource: Int? = null,
     val backgroundColor: Color? = null
 ) {
 
-    data class MainButtonLabel(override val textLabel:String):DialogButtonStyle(
+    data class MainButtonLabel(override val textLabel: String) : DialogButtonStyle(
         textLabel = textLabel,
         colorResource = Color.White
     )

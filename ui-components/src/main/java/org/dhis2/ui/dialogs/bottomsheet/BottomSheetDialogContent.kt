@@ -56,7 +56,6 @@ fun BottomSheetDialogUi(
     extraContent: @Composable
     (() -> Unit)? = null
 ) {
-
     Column(
         modifier = Modifier
             .background(color = Color.White, shape = RoundedCornerShape(28.dp, 28.dp))
@@ -132,14 +131,13 @@ fun BottomSheetDialogUi(
                     )
                 }
             }
-
         }
         extraContent?.let {
             Divider()
             it.invoke()
         }
 
-        if(bottomSheetDialogUiModel.hasButtons()) {
+        if (bottomSheetDialogUiModel.hasButtons()) {
             Divider()
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -305,7 +303,7 @@ fun DialogPreview4() {
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Not saved",
             message = "Some fields have errors and they are not saved." +
-                    "If you exit now the changes will be discarded.",
+                "If you exit now the changes will be discarded.",
             iconResource = R.drawable.ic_error_outline,
             mainButton = DialogButtonStyle.MainButton(R.string.review),
             secondaryButton = DialogButtonStyle.DiscardButton()

@@ -23,9 +23,9 @@ import org.dhis2.ui.theme.textSecondary
 fun SyncStatusItem(
     title: String,
     subtitle: String? = null,
-    onClick:()->Unit,
+    onClick: () -> Unit,
     syncStatusIcon: @Composable
-        () -> Unit
+    () -> Unit
 ) {
     Row(
         modifier = Modifier

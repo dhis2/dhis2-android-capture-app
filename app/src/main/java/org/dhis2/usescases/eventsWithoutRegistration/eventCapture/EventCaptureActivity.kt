@@ -1,7 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -378,8 +377,8 @@ class EventCaptureActivity :
             .setMessage(R.string.event_date_in_future_message)
             .setPositiveButton(
                 R.string.change_event_date
-            ) { dialogInterface: DialogInterface?, i: Int -> binding!!.navigationBar.selectItemAt(0) }
-            .setNegativeButton(R.string.go_back) { dialogInterface: DialogInterface?, i: Int -> back() }
+            ) { _, _ -> binding!!.navigationBar.selectItemAt(0) }
+            .setNegativeButton(R.string.go_back) { _, _ -> back() }
             .setCancelable(false)
             .show()
     }

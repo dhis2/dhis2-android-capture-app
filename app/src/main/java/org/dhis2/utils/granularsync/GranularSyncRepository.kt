@@ -59,7 +59,7 @@ class GranularSyncRepository(
     fun getUiState(forcedState: State? = null): SyncUiState {
         return Single.zip(
             getState(),
-            getLastSynced(),
+            getLastSynced()
         ) { state, lastSync ->
             buildUiState(
                 forcedState.takeIf { it != null } ?: state,
@@ -177,7 +177,8 @@ class GranularSyncRepository(
 
     private fun getNotSyncedMessage(): String {
         return when (syncContext.conflictType()) {
-            ConflictType.ALL -> resourceManager.getString(R.string.sync_dialog_message_not_synced_all)
+            ConflictType.ALL ->
+                resourceManager.getString(R.string.sync_dialog_message_not_synced_all)
             ConflictType.DATA_SET,
             ConflictType.DATA_VALUES,
             ConflictType.PROGRAM -> resourceManager.getString(
@@ -294,7 +295,6 @@ class GranularSyncRepository(
         }
     }
 
-
     private fun getHomeItemsWithStates(vararg states: State): List<SyncStatusItem> {
         val programList = d2.programs().filter {
             states.contains(dhisProgramUtils.getProgramState(it))
@@ -306,7 +306,10 @@ class GranularSyncRepository(
                         programUid = program.uid(),
                         trackedEntityTypeUid = program.trackedEntityType()!!.uid()
                     )
-                    null -> throw NullPointerException("Program ${program.uid()}: program type can't be null")
+                    null ->
+                        throw NullPointerException(
+                            "Program ${program.uid()}: program type can't be null"
+                        )
                 },
                 displayName = program.displayName() ?: program.uid(),
                 description = "Tap here to explore",
@@ -430,7 +433,6 @@ class GranularSyncRepository(
                 mapEventToSyncStatusItem(programUid, event.uid(), *states)
             }.sortedByState()
         }
-
     }
 
     private fun getTeiItemWithStates(
@@ -692,7 +694,10 @@ class GranularSyncRepository(
             dataSetUid = dataSetUid,
             states = states.toList()
         ).map { dataSetInstance ->
-            if (dataSetInstance.state() == State.ERROR || dataSetInstance.state() == State.WARNING) {
+            if (
+                dataSetInstance.state() == State.ERROR ||
+                dataSetInstance.state() == State.WARNING
+            ) {
                 val conflictNumber = d2.countDataValueConflicts(
                     dataSetUid = dataSetUid,
                     periodId = dataSetInstance.period(),
@@ -825,11 +830,11 @@ class GranularSyncRepository(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                    stateCandidates.contains(State.UPLOADING) ||
-                    stateCandidates.contains(State.TO_UPDATE) ->
+                stateCandidates.contains(State.UPLOADING) ||
+                stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -842,8 +847,9 @@ class GranularSyncRepository(
     private fun getTitle(): Single<String> {
         return when (syncContext.conflictType()) {
             ConflictType.ALL -> Single.just("")
-            ConflictType.PROGRAM -> d2.programModule().programs().uid(syncContext.recordUid()).get()
-                .map { it.displayName() }
+            ConflictType.PROGRAM ->
+                d2.programModule().programs().uid(syncContext.recordUid()).get()
+                    .map { it.displayName() }
             ConflictType.TEI -> {
                 val enrollment =
                     d2.enrollmentModule().enrollments().uid(syncContext.recordUid()).blockingGet()
