@@ -33,7 +33,7 @@ class TableTestActivity : ComponentActivity() {
 
                 DataSetTableScreen(
                     tableScreenState = collectedState,
-                    onCellClick = { _, cell, updateTableCell ->
+                    onCellClick = { _, cell, _ ->
                         TextInputModel(
                             id = cell.id ?: "",
                             mainLabel = "-",

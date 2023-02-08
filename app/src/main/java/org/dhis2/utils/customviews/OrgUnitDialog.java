@@ -21,7 +21,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.DialogOrgunitBinding;
-import org.dhis2.utils.OrgUnitUtils;
+import org.dhis2.commons.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.ArrayList;
@@ -44,6 +44,7 @@ public class OrgUnitDialog extends DialogFragment {
     private Context context;
     private TreeNode treeNode;
     private String programUid;
+    private OrganisationUnit selectedOrg;
 
     public static OrgUnitDialog getInstace() {
         if (instance == null) {
@@ -59,6 +60,7 @@ public class OrgUnitDialog extends DialogFragment {
         negativeListener = null;
         title = null;
         myOrgs = null;
+        selectedOrg = null;
 
 
     }
@@ -90,6 +92,10 @@ public class OrgUnitDialog extends DialogFragment {
 
     public OrgUnitDialog setOrgUnits(List<OrganisationUnit> orgUnits) {
         this.myOrgs = orgUnits;
+        return this;
+    }
+    public OrgUnitDialog setOrgUnit(OrganisationUnit orgUnit) {
+        this.selectedOrg = orgUnit;
         return this;
     }
 
@@ -164,7 +170,7 @@ public class OrgUnitDialog extends DialogFragment {
     private void renderTree(@NonNull List<OrganisationUnit> myOrgs) {
 
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection, programUid));
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection, programUid, this.selectedOrg, ""));
         treeView.deselectAll();
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);

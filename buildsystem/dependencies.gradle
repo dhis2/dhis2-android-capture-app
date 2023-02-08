@@ -125,8 +125,17 @@ ext {
 
             google_truth              : "1.1.2",
 
-            kotlinxcoroutines         : "1.6.1"
+            kotlinxcoroutines         : "1.6.1",
 
+            //Kotlin metadata
+            kotlinmetadata             : "0.5.0",
 
+            rxrelay                     : '2.1.1',
+            preference_ktx              : '1.2.0',
+
+            // DI
+            hilt                        : '2.43.2',
+
+            coroutines_test            : "1.6.4"
     ]
 }

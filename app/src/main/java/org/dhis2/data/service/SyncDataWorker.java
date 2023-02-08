@@ -1,5 +1,7 @@
 package org.dhis2.data.service;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_TIME;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -27,8 +29,6 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_TIME;
-
 public class SyncDataWorker extends Worker {
 
     private static final String DATA_CHANNEL = "sync_data_notification";
@@ -49,7 +49,9 @@ public class SyncDataWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncDataWorkerModule()).inject(this);
+        Objects.requireNonNull(((App) getApplicationContext()).userComponent())
+                .plus(new SyncDataWorkerModule())
+                .inject(this);
 
         presenter.initSyncControllerMap();
 
@@ -72,7 +74,7 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadEvents();
         } catch (Exception e) {
-            if(!new NetworkUtils(getApplicationContext()).isOnline()){
+            if (!new NetworkUtils(getApplicationContext()).isOnline()) {
                 presenter.setNetworkUnavailable();
             }
             Timber.e(e);
@@ -87,7 +89,7 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadTeis();
         } catch (Exception e) {
-            if(!new NetworkUtils(getApplicationContext()).isOnline()){
+            if (!new NetworkUtils(getApplicationContext()).isOnline()) {
                 presenter.setNetworkUnavailable();
             }
             Timber.e(e);
@@ -102,7 +104,7 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadDataValues();
         } catch (Exception e) {
-            if(!new NetworkUtils(getApplicationContext()).isOnline()){
+            if (!new NetworkUtils(getApplicationContext()).isOnline()) {
                 presenter.setNetworkUnavailable();
             }
             Timber.e(e);

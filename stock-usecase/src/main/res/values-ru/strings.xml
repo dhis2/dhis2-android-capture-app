@@ -1,0 +1,291 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Управление запасами аптек</string>
+    <string name="title_activity_home">Дом</string>
+    <string name="title_activity_review">Рассмотрение</string>
+    <string name="action_settings">Настройки</string>
+
+    <string name="distribution">Распределение</string>
+    <string name="discard">Отказаться</string>
+    <string name="correction">Исправление</string>
+    <string name="select_transaction">Выберите транзакцию</string>
+    <string name="transaction_date">Дата транзакции</string>
+    <string name="recent_activity">Недавняя активность</string>
+    <string name="last_synced">Последняя синхронизация:</string>
+    <string name="select_facility">Выбрать объект</string>
+    <string name="distributed_to">Распространено в</string>
+    <string name="select_one">Выбери один</string>
+
+    <!-- Sign in -->
+    <string name="server">Сервер:</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_in_to_your_account">Войдите в свой аккаунт</string>
+    <string name="sign_in_to_with_oidc">Войти через Microsoft</string>
+    <string name="non_icrc_staff_members">
+        Только для сотрудников, не являющихся сотрудниками МККК.
+    </string>
+    <string name="icrc_staff_members">Только для сотрудников МККК</string>
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="forgot_password">Забыл пароль\?</string>
+
+    <string name="recent_activities_loading_message">Загрузка недавних действий&#8230;</string>
+    <string name="recent_activities_empty_message">Вы еще не выполняли никаких действий</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">Синхронизация метаданных&#8230;</string>
+    <string name="metadata_sync_error">Невозможно завершить синхронизацию метаданных</string>
+    <string name="data_sync_in_progress">Синхронизация данных&#8230;</string>
+    <string name="data_sync_error">Невозможно завершить синхронизацию данных</string>
+    <string name="metadata_sync_completed">Синхронизация метаданных завершена!</string>
+    <string name="sync_completed">Синхронизация завершена!</string>
+
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Продолжить</string>
+    <string name="review">Рассмотрение</string>
+
+    <string name="scan_barcode">Сканировать штрих-код</string>
+
+    <string name="scanning">Сканирование&#8230;</string>
+    <string name="search">Элемент поиска</string>
+    <string name="delete">Удалить</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Отмена</string>
+    <string name="confirmation">Подтверждение</string>
+
+    <!-- Languages -->
+    <string name="language_english">английский</string>
+    <string name="language_french">французкий язык</string>
+    <string name="language_spanish">испанский</string>
+    <string name="language_arabic">арабский</string>
+    <string name="language_russian">русский</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">Используйте микрофон для ввода данных</string>
+    <string name="language">Язык</string>
+    <string name="force_data_sync">Принудительная синхронизация данных</string>
+    <string name="logout">Выйти</string>
+
+
+    <!-- Stock table -->
+    <string name="item">Элемент</string>
+    <string name="stock_on_hand">Наличие на складе</string>
+    <string name="quantity">Количество</string>
+    <string name="items_available">доступные предметы</string>
+
+
+    <string name="positive_value">
+        <b>Положительное значение</b>  = \"недостающее количество\" (<i>физический запас меньше расчетного</i>)
+    </string>
+    <string name="negative_value">
+        <b><span style="color: #C81818">Отрицательное значение</span></b> = \"найдено в наличии\"     (<i>физический запас превышает расчетное значение</i>)
+    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">
+        Прежде чем продолжить, необходимо выбрать тип транзакции и заполнить все поля.
+    </string>
+    <string name="mandatory_facility_selection">
+        Поле объекта должно быть заполнено, прежде чем вы сможете продолжить
+    </string>
+    <string name="mandatory_distributed_to_selection">
+        Поле "Распространено на" должно быть заполнено, прежде чем вы сможете продолжить
+    </string>
+    <string name="mandatory_transaction_date_selection">
+        Поле даты транзакции должно быть заполнено, прежде чем вы сможете продолжить
+    </string>
+    <string name="previous_page_lose_data_warning">
+        Вы уверены, что хотите вернуться к предыдущему экрану?
+        Вы потеряете только что введенные данные, если решите продолжить.
+    </string>
+    <string name="transaction_completed">Сделка успешно завершена!</string>
+    <string name="transaction_cancelled">Транзакция успешно отменена!</string>
+    <string name="force_sync_confirmation_message">
+        Вы уверены, что хотите принудительно синхронизировать \?
+    </string>
+    <string name="logout_confirmation_message">Вы действительно хотите выйти\?</string>
+
+    <string name="remove_correction_item_confirmation_message">
+        Вы уверены, что хотите навсегда сохранить Удалить для исправления \"%1$s\"?
+         Это действие не может быть отменено.
+    </string>
+    <string name="remove_distribution_item_confirmation_message">
+        Вы уверены, что хотите навсегда удалить запись о распространении \"%1$s\"\?
+         Это действие не может быть отменено.
+    </string>
+    <string name="remove_discard_item_confirmation_message">
+        Вы уверены, что хотите навсегда удалить запись об отмене \"%1$s\"\?
+         Это действие не может быть отменено.
+    </string>
+
+    <plurals name="items_found">
+        <item quantity="one">%d пункт</item>
+        <item quantity="few">%d Предметы</item>
+        <item quantity="many">%d Предметы</item>
+        <item quantity="other">%d Предметы</item>
+    </plurals>
+    <string name="no_items_found">ничего не найдено</string>
+    <string name="loading_items_message">Загрузка товаров на складе &#8230;</string>
+    <string name="prompt_email">Эл. адрес</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in">Войдите или зарегистрируйтесь</string>
+    <string name="action_sign_in_short">Войти</string>
+    <string name="welcome">"Добро пожаловать !"</string>
+    <string name="invalid_username">Неверное имя пользователя</string>
+    <string name="invalid_password">Пароль должен содержать более 5 символов.</string>
+    <string name="login_failed">"Авторизация не удалась"</string>
+    <string name="resync">Повторная синхронизация</string>
+
+    <!-- Errors -->
+    <string name="login_error">Невозможно войти</string>
+    <string name="config_file_error">Невозможно загрузить файл конфигурации</string>
+    <string name="config_file_program_error">
+        Идентификатор стоковой программы не указан в файле конфигурации
+    </string>
+    <string name="recent_activities_load_error">Не удалось загрузить ваши недавние действия</string>
+    <string name="facilities_load_error">Невозможно загрузить список доступных объектов</string>
+    <string name="destinations_load_error">
+        Невозможно загрузить список доступных направлений
+    </string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="content_desc_sync_info">Информация о синхронизации</string>
+    <string name="content_desc_search">Поиск</string>
+    <string name="content_desc_clear_text">Очистить текст</string>
+    <string name="content_desc_transaction_date">Показать выбор даты</string>
+    <string name="content_desc_distributed_to">Распространено в</string>
+    <string name="content_desc_last_sync">Последняя синхронизация</string>
+    <string name="content_desc_quantity_info">Больше информации о количестве</string>
+    <string name="content_desc_remove">Убрать предмет</string>
+    <string name="content_desc_recent_activity">Направленная стрелка</string>
+    <string name="content_desc_recent_activity_status">Статус недавней активности</string>
+    <string name="content_desc_close_info_guide">Закрыть информационный гид</string>
+
+    <string name="confirm_transaction_label">Подтверждать</string>
+    <string name="missing_configuration">
+        В файле конфигурации отсутствуют одно или несколько обязательных полей.
+    </string>
+    <string name="select_language">Выберите желаемый язык</string>
+
+    <string name="restart_later">Перезагрузить позже</string>
+    <string name="language_change_dialog_title">Подтвердите перезапуск</string>
+    <string name="confirm_app_restart_message">
+        Чтобы изменения вступили в силу, необходимо перезапустить приложение, однако все несохраненные изменения будут потеряны.\n\nХотите продолжить перезагрузку?
+    </string>
+    <string name="scan_canceled">Сканирование отменено!</string>
+    <string name="logout_error_message">
+        Произошла ошибка при выходе из системы. Пожалуйста, попробуйте позже.
+    </string>
+    <string name="logout_success_message">Успешный выход из системы</string>
+
+    <string name="invalid_quantity">Недействителен</string>
+    <string name="stock_on_hand_exceeded_message">
+        Доступный запас на складе не может быть превышен
+    </string>
+    <string name="reviewed_item_cannot_be_empty_message">
+        Акция на рассмотрении не может быть пустой. При желании вы можете убрать товар.
+    </string>
+
+    <string name="permission_granted">Разрешение получено</string>
+    <string name="permission_denied">Доступ запрещен</string>
+
+    <!-- Speech error messages -->
+    <string name="insufficient_speech_permissions_error">
+        Недостаточно разрешений. Запросить android.permission.RECORD_AUDIO
+    </string>
+    <string name="speech_audio_error">Ошибка записи звука</string>
+    <string name="speech_client_error">
+        Ошибка на стороне клиента. Пожалуйста, проверьте подключение к интернету!
+    </string>
+    <string name="speech_network_error">Сетевая ошибка</string>
+    <string name="speech_network_timeout_error">Время работы сети истекло</string>
+    <string name="no_speech_match_error">Результат распознавания не совпал.</string>
+    <string name="speech_recognition_service_busy_error">Служба распознавания занята</string>
+    <string name="speech_server_error">Произошла ошибка на речевом сервере</string>
+    <string name="speech_timeout_error">Речевой ввод не обнаружен</string>
+    <string name="unknown_speech_error">Произошла неизвестная ошибка</string>
+    <string name="non_numeric_speech_input_error">Нечисловой ввод запрещен: \"%s\"</string>
+    <string name="negative_number_speech_input_error">
+        Ввод отрицательных чисел не допускается: \"%s\"
+    </string>
+
+    <string name="openid_config_load_error">Не удалось загрузить конфигурацию OpenID</string>
+    <string name="unexpected_openid_authentication_error">
+        Произошла непредвиденная ошибка при аутентификации с помощью OpenID
+    </string>
+    <string name="no_network_available">Нет доступного сетевого подключения</string>
+    <string name="unable_to_sync_data_no_network_available">
+        Невозможно синхронизировать данные, так как нет доступного сетевого подключения
+    </string>
+    <string name="openid_authentication_not_successful">
+        Не удалось пройти аутентификацию с помощью вашей учетной записи ICRC
+    </string>
+
+    <string name="contact_service_desk_message">
+        В случае проблем, \nобратитесь в службу поддержки ICRC
+    </string>
+
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">
+        Что-то пошло не так. Пожалуйста, проверьте правильность URL-адреса сервера, имени пользователя и пароля и повторите попытку.
+    </string>
+    <string name="login_error_error_response">Ой! Что-то пошло не так на стороне сервера.</string>
+    <string name="login_error_no_dhis_instance">
+        Предоставленный URL-адрес не является сервером DHIS2.
+    </string>
+    <string name="login_error_bad_credentials">Имя пользователя и/или пароль неверны</string>
+    <string name="login_error_unknown_host">Неизвестный сервер</string>
+    <string name="online_search_parsing_error">Ошибка при анализе результатов</string>
+    <string name="error_unexpected">Что-то неожиданное пошло не так.</string>
+    <string name="error_many_requests">
+        В данный момент сервер немного занят. Пожалуйста, попробуйте чуть позже.
+    </string>
+    <string name="error_already_authenticated">Пользователь уже авторизован.</string>
+    <string name="error_already_executed">Запрос уже выполнен.</string>
+    <string name="error_api_invalid_query">Запрос сервера недействителен.</string>
+    <string name="error_create_existing_error">Создание прервано. Объект уже существует.</string>
+    <string name="error_export_login">
+        Пожалуйста, войдите, чтобы экспортировать базу данных.
+    </string>
+    <string name="error_export_encrypted">
+        Экспорт зашифрованной базы данных не поддерживается.
+    </string>
+    <string name="error_import_exist">Вы импортируете уже существующую базу данных.</string>
+    <string name="error_import_logout">
+        Выйдите из системы, чтобы импортировать новую базу данных.</string>
+    <string name="error_import_version">Версия импортированной базы данных выше поддерживаемой.
+    </string>
+    <string name="error_user_no_authenticated">Нет аутентифицированного пользователя.</string>
+    <string name="error_user_no_authenticated_offline">
+        Нет пользователя, прошедшего проверку подлинности в автономном режиме.
+    </string>
+    <string name="error_different_offline_user">
+        Вы пытаетесь войти в систему в автономном режиме с другим пользователем.
+    </string>
+    <string name="error_object_update">Не удалось обновить объект.</string>
+    <string name="error_object_insert">Объект не может быть вставлен.</string>
+    <string name="error_ownership_access">У вас нет доступа.</string>
+    <string name="error_null_url">URL-адрес сервера отсутствует. Пожалуйста, введите URL.</string>
+    <string name="error_server_malformed">
+        URL-адрес сервера имеет неправильный формат. Пожалуйста, проверь это.
+    </string>
+    <string name="error_settings_app_not_supported">
+        Эта версия веб-приложения настроек не поддерживается.
+    </string>
+    <string name="error_settings_app_not_intalled">
+        Веб-приложение настроек не установлено на сервере.
+    </string>
+    <string name="error_socket_timeout">
+        Запрос отменен. Серверу потребовалось слишком много времени, чтобы ответить.
+    </string>
+    <string name="error_url_not_found">Не удалось найти URL. Пожалуйста, подтвердите это.</string>
+    <string name="error_account_disabled">
+        Ваша учетная запись пользователя отключена. Пожалуйста, свяжитесь с вашим администратором, если это ошибка.
+    </string>
+    <string name="error_account_locked">
+        Ваша учетная запись пользователя заблокирована. Пожалуйста, свяжитесь с вашим администратором, если это ошибка.
+    </string>
+    <string name="error_set_value">Не удалось установить значение.</string>
+    <string name="error_ssl">
+        Проблема с сертификатами сервера. Пожалуйста, свяжитесь с вашим администратором.
+    </string>
+</resources>
