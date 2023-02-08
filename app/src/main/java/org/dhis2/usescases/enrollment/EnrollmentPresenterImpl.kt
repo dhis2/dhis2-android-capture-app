@@ -271,7 +271,7 @@ class EnrollmentPresenterImpl(
     fun isEventScheduleOrSkipped(eventUid: String): Boolean {
         val event = eventCollectionRepository.uid(eventUid).blockingGet()
         return event.status() == EventStatus.SCHEDULE ||
-                event.status() == EventStatus.SKIPPED ||
-                event.status() == EventStatus.OVERDUE
+            event.status() == EventStatus.SKIPPED ||
+            event.status() == EventStatus.OVERDUE
     }
 }
