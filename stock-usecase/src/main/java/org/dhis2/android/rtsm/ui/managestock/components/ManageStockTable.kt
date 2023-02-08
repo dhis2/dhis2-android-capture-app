@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
+import kotlin.math.roundToInt
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.composetable.TableScreenState
@@ -25,7 +26,6 @@ import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
-import kotlin.math.roundToInt
 
 @Composable
 fun ManageStockTable(
