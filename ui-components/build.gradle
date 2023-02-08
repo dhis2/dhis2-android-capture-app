@@ -65,7 +65,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
 
     //Compose
-    api "androidx.compose.material:material:${libraries.compose}"
     api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     api "com.google.android.material:compose-theme-adapter:${libraries.composeTheme}"
     implementation "androidx.compose.material3:material3:${libraries.material3}"

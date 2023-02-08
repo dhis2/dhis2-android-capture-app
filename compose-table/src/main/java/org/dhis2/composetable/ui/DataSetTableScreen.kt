@@ -186,6 +186,9 @@ fun DataSetTableScreen(
                         onSaveValue(it, false)
                     }
                     saveClicked = true
+                    if (!tableScreenState.textInputCollapsedMode) {
+                        collapseBottomSheet(true)
+                    }
                 },
                 onNextSelected = {
                     currentCell?.let { tableCell ->

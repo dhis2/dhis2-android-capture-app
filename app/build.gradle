@@ -5,6 +5,7 @@ apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
+apply plugin: "dagger.hilt.android.plugin"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -73,6 +74,7 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
+        javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
     }
 
     testOptions {
@@ -185,6 +187,8 @@ android {
         exclude "META-INF/licenses/**"
         exclude "META-INF/AL2.0"
         exclude "META-INF/LGPL2.1"
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+        exclude 'META-INF/gradle/incremental.annotation.processors'
     }
 
     dexOptions {
@@ -218,6 +222,7 @@ dependencies {
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
     implementation project(":compose-table")
+    implementation project(':stock-usecase')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:${libraries.kotlinmetadata}"
@@ -250,6 +255,11 @@ dependencies {
 
     //region DEPENDENCY INJECTION
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+
+    //Hilt dependency INJECTION
+    implementation "com.google.dagger:hilt-android:${libraries.hilt}"
+    kapt "com.google.dagger:hilt-android-compiler:${libraries.hilt}"
+    kapt "androidx.hilt:hilt-compiler:1.0.0"
 
     //region RXJAVA
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"

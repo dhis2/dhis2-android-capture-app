@@ -115,6 +115,18 @@
         <item name="buttonTint">?colorPrimary</item>
     </style>
 
+    <style name="checkBox" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">?colorPrimary</item>
+        <item name="android:colorAccent">?colorPrimary</item>
+        <item name="android:textColorSecondary">?colorPrimary</item> <!-- for check state -->
+    </style>
+
+    <style name="checkBoxErrorLog" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">@color/colorPrimary_00b</item>
+        <item name="android:textColorSecondary">@color/colorGreyDefault
+        </item> <!-- for check state -->
+    </style>
+
     <style name="error_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/error_color</item>
         <item name="android:textSize">10sp</item>

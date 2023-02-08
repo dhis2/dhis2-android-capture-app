@@ -23,6 +23,9 @@ import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
+import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
@@ -236,6 +239,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
                     getActivityContent.launch(this)
                 }
             }
+        }
+    }
+
+    override fun navigateToStockManagement(config: AppConfig) {
+        Intent(activity, HomeActivity::class.java).apply {
+            putExtra(INTENT_EXTRA_APP_CONFIG, config)
+            getActivityContent.launch(this)
         }
     }
 

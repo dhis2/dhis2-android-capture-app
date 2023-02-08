@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
         <variable
             name="filterCount"
             type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
@@ -123,6 +121,7 @@
             app:layout_constraintStart_toEndOf="@id/filterTextLayout"
             app:sortingItem="@{filterItem.sortingItem}"
             app:srcCompat="@drawable/ic_sort_deactivated" />
+
 
         <ImageView
             android:id="@+id/filterArrow"
