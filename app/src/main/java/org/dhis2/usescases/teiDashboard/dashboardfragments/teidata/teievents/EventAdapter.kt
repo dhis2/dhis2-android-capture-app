@@ -79,11 +79,10 @@ class EventAdapter(
                     program,
                     { presenter.onSyncDialogClick() },
                     { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
-                    { eventUid, _, eventStatus, sharedView ->
+                    { eventUid, _, eventStatus, _ ->
                         presenter.onEventSelected(
                             eventUid,
-                            eventStatus,
-                            sharedView
+                            eventStatus
                         )
                     }
                 )

@@ -333,7 +333,7 @@ public class TEIDataPresenter {
     }
 
     public void completeEnrollment() {
-        if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
+        if (Boolean.TRUE.equals(d2.programModule().programs().uid(programUid).blockingGet().access().data().write())) {
             compositeDisposable.add(dashboardRepository.completeEnrollment(dashboardModel.getCurrentEnrollment().uid())
                     .subscribeOn(schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
@@ -373,7 +373,7 @@ public class TEIDataPresenter {
         view.openEventDetails(intent, options.toBundle());
     }
 
-    public void onEventSelected(String uid, EventStatus eventStatus, View sharedView) {
+    public void onEventSelected(String uid, EventStatus eventStatus) {
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
             intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK));
@@ -410,14 +410,11 @@ public class TEIDataPresenter {
         view.showDescription(description);
     }
 
-    public void onGroupingChanged(Boolean shouldGroup) {
+    public void onGroupingChanged(Boolean shouldGroupBool) {
+        boolean shouldGroup = shouldGroupBool;
         if (programUid != null) {
             Map<String, Boolean> groups = getGrouping();
-            if (shouldGroup) {
-                groups.put(programUid, true);
-            } else {
-                groups.put(programUid, false);
-            }
+            groups.put(programUid, shouldGroup);
             preferences.saveAsJson(Preference.GROUPING, groups);
             groupingProcessor.onNext(shouldGroup);
         }
