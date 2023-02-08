@@ -103,7 +103,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private FragmentTeiDataBinding binding;
 
     @Inject
-    TEIDataContracts.Presenter presenter;
+    TEIDataPresenter presenter;
 
     @Inject
     FilterManager filterManager;

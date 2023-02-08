@@ -17,12 +17,12 @@ import org.dhis2.commons.data.EventViewModelType.values
 import org.dhis2.commons.data.StageSection
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.databinding.ItemStageSectionBinding
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 
 class EventAdapter(
-    val presenter: TEIDataContracts.Presenter,
+    val presenter: TEIDataPresenter,
     val program: Program
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {

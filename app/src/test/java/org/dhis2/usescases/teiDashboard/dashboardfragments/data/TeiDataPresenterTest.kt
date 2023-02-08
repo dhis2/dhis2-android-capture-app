@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
@@ -17,7 +16,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenterImpl
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -28,7 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
-class TeiDataPresenterImplTest {
+class TeiDataPresenterTest {
 
     private val view: TEIDataContracts.View = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -43,12 +42,12 @@ class TeiDataPresenterImplTest {
     private val analytics: AnalyticsHelper = mock()
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
-    private lateinit var teiDataPresenterImpl: TEIDataPresenterImpl
+    private lateinit var teiDataPresenter: TEIDataPresenter
     private val valueStore: FormValueStore = mock()
 
     @Before
     fun setUp() {
-        teiDataPresenterImpl = TEIDataPresenterImpl(
+        teiDataPresenter = TEIDataPresenter(
             view,
             d2,
             dashboardRepository,
@@ -73,7 +72,7 @@ class TeiDataPresenterImplTest {
         }
 
         val anyView: View = any()
-        teiDataPresenterImpl.onAddNewEvent(anyView, eq(programStage))
+        teiDataPresenter.onAddNewEvent(anyView, eq(programStage))
 
         verify(view).showNewEventOptions(anyView, programStage)
         verify(view).hideDueDate()
@@ -105,7 +104,7 @@ class TeiDataPresenterImplTest {
                 .blockingIsEmpty()
         ) doReturn false
         assertTrue(
-            teiDataPresenterImpl.enrollmentOrgUnitInCaptureScope("orgUnitUid")
+            teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid")
         )
     }
 
@@ -114,7 +113,14 @@ class TeiDataPresenterImplTest {
         whenever(
             teiDataRepository.eventsWithoutCatCombo()
         ) doReturn Single.just(mock())
-        teiDataPresenterImpl.getEventsWithoutCatCombo()
+        teiDataPresenter.getEventsWithoutCatCombo()
         verify(view).displayCatComboOptionSelectorForEvents(any())
+    }
+
+    @Test
+    fun `Should return orgUnit display name`() {
+        val uid = "orgUnitUid"
+        whenever(teiDataRepository.getOrgUnitName(uid)) doReturn "OrgUnitDisplayName"
+        assertTrue(teiDataPresenter.getOrgUnitName(uid) == "OrgUnitDisplayName")
     }
 }
