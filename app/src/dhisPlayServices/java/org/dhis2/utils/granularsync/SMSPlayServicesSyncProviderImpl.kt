@@ -113,7 +113,9 @@ class SMSPlayServicesSyncProviderImpl(
     }
 
     override fun convertEnrollment(): Single<ConvertTaskResult> {
-        return smsSender.compressEnrollment(syncContext.recordUid()).map { msg -> ConvertTaskResult.Message(msg) }
+        return smsSender.compressEnrollment(syncContext.recordUid()).map { msg ->
+            ConvertTaskResult.Message(msg)
+        }
     }
 
     override fun convertDataSet(): Single<ConvertTaskResult> {
