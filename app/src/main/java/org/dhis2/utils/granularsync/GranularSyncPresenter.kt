@@ -340,11 +340,13 @@ class GranularSyncPresenter(
                 onFailure = {
                     updateStatusToSentBySMS()
                     restartSmsSender()
+                    refreshContent()
                 }
             )
         } else {
             updateStatusToSentBySMS()
             restartSmsSender()
+            refreshContent()
         }
     }
 
@@ -358,6 +360,7 @@ class GranularSyncPresenter(
                     updateStatusToSentBySMS()
                 }
             }
+            refreshContent()
         }
         restartSmsSender()
     }

@@ -60,7 +60,7 @@ class DataSetTablePresenterTest {
         val periodId = "periodId"
 
         val sections = listOf(DataSetSection("section_1_uid", "section_1"))
-        val dataSet = DataSet.builder().uid("datasetUid").build()
+        val dataSet = DataSet.builder().uid("datasetUid").displayName("name").build()
         val catComboName = "catComboName"
         val period = Period.builder().periodType(PeriodType.Daily)
             .startDate(Date())
