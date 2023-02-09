@@ -100,9 +100,6 @@ class ManageStockViewModel @Inject constructor(
     private val _scanText = MutableStateFlow("")
     val scanText = _scanText.asStateFlow()
 
-    private val _onCellClick = MutableStateFlow(false)
-    val onCellClick = _onCellClick.asStateFlow()
-
     init {
         configureRelays()
     }
@@ -293,7 +290,6 @@ class ManageStockViewModel @Inject constructor(
     }
 
     fun onCellClick(cell: TableCell, updateCellValue: (TableCell) -> Unit): TextInputModel {
-        _onCellClick.value = true
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
         return TextInputModel(
@@ -316,7 +312,6 @@ class ManageStockViewModel @Inject constructor(
         viewModelScope.launch {
             saveValue(cell)
         }
-        _onCellClick.value = false
     }
 
     private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
