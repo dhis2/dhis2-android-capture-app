@@ -109,7 +109,6 @@ fun ManageStockTable(
                             Text(text = stringResource(id = R.string.review))
                         }
                     }
-
                 )
             }
         } else {
