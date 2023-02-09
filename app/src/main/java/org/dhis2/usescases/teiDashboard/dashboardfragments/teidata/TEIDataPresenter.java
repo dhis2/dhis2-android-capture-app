@@ -161,9 +161,7 @@ public class TEIDataPresenter {
                         currentStage = selectedStage.getStageUid().equals(currentStage) && !selectedStage.getShowOptions() ? "" : selectedStage.getStageUid();
                         return new StageSection(currentStage, selectedStage.getShowOptions());
                     });
-            Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
-                    getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true
-            );
+            Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(hasGrouping(programUid));
 
             compositeDisposable.add(
                     Flowable.combineLatest(
@@ -255,6 +253,14 @@ public class TEIDataPresenter {
                                 orgUnitRequest -> view.openOrgUnitTreeSelector(programUid),
                                 Timber::e
                         ));
+    }
+
+    private boolean hasGrouping(String programUid) {
+        boolean hasGrouping = true;
+        if (getGrouping().containsKey(programUid)) {
+            hasGrouping = getGrouping().get(programUid);
+        }
+        return hasGrouping;
     }
 
     private List<EventViewModel> applyEffects(
