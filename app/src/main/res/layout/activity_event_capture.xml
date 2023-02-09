@@ -4,13 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="presenter"
             type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
-        <variable
-            name="navigationInitialPage"
-            type="Integer" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -150,7 +146,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:forceShowAnalytics="true"
-            app:initialPage="@{navigationInitialPage}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/navigation_event_menu" />
 

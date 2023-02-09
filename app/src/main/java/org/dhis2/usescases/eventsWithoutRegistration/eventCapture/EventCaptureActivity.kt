@@ -49,6 +49,7 @@ import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.customviews.navigationbar.setInitialPage
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 
@@ -95,15 +96,15 @@ class EventCaptureActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
         binding?.presenter = presenter
-        binding?.navigationInitialPage =
+        val navigationInitialPage =
             if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
                 0
             } else {
                 1
             }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
-        setUpViewPagerAdapter()
-        setUpNavigationBar()
+        setUpViewPagerAdapter(navigationInitialPage)
+        setUpNavigationBar(navigationInitialPage)
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
@@ -114,7 +115,7 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpViewPagerAdapter() {
+    private fun setUpViewPagerAdapter(initialPage: Int) {
         binding!!.eventViewPager.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
             this,
@@ -124,7 +125,7 @@ class EventCaptureActivity :
             pageConfigurator!!.displayRelationships()
         )
         binding!!.eventViewPager.adapter = adapter
-        binding!!.eventViewPager.setCurrentItem(binding!!.navigationInitialPage ?: 0, false)
+        binding!!.eventViewPager.setCurrentItem(initialPage, false)
         binding!!.eventViewPager.clipWithRoundedCorners(16.dp)
         binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -141,7 +142,8 @@ class EventCaptureActivity :
         })
     }
 
-    private fun setUpNavigationBar() {
+    private fun setUpNavigationBar(initialPage: Int) {
+        binding!!.navigationBar.setInitialPage(initialPage)
         binding!!.navigationBar.pageConfiguration(pageConfigurator!!)
         binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
             binding!!.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
@@ -215,24 +217,23 @@ class EventCaptureActivity :
     ) {
         if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
             val dialog = BottomSheetDialog(
-                eventCompletionDialog.bottomSheetDialogUiModel,
-                {
+                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                onMainButtonClicked = {
                     setAction(eventCompletionDialog.mainButtonAction)
-                    Unit
                 },
-                {
+                onSecondaryButtonClicked = {
                     setAction(eventCompletionDialog.secondaryButtonAction)
-                    Unit
+                },
+                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                    { bottomSheetDialog ->
+                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                            bottomSheetDialog.dismiss()
+                        }
+                    }
+                } else {
+                    null
                 }
-            ) { bottomSheetDialog: BottomSheetDialog ->
-                ErrorFieldList(
-                    eventCompletionDialog.fieldsWithIssues
-                ) { fieldUid: String? ->
-                    bottomSheetDialog.dismiss()
-                    Unit
-                }
-                Unit
-            }
+            )
             dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
     }
