@@ -57,14 +57,6 @@ fun Backdrop(
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
 
-    if (manageStockViewModel.onCellClick.collectAsState().value) {
-        LaunchedEffect(backdropState) {
-            if (backdropState.isConcealed) {
-                scope.launch { backdropState.reveal() }
-            } else scope.launch { backdropState.conceal() }
-        }
-    }
-
     (activity as HomeActivity).onBackPressed = {
         handleBackNavigation(
             activity,
