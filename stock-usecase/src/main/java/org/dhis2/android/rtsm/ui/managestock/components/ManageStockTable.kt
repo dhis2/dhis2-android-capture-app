@@ -19,7 +19,6 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import kotlin.math.roundToInt
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
-import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.ui.DataSetTableScreen
