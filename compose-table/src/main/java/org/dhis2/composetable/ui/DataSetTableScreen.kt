@@ -234,75 +234,82 @@ fun DataSetTableScreen(
             OnTextChange provides { currentCell },
             LocalTableSelection provides tableSelection
         ) {
-            DataTable(
-                tableList = tableScreenState.tables,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
-                    }
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally
+                ){
 
-                    override fun onDecorationClick(dialogModel: TableDialogModel) {
-                        displayDescription = dialogModel
-                    }
-
-                    override fun onClick(tableCell: TableCell) {
-                        currentCell?.takeIf { it != tableCell }?.let {
-                            onSaveValue(it, false)
+                DataTable(
+                    tableList = tableScreenState.tables,
+                    tableInteractions = object : TableInteractions {
+                        override fun onSelectionChange(newTableSelection: TableSelection) {
+                            tableSelection = newTableSelection
                         }
-                        onCellClick(
-                            tableSelection.tableId,
-                            tableCell
-                        ) { updateCellValue(it) }?.let { inputModel ->
-                            currentCell = tableCell
-                            currentInputType =
-                                inputModel.copy(currentValue = currentCell?.value)
-                            startEdition()
-                            focusRequester.requestFocus()
-                        } ?: collapseBottomSheet()
-                    }
 
-                    override fun onOptionSelected(
-                        cell: TableCell,
-                        code: String,
-                        label: String
-                    ) {
-                        currentCell = cell.copy(
-                            value = label,
-                            error = null
-                        ).also {
-                            onCellValueChange(it)
-                            onSaveValue(cell.copy(value = code), false)
+                        override fun onDecorationClick(dialogModel: TableDialogModel) {
+                            displayDescription = dialogModel
+                        }
+
+                        override fun onClick(tableCell: TableCell) {
+                            currentCell?.takeIf { it != tableCell }?.let {
+                                onSaveValue(it, false)
+                            }
+                            onCellClick(
+                                tableSelection.tableId,
+                                tableCell
+                            ) { updateCellValue(it) }?.let { inputModel ->
+                                currentCell = tableCell
+                                currentInputType =
+                                    inputModel.copy(currentValue = currentCell?.value)
+                                startEdition()
+                                focusRequester.requestFocus()
+                            } ?: collapseBottomSheet()
+                        }
+
+                        override fun onOptionSelected(
+                            cell: TableCell,
+                            code: String,
+                            label: String
+                        ) {
+                            currentCell = cell.copy(
+                                value = label,
+                                error = null
+                            ).also {
+                                onCellValueChange(it)
+                                onSaveValue(cell.copy(value = code), false)
+                            }
+                        }
+
+                        override fun onTableSizeChanged(width: Int) {
+                            onTableWidthChanged(width)
+                        }
+
+                        override fun onRowHeaderSizeChanged(tableId: String, newValue: Float) {
+                            onRowHeaderResize(tableId, newValue)
+                        }
+
+                        override fun onColumnHeaderSizeChanged(
+                            tableId: String,
+                            column: Int,
+                            newValue: Float
+                        ) {
+                            onColumnHeaderResize(tableId, column, newValue)
+                        }
+
+                        override fun onTableWidthReset(tableId: String) {
+                            onTableDimensionReset(tableId)
+                        }
+
+                        override fun onTableWidthChanged(tableId: String, newValue: Float) {
+                            onTableDimensionResize(tableId, newValue)
                         }
                     }
-
-                    override fun onTableSizeChanged(width: Int) {
-                        onTableWidthChanged(width)
-                    }
-
-                    override fun onRowHeaderSizeChanged(tableId: String, newValue: Float) {
-                        onRowHeaderResize(tableId, newValue)
-                    }
-
-                    override fun onColumnHeaderSizeChanged(
-                        tableId: String,
-                        column: Int,
-                        newValue: Float
-                    ) {
-                        onColumnHeaderResize(tableId, column, newValue)
-                    }
-
-                    override fun onTableWidthReset(tableId: String) {
-                        onTableDimensionReset(tableId)
-                    }
-
-                    override fun onTableWidthChanged(tableId: String, newValue: Float) {
-                        onTableDimensionResize(tableId, newValue)
-                    }
+                )
+                if (bottomContent != null) {
+                    Column(content = bottomContent)
                 }
-            )
-            if (bottomContent != null) {
-                Column(content = bottomContent)
+
             }
+
         }
         displayDescription?.let {
             TableDialog(
