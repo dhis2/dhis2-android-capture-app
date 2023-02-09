@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
 import kotlin.math.roundToInt
 import org.dhis2.android.rtsm.R
+import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
+import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.ui.DataSetTableScreen
@@ -48,6 +50,7 @@ fun ManageStockTable(
             var dimensions by remember {
                 mutableStateOf(
                     TableDimensions(
+
                         cellVerticalPadding = 11.dp,
                         maxRowHeaderWidth = with(localDensity) {
                             (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
@@ -56,7 +59,8 @@ fun ManageStockTable(
                         extraWidths = emptyMap(),
                         rowHeaderWidths = emptyMap(),
                         columnWidth = emptyMap(),
-                        defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt()
+                        defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt(),
+                        tableBottomPadding = 16.dp
                     )
                 )
             }
@@ -98,6 +102,13 @@ fun ManageStockTable(
                     },
                     onTableDimensionReset = { tableId ->
                         dimensions = dimensions.resetWidth(tableId)
+                    },
+                    bottomContent = {
+                        if (viewModel.dataEntryUiState.collectAsState().value.step
+                            == DataEntryStep.REVIEWING
+                        ) {
+                            Text(text = stringResource(id = R.string.review))
+                        }
                     }
 
                 )
