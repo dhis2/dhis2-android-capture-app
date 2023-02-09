@@ -264,8 +264,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             onSecondaryButtonClicked = {
                 presenter.deleteAllSavedData()
                 finish()
-            },
-            content = {}
+            }
         ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
