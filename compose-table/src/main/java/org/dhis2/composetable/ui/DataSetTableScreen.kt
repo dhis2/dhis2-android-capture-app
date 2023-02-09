@@ -234,10 +234,9 @@ fun DataSetTableScreen(
             OnTextChange provides { currentCell },
             LocalTableSelection provides tableSelection
         ) {
-            Column (
+            Column(
                 horizontalAlignment = Alignment.CenterHorizontally
-                ){
-
+            ) {
                 DataTable(
                     tableList = tableScreenState.tables,
                     tableInteractions = object : TableInteractions {
@@ -307,9 +306,7 @@ fun DataSetTableScreen(
                 if (bottomContent != null) {
                     Column(content = bottomContent)
                 }
-
             }
-
         }
         displayDescription?.let {
             TableDialog(
