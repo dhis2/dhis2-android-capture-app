@@ -35,6 +35,7 @@ import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncDialog
 
 @AndroidEntryPoint
@@ -139,7 +140,7 @@ class HomeActivity : AppCompatActivity() {
             SyncDialog(
                 activity = this@HomeActivity,
                 recordUid = programUid,
-                conflictType = ConflictType.PROGRAM,
+                syncContext = SyncContext.TrackerProgram(programUid),
                 dismissListener = object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
                         manageStockViewModel.refreshData()

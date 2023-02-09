@@ -181,12 +181,11 @@ class EventCaptureActivity :
     private fun attemptFinish() {
         if (eventMode === EventMode.NEW) {
             val bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                getString(R.string.title_delete_go_back),
-                getString(R.string.discard_go_back),
-                null,
-                R.drawable.ic_alert,
-                MainButton(R.string.keep_editing),
-                DiscardButton()
+                title = getString(R.string.title_delete_go_back),
+                message = getString(R.string.discard_go_back),
+                iconResource = R.drawable.ic_alert,
+                mainButton = MainButton(R.string.keep_editing),
+                secondaryButton = DiscardButton()
             )
             val dialog = BottomSheetDialog(
                 bottomSheetDialogUiModel,
@@ -195,7 +194,7 @@ class EventCaptureActivity :
                     presenter!!.deleteEvent()
                     Unit
                 }
-            ) { bottomSheetDialog: BottomSheetDialog? -> Unit }
+            )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else {
             finishDataEntry()

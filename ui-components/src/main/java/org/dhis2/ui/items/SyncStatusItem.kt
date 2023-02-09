@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,7 +31,7 @@ fun SyncStatusItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colors.surface
+                color = MaterialTheme.colorScheme.surface
             ).clickable { onClick() },
         horizontalArrangement = spacedBy(8.dp)
     ) {
@@ -40,14 +40,14 @@ fun SyncStatusItem(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = title,
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyMedium
                     .copy(color = textPrimary)
             )
             subtitle?.let {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = subtitle,
-                    style = MaterialTheme.typography.body2.copy(
+                    style = MaterialTheme.typography.bodyMedium.copy(
                         color = textSecondary
                     )
                 )

@@ -20,7 +20,7 @@ class BottomSheetDialog(
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
     val content: @Composable
-    (org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit
+    ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit)? = null
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +47,11 @@ class BottomSheetDialog(
                             onSecondaryButtonClicked.invoke()
                             dismiss()
                         },
-                        onMessageClick = onMessageClick
-                    ) {
-                        content(this@BottomSheetDialog)
-                    }
+                        onMessageClick = onMessageClick,
+                        extraContent = content?.let {
+                            { it.invoke(this@BottomSheetDialog) }
+                        }
+                    )
                 }
             }
         }

@@ -86,7 +86,7 @@ fun BottomSheetDialogUi(
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.bodySmall,
                     color = textSubtitle,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -97,7 +97,7 @@ fun BottomSheetDialogUi(
                 if (bottomSheetDialogUiModel.clickableWord == null) {
                     Text(
                         text = message,
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = textSecondary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.fillMaxWidth()
@@ -108,7 +108,7 @@ fun BottomSheetDialogUi(
                             .testTag(CLICKABLE_TEXT_TAG)
                             .fillMaxWidth(),
                         text = buildAnnotatedString {
-                            val originalText = bottomSheetDialogUiModel.message
+                            val originalText = message
                             val clickableWord = bottomSheetDialogUiModel.clickableWord!!
                             val clickableWordIndex = originalText.indexOf(clickableWord)
                             append(originalText)

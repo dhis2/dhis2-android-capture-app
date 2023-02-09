@@ -40,7 +40,7 @@ class ConfigureEventCompletionDialog(
         )
         val bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = getTitle(dialogType),
-            subtitle = getSubtitle(dialogType),
+            message = getSubtitle(dialogType),
             iconResource = getIcon(dialogType),
             mainButton = mainButton.buttonStyle,
             secondaryButton = secondaryButton.buttonStyle
