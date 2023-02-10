@@ -25,7 +25,6 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.popupmenu.AppMenuHelper
-import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.ui.ErrorFieldList
@@ -108,7 +107,7 @@ class EventCaptureActivity :
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
-        binding?.syncButton?.setOnClickListener { view: View? -> showSyncDialog() }
+        binding?.syncButton?.setOnClickListener { showSyncDialog() }
 
         if (intent.shouldLaunchSyncDialog()) {
             showSyncDialog()
@@ -270,10 +269,9 @@ class EventCaptureActivity :
             FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter!!.completeEvent(true)
             FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
             FormBottomDialog.ActionType.SKIP -> presenter!!.skipEvent()
-            FormBottomDialog.ActionType.RESCHEDULE -> {}
-            FormBottomDialog.ActionType.CHECK_FIELDS -> {}
+            FormBottomDialog.ActionType.RESCHEDULE -> { /*Do nothing*/ }
+            FormBottomDialog.ActionType.CHECK_FIELDS -> { /*Do nothing*/ }
             FormBottomDialog.ActionType.FINISH -> finishDataEntry()
-            else -> finishDataEntry()
         }
     }
 
@@ -338,7 +336,7 @@ class EventCaptureActivity :
                         showTutorial(false)
                     }
                     R.id.menu_delete -> confirmDeleteEvent()
-                    else -> {}
+                    else -> { /*Do nothing*/ }
                 }
                 false
             }
@@ -426,10 +424,7 @@ class EventCaptureActivity :
         SyncStatusDialog.Builder()
             .withContext(this)
             .withSyncContext(SyncContext.Event(eventUid!!))
-            .onDismissListener(object : OnDismissListener {
-                override fun onDismiss(hasChanged: Boolean) {
-                }
-            }).show("EVENT_SYNC")
+            .show("EVENT_SYNC")
     }
 
     companion object {

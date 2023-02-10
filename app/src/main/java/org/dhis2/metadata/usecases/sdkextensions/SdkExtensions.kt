@@ -32,8 +32,7 @@ fun D2.observeProgram(programUid: String): Single<Program> =
     programModule().programs().uid(programUid).get()
 
 fun D2.dataSetSummaryBy(
-    dataSetUid: String,
-    syncState: List<State>?
+    dataSetUid: String
 ): DataSetInstanceSummary {
     return dataSetModule().dataSetInstanceSummaries()
         .blockingGet()

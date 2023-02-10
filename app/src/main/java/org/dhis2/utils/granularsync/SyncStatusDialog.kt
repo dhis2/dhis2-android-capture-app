@@ -197,15 +197,15 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 when (status) {
                     SMSSenderHelper.Status.ALL_SMS_SENT -> allSmsSent()
                     SMSSenderHelper.Status.SMS_NOT_MANUALLY_SENT -> smsNotManuallySent()
-                    SMSSenderHelper.Status.RETURNED_TO_APP -> {}
+                    SMSSenderHelper.Status.RETURNED_TO_APP -> { /*Do nothing*/ }
                 }
             }
         ).also {
             if (it.smsCount() > 1) {
                 askForMessagesAmount(
-                    it.smsCount(),
-                    { it.pollSms() },
-                    { /*logSmsNotSent()*/ }
+                    amount = it.smsCount(),
+                    onAccept = { it.pollSms() },
+                    onDecline = { /*Do nothing*/ }
                 )
             } else {
                 it.pollSms()
@@ -270,11 +270,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             SmsSendingService.State.COUNT_NOT_ACCEPTED,
             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
             SmsSendingService.State.ERROR,
-            SmsSendingService.State.COMPLETED -> {
+            SmsSendingService.State.COMPLETED ->
                 viewModel.restartSmsSender()
-                if (lastState.state == SmsSendingService.State.COMPLETED) {
-                }
-            }
         }
     }
 

@@ -133,8 +133,7 @@ class GranularSyncPresenter(
                         )
                         .build()
                 }
-            ALL -> {
-            }
+            ALL -> { /*Do nothing*/ }
         }
         var workName: String
         if (syncContext.conflictType() != ALL) {

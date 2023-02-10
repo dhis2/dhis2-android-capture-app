@@ -145,24 +145,16 @@ fun BottomSheetDialogUi(
             ) {
                 Button(
                     modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
-                    shape = if (
-                        bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
-                    ) {
-                        RoundedCornerShape(24.dp)
-                    } else {
-                        RoundedCornerShape(0.dp)
-                    },
+                    shape = RoundedCornerShape(
+                        bottomSheetDialogUiModel.secondaryRoundedCornersSizeDp().dp
+                    ),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         disabledContainerColor = Color.White
                     ),
-                    elevation = if (
-                        bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
-                    ) {
-                        ButtonDefaults.buttonElevation(2.dp)
-                    } else {
-                        ButtonDefaults.buttonElevation(0.dp)
-                    },
+                    elevation = ButtonDefaults.buttonElevation(
+                        bottomSheetDialogUiModel.secondaryElevationDp().dp
+                    ),
                     onClick = { onSecondaryButtonClicked() },
                     content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
                     enabled = bottomSheetDialogUiModel.secondaryButton != null

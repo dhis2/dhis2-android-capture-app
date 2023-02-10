@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.work.Data;
 
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
@@ -15,7 +14,6 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.validationrules.ValidationRuleResult;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
 
 import java.util.ArrayList;

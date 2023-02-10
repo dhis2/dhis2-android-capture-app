@@ -283,7 +283,7 @@ class GranularSyncRepository(
             is SyncContext.Global ->
                 getHomeItemsWithStates(*states)
             is SyncContext.GlobalDataSet ->
-                getDataSetItemsForGlobalContext(syncContext.dataSetUid, *states)
+                getDataSetItemsForGlobalContext(syncContext.dataSetUid)
             is SyncContext.GlobalEventProgram ->
                 getProgramItemsForGlobalContext(syncContext.programUid, *states)
             is SyncContext.GlobalTrackerProgram ->
@@ -384,10 +384,9 @@ class GranularSyncRepository(
     }
 
     private fun getDataSetItemsForGlobalContext(
-        dataSetUid: String,
-        vararg state: State
+        dataSetUid: String
     ): List<SyncStatusItem> {
-        val datasetSummary = d2.dataSetSummaryBy(dataSetUid, state.toList())
+        val datasetSummary = d2.dataSetSummaryBy(dataSetUid)
         var errorCount = 0
         var warningCount = 0
         d2.dataValueConflictsBy(dataSetUid).forEach { dataValueConflict ->
