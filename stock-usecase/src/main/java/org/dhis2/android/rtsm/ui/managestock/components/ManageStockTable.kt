@@ -13,8 +13,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.material.composethemeadapter.MdcTheme
 import kotlin.math.roundToInt
 import org.dhis2.android.rtsm.R
@@ -41,6 +47,9 @@ fun ManageStockTable(
             overwrittenRowHeaderWidth = 200F
         )
     )
+    val robotoFont = FontFamily(
+        Font(R.font.roboto_medium, FontWeight.Medium)
+    )
 
     MdcTheme {
         if (viewModel.hasData.collectAsState().value) {
@@ -49,7 +58,6 @@ fun ManageStockTable(
             var dimensions by remember {
                 mutableStateOf(
                     TableDimensions(
-
                         cellVerticalPadding = 11.dp,
                         maxRowHeaderWidth = with(localDensity) {
                             (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
@@ -106,7 +114,14 @@ fun ManageStockTable(
                         if (viewModel.dataEntryUiState.collectAsState().value.step
                             == DataEntryStep.REVIEWING
                         ) {
-                            Text(text = stringResource(id = R.string.review))
+                            Text(
+                                text = stringResource(id = R.string.under_review),
+                                color = colorResource(id = R.color.text_color),
+                                fontSize = 14.sp,
+                                fontStyle = FontStyle.Normal,
+                                fontFamily = robotoFont,
+                                lineHeight = 20.sp
+                            )
                         }
                     }
                 )
