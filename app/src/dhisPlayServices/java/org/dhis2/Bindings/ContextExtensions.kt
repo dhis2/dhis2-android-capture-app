@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import org.dhis2.BuildConfig
 
 fun Context.buildInfo(): String {
-    val paperWork = Paperwork(this)
     return if (BuildConfig.BUILD_TYPE == "release") {
         "v${BuildConfig.VERSION_NAME}"
     } else {
