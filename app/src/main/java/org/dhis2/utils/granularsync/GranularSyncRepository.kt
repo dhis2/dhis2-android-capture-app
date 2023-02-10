@@ -271,7 +271,7 @@ class GranularSyncRepository(
             is SyncContext.DataSet ->
                 getDataSetItemsWithStates(syncContext.dataSetUid, *states)
             is SyncContext.DataSetInstance ->
-                getDataSetInstanceItemsWithStates(syncContext.dataSetUid, *states)
+                getDataSetInstanceItemsWithStates(syncContext.dataSetUid)
             is SyncContext.Enrollment ->
                 getEnrollmentItemsWithStates(syncContext.enrollmentUid, *states)
             is SyncContext.EnrollmentEvent ->
@@ -291,7 +291,7 @@ class GranularSyncRepository(
             is SyncContext.TrackerProgram ->
                 getProgramItemsWithStates(syncContext.programUid, *states)
             is SyncContext.TrackerProgramTei ->
-                getTeiItemWithStates(syncContext.enrollmentUid, *states)
+                getTeiItemWithStates(syncContext.enrollmentUid)
         }
     }
 
@@ -312,7 +312,7 @@ class GranularSyncRepository(
                         )
                 },
                 displayName = program.displayName() ?: program.uid(),
-                description = "Tap here to explore",
+                description = resourceManager.getString(R.string.tap_to_explore_action),
                 state = dhisProgramUtils.getProgramState(program)
             )
         }
@@ -322,7 +322,7 @@ class GranularSyncRepository(
             SyncStatusItem(
                 type = SyncStatusType.DataSet(dataSetInstanceSummary.dataSetUid()),
                 displayName = dataSetInstanceSummary.dataSetDisplayName(),
-                description = "Tap here to explore",
+                description = resourceManager.getString(R.string.tap_to_explore_action),
                 state = dataSetInstanceSummary.state()
             )
         }
@@ -367,12 +367,7 @@ class GranularSyncRepository(
                 programUid = programUid
             )
         }
-        val description = when {
-            errorCount > 0 && warningCount > 0 -> "$errorCount errors and $warningCount warnings"
-            errorCount == 0 && warningCount > 0 -> "$warningCount warnings"
-            errorCount > 0 && warningCount == 0 -> "$errorCount errors"
-            else -> "Tap here to explore"
-        }
+        val description = errorWarningDescriptionLabel(errorCount, warningCount)
         return listOf(
             SyncStatusItem(
                 type = syncStatusType,
@@ -381,6 +376,23 @@ class GranularSyncRepository(
                 state = programState
             )
         )
+    }
+
+    private fun errorWarningDescriptionLabel(errorCount: Int, warningCount: Int) = when {
+        errorCount > 0 && warningCount > 0 -> {
+            val errorLabel = resourceManager.getPlural(R.plurals.error_count_label, errorCount)
+                .format(errorCount)
+            val warningLabel = resourceManager.getPlural(R.plurals.error_count_label, errorCount)
+                .format(errorCount)
+            "$errorLabel, $warningLabel"
+        }
+        errorCount == 0 && warningCount > 0 ->
+            resourceManager.getPlural(R.plurals.warning_count_label, warningCount)
+                .format(errorCount)
+        errorCount > 0 && warningCount == 0 ->
+            resourceManager.getPlural(R.plurals.error_count_label, errorCount)
+                .format(errorCount)
+        else -> resourceManager.getString(R.string.tap_to_explore_action)
     }
 
     private fun getDataSetItemsForGlobalContext(
@@ -396,12 +408,7 @@ class GranularSyncRepository(
                 warningCount += 1
             }
         }
-        val description = when {
-            errorCount > 0 && warningCount > 0 -> "$errorCount errors and $warningCount warnings"
-            errorCount == 0 && warningCount > 0 -> "$warningCount warnings"
-            errorCount > 0 && warningCount == 0 -> "$errorCount errors"
-            else -> "Tap here to explore"
-        }
+        val description = errorWarningDescriptionLabel(errorCount, warningCount)
         return listOf(
             SyncStatusItem(
                 type = SyncStatusType.DataSet(dataSetUid),
@@ -422,41 +429,47 @@ class GranularSyncRepository(
                 programs = listOf(programUid),
                 aggregatedSynStates = states.toList()
             ).map { tei ->
-                mapTeiToSyncStatusItem(programUid, tei.uid(), *states)
+                mapTeiToSyncStatusItem(programUid, tei.uid())
             }.sortedByState()
         } else {
             d2.eventsBy(
                 programUid = programUid,
                 aggregatedSynStates = states.toList()
             ).map { event ->
-                mapEventToSyncStatusItem(programUid, event.uid(), *states)
+                mapEventToSyncStatusItem(programUid, event.uid())
             }.sortedByState()
         }
     }
 
     private fun getTeiItemWithStates(
-        enrollmentUid: String,
-        vararg states: State
+        enrollmentUid: String
     ): List<SyncStatusItem> {
         val enrollment = d2.enrollment(enrollmentUid)
         return listOf(
             mapTeiToSyncStatusItem(
                 enrollment.program()!!,
-                enrollment.trackedEntityInstance()!!,
-                *states
+                enrollment.trackedEntityInstance()!!
             )
         )
     }
 
     private fun mapTeiToSyncStatusItem(
         programUid: String,
-        teiUid: String,
-        vararg states: State
+        teiUid: String
     ): SyncStatusItem {
         val tei = d2.tei(teiUid)
         val description = when (tei.aggregatedSyncState()) {
-            State.ERROR -> "%d errors".format(getNumberOfConflictsForTei(tei.uid()))
-            State.TO_POST, State.TO_UPDATE -> "Sync needed"
+            State.WARNING,
+            State.ERROR -> {
+                val conflicts = d2.teiImportConflictsBy(teiUid = teiUid)
+                errorWarningDescriptionLabel(
+                    errorCount = conflicts.count { it.status() == ImportStatus.ERROR },
+                    warningCount = conflicts.count { it.status() == ImportStatus.WARNING }
+                )
+            }
+            State.TO_POST,
+            State.TO_UPDATE ->
+                resourceManager.getString(R.string.tap_to_explore_action)
             else -> ""
         }
 
@@ -488,14 +501,20 @@ class GranularSyncRepository(
 
     private fun mapEventToSyncStatusItem(
         programUid: String,
-        eventUid: String,
-        vararg states: State
+        eventUid: String
     ): SyncStatusItem {
         val event = d2.event(eventUid)
         val eventConflicts = d2.eventImportConflictsBy(eventUid)
         val description = when (event.aggregatedSyncState()) {
-            State.ERROR -> "%d errors".format(eventConflicts.size)
-            State.TO_POST, State.TO_UPDATE -> "Sync needed"
+            State.WARNING,
+            State.ERROR -> {
+                errorWarningDescriptionLabel(
+                    eventConflicts.count { it.status() == ImportStatus.ERROR },
+                    eventConflicts.count { it.status() == ImportStatus.WARNING }
+                )
+            }
+            State.TO_POST, State.TO_UPDATE ->
+                resourceManager.getString(R.string.tap_to_explore_action)
             else -> ""
         }
         val hasNullDataElementConflict = eventConflicts.any { it.dataElement() == null }
@@ -552,7 +571,7 @@ class GranularSyncRepository(
                                     enrollmentUid = enrollment.uid(),
                                     programUid = program.uid()
                                 ),
-                                displayName = "Enrollment in ${program.displayName()}",
+                                displayName = program.displayName() ?: program.uid(),
                                 description = trackerImportConflict.displayDescription() ?: "",
                                 state = trackerImportConflict.status()?.toState()
                                     ?: enrollment.aggregatedSyncState()!!
@@ -564,8 +583,7 @@ class GranularSyncRepository(
                 allConflicts.filter { it.event() != null }.map { trackerImportConflict ->
                     mapEventToSyncStatusItem(
                         enrollment.program()!!,
-                        trackerImportConflict.event()!!,
-                        *states
+                        trackerImportConflict.event()!!
                     )
                 }
             (enrollmentConflicts + eventConflicts)
@@ -603,7 +621,7 @@ class GranularSyncRepository(
                                 enrollment.program(),
                                 enrollmentUid
                             ),
-                            displayName = "Error in TEI",
+                            displayName = resourceManager.getString(R.string.conflict),
                             description = trackerImportConflict.displayDescription() ?: "",
                             state = trackerImportConflict.status()?.toState()
                                 ?: tei.aggregatedSyncState()!!
@@ -621,7 +639,11 @@ class GranularSyncRepository(
             enrollmentUid = enrollmentUid,
             aggregatedSynStates = statesWithoutError.toList()
         ).map { event ->
-            mapEventToSyncStatusItem(event.uid(), null, "Sync needed")
+            mapEventToSyncStatusItem(
+                eventUid = event.uid(),
+                dataElementUid = null,
+                description = resourceManager.getString(R.string.tap_to_explore_action)
+            )
         }
 
         return (conflicts + teiConflicts + notSyncedEvents).sortedByState()
@@ -711,7 +733,7 @@ class GranularSyncRepository(
                         dataSetInstance.attributeOptionComboUid()
                     ),
                     displayName = getDataSetInstanceLabel(dataSetInstance),
-                    description = "$conflictNumber errors",
+                    description = errorWarningDescriptionLabel(conflictNumber, 0),
                     state = dataSetInstance.state()!!
                 )
             } else {
@@ -723,7 +745,7 @@ class GranularSyncRepository(
                         dataSetInstance.attributeOptionComboUid()
                     ),
                     displayName = getDataSetInstanceLabel(dataSetInstance),
-                    description = "Sync needed",
+                    description = resourceManager.getString(R.string.tap_to_explore_action),
                     state = dataSetInstance.state()!!
                 )
             }
@@ -751,8 +773,7 @@ class GranularSyncRepository(
     }
 
     private fun getDataSetInstanceItemsWithStates(
-        dataSetUid: String,
-        vararg states: State
+        dataSetUid: String
     ): List<SyncStatusItem> {
         val conflicts = with(syncContext as SyncContext.DataSetInstance) {
             d2.dataValueConflicts(

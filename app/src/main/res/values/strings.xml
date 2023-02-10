@@ -930,4 +930,13 @@
     <string name="sync_dialog_action_send">Send</string>
     <string name="sync_dialog_action_refresh">Refresh</string>
     <string name="sync_dialog_action_not_now">Not now</string>
+    <string name="tap_to_explore_action">Tap here to explore</string>
+    <plurals name="error_count_label">
+        <item quantity="one">%s error</item>
+        <item quantity="other">%s errors</item>
+    </plurals>
+    <plurals name="warning_count_label">
+        <item quantity="one">%s warning</item>
+        <item quantity="other">%s warnings</item>
+    </plurals>
 </resources>

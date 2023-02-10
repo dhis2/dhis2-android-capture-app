@@ -2,6 +2,7 @@ package org.dhis2.commons.resources
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.commons.R
@@ -13,6 +14,9 @@ class ResourceManager(val context: Context) {
 
     fun getString(@StringRes stringResource: Int, vararg arguments: String) =
         getWrapperContext().getString(stringResource).format(*arguments)
+
+    fun getPlural(@PluralsRes pluralResource: Int, quantity: Int) =
+        getWrapperContext().resources.getQuantityString(pluralResource, quantity)
 
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {

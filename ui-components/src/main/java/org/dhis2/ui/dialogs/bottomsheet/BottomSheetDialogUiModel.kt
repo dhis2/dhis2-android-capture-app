@@ -11,15 +11,15 @@ data class BottomSheetDialogUiModel(
 ) {
     fun hasButtons() = mainButton != null || secondaryButton != null
 
-    fun secondaryRoundedCornersSizeDp() = if(secondaryButton is DialogButtonStyle.NeutralButton){
+    fun secondaryRoundedCornersSizeDp() = if (secondaryButton is DialogButtonStyle.NeutralButton) {
         2
-    }else{
+    } else {
         0
     }
 
-    fun secondaryElevationDp() = if(secondaryButton is DialogButtonStyle.NeutralButton){
+    fun secondaryElevationDp() = if (secondaryButton is DialogButtonStyle.NeutralButton) {
         24
-    }else{
-0
+    } else {
+        0
     }
 }
