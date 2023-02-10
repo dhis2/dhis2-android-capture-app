@@ -138,7 +138,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         val accountsCount = intent.getIntExtra(ACCOUNTS_COUNT, -1)
         val isDeletion = intent.getBooleanExtra(IS_DELETION, false)
 
-        if ((isDeletion && accountsCount >= 1) || (!isDeletion && accountsCount > 1)) {
+        if ((isDeletion && accountsCount >= 1)) {
             openAccountsActivity()
         }
 

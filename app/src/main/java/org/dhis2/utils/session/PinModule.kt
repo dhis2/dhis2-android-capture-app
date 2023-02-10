@@ -35,7 +35,7 @@ class PinModule(val view: PinView) {
 
     @Provides
     fun providesPresenter(
-        d2: D2?,
+        d2: D2,
         preferenceProvider: PreferenceProvider
     ): PinPresenter {
         return PinPresenter(view, preferenceProvider, d2)

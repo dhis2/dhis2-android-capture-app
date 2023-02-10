@@ -202,8 +202,8 @@ class LoginPresenter(
                                             .username()
                                     )
                                     setValue(SESSION_LOCKED, false)
-                                    setValue(PIN, null)
                                 }
+                                deletePin()
                                 trackUserInfo()
                                 Response.success<Any>(null)
                             }
@@ -260,9 +260,9 @@ class LoginPresenter(
                                         .username()
                                 )
                                 setValue(SESSION_LOCKED, false)
-                                setValue(PIN, null)
                                 setValue(SERVER, "$serverUrl/api")
                             }
+                            deletePin()
                             trackUserInfo()
                             Response.success<Any>(null)
                         }
@@ -467,6 +467,13 @@ class LoginPresenter(
         userManager?.d2?.dataStoreModule()?.localDataStore()
             ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
             ?.set(activate.toString())
+    }
+
+    private fun deletePin() {
+        userManager?.d2?.dataStoreModule()
+            ?.localDataStore()
+            ?.value(PIN)
+            ?.blockingDeleteIfExist()
     }
 
     companion object {

@@ -18,6 +18,7 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
+import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -177,7 +178,7 @@ class MainPresenter(
                 workManagerController.cancelAllWork()
                 FilterManager.getInstance().clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
-                preferences.setValue(Preference.PIN, null)
+                userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
             }.andThen(
                 repository.logOut()
             )
@@ -252,6 +253,8 @@ class MainPresenter(
     fun setOpeningFilterToNone() {
         filterRepository.collapseAllFilters()
     }
+
+    fun isPinStored() = repository.isPinStored()
 
     fun launchInitialDataSync() {
         workManagerController

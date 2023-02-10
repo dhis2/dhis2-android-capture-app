@@ -3,6 +3,7 @@ package org.dhis2.usescases.main
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Completable
 import io.reactivex.Single
+import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -49,4 +50,6 @@ class HomeRepositoryImpl(
     }
 
     override fun accountsCount() = d2.userModule().accountManager().getAccounts().count()
+
+    override fun isPinStored() = d2.dataStoreModule().localDataStore().value(PIN).blockingExists()
 }
