@@ -2,6 +2,13 @@
 host     = https://www.transifex.com
 lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: b+es+419
 
+[o:hisp-uio:p:dhis2-android-capture-app:r:stock-strings-xml]
+file_filter  = stock-usecase/src/main/res/values-<lang>/strings.xml
+source_file  = stock-usecase/src/main/res/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0
+
 [o:hisp-uio:p:dhis2-android-capture-app:r:analytics-strings-xml]
 file_filter  = dhis_android_analytics/src/main/res/values-<lang>/strings.xml
 source_file  = dhis_android_analytics/src/main/res/values/strings.xml
