@@ -304,4 +304,5 @@
     <string name="error_ssl">
         Hay un problema con los certificados del servidor. Por favor, póngase en contacto con su administrador.
     </string>
+    <string name="under_review">Bajo revisión</string>
 </resources>

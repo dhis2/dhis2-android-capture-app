@@ -306,4 +306,5 @@
     <string name="error_ssl">
         Il y a un problème avec les certificats du serveur. Veuillez contacter votre administrateur.
     </string>
+    <string name="under_review">À létude</string>
 </resources>
