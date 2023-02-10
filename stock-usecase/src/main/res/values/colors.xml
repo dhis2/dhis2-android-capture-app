@@ -73,5 +73,6 @@
     <color name="mic_disabled">#59C7C7C7</color>
 
     <color name="success_color">#4CAF50</color>
+    <color name="text_color">#8A000000</color>
 
 </resources>
