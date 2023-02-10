@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
@@ -21,14 +20,21 @@ repositories {
     mavenCentral()
 }
 
-paperwork {
-    set = [
-            buildTime: buildTime("yyyy-MM-dd HH:mm"),
-            gitSha   : gitSha()
-    ]
-}
-
 android {
+
+    def getBuildDate = {
+        return new Date().format("yyyy-MM-dd HH:mm")
+    }
+
+    def getCommitHash = {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
@@ -108,6 +114,8 @@ android {
             signingConfig = signingConfigs.debug
 
             buildConfigField "int", "MATOMO_ID", "2"
+            buildConfigField "String", "BUILD_DATE", "\""+getBuildDate()+"\""
+            buildConfigField "String", "GIT_SHA", "\""+getCommitHash()+"\""
 
             applicationVariants.all { variant ->
                 if (variant.getFlavorName() == "dhisUITesting") {
@@ -128,6 +136,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField "int", "MATOMO_ID", "1"
+            buildConfigField "String", "BUILD_DATE", getBuildDate()
+            buildConfigField "String", "GIT_SHA", getCommitHash()
 
             //Sentry variables
             manifestPlaceholders = [
@@ -287,7 +297,6 @@ dependencies {
     releaseImplementation "com.facebook.flipper:flipper-noop:${libraries.flippernoop}"
     //RXLint
     implementation "nl.littlerobots.rxlint:rxlint:${libraries.rxlint}"
-    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
     implementation "cat.ereza:customactivityoncrash:${libraries.crashactivity}"
     //endregion
 
