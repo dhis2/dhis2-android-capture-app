@@ -123,12 +123,16 @@ class MainPresenterTest {
         whenever(repository.logOut()) doReturn Completable.complete()
 
         whenever(repository.accountsCount()) doReturn 1
+        whenever(userManager.d2) doReturn mock()
+        whenever(userManager.d2.dataStoreModule()) doReturn mock()
+        whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
+        whenever(userManager.d2.dataStoreModule().localDataStore().value(PIN)) doReturn mock()
 
         presenter.logOut()
 
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
-        verify(preferences).setValue(PIN, null)
+        verify(userManager.d2.dataStoreModule().localDataStore().value(PIN)).blockingDeleteIfExist()
         verify(view).goToLogin(1, false)
     }
 
