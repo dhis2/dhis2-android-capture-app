@@ -188,7 +188,7 @@ fun handleBackNavigation(
                 activity.finish()
             }
         }
-        DataEntryStep.EDITING -> {
+        DataEntryStep.EDITING_LISTING -> {
             activity.onBackPressed()
         }
         DataEntryStep.REVIEWING -> {
@@ -205,6 +205,9 @@ fun handleBackNavigation(
             } else {
                 viewModel.onHandleBackNavigation()
             }
+        }
+        DataEntryStep.EDITING_REVIEWING -> {
+            activity.onBackPressed()
         }
         DataEntryStep.COMPLETED -> {
             viewModel.onHandleBackNavigation()

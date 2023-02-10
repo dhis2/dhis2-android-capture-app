@@ -50,7 +50,6 @@ import org.dhis2.composetable.model.TextInputModel
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
-import timber.log.Timber
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
@@ -209,7 +208,8 @@ class ManageStockViewModel @Inject constructor(
 
     private fun populateTable(selectNext: Boolean = false) {
         val items = when (dataEntryUiState.value.step) {
-            DataEntryStep.REVIEWING ->
+            DataEntryStep.REVIEWING,
+            DataEntryStep.EDITING_REVIEWING ->
                 _stockItems.value?.filter {
                     itemsCache[it.id] != null
                 }
@@ -245,7 +245,6 @@ class ManageStockViewModel @Inject constructor(
 
     private fun commitTransaction() {
         if (itemsCache.values.isEmpty()) {
-            Timber.w("No items to commit On Cache")
             return
         }
         disposable.add(
@@ -393,8 +392,10 @@ class ManageStockViewModel @Inject constructor(
 
     fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
         val step = when (dataEntryUiState.value.step) {
-            DataEntryStep.LISTING -> if (isEditing) DataEntryStep.EDITING else null
-            DataEntryStep.EDITING -> if (!isEditing) DataEntryStep.LISTING else null
+            DataEntryStep.LISTING -> if (isEditing) DataEntryStep.EDITING_LISTING else null
+            DataEntryStep.EDITING_LISTING -> if (!isEditing) DataEntryStep.LISTING else null
+            DataEntryStep.REVIEWING -> if (isEditing) DataEntryStep.EDITING_REVIEWING else null
+            DataEntryStep.EDITING_REVIEWING -> if (!isEditing) DataEntryStep.REVIEWING else null
             else -> null
         }
         step?.let { updateStep(it) }

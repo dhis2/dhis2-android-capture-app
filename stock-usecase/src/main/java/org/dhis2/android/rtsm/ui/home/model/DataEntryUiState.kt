@@ -10,7 +10,8 @@ data class DataEntryUiState(
 enum class DataEntryStep {
     START,
     LISTING,
-    EDITING,
+    EDITING_LISTING,
     REVIEWING,
+    EDITING_REVIEWING,
     COMPLETED
 }
