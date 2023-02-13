@@ -47,9 +47,6 @@ fun ManageStockTable(
             overwrittenRowHeaderWidth = 200F
         )
     )
-    val robotoFont = FontFamily(
-        Font(R.font.roboto_medium, FontWeight.Medium)
-    )
 
     MdcTheme {
         if (viewModel.hasData.collectAsState().value) {
@@ -119,7 +116,6 @@ fun ManageStockTable(
                                 color = colorResource(id = R.color.text_color),
                                 fontSize = 14.sp,
                                 fontStyle = FontStyle.Normal,
-                                fontFamily = robotoFont,
                                 lineHeight = 20.sp
                             )
                         }
