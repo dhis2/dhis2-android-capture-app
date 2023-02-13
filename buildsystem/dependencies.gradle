@@ -81,7 +81,6 @@ ext {
             leakcannary               : "2.9.1",
             leakcannarynoop           : "1.6.3",
             rxlint                    : "1.6",
-            paperwork                 : "1.2.7",
             crashactivity             : "2.3.0",
 
             //QR/Barcode scanner
