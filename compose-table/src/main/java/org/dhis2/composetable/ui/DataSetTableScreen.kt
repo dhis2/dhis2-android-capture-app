@@ -5,10 +5,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -234,74 +237,84 @@ fun DataSetTableScreen(
             OnTextChange provides { currentCell },
             LocalTableSelection provides tableSelection
         ) {
-            DataTable(
-                tableList = tableScreenState.tables,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
-                    }
-
-                    override fun onDecorationClick(dialogModel: TableDialogModel) {
-                        displayDescription = dialogModel
-                    }
-
-                    override fun onClick(tableCell: TableCell) {
-                        currentCell?.takeIf { it != tableCell }?.let {
-                            onSaveValue(it, false)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                DataTable(
+                    tableList = tableScreenState.tables,
+                    tableInteractions = object : TableInteractions {
+                        override fun onSelectionChange(newTableSelection: TableSelection) {
+                            tableSelection = newTableSelection
                         }
-                        onCellClick(
-                            tableSelection.tableId,
-                            tableCell
-                        ) { updateCellValue(it) }?.let { inputModel ->
-                            currentCell = tableCell
-                            currentInputType =
-                                inputModel.copy(currentValue = currentCell?.value)
-                            startEdition()
-                            focusRequester.requestFocus()
-                        } ?: collapseBottomSheet()
-                    }
 
-                    override fun onOptionSelected(
-                        cell: TableCell,
-                        code: String,
-                        label: String
-                    ) {
-                        currentCell = cell.copy(
-                            value = label,
-                            error = null
-                        ).also {
-                            onCellValueChange(it)
-                            onSaveValue(cell.copy(value = code), false)
+                        override fun onDecorationClick(dialogModel: TableDialogModel) {
+                            displayDescription = dialogModel
+                        }
+
+                        override fun onClick(tableCell: TableCell) {
+                            currentCell?.takeIf { it != tableCell }?.let {
+                                onSaveValue(it, false)
+                            }
+                            onCellClick(
+                                tableSelection.tableId,
+                                tableCell
+                            ) { updateCellValue(it) }?.let { inputModel ->
+                                currentCell = tableCell
+                                currentInputType =
+                                    inputModel.copy(currentValue = currentCell?.value)
+                                startEdition()
+                                focusRequester.requestFocus()
+                            } ?: collapseBottomSheet()
+                        }
+
+                        override fun onOptionSelected(
+                            cell: TableCell,
+                            code: String,
+                            label: String
+                        ) {
+                            currentCell = cell.copy(
+                                value = label,
+                                error = null
+                            ).also {
+                                onCellValueChange(it)
+                                onSaveValue(cell.copy(value = code), false)
+                            }
+                        }
+
+                        override fun onTableSizeChanged(width: Int) {
+                            onTableWidthChanged(width)
+                        }
+
+                        override fun onRowHeaderSizeChanged(tableId: String, newValue: Float) {
+                            onRowHeaderResize(tableId, newValue)
+                        }
+
+                        override fun onColumnHeaderSizeChanged(
+                            tableId: String,
+                            column: Int,
+                            newValue: Float
+                        ) {
+                            onColumnHeaderResize(tableId, column, newValue)
+                        }
+
+                        override fun onTableWidthReset(tableId: String) {
+                            onTableDimensionReset(tableId)
+                        }
+
+                        override fun onTableWidthChanged(tableId: String, newValue: Float) {
+                            onTableDimensionResize(tableId, newValue)
                         }
                     }
-
-                    override fun onTableSizeChanged(width: Int) {
-                        onTableWidthChanged(width)
-                    }
-
-                    override fun onRowHeaderSizeChanged(tableId: String, newValue: Float) {
-                        onRowHeaderResize(tableId, newValue)
-                    }
-
-                    override fun onColumnHeaderSizeChanged(
-                        tableId: String,
-                        column: Int,
-                        newValue: Float
-                    ) {
-                        onColumnHeaderResize(tableId, column, newValue)
-                    }
-
-                    override fun onTableWidthReset(tableId: String) {
-                        onTableDimensionReset(tableId)
-                    }
-
-                    override fun onTableWidthChanged(tableId: String, newValue: Float) {
-                        onTableDimensionResize(tableId, newValue)
-                    }
+                )
+                if (bottomContent != null) {
+                    Column(
+                        content = bottomContent,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    )
                 }
-            )
-            if (bottomContent != null) {
-                Column(content = bottomContent)
             }
         }
         displayDescription?.let {

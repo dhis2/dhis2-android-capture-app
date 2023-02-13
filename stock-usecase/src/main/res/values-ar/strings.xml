@@ -239,4 +239,5 @@
     <string name="error_account_locked">تم قفل حساب المستخدم الخاص بك. يرجى الاتصال بالمسؤول إذا كان هذا خطأ.</string>
     <string name="error_set_value">لا يمكن تعيين القيمة.</string>
     <string name="error_ssl">هناك مشكلة في شهادات الخادم. من فضلك ، اتصل بالمسؤول الخاص بك.</string>
+    <string name="under_review">Վերանայման տակ</string>
 </resources>

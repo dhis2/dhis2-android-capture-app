@@ -925,7 +925,6 @@ private fun TableList(
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxWidth()
-                .fillMaxHeight()
                 .padding(
                     horizontal = TableTheme.dimensions.tableHorizontalPadding,
                     vertical = TableTheme.dimensions.tableVerticalPadding

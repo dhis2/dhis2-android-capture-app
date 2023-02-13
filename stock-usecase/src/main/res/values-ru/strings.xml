@@ -288,4 +288,5 @@
     <string name="error_ssl">
         Проблема с сертификатами сервера. Пожалуйста, свяжитесь с вашим администратором.
     </string>
+    <string name="under_review">На рассмотрении</string>
 </resources>

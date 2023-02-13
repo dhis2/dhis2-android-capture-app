@@ -13,11 +13,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.material.composethemeadapter.MdcTheme
 import kotlin.math.roundToInt
 import org.dhis2.android.rtsm.R
+import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.ui.DataSetTableScreen
@@ -56,7 +60,8 @@ fun ManageStockTable(
                         extraWidths = emptyMap(),
                         rowHeaderWidths = emptyMap(),
                         columnWidth = emptyMap(),
-                        defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt()
+                        defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt(),
+                        tableBottomPadding = 16.dp
                     )
                 )
             }
@@ -99,8 +104,20 @@ fun ManageStockTable(
                     },
                     onTableDimensionReset = { tableId ->
                         dimensions = dimensions.resetWidth(tableId)
+                    },
+                    bottomContent = {
+                        if (viewModel.dataEntryUiState.collectAsState().value.step
+                            == DataEntryStep.REVIEWING
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.under_review),
+                                color = colorResource(id = R.color.text_color),
+                                fontSize = 14.sp,
+                                fontStyle = FontStyle.Normal,
+                                lineHeight = 20.sp
+                            )
+                        }
                     }
-
                 )
             }
         } else {

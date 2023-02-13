@@ -133,6 +133,7 @@ fun Backdrop(
         },
         scaffoldState = backdropState,
         gesturesEnabled = false,
+        frontLayerBackgroundColor = Color.White,
         frontLayerScrimColor = if (
             settingsUiState.transactionType == TransactionType.DISTRIBUTION
         ) {
