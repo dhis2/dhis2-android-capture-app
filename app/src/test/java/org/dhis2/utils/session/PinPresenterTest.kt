@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import junit.framework.Assert.assertFalse
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.hisp.dhis.android.core.D2
@@ -19,6 +18,10 @@ class PinPresenterTest {
     private var pinView: PinView = mock()
     private var preferenceProvider: PreferenceProvider = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+
+    private val onPinCorrect: () -> Unit = mock()
+    private val onError: () -> Unit = mock()
+    private val onTwoManyAttempts: () -> Unit = mock()
 
     @Before
     fun setUp() {
@@ -40,10 +43,17 @@ class PinPresenterTest {
         whenever(
             d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
         ) doReturn testPin
-        val isUnlocked = presenter.unlockSession(testPin)
+
+        presenter.unlockSession(
+            testPin,
+            attempts = 0,
+            onError = onError,
+            onPinCorrect = onPinCorrect,
+            onTwoManyAttempts = onTwoManyAttempts
+        )
 
         verify(preferenceProvider, times(1)).setValue(Preference.SESSION_LOCKED, true)
-        assert(isUnlocked)
+        verify(onPinCorrect).invoke()
     }
 
     @Test
@@ -51,10 +61,55 @@ class PinPresenterTest {
         val testPin = "testPin"
         val wrongPin = "wrongPin"
 
-        whenever(preferenceProvider.getString(Preference.PIN, "")) doReturn testPin
-        val isUnlocked = presenter.unlockSession(wrongPin)
+        whenever(d2.dataStoreModule()) doReturn mock()
+        whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
+        whenever(
+            d2.dataStoreModule().localDataStore().value(Preference.PIN)
+        )doReturn mock()
+        whenever(
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+        ) doReturn testPin
 
-        assertFalse(isUnlocked)
+        presenter.unlockSession(
+            wrongPin,
+            attempts = 0,
+            onError = onError,
+            onPinCorrect = onPinCorrect,
+            onTwoManyAttempts = onTwoManyAttempts
+        )
+
+        verify(onError).invoke()
+    }
+
+    @Test
+    fun `Should call onTwoManyAttempts when try 3 times`() {
+        val testPin = "testPin"
+        val wrongPin = "wrongPin"
+
+        whenever(d2.dataStoreModule()) doReturn mock()
+        whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
+        whenever(
+            d2.dataStoreModule().localDataStore().value(Preference.PIN)
+        )doReturn mock()
+        whenever(
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+        ) doReturn testPin
+
+        presenter.unlockSession(
+            wrongPin,
+            attempts = 3,
+            onError = onError,
+            onPinCorrect = onPinCorrect,
+            onTwoManyAttempts = onTwoManyAttempts
+        )
+
+        verify(onTwoManyAttempts).invoke()
     }
 
     @Test

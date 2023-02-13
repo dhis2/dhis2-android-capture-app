@@ -11,17 +11,24 @@ class PinPresenter(
     val d2: D2
 ) {
 
-    fun unlockSession(pin: String): Boolean {
+    fun unlockSession(
+        pin: String,
+        attempts: Int,
+        onPinCorrect: () -> Unit,
+        onError: () -> Unit,
+        onTwoManyAttempts: () -> Unit
+    ) {
         val pinStored = d2.dataStoreModule()
             .localDataStore()
             .value(Preference.PIN)
             .blockingGet().value()
-        return when (pinStored) {
-            pin -> {
+        when {
+            pinStored == pin -> {
                 preferenceProvider.setValue(Preference.SESSION_LOCKED, true)
-                true
+                onPinCorrect()
             }
-            else -> false
+            attempts < 2 -> onError()
+            else -> onTwoManyAttempts()
         }
     }
 
