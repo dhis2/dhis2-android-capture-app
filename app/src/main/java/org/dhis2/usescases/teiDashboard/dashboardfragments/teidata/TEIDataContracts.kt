@@ -49,7 +49,7 @@ class TEIDataContracts {
         fun showPeriodRequest(periodRequest: PeriodRequest)
         fun openOrgUnitTreeSelector(programUid: String)
         fun setEnrollment(enrollment: Enrollment)
-        fun showSyncDialog(uid: String)
+        fun showSyncDialog(eventUid: String, enrollmentUid: String)
         fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>)
     }
 }
