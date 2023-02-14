@@ -43,6 +43,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,7 +61,7 @@ import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
-public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
+public class TEIDataPresenter {
 
     private final D2 d2;
     private final DashboardRepository dashboardRepository;
@@ -83,17 +84,17 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private String currentStage = null;
     private List<String> stagesToHide;
 
-    public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2,
-                                DashboardRepository dashboardRepository,
-                                TeiDataRepository teiDataRepository,
-                                RuleEngineRepository ruleEngineRepository,
-                                String programUid, String teiUid, String enrollmentUid,
-                                SchedulerProvider schedulerProvider,
-                                PreferenceProvider preferenceProvider,
-                                AnalyticsHelper analyticsHelper,
-                                FilterManager filterManager,
-                                FilterRepository filterRepository,
-                                FormValueStore valueStore) {
+    public TEIDataPresenter(TEIDataContracts.View view, D2 d2,
+                            DashboardRepository dashboardRepository,
+                            TeiDataRepository teiDataRepository,
+                            RuleEngineRepository ruleEngineRepository,
+                            String programUid, String teiUid, String enrollmentUid,
+                            SchedulerProvider schedulerProvider,
+                            PreferenceProvider preferenceProvider,
+                            AnalyticsHelper analyticsHelper,
+                            FilterManager filterManager,
+                            FilterRepository filterRepository,
+                            FormValueStore valueStore) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -112,7 +113,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.valueStore = valueStore;
     }
 
-    @Override
     public void init() {
         compositeDisposable.add(
                 filterManager.asFlowable().startWith(filterManager)
@@ -161,9 +161,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         currentStage = selectedStage.getStageUid().equals(currentStage) && !selectedStage.getShowOptions() ? "" : selectedStage.getStageUid();
                         return new StageSection(currentStage, selectedStage.getShowOptions());
                     });
-            Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
-                    getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true
-            );
+            Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(hasGrouping(programUid));
 
             compositeDisposable.add(
                     Flowable.combineLatest(
@@ -257,6 +255,14 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         ));
     }
 
+    private boolean hasGrouping(String programUid) {
+        boolean hasGrouping = true;
+        if (getGrouping().containsKey(programUid)) {
+            hasGrouping = getGrouping().get(programUid);
+        }
+        return hasGrouping;
+    }
+
     private List<EventViewModel> applyEffects(
             @NonNull List<EventViewModel> events,
             @NonNull Result<RuleEffect> calcResult) {
@@ -302,12 +308,10 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         );
     }
 
-    @Override
     public void changeCatOption(String eventUid, String catOptionComboUid) {
         dashboardRepository.saveCatOption(eventUid, catOptionComboUid);
     }
 
-    @Override
     public void areEventsCompleted() {
         compositeDisposable.add(
                 dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teiUid)
@@ -322,7 +326,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         );
     }
 
-    @Override
     public void displayGenerateEvent(String eventUid) {
         compositeDisposable.add(
                 dashboardRepository.displayGenerateEvent(eventUid)
@@ -335,9 +338,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         );
     }
 
-    @Override
     public void completeEnrollment() {
-        if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
+        if (Boolean.TRUE.equals(d2.programModule().programs().uid(programUid).blockingGet().access().data().write())) {
             compositeDisposable.add(dashboardRepository.completeEnrollment(dashboardModel.getCurrentEnrollment().uid())
                     .subscribeOn(schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
@@ -351,7 +353,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             view.displayMessage(null);
     }
 
-    @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
         analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
@@ -363,7 +364,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     }
 
-    @Override
     public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
         view.seeDetails(EnrollmentActivity.Companion.getIntent(view.getContext(),
@@ -373,15 +373,13 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 false), options.toBundle());
     }
 
-    @Override
     public void onScheduleSelected(String uid, View sharedView) {
         Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }
 
-    @Override
-    public void onEventSelected(String uid, EventStatus eventStatus, View sharedView) {
+    public void onEventSelected(String uid, EventStatus eventStatus) {
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
             intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK));
@@ -396,48 +394,38 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         }
     }
 
-    @Override
     public void setDashboardProgram(DashboardProgramModel dashboardModel) {
         this.dashboardModel = dashboardModel;
         this.programUid = dashboardModel.getCurrentProgram().uid();
     }
 
-    @Override
     public void setProgram(Program program, String enrollmentUid) {
         this.programUid = program.uid();
         view.restoreAdapter(programUid, teiUid, enrollmentUid);
     }
 
-    @Override
     public void onDettach() {
         compositeDisposable.clear();
     }
 
-    @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
 
-    @Override
     public void showDescription(String description) {
         view.showDescription(description);
     }
 
-    @Override
-    public void onGroupingChanged(Boolean shouldGroup) {
+    public void onGroupingChanged(Boolean shouldGroupBool) {
+        boolean shouldGroup = shouldGroupBool;
         if (programUid != null) {
             Map<String, Boolean> groups = getGrouping();
-            if (shouldGroup) {
-                groups.put(programUid, true);
-            } else {
-                groups.put(programUid, false);
-            }
+            groups.put(programUid, shouldGroup);
             preferences.saveAsJson(Preference.GROUPING, groups);
             groupingProcessor.onNext(shouldGroup);
         }
     }
 
-    @Override
     public void onAddNewEvent(@NonNull View anchor, @NonNull ProgramStage stage) {
         view.showNewEventOptions(anchor, stage);
         if (stage.hideDueDate() != null && stage.hideDueDate()) {
@@ -445,7 +433,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         }
     }
 
-    @Override
     public void getEnrollment(String enrollmentUid) {
         compositeDisposable.add(
                 d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
@@ -462,7 +449,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         );
     }
 
-    @Override
     public boolean hasAssignment() {
         return !isEmpty(programUid) && !d2.programModule().programStages()
                 .byProgramUid().eq(programUid)
@@ -479,12 +465,10 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 new HashMap<>());
     }
 
-    @Override
     public void onSyncDialogClick() {
         view.showSyncDialog(enrollmentUid);
     }
 
-    @Override
     public boolean enrollmentOrgUnitInCaptureScope(String enrollmentOrgUnit) {
         return !d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
@@ -492,12 +476,10 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 .blockingIsEmpty();
     }
 
-    @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
     }
 
-    @Override
     public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
         FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
@@ -509,5 +491,9 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         enrollmentUid,
                         stagesToHide
                 );
+    }
+
+    public String getOrgUnitName(@NotNull String orgUnitUid) {
+        return teiDataRepository.getOrgUnitName(orgUnitUid);
     }
 }

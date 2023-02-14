@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter" />
 
         <variable
             name="program"
@@ -22,6 +22,10 @@
         <variable
             name="style"
             type="org.hisp.dhis.android.core.common.ObjectStyle" />
+
+        <variable
+            name="orgUnit"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,7 +55,7 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/program_last_date"
             app:layout_constraintStart_toEndOf="@id/program_image"
-            app:layout_constraintTop_toBottomOf="@id/program_name"
+            app:layout_constraintTop_toBottomOf="@id/enrolledOrgUnitLabel"
             tools:text="date label" />
 
         <TextView
@@ -96,6 +100,38 @@
             android:textSize="12sp"
             app:date="@{enrollment.enrollmentDate()}"
             app:layout_constraintTop_toTopOf="@id/enrollmentDateLabel"
+            app:layout_constraintEnd_toStartOf="@id/overdue"
+            tools:text="2018-04-09" />
+
+
+        <TextView
+            android:id="@+id/enrolledOrgUnitLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="7.8dp"
+            android:ellipsize="end"
+            android:paddingBottom="5dp"
+            android:maxLines="1"
+            android:text="@string/enrolledIn"
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/enrolledOrgUnit"
+            app:layout_constraintStart_toEndOf="@id/program_image"
+            app:layout_constraintTop_toBottomOf="@id/program_name"
+            tools:text="enrolled in:" />
+
+        <TextView
+            android:id="@+id/enrolledOrgUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="7.8dp"
+            android:paddingBottom="5dp"
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
+            android:text="@{orgUnit}"
+            app:layout_constraintTop_toTopOf="@id/enrolledOrgUnitLabel"
             app:layout_constraintEnd_toStartOf="@id/overdue"
             tools:text="2018-04-09" />
 
