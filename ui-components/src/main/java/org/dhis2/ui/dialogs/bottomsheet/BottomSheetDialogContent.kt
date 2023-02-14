@@ -80,7 +80,7 @@ fun BottomSheetDialogUi(
                 style = MaterialTheme.typography.headlineSmall,
                 color = textPrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.testTag(TITLE).padding(horizontal = 16.dp)
             )
             bottomSheetDialogUiModel.subtitle?.let { subtitle ->
                 Spacer(modifier = Modifier.size(4.dp))
@@ -309,3 +309,4 @@ fun DialogPreview4() {
 const val CLICKABLE_TEXT_TAG = "CLICKABLE_TEXT_TAG"
 const val SECONDARY_BUTTON_TAG = "SECONDARY_BUTTON_TAG"
 const val MAIN_BUTTON_TAG = "MAIN_BUTTON_TAG"
+const val TITLE = "TITLE_TAG"
