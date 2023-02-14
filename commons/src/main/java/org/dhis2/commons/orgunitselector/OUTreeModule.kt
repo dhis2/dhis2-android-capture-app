@@ -29,7 +29,6 @@ package org.dhis2.commons.orgunitselector
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 

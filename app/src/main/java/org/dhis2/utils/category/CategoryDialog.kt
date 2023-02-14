@@ -93,6 +93,12 @@ class CategoryDialog(
             this,
             Observer {
                 adapter?.submitList(it)
+                binding.layoutSearch.visibility =
+                    if ((adapter?.itemCount ?: 0) < DEFAULT_COUNT_LIMIT) {
+                        View.GONE
+                    } else {
+                        View.VISIBLE
+                    }
             }
         )
     }

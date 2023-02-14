@@ -63,7 +63,6 @@
     <string name="configuration_sync_failed">La configuration a échoué</string>
     <string name="data_sync_failed">Synchronisation a échoue</string>
     <string name="account_recovery">Récupération de compte</string>
-
     <!--PERIOD-->
     <string name="DAILY">Quotidien</string>
     <string name="WEEKLY">Hebdomadaire</string>
@@ -102,7 +101,6 @@
     <string name="event_approved">événement approuvé</string>
     <string name="event_inactive">événement inactif</string>
     <string name="read_only">Lecture seule</string>
-    <string name="complete">Terminer</string>
     <string name="finish_and_complete">Terminer et Compléter</string>
     <string name="completed">Terminé</string>
     <string name="cancelled">Annulé</string>
@@ -266,7 +264,6 @@
     <string name="missing_mandatory_fields_events">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
     <string name="title_delete_go_back">Vos données n\'ont pas été sauvegardées</string>
     <string name="delete_go_back">Si vous retournez maintenant, toute information saisie sera supprimée.</string>
-    <string name="discard_go_back">Si vous quittez maintenant, toutes les informations du formulaire seront supprimées.</string>
     <string name="missing_mandatory_fields_events_2.0">Certains champs obligatoires sont vides:\n%s\nVous pouvez retourner maintenant, mais cet évènement ne pourra etre complété.</string>
     <string name="missing_mandatory_fields_go_back">Supprimer et retourner</string>
     <string name="error_fields">Certains champs ont des erreurs:\n%s\nVeuillez les vérifier.</string>
@@ -457,7 +454,6 @@
     <string name="unable_to_complete">Impossible de terminer</string>
     <string name="unable_to_save">Impossible de sauvegarder</string>
     <string name="warnings_in_form">Il y a des avertissements dans le formulaire</string>
-    <string name="review">Vérifier</string>
     <string name="field_errors">Certains champs comportent des erreurs. Merci de les vérifier pour compléter.</string>
     <string name="unselect_enrollment">Désélectionner l\'inscription</string>
     <string name="unselect_enrollment_description">Montrer le tableau de bord avec tous les programmes actifs</string>
@@ -730,7 +726,6 @@
     <string name="show_events_timeline">Afficher la chronologie des événements</string>
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Date d´événement</string>
-    <string name="dataset_data">Données</string>
     <string name="tei_type_has_no_attributes">%s n\'a pas d\'attributs publics. Veuillez sélectionner un programme</string>
     <string name="privacy_policy_title">Politique de confidentialité</string>
     <string name="open_privacy_policy">Cliquez ici pour consulter notre <a href=""> politique de confidentialité </a></string>
@@ -831,13 +826,11 @@
     <string name="granular_sync_refresh">Actualiser</string>
     <string name="unknown_date">Inconnu</string>
     <string name="granular_sync_refresh_title">Actualiser toutes les données</string>
+    <string name="add_accout">Ajouter une compte</string>
     <string name="delete_account">Supprimer compte</string>
     <string name="troubleshooting_language_title">Langue</string>
     <string name="not_saved">Non enregistré!</string>
-    <string name="discard_changes">Abandonner les modifications</string>
-    <string name="keep_editing">Continuer l’édition</string>
     <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
-    <string name="not_now">Pas maintenant</string>
     <string name="search_no_results">Il n\'y a pas de résultats pour cette recherche</string>
     <string name="search_too_many_results">Résultats trop nombreux</string>
     <string name="search_create_new">Créer nouveau</string>
@@ -848,10 +841,6 @@
     <string name="missing_error_fields_events">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nVoulez-vous revoir le formulaire ?</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
     <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
-    <string name="field_errors_not_saved_discard">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nSi vous quittez maintenant, les modifications seront ignorées.</string>
-    <string name="field_errors_not_saved">Certains champs contiennent des erreurs et ils ne sont pas enregistrés.</string>
-    <string name="fields_mandatory_missing">Certains champs obligatoires manquent et le formulaire ne peut pas être enregistré.</string>
-    <string name="fields_mandatory_missing_discard">Certains champs obligatoires manquent et le formulaire ne peut pas être enregistré. \ nSi vous quittez maintenant, les modifications seront ignorées</string>
     <string name="changes_will_be_discarted">Si vous quittez maintenant, les modifications seront ignorées.</string>
     <string name="re_opened">Réouvert</string>
     <string name="account_disable_title">Compte désactivé</string>

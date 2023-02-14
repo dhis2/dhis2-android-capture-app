@@ -204,4 +204,14 @@
     <string name="error_min_attributes">No hay suficientes atributos para realizar la búsqueda. Por favor redefina la búsqueda añadiendo más atributos.</string>
     <string name="error_org_unit_scope">La búsqueda online solo está disponible para las unidades organizativas de búsqueda.</string>
     <string name="error_invalid_characters">El query contiene caracteres invalidos. Por favor contacte a su administrador para verificar la configuración del servidor (relaxedQueryChars,...).</string>
+    <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
+    <string name="add_image">Añadir imagen</string>
+    <string name="action_ok">De acuerdo</string>
+    <string name="enable_location_message">La ubicación de su dispositivo está desconectada. Por favor habilítela para capturar coordenadas. </string>
+    <string name="keep_editing">Seguir editando</string>
+    <string name="not_now">Ahora no</string>
+    <string name="review">Revisar</string>
+    <string name="complete">Completar</string>
+    <string name="default_table_header_label">Valor</string>
+    <string name="discard_changes">Descartar los cambios</string>
     </resources>

@@ -57,7 +57,7 @@ fun RadioGroup.setRenderingType(renderingType: UiRenderType?) {
 fun LinearLayout.addOptions(item: FieldUiModel) {
     if (item.renderingType?.isCheckBox() == true) {
         removeAllViews()
-        item.optionsToDisplay?.forEach { option ->
+        item.optionSetConfiguration?.optionsToDisplay()?.forEach { option ->
             val optionBinding: OptionSetSelectCheckItemBinding =
                 OptionSetSelectCheckItemBinding.inflate(LayoutInflater.from(context), this, false)
             optionBinding.apply {
@@ -83,7 +83,7 @@ fun LinearLayout.addOptions(item: FieldUiModel) {
 fun RadioGroup.addOptions(item: FieldUiModel) {
     if (item.renderingType?.isRadioButton() == true) {
         removeAllViews()
-        item.optionsToDisplay?.forEach { option ->
+        item.optionSetConfiguration?.optionsToDisplay()?.forEach { option ->
             val optionBinding: OptionSetSelectItemBinding =
                 OptionSetSelectItemBinding.inflate(LayoutInflater.from(context), this, false)
             optionBinding.apply {

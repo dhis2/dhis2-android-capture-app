@@ -6,8 +6,10 @@ import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
+import java.lang.IllegalArgumentException
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.UiEventType
 
 @BindingAdapter("options")
@@ -25,22 +27,25 @@ fun TextView.addOptions(field: FieldUiModel) {
 }
 
 private fun showOptions(view: View, field: FieldUiModel) {
-    when (field.optionsToDisplay?.size) {
-        in 0..15 -> {
+    when (val optionSetConfig = field.optionSetConfiguration) {
+        is OptionSetConfiguration.BigOptionSet ->
+            field.invokeUiEvent(UiEventType.OPTION_SET)
+        is OptionSetConfiguration.DefaultOptionSet ->
             ListPopupWindow(view.context, null, R.attr.listPopupWindowStyle).apply {
                 anchorView = view
-                val list = field.optionsToDisplay?.map { it.displayName() } ?: emptyList()
+                val list = optionSetConfig.optionsToDisplay().map { it.displayName() }
                 val adapter = ArrayAdapter(view.context, R.layout.pop_up_menu_item, list)
                 setAdapter(adapter)
 
                 setOnItemClickListener { _, _, position, _ ->
-                    field.optionsToDisplay?.get(position)?.code()?.let { field.onSave(it) }
+                    optionSetConfig.optionsToDisplay()[position].code()?.let { field.onSave(it) }
                     dismiss()
                 }
                 show()
             }
+        null -> {
+            throw IllegalArgumentException("Unsupported OptionSetConfiguration")
         }
-        else -> field.invokeUiEvent(UiEventType.OPTION_SET)
     }
     field.onItemClick()
 }

@@ -93,6 +93,8 @@ data class Graph(
             series.isNotEmpty()
         }
     }
+
+    fun isSingleValue() = series.size == 1 && series[0].coordinates.size == 1
 }
 
 data class SerieData(

@@ -3,8 +3,8 @@ package org.dhis2.data.forms.dataentry.tablefields.coordinate;
 import static android.app.Activity.RESULT_OK;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
+import static org.dhis2.commons.Constants.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.commons.Constants.RQ_MAP_LOCATION_VIEW;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -26,21 +26,21 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.App;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.maps.geometry.LngLatValidatorKt;
-import org.dhis2.maps.views.MapSelectorActivity;
+import org.dhis2.commons.ActivityResultObservable;
+import org.dhis2.commons.ActivityResultObserver;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.extensions.DoubleExtensionsKt;
+import org.dhis2.commons.locationprovider.LocationSettingLauncher;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
+import org.dhis2.maps.geometry.LngLatValidatorKt;
+import org.dhis2.maps.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.ActivityResultObservable;
-import org.dhis2.utils.ActivityResultObserver;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -307,7 +307,13 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     return Unit.INSTANCE;
                 },
                 () -> {
-                    ((ActivityGlobalAbstract) this.getContext()).requestEnableLocation();
+                    LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(
+                            getContext(),
+                            null,
+                            () -> {
+                                updateLocation(currentGeometry);
+                                return Unit.INSTANCE;
+                            });
                     return Unit.INSTANCE;
                 });
     }
@@ -381,9 +387,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void onMapPositionClick() {
         subscribe();
         ((FragmentActivity) getContext()).startActivityForResult(MapSelectorActivity.Companion.create(
-                (FragmentActivity) getContext(),
-                getFeatureType(),
-                currentCoordinates()),
+                        (FragmentActivity) getContext(),
+                        getFeatureType(),
+                        currentCoordinates()),
                 RQ_MAP_LOCATION_VIEW);
     }
 

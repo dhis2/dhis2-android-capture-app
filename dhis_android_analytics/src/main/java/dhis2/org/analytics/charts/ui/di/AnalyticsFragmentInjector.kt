@@ -7,6 +7,7 @@ import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.ui.AnalyticMode
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import dhis2.org.analytics.charts.ui.GroupAnalyticsViewModelFactory
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 
 @Subcomponent(modules = [AnalyticsFragmentModule::class])
 interface AnalyticsFragmentComponent {
@@ -19,7 +20,10 @@ class AnalyticsFragmentModule(
     private val uid: String?
 ) {
     @Provides
-    fun provideViewModelFactory(charts: Charts): GroupAnalyticsViewModelFactory {
-        return GroupAnalyticsViewModelFactory(mode, uid, charts)
+    fun provideViewModelFactory(
+        charts: Charts,
+        matomoAnalyticsController: MatomoAnalyticsController
+    ): GroupAnalyticsViewModelFactory {
+        return GroupAnalyticsViewModelFactory(mode, uid, charts, matomoAnalyticsController)
     }
 }

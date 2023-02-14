@@ -54,8 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
 import org.dhis2.R
-import org.dhis2.commons.ui.MetadataIcon
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIcon
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel

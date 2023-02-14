@@ -34,11 +34,12 @@ private fun <R> Tree.Root<R>.filterChildren(
 
     for (child in oldChildren) {
         if (predicate(child)) {
-            when (child) {
-                is Tree.Node -> children.add(
+            if (child is Tree.Node){
+                children.add(
                     child.copy(children = filterChildren(child.children, predicate))
                 )
-                is Tree.Leaf -> children.add(child.copy())
+            } else if (child is Tree.Leaf){
+                children.add(child.copy())
             }
         }
     }
@@ -62,15 +63,14 @@ private fun <R> Tree.Root<R>.expandChildren(
     val children = mutableListOf<Tree<*>>()
 
     for (child in oldChildren) {
-        when (child) {
-            is Tree.Node -> {
-                if (child == target) {
-                    children.add(child.copy(expanded = !child.expanded))
-                } else {
-                    children.add(child.copy(children = expandChildren(child.children, target)))
-                }
+        if (child is Tree.Node){
+            if (child == target) {
+                children.add(child.copy(expanded = !child.expanded))
+            } else {
+                children.add(child.copy(children = expandChildren(child.children, target)))
             }
-            is Tree.Leaf -> children.add(child.copy())
+        } else if (child is Tree.Leaf){
+            children.add(child.copy())
         }
     }
 

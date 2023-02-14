@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 
@@ -60,12 +60,22 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
     override fun setResult(programStageUid: String, repeatable: Boolean, periodType: PeriodType?) {
         val intent = Intent(this, EventInitialActivity::class.java)
         val bundle = Bundle().apply {
-            putString(Constants.PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID))
+            putString(
+                Constants.PROGRAM_UID,
+                getIntent().getStringExtra(
+                    Constants.PROGRAM_UID
+                )
+            )
             putString(
                 Constants.TRACKED_ENTITY_INSTANCE,
                 getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE)
             )
-            putString(Constants.ORG_UNIT, getIntent().getStringExtra(Constants.ORG_UNIT))
+            putString(
+                Constants.ORG_UNIT,
+                getIntent().getStringExtra(
+                    Constants.ORG_UNIT
+                )
+            )
             putString(
                 Constants.ENROLLMENT_UID,
                 getIntent().getStringExtra(Constants.ENROLLMENT_UID)

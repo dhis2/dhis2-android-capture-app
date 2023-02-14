@@ -3,21 +3,14 @@ package org.dhis2.usescases.enrollment
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
-import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.dataentry.EnrollmentRepository
-import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.model.FieldUiModelImpl
-import org.dhis2.form.model.StoreResult
-import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -26,11 +19,12 @@ import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -50,10 +44,9 @@ class EnrollmentPresenterImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
-    private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val sectionProcessor: FlowableProcessor<String> = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val eventCollectionRepository: EventCollectionRepository = mock()
 
     @Before
     fun setUp() {
@@ -66,9 +59,9 @@ class EnrollmentPresenterImplTest {
             programRepository,
             schedulers,
             enrollmentFormRepository,
-            valueStore,
             analyticsHelper,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            eventCollectionRepository
         )
     }
 
@@ -124,18 +117,6 @@ class EnrollmentPresenterImplTest {
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
 
         verify(enrollmentView).displayMessage(null)
-    }
-
-    @Test
-    fun `Save file should use valueStore`() {
-        whenever(valueStore.save("uid", "fileValue")) doReturn Flowable.just(
-            StoreResult(
-                "uid",
-                ValueStoreResult.VALUE_CHANGED
-            )
-        )
-        presenter.saveFile("uid", "fileValue")
-        verify(valueStore, times(1)).save("uid", "fileValue")
     }
 
     @Test
@@ -222,6 +203,33 @@ class EnrollmentPresenterImplTest {
         verify(enrollmentView).setSaveButtonVisible(false)
     }
 
+    @Test
+    fun `Should return true if event status is SCHEDULE`() {
+        val event = Event.builder().uid("uid").status(EventStatus.SCHEDULE).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(presenter.isEventScheduleOrSkipped("uid"))
+    }
+
+    @Test
+    fun `Should return true if event status is SKIPPED`() {
+        val event = Event.builder().uid("uid").status(EventStatus.SKIPPED).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(presenter.isEventScheduleOrSkipped("uid"))
+    }
+
+    @Test
+    fun `Should return false if event status is ACTIVE`() {
+        val event = Event.builder().uid("uid").status(EventStatus.ACTIVE).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(!presenter.isEventScheduleOrSkipped("uid"))
+    }
+
     private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
         whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
             .categoryCombo(ObjectWithUid.create("")).build()
@@ -248,53 +256,5 @@ class EnrollmentPresenterImplTest {
             .isDefault(catCombo)
             .uid("")
             .build()
-    }
-
-    private fun dummyEditTextViewModel(
-        uid: String,
-        label: String,
-        value: String? = null,
-        mandatory: Boolean = false
-    ) =
-        FieldUiModelImpl(
-            uid = uid,
-            layoutId = 1,
-            value = value,
-            mandatory = mandatory,
-            label = label,
-            programStageSection = "testSection",
-            valueType = ValueType.TEXT
-        )
-
-    private fun mockTrackedEntityAttributes() {
-        whenever(d2.trackedEntityModule()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("uid1")) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet()
-        ) doReturn mock()
-    }
-
-    private fun mockTrackedEntityAttributeValues() {
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityAttribute()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-                .byValue()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-                .byValue().eq("value")
-        ) doReturn mock()
     }
 }

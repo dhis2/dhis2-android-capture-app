@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import org.dhis2.commons.data.RelationshipOwnerType
 import java.io.File
+import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.maps.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.model.TeiMap

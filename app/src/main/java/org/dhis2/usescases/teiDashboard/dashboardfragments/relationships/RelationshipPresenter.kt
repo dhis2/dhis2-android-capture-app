@@ -3,12 +3,13 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.ArrayList
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -16,7 +17,6 @@ import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.relationship.RelationshipEntityType
 import org.hisp.dhis.android.core.relationship.RelationshipHelper
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import timber.log.Timber
@@ -31,7 +31,8 @@ class RelationshipPresenter internal constructor(
     private val schedulerProvider: SchedulerProvider,
     private val analyticsHelper: AnalyticsHelper,
     private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
-    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
+    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
+    private val mapStyleConfig: MapStyleConfiguration
 ) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -89,18 +90,9 @@ class RelationshipPresenter internal constructor(
         teiTypeToAdd: String,
         relationshipType: RelationshipType
     ) {
-        val writeAccess: Boolean = when (relationshipType.fromConstraint()?.relationshipEntity()) {
-            RelationshipEntityType.PROGRAM_INSTANCE ->
-                d2.programModule()
-                    .programs().uid(programUid).blockingGet()!!.access().data().write()!!
-            RelationshipEntityType.PROGRAM_STAGE_INSTANCE ->
-                d2.programModule()
-                    .programStages().uid(programStageUid).blockingGet()?.access()!!.data().write()
-            RelationshipEntityType.TRACKED_ENTITY_INSTANCE ->
-                d2.programModule()
-                    .programs().uid(programUid).blockingGet()!!.access().data().write()!!
-            else -> false
-        }
+        val writeAccess =
+            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
+
         if (writeAccess) {
             analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
             if (teiUid != null) {
@@ -179,7 +171,7 @@ class RelationshipPresenter internal constructor(
             } else {
                 view.showTeiWithoutEnrollmentError(
                     d2.trackedEntityModule()
-                        .trackedEntityTypes().uid(teiType).blockingGet()!!.displayName() ?: ""
+                        .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: ""
                 )
             }
         } else {
@@ -210,5 +202,9 @@ class RelationshipPresenter internal constructor(
             )
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
+    }
+
+    fun fetchMapStyles(): List<BaseMapStyle> {
+        return mapStyleConfig.fetchMapStyles()
     }
 }

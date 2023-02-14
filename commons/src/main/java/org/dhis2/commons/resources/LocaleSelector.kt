@@ -6,8 +6,8 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
-import org.hisp.dhis.android.core.D2
 import java.util.Locale
+import org.hisp.dhis.android.core.D2
 
 private const val OVERRIDE_LANGUAGE_KEY = "OVERRIDE_LANGUAGE_KEY"
 
@@ -55,7 +55,7 @@ class LocaleSelector(private val base: Context, private val d2: D2) {
 
     private fun changeToUserLanguage(base: Context): Context {
         var context = base
-        if (!d2.userModule().isLogged.blockingGet()){
+        if (!d2.userModule().isLogged.blockingGet()) {
             return context
         }
         getUserLanguage()?.let { newLocale ->

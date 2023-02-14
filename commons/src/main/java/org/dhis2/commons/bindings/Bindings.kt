@@ -13,8 +13,8 @@ import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.ui.MetadataIconData
-import org.dhis2.commons.ui.setUpMetadataIcon
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.setUpMetadataIcon
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -134,8 +134,18 @@ private fun getScheduleIcon(isActive: Boolean) = when (isActive) {
 @BindingAdapter("eventWithoutRegistrationStatusIcon")
 fun ImageView.setEventWithoutRegistrationStatusIcon(event: ProgramEventViewModel) {
     val drawableResource: Int = when (event.eventStatus()) {
-        EventStatus.COMPLETED -> if (event.canBeEdited()) R.drawable.ic_event_status_complete else R.drawable.ic_event_status_complete_read
-        else -> if (event.canBeEdited()) R.drawable.ic_event_status_open else R.drawable.ic_event_status_open_read
+        EventStatus.COMPLETED ->
+            if (event.canBeEdited()) {
+                R.drawable.ic_event_status_complete
+            } else {
+                R.drawable.ic_event_status_complete_read
+            }
+        else ->
+            if (event.canBeEdited()) {
+                R.drawable.ic_event_status_open
+            } else {
+                R.drawable.ic_event_status_open_read
+            }
     }
     setImageResource(drawableResource)
 }
@@ -165,4 +175,12 @@ fun ComposeView.setIconStyle(style: ObjectStyle?) {
             true
         )
     }
+}
+
+@BindingAdapter("set_metadata_icon_data")
+fun ComposeView.setIconData(iconData: MetadataIconData) {
+    setUpMetadataIcon(
+        metadataIconData = iconData.copy(sizeInDp = 48),
+        true
+    )
 }

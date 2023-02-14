@@ -19,10 +19,10 @@ import io.reactivex.Observable
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.databinding.DialogOptionSetBinding
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.hisp.dhis.android.core.option.Option
 

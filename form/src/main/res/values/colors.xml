@@ -3,4 +3,8 @@
     <color name="warning_color">#F19525</color>
     <color name="error_color">#F11E1E</color>
     <color name="textPrimary">#DE000000</color>
+    <color name="placeholder">#61333333</color>
+    <color name="text_black_A63">#A6333333</color>
+    <color name="textSecondary">#8A000000</color>
+    <color name="colorPrimaryLight">#72C8FF</color>
 </resources>

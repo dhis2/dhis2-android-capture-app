@@ -34,7 +34,7 @@ class WorkingListChipGroup @JvmOverloads constructor(
                     chip.isChecked = workingListItem.isSelected()
                     chip.tag = workingListItem.uid
                     chip.setOnCheckedChangeListener { _, checked ->
-                        if(checked) {
+                        if (checked) {
                             scrollContainer?.scrollToPosition(chip.tag as String)
                         }
                     }
@@ -48,7 +48,7 @@ class WorkingListChipGroup @JvmOverloads constructor(
             .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
                 override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
                     if (FilterManager.getInstance().observeWorkingListScope()
-                            .get() is EmptyWorkingList && checkedChipId != -1
+                        .get() is EmptyWorkingList && checkedChipId != -1
                     ) {
                         clearCheck()
                     }

@@ -31,10 +31,10 @@ public class MessageAmountDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(getString(R.string.sms_amount_question, amount));
 
-        builder.setPositiveButton(android.R.string.yes, (dialog, which) ->
+        builder.setPositiveButton(getString(R.string.yes), (dialog, which) ->
                 messageCountAcceptedListener.acceptSMSCount(true)
         );
-        builder.setNegativeButton(android.R.string.no, (dialog, which) ->
+        builder.setNegativeButton(getString(R.string.no), (dialog, which) ->
                 messageCountAcceptedListener.acceptSMSCount(false)
         );
         return builder.create();

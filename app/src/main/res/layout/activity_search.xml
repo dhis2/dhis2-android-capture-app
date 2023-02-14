@@ -14,6 +14,10 @@
         <variable
             name="totalFilters"
             type="Integer" />
+
+        <variable
+            name="navigationInitialPage"
+            type="Integer" />
     </data>
 
     <RelativeLayout
@@ -216,6 +220,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:elevation="12dp"
+                app:initialPage="@{navigationInitialPage}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:menu="@menu/navigation_search_menu" />
 

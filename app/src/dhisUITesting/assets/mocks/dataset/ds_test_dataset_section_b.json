@@ -1,0 +1,350 @@
+[
+  {
+    "id": "wk4WVISjWAE",
+    "tableHeaderModel": {
+      "rows": [
+        {
+          "cells": [
+            {
+              "value": "CATC1"
+            },
+            {
+              "value": "CATC2"
+            },
+            {
+              "value": "CATC3"
+            }
+          ]
+        }
+      ]
+    },
+    "tableRows": [
+      {
+        "rowHeader": {
+          "title": "DS TEST NUMBER",
+          "row": 0
+        },
+        "values": {
+          "0": {
+            "id": "vWlMaaRaSpH_mJgFuT53ehR",
+            "row": 0,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          },
+          "1": {
+            "id": "vWlMaaRaSpH_RmdcbOsdybO",
+            "row": 0,
+            "column": 1,
+            "value": null,
+            "dropDownOptions": []
+          },
+          "2": {
+            "id": "vWlMaaRaSpH_FyadY0SOoZN",
+            "row": 0,
+            "column": 2,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "Total",
+          "row": 1
+        },
+        "values": {
+          "0": {
+            "id": "",
+            "row": 1,
+            "column": 0,
+            "value": "0.0",
+            "editable": false,
+            "dropDownOptions": []
+          },
+          "1": {
+            "id": "",
+            "row": 1,
+            "column": 1,
+            "value": "0.0",
+            "editable": false,
+            "dropDownOptions": []
+          },
+          "2": {
+            "id": "",
+            "row": 1,
+            "column": 2,
+            "value": "0.0",
+            "editable": false,
+            "dropDownOptions": []
+          }
+        },
+        "isLastRow": true
+      }
+    ]
+  },
+  {
+    "id": "bjDvmb4bfuf",
+    "tableHeaderModel": {
+      "rows": [
+        {
+          "cells": [
+            {
+              "value": "default"
+            }
+          ]
+        }
+      ]
+    },
+    "tableRows": [
+      {
+        "rowHeader": {
+          "title": "DS TEST NEGINT",
+          "row": 0
+        },
+        "values": {
+          "0": {
+            "id": "Lcc5ZvvZodu_HllvX50cXC0",
+            "row": 0,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST ORGUNIT",
+          "row": 1
+        },
+        "values": {
+          "0": {
+            "id": "d26Mn3ODQxd_HllvX50cXC0",
+            "row": 1,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST PERCENTAGE",
+          "row": 2
+        },
+        "values": {
+          "0": {
+            "id": "uOVJaclwjyJ_HllvX50cXC0",
+            "row": 2,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST PHONENUMBER",
+          "row": 3,
+          "showDecoration": true
+        },
+        "values": {
+          "0": {
+            "id": "evr1rxxZX8i_HllvX50cXC0",
+            "row": 3,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST POSINT",
+          "row": 4
+        },
+        "values": {
+          "0": {
+            "id": "QO0KDeBrLbS_HllvX50cXC0",
+            "row": 4,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST POSORZEROINT",
+          "row": 5
+        },
+        "values": {
+          "0": {
+            "id": "pWAj6vft0gk_HllvX50cXC0",
+            "row": 5,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST TEXT",
+          "row": 6
+        },
+        "values": {
+          "0": {
+            "id": "Xbi5eOAlGPX_HllvX50cXC0",
+            "row": 6,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST TEXT OptionSet",
+          "row": 7,
+          "showDecoration": true
+        },
+        "values": {
+          "0": {
+            "id": "zxQX7O0DF5w_HllvX50cXC0",
+            "row": 7,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": [
+              "Medium",
+              "Large",
+              "Small"
+            ]
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST TIME",
+          "row": 8
+        },
+        "values": {
+          "0": {
+            "id": "ISeLNr7ZX8i_HllvX50cXC0",
+            "row": 8,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST TRACKASSOC",
+          "row": 9
+        },
+        "values": {
+          "0": {
+            "id": "MJH4MvREjRr_HllvX50cXC0",
+            "row": 9,
+            "column": 0,
+            "value": "Tipo de valor no admitido",
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST UNITINTERVAL",
+          "row": 10
+        },
+        "values": {
+          "0": {
+            "id": "tuM3CqPbxq5_HllvX50cXC0",
+            "row": 10,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST URL",
+          "row": 11
+        },
+        "values": {
+          "0": {
+            "id": "bRhwhcNo6GD_HllvX50cXC0",
+            "row": 11,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST USERNAME",
+          "row": 12
+        },
+        "values": {
+          "0": {
+            "id": "lSMHh5rxkc5_HllvX50cXC0",
+            "row": 12,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST YESNO",
+          "row": 13
+        },
+        "values": {
+          "0": {
+            "id": "TDeiFuORGhe_HllvX50cXC0",
+            "row": 13,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "DS TEST YESONLY",
+          "row": 14
+        },
+        "values": {
+          "0": {
+            "id": "seopgsMGNIm_HllvX50cXC0",
+            "row": 14,
+            "column": 0,
+            "value": null,
+            "dropDownOptions": []
+          }
+        }
+      },
+      {
+        "rowHeader": {
+          "title": "Total",
+          "row": 15
+        },
+        "values": {
+          "0": {
+            "id": "",
+            "row": 15,
+            "column": 0,
+            "value": "0.0",
+            "editable": false,
+            "dropDownOptions": []
+          }
+        },
+        "isLastRow": true
+      }
+    ]
+  }
+]

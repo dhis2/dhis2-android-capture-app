@@ -2,9 +2,9 @@ package org.dhis2.maps.location
 
 import android.location.Location
 import android.widget.Toast
-import com.mapbox.android.core.location.LocationEngineCallback
-import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.engine.LocationEngineCallback
+import com.mapbox.mapboxsdk.location.engine.LocationEngineResult
 import java.lang.ref.WeakReference
 import org.dhis2.maps.views.MapSelectorActivity
 

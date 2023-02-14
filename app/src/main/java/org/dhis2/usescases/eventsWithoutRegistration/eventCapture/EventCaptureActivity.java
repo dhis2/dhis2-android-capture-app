@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
@@ -19,18 +19,22 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
-import org.dhis2.ui.DataEntryDialogUiModel;
-import org.dhis2.ui.DialogButtonStyle;
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel;
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
@@ -40,9 +44,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.EventMode;
-import org.dhis2.utils.customviews.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog.ActionType;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -57,6 +59,8 @@ import javax.inject.Inject;
 import kotlin.Unit;
 
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, MapButtonObservable, EventDetailsComponentProvider {
+
+    private static final String SHOW_OPTIONS = "SHOW_OPTIONS";
 
     private ActivityEventCaptureBinding binding;
     @Inject
@@ -89,8 +93,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(
                 new EventCaptureModule(
                         this,
-                        eventUid,
-                        getContext()));
+                        eventUid));
         eventCaptureComponent.inject(this);
         themeManager.setProgramTheme(getIntent().getStringExtra(PROGRAM_UID));
         super.onCreate(savedInstanceState);
@@ -184,7 +187,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void attemptFinish() {
         if (eventMode == EventMode.NEW) {
-            DataEntryDialogUiModel dataEntryDialogUiModel = new DataEntryDialogUiModel(
+            BottomSheetDialogUiModel bottomSheetDialogUiModel = new BottomSheetDialogUiModel(
                     getString(R.string.title_delete_go_back),
                     getString(R.string.discard_go_back),
                     R.drawable.ic_alert,
@@ -192,8 +195,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     new DialogButtonStyle.MainButton(R.string.keep_editing),
                     new DialogButtonStyle.DiscardButton()
             );
-            DataEntryBottomDialog dialog = new DataEntryBottomDialog(
-                    dataEntryDialogUiModel,
+            BottomSheetDialog dialog = new BottomSheetDialog(
+                    bottomSheetDialogUiModel,
                     () -> Unit.INSTANCE,
                     () -> {
                         presenter.deleteEvent();
@@ -220,8 +223,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             Map<String, String> emptyMandatoryFields,
             EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
-            DataEntryBottomDialog dialog = new DataEntryBottomDialog(
-                    eventCompletionDialog.getDataEntryDialogUiModel(),
+            BottomSheetDialog dialog = new BottomSheetDialog(
+                    eventCompletionDialog.getBottomSheetDialogUiModel(),
                     () -> {
                         setAction(eventCompletionDialog.getMainButtonAction());
                         return Unit.INSTANCE;
@@ -231,7 +234,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                         return Unit.INSTANCE;
                     }
             );
-            dialog.show(getSupportFragmentManager(), "SHOW_OPTIONS");
+            dialog.show(getSupportFragmentManager(), SHOW_OPTIONS);
         }
     }
 
@@ -249,7 +252,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setSkip(true)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), SHOW_OPTIONS);
     }
 
     @Override
@@ -259,7 +262,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setReschedule(true)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), SHOW_OPTIONS);
     }
 
     private void setAction(ActionType actionType) {
@@ -278,7 +281,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 presenter.skipEvent();
                 break;
             case RESCHEDULE:
-                reschedule();
                 break;
             case CHECK_FIELDS:
                 break;
@@ -294,12 +296,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         showSnackBar(R.string.fix_error);
     }
 
-    private void reschedule() {
-    }
-
     @Override
     public void showSnackBar(int messageId) {
-        Snackbar mySnackbar = Snackbar.make(binding.root, messageId, Snackbar.LENGTH_SHORT);
+        Snackbar mySnackbar = Snackbar.make(binding.root, messageId, BaseTransientBottomBar.LENGTH_SHORT);
         mySnackbar.show();
     }
 
@@ -451,7 +450,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onRelationshipMapLoaded() {
-
+        // there are no relationships on events
     }
 
     public void setFormEditionListener(OnEditionListener onEditionListener) {
@@ -466,7 +465,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void showSyncDialog() {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.EVENT)
+                .setConflictType(ConflictType.EVENT)
                 .setUid(eventUid)
                 .onDismissListener(hasChanged -> {
                 })

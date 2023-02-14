@@ -63,7 +63,7 @@ fun FrameLayout.addOptions(item: FieldUiModel) {
     post {
         removeAllViews()
         val parentWidth = measuredWidth
-        item.optionsToDisplay?.forEachIndexed { index, option ->
+        item.optionSetConfiguration?.optionsToDisplay()?.forEachIndexed { index, option ->
             val columns: Int
             val optionContainer = FrameLayout(context)
             val binding = when (item.renderingType) {

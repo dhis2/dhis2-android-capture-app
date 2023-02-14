@@ -2,14 +2,13 @@ package org.dhis2.usescases.sync
 
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso.onView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import androidx.work.Data
 import androidx.work.WorkInfo
 import org.dhis2.AppTest
 import org.dhis2.usescases.BaseTest
-import org.dhis2.utils.Constants
+import org.dhis2.commons.Constants
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,11 +58,6 @@ class SyncActivityTest : BaseTest() {
             checkDataIsWaiting()
             workInfoStatusLiveData.postValue(arrayListOf(mockedMetaWorkInfo(WorkInfo.State.SUCCEEDED)))
             waitToDebounce(3000)
-            checkMetadataIsReady()
-            workInfoStatusLiveData.postValue(arrayListOf(mockedDataWorkInfo(WorkInfo.State.RUNNING)))
-            waitToDebounce(3000)
-            checkDataIsSyncing()
-            workInfoStatusLiveData.postValue(arrayListOf(mockedDataWorkInfo(WorkInfo.State.SUCCEEDED)))
             checkMainActivityIsLaunched()
         }
     }

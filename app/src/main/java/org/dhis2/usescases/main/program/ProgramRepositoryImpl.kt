@@ -7,7 +7,9 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
+import org.dhis2.data.service.SyncStatusData
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
@@ -21,9 +23,37 @@ internal class ProgramRepositoryImpl(
     private val schedulerProvider: SchedulerProvider
 ) : ProgramRepository {
 
-    private val programViewModelMapper = ProgramViewModelMapper()
+    private val programViewModelMapper = ProgramViewModelMapper(resourceManager)
+    private var lastSyncStatus: SyncStatusData? = null
+    private var baseProgramCache: List<ProgramViewModel> = emptyList()
 
-    override fun aggregatesModels(): Flowable<List<ProgramViewModel>> {
+    override fun homeItems(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>> {
+        return programModels(syncStatusData).onErrorReturn { arrayListOf() }
+            .mergeWith(aggregatesModels(syncStatusData).onErrorReturn { arrayListOf() })
+            .flatMapIterable { data -> data }
+            .sorted { p1, p2 -> p1.title.compareTo(p2.title, ignoreCase = true) }
+            .toList().toFlowable()
+            .subscribeOn(schedulerProvider.io())
+            .onErrorReturn { arrayListOf() }
+            .doOnNext {
+                lastSyncStatus = syncStatusData
+            }
+    }
+
+    override fun aggregatesModels(
+        syncStatusData: SyncStatusData
+    ): Flowable<List<ProgramViewModel>> {
+        return Flowable.fromCallable {
+            aggregatesModels().blockingFirst()
+                .applySync(syncStatusData)
+        }
+    }
+
+    override fun clearCache() {
+        baseProgramCache = emptyList()
+    }
+
+    private fun aggregatesModels(): Flowable<List<ProgramViewModel>> {
         return filterPresenter.filteredDataSetInstances().get()
             .toFlowable()
             .map { dataSetSummaries ->
@@ -46,7 +76,17 @@ internal class ProgramRepositoryImpl(
             }
     }
 
-    override fun programModels(): Flowable<List<ProgramViewModel>> {
+    override fun programModels(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>> {
+        return Flowable.fromCallable {
+            baseProgramCache.ifEmpty {
+                baseProgramCache = basePrograms()
+                baseProgramCache
+            }.applyFilters()
+                .applySync(syncStatusData)
+        }
+    }
+
+    private fun basePrograms(): List<ProgramViewModel> {
         return dhisProgramUtils.getProgramsInCaptureOrgUnits()
             .flatMap { programs ->
                 ParallelFlowable.from(Flowable.fromIterable(programs))
@@ -61,21 +101,58 @@ internal class ProgramRepositoryImpl(
                         resourceManager.defaultEventLabel()
                     )
                 val state = dhisProgramUtils.getProgramState(program)
-                val (count, hasOverdue) =
-                    if (program.programType() == WITHOUT_REGISTRATION) {
-                        getSingleEventCount(program)
-                    } else {
-                        getTrackerTeiCountAndOverdue(program)
-                    }
+
                 programViewModelMapper.map(
                     program,
-                    count,
+                    0,
                     recordLabel,
                     state,
-                    hasOverdue,
-                    filterPresenter.areFiltersActive()
+                    hasOverdue = false,
+                    filtersAreActive = false
                 )
-            }.toList().toFlowable()
+            }.toList().toFlowable().blockingFirst()
+    }
+
+    private fun List<ProgramViewModel>.applyFilters(): List<ProgramViewModel> {
+        return map { programModel ->
+            val program = d2.programModule().programs().uid(programModel.uid).blockingGet()
+            val (count, hasOverdue) =
+                if (program.programType() == WITHOUT_REGISTRATION) {
+                    getSingleEventCount(program)
+                } else {
+                    getTrackerTeiCountAndOverdue(program)
+                }
+            programModel.copy(
+                count = count,
+                hasOverdueEvent = hasOverdue,
+                filtersAreActive = filterPresenter.areFiltersActive()
+            )
+        }
+    }
+
+    private fun List<ProgramViewModel>.applySync(
+        syncStatusData: SyncStatusData
+    ): List<ProgramViewModel> {
+        return map { programModel ->
+            programModel.copy(
+                downloadState = when {
+                    syncStatusData.hasDownloadError(programModel.uid) ->
+                        ProgramDownloadState.ERROR
+                    syncStatusData.isProgramDownloading(programModel.uid) ->
+                        ProgramDownloadState.DOWNLOADING
+                    syncStatusData.wasProgramDownloading(lastSyncStatus, programModel.uid) ->
+                        when (syncStatusData.programSyncStatusMap[programModel.uid]?.syncStatus) {
+                            D2ProgressSyncStatus.SUCCESS -> ProgramDownloadState.DOWNLOADED
+                            D2ProgressSyncStatus.ERROR,
+                            D2ProgressSyncStatus.PARTIAL_ERROR -> ProgramDownloadState.ERROR
+                            null -> ProgramDownloadState.DOWNLOADED
+                        }
+                    else ->
+                        ProgramDownloadState.NONE
+                },
+                downloadActive = syncStatusData.running
+            )
+        }
     }
 
     private fun getSingleEventCount(program: Program): Pair<Int, Boolean> {

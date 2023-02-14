@@ -2,6 +2,7 @@ package org.dhis2.form.model.section
 
 import androidx.databinding.ObservableField
 import org.dhis2.form.model.SectionUiModelImpl
+import org.dhis2.form.model.SectionUiModelImpl.Companion.CLOSING_SECTION_UID
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -44,6 +45,62 @@ class SectionUiModelTest {
         assertTrue(sectionUiModel.hasToShowDescriptionIcon(false))
     }
 
+    @Test
+    fun shouldShowNextButton() {
+        val sectionUiModel = givenSectionUiModelWithDescription().also {
+            it.setShowBottomShadow(true)
+        }
+        assertTrue(sectionUiModel.showNextButton())
+    }
+
+    @Test
+    fun shouldNotShowNextButton() {
+        val sectionUiModel = givenSectionUiModelWithDescription().also {
+            it.setShowBottomShadow(false)
+        }
+        assertFalse(sectionUiModel.showNextButton())
+    }
+
+    @Test
+    fun shouldNotShowNextButtonForClosingSection() {
+        val sectionUiModel = givenClosingSectionUiModel().also {
+            it.setShowBottomShadow(true)
+        }
+        assertFalse(sectionUiModel.showNextButton())
+    }
+
+    private fun givenClosingSectionUiModel() = SectionUiModelImpl(
+        CLOSING_SECTION_UID,
+        1,
+        null,
+        false,
+        null,
+        false,
+        null,
+        false,
+        "",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        false,
+        1,
+        1,
+        0,
+        0,
+        "",
+        ObservableField()
+    )
+
     private fun givenSectionUiModelWithNullDescription() = SectionUiModelImpl(
         "",
         1,
@@ -54,7 +111,6 @@ class SectionUiModelTest {
         null,
         false,
         "",
-        null,
         null,
         null,
         null,
@@ -100,7 +156,6 @@ class SectionUiModelTest {
         null,
         null,
         null,
-        null,
         false,
         1,
         1,
@@ -124,7 +179,6 @@ class SectionUiModelTest {
         null,
         null,
         "This is a description",
-        null,
         null,
         null,
         null,

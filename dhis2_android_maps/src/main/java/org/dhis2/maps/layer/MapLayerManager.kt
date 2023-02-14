@@ -6,6 +6,8 @@ import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.maps.R
+import org.dhis2.maps.attribution.AttributionManager
+import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
 import org.dhis2.maps.layer.types.FieldMapLayer
@@ -16,13 +18,15 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 
-class MapLayerManager(val mapboxMap: MapboxMap) {
-
+class MapLayerManager(
+    val mapboxMap: MapboxMap,
+    val baseMapManager: BaseMapManager
+) {
     private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private var mapStyle: MapStyle? = null
     var styleChangeCallback: ((Style) -> Unit)? = null
-    var currentStyle: String = Style.MAPBOX_STREETS
+    var currentStylePosition = 0
 
     private val relationShipColors =
         mutableListOf(
@@ -102,7 +106,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                 )
             }
 
-            if(mapLayers.size == 1){
+            if (mapLayers.size == 1) {
                 handleLayer(sourceId ?: layerType.toString(), true)
             }
         }
@@ -177,14 +181,12 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
         mapLayers.clear()
     }
 
-    fun changeStyle(baseMapType: BaseMapType) {
-        currentStyle = when (baseMapType) {
-            BaseMapType.STREET -> Style.MAPBOX_STREETS
-            BaseMapType.SATELLITE -> Style.SATELLITE_STREETS
-        }
-        mapboxMap.setStyle(
-            currentStyle
-        ) {
+    fun changeStyle(basemapPosition: Int) {
+        currentStylePosition = basemapPosition
+        val newStyle = baseMapManager.baseMapStyles[basemapPosition]
+        (mapboxMap.uiSettings.attributionDialogManager as AttributionManager)
+            .updateCurrentBaseMap(newStyle)
+        mapboxMap.setStyle(baseMapManager.styleJson(newStyle)) {
             styleChangeCallback?.invoke(it)
         }
     }

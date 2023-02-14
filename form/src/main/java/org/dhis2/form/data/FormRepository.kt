@@ -8,7 +8,7 @@ import org.hisp.dhis.android.core.common.ValueType
 interface FormRepository {
 
     fun fetchFormItems(): List<FieldUiModel>
-    fun composeList(): List<FieldUiModel>
+    fun composeList(skipProgramRules: Boolean = false): List<FieldUiModel>
     fun getConfigurationErrors(): List<RulesUtilsProviderConfigurationError>?
     fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult
     fun completedFieldsPercentage(value: List<FieldUiModel>): Float
@@ -21,4 +21,6 @@ interface FormRepository {
     fun setFocusedItem(action: RowAction)
     fun updateSectionOpened(action: RowAction)
     fun removeAllValues()
+    fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean)
+    fun clearFocusItem()
 }

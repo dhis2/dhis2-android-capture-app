@@ -16,6 +16,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.service.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
@@ -101,6 +102,7 @@ class ProgramRepositoryImplTest {
 
     @Test
     fun `Should return list of data set ProgramViewModel`() {
+        val syncStatusData = SyncStatusData(true)
         whenever(
             filterPresenter.filteredDataSetInstances()
         ) doReturn mock()
@@ -111,7 +113,7 @@ class ProgramRepositoryImplTest {
             filterPresenter.isAssignedToMeApplied()
         ) doReturn false
 
-        val testObserver = programRepository.aggregatesModels().test()
+        val testObserver = programRepository.aggregatesModels(syncStatusData).test()
 
         testObserver
             .assertNoErrors()
@@ -122,6 +124,7 @@ class ProgramRepositoryImplTest {
 
     @Test
     fun `Should set data set count to 0 if assign to me is active`() {
+        val syncStatusData = SyncStatusData(true)
         whenever(
             filterPresenter.filteredDataSetInstances()
         ) doReturn mock()
@@ -135,36 +138,37 @@ class ProgramRepositoryImplTest {
             filterPresenter.areFiltersActive()
         ) doReturn true
 
-        val testObserver = programRepository.aggregatesModels().test()
+        val testObserver = programRepository.aggregatesModels(syncStatusData).test()
 
         testObserver
             .assertNoErrors()
             .assertValue {
                 it.size == 2 &&
-                    it[0].count() == 0 &&
+                    it[0].count == 0 &&
                     it[0].translucent() &&
-                    it[1].count() == 0 &&
+                    it[1].count == 0 &&
                     it[1].translucent()
             }
     }
 
     @Test
     fun `Should return list of program ProgramViewModels`() {
+        val syncStatusData = SyncStatusData(true)
         initWheneverForPrograms()
         whenever(
             filterPresenter.areFiltersActive()
         ) doReturn false
-        val testOvserver = programRepository.programModels().test()
+        val testOvserver = programRepository.programModels(syncStatusData).test()
 
         testOvserver
             .assertNoErrors()
             .assertValue {
                 it.size == mockedPrograms().size &&
-                    it[0].count() == 10 &&
-                    it[0].typeName() == "event" &&
-                    it[1].count() == 2 &&
-                    it[1].hasOverdue() &&
-                    it[1].typeName() == "tei"
+                    it[0].count == 10 &&
+                    it[0].typeName == "event" &&
+                    it[1].count == 2 &&
+                    it[1].hasOverdueEvent &&
+                    it[1].typeName == "tei"
             }
     }
 
@@ -180,6 +184,9 @@ class ProgramRepositoryImplTest {
         whenever(
             dhisProgramUtils.getProgramState(any<Program>())
         ) doReturnConsecutively arrayListOf(State.SYNCED, State.TO_POST)
+        whenever(
+            d2.programModule().programs().uid(any()).blockingGet()
+        )doReturnConsecutively mockedPrograms()
         whenever(
             filterPresenter.filteredEventProgram(any(), any())
         ) doReturn mock()
