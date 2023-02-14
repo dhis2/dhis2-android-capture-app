@@ -100,7 +100,7 @@
                             app:layout_constraintTop_toBottomOf="@id/dataPeriods" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Button
+                    <!--<Button
                         android:id="@+id/buttonSyncData"
                         style="@style/TextButton"
                         android:layout_width="wrap_content"
@@ -114,7 +114,16 @@
                         android:textColor="?colorPrimary"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/dataOptions" />
+                        app:layout_constraintTop_toBottomOf="@id/dataOptions" />-->
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/syncDataButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/dataOptions"
+                        app:addSyncButton='@{()->presenter.syncData()}'/>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View

@@ -973,8 +973,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private void checkSyncDataButtonStatus() {
         boolean isOnline = networkUtils.isOnline();
         boolean canBeClicked = isOnline && !dataWorkRunning;
-        binding.buttonSyncData.setEnabled(canBeClicked);
-        binding.buttonSyncData.setClickable(canBeClicked);
+       /* binding.buttonSyncData.setEnabled(canBeClicked);
+        binding.buttonSyncData.setClickable(canBeClicked);*/
     }
 
     private void checkSyncMetaButtonStatus() {
