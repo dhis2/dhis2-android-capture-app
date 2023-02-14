@@ -154,7 +154,8 @@ fun TableHeader(
                                     cellStyle = cellStyle(columnIndex, rowIndex),
                                     onCellSelected = { onHeaderCellSelected(it, rowIndex) },
                                     onHeaderResize = onHeaderResize,
-                                    onResizing = onResizing
+                                    onResizing = onResizing,
+                                    isLastRow = tableHeaderModel.rows.lastIndex == rowIndex
                                 )
                             )
                         }
@@ -183,7 +184,8 @@ fun TableHeader(
                     ),
                     onCellSelected = {},
                     onHeaderResize = { _, _ -> },
-                    onResizing = {}
+                    onResizing = {},
+                    isLastRow = false
                 )
             )
         }
@@ -236,7 +238,7 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
                 columnHeaderRowIndex = itemHeaderUiState.rowIndex
             )
         }
-        if (isSelected) {
+        if (isSelected && itemHeaderUiState.isLastRow) {
             VerticalResizingRule(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
