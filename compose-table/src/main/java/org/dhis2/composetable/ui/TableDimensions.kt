@@ -208,8 +208,8 @@ data class TableDimensions(
         val desiredDimension = updateAllWidthBy(tableId = tableId, widthOffset = widthOffset)
         return desiredDimension.rowHeaderWidth(tableId) in minRowHeaderWidth..maxRowHeaderWidth &&
             desiredDimension.columnWidth[tableId]?.all { (_, width) ->
-                width in minColumnWidth..maxColumnWidth
-            } ?: true
+            width in minColumnWidth..maxColumnWidth
+        } ?: true
     }
 }
 
