@@ -193,19 +193,7 @@ fun handleBackNavigation(
             activity.onBackPressed()
         }
         DataEntryStep.REVIEWING -> {
-            if (dataEntryUiState.hasUnsavedData) {
-                launchBottomSheet(
-                    activity.getString(R.string.not_saved),
-                    activity.getString(R.string.transaction_not_confirmed),
-                    supportFragmentManager,
-                    onKeepEdition = { },
-                    onDiscard = {
-                        viewModel.onHandleBackNavigation()
-                    }
-                )
-            } else {
-                viewModel.onHandleBackNavigation()
-            }
+            viewModel.onHandleBackNavigation()
         }
         DataEntryStep.EDITING_REVIEWING -> {
             activity.onBackPressed()
