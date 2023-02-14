@@ -462,7 +462,10 @@ class ManageStockViewModel @Inject constructor(
 
     fun onHandleBackNavigation() {
         val backStep = when (dataEntryUiState.value.step) {
-            DataEntryStep.REVIEWING -> DataEntryStep.LISTING
+            DataEntryStep.REVIEWING -> {
+                _hasData.value = false
+                DataEntryStep.LISTING
+            }
             else -> null
         }
 
