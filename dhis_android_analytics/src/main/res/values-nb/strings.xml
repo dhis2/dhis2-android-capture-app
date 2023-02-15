@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_table_graph">Vis som tabell</string>
+    <string name="action_accept">Aksepter</string>
+    <string name="period">Periode</string>
+    <string name="none">Ingen</string>
+    <string name="daily">Daglig</string>
+    <string name="today">I dag</string>
+    <string name="other">Annet</string>
+    <string name="yesterday">I går</string>
+    <string name="lastweek">Forrige uke</string>
+    <string name="thisyear">Dette året</string>
+    <string name="weekly">Ukentlig</string>
+    <string name="monthly">Månedlig</string>
+    <string name="yearly">Årlig</string>
+    <string name="all">Alt</string>
+    <string name="reset">Resett</string>
+    </resources>

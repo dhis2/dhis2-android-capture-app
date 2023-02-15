@@ -21,4 +21,4 @@
     <string name="reset">Réinitialiser</string>
     <string name="error_invalid_program">Vous n\'avez pas accès au programme 1%s</string>
     <string name="error_invalid_attribute">Vous n\'avez pas accès à l\'attribut 1%s</string>
-</resources>
+    </resources>

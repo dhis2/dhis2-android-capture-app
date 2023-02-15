@@ -32,6 +32,7 @@
         <item name="navigationViewStyle">@style/Widget.Design.NavigationView</item>
         <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
+        <item name="android:textDirection">locale</item>
     </style>
 
     <style name="DhisBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">

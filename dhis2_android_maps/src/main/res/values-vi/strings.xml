@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_location">Chọn địa điểm</string>
+    <string name="map_layers">Các lớp bản đồ</string>
+    <string name="action_apply">Áp dụng</string>
+    <string name="dialog_layer_satellite">Xem Vệ Tinh</string>
+    <string name="dialog_layer_event">Hiển thị sự kiện</string>
+    <string name="dialog_layer_tei_coordinates">Hiển thị tọa độ đối tượng theo dõi</string>
+    <string name="dialog_layer_enrollment_coordinates">Hiển thị tọa độ của đăng ký này</string>
+    <string name="dialog_layer_heatmap">Hiển thị lớp bản đồ nhiệt độ</string>
 </resources>

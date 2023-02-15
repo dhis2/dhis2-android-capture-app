@@ -45,16 +45,16 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
 
     @Override
     public void onEnrollClick(ProgramViewModel program) {
-        switch (enrollmentService.blockingGetEnrollmentAccess(teiUid, program.id())) {
+        switch (enrollmentService.blockingGetEnrollmentAccess(teiUid, program.getUid())) {
             case WRITE_ACCESS:
             default:
                 analytics.setEvent(ENROLL_FROM_LIST, CLICK, ENROLL_FROM_LIST);
                 preferences.removeValue(Preference.CURRENT_ORG_UNIT);
-                interactor.enroll(program.id(), teiUid);
+                interactor.enroll(program.getUid(), teiUid);
                 break;
             case PROTECTED_PROGRAM_DENIED:
             case CLOSED_PROGRAM_DENIED:
-                view.displayBreakGlassError(program.typeName());
+                view.displayBreakGlassError(program.getTypeName());
                 break;
             case READ_ACCESS:
             case NO_ACCESS:
@@ -89,5 +89,10 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
+    }
+
+    @Override
+    public void refreshData() {
+        interactor.refreshData();
     }
 }

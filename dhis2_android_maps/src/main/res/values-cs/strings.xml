@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">Vyberte místo</string>
+    <string name="map_layers">Mapové vrstvy</string>
+    <string name="action_apply">Použít</string>
+    <string name="dialog_layer_satellite">Zobrazit satelitní pohled</string>
+    <string name="dialog_layer_event">Zobrazit události</string>
+    <string name="dialog_layer_tei_coordinates">Zobrazit TEI souřadnice</string>
+    <string name="dialog_layer_enrollment_coordinates">Zobrazit souřadnice zápisu</string>
+    <string name="dialog_layer_heatmap">Zobrazit vrstvu teplotní mapy</string>
+</resources>

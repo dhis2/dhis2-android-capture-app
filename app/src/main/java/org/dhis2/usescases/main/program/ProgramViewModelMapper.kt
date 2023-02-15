@@ -1,11 +1,14 @@
 package org.dhis2.usescases.main.program
 
+import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
 import org.hisp.dhis.android.core.program.Program
 
-class ProgramViewModelMapper {
+class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
     fun map(
         program: Program,
         recordCount: Int,
@@ -14,25 +17,31 @@ class ProgramViewModelMapper {
         hasOverdue: Boolean,
         filtersAreActive: Boolean
     ): ProgramViewModel {
-        return ProgramViewModel.create(
-            program.uid(),
-            program.displayName()!!,
-            if (program.style() != null) program.style()!!.color() else null,
-            if (program.style() != null) program.style()!!.icon() else null,
-            recordCount,
-            if (program.trackedEntityType() != null) {
+        return ProgramViewModel(
+            uid = program.uid(),
+            title = program.displayName()!!,
+            metadataIconData = MetadataIconData(
+                programColor = resourceManager.getColorOrDefaultFrom(program.style()?.color()),
+                iconResource = resourceManager.getObjectStyleDrawableResource(
+                    program.style()?.icon(),
+                    R.drawable.ic_default_outline
+                )
+            ),
+            count = recordCount,
+            type = if (program.trackedEntityType() != null) {
                 program.trackedEntityType()!!.uid()
             } else {
                 null
             },
-            recordLabel,
-            program.programType()!!.name,
-            program.displayDescription(),
+            typeName = recordLabel,
+            programType = program.programType()!!.name,
+            description = program.displayDescription(),
             onlyEnrollOnce = program.onlyEnrollOnce() == true,
             accessDataWrite = program.access().data().write(),
-            state = state.name,
+            state = State.valueOf(state.name),
             hasOverdueEvent = hasOverdue,
-            filtersAreActive = filtersAreActive
+            filtersAreActive = filtersAreActive,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 
@@ -43,21 +52,36 @@ class ProgramViewModelMapper {
         dataSetLabel: String,
         filtersAreActive: Boolean
     ): ProgramViewModel {
-        return ProgramViewModel.create(
-            dataSetInstanceSummary.dataSetUid(),
-            dataSetInstanceSummary.dataSetDisplayName(),
-            dataSet.style().color(),
-            dataSet.style().icon(),
-            recordCount,
-            null,
+        return ProgramViewModel(
+            uid = dataSetInstanceSummary.dataSetUid(),
+            title = dataSetInstanceSummary.dataSetDisplayName(),
+            metadataIconData = MetadataIconData(
+                programColor = resourceManager.getColorOrDefaultFrom(dataSet.style()?.color()),
+                iconResource = resourceManager.getObjectStyleDrawableResource(
+                    dataSet.style()?.icon(),
+                    R.drawable.ic_default_outline
+                )
+            ),
+            count = recordCount,
+            type = null,
             typeName = dataSetLabel,
             programType = "",
             description = dataSet.description(),
             onlyEnrollOnce = false,
             accessDataWrite = dataSet.access().data().write(),
-            state = dataSetInstanceSummary.state().name,
+            state = dataSetInstanceSummary.state(),
             hasOverdueEvent = false,
-            filtersAreActive = filtersAreActive
+            filtersAreActive = filtersAreActive,
+            downloadState = ProgramDownloadState.NONE
+        )
+    }
+
+    fun map(
+        programViewModel: ProgramViewModel,
+        downloadState: ProgramDownloadState
+    ): ProgramViewModel {
+        return programViewModel.copy(
+            downloadState = downloadState
         )
     }
 }

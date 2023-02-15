@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
 }
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -25,7 +27,7 @@ android {
     }
 
     buildTypes {
-        debug{
+        debug {
 
         }
         release {
@@ -42,18 +44,32 @@ android {
         dataBinding true
     }
 
+    flavorDimensions "default"
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
 }
 
 dependencies {
-
     implementation project(":commons")
+    api('org.maplibre.gl:android-sdk:9.5.2') {
+        exclude group: 'com.google.android.gms'
+    }
+    api('org.maplibre.gl:android-sdk-geojson:5.9.0') {
+        exclude group: 'com.google.android.gms'
+    }
+    implementation("com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:${libraries.mapboxmarkerview}") {
+        exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-android-sdk'
+    }
+    implementation("com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:${libraries.mapboxannotation}") {
+        exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-android-sdk'
+    }
 
-    //region Mapbox
-    api "com.mapbox.mapboxsdk:mapbox-android-sdk:${libraries.mapboxsdk}"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:${libraries.mapboxmarkerview}"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:${libraries.mapboxannotation}"
-    //endregion
+    //TEST
+    androidTestImplementation "org.mockito:mockito-android:$libraries.mockito_android"
+    androidTestImplementation "org.mockito:mockito-core:$libraries.mockito"
+    testImplementation "org.mockito:mockito-core:$libraries.mockito"
+    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$libraries.mockito_kotlin"
 }

@@ -6,20 +6,19 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.StageSection;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -43,8 +42,6 @@ public class TEIDataContracts {
 
         Consumer<EnrollmentStatus> enrollmentCompleted();
 
-        void showCatComboDialog(String eventUid, Date eventDate, String categoryComboUid);
-
         void switchFollowUp(boolean followUp);
 
         void displayGenerateEvent(String eventUid);
@@ -52,8 +49,6 @@ public class TEIDataContracts {
         void restoreAdapter(String programUid, String teiUid, String enrollmentUid);
 
         void seeDetails(Intent intent, Bundle bundle);
-
-        void showQR(Intent intent);
 
         void openEventDetails(Intent intent, Bundle bundle);
 
@@ -67,7 +62,7 @@ public class TEIDataContracts {
 
         void hideFilters();
 
-        Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
+        Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
 
         void showNewEventOptions(android.view.View view, ProgramStage stageUid);
 
@@ -82,15 +77,13 @@ public class TEIDataContracts {
         void setEnrollment(Enrollment enrollment);
 
         void showSyncDialog(String uid);
+
+        void displayCatComboOptionSelectorForEvents(List<EventViewModel> data);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void init();
-
-        void getCatComboOptions(Event event);
-
-        void setDefaultCatOptCombToEvent(String eventUid);
 
         void changeCatOption(String eventUid, String catOptionComboUid);
 
@@ -101,8 +94,6 @@ public class TEIDataContracts {
         void completeEnrollment();
 
         void onFollowUp(DashboardProgramModel dashboardProgramModel);
-
-        void onShareClick(android.view.View mView);
 
         void seeDetails(android.view.View sharedView, DashboardProgramModel dashboardProgramModel);
 

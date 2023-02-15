@@ -59,7 +59,7 @@ class MapTeisToFeatureCollection(
                 val relationshipsFeatureCollections =
                     mapRelationshipsToFeatureCollection.map(relationshipModels)
                 relationshipsFeatureCollections.first.forEach { (key, featureCollection) ->
-                    if(key != null) {
+                    if (key != null) {
                         featureCollectionMap[key]?.features()?.addAll(
                             featureCollection.features() ?: listOf()
                         ) ?: run {

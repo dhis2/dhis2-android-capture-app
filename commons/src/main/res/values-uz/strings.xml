@@ -1,3 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Ҳодиса/Тадбир</string>
+    <string name="no_data">Маълумот йўқ</string>
+    <string name="change_calendar_view">Тақвим кўринишини ўзгартириш</string>
+    <string name="clear">аниқ</string>
+    <string name="action_accept">Қабул қилинг</string>
+    <string name="next">Кейинги</string>
+    <string name="cancel">Бекор қилиш</string>
+    <string name="yes">Ҳа</string>
+    <string name="no">Йўқ</string>
+    <string name="clear_all">аниқ танлов</string>
+    <string name="navigation_list_view">Рўйхат кўриниши</string>
+    <string name="navigation_table_view">Жадвал кўриниши</string>
+    <string name="navigation_map_view">Харита кўриниши</string>
+    <string name="navigation_analytics">Аналитика</string>
+    <string name="navigation_tasks">Вазифалар</string>
+    <string name="navigation_programs">Дастурлар</string>
+    <string name="navigation_events">Ҳодиса/Тадбирлар</string>
+    <string name="navigation_relationships">Ўзаро алоқалар</string>
+    <string name="navigation_notes">Изоҳлар</string>
+    <string name="navigation_data_entry">Маълумот киритиш</string>
+    <string name="navigation_tei_data">Тафсилотлари</string>
+    <string name="event_overview">Тафсилотлари</string>
+    <string name="select_option">Вариант танланг</string>
+    <string name="search">Қидириш</string>
+    <string name="jira_issue_sent">Муаммо юборилди</string>
+    <string name="jira_issue_sent_error">Муаммони юборишда ххатолик юз берди</string>
+    <string name="events">ҳодиса/тадбирлар</string>
+    <string name="data_sets">Маълумотлар тўплами</string>
+    <string name="tei">TEI</string>
+    <string name="info">Ахборот</string>
+    <string name="done">Бажарилди</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Фильтрлар қўлланилади</string>
+    <string name="filters_disabled">Ҳеч қандай фильтр қўлланилмаган</string>
+    <string name="filters_title_period">Давр</string>
+    <string name="filters_title_org_unit">Ташкилий бўлим</string>
+    <string name="filters_title_sorting">Тартиблаш</string>
+    <string name="filters_title_status">Статус</string>
+    <string name="filters_title_state">Синхронлаш</string>
+    <string name="filters_title_assigned">Менга берилган ваколат</string>
+    <string name="filters_title_date">Сана</string>
+    <string name="filters_title_event_date">Ҳодиса/Тадбир санаси</string>
+    <string name="enrollment_date">Қайд этилган сана</string>
+    <string name="filters_title_event_status">Ҳодиса/тадбир ҳолати</string>
+    <string name="filters_title_enrollment_status">Рўйхатга олиш ҳолати</string>
+    <!-- State -->
+    <string name="state_synced">Синхронлаш</string>
+    <string name="state_to_post">Юбориш учун</string>
+    <string name="state_to_update">Янгилаш учун</string>
+    <string name="state_to_delete">Ўчириб ташлаш учун</string>
+    <string name="state_error">Хатолик</string>
+    <string name="state_warning">Огоҳлантириш</string>
+    <string name="state_uploading">Юкланмоқда</string>
+    <string name="state_relationship">Ўзаро алоқа</string>
+    <string name="sent_by_sms">СМС орқали юборилган</string>
+    <string name="sync_by_sms">СМС орқали синхронлаш</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Очиқ</string>
+    <string name="filter_event_status_schedule">Режа</string>
+    <string name="filter_event_status_overdue">Муддат ўтган</string>
+    <string name="filter_event_status_visited">Ташриф буюрди</string>
+    <string name="filter_event_status_completed">Тўлдирилди</string>
+    <string name="filter_event_status_skipped">Ўтказиб юборилди</string>
+    <string name="active">Фаол</string>
+    <string name="cancelled">Бекор қилинди</string>
+    <string name="enrollment_status_active">Очиқ</string>
+    <string name="enrollment_status_completed">Тўлдириш</string>
+    <string name="enrollment_status_cancelled">Бекор қилинди</string>
+    <string name="record_marked_for_deletion">Ушбу ёзув ўчириб ташлаш учун белгилаб қўйилган. Сизда кириб кўриш ҳуқуқи мавжуд эмас.</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">Бугун</string>
+    <string name="filter_period_yesterday">Кеча</string>
+    <string name="filter_period_tomorrow">Эртага</string>
+    <string name="filter_period_this_week">Ушбу ҳафта</string>
+    <string name="filter_period_last_week">Охирги ҳафта</string>
+    <string name="filter_perdior_next_week">Кейинги ҳафта</string>
+    <string name="filter_period_this_month">Ушбу ой</string>
+    <string name="filter_period_last_month">Охирги ой</string>
+    <string name="filter_period_next_month">Кейинги ой</string>
+    <string name="filter_period_form_to">Дан-Гача</string>
+    <string name="filter_period_other">Бошқа</string>
+    <string name="filter_period_any">Исталган вақт</string>
+    <string name="filter_period_this_year">Ушбу йил</string>
+    <string name="filter_period_this_bimonth">Ушбу жуфт ойлик</string>
+    <string name="filter_period_last_bimonth">Охирги жуфт ойлик</string>
+    <string name="filter_period_this_quarter">Ушбу квартал</string>
+    <string name="filter_period_last_quarter">Охирги квартал</string>
+    <string name="filter_period_six_months">Жорий 6 ой</string>
+    <string name="filter_period_last_six_months">Охирги 6 ой</string>
+    <string name="filter_period_weeks_this_year">Ҳафталар айни йилда </string>
+    <string name="filter_period_months_this_year">Ойлар ушбу йилда</string>
+    <string name="filter_period_bimonths_this_year">Ушбу йилдаги жуфт ойлар</string>
+    <string name="filter_period_quarters_this_year">Ушбу йилдаги кварталлар</string>
+    <string name="filter_period_months_last_year">Ўтган йилдаги ойлар</string>
+    <string name="filter_period_quarters_last_year">Охирги йилдаги чораклар</string>
+    <string name="filter_period_last_year">Охирги йил</string>
+    <string name="filter_period_this_biweek">Жорий жуфт ҳафта</string>
+    <string name="filter_period_last_biweek">Охирги жуфт ҳафта</string>
+    <string name="filter_period_this_financial_year">Ушбу молиявий йил</string>
+    <string name="filter_period_last_financial_year">Охирги молиявий йил</string>
+    <string name="period">Давр</string>
+    <string name="DAILY">Кунлик</string>
+    <string name="WEEKLY">Ҳафталик</string>
+    <string name="MONTHLY">Ойлик</string>
+    <string name="YEARLY">Йиллик</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Синхронизацияланган</string>
+    <string name="filter_sync_not_synced">Синхронизацияланмаган</string>
+    <string name="filter_sync_error">Синхронлашда хатолик</string>
+    <string name="filter_sync_sms">СМС Синхронизацияланган</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">ҳозир</string>
+    <string name="interval_minute_ago">%d дақиқа олдин</string>
+    <string name="interval_hour_ago">%d соат олдин</string>
+    <string name="interval_yesterday">Кеча</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Фикр-мулоҳаза</string>
+    <string name="section_indicators">Кўрсатгичлар</string>
+    <string name="section_charts">Диаграммалар</string>
+    <string name="section_charts_indicators">Диаграммалар ва индикаторлар</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Қайд этилган:</string>
+
+    <string name="login_error_dhis_version">Ушбу сервер 2.29 дан фарқли версияни ишлатмоқда. Сервер версиясини янгиланг ёки давом этиш учун синов муддатидан фойдаланинг.</string>
+    <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
+    <string name="unsupported_field_description">Ушбу сатр мобил назорат учун мавжуд эмас</string>
+    <string name="add_image">Расм қўшиш</string>
+    <string name="action_ok">Яхши</string>
+    <string name="enable_location_message">Сизнинг қўрилмангиз интернет алоқаси узилди. Илтимос, координаталарни олиш учун уни ёқинг</string>
+    <string name="keep_editing">Таҳрирни давом этинг</string>
+    <string name="complete">Тўлдириш</string>
+    <string name="default_table_header_label">Қиймат</string>
+    <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
     </resources>

@@ -56,29 +56,29 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), true, valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), true, valueType());
     }
 
     @Override
     public FieldViewModel setValue(String value) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), mandatory(), valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), mandatory(), valueType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(), mandatory(), valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(),dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(), mandatory(), valueType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(),dataElement(),listCategoryOption(), storeBy(), row(), column(),categoryOptionCombo(),catCombo(), mandatory(), valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(),dataElement(), options(), storeBy(), row(), column(),categoryOptionCombo(),catCombo(), mandatory(), valueType());
     }
 
    @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(), mandatory(), valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(),dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(), mandatory(), valueType());
     }
 }

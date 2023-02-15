@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">Joyni tanlang</string>
+    <string name="map_layers">Xarita qavatlari</string>
+    <string name="action_apply">Murojaat qilish</string>
+    <string name="dialog_layer_satellite">Suniy yoʼldosh koʼrinishini koʼrsatish</string>
+    <string name="dialog_layer_event">Hodisa/tadbirlarni koʼrsatish</string>
+    <string name="dialog_layer_tei_coordinates">TEI koordinatalarini koʼrsatish</string>
+    <string name="dialog_layer_enrollment_coordinates">Qayd etilganlar koordinatalarini koʼrsatish</string>
+    <string name="dialog_layer_heatmap">Issiqlik xaritasi qatlamini koʼrsatish</string>
+</resources>

@@ -1,3 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">ເຫດການ</string>
+    <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
+    <string name="change_calendar_view">ປ່ຽນຮູບແບບປະຕິທິນ</string>
+    <string name="clear">ຈັດມ້ຽນ</string>
+    <string name="action_accept">ຍອມຮັບ</string>
+    <string name="next">ຕໍ່ໄປ</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">ແມ່ນ</string>
+    <string name="no">ບໍ່ມີ</string>
+    <string name="navigation_programs">ສາຍງານ</string>
+    <string name="navigation_events">ເຫດການ</string>
+    <string name="navigation_relationships">ສາຍພົວພັນ</string>
+    <string name="navigation_notes">ຂໍ້ຄວາມ</string>
+    <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
+    <string name="navigation_tei_data">ລາຍລະອຽດ</string>
+    <string name="event_overview">ລາຍລະອຽດ</string>
+    <string name="select_option">ເລືອກທາງເລືອກ</string>
+    <string name="search">ຄົນຫາ</string>
+    <string name="events">ເຫດການ</string>
+    <string name="data_sets">ແບບຟອມ</string>
+    <string name="tei">ຈໍານວນກໍລະນີທີ່ປ້ອນເຂົ້າ</string>
+    <string name="done">ສຳເລັດ</string>
+
+    <string name="filters_title_period">ຊ່ວງເວລາ</string>
+    <string name="filters_title_status">ສະຖານະ</string>
+    <string name="filters_title_state">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="filters_title_date">ວັນທີ່</string>
+    <string name="filters_title_event_date">ວັນທີເຫດການ</string>
+    <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
+    <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
+    <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
+    <!-- State -->
+    <string name="state_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="state_to_update">ຕ້ອງການອັບເດດ</string>
+    <string name="state_to_delete">ເພື່ອລືບອອກ</string>
+    <string name="state_error">ເກີດການຜິດພາດ</string>
+    <string name="state_warning">ແຈ້ງເຕືອນ</string>
+    <string name="state_relationship">ຄວາມສໍາພັນ</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">ເປີດ</string>
+    <string name="filter_event_status_schedule">ກຳນົດເວລາ</string>
+    <string name="filter_event_status_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
+    <string name="filter_event_status_completed">ສໍາເລັດແລ້ວ</string>
+    <string name="filter_event_status_skipped">ຂ້າມໄປ</string>
+    <string name="active">ທີ່ຍັງນໍາໃຊ້ຢູ່</string>
+    <string name="cancelled">ຍົກເລີກແລ້ວ</string>
+    <string name="enrollment_status_active">ເປີດ</string>
+    <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
+    <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
+    <!-- Periods -->
+    <string name="filter_period_today">ມື້ນີ້</string>
+    <string name="filter_period_yesterday">ມື້ວານນີ</string>
+    <string name="filter_period_this_week">ທິດນີ້</string>
+    <string name="filter_period_last_week">ອາທິດທີ່ຜ່ານມາ</string>
+    <string name="filter_period_this_month">ເດືອນນີ້</string>
+    <string name="filter_period_last_month">ເດືອນຜ່ານມາ</string>
+    <string name="filter_period_other">ອື່ນໆ</string>
+    <string name="filter_period_this_year">ປີນີ້</string>
+    <string name="filter_period_this_quarter">ໄຕມານີ້</string>
+    <string name="filter_period_last_quarter">ໄຕມາດຜ່ານມາ</string>
+    <string name="filter_period_weeks_this_year">ອາທິດ ຂອງປີນີ້</string>
+    <string name="filter_period_months_this_year">​ເດືອນ​ໃນ​ປີ</string>
+    <string name="filter_period_quarters_this_year">​ໄຕຼມາດ​ໃນ​ປີ</string>
+    <string name="filter_period_months_last_year">​ເດືອນ​ໃນປີ​ຜ່ານ​ມາ</string>
+    <string name="filter_period_last_year">ປີກາຍ</string>
+    <string name="filter_period_this_financial_year">ສົກປີງົບປະມານຂອງປິນີ້</string>
+    <string name="filter_period_last_financial_year">​ສົກ​ປີ​ງົບ​ປະ​ມານ​ປີ​ກາຍ</string>
+    <string name="period">ຊ່ວງເວລາ</string>
+    <string name="DAILY">ທຸກໆມື້</string>
+    <string name="WEEKLY">ເປັນອາທິດ</string>
+    <string name="MONTHLY">ລາຍເດືອນ</string>
+    <string name="YEARLY">ລາຍປີ</string>
+
+    <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
+    <string name="interval_yesterday">ມື້ວານນີ</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">ຜົນຕອບຮັບ</string>
+    <string name="section_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
+    <string name="login_error_dhis_version">ຄອມພີວເຕີໜ່ວຍແມ່ກໍາລັງທໍາງານກັບລະບົບ DHIS2 ລຸ້ນສູງກ່ວາ 2.29. ກະລຸນາ ນໍາໃຊ້ລຸນທີ່ສູງກ່ວາ ຫຼື ນໍາໃຊ້ລະບົບທົດລອງແທນ</string>
+    <string name="online_search_parsing_error">ມີຄໍາຜິດໃນຂະນະທີ່ສົ່ງຜົນໄດ້ຮັບ</string>
+    <string name="complete">ສຳເລັດແລ້ວ</string>
+    <string name="default_table_header_label">Value</string>
     </resources>

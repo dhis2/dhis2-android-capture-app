@@ -7,7 +7,7 @@ import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityReservedValueBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.jetbrains.annotations.NotNull;
 

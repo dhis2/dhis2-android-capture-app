@@ -43,12 +43,21 @@ class ProgramStageSelectionPresenter(
             stageModelsFlowable
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe({ programStages -> view.setData(programStages) }) { t: Throwable? ->
-                    Timber.e(
-                        t
-                    )
+                .subscribe(this::handleProgramStages) { t: Throwable? ->
+                    Timber.e(t)
                 }
         )
+    }
+
+    private fun handleProgramStages(programStages: List<ProgramStage>) {
+        when (programStages.size) {
+            1 -> view.setResult(
+                programStageUid = programStages.first().uid(),
+                repeatable = programStages.first().repeatable() == true,
+                periodType = programStages.first().periodType()
+            )
+            else -> view.setData(programStages)
+        }
     }
 
     @VisibleForTesting

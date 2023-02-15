@@ -8,9 +8,9 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.livedata.observeAsState
 import javax.inject.Inject
 import org.dhis2.Bindings.app
+import org.dhis2.commons.Constants
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.accounts.ui.AccountsScreen
-import org.dhis2.utils.Constants
 
 class AccountsActivity : ActivityGlobalAbstract() {
 

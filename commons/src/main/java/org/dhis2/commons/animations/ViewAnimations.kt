@@ -146,5 +146,3 @@ fun View.hideWithTranslation(
             .start()
     }
 }
-
-

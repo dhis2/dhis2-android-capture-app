@@ -13,7 +13,6 @@ import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselTeiBinding
-import java.util.Locale
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,

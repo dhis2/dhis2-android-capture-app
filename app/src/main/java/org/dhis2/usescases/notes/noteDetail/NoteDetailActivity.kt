@@ -13,11 +13,11 @@ import org.dhis2.Bindings.initials
 import org.dhis2.Bindings.placeHolder
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.databinding.ActivityNoteDetailBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NoteType
-import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.note.Note
 
 class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher {

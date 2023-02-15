@@ -7,9 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
@@ -34,9 +33,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
     lateinit var binding: FragmentProgramEventDetailListBinding
     private var liveAdapter: ProgramEventDetailLiveAdapter? = null
-    private val programEventsViewModel by lazy {
-        ViewModelProviders.of(requireActivity())[ProgramEventDetailViewModel::class.java]
-    }
+    private val programEventsViewModel: ProgramEventDetailViewModel by activityViewModels()
 
     @Inject
     lateinit var presenter: EventListPresenter
@@ -45,8 +42,10 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        (activity as ProgramEventDetailActivity).component.plus(EventListModule(this)).inject(this)
+    ): View {
+        (activity as ProgramEventDetailActivity).component
+            ?.plus(EventListModule(this))
+            ?.inject(this)
         programEventsViewModel.setProgress(true)
 
         val bgThreadPoolExecutor = IdlingThreadPoolExecutor(
@@ -59,7 +58,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
             Executors.defaultThreadFactory()
         )
 
-        val config = AsyncDifferConfig.Builder(ProgramEventDetailLiveAdapter.getDiffCallback())
+        val config = AsyncDifferConfig.Builder(ProgramEventDetailLiveAdapter.diffCallback)
             .setBackgroundThreadExecutor(bgThreadPoolExecutor)
             .build()
 
@@ -82,22 +81,20 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
     override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
         pagedListLiveData.observe(
-            this,
-            Observer<PagedList<EventViewModel>> { pagedList: PagedList<EventViewModel> ->
-                programEventsViewModel.setProgress(false)
-                liveAdapter?.submitList(pagedList) {
-                    if (binding.recycler.adapter?.itemCount ?: 0 == 0) {
-                        binding.emptyTeis.text = getString(R.string.empty_tei_add)
-                        binding.emptyTeis.visibility = View.VISIBLE
-                        binding.recycler.visibility = View.GONE
-                    } else {
-                        binding.emptyTeis.visibility = View.GONE
-                        binding.recycler.visibility = View.VISIBLE
-                    }
-                    //   CountingIdlingResourceSingleton.decrement()
+            this
+        ) { pagedList: PagedList<EventViewModel> ->
+            programEventsViewModel.setProgress(false)
+            liveAdapter?.submitList(pagedList) {
+                if ((binding.recycler.adapter?.itemCount ?: 0) == 0) {
+                    binding.emptyTeis.text = getString(R.string.empty_tei_add)
+                    binding.emptyTeis.visibility = View.VISIBLE
+                    binding.recycler.visibility = View.GONE
+                } else {
+                    binding.emptyTeis.visibility = View.GONE
+                    binding.recycler.visibility = View.VISIBLE
                 }
             }
-        )
+        }
     }
 
     private fun initializeTextFilter() {

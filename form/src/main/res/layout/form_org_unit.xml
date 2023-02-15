@@ -100,8 +100,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:alpha="@{item.editable? 1f : 0.5f}"
-                    android:hint="@{item.hint}"
                     android:theme="@style/formInputText"
+                    app:hintEnabled="false"
                     app:inputError="@{item.error}"
                     app:inputWarning="@{item.warning}"
                     app:input_layout_style="@{item.style}">
@@ -115,6 +115,7 @@
                         android:onClick="@{() -> item.invokeUiEvent(UiEventType.ORG_UNIT)}"
                         android:text="@{item.displayName}"
                         android:textSize="@dimen/form_edit_text_size"
+                        android:hint="@{item.hint}"
                         app:input_style="@{item}"
                         tools:text="Organisation Unit"/>
 

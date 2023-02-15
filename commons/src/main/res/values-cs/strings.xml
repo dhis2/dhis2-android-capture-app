@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">Událost</string>
+    <string name="no_data">Nejsou data</string>
+    <string name="feature_configuration">Konfigurace funkcí</string>
+    <string name="change_calendar_view">Změnit zobrazení kalendáře</string>
+    <string name="clear">vymazat</string>
+    <string name="action_accept">Přijmout</string>
+    <string name="next">Další</string>
+    <string name="cancel">Zrušit</string>
+    <string name="yes">Ano</string>
+    <string name="no">Ne</string>
+    <string name="clear_all">vymazat výběr</string>
+    <string name="navigation_list_view">Zobrazení seznamu</string>
+    <string name="navigation_table_view">Zobrazení tabulky</string>
+    <string name="navigation_map_view">Zobrazení mapy</string>
+    <string name="navigation_analytics">Analytika</string>
+    <string name="navigation_tasks">Úkoly</string>
+    <string name="navigation_programs">Programy</string>
+    <string name="navigation_events">Události</string>
+    <string name="navigation_relationships">Vztahy</string>
+    <string name="navigation_notes">Poznámky</string>
+    <string name="navigation_data_entry">Vstup dat</string>
+    <string name="navigation_tei_data">Detaily</string>
+    <string name="event_overview">Detaily</string>
+    <string name="select_option">Vybrat možnost</string>
+    <string name="search">Hledat</string>
+    <string name="jira_issue_sent">Problém odeslán</string>
+    <string name="jira_issue_sent_error">Chyba při odesílání problému</string>
+    <string name="events">události</string>
+    <string name="data_sets">Datové sady</string>
+    <string name="tei">TEI</string>
+    <string name="info">Info</string>
+    <string name="done">Hotovo</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Filtry se používají</string>
+    <string name="filters_disabled">Nejsou použity žádné filtry</string>
+    <string name="filters_title_period">Období</string>
+    <string name="filters_title_org_unit">Org. jednotka</string>
+    <string name="filters_title_sorting">Třídění</string>
+    <string name="filters_title_status">Stav</string>
+    <string name="filters_title_state">Synchronizace</string>
+    <string name="filters_title_assigned">Přiděleno mně</string>
+    <string name="filters_title_date">datum</string>
+    <string name="filters_title_event_date">Datum události</string>
+    <string name="enrollment_date">Datum zápisu</string>
+    <string name="filters_title_event_status">Stav události</string>
+    <string name="filters_title_enrollment_status">Stav zápisu</string>
+    <string name="filter_follow_up_label">Navázalo na %s</string>
+
+    <!-- State -->
+    <string name="state_synced">Synchronizace</string>
+    <string name="state_to_post">Poslat</string>
+    <string name="state_to_update">Aktualizovat</string>
+    <string name="state_to_delete">Smazat</string>
+    <string name="state_error">Chyba</string>
+    <string name="state_warning">Varování</string>
+    <string name="state_uploading">Nahrávám</string>
+    <string name="state_relationship">Vztah</string>
+    <string name="sent_by_sms">Odesláno sms</string>
+    <string name="sync_by_sms">Synchronizováno pomocí SMS</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Otevřít</string>
+    <string name="filter_event_status_schedule">Plán</string>
+    <string name="filter_event_status_overdue">Po termínu</string>
+    <string name="filter_event_status_visited">Navštíveno</string>
+    <string name="filter_event_status_completed">Dokončeno</string>
+    <string name="filter_event_status_skipped">Přeskočeno</string>
+    <string name="active">Aktivní</string>
+    <string name="cancelled">Zrušeno</string>
+    <string name="enrollment_status_active">Otevřít</string>
+    <string name="enrollment_status_completed">Dokončit</string>
+    <string name="enrollment_status_cancelled">Zrušeno</string>
+    <string name="record_marked_for_deletion">Tento záznam je označen k odstranění. Nemáte k němu přístup.</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">Dnes</string>
+    <string name="filter_period_yesterday">Včera</string>
+    <string name="filter_period_tomorrow">Zítra</string>
+    <string name="filter_period_this_week">Tento týden</string>
+    <string name="filter_period_last_week">Minulý týden</string>
+    <string name="filter_perdior_next_week">Příští týden</string>
+    <string name="filter_period_this_month">Tento měsíc</string>
+    <string name="filter_period_last_month">Minulý měsíc</string>
+    <string name="filter_period_next_month">Příští měsíc</string>
+    <string name="filter_period_form_to">Od - Do</string>
+    <string name="filter_period_other">jiný</string>
+    <string name="filter_period_any">Kdykoli</string>
+    <string name="working_list_default_label">Pracovní seznam %s</string>
+    <string name="filter_period_last_n_days">Posledních %d dní</string>
+    <string name="filter_period_this_year">Tento rok</string>
+    <string name="filter_period_this_bimonth">Tento dvouměsíc</string>
+    <string name="filter_period_last_bimonth">Poslední dvouměsíční</string>
+    <string name="filter_period_this_quarter">Toto čtvrtletí</string>
+    <string name="filter_period_last_quarter">Poslední čtvrtletí</string>
+    <string name="filter_period_six_months">Těchto šest měsíců</string>
+    <string name="filter_period_last_six_months">Posledních šest měsíců</string>
+    <string name="filter_period_last_n_years">Posledních %d let</string>
+    <string name="filter_period_last_n_months">Posledních %d měsíců</string>
+    <string name="filter_period__last_n_weeks">Posledních %d týdnů</string>
+    <string name="filter_period_weeks_this_year">Týdny tohoto roku</string>
+    <string name="filter_period_months_this_year">Měsíce tohoto roku</string>
+    <string name="filter_period_bimonths_this_year">Dvouměsíční tento rok</string>
+    <string name="filter_period_quarters_this_year">Čtvrtletí tohoto roku</string>
+    <string name="filter_period_months_last_year">Měsíců minulého roku</string>
+    <string name="filter_period_quarters_last_year">Čtvrtletí poslední roky</string>
+    <string name="filter_period_last_year">Poslední rok</string>
+    <string name="filter_period_this_biweek">Tyto dva týdny</string>
+    <string name="filter_period_last_biweek">Poslední dva týdny</string>
+    <string name="filter_period_last_n_bimonths">Poslední %d dvouměsíce</string>
+    <string name="filter_period_last_n_quarters">Poslední %d čtvrtletí </string>
+    <string name="last_n_months">Posledních %d měsíců</string>
+    <string name="filter_period_this_financial_year">Tento finanční rok</string>
+    <string name="filter_period_last_financial_year">Poslední finanční rok</string>
+    <string name="filter_period_last_n_financial_years">Poslední %d finanční roky </string>
+    <string name="filter_period_last_n_biweeks">Poslední %d dvoutýdny</string>
+    <string name="period">Období</string>
+    <string name="DAILY">Denně</string>
+    <string name="WEEKLY">Týdně</string>
+    <string name="MONTHLY">Měsíčně</string>
+    <string name="YEARLY">Ročně</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Synchronizováno</string>
+    <string name="filter_sync_not_synced">Nesynchronizováno</string>
+    <string name="filter_sync_error">Chyba synchronizace</string>
+    <string name="filter_sync_sms">SMS synchronizováno</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">teď</string>
+    <string name="interval_minute_ago">před %d min.</string>
+    <string name="interval_hour_ago">před %d hodinami</string>
+    <string name="interval_yesterday">Včera</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Zpětná vazba</string>
+    <string name="section_indicators">Indikátory</string>
+    <string name="section_charts">Grafy</string>
+    <string name="section_charts_indicators">Grafy a indikátory</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Zapsáno v:</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">Chybí heslo. Prosím vložte heslo.</string>
+    <string name="login_error_null_username">Chybí uživatelské jméno. Zadejte uživatelské jméno.</string>
+    <string name="login_error_dhis_version">Tento server používá jinou verzi DHIS než 2.29. Aktualizujte verzi serveru nebo pokračujte testovacím prostředím.</string>
+    <string name="login_error_dhis_version_v2">Tento server používá verzi DHIS2 odlišnou od %s. Aktualizujte verzi serveru nebo kontaktujte svého administrátora.</string>
+    <string name="login_error_unsuccessful_response">Něco se pokazilo. Zkontrolujte prosím správnost adresy URL serveru, uživatelského jména a hesla a zkuste to znovu.</string>
+    <string name="login_error_error_response">Promiňte! Něco selhalo na straně serveru.</string>
+    <string name="login_error_no_dhis_instance">Uvedená adresa URL není server DHIS2.</string>
+    <string name="login_error_bad_credentials">Uživatelské jméno nebo heslo jsou nesprávné</string>
+    <string name="login_error_unknown_host">Neznámý server</string>
+    <string name="online_search_parsing_error">Chyba při analýze výsledků</string>
+    <string name="error_unexpected">Něco neočekávaného se opotřebovalo.</string>
+    <string name="error_too_manu_org_units">Váš uživatel má více než jednu kořenovou organizační jednotku. Zkontrolujte svou konfiguraci nebo kontaktujte svého správce.</string>
+    <string name="error_max_tei_count_reached">Online výsledky překračují maximální počet instancí sledování, které lze zobrazit. Upřesněte prosím vyhledávání.</string>
+    <string name="error_many_requests">Server je v tuto chvíli trochu zaneprázdněn. Zkuste to o něco později.</string>
+    <string name="error_already_authenticated">Uživatel je již přihlášen.</string>
+    <string name="error_already_executed">Požadavek již byl proveden.</string>
+    <string name="error_api_invalid_query">Požadavek serveru je neplatný.</string>
+    <string name="error_app_name_not_set">Název aplikace nebyl nastaven.</string>
+    <string name="error_app_version_not_set">Verze aplikace nebyla nastavena.</string>
+    <string name="error_access_keystore">Nelze získat přístup k úložišti klíčů zařízení.</string>
+    <string name="error_create_existing_error">Vytváření přerušeno. Objekt již existuje.</string>
+    <string name="error_delete_non_existing_object">Mazání přerušeno. Objekt neexistuje.</string>
+    <string name="error_instance_keystore">Nelze vytvořit instanci úložiště klíčů.</string>
+    <string name="error_reserve_value_on_server">Pro tyto záznamy jsme nemohli vyhradit hodnoty. Kontaktujte prosím svého administrátora.</string>
+    <string name="error_export_login">Pro export databáze se prosím přihlaste.</string>
+    <string name="error_export_encrypted">Export šifrované databáze není podporován.</string>
+    <string name="error_import_exist">Importujete již existující databázi.</string>
+    <string name="error_import_logout">Chcete-li importovat novou databázi, odhlaste se.</string>
+    <string name="error_import_version">Verze importované databáze je vyšší než podporovaná.</string>
+    <string name="error_file_not_found">Soubor nebyl nalezen.</string>
+    <string name="error_file_resize">Při změně velikosti obrázku došlo k chybě.</string>
+    <string name="error_generate_coordinate">Není možné generovat souřadnice.</string>
+    <string name="error_job">Přehled práce není k dispozici.</string>
+    <string name="error_low_on_available_values">Možná vám dochází dostupné hodnoty.</string>
+    <string name="error_user_no_authenticated">Není ověřen žádný uživatel.</string>
+    <string name="error_user_no_authenticated_offline">Neexistuje žádný uživatel ověřený offline.</string>
+    <string name="error_no_values_left_on_server">Na serveru není dostatek hodnot k rezervaci. Kontaktujte prosím svého administrátora.</string>
+    <string name="error_different_offline_user">Pokoušíte se přihlásit offline s jiným uživatelem.</string>
+    <string name="error_invalid_geometry">Hodnota geometrie je neplatná.</string>
+    <string name="error_no_reserved_values">Nejsou k dispozici žádné rezervované hodnoty. Přejděte do nastavení a doplňte hodnoty, když máte připojení k internetu.</string>
+    <string name="error_object_update">Objekt nelze aktualizovat.</string>
+    <string name="error_object_insert">Objekt nelze vložit.</string>
+    <string name="error_ownership_access">Nemáte přístup.</string>
+    <string name="error_null_url">Chybí adresa URL serveru. Zadejte prosím URL.</string>
+    <string name="error_server_malformed">Adresa URL serveru není správně vytvořena. Prosím zkontrolujte to.</string>
+    <string name="error_settings_app_not_supported">Tato verze webové aplikace Settings není podporována.</string>
+    <string name="error_settings_app_not_intalled">Webová aplikace Nastavení není na serveru nainstalována.</string>
+    <string name="error_socket_timeout">Serveru trvalo příliš dlouho, než odpověděl. Žádost jsme zrušili.</string>
+    <string name="error_relationship_updated">Vztah nelze aktualizovat.</string>
+    <string name="error_too_many_periods">Období je příliš mnoho.</string>
+    <string name="error_url_not_found">Adresu URL jsme nenašli. Prosím ověřte to.</string>
+    <string name="error_account_disabled">Váš uživatelský účet byl deaktivován. Pokud se jedná o chybu, kontaktujte svého správce.</string>
+    <string name="error_account_locked">Váš uživatelský účet je uzamčen. Pokud se jedná o chybu, kontaktujte svého správce.</string>
+    <string name="error_set_value">Hodnotu nelze nastavit.</string>
+    <string name="error_value_reservation_time">Požadavek na rezervaci hodnot trval příliš dlouho. Zkuste to znovu.</string>
+    <string name="error_ssl">Došlo k problému s certifikáty serveru. Kontaktujte prosím svého správce.</string>
+    <string name="error_sms_not_supported">SMS nejsou podporovány.</string>
+    <string name="error_min_attributes">K provedení vyhledávání není k dispozici dostatek atributů. Upřesněte vyhledávání pomocí dalších atributů.</string>
+    <string name="error_org_unit_scope">Online vyhledávání je dostupné pouze pro vaše organizační jednotky vyhledávání uživatelů.</string>
+    <string name="error_invalid_characters">V dotazu jsou neplatné znaky. Požádejte správce o ověření konfigurace serveru (relaxedQueryChars,...).</string>
+    <string name="unsupported_field_description">Toto pole není k dispozici pro mobilní zachycení</string>
+    <string name="add_image">Přidat obrázek</string>
+    <string name="action_ok">Ok</string>
+    <string name="enable_location_message">Poloha vašeho zařízení je odpojena. Povolte jej k zachycení souřadnic</string>
+    <string name="keep_editing">Pokračovat v úpravách</string>
+    <string name="not_now">Teď ne</string>
+    <string name="review">Posouzení</string>
+    <string name="complete">Dokončit</string>
+    <string name="default_table_header_label">Hodnota</string>
+    <string name="discard_changes">Zrušit změny</string>
+    </resources>

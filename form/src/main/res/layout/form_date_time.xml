@@ -61,9 +61,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="@{item.editable? 1f : 0.5f}"
-                android:text="@{item.formattedLabel}"
                 android:enabled="@{item.editable}"
                 android:onClick="@{() -> item.invokeUiEvent(UiEventType.DATE_TIME)}"
+                android:text="@{item.formattedLabel}"
                 app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
@@ -104,8 +104,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:alpha="@{item.editable? 1f : 0.5f}"
-                    android:hint="@{item.hint}"
                     android:theme="@style/formInputText"
+                    app:hintEnabled="false"
                     app:inputError="@{item.error}"
                     app:inputWarning="@{item.warning}"
                     app:input_layout_style="@{item.style}">
@@ -116,12 +116,16 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:enabled="@{item.editable}"
-                        android:focusable="false"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:hint="@{item.hint}"
                         android:inputType="date"
                         android:onClick="@{() -> item.invokeUiEvent(UiEventType.DATE_TIME)}"
                         android:text="@{item.displayName}"
                         android:textSize="@dimen/form_edit_text_size"
-                        app:input_style="@{item}" />
+                        app:input_style="@{item}"
+                        app:requestDateFocus="@{item}"
+                        app:setOnDateTouchListener="@{item}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

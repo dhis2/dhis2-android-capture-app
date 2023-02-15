@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -44,8 +46,9 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository) {
-        return new TeiProgramListInteractor(teiProgramListRepository);
+    TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository,
+                                                        SyncStatusController syncStatusController) {
+        return new TeiProgramListInteractor(teiProgramListRepository, syncStatusController);
     }
 
     @Provides
@@ -57,6 +60,6 @@ public class TeiProgramListModule {
     @Provides
     @PerActivity
     TeiProgramListRepository eventDetailRepository(D2 d2) {
-        return new TeiProgramListRepositoryImpl(d2, new ProgramViewModelMapper());
+        return new TeiProgramListRepositoryImpl(d2, new ProgramViewModelMapper(new ResourceManager(view.getContext())));
     }
 }

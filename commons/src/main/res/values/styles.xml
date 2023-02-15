@@ -125,10 +125,16 @@
 
     <style name="error_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/error_color</item>
+        <item name="android:textSize">10sp</item>
+        <item name="lineHeight">10dp</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
     </style>
 
     <style name="warning_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/warning_color</item>
+        <item name="android:textSize">10sp</item>
+        <item name="lineHeight">10dp</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
     </style>
 
     <style name="ImageFieldLabel">
@@ -136,5 +142,16 @@
         <item name="android:textAlignment">textStart</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
+    <style name="CustomDialog" parent="Base.AlertDialog.AppCompat.Light">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:textColor">?colorPrimary</item>
+        <item name="colorAccent">?colorPrimary</item>
+    </style>
+
+    <style name="DhisMaterialDialog" parent="Base.ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorAccent">@color/text_black_333</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 </resources>

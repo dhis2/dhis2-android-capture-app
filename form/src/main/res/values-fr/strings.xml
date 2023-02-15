@@ -47,4 +47,36 @@
     <string name="due_date">Date d\'échéance</string>
     <string name="event_date">Date d\'événement</string>
     <string name="mandatory_field">Champ obligatoire</string>
-    </resources>
+    <string name="not_saved">Non enregistré!</string>
+    <string name="review">Vérifier</string>
+    <string name="complete">Terminer</string>
+    <string name="discard_changes">Annuler les modifications</string>
+    <string name="saved">Enregistré!</string>
+    <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
+    <string name="not_now">Pas maintenant</string>
+    <string name="keep_editing">Continuer l’édition</string>
+    <string name="discard_go_back">Si vous quittez maintenant, toutes les informations du formulaire seront supprimées.</string>
+    <string name="field_errors_not_saved_discard">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nSi vous quittez maintenant, les modifications seront ignorées.</string>
+    <string name="field_errors_not_saved">Certains champs contiennent des erreurs et ils ne sont pas enregistrés.</string>
+    <string name="fields_mandatory_missing">Certains champs obligatoires manquent et le formulaire ne peut pas être enregistré.</string>
+    <string name="fields_mandatory_missing_discard">Certains champs obligatoires manquent et le formulaire ne peut pas être enregistré. \ nSi vous quittez maintenant, les modifications seront ignorées</string>
+    <string name="share">Partager</string>
+    <string name="camera_permission_denied">L\'autorisation de la caméra est refusée. \nVous devez l\'activer pour utiliser cette fonctionnalité.</string>
+    <string name="action_close">Fermer</string>
+    <string name="program_rules_loop_warning_title">Avertissement relatif aux règles du programme</string>
+    <string name="copied_text">Copié</string>
+    <string name="empty_description">Pas d\'information pour ce champ</string>
+    <string name="take_photo">Prendre une photo</string>
+    <string name="from_gallery">Choisir depuis la galerie</string>
+    <string name="warning_error_on_complete_title">Attention. Vérifiez ceci!</string>
+    <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
+    <string name="enrollment_data_section_label">Données d\'inscription</string>
+    <string name="enrollment_single_section_label">Attributs - %s</string>
+    <string name="enrolling_ou">Unté d\'organisation d\'enrôlement</string>
+    <string name="tei_coordinates">Coordonnées pour</string>
+    <string name="enrollment_coordinates">Coordonnées de l\'enrôlement</string>
+    <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
+    <string name="enrollmment_date">Date d\'enrôlement</string>
+    <string name="incident_date">Date de l´incident</string>
+
+</resources>

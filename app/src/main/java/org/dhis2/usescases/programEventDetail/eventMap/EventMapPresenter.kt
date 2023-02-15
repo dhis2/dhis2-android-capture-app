@@ -36,7 +36,7 @@ class EventMapPresenter(
 
         disposable.add(
             eventInfoProcessor
-                .flatMap { eventUid: String? -> eventRepository.getInfoForEvent(eventUid) }
+                .flatMap { eventUid -> eventRepository.getInfoForEvent(eventUid) }
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.updateEventCarouselItem(it) },

@@ -11,19 +11,31 @@ data class RuleUtilsProviderResult(
     val fieldsWithErrors: List<FieldWithError>,
     val fieldsWithWarnings: List<FieldWithError>,
     val unsupportedRules: List<String>,
-    val fieldsToUpdate: List<String>,
+    val fieldsToUpdate: List<FieldWithNewValue>,
     val stagesToHide: List<String>,
     val configurationErrors: List<RulesUtilsProviderConfigurationError>,
     val optionsToHide: Map<String, List<String>>,
     val optionGroupsToHide: Map<String, List<String>>,
     val optionGroupsToShow: Map<String, List<String>>
 ) {
-    fun errorMap(): Map<String, String> = fieldsWithErrors.associate {
-        it.fieldUid to it.errorMessage
+    fun errorMap(): Map<String, String> {
+        val map: MutableMap<String, String> = mutableMapOf()
+        val iterator = fieldsWithErrors.toMutableList().listIterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            map[item.fieldUid] = item.errorMessage
+        }
+        return map
     }
 
-    fun warningMap(): Map<String, String> = fieldsWithWarnings.associate {
-        it.fieldUid to it.errorMessage
+    fun warningMap(): Map<String, String> {
+        val map: MutableMap<String, String> = mutableMapOf()
+        val iterator = fieldsWithWarnings.toMutableList().listIterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            map[item.fieldUid] = item.errorMessage
+        }
+        return map
     }
 
     fun optionsToHide(fieldUid: String): List<String> {
@@ -38,6 +50,8 @@ data class RuleUtilsProviderResult(
         return optionGroupsToShow[fieldUid] ?: mutableListOf()
     }
 }
+
+data class FieldWithNewValue(val fieldUid: String, val newValue: String?)
 
 data class FieldWithError(val fieldUid: String, val errorMessage: String)
 

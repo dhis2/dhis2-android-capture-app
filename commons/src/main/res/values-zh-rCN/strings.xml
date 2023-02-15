@@ -1,3 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">事件</string>
+    <string name="no_data">无数据</string>
+    <string name="change_calendar_view">改变日历视图。</string>
+    <string name="clear">清除</string>
+    <string name="action_accept">接受</string>
+    <string name="next">下一个</string>
+    <string name="cancel">取消</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="clear_all">清除选择</string>
+    <string name="navigation_list_view">列表显示</string>
+    <string name="navigation_table_view">表格检视</string>
+    <string name="navigation_map_view">地图检视</string>
+    <string name="navigation_analytics">分析</string>
+    <string name="navigation_tasks">任务</string>
+    <string name="navigation_programs">项目</string>
+    <string name="navigation_events">事件</string>
+    <string name="navigation_relationships">关系</string>
+    <string name="navigation_notes">笔记</string>
+    <string name="navigation_data_entry">数据输入</string>
+    <string name="navigation_tei_data">详情</string>
+    <string name="event_overview">详情</string>
+    <string name="select_option">选择选项</string>
+    <string name="search">搜索</string>
+    <string name="jira_issue_sent">已发送的问题</string>
+    <string name="jira_issue_sent_error">发送问题时出错</string>
+    <string name="events">事件</string>
+    <string name="data_sets">数据集</string>
+    <string name="tei">跟踪实体</string>
+    <string name="info">信息</string>
+    <string name="done">完成</string>
+
+    <!-- Filters -->
+    <string name="filters_active">应用过滤器</string>
+    <string name="filters_disabled">无过滤器</string>
+    <string name="filters_title_period">周期</string>
+    <string name="filters_title_org_unit">机构</string>
+    <string name="filters_title_sorting">排序</string>
+    <string name="filters_title_status">状态</string>
+    <string name="filters_title_state">同步</string>
+    <string name="filters_title_assigned">指派给我</string>
+    <string name="filters_title_date">日期</string>
+    <string name="filters_title_event_date">事故日期</string>
+    <string name="enrollment_date">登记日期</string>
+    <string name="filters_title_event_status">事件状态</string>
+    <string name="filters_title_enrollment_status">登记状态</string>
+    <!-- State -->
+    <string name="state_synced">同步</string>
+    <string name="state_to_post">发送</string>
+    <string name="state_to_update">更新</string>
+    <string name="state_to_delete">删除</string>
+    <string name="state_error">错误</string>
+    <string name="state_warning">警告</string>
+    <string name="state_relationship">关系</string>
+    <string name="sync_by_sms">通过短信同步。</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">打开</string>
+    <string name="filter_event_status_schedule">调度</string>
+    <string name="filter_event_status_overdue">过期</string>
+    <string name="filter_event_status_visited">已随访</string>
+    <string name="filter_event_status_completed">完成</string>
+    <string name="filter_event_status_skipped">跳过</string>
+    <string name="active">活动的</string>
+    <string name="cancelled">已取消</string>
+    <string name="enrollment_status_active">打开</string>
+    <string name="enrollment_status_completed">完成</string>
+    <string name="enrollment_status_cancelled">已取消</string>
+    <string name="record_marked_for_deletion">该记录被标记为删除。你不能访问。</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">今天</string>
+    <string name="filter_period_yesterday">昨天</string>
+    <string name="filter_period_tomorrow">明天</string>
+    <string name="filter_period_this_week">本周</string>
+    <string name="filter_period_last_week">上周</string>
+    <string name="filter_perdior_next_week">下周</string>
+    <string name="filter_period_this_month">本月</string>
+    <string name="filter_period_last_month">上月</string>
+    <string name="filter_period_next_month">下月</string>
+    <string name="filter_period_form_to">从——到</string>
+    <string name="filter_period_other">其它</string>
+    <string name="filter_period_any">任何时候</string>
+    <string name="filter_period_this_year">今年</string>
+    <string name="filter_period_this_bimonth">本俩月</string>
+    <string name="filter_period_last_bimonth">最近俩月</string>
+    <string name="filter_period_this_quarter">本季</string>
+    <string name="filter_period_last_quarter">最近一季</string>
+    <string name="filter_period_weeks_this_year">今年的星期</string>
+    <string name="filter_period_months_this_year">今年的月份</string>
+    <string name="filter_period_bimonths_this_year">今年的俩月</string>
+    <string name="filter_period_quarters_this_year">今年的季度</string>
+    <string name="filter_period_months_last_year">去年的月份</string>
+    <string name="filter_period_last_year">去年</string>
+    <string name="filter_period_this_financial_year">本财政年</string>
+    <string name="filter_period_last_financial_year">上一财政年</string>
+    <string name="period">周期</string>
+    <string name="DAILY">每日</string>
+    <string name="WEEKLY">每周</string>
+    <string name="MONTHLY">每月</string>
+    <string name="YEARLY">每年</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">已同步</string>
+    <string name="filter_sync_not_synced">未同步</string>
+    <string name="filter_sync_error">同步错误</string>
+    <string name="filter_sync_sms">短信已同步</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">现在</string>
+    <string name="interval_minute_ago">%d分钟前</string>
+    <string name="interval_hour_ago">%d小时前</string>
+    <string name="interval_yesterday">昨天</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">反馈</string>
+    <string name="section_indicators">指标</string>
+    <string name="section_charts">图表</string>
+    <string name="login_error_dhis_version">服务器运行版本不是2.29，请更新服务器版本或使用测试环境继续</string>
+    <string name="online_search_parsing_error">解析结果发生错误</string>
+    <string name="add_image">添加图片</string>
+    <string name="action_ok">Ok!</string>
+    <string name="enable_location_message">您的设备位置已断开。请启用它以捕获坐标</string>
+    <string name="complete">完成</string>
+    <string name="default_table_header_label">值</string>
+    <string name="default_empty_dataset_section_label">数据</string>
     </resources>

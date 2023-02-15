@@ -42,6 +42,7 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleActionHideProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
@@ -65,7 +66,10 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should set programStages`() {
-        val programStages = listOf(ProgramStage.builder().uid("programStage").build())
+        val programStages = listOf(
+            ProgramStage.builder().uid("programStage1").build(),
+            ProgramStage.builder().uid("programStage2").build()
+        )
         val calcResult = Result.success(
             listOf(
                 RuleEffect.create(
@@ -89,6 +93,43 @@ class ProgramStageSelectionPresenterTest {
         presenter.programStages()
 
         verify(view).setData(programStages)
+    }
+
+    @Test
+    fun `Should go to programStage when there is only one`() {
+        val programStage = ProgramStage.builder()
+            .uid("programStage")
+            .repeatable(true)
+            .periodType(PeriodType.Daily)
+            .build()
+        val programStages = listOf(programStage)
+        val calcResult = Result.success(
+            listOf(
+                RuleEffect.create(
+                    "ruleUid",
+                    RuleActionHideProgramStage.create("programStage")
+                )
+            )
+        )
+
+        whenever(
+            repository.enrollmentProgramStages()
+        ) doReturn Flowable.just(programStages)
+        whenever(repository.calculate()) doReturn Flowable.just(calcResult)
+        whenever(
+            rulesUtils.applyRuleEffects(
+                programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
+                kotlin.Result.success(calcResult.items())
+            )
+        ) doAnswer { null }
+
+        presenter.programStages()
+
+        verify(view).setResult(
+            programStage.uid(),
+            programStage.repeatable() == true,
+            programStage.periodType()
+        )
     }
 
     @Test

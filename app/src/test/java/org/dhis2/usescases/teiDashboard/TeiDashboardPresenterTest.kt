@@ -12,6 +12,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.GROUPING
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -45,6 +46,7 @@ class TeiDashboardPresenterTest {
     private val programUid = "programUid"
     private val teiUid = "teiUid"
     private val enrollmentUid = "enrollmentUid"
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setup() {
@@ -57,7 +59,8 @@ class TeiDashboardPresenterTest {
             schedulers,
             analyticsHelper,
             preferenceProvider,
-            filterManager
+            filterManager,
+            matomoAnalyticsController
         )
     }
 
@@ -336,7 +339,8 @@ class TeiDashboardPresenterTest {
             schedulers,
             analyticsHelper,
             preferenceProvider,
-            filterManager
+            filterManager,
+            matomoAnalyticsController
         )
 
         val isGrouped = presenter.programGrouping

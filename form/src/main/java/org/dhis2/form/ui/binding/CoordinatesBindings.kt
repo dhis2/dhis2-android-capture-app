@@ -3,12 +3,14 @@ package org.dhis2.form.ui.binding
 import android.content.Context
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.intent.FormIntent.SaveCurrentLocation
@@ -163,6 +165,33 @@ fun TextInputEditText.setOnGeometryLongitudeEditorActionListener(
             editTextToActivate.performClick()
         }
         true
+    }
+}
+
+@BindingAdapter(value = ["model", "loadingView"], requireAll = true)
+fun ImageButton.setOnLocationClick(model: FieldUiModel?, progress: View) {
+    setOnClickListener {
+        this.visibility = View.GONE
+        progress.visibility = View.VISIBLE
+        model?.invokeUiEvent(UiEventType.REQUEST_CURRENT_LOCATION)
+    }
+}
+
+@BindingAdapter("progressVisibility")
+fun View.progressVisibility(model: FieldUiModel?) {
+    visibility = if (model?.isLoadingData == true) {
+        View.VISIBLE
+    } else {
+        View.GONE
+    }
+}
+
+@BindingAdapter("currentLocationVisibility")
+fun View.currentLocationVisibility(model: FieldUiModel?) {
+    visibility = if (model?.renderingType == UiRenderType.POINT && !model.isLoadingData) {
+        View.VISIBLE
+    } else {
+        View.GONE
     }
 }
 

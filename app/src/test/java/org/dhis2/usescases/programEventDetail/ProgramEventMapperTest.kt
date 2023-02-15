@@ -2,18 +2,18 @@ package org.dhis2.usescases.programEventDetail
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
 import mock
+import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -62,6 +62,39 @@ class ProgramEventMapperTest {
         assert(result.eventState() == State.SYNCED)
     }
 
+    @Test
+    fun `Should show displayDate only if event has a valid date`() {
+        mockOrgUnitName()
+        mockProgramStageDataElements()
+        mockProgram()
+        mockCategoryOptionCombo()
+        mockProgramStage()
+        whenever(
+            d2.programModule().programStageDataElements()
+                .byProgramStage().eq("programStage")
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageDataElements()
+                .byProgramStage().eq("programStage")
+                .byDisplayInReports()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageDataElements()
+                .byProgramStage().eq("programStage")
+                .byDisplayInReports().isTrue
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageDataElements()
+                .byProgramStage().eq("programStage")
+                .byDisplayInReports().isTrue.blockingGet()
+        ) doReturn emptyList()
+
+        val event = eventWithoutValidDate()
+        val result = mapper.eventToEventViewModel(event)
+
+        assert(result.displayDate.isNullOrEmpty())
+    }
+
     private fun mockOrgUnitName() {
         whenever(
             d2.organisationUnitModule().organisationUnits()
@@ -92,6 +125,16 @@ class ProgramEventMapperTest {
             d2.programModule().programStageDataElements()
                 .byProgramStage().eq("programStage").blockingGet()
         ) doReturn emptyList()
+    }
+
+    private fun mockProgramStage() {
+        whenever(d2.programModule().programStages()) doReturn mock()
+        whenever(d2.programModule().programStages().uid("programStage")) doReturn mock()
+        whenever(
+            d2.programModule().programStages().uid("programStage").blockingGet()
+        ) doReturn ProgramStage.builder()
+            .uid("programStage")
+            .build()
     }
 
     private fun mockProgram() {
@@ -130,4 +173,14 @@ class ProgramEventMapperTest {
 
     private fun dummyCategoryOptionCombo() =
         CategoryOptionCombo.builder().uid("attrComboUid").displayName("default").build()
+
+    private fun eventWithoutValidDate() =
+        Event.builder()
+            .uid("eventUid")
+            .organisationUnit("orgUnitUid")
+            .program("programUid")
+            .programStage("programStage")
+            .attributeOptionCombo("attrComboUid")
+            .status(EventStatus.ACTIVE)
+            .build()
 }

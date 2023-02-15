@@ -38,6 +38,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,19 +61,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private String programUid;
 
+    private TeiAttributesProvider teiAttributesProvider;
+
 
     public DashboardRepositoryImpl(D2 d2,
                                    @Nullable Charts charts,
                                    String teiUid,
                                    String programUid,
                                    String enrollmentUid,
-                                   ResourceManager resources) {
+                                   ResourceManager resources,
+                                   TeiAttributesProvider teiAttributesProvider) {
         this.d2 = d2;
         this.teiUid = teiUid;
         this.programUid = programUid;
         this.enrollmentUid = enrollmentUid;
         this.resources = resources;
         this.charts = charts;
+        this.teiAttributesProvider = teiAttributesProvider;
     }
 
     @Override
@@ -230,48 +235,56 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<List<TrackedEntityAttributeValue>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null) {
-            return d2.programModule().programTrackedEntityAttributes()
-                    .byDisplayInList().isTrue()
-                    .byProgram().eq(programUid)
-                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
-                    .map(programTrackedEntityAttributes -> {
-                        List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
-                        for (ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes) {
-                            if (d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingExists()) {
-                                TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingGet();
-                                TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(programAttribute.trackedEntityAttribute().uid()).blockingGet();
+            return teiAttributesProvider.getValuesFromProgramTrackedEntityAttributesByProgram(programUid, teiUid)
+                    .map(attributesValues -> {
+                        List<TrackedEntityAttributeValue> formattedValues = new ArrayList<>();
+                        for (TrackedEntityAttributeValue attributeValue : attributesValues) {
+                            if (attributeValue.value() != null) {
+                                TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
                                 if (attribute.valueType() != ValueType.IMAGE) {
-                                    attributeValues.add(
+                                    formattedValues.add(
                                             ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                     );
                                 }
                             } else {
-                                attributeValues.add(
+                                formattedValues.add(
                                         TrackedEntityAttributeValue.builder()
-                                                .trackedEntityAttribute(programAttribute.trackedEntityAttribute().uid())
+                                                .trackedEntityAttribute(attributeValue.trackedEntityAttribute())
                                                 .trackedEntityInstance(teiUid)
                                                 .value("")
                                                 .build()
                                 );
                             }
                         }
-                        return attributeValues;
+                        return formattedValues;
                     }).toObservable();
 
         } else {
-            return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).get()
-                    .map(attributeValueList -> {
-                        List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
-                        for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
-                            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                            if (attribute.valueType() != ValueType.IMAGE) {
-                                attributeValues.add(
-                                        ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
-                                );
-                            }
-                        }
-                        return attributeValues;
-                    }).toObservable();
+            String teType = d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet().trackedEntityType();
+            List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
+
+            for (TrackedEntityAttributeValue attributeValue: teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)) {
+                if (attributeValue != null) {
+                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                    if (attribute.valueType() != ValueType.IMAGE && attributeValue.value() != null) {
+                        attributeValues.add(
+                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                        );
+                    }
+                }
+            }
+
+            if (attributeValues.isEmpty()) {
+                for (TrackedEntityAttributeValue attributeValue: teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid)) {
+                    if (attributeValue != null) {
+                        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                        attributeValues.add(
+                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                        );
+                    }
+                }
+            }
+            return Observable.just(attributeValues);
         }
     }
 

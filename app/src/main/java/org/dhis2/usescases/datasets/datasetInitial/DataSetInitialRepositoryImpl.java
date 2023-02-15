@@ -33,8 +33,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
         return d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get().toFlowable()
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
-                        Flowable.just(d2.periodModule().periods().byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
-                                .flatMapIterable(periods -> periods)
+                        Flowable.just(d2.periodModule().periodHelper().getPeriodForPeriodId(dataInputPeriod.period().uid()).blockingGet())
                                 .map(period -> {
                                     Date periodStartDate = period.startDate();
                                     Date periodEndDate = period.endDate();

@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -9,11 +10,8 @@ import org.hisp.dhis.android.core.program.Program;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
-
-/**
- * QUADRAM. Created by Cristian E. on 02/11/2017.
- */
 
 public interface TeiProgramListRepository {
 
@@ -24,7 +22,7 @@ public interface TeiProgramListRepository {
     Observable<List<EnrollmentViewModel>> otherEnrollments(String trackedEntityId);
 
     @NonNull
-    Observable<List<ProgramViewModel>> allPrograms(String trackedEntityId);
+    Flowable<List<ProgramViewModel>> allPrograms(String trackedEntityId);
 
     @NonNull
     Observable<List<Program>> alreadyEnrolledPrograms(String trackedEntityId);
@@ -37,4 +35,6 @@ public interface TeiProgramListRepository {
     String getProgramColor(@NonNull String programUid);
 
     Program getProgram(String programUid);
+
+    ProgramViewModel updateProgramViewModel(ProgramViewModel programViewModel, ProgramDownloadState programDownloadState);
 }

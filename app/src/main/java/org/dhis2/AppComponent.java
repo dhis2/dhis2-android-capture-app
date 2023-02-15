@@ -5,8 +5,8 @@ import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.network.NetworkUtilsModule;
 import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
-import org.dhis2.data.location.LocationModule;
-import org.dhis2.data.location.LocationProvider;
+import org.dhis2.commons.locationprovider.LocationModule;
+import org.dhis2.commons.locationprovider.LocationProvider;
 import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerModule;
@@ -20,11 +20,11 @@ import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.Validator;
 import org.dhis2.utils.analytics.AnalyticsModule;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import org.dhis2.commons.filters.di.FilterModule;
-import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.reporting.CrashReportModule;
+import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportModule;
 import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Map;
@@ -54,7 +54,7 @@ import dispatch.core.DispatcherProvider;
         NetworkUtilsModule.class,
         CustomDispatcherModule.class
 })
-public interface AppComponent {
+public  interface AppComponent {
 
     @Component.Builder
     interface Builder {

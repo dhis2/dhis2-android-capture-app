@@ -24,7 +24,7 @@ else:
 
     print("Ready to assigned reviewers")
     pr_owner = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s" %(BITRISE_PULL_REQUEST), headers=Headers).json()['user']['login']
-    devs = ["ferdyrod", "Balcan", "mmmateos", "JaimeToca", "andresmr"]
+    devs = ["ferdyrod", "Balcan", "mmmateos", "andresmr"]
 
     if pr_owner in devs:
         devs.remove(pr_owner)

@@ -126,7 +126,8 @@ class OptionSetPresenterTest {
             label = "Label",
             optionSet = "optionSet",
             programStageSection = null,
-            valueType = ValueType.TEXT
+            valueType = ValueType.TEXT,
+            optionSetConfiguration = null
         )
     }
 

@@ -1,8 +1,7 @@
 This is a patch version that fixes:
-- [ANDROAPP-4824] Attribute option combo set to null in auto generated events
-- [ANDROAPP-4823] Dropdown for type Number/Integer are displayed as normal input
-- [ANDROAPP-4814] Infinite login with wrong url/username/password
-- [ANDROAPP-4795] SMS Sync Unable to Send
+- ANDROAPP-5084 Data set table header resizing
+- ANDROAPP-5061 Opensource map engine
+- ANDROAPP-5014 Allow long click in form fields to copy value
+- Improvements on stability and user experience.
 ....
-General system stability improvements to enhance the user's experience.
 You can find all the details on Jira and Github.
