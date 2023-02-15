@@ -4,7 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.transition.ChangeBounds
@@ -23,12 +22,10 @@ import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.prefs.Preference
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
@@ -77,7 +74,6 @@ class MainActivity :
 
     private var isPinLayoutVisible = false
 
-    private var prefs: SharedPreferences? = null
     private var backDropActive = false
     private var elevation = 0f
     private val mainNavigator = MainNavigator(
@@ -140,10 +136,6 @@ class MainActivity :
         }
 
         binding.mainDrawerLayout.addDrawerListener(this)
-
-        prefs = abstracContext.getSharedPreferences(
-            Constants.SHARE_PREFS, Context.MODE_PRIVATE
-        )
 
         binding.filterRecycler.adapter = newAdapter
 
