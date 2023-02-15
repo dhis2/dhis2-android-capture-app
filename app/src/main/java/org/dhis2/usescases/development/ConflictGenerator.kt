@@ -1,9 +1,9 @@
 package org.dhis2.usescases.development
 
 import kotlin.random.Random
-import org.dhis2.metadata.usecases.sdkextensions.enrollment
-import org.dhis2.metadata.usecases.sdkextensions.event
-import org.dhis2.metadata.usecases.sdkextensions.tei
+import org.dhis2.commons.bindings.enrollment
+import org.dhis2.commons.bindings.event
+import org.dhis2.commons.bindings.tei
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.datavalue.DataValueConflict
