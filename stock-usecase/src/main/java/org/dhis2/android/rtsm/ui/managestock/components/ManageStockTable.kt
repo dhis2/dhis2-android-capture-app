@@ -77,11 +77,10 @@ fun ManageStockTable(
             ) {
                 DataSetTableScreen(
                     tableScreenState = screenState,
-                    onCellClick = { _, cell, updatedCellValue ->
+                    onCellClick = { _, cell, _ ->
                         concealBackdropState.invoke()
                         viewModel.onCellClick(
-                            cell = cell,
-                            updateCellValue = updatedCellValue
+                            cell = cell
                         )
                     },
                     onEdition = { isEditing ->

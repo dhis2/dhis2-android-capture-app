@@ -24,7 +24,6 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
 import org.dhis2.android.rtsm.commons.Constants.SEARCH_QUERY_DEBOUNCE
 import org.dhis2.android.rtsm.data.AppConfig
-import org.dhis2.android.rtsm.data.ReviewStockData
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
@@ -76,7 +75,7 @@ class ManageStockViewModel @Inject constructor(
     private val itemsCache = linkedMapOf<String, StockEntry>()
 
     private val _hasData = MutableStateFlow(false)
-    val hasData = _hasData
+    val hasData: StateFlow<Boolean> = _hasData
 
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(
@@ -236,6 +235,8 @@ class ManageStockViewModel @Inject constructor(
                 overwrittenRowHeaderWidth = 200F
             )
         )
+
+        updateReviewButton()
     }
 
     private fun provideQuantityLabel() = when (transaction.value?.transactionType) {
@@ -288,7 +289,7 @@ class ManageStockViewModel @Inject constructor(
         populateTable()
     }
 
-    fun onCellClick(cell: TableCell, updateCellValue: (TableCell) -> Unit): TextInputModel {
+    fun onCellClick(cell: TableCell): TextInputModel {
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
         return TextInputModel(
@@ -375,7 +376,6 @@ class ManageStockViewModel @Inject constructor(
     fun cleanItemsFromCache() {
         hasUnsavedData(false)
         itemsCache.clear()
-        updateReviewButton()
     }
 
     private fun hasUnsavedData(value: Boolean) {
@@ -387,8 +387,6 @@ class ManageStockViewModel @Inject constructor(
     private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
-
-    fun getData(): ReviewStockData = ReviewStockData(transaction.value!!, getPopulatedEntries())
 
     fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
         val step = when (dataEntryUiState.value.step) {
@@ -409,7 +407,6 @@ class ManageStockViewModel @Inject constructor(
         _dataEntryUiState.update { currentUiState ->
             currentUiState.copy(step = step)
         }
-        updateReviewButton()
         populateTable()
     }
 
