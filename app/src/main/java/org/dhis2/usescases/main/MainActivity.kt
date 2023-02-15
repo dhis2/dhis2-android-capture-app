@@ -27,7 +27,6 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.databinding.ActivityMainBinding
@@ -308,7 +307,7 @@ class MainActivity :
     }
 
     override fun onLockClick() {
-        if (prefs!!.getString(Preference.PIN, null) == null) {
+        if (!presenter.isPinStored()) {
             binding.mainDrawerLayout.closeDrawers()
             PinDialog(
                 PinDialog.Mode.SET,
