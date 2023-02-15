@@ -17,14 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:visibility="gone"
-            app:srcCompat="@drawable/sierra_leone" />
+            app:srcCompat="@drawable/india" />
 
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            app:srcCompat="@drawable/ic_dhis_white" />
+            app:srcCompat="@drawable/mhssp_logo" />
 
 
         <ProgressBar
