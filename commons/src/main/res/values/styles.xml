@@ -102,6 +102,7 @@
 
     <style name="filterCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="buttonTint">@color/white</item>
+        <item name="buttonIconTint">?colorPrimaryDark</item>
     </style>
 
     <style name="inputText">

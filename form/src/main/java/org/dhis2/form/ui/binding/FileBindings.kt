@@ -6,7 +6,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.core.graphics.toColorInt
 import androidx.databinding.BindingAdapter
-import com.google.android.material.composethemeadapter.MdcTheme
 import java.io.File
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
@@ -14,6 +13,7 @@ import org.dhis2.form.model.UiEventType
 import org.dhis2.ui.inputs.FileInput
 import org.dhis2.ui.inputs.FormInputBox
 import org.dhis2.ui.model.InputData
+import org.dhis2.ui.theme.Dhis2Theme
 
 @BindingAdapter("add_file")
 fun ComposeView.addFile(fieldUiModel: FieldUiModel) {
@@ -21,7 +21,7 @@ fun ComposeView.addFile(fieldUiModel: FieldUiModel) {
         setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
         )
-        MdcTheme {
+        Dhis2Theme {
             FormInputBox(
                 labelText = fieldUiModel.formattedLabel,
                 helperText = fieldUiModel.error ?: fieldUiModel.warning,

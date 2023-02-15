@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +30,8 @@ fun IconTextButton(
         enabled = enabled,
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.primary
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 4.dp
@@ -39,14 +39,12 @@ fun IconTextButton(
     ) {
         Icon(
             painter = painter,
-            contentDescription = "icon",
-            tint = MaterialTheme.colorScheme.primary
+            contentDescription = "icon"
         )
         Spacer(modifier = Modifier.size(8.dp))
         Text(
             text = text,
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.primary
+            fontSize = 14.sp
         )
     }
 }

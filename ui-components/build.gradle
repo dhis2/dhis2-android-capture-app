@@ -68,6 +68,7 @@ dependencies {
     api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     api "com.google.android.material:compose-theme-adapter:${libraries.composeTheme}"
     implementation "androidx.compose.material3:material3:${libraries.material3}"
+    api "com.google.accompanist:accompanist-themeadapter-material3:${libraries.themeAdapter}"
     api "androidx.compose.ui:ui-tooling-preview:${libraries.compose}"
     api "androidx.compose.ui:ui:${libraries.compose}"
     api "androidx.compose.runtime:runtime-livedata:${libraries.compose}"

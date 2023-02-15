@@ -41,6 +41,7 @@ ext {
             material                  : "1.7.0",
             flexbox                   : "3.0.0",
             material3                 : "1.0.1",
+            themeAdapter              : "0.28.0",
 
             //UI
             atv                       : "1.2.9",

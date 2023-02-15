@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -104,18 +105,21 @@ fun SignatureDialogUi(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 )
-                IconButton(
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    enabled = isSigned,
-                    onClick = {
-                        drawing.value = null
+                if (isSigned) {
+                    IconButton(
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                        onClick = {
+                            drawing.value = null
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = stringResource(R.string.clear)
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = stringResource(R.string.clear),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
                 }
             }
         }
@@ -126,10 +130,7 @@ fun SignatureDialogUi(
             TextButton(
                 onClick = onCancel
             ) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Text(text = stringResource(R.string.cancel))
             }
             Button(
                 onClick = {

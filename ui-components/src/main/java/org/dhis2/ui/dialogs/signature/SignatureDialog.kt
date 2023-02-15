@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.composethemeadapter.MdcTheme
+import org.dhis2.ui.theme.Dhis2Theme
 
 const val TAG = "SignatureDialog"
 
@@ -39,7 +39,7 @@ class SignatureDialog(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindow
             )
             setContent {
-                MdcTheme {
+                Dhis2Theme {
                     SignatureDialogUi(
                         title = title,
                         onSave = {

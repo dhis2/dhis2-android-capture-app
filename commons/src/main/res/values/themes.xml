@@ -2,7 +2,7 @@
 <resources>
 
     <!--region BASE THEMES -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         parent
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -11,6 +11,8 @@
         <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
+        <item name="colorPrimaryContainer">@color/colorPrimary</item>
+        <item name="colorOnPrimaryContainer">@color/colorAccent</item>
         <item name="primaryBgTextColor">@color/primaryBgTextColor</item>
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor</item>
         <item name="primaryDarkBgTextColor">@color/primaryDarkBgTextColor</item>
