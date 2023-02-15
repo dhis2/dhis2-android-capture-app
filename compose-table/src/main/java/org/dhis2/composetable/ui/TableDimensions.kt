@@ -209,7 +209,7 @@ data class TableDimensions(
         return desiredDimension.rowHeaderWidth(tableId) in minRowHeaderWidth..maxRowHeaderWidth &&
             desiredDimension.columnWidth[tableId]?.all { (_, width) ->
             width in minColumnWidth..maxColumnWidth
-        } == true
+        } ?: true
     }
 }
 

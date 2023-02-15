@@ -1,6 +1,5 @@
 package org.dhis2.composetable.model
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import org.dhis2.composetable.ui.CellStyle
 import org.dhis2.composetable.ui.HEADER_CELL
@@ -26,10 +25,10 @@ data class ItemColumnHeaderUiState(
     val cellStyle: CellStyle,
     val onCellSelected: (Int) -> Unit,
     val onHeaderResize: (Int, Float) -> Unit,
-    val onResizing: (ResizingCell?) -> Unit
+    val onResizing: (ResizingCell?) -> Unit,
+    val isLastRow: Boolean
 ) {
     val testTag = "$HEADER_CELL$tableId$rowIndex$columnIndex"
-    fun isSelected(selectedColor: Color) = cellStyle.backgroundColor() == selectedColor
 }
 
 data class TableCornerUiState(
