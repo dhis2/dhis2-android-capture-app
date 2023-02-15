@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -15,6 +15,7 @@ import org.dhis2.usescases.reservedValue.ReservedValueModel
 import org.dhis2.usescases.reservedValue.ReservedValuePresenter
 import org.dhis2.usescases.reservedValue.ReservedValueRepository
 import org.dhis2.usescases.reservedValue.ReservedValueView
+import org.hisp.dhis.android.core.arch.call.BaseD2Progress
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -50,7 +51,7 @@ class ReservedValuePresenterTest {
         refillFlowable.onNext("attr")
 
         assert(!dummyD2Progress.isEmpty.blockingGet())
-        verifyZeroInteractions(view)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -72,7 +73,7 @@ class ReservedValuePresenterTest {
         reservedValuePresenter.init()
         refillFlowable.onNext("attr")
 
-        verifyZeroInteractions(view)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -82,9 +83,9 @@ class ReservedValuePresenterTest {
         verify(view).onBackClick()
     }
 
-    private fun dummyD2Progress() =
+    private fun dummyD2Progress(): Observable<D2Progress> =
         Observable.just(
-            D2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
+            BaseD2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
                 .isComplete(false).build()
         )
 

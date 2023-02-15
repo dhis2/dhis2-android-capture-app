@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.dp
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
@@ -30,7 +31,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
 import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButton
-import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
@@ -186,14 +186,6 @@ class SearchTEList : FragmentGlobalAbstract() {
     @ExperimentalAnimationApi
     private fun configureCreateButton(createButton: ComposeView) {
         createButton.apply {
-            updateLayoutParams<ConstraintLayout.LayoutParams> {
-                val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
-                    56.dp
-                } else {
-                    16.dp
-                }
-                setMargins(0, 0, 0, bottomMargin)
-            }
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
@@ -202,6 +194,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                 val createButtonVisibility by viewModel
                     .createButtonScrollVisibility.observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
+                updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
+                        56.dp
+                    } else {
+                        16.dp
+                    }
+                    setMargins(0, 0, 0, bottomMargin)
+                }
                 if (createButtonVisibility && !filtersOpened) {
                     CreateNewButton(
                         modifier = Modifier,
@@ -262,7 +262,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun restoreAdapters() {
         initLoading(null)
         liveAdapter.clearList()
-        if (viewModel.filtersActive.value != true) {
+        if (!viewModel.filtersApplyOnGlobalSearch()) {
             globalAdapter.clearList()
         } else if (globalAdapter.itemCount > 0) {
             initGlobalData()
@@ -297,7 +297,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun initData() {
         displayLoadingData()
         viewModel.fetchListResults {
-            it?.apply {
+            it?.takeIf { view != null }?.apply {
                 removeObservers(viewLifecycleOwner)
                 observe(viewLifecycleOwner) { results ->
                     liveAdapter.submitList(results) {

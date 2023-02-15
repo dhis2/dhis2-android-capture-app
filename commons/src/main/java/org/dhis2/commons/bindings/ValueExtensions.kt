@@ -151,11 +151,11 @@ fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
 ): TrackedEntityAttributeValue? {
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().let {
         if (blockingExists() && check(
-                d2,
-                it.valueType(),
-                it.optionSet()?.uid(),
-                blockingGet().value()!!
-            )
+            d2,
+            it.valueType(),
+            it.optionSet()?.uid(),
+            blockingGet().value()!!
+        )
         ) {
             blockingGet()
         } else {
@@ -191,8 +191,8 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_NEGATIVE,
             ValueType.INTEGER_ZERO_OR_POSITIVE -> (
-                    it.toIntOrNull() ?: it.toFloat().toInt()
-                    ).toString()
+                it.toIntOrNull() ?: it.toFloat().toInt()
+                ).toString()
             ValueType.UNIT_INTERVAL -> (it.toIntOrNull() ?: it.toFloat()).toString()
             else -> this
         }
@@ -205,11 +205,11 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
 ): TrackedEntityDataValue? {
     return d2.dataElementModule().dataElements().uid(deUid).blockingGet().let {
         if (blockingExists() && check(
-                d2,
-                it.valueType(),
-                it.optionSet()?.uid(),
-                blockingGet().value()!!
-            )
+            d2,
+            it.valueType(),
+            it.optionSet()?.uid(),
+            blockingGet().value()!!
+        )
         ) {
             blockingGet()
         } else {
@@ -259,9 +259,9 @@ private fun check(
 private fun assureCodeForOptionSet(d2: D2, optionSetUid: String?, value: String): String? {
     return optionSetUid?.let {
         if (d2.optionModule().options()
-                .byOptionSetUid().eq(it)
-                .byName().eq(value)
-                .one().blockingExists()
+            .byOptionSetUid().eq(it)
+            .byName().eq(value)
+            .one().blockingExists()
         ) {
             d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
                 .blockingGet().code()

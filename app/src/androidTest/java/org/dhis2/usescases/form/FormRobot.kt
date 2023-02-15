@@ -29,14 +29,14 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.form.ui.FormViewHolder
-import org.dhis2.ui.SECONDARY_BUTTON_TAG
+import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.anything
-import org.hamcrest.Matchers.instanceOf
-import org.hamcrest.Matchers.not
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.anything
+import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.CoreMatchers.not
 
 
 fun formRobot(formRobot: FormRobot.() -> Unit) {
@@ -48,7 +48,7 @@ fun formRobot(formRobot: FormRobot.() -> Unit) {
 class FormRobot : BaseRobot() {
 
     private fun clickOnASpecificSection(sectionLabel: String) {
-        onView(withId(R.id.recyclerView))
+        val perform = onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItem<FormViewHolder>(
                     allOf(

@@ -11,11 +11,7 @@ import org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
 fun FloatingActionButton.rotate(rotate: Boolean): Boolean {
     animate()
         .setDuration(200)
-        .setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                super.onAnimationEnd(animation)
-            }
-        })
+        .setListener(object : AnimatorListenerAdapter() {})
         .rotation(if (rotate) 135f else 0f)
         .start()
     return rotate
@@ -34,7 +30,7 @@ fun View.showDialItem(onAnimationEnd: () -> Unit = {}) {
             .scaleY(1f)
             .setDuration(100)
             .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     onAnimationEnd()
                     super.onAnimationEnd(animation)
                 }
@@ -56,7 +52,7 @@ fun View.hideDialItem(onAnimationEnd: () -> Unit = {}) {
         .scaleY(0.5f)
         .setDuration(100)
         .setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 visibility = View.GONE
                 onAnimationEnd()
                 super.onAnimationEnd(animation)

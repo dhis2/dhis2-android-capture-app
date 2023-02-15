@@ -203,7 +203,7 @@ class FormTest: BaseTest() {
         }
 
         enrollmentRobot {
-            clickOnPersonAttributes("Attributes - Person")
+            clickOnPersonAttributesUsingButton("Attributes - Person")
             scrollToBottomProgramForm()
             clickOnDatePicker()
             clickOnAcceptEnrollmentDate()

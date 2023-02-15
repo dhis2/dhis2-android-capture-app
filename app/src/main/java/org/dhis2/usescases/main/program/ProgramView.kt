@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main.program
 
-import androidx.annotation.UiThread
 import org.dhis2.usescases.general.AbstractActivityContracts
 
 interface ProgramView : AbstractActivityContracts.View {
@@ -8,9 +7,6 @@ interface ProgramView : AbstractActivityContracts.View {
     fun swapProgramModelData(programs: List<ProgramViewModel>)
 
     fun showFilterProgress()
-
-    @UiThread
-    fun renderError(message: String)
 
     fun openOrgUnitTreeSelector()
 

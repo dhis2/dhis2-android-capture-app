@@ -3,16 +3,16 @@ package org.dhis2.usescases.sync
 import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.METADATA_MESSAGE
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.data.service.workManager.WorkerItem
-import org.dhis2.data.service.workManager.WorkerType
-import org.dhis2.utils.Constants
 import timber.log.Timber
+
+const val WAS_INITIAL_SYNC_DONE = "WasInitialSyncDone"
 
 class SyncPresenter internal constructor(
     private val view: SyncView,
@@ -25,7 +25,7 @@ class SyncPresenter internal constructor(
 
     fun sync() {
         workManagerController
-            .syncDataForWorkers(Constants.META_NOW, Constants.DATA_NOW, Constants.INITIAL_SYNC)
+            .syncMetaDataForWorker(Constants.META_NOW, Constants.INITIAL_SYNC)
     }
 
     fun observeSyncProcess(): LiveData<List<WorkInfo>> {
@@ -36,8 +36,6 @@ class SyncPresenter internal constructor(
         workInfoList.forEach { workInfo ->
             if (workInfo.tags.contains(Constants.META_NOW)) {
                 handleMetaState(workInfo.state, workInfo.outputData.getString(METADATA_MESSAGE))
-            } else if (workInfo.tags.contains(Constants.DATA_NOW)) {
-                handleDataState(workInfo.state)
             }
         }
     }
@@ -52,16 +50,8 @@ class SyncPresenter internal constructor(
         }
     }
 
-    private fun handleDataState(state: WorkInfo.State) {
-        when (state) {
-            WorkInfo.State.RUNNING -> view.setDataSyncStarted()
-            WorkInfo.State.SUCCEEDED -> view.setDataSyncSucceed()
-            else -> {
-            }
-        }
-    }
-
     fun onMetadataSyncSuccess() {
+        preferences.setValue(Preference.INITIAL_METADATA_SYNC_DONE, true)
         userManager?.let { userManager ->
             disposable.add(
                 userManager.theme.doOnSuccess { flagAndTheme ->
@@ -74,6 +64,7 @@ class SyncPresenter internal constructor(
                         { (first, second) ->
                             view.setFlag(first)
                             view.setServerTheme(second)
+                            view.goToMain()
                         },
                         { t: Throwable? ->
                             Timber.e(t)
@@ -83,23 +74,8 @@ class SyncPresenter internal constructor(
         }
     }
 
-    fun onDataSyncSuccess() {
-        preferences.setValue(Preference.INITIAL_SYNC_DONE, true)
-        val workerItem = WorkerItem(
-            Constants.RESERVED,
-            WorkerType.RESERVED,
-            null,
-            null,
-            null,
-            null
-        )
-        workManagerController.cancelAllWorkByTag(workerItem.workerName)
-        workManagerController.syncDataForWorker(workerItem)
-        view.goToMain()
-    }
-
     fun onLogout() {
-        userManager?. let { userManager ->
+        userManager?.let { userManager ->
             disposable.add(
                 userManager.logout()
                     .subscribeOn(schedulerProvider.io())

@@ -20,6 +20,7 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
+import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -41,6 +42,7 @@ class SearchTEIViewModelTest {
     private val pageConfigurator: SearchPageConfigurator = mock()
     private val mapDataRepository: MapDataRepository = mock()
     private val networkUtils: NetworkUtils = mock()
+    private val mapStyleConfiguration: MapStyleConfiguration = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -53,6 +55,7 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram())
         whenever(repository.canCreateInProgramWithoutSearch()) doReturn true
         whenever(repository.getTrackedEntityType()) doReturn testingTrackedEntityType()
+        whenever(repository.filtersApplyOnGlobalSearch()) doReturn true
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
@@ -73,7 +76,8 @@ class SearchTEIViewModelTest {
                 override fun ui(): CoroutineDispatcher {
                     return testingDispatcher
                 }
-            }
+            },
+            mapStyleConfiguration
         )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -481,6 +485,20 @@ class SearchTEIViewModelTest {
     }
 
     @Test
+    fun `Should return no more results for global search when filter do not apply for it`() {
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
+        whenever(repository.filtersApplyOnGlobalSearch()) doReturn false
+        performSearch()
+        viewModel.onDataLoaded(1, 1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+        }
+    }
+
+    @Test
     fun `Should close keyboard and filters`() {
         viewModel.onBackPressed(
             isPortrait = true,
@@ -576,8 +594,8 @@ class SearchTEIViewModelTest {
     @Test
     fun `should return selected program uid and set theme`() {
         val programs = listOf(
-            Program.builder().uid("program1").build(),
-            Program.builder().uid("program2").build()
+            ProgramSpinnerModel("program1", "program1", false),
+            ProgramSpinnerModel("program2", "program2", false)
         )
 
         viewModel.onProgramSelected(2, programs) {
@@ -589,7 +607,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `should return first program uid and set theme`() {
         val programs = listOf(
-            Program.builder().uid("program1").build()
+            ProgramSpinnerModel("program1", "program1", false)
         )
 
         viewModel.onProgramSelected(2, programs) {

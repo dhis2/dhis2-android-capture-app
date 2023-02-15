@@ -31,7 +31,6 @@ data class SectionUiModelImpl(
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
     override val renderingType: UiRenderType? = null,
-    override val options: List<Option>? = null,
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null,
     var isOpen: Boolean = false,
@@ -40,7 +39,9 @@ data class SectionUiModelImpl(
     var errors: Int = 0,
     var warnings: Int = 0,
     var rendering: String? = null,
-    var selectedField: ObservableField<String?> = ObservableField(null)
+    var selectedField: ObservableField<String?> = ObservableField(null),
+    override val isLoadingData: Boolean = false,
+    override var optionSetConfiguration: OptionSetConfiguration? = null
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0
@@ -90,6 +91,10 @@ data class SectionUiModelImpl(
 
     fun showBottomShadow(): Boolean {
         return showBottomShadow
+    }
+
+    fun showNextButton(): Boolean {
+        return showBottomShadow && !isClosingSection()
     }
 
     fun setLastSectionHeight(lastPositionShouldChangeHeight: Boolean) {
@@ -142,10 +147,6 @@ data class SectionUiModelImpl(
                 style?.backgroundColor(it, error, warning)
             }
 
-    override var optionsToHide: List<String>? = null
-
-    override var optionsToShow: List<String>? = null
-
     override val hasImage: Boolean
         get() = false
 
@@ -169,6 +170,8 @@ data class SectionUiModelImpl(
 
     override fun setValue(value: String?) = this.copy(value = value)
 
+    override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
+
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 
     override fun setKeyBoardActionDone() = this.copy(keyboardActionType = KeyboardActionType.DONE)
@@ -184,8 +187,6 @@ data class SectionUiModelImpl(
     override fun setWarning(warning: String) = this.copy(warning = warning)
 
     override fun setFieldMandatory() = this.copy(mandatory = true)
-
-    override val optionsToDisplay: List<Option>? = null
 
     override fun isSectionWithFields() = totalFields > 0
 

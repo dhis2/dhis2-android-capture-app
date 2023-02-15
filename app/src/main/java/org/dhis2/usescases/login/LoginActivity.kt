@@ -39,6 +39,13 @@ import org.dhis2.Bindings.app
 import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.commons.Constants
+import org.dhis2.commons.Constants.ACCOUNT_RECOVERY
+import org.dhis2.commons.Constants.ACCOUNT_USED
+import org.dhis2.commons.Constants.EXTRA_DATA
+import org.dhis2.commons.Constants.SERVER
+import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
+import org.dhis2.commons.Constants.USER
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
@@ -54,13 +61,6 @@ import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
-import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
-import org.dhis2.utils.Constants.ACCOUNT_USED
-import org.dhis2.utils.Constants.EXTRA_DATA
-import org.dhis2.utils.Constants.SERVER
-import org.dhis2.utils.Constants.SESSION_DIALOG_RQ
-import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.WebViewActivity
@@ -117,6 +117,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         EXTRA_ACCOUNT_DISABLED,
                         true
                     )
+                    null -> {
+                        // Nothing to do in this case
+                    }
                 }
             }
         }
@@ -214,8 +217,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() &&
-            HttpUrl.parse(urlString) != null
+                Patterns.WEB_URL.matcher(urlString).matches() &&
+                HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
@@ -325,7 +328,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun showCrashlyticsDialog() {
         val spannable = SpannableString(
             getString(R.string.analytics_crash_name_message) + " " +
-                getString(R.string.send_user_privacy_policy)
+                    getString(R.string.send_user_privacy_policy)
         )
 
         val clickableSpan = object : ClickableSpan() {
@@ -401,14 +404,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun saveUsersData() {
+    override fun saveUsersData(isInitialSyncDone: Boolean) {
         (context.applicationContext as App).createUserComponent()
-
+        skipSync = isInitialSyncDone
         if (!presenter.areSameCredentials(
-            binding.serverUrlEdit.text.toString(),
-            binding.userNameEdit.text.toString(),
-            binding.userPassEdit.text.toString()
-        )
+                binding.serverUrlEdit.text.toString(),
+                binding.userNameEdit.text.toString(),
+                binding.userPassEdit.text.toString()
+            )
         ) {
             // This is commented until fingerprint login for multiuser is supported
             /* if (presenter.canHandleBiometrics() == true) {
@@ -424,7 +427,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                             )
                             goToNextScreen()
                         }
-
                         override fun onNegativeClick() {
                             goToNextScreen()
                         }
@@ -640,5 +642,18 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         )
         sessionDialog.setCancelable(false)
         sessionDialog.show()
+    }
+
+    override fun showNoConnectionDialog() {
+        val dialog = CustomDialog(
+            this,
+            getString(R.string.network_unavailable),
+            getString(R.string.no_network_to_recover_account),
+            getString(R.string.action_ok),
+            null,
+            CustomDialog.NO_RQ_CODE,
+            null
+        )
+        dialog.show()
     }
 }

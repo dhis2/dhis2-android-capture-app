@@ -6,6 +6,7 @@ import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
+import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
@@ -35,7 +36,7 @@ class TeiDataRepositoryImpl(
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
-        selectedStage: String?,
+        selectedStage: StageSection?,
         groupedByStage: Boolean,
         periodFilters: MutableList<DatePeriod>,
         orgUnitFilters: MutableList<String>,
@@ -61,7 +62,13 @@ class TeiDataRepositoryImpl(
             catOptComboFilters
         )
 
+
+
         return if (groupedByStage) {
+            if (selectedStage == null){
+                throw Exception("When groupedByStage is true then selectedStage can't be null")
+            }
+
             getGroupedEvents(eventRepo, selectedStage, sortingItem, replaceProgramStageName)
         } else {
             getTimelineEvents(eventRepo, sortingItem,replaceProgramStageName)
@@ -93,9 +100,63 @@ class TeiDataRepositoryImpl(
             }
     }
 
+    override fun eventsWithoutCatCombo(): Single<List<EventViewModel>> {
+        return getEnrollmentProgram()
+            .flatMap { program ->
+                d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get()
+            }
+            .flatMap { categoryCombo ->
+                if (categoryCombo.isDefault == true) {
+                    Single.just(emptyList())
+                } else {
+                    val defaultCatOptCombo = d2.categoryModule().categoryOptionCombos()
+                        .byDisplayName().eq("default")
+                        .one()
+                        .blockingGet()
+                    val eventsWithDefaultCatCombo = d2.eventModule().events()
+                        .byEnrollmentUid().eq(enrollmentUid)
+                        .byAttributeOptionComboUid().eq(defaultCatOptCombo.uid())
+                        .get()
+                    val eventsWithNoCatCombo = d2.eventModule().events()
+                        .byEnrollmentUid().eq(enrollmentUid)
+                        .byAttributeOptionComboUid().isNull
+                        .get()
+                    val eventSource = Single.zip(
+                        eventsWithDefaultCatCombo,
+                        eventsWithNoCatCombo
+                    ) { sourceA, sourceB ->
+                        mutableListOf<Event>().apply {
+                            addAll(sourceA)
+                            addAll(sourceB)
+                        }
+                    }
+                    return@flatMap eventSource.map { events ->
+                        events.map {
+                            val stage = d2.programModule().programStages()
+                                .uid(it.programStage())
+                                .blockingGet()
+                            EventViewModel(
+                                type = EventViewModelType.EVENT,
+                                stage = stage,
+                                event = it,
+                                eventCount = 0,
+                                lastUpdate = null,
+                                isSelected = false,
+                                canAddNewEvent = false,
+                                orgUnitName = it.organisationUnit()!!,
+                                catComboName = null,
+                                dataElementValues = null,
+                                displayDate = null
+                            )
+                        }
+                    }
+                }
+            }
+    }
+
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
-        selectedStage: String?,
+        selectedStage: StageSection,
         sortingItem: SortingItem?,
         replaceProgramStageName: Boolean = false
     ): Single<List<EventViewModel>> {
@@ -114,7 +175,7 @@ class TeiDataRepositoryImpl(
                     eventRepo = eventRepoSorting(sortingItem, eventRepo)
                     val eventList = eventRepo.blockingGet()
 
-                    val isSelected = programStage.uid() == selectedStage
+                    val isSelected = programStage.uid() == selectedStage.stageUid
 
                     val canAddEventToEnrollment = enrollmentUid?.let {
                         programStage.access()?.data()?.write() == true &&
@@ -131,7 +192,7 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            isSelected,
+                            selectedStage.showOptions && isSelected,
                             canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
@@ -140,7 +201,7 @@ class TeiDataRepositoryImpl(
                             displayDate = null
                         )
                     )
-                    if (selectedStage != null && selectedStage == programStage.uid()) {
+                    if (isSelected) {
                         checkEventStatus(eventList).forEachIndexed { index, event ->
                             val showTopShadow = index == 0
                             val showBottomShadow = index == eventList.size - 1

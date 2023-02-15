@@ -33,20 +33,20 @@
                 android:id="@+id/view"
                 android:layout_width="24dp"
                 android:layout_height="4dp"
-                android:background="@drawable/ic_bottom_sheet_thumb"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/ic_bottom_sheet_thumb"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/clear_filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
                 android:layout_marginEnd="12dp"
-                android:onClick="@{()->presenter.clearFilterClick()}"
                 android:background="?selectableItemBackgroundBorderless"
+                android:onClick="@{()->presenter.clearFilterClick()}"
+                android:padding="4dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/close_filter"
@@ -58,10 +58,10 @@
                 android:id="@+id/close_filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
                 android:layout_marginEnd="12dp"
-                android:onClick="@{()->presenter.showHideFilterClick()}"
                 android:background="?selectableItemBackgroundBorderless"
+                android:onClick="@{()->presenter.showHideFilterClick()}"
+                android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -70,50 +70,24 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <RelativeLayout
-            android:id="@+id/progressLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filter">
 
-            <ProgressBar
-                android:id="@+id/program_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerInParent="true"
-                android:layout_margin="5dp"
-                app:progressColor="@{@color/colorPrimary}" />
-        </RelativeLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/program_recycler"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/programList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_below="@+id/progressLayout"
-            app:layout_constraintTop_toBottomOf="@id/progressLayout"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:clipToPadding="false"
-            android:paddingBottom="56dp"
-            app:initGrid="@{false}"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="@{1}"
-            tools:itemCount="4"
-            tools:listitem="@layout/item_program_model" />
-
+            app:layout_constraintTop_toBottomOf="@id/filter" />
 
         <TextView
             android:id="@+id/emptyView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            app:layout_constraintTop_toBottomOf="@id/progressLayout"
             android:text="@string/empty_program_list"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/filter" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

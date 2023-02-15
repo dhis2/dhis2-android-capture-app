@@ -1,3 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Evento</string>
+    <string name="no_data">Não ha dados</string>
+    <string name="change_calendar_view">Alterar visualização da agenda</string>
+    <string name="clear">claro</string>
+    <string name="action_accept">Aceitar</string>
+    <string name="next">Próximo</string>
+    <string name="cancel">Cancelar</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="clear_all">seleção clara</string>
+    <string name="navigation_list_view">Vista de lista</string>
+    <string name="navigation_table_view">Vista de tabela</string>
+    <string name="navigation_map_view">Vista de mapa</string>
+    <string name="navigation_analytics">Google Analytics</string>
+    <string name="navigation_tasks">Tarefas</string>
+    <string name="navigation_programs">Programas</string>
+    <string name="navigation_events">Eventos</string>
+    <string name="navigation_relationships">Relacionamentos</string>
+    <string name="navigation_notes">Notas</string>
+    <string name="navigation_data_entry">Entrada de dados</string>
+    <string name="navigation_tei_data">Detalhes</string>
+    <string name="event_overview">Detalhes</string>
+    <string name="select_option">Selecionar opção</string>
+    <string name="search">Pesquisar</string>
+    <string name="jira_issue_sent">Problema Enviado</string>
+    <string name="jira_issue_sent_error">Erro ao enviar Problema</string>
+    <string name="events">eventos</string>
+    <string name="data_sets">Agregação de Dados</string>
+    <string name="tei">TEI</string>
+    <string name="info">Informações</string>
+    <string name="done">done</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Aplicação de filtros</string>
+    <string name="filters_disabled">Nenhum filtro aplicado</string>
+    <string name="filters_title_period">Período</string>
+    <string name="filters_title_org_unit">Unidade Org.</string>
+    <string name="filters_title_sorting">Ordem</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Sincronizar</string>
+    <string name="filters_title_assigned">Atribuído a mim</string>
+    <string name="filters_title_date">Data</string>
+    <string name="filters_title_event_date">Data de incidente</string>
+    <string name="enrollment_date">Data de inscrição</string>
+    <string name="filters_title_event_status">Estado do evento </string>
+    <string name="filters_title_enrollment_status">Status da inscrição</string>
+    <!-- State -->
+    <string name="state_synced">Sincronizar</string>
+    <string name="state_to_post">Para enviar</string>
+    <string name="state_to_update">Atualizar</string>
+    <string name="state_to_delete">Suprimir</string>
+    <string name="state_error">Erro</string>
+    <string name="state_warning">Advertência</string>
+    <string name="state_relationship">Relação</string>
+    <string name="sync_by_sms">Sincronizado por SMS</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Abrir</string>
+    <string name="filter_event_status_schedule">Programar</string>
+    <string name="filter_event_status_overdue">Atrasado</string>
+    <string name="filter_event_status_visited">Visitou</string>
+    <string name="filter_event_status_completed">Completo</string>
+    <string name="filter_event_status_skipped">Ignorado</string>
+    <string name="active">Activo</string>
+    <string name="cancelled">Cancelado</string>
+    <string name="enrollment_status_active">Abrir</string>
+    <string name="enrollment_status_completed">Completo</string>
+    <string name="enrollment_status_cancelled">Cancelado</string>
+    <string name="record_marked_for_deletion">Este registro está marcado para exclusão. Você não pode acessá-lo.</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">Hoje</string>
+    <string name="filter_period_yesterday">Ontém</string>
+    <string name="filter_period_tomorrow">Amanhã</string>
+    <string name="filter_period_this_week">Esta semana</string>
+    <string name="filter_period_last_week">Última semana</string>
+    <string name="filter_perdior_next_week">Semana que vem</string>
+    <string name="filter_period_this_month">Este mês</string>
+    <string name="filter_period_last_month">Último mês</string>
+    <string name="filter_period_next_month">Próximo mês</string>
+    <string name="filter_period_form_to">De - Para</string>
+    <string name="filter_period_other">Outro</string>
+    <string name="filter_period_any">A qualquer momento</string>
+    <string name="filter_period_this_year">Este ano</string>
+    <string name="filter_period_this_bimonth">Este bimensal</string>
+    <string name="filter_period_last_bimonth">Ultimo bimensal</string>
+    <string name="filter_period_this_quarter">Este Trimestre</string>
+    <string name="filter_period_last_quarter">Último trimestre</string>
+    <string name="filter_period_weeks_this_year">Semanas deste ano </string>
+    <string name="filter_period_months_this_year">Meses deste ano</string>
+    <string name="filter_period_bimonths_this_year">Bimensais deste ano</string>
+    <string name="filter_period_quarters_this_year">Trimestres deste ano</string>
+    <string name="filter_period_months_last_year">Meses do ano passado</string>
+    <string name="filter_period_last_year">Último ano</string>
+    <string name="filter_period_this_financial_year">Ano financeiro</string>
+    <string name="filter_period_last_financial_year">Último ano fiscal</string>
+    <string name="period">Período</string>
+    <string name="DAILY">Diário</string>
+    <string name="WEEKLY">Semanal</string>
+    <string name="MONTHLY">Mensal</string>
+    <string name="YEARLY">Anualmente</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Sincronizado</string>
+    <string name="filter_sync_not_synced">Não sincronizado</string>
+    <string name="filter_sync_error">Erro de Sincronização</string>
+    <string name="filter_sync_sms">SMS sincronizado</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">agora</string>
+    <string name="interval_minute_ago">%d min. atrás</string>
+    <string name="interval_hour_ago">%d horas atrás</string>
+    <string name="interval_yesterday">Ontém</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Retroinformacão</string>
+    <string name="section_indicators">Indicadores</string>
+    <string name="section_charts">Gráficos</string>
+    <string name="login_error_dhis_version">Este servidor está executando uma versão dhis diferente de 2.29. Atualize a versão do servidor ou use o ambiente de teste para continuar.</string>
+    <string name="online_search_parsing_error">Erro ao analisar resultados</string>
+    <string name="add_image">Adicionar imagem</string>
+    <string name="action_ok">Esta bem</string>
+    <string name="enable_location_message">A localização do seu dispositivo está desconectada. Por favor ative-o para capturar coordenadas</string>
+    <string name="keep_editing">Continue editando</string>
+    <string name="complete">Completo</string>
+    <string name="default_table_header_label">Valor</string>
+    <string name="discard_changes">Descartar mudanças</string>
     </resources>

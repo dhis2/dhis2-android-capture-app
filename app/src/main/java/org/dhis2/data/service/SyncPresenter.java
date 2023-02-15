@@ -2,6 +2,7 @@ package org.dhis2.data.service;
 
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.tracker.exporter.TrackerD2Progress;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ interface SyncPresenter {
 
     SyncResult checkSyncStatus();
 
-    Observable<D2Progress> syncGranularEvent(String eventUid);
+    Observable<TrackerD2Progress> syncGranularEvent(String eventUid);
 
     ListenableWorker.Result blockSyncGranularProgram(String programUid);
 
@@ -34,7 +35,7 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularProgram(String uid);
 
-    Observable<D2Progress> syncGranularTEI(String uid);
+    Observable<TrackerD2Progress> syncGranularTEI(String uid);
 
     Observable<D2Progress> syncGranularDataSet(String uid);
 
@@ -62,11 +63,15 @@ interface SyncPresenter {
 
     void downloadResources();
 
-    void uploadResources();
-
     ListenableWorker.Result blockSyncGranularDataValues(String dataSetUid, String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo);
 
     void logTimeToFinish(long millisToFinish, String eventName);
 
     void updateProyectAnalytics();
+
+    void initSyncControllerMap();
+
+    void finishSync();
+
+    void setNetworkUnavailable();
 }

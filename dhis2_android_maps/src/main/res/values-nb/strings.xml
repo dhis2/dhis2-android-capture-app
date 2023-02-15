@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">Velg lokasjon</string>
+    <string name="map_layers">Kartlag</string>
+    <string name="action_apply">Bruk</string>
+    <string name="dialog_layer_satellite">Vis satelittvisning</string>
+    <string name="dialog_layer_event">Vis hendelser</string>
+    <string name="dialog_layer_tei_coordinates">Vis tei koordinater</string>
+    <string name="dialog_layer_enrollment_coordinates">Vis registreringskoordinater</string>
+    <string name="dialog_layer_heatmap">Vis varmekartlag</string>
+</resources>

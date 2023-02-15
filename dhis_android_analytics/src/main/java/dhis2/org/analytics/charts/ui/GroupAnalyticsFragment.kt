@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.github.mikephil.charting.utils.Utils
@@ -37,7 +36,7 @@ class GroupAnalyticsFragment : Fragment() {
     private val uid: String? by lazy {
         arguments?.getString(ARG_UID)
     }
-    private lateinit var binding: AnalyticsGroupBinding
+    private var binding: AnalyticsGroupBinding? = null
 
     @Inject
     lateinit var analyticsViewModelFactory: GroupAnalyticsViewModelFactory
@@ -54,7 +53,13 @@ class GroupAnalyticsFragment : Fragment() {
 
         fun forProgram(programUid: String): GroupAnalyticsFragment {
             return GroupAnalyticsFragment().apply {
-                arguments = bundleArguments(AnalyticMode.PROGRAM, programUid)
+                arguments = bundleArguments(AnalyticMode.TRACKER_PROGRAM, programUid)
+            }
+        }
+
+        fun forTrackerProgram(programUid: String): GroupAnalyticsFragment {
+            return GroupAnalyticsFragment().apply {
+                arguments = bundleArguments(AnalyticMode.EVENT_PROGRAM, programUid)
             }
         }
 
@@ -92,37 +97,53 @@ class GroupAnalyticsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         postponeEnterTransition()
-        binding = DataBindingUtil.inflate(inflater, R.layout.analytics_group, container, false)
-        ViewCompat.setTransitionName(binding.visualizationContainer, "contenttest")
-        binding.lifecycleOwner = this
-        binding.analyticsRecycler.adapter = adapter
-        adapter.onRelativePeriodCallback =
-            { chartModel: ChartModel, relativePeriod: RelativePeriod?, current: RelativePeriod? ->
-                relativePeriod?.let {
-                    if (it.isNotCurrent()) {
-                        showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
-                    } else {
-                        groupViewModel.filterByPeriod(chartModel, mutableListOf(it))
+
+        return AnalyticsGroupBinding.inflate(inflater, container, false).apply {
+            ViewCompat.setTransitionName(visualizationContainer, "contenttest")
+            lifecycleOwner = viewLifecycleOwner
+            setUpAdapter()
+            analyticsRecycler.adapter = adapter
+            visualizationContainer.clipWithRoundedCorners()
+        }.also {
+            binding = it
+        }.root
+    }
+
+    private fun setUpAdapter() {
+        adapter.apply {
+            onRelativePeriodCallback =
+                { chartModel, relativePeriod, current ->
+                    groupViewModel.trackAnalyticsPeriodFilter(mode)
+                    relativePeriod?.let {
+                        if (it.isNotCurrent()) {
+                            showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
+                        } else {
+                            groupViewModel.filterByPeriod(chartModel, mutableListOf(it))
+                        }
                     }
                 }
+
+            onOrgUnitCallback =
+                { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
+                    groupViewModel.trackAnalyticsOrgUnitFilter(mode)
+                    when (orgUnitFilterType) {
+                        OrgUnitFilterType.SELECTION -> showOUTreeSelector(chartModel)
+                        else -> groupViewModel.filterByOrgUnit(
+                            chartModel,
+                            emptyList(),
+                            orgUnitFilterType
+                        )
+                    }
+                }
+            onResetFilterCallback = { chartModel, filterType ->
+                groupViewModel.trackAnalyticsFilterReset(mode)
+                groupViewModel.resetFilter(chartModel, filterType)
             }
 
-        adapter.onOrgUnitCallback =
-            { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
-                when (orgUnitFilterType) {
-                    OrgUnitFilterType.SELECTION -> showOUTreeSelector(chartModel)
-                    else -> groupViewModel.filterByOrgUnit(
-                        chartModel,
-                        emptyList(),
-                        orgUnitFilterType
-                    )
-                }
+            onChartTypeChanged = {
+                groupViewModel.trackChartTypeChanged(mode)
             }
-        adapter.onResetFilterCallback = { chartModel, filterType ->
-            groupViewModel.resetFilter(chartModel, filterType)
         }
-        binding.visualizationContainer.clipWithRoundedCorners()
-        return binding.root
     }
 
     private fun showAlertDialogCurrentPeriod(
@@ -165,57 +186,51 @@ class GroupAnalyticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        groupViewModel.chipItems.observe(
-            viewLifecycleOwner,
-            { chipResult ->
-                when {
-                    chipResult.isSuccess -> {
-                        val chips = chipResult.getOrDefault(emptyList())
-                        if (chips.isEmpty() || chips.size < MIN_SIZE_TO_SHOW) {
-                            binding.analyticChipGroup.visibility = View.GONE
-                        } else {
-                            binding.analyticChipGroup.visibility = View.VISIBLE
-                            disableToolbarElevation?.invoke()
-                            addChips(chips)
-                        }
-                    }
-                    chipResult.isFailure -> {
-                        binding.progressLayout.visibility = View.GONE
-                        binding.emptyAnalytics.apply {
-                            visibility = View.VISIBLE
-                            text = getString(R.string.visualization_groups_failure)
-                        }
+        groupViewModel.chipItems.observe(viewLifecycleOwner) { chipResult ->
+            when {
+                chipResult.isSuccess -> {
+                    val chips = chipResult.getOrDefault(emptyList())
+                    if (chips.isEmpty() || chips.size < MIN_SIZE_TO_SHOW) {
+                        binding?.analyticChipGroup?.visibility = View.GONE
+                    } else {
+                        binding?.analyticChipGroup?.visibility = View.VISIBLE
+                        disableToolbarElevation?.invoke()
+                        addChips(chips)
                     }
                 }
-                startPostponedEnterTransition()
-            }
-        )
-        groupViewModel.analytics.observe(
-            viewLifecycleOwner,
-            { analytics ->
-                when {
-                    analytics.isSuccess -> adapter.submitList(analytics.getOrDefault(emptyList())) {
-                        binding.progressLayout.visibility = View.GONE
-                    }
-                    analytics.isFailure -> {
-                        binding.progressLayout.visibility = View.GONE
-                        binding.emptyAnalytics.apply {
-                            visibility = View.VISIBLE
-                            text = getString(R.string.visualization_failure)
-                        }
+                chipResult.isFailure -> {
+                    binding?.progressLayout?.visibility = View.GONE
+                    binding?.emptyAnalytics?.apply {
+                        visibility = View.VISIBLE
+                        text = getString(R.string.visualization_groups_failure)
                     }
                 }
             }
-        )
+            startPostponedEnterTransition()
+        }
+        groupViewModel.analytics.observe(viewLifecycleOwner) { analytics ->
+            when {
+                analytics.isSuccess -> adapter.submitList(analytics.getOrDefault(emptyList())) {
+                    binding?.progressLayout?.visibility = View.GONE
+                }
+                analytics.isFailure -> {
+                    binding?.progressLayout?.visibility = View.GONE
+                    binding?.emptyAnalytics?.apply {
+                        visibility = View.VISIBLE
+                        text = getString(R.string.visualization_failure)
+                    }
+                }
+            }
+        }
     }
 
     private fun addChips(list: List<AnalyticGroup>) {
         var idChip = 0
         list.forEachIndexed { index, analyticGroup ->
-            binding.analyticChipGroup.addView(
+            binding?.analyticChipGroup?.addView(
                 AnalyticsItemBinding.inflate(
                     layoutInflater,
-                    binding.analyticChipGroup, false
+                    binding?.analyticChipGroup, false
                 ).apply {
                     chip.id = idChip
                     chip.text = analyticGroup.name
@@ -223,8 +238,9 @@ class GroupAnalyticsFragment : Fragment() {
                     chip.tag = analyticGroup.uid
                     chip.setOnCheckedChangeListener { buttonView, isChecked ->
                         if (isChecked) {
-                            binding.analyticChipGroupContainer.scrollToPosition(chip.tag as String)
-                            binding.progressLayout.visibility = View.VISIBLE
+                            binding?.analyticChipGroupContainer
+                                ?.scrollToPosition(chip.tag as String)
+                            binding?.progressLayout?.visibility = View.VISIBLE
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }
                     }
@@ -234,5 +250,5 @@ class GroupAnalyticsFragment : Fragment() {
         }
     }
 
-    fun sharedView() = binding.visualizationContainer
+    fun sharedView() = binding?.visualizationContainer
 }

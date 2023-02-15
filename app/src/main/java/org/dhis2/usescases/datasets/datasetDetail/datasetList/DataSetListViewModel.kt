@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.matomo.Actions
+import org.dhis2.commons.matomo.Categories
+import org.dhis2.commons.matomo.Labels
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
 import org.dhis2.utils.Action
-import org.dhis2.utils.analytics.matomo.Actions
-import org.dhis2.utils.analytics.matomo.Categories
-import org.dhis2.utils.analytics.matomo.Labels
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import timber.log.Timber
 
 class DataSetListViewModel(

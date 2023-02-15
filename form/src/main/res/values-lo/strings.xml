@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invalid_percentage">ອະຍາດໃຫ້ປ້ອນແຕ່ຄ່າ 0 ຫາ 100 ເທົ່ານັ້ນ </string>
+    <string name="invalid_possitive">ອະນຸຍາດໃຫ້ປ້ອນແຕ່ຄ່າບວກເທົ່ານັ້ນ</string>
+    <string name="invalid_phone_number">ເບີໂທລະສັບບໍ່ຖືກຕ້ອງ</string>
+    <string name="invalid_email">ຊື່ອີແມ໋ວບໍ່ຖືກ</string>
+    <string name="invalid_negative_number">ອະນຸຍາດໃຫ້ປ້ອນໄດ້ພຽງແຕ່ຄ່າລົບເທົ່ານັ້ນ</string>
+    <string name="invalid_possitive_zero">ອະນຸຍາດໃຫ້ປ້ອນໄດ້ພຽງແຕ່ຄ່າບວກ ຫຼື ສູນເທົ່ານັ້ນ</string>
+    <string name="invalid_interval">ອະນຸຍາດໃຫ້ປ້ອນແຕ່ຄ່າ 0 ຫາ 1 ເທົ່ານັ້ນ</string>
+    <string name="validation_url">ຊື່ url ບໍ່ຖຶກຕ້ອງ</string>
+    <string name="invalid_integer">ຄ່າຕ້ອງເປັນຈຳນວນຖ້ວນ</string>
+    <string name="error">ເກີດການຜິດພາດ</string>
+    <string name="choose_date">ເລືອກວັນທີ</string>
+    <string name="choose_ou">ເລືອກຫົວໜ່ວຍອົງກອນ</string>
+    <string name="date">ວັນທີ່</string>
+    <string name="hint_year">ປີ</string>
+    <string name="hint_month">ເດືອນ</string>
+    <string name="hint_day">ມື້</string>
+    <string name="polygon">Polygon</string>
+    <string name="latitude">ເສັ້ນຂະໜານ</string>
+    <string name="longitude">ເສັ້ນແວງ</string>
+    <string name="enter_positive_integer_or_zero">ຕື່ມຕົວເລກ</string>
+    <string name="enter_negative_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າລົບ</string>
+    <string name="enter_positive_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າບວກ</string>
+    <string name="enter_number">ຕື່ມຕົວເລກ</string>
+    <string name="enter_long_text">ປ້ອນຂໍ້ມູນເປັນຂໍ້ຄວາມຍາວ</string>
+    <string name="enter_text">ຂຽນຄໍາຕອບ</string>
+    <string name="due_date">ວັນທີຕ້ອງແລ້ວ</string>
+    <string name="event_date">ວັນທີເຫດການ</string>
+    <string name="complete">ສຳເລັດແລ້ວ</string>
+    <string name="share">ເຜີຍແຜ່</string>
+    <string name="action_close">ປິດ</string>
+    <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>
+    <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
+    <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
+    <string name="tei_coordinates">ປະສານງານຫາ</string>
+    <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>
+    <string name="incident_date">ວັນທີເດືອນປີທີ່ເຫດການເກີດຂື້ນ</string>
+    </resources>

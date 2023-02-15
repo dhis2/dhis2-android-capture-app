@@ -26,30 +26,30 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_SpinnerViewModel(uid(),label(),true,value(),programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
+        return new AutoValue_SpinnerViewModel(uid(),label(),true,value(),programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(), options(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
     }
 
     @Override
     public FieldViewModel setValue(String value) {
-        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(), options(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value(),programStageSection(),allowFutureDate(),editable(),warning(),error,description(),dataElement(),listCategoryOption(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value(),programStageSection(),allowFutureDate(),editable(),warning(),error,description(),dataElement(), options(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value(),programStageSection(),allowFutureDate(),editable(),warning,error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value(),programStageSection(),allowFutureDate(),editable(),warning,error(),description(),dataElement(), options(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
     }
 
    @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(),categoryOptionCombo(), catCombo(),hint(),optionSet());
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(), options(),storeBy(), row(), column(),categoryOptionCombo(), catCombo(),hint(),optionSet());
     }
 
     public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {

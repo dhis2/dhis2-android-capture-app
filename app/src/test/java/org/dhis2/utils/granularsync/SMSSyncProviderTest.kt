@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.sync.ConflictType
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.Event
@@ -49,7 +50,7 @@ class SMSSyncProviderTest {
         mockTrackerSMSVersion(SMSVersion.V2)
         mockModuleEnableStatus(true)
 
-        val result = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
+        val result = smsSyncProvider(ConflictType.TEI)
             .isSMSEnabled(true)
 
         assertTrue(result)
@@ -59,7 +60,7 @@ class SMSSyncProviderTest {
     fun `should return sms enabled if it is not tracker sync`() {
         mockModuleEnableStatus(true)
 
-        val result = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
+        val result = smsSyncProvider(ConflictType.TEI)
             .isSMSEnabled(false)
 
         assertTrue(result)
@@ -70,7 +71,7 @@ class SMSSyncProviderTest {
         mockTrackerSMSVersion(SMSVersion.V1)
         mockModuleEnableStatus(true)
 
-        val result = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
+        val result = smsSyncProvider(ConflictType.TEI)
             .isSMSEnabled(true)
 
         assertTrue(!result)
@@ -81,7 +82,7 @@ class SMSSyncProviderTest {
         mockTrackerSMSVersion(SMSVersion.V2)
         mockModuleEnableStatus(false)
 
-        val result = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
+        val result = smsSyncProvider(ConflictType.TEI)
             .isSMSEnabled(true)
 
         assertTrue(!result)
@@ -90,34 +91,38 @@ class SMSSyncProviderTest {
     @Test
     fun `should return single event task`() {
         mockIsTrackerEvent(false)
-        smsSyncProvider(SyncStatusDialog.ConflictType.EVENT).getConvertTask()
+        whenever(smsSender.convertSimpleEvent(any()))doReturn Single.just(1)
+        smsSyncProvider(ConflictType.EVENT).getConvertTask()
         verify(smsSender).convertSimpleEvent("uid")
     }
 
     @Test
     fun `should return tracker event task`() {
         mockIsTrackerEvent(true)
-        smsSyncProvider(SyncStatusDialog.ConflictType.EVENT).getConvertTask()
+        whenever(smsSender.convertTrackerEvent(any()))doReturn Single.just(1)
+        smsSyncProvider(ConflictType.EVENT).getConvertTask()
         verify(smsSender).convertTrackerEvent("uid")
     }
 
     @Test
     fun `should return enrollment task`() {
         mockEnrollmentExists(true)
-        smsSyncProvider(SyncStatusDialog.ConflictType.TEI).getConvertTask()
+        whenever(smsSender.convertEnrollment(any()))doReturn Single.just(1)
+        smsSyncProvider(ConflictType.TEI).getConvertTask()
         verify(smsSender).convertEnrollment("uid")
     }
 
     @Test
     fun `should return enrollment error task`() {
         mockEnrollmentExists(false)
-        smsSyncProvider(SyncStatusDialog.ConflictType.TEI).getConvertTask()
+        smsSyncProvider(ConflictType.TEI).getConvertTask()
         verify(resources).getString(R.string.granular_sync_enrollments_empty)
     }
 
     @Test
     fun `should return data value task`() {
-        smsSyncProviderDataValue(SyncStatusDialog.ConflictType.DATA_VALUES).getConvertTask()
+        whenever(smsSender.convertDataSet(any(), any(), any(), any()))doReturn Single.just(1)
+        smsSyncProviderDataValue(ConflictType.DATA_VALUES).getConvertTask()
         verify(smsSender).convertDataSet(
             "uid",
             "orgUnitUid",
@@ -128,7 +133,7 @@ class SMSSyncProviderTest {
 
     @Test
     fun `should return error task`() {
-        smsSyncProvider(SyncStatusDialog.ConflictType.PROGRAM).getConvertTask()
+        smsSyncProvider(ConflictType.PROGRAM).getConvertTask()
         verify(resources).getString(R.string.granular_sync_unsupported_task)
     }
 
@@ -136,7 +141,7 @@ class SMSSyncProviderTest {
     fun `should send sms`() {
         mockSendingSMS(false)
         val statuses = mutableListOf<SmsSendingService.SendingStatus>()
-        val testObserver = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
+        val testObserver = smsSyncProvider(ConflictType.TEI)
             .sendSms(
                 {
                     statuses.add(it)
@@ -161,7 +166,7 @@ class SMSSyncProviderTest {
         mockSendingSMS(true)
         mockConfirmationSMS()
         val statuses = mutableListOf<SmsSendingService.SendingStatus>()
-        val testObserver = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
+        val testObserver = smsSyncProvider(ConflictType.TEI)
             .sendSms(
                 {
                     statuses.add(it)
@@ -187,7 +192,7 @@ class SMSSyncProviderTest {
         mockSendingSMS(true)
         mockConfirmationSMSTimeout()
         val statuses = mutableListOf<SmsSendingService.SendingStatus>()
-        val testObserver = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
+        val testObserver = smsSyncProvider(ConflictType.TEI)
             .sendSms(
                 {
                     statuses.add(it)
@@ -231,7 +236,7 @@ class SMSSyncProviderTest {
         ) doReturn Single.just(smsConfig)
     }
 
-    fun smsSyncProvider(conflictType: SyncStatusDialog.ConflictType) = SMSSyncProvider(
+    fun smsSyncProvider(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
         conflictType,
         "uid",
@@ -241,7 +246,7 @@ class SMSSyncProviderTest {
         resources
     )
 
-    fun smsSyncProviderDataValue(conflictType: SyncStatusDialog.ConflictType) = SMSSyncProvider(
+    fun smsSyncProviderDataValue(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
         conflictType,
         "uid",

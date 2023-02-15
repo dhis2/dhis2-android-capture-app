@@ -29,9 +29,10 @@ data class FieldUiModelImpl(
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
     override val renderingType: UiRenderType? = null,
-    override val options: List<Option>? = null,
     override val keyboardActionType: KeyboardActionType? = null,
-    override val fieldMask: String? = null
+    override val fieldMask: String? = null,
+    override val isLoadingData: Boolean = false,
+    override var optionSetConfiguration: OptionSetConfiguration?
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -96,7 +97,10 @@ data class FieldUiModelImpl(
     }
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
-        onItemClick()
+        callback?.intent(FormIntent.OnRequestCoordinates(uid))
+        if (uiEventType != UiEventType.QR_CODE && !focused) {
+            onItemClick()
+        }
         uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
             callback?.recyclerViewUiEvents(it)
         }
@@ -112,10 +116,6 @@ data class FieldUiModelImpl(
     override val backGroundColor: Pair<Array<Int>, Int>?
         get() = style?.backgroundColor(valueType, error, warning)
 
-    override var optionsToHide: List<String>? = null
-
-    override var optionsToShow: List<String>? = null
-
     override val hasImage: Boolean
         get() = value?.let { File(it).exists() } ?: false
 
@@ -125,17 +125,9 @@ data class FieldUiModelImpl(
     override val isNegativeChecked: Boolean
         get() = value?.toBoolean() == false
 
-    override val optionsToDisplay: List<Option>?
-        get() = options?.filter { option ->
-            when {
-                optionsToShow?.isNotEmpty() == true ->
-                    optionsToShow?.contains(option.uid()) ?: false
-                else ->
-                    !(optionsToHide?.contains(option.uid()) ?: false)
-            }
-        }?.sortedBy { it.sortOrder() }
-
     override fun setValue(value: String?) = this.copy(value = value)
+
+    override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 

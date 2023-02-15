@@ -8,6 +8,7 @@ import io.reactivex.processors.PublishProcessor
 import java.util.Date
 import javax.inject.Singleton
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.utils.validationrules.DataToReview
 import org.dhis2.utils.validationrules.ValidationRuleResult
@@ -31,7 +32,8 @@ class DataSetTableRepositoryImpl(
     private val dataSetUid: String,
     private val periodId: String,
     private val orgUnitUid: String,
-    private val catOptCombo: String
+    private val catOptCombo: String,
+    private val resourceManager: ResourceManager
 ) {
 
     private val dataSetInstanceProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
@@ -102,7 +104,12 @@ class DataSetTableRepositoryImpl(
         return d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
             .map { sections ->
                 if (sections.isEmpty()) {
-                    arrayListOf(DataSetSection("NO_SECTION", "NO_SECTION"))
+                    arrayListOf(
+                        DataSetSection(
+                            "NO_SECTION",
+                            resourceManager.defaultEmptyDataSetSectionLabel()
+                        )
+                    )
                 } else {
                     sections.map { DataSetSection(it.uid(), it.displayName()) }
                 }

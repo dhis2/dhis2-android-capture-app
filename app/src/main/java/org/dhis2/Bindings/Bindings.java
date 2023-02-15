@@ -1,7 +1,6 @@
 package org.dhis2.Bindings;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -16,8 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -28,21 +25,16 @@ import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.filters.CatOptionComboFilter;
-import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.commons.data.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -52,7 +44,6 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -443,21 +434,6 @@ public class Bindings {
     public static void setSettingIcon(ImageView view, int drawableReference) {
         Drawable drawable = AppCompatResources.getDrawable(view.getContext(), drawableReference);
         view.setImageDrawable(drawable);
-    }
-
-    @BindingAdapter("tableScaleTextSize")
-    public static void setTabeScaleTextSize(TextView textView, DataSetTableAdapter.TableScale tableScale) {
-        switch (tableScale) {
-            case LARGE:
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                break;
-            case SMALL:
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-                break;
-            default:
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-                break;
-        }
     }
 
     @BindingAdapter("iconTint")

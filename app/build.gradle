@@ -2,9 +2,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'hu.supercluster.paperwork'
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
+apply plugin: "kotlinx-serialization"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
+
+sonarqube {
+    properties {
+        property 'sonar.coverage.jacoco.xmlReportPaths', "${project.buildDir}/coverage-report/jacocoTestReport.xml"
+    }
+}
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -96,7 +105,6 @@ android {
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
 
-            resValue "string", "content_provider", "com.dhis2.debug.provider"
             buildConfigField "int", "MATOMO_ID", "2"
 
             applicationVariants.all { variant ->
@@ -118,7 +126,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField "int", "MATOMO_ID", "1"
-            resValue "string", "content_provider", "com.dhis2.provider"
 
             //Sentry variables
             manifestPlaceholders = [
@@ -140,7 +147,7 @@ android {
             versionName versions.vName
         }
 
-        dhisNoSMS {
+        dhisPlayServices {
             applicationId "com.dhis2"
             dimension "default"
             versionCode versions.vCode
@@ -158,21 +165,21 @@ android {
             applicationId "com.eyeseetea.widp"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.6.2-widp-fork-1"
+            versionName "2.7.1-widp-fork-1"
         }
 
         psi {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.6.2-psi-fork-1"
+            versionName "2.7.1-psi-fork-3"
         }
 
         spOCC {
             applicationId "org.samaritan.cpr"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.6.2-spOCC-fork-1"
+            versionName "2.7.1-spOCC-fork-1"
         }
     }
 
@@ -223,23 +230,22 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.1'
+        kotlinCompilerExtensionVersion = "1.3.0"
     }
 }
 
 dependencies {
-    implementation 'androidx.activity:activity-compose:1.3.1'
+    implementation "androidx.activity:activity-compose:${libraries.activityCompose}"
 
     implementation project(':viewpagerdotsindicator')
-    implementation project(':tableview')
     implementation project(":dhis_android_analytics")
     implementation project(":form")
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
     implementation project(":compose-table")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:${libraries.kotlinmetadata}"
 
     implementation "androidx.annotation:annotation:${libraries.annotation}"
     implementation "androidx.cardview:cardview:${libraries.cardview}"
@@ -264,10 +270,10 @@ dependencies {
     implementation "io.noties.markwon:core:${libraries.markwon}"
 
     //PIN LOCK
-    implementation "com.andrognito.pinlockview:pinlockview:${libraries.pinlock}"
+    implementation "com.github.aritraroy:PinLockView:${libraries.pinlock}"
 
     //FancyShowCase
-    implementation "me.toptas.fancyshowcase:fancyshowcaseview:${libraries.fancyshowcase}"
+    implementation "com.github.faruktoptas:FancyShowCaseView:${libraries.fancyshowcase}"
 
     //Lottie animations
     implementation "com.airbnb.android:lottie:${libraries.lottie}"
@@ -279,9 +285,7 @@ dependencies {
     //region RXJAVA
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
-    //rxbinding
-    implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
-    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+
     //endregion
 
     // Extension which generates mappers for work with cursors
@@ -290,8 +294,7 @@ dependencies {
     //endregion
 
     //region Analytics
-    implementation "org.matomo.sdk:tracker:${libraries.matomo}"
-    implementation "io.sentry:sentry-android:${libraries.sentry}"
+    implementation "com.github.matomo-org:matomo-sdk-android:${libraries.matomo}"
     //endregion
 
     //region Debug
@@ -309,16 +312,7 @@ dependencies {
     implementation "cat.ereza:customactivityoncrash:${libraries.crashactivity}"
     //endregion
 
-    //region QR/Barcode scanner
-    implementation "com.google.zxing:core:${libraries.zxing}"
-
-    implementation ("me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"){
-        exclude group: "com.google.zxing", module: "core"
-    }
-    implementation ("com.journeyapps:zxing-android-embedded:${libraries.zxingandroid}"){
-        exclude group: "com.google.zxing", module: "core"
-    }
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${libraries.desugar_jdk_libs}"
     //endregion
 
     //region Security
@@ -336,15 +330,14 @@ dependencies {
 
     //region Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
 
     testImplementation "androidx.arch.core:core-testing:2.1.0"
-    testImplementation "androidx.test:core:1.3.0"
+    testImplementation "androidx.test:core:$libraries.androidx_test"
 
-    testImplementation 'org.mockito:mockito-core:2.28.2'
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-    testImplementation 'com.google.truth:truth:0.43'
+    testImplementation "org.mockito:mockito-core:$libraries.mockito"
+    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$libraries.mockito_kotlin"
+    testImplementation "com.google.truth:truth:$libraries.google_truth"
 
     implementation(platform("com.rickbusarow.dispatch:dispatch-bom:1.0.0-beta10"))
     implementation("com.rickbusarow.dispatch:dispatch-core")
@@ -352,23 +345,34 @@ dependencies {
     androidTestImplementation("com.rickbusarow.dispatch:dispatch-android-espresso:1.0.0-beta10")
 
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
-    androidTestImplementation "androidx.test:runner:1.4.0"
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.3.0'
+    androidTestImplementation "androidx.test:runner:$libraries.androidx_test"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$libraries.espresso_core"
+
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$libraries.espresso_core"
+    androidTestImplementation "androidx.test.espresso:espresso-accessibility:$libraries.espresso_core"
+    androidTestImplementation "androidx.test.espresso:espresso-web:$libraries.espresso_core"
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
-    androidTestImplementation "androidx.test:core:1.3.0"
-    androidTestImplementation 'androidx.test:rules:1.3.0'
-    androidTestImplementation "androidx.test:core-ktx:1.3.0"
-    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.2"
-    androidTestImplementation 'org.mockito:mockito-android:2.28.2'
-    androidTestImplementation 'org.mockito:mockito-core:3.4.6'
+    androidTestImplementation "androidx.test:core:$libraries.androidx_test"
+    androidTestImplementation "androidx.test:rules:$libraries.androidx_test"
+    androidTestImplementation "androidx.test:core-ktx:$libraries.androidx_test"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$libraries.junit_ext"
+    androidTestImplementation "org.mockito:mockito-android:$libraries.mockito_android"
+    androidTestImplementation "org.mockito:mockito-core:$libraries.mockito"
     androidTestImplementation 'com.android.support:support-annotations:28.0.0'
     androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
     androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.11.0'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.0.4")
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$libraries.kotlinxcoroutines"
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$libraries.compose_ui_test")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$libraries.compose_ui_test")
+    androidTestImplementation "org.hamcrest:hamcrest:$libraries.hamcrest"
     //endregion
+
+    //Serialization library
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
+
+    dhisPlayServicesImplementation("com.google.android.gms:play-services-auth:20.2.0")
+    dhisPlayServicesImplementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
+
+    //Conscrypt
+    implementation "org.conscrypt:conscrypt-android:${libraries.conscrypt}"
 }

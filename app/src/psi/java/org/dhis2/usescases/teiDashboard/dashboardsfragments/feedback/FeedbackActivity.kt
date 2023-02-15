@@ -9,10 +9,10 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.databinding.ActivityFeedbackBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.adapters.FeedbackPagerAdapter
-import org.dhis2.utils.Constants
 import javax.inject.Inject
 
 class FeedbackActivity : ActivityGlobalAbstract(), FeedbackPresenter.FeedbackView {

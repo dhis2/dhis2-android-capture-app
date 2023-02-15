@@ -51,7 +51,7 @@ class EventListPresenter(
     }
 
     fun program(): Program {
-        return eventRepository.program().blockingFirst()
+        return eventRepository.program().blockingGet()
     }
 
     fun setTextFilterValue(value: String) {

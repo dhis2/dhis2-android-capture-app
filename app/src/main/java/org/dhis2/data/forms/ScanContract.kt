@@ -5,7 +5,7 @@ import android.content.Intent
 import com.journeyapps.barcodescanner.ScanContract as DefaultScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
-import org.dhis2.utils.Constants
+import org.dhis2.commons.Constants
 
 class ScanContract() : DefaultScanContract() {
 

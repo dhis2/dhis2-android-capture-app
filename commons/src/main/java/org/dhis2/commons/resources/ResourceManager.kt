@@ -47,7 +47,7 @@ class ResourceManager(val context: Context) {
     fun getColorOrDefaultFrom(hexColor: String?): Int {
         return ColorUtils.getColorFrom(
             hexColor,
-            ColorUtils.getPrimaryColor(getWrapperContext(), ColorUtils.ColorType.PRIMARY_LIGHT)
+            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
         )
     }
 
@@ -71,7 +71,11 @@ class ResourceManager(val context: Context) {
 
     fun getWrapperContext() = try {
         LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
-    } catch (exception: IllegalStateException) {
+    } catch (exception: Exception) {
         context
     }
+
+    fun defaultTableLabel(): String = context.getString(R.string.default_table_header_label)
+    fun defaultEmptyDataSetSectionLabel(): String =
+        context.getString(R.string.default_empty_dataset_section_label)
 }

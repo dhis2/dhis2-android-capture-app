@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_location">Sélectionnez l\'emplacement</string>
+    <string name="map_layers">Couches de la carte</string>
+    <string name="action_apply">Appliquer</string>
+    <string name="dialog_layer_satellite">Afficher la vue satellite</string>
+    <string name="dialog_layer_event">Afficher les événements</string>
+    <string name="dialog_layer_tei_coordinates">Afficher les coordonnées tei</string>
+    <string name="dialog_layer_enrollment_coordinates">Afficher les coordonnées d\'inscription</string>
+    <string name="dialog_layer_heatmap">Afficher la couche de carte thermique</string>
 </resources>
