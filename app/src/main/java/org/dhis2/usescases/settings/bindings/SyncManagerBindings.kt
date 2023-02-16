@@ -12,18 +12,20 @@ import org.dhis2.R
 import org.dhis2.usescases.settings.models.SyncButtonUIModel
 
 @BindingAdapter("addSyncButton")
-fun ComposeView.addSyncButton(syncButton: SyncButtonUIModel) {
-    setContent {
-        TextButton(
-            onClick = syncButton.onClick,
-            enabled = syncButton.enabled
-        ) {
-            Text(
-                text = syncButton.text.uppercase(),
-                color = colorResource(id = R.color.colorPrimary),
-                fontSize = 12.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_medium))
-            )
+fun ComposeView.addSyncButton(syncButton: SyncButtonUIModel?) {
+    syncButton?.let {
+        setContent {
+            TextButton(
+                onClick = it.onClick,
+                enabled = it.enabled
+            ) {
+                Text(
+                    text = it.text.uppercase(),
+                    color = colorResource(id = R.color.colorPrimary),
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.rubik_medium))
+                )
+            }
         }
     }
 }

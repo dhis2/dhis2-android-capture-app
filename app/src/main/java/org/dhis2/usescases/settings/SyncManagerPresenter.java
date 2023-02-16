@@ -131,7 +131,7 @@ public class SyncManagerPresenter {
                                 Timber::e
                         ));
 
-        syncDataButton.setValue(new SyncButtonUIModel(
+        syncDataButton.postValue(new SyncButtonUIModel(
                 resourceManager.getString(R.string.SYNC_DATA),
                 true,
                 () -> {
@@ -140,7 +140,7 @@ public class SyncManagerPresenter {
                 }
         ));
 
-        syncMetaDataButton.setValue(new SyncButtonUIModel(
+        syncMetaDataButton.postValue(new SyncButtonUIModel(
                 resourceManager.getString(R.string.SYNC_META),
                 true,
                 () -> {

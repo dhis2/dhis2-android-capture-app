@@ -14,6 +14,7 @@ import org.dhis2.commons.Constants.DATA_NOW
 import org.dhis2.commons.Constants.META_NOW
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
@@ -47,6 +48,7 @@ class SyncManagerPresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val errorMapper: ErrorModelMapper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val resourcesManager: ResourceManager = mock()
 
     @Before
     fun setUp() {
@@ -61,12 +63,14 @@ class SyncManagerPresenterTest {
             view,
             analyticsHelper,
             errorMapper,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            resourcesManager
         )
     }
 
     @Test
     fun `Should init settings values`() {
+        whenever(resourcesManager.getString(any())) doReturn ""
         presenter.init()
         whenever(
             settingsRepository.metaSync(userManager)
