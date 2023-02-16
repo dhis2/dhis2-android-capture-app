@@ -1,11 +1,27 @@
 package org.dhis2.usescases.settings;
 
+import static org.dhis2.commons.Constants.DATA_NOW;
+import static org.dhis2.commons.Constants.META_NOW;
+import static org.dhis2.commons.matomo.Actions.SYNC_CONFIG;
+import static org.dhis2.commons.matomo.Actions.SYNC_DATA;
+import static org.dhis2.commons.matomo.Categories.SETTINGS;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
+
+import androidx.lifecycle.MutableLiveData;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.WorkInfo;
 
+import com.google.common.annotations.VisibleForTesting;
+
+import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerController;
@@ -13,13 +29,12 @@ import org.dhis2.data.service.workManager.WorkerItem;
 import org.dhis2.data.service.workManager.WorkerType;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
+import org.dhis2.usescases.settings.models.ErrorModelMapper;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SettingsViewModel;
-import org.dhis2.commons.Constants;
+import org.dhis2.usescases.settings.models.SyncButtonUIModel;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.usescases.settings.models.ErrorModelMapper;
-import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -32,18 +47,8 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.Unit;
 import timber.log.Timber;
-
-import static org.dhis2.commons.Constants.DATA_NOW;
-import static org.dhis2.commons.Constants.META_NOW;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
-import static org.dhis2.commons.matomo.Actions.SYNC_CONFIG;
-import static org.dhis2.commons.matomo.Actions.SYNC_DATA;
-import static org.dhis2.commons.matomo.Categories.SETTINGS;
-
-import com.google.common.annotations.VisibleForTesting;
 
 
 public class SyncManagerPresenter {
@@ -62,6 +67,10 @@ public class SyncManagerPresenter {
     private WorkManagerController workManagerController;
     private MatomoAnalyticsController matomoAnalyticsController;
     private SMSSettingsViewModel smsSettingsViewModel;
+    private ResourceManager resourceManager;
+    public MutableLiveData<SyncButtonUIModel> syncDataButton = new MutableLiveData<>();
+
+    public MutableLiveData<SyncButtonUIModel> syncMetaDataButton = new MutableLiveData<>();
 
     SyncManagerPresenter(
             D2 d2,
@@ -74,7 +83,8 @@ public class SyncManagerPresenter {
             SyncManagerContracts.View view,
             AnalyticsHelper analyticsHelper,
             ErrorModelMapper errorMapper,
-            MatomoAnalyticsController matomoAnalyticsController) {
+            MatomoAnalyticsController matomoAnalyticsController,
+            ResourceManager resourceManager) {
         this.view = view;
         this.d2 = d2;
         this.settingsRepository = settingsRepository;
@@ -86,6 +96,7 @@ public class SyncManagerPresenter {
         this.analyticsHelper = analyticsHelper;
         this.errorMapper = errorMapper;
         this.matomoAnalyticsController = matomoAnalyticsController;
+        this.resourceManager = resourceManager;
         checkData = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
     }
@@ -119,6 +130,24 @@ public class SyncManagerPresenter {
                                 },
                                 Timber::e
                         ));
+
+        syncDataButton.setValue(new SyncButtonUIModel(
+                resourceManager.getString(R.string.SYNC_DATA),
+                true,
+                () -> {
+                    syncData();
+                    return Unit.INSTANCE;
+                }
+        ));
+
+        syncMetaDataButton.setValue(new SyncButtonUIModel(
+                resourceManager.getString(R.string.SYNC_META),
+                true,
+                () -> {
+                    syncMeta();
+                    return Unit.INSTANCE;
+                }
+        ));
     }
 
     public int getMetadataPeriodSetting() {
@@ -392,5 +421,29 @@ public class SyncManagerPresenter {
     @VisibleForTesting
     public void setSmsSettingsViewModel(SMSSettingsViewModel settingsViewModel) {
         this.smsSettingsViewModel = settingsViewModel;
+    }
+
+    public void updateSyncDataButton(boolean canBeClicked) {
+        syncDataButton.postValue(new SyncButtonUIModel(
+                resourceManager.getString(R.string.SYNC_DATA),
+                canBeClicked,
+                () -> {
+                    syncData();
+                    return Unit.INSTANCE;
+                }
+        ));
+    }
+
+    public void updateSyncMetaDataButton(boolean canBeClicked) {
+        syncMetaDataButton.postValue(
+                new SyncButtonUIModel(
+                        resourceManager.getString(R.string.SYNC_META),
+                        canBeClicked,
+                        () -> {
+                            syncMeta();
+                            return Unit.INSTANCE;
+                        }
+                )
+        );
     }
 }

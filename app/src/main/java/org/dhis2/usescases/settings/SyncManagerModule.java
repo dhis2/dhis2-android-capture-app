@@ -4,6 +4,7 @@ package org.dhis2.usescases.settings;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.UserManager;
@@ -37,7 +38,8 @@ public final class SyncManagerModule {
             WorkManagerController workManagerController,
             SettingsRepository settingsRepository,
             AnalyticsHelper analyticsHelper,
-            MatomoAnalyticsController matomoAnalyticsController) {
+            MatomoAnalyticsController matomoAnalyticsController,
+            ResourceManager resourceManager) {
         return new SyncManagerPresenter(d2,
                 schedulerProvider,
                 gatewayValidator,
@@ -48,7 +50,8 @@ public final class SyncManagerModule {
                 view,
                 analyticsHelper,
                 new ErrorModelMapper(view.getContext().getString(R.string.fk_message)),
-                matomoAnalyticsController);
+                matomoAnalyticsController,
+                resourceManager);
     }
 
     @Provides
