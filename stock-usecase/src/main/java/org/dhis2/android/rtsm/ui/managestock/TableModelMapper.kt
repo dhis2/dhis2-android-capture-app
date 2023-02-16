@@ -57,6 +57,7 @@ class TableModelMapper @Inject constructor(
                         )
                     )
                 ),
+                isLastRow = index == entries.lastIndex,
                 maxLines = 3
             )
 
