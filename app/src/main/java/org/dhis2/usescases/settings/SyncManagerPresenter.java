@@ -27,13 +27,13 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkerItem;
 import org.dhis2.data.service.workManager.WorkerType;
+import org.dhis2.ui.model.ButtonUiModel;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SettingsViewModel;
-import org.dhis2.usescases.settings.models.SyncButtonUIModel;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -68,9 +68,9 @@ public class SyncManagerPresenter {
     private MatomoAnalyticsController matomoAnalyticsController;
     private SMSSettingsViewModel smsSettingsViewModel;
     private ResourceManager resourceManager;
-    public MutableLiveData<SyncButtonUIModel> syncDataButton = new MutableLiveData<>();
+    public MutableLiveData<ButtonUiModel> syncDataButton = new MutableLiveData<>();
 
-    public MutableLiveData<SyncButtonUIModel> syncMetaDataButton = new MutableLiveData<>();
+    public MutableLiveData<ButtonUiModel> syncMetaDataButton = new MutableLiveData<>();
 
     SyncManagerPresenter(
             D2 d2,
@@ -131,8 +131,8 @@ public class SyncManagerPresenter {
                                 Timber::e
                         ));
 
-        syncDataButton.postValue(new SyncButtonUIModel(
-                resourceManager.getString(R.string.SYNC_DATA),
+        syncDataButton.postValue(new ButtonUiModel(
+                resourceManager.getString(R.string.SYNC_DATA).toUpperCase(),
                 true,
                 () -> {
                     syncData();
@@ -140,8 +140,8 @@ public class SyncManagerPresenter {
                 }
         ));
 
-        syncMetaDataButton.postValue(new SyncButtonUIModel(
-                resourceManager.getString(R.string.SYNC_META),
+        syncMetaDataButton.postValue(new ButtonUiModel(
+                resourceManager.getString(R.string.SYNC_META).toUpperCase(),
                 true,
                 () -> {
                     syncMeta();
@@ -262,15 +262,15 @@ public class SyncManagerPresenter {
         FilterManager.getInstance().clearAllFilters();
     }
 
-    public void onWorkStatusesUpdate(WorkInfo.State workState,String workerTag) {
-        if(workState!=null){
-            switch (workState){
+    public void onWorkStatusesUpdate(WorkInfo.State workState, String workerTag) {
+        if (workState != null) {
+            switch (workState) {
                 case ENQUEUED:
                 case RUNNING:
                 case BLOCKED:
-                    if(workerTag.equals(META_NOW)){
+                    if (workerTag.equals(META_NOW)) {
                         view.onMetadataSyncInProgress();
-                    }else if(workerTag.equals(DATA_NOW)){
+                    } else if (workerTag.equals(DATA_NOW)) {
                         view.onDataSyncInProgress();
                     }
                     break;
@@ -278,16 +278,16 @@ public class SyncManagerPresenter {
                 case FAILED:
                 case CANCELLED:
                 default:
-                    if(workerTag.equals(META_NOW)){
+                    if (workerTag.equals(META_NOW)) {
                         view.onMetadataFinished();
-                    }else if(workerTag.equals(DATA_NOW)){
+                    } else if (workerTag.equals(DATA_NOW)) {
                         view.onDataFinished();
                     }
             }
-        }else{
-            if(workerTag.equals(META_NOW)){
+        } else {
+            if (workerTag.equals(META_NOW)) {
                 view.onMetadataFinished();
-            }else if(workerTag.equals(DATA_NOW)){
+            } else if (workerTag.equals(DATA_NOW)) {
                 view.onDataFinished();
             }
         }
@@ -387,12 +387,12 @@ public class SyncManagerPresenter {
 
     public void checkSyncErrors() {
         compositeDisposable.add(Single.fromCallable(() -> {
-            List<ErrorViewModel> errors = new ArrayList<>();
-            errors.addAll(errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet()));
-            errors.addAll(errorMapper.mapConflict(d2.importModule().trackerImportConflicts().blockingGet()));
-            errors.addAll(errorMapper.mapFKViolation(d2.maintenanceModule().foreignKeyViolations().blockingGet()));
-            return errors;
-        })
+                    List<ErrorViewModel> errors = new ArrayList<>();
+                    errors.addAll(errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet()));
+                    errors.addAll(errorMapper.mapConflict(d2.importModule().trackerImportConflicts().blockingGet()));
+                    errors.addAll(errorMapper.mapFKViolation(d2.maintenanceModule().foreignKeyViolations().blockingGet()));
+                    return errors;
+                })
                 .map(errors -> {
                     Collections.sort(
                             errors,
@@ -424,8 +424,8 @@ public class SyncManagerPresenter {
     }
 
     public void updateSyncDataButton(boolean canBeClicked) {
-        syncDataButton.postValue(new SyncButtonUIModel(
-                resourceManager.getString(R.string.SYNC_DATA),
+        syncDataButton.postValue(new ButtonUiModel(
+                resourceManager.getString(R.string.SYNC_DATA).toUpperCase(),
                 canBeClicked,
                 () -> {
                     syncData();
@@ -436,8 +436,8 @@ public class SyncManagerPresenter {
 
     public void updateSyncMetaDataButton(boolean canBeClicked) {
         syncMetaDataButton.postValue(
-                new SyncButtonUIModel(
-                        resourceManager.getString(R.string.SYNC_META),
+                new ButtonUiModel(
+                        resourceManager.getString(R.string.SYNC_META).toUpperCase(),
                         canBeClicked,
                         () -> {
                             syncMeta();

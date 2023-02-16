@@ -108,7 +108,7 @@
                         android:layout_marginEnd="16dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/dataOptions"
-                        app:addSyncButton="@{presenter.syncDataButton}"/>
+                        app:addTextButton="@{presenter.syncDataButton}"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -213,7 +213,7 @@
                         android:layout_marginEnd="16dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/metaOptions"
-                        app:addSyncButton="@{presenter.syncMetaDataButton}"/>
+                        app:addTextButton="@{presenter.syncMetaDataButton}"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
