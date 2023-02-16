@@ -61,7 +61,7 @@ class SettingsRobot : BaseRobot() {
     fun checkEditPeriodIsDisableForConfiguration() {
         onView(withId(R.id.metaPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
         onView(withId(R.id.metadataPeriods)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.buttonSyncMeta)).check(
+        onView(withId(R.id.syncMetaDataButton)).check(
             matches(
                 allOf(
                     withText("SYNC CONFIGURATION NOW"),
