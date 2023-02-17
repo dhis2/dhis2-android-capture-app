@@ -1,15 +1,12 @@
 package dhis2.org.analytics.charts.providers
 
-import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.NutritionChartType
 import dhis2.org.analytics.charts.data.SerieData
-import java.util.GregorianCalendar
-import org.hisp.dhis.rules.functions.ZScoreTable
 
 class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
     override fun getNutritionData(nutritionChartType: NutritionChartType): List<SerieData> {
-        val zscoreTable = when (nutritionChartType) {
-            NutritionChartType.WHO_WFA_BOY -> ZScoreTable.getZscoreWFATableBoy()
+        /*val zscoreTable = when (nutritionChartType) {
+            NutritionChartType.WHO_WFA_BOY ->  emptyMap<Key, Entry>() ZScoreTable.getZscoreWFATableBoy()
             NutritionChartType.WHO_WFA_GIRL -> ZScoreTable.getZscoreWFATableGirl()
             NutritionChartType.WHO_HFA_BOY -> ZScoreTable.getZscoreHFATableBoy()
             NutritionChartType.WHO_HFA_GIRL -> ZScoreTable.getZscoreHFATableGirl()
@@ -40,6 +37,7 @@ class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
 
         return nutritionData.map {
             SerieData("", it)
-        }
+        }*/
+        return emptyList()
     }
 }

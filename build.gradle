@@ -7,7 +7,8 @@ buildscript {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.3'
+        classpath 'com.google.guava:guava:31.1-jre'
+        classpath 'com.android.tools.build:gradle:7.4.1'
         classpath 'me.tatarka:gradle-retrolambda:3.7.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.dagger:hilt-android-gradle-plugin:2.43.2"
@@ -58,9 +59,12 @@ allprojects {
         google()
         jcenter() {
             content {
-                includeModule('de.adorsys.android', 'securestoragelibrary') //Only available version in jitpack is 0.0.2. We use 1.2.2
-                includeModule('com.journeyapps', 'zxing-android-embedded')  //Only works for API 24+ using Maven Repository, 19+ can be used but we have to downgrade zxing to 3.3.0
-                includeGroup('co.infinum') //There is a problem with the library in mavenCentral, an issue has been created in the github repo
+                includeModule('de.adorsys.android', 'securestoragelibrary')
+                //Only available version in jitpack is 0.0.2. We use 1.2.2
+                includeModule('com.journeyapps', 'zxing-android-embedded')
+                //Only works for API 24+ using Maven Repository, 19+ can be used but we have to downgrade zxing to 3.3.0
+                includeGroup('co.infinum')
+                //There is a problem with the library in mavenCentral, an issue has been created in the github repo
             }
         }
         mavenCentral()

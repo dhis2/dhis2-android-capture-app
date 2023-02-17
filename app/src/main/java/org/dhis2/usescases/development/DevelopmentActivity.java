@@ -1,5 +1,7 @@
 package org.dhis2.usescases.development;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -29,8 +31,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import kotlin.Unit;
 
@@ -53,6 +58,11 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadFeatureConfig();
         loadTable();
         loadSignature();
+
+        ArrayList<String> list = new ArrayList<String>();
+        List<String> result = Stream.of(list)
+                .flatMap(Collection::stream)
+                .collect(toUnmodifiableList());
     }
 
     private void loadAnalyticsDevTools() {

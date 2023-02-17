@@ -10,7 +10,6 @@ import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.antlr.Parser
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.rules.ItemValueType
 import org.hisp.dhis.rules.RuleVariableValue
@@ -30,8 +29,6 @@ import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
-import org.hisp.dhis.rules.parser.expression.CommonExpressionVisitor
-import org.hisp.dhis.rules.parser.expression.ParserUtils
 import org.hisp.dhis.rules.utils.RuleEngineUtils
 
 class TroubleshootingRepository(
@@ -147,7 +144,7 @@ class TroubleshootingRepository(
                         ItemValueType.BOOLEAN -> RuleValueType.BOOLEAN
                     }
                     this[envLabelKey] = RuleVariableValue.create(
-                        value ?: ruleValueType.defaultValue(),
+                        value ?: ruleValueType.defaultValue().toString(),
                         ruleValueType
                     )
                 }
@@ -159,7 +156,7 @@ class TroubleshootingRepository(
         addDefaultValue: Boolean = false
     ): RuleVariableValue? {
         val valueToUse = if (addDefaultValue) {
-            ruleValueType?.defaultValue()
+            ruleValueType?.defaultValue().toString()
         } else {
             value
         }
@@ -179,7 +176,7 @@ class TroubleshootingRepository(
             }
         }
         return try {
-            val commonExpressionVisitor =
+           /* val commonExpressionVisitor =
                 CommonExpressionVisitor.newBuilder()
                     .withFunctionMap(RuleEngineUtils.FUNCTIONS)
                     .withFunctionMethod(ParserUtils.FUNCTION_EVALUATE)
@@ -191,7 +188,7 @@ class TroubleshootingRepository(
                 commonExpressionVisitor,
                 true
             )
-            convertInteger(result).toString()
+            convertInteger(result).toString()*/
             ""
         } catch (e: ParserExceptionWithoutContext) {
             "Condition " + condition + " not executed: " + e.message
