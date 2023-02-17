@@ -471,4 +471,12 @@ class ManageStockViewModel @Inject constructor(
     private fun clearTransaction() {
         _transaction.value = null
     }
+
+     fun backToListing() {
+
+         if (itemsCache.size == 0 && dataEntryUiState.value.step == DataEntryStep.EDITING_REVIEWING) {
+             updateStep(DataEntryStep.LISTING)
+         }
+//       return itemsCache.size
+    }
 }

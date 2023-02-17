@@ -65,6 +65,7 @@ fun Backdrop(
             manageStockViewModel
         )
     }
+    manageStockViewModel.backToListing()
     DisplaySnackBar(manageStockViewModel, scaffoldState)
     BackdropScaffold(
         appBar = {
