@@ -20,7 +20,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorPrimary">
+        android:background="@color/avatar_main_color">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/logo"
@@ -34,13 +34,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="11dp"
-                android:layout_marginBottom="23dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_dhis_white" />
+                app:srcCompat="@drawable/mhssp_logo" />
 
             <TextView
                 android:id="@+id/app_build_info"
@@ -50,7 +50,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="12dp"
-                android:textColor="?colorAccent"
+                android:textColor="?colorPrimary"
                 android:textSize="9sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
