@@ -17,11 +17,5 @@
             android:textColor="#fff"
             android:textSize="55sp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/logo_number"
-            android:textColor="#7ec4fd"
-            android:textSize="60sp"/>
     </LinearLayout>
 </layout>

@@ -16,7 +16,7 @@
             android:layout_marginEnd="-195dp"
             android:layout_marginBottom="-200dp"
             android:alpha=".1"
-            app:srcCompat="@drawable/ic_dhis" />
+            app:srcCompat="@drawable/mhssp_logo" />
 
         <ScrollView
             android:layout_width="match_parent"

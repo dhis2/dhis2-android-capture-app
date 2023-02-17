@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_centerInParent="true"
-                app:srcCompat="@drawable/ic_dhis_white" />
+                app:srcCompat="@drawable/mhssp_logo_2" />
         </RelativeLayout>
 
 
