@@ -9,6 +9,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
@@ -60,17 +61,19 @@ public class SyncManagerPresenter {
     private final UserManager userManager;
     private final AnalyticsHelper analyticsHelper;
     private final ErrorModelMapper errorMapper;
-    private CompositeDisposable compositeDisposable;
-    private SyncManagerContracts.View view;
-    private FlowableProcessor<Boolean> checkData;
-    private GatewayValidator gatewayValidator;
-    private WorkManagerController workManagerController;
-    private MatomoAnalyticsController matomoAnalyticsController;
+    private final CompositeDisposable compositeDisposable;
+    private final SyncManagerContracts.View view;
+    private final FlowableProcessor<Boolean> checkData;
+    private final GatewayValidator gatewayValidator;
+    private final WorkManagerController workManagerController;
+    private final MatomoAnalyticsController matomoAnalyticsController;
     private SMSSettingsViewModel smsSettingsViewModel;
-    private ResourceManager resourceManager;
-    public MutableLiveData<ButtonUiModel> syncDataButton = new MutableLiveData<>();
+    private final ResourceManager resourceManager;
+    private final MutableLiveData<ButtonUiModel> _syncDataButton = new MutableLiveData<>();
+    public final LiveData<ButtonUiModel> syncDataButton = _syncDataButton;
 
-    public MutableLiveData<ButtonUiModel> syncMetaDataButton = new MutableLiveData<>();
+    private final MutableLiveData<ButtonUiModel> _syncMetaDataButton = new MutableLiveData<>();
+    public final LiveData<ButtonUiModel> syncMetaDataButton = _syncMetaDataButton;
 
     SyncManagerPresenter(
             D2 d2,
@@ -131,7 +134,7 @@ public class SyncManagerPresenter {
                                 Timber::e
                         ));
 
-        syncDataButton.postValue(new ButtonUiModel(
+        _syncDataButton.postValue(new ButtonUiModel(
                 resourceManager.getString(R.string.SYNC_DATA).toUpperCase(),
                 true,
                 () -> {
@@ -140,7 +143,7 @@ public class SyncManagerPresenter {
                 }
         ));
 
-        syncMetaDataButton.postValue(new ButtonUiModel(
+        _syncMetaDataButton.postValue(new ButtonUiModel(
                 resourceManager.getString(R.string.SYNC_META).toUpperCase(),
                 true,
                 () -> {
@@ -403,7 +406,7 @@ public class SyncManagerPresenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        errors -> view.showSyncErrors(errors),
+                        view::showSyncErrors,
                         Timber::e
                 ));
     }
@@ -424,7 +427,7 @@ public class SyncManagerPresenter {
     }
 
     public void updateSyncDataButton(boolean canBeClicked) {
-        syncDataButton.postValue(new ButtonUiModel(
+        _syncDataButton.postValue(new ButtonUiModel(
                 resourceManager.getString(R.string.SYNC_DATA).toUpperCase(),
                 canBeClicked,
                 () -> {
@@ -435,7 +438,7 @@ public class SyncManagerPresenter {
     }
 
     public void updateSyncMetaDataButton(boolean canBeClicked) {
-        syncMetaDataButton.postValue(
+        _syncMetaDataButton.postValue(
                 new ButtonUiModel(
                         resourceManager.getString(R.string.SYNC_META).toUpperCase(),
                         canBeClicked,
