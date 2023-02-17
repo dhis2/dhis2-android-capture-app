@@ -11,6 +11,8 @@ import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
+import org.hisp.dhis.lib.expression.Expression
+import org.hisp.dhis.lib.expression.spi.ExpressionData
 import org.hisp.dhis.rules.ItemValueType
 import org.hisp.dhis.rules.RuleVariableValue
 import org.hisp.dhis.rules.models.RuleAction
@@ -43,7 +45,12 @@ class TroubleshootingRepository(
             val program = program(programAndRule.first?.uid())
             val valueMap: Map<String, RuleVariableValue?> = ruleVariableMap(program.uid())
             var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid()))
-            val ruleConditionResult = process(rule.condition(), valueMap)
+            val ruleConditionResult = process(
+                rule.condition(),
+                valueMap,
+                null,
+                Expression.Mode.RULE_ENGINE_CONDITION
+            )
             if (ruleConditionResult.isNotEmpty()) {
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
             }
@@ -166,7 +173,8 @@ class TroubleshootingRepository(
     private fun process(
         condition: String,
         valueMap: Map<String, RuleVariableValue?>,
-        ruleActionType: String? = null
+        ruleActionType: String? = null,
+        mode: Expression.Mode
     ): String {
         if (condition.isEmpty()) {
             return if (ruleActionType != null) {
@@ -176,19 +184,18 @@ class TroubleshootingRepository(
             }
         }
         return try {
-           /* val commonExpressionVisitor =
-                CommonExpressionVisitor.newBuilder()
-                    .withFunctionMap(RuleEngineUtils.FUNCTIONS)
-                    .withFunctionMethod(ParserUtils.FUNCTION_EVALUATE)
-                    .withVariablesMap(valueMap)
-                    .withSupplementaryData(HashMap())
-                    .validateCommonProperties()
-            val result = Parser.visit(
-                condition,
-                commonExpressionVisitor,
-                true
+            val expression = Expression(condition, mode)
+            val expressionData = ExpressionData.builder()
+                .supplementaryValues(HashMap())
+                .programRuleVariableValues(valueMap)
+                .build()
+            val result = expression.evaluate(
+                { name ->
+                    throw UnsupportedOperationException(name)
+                },
+                expressionData
             )
-            convertInteger(result).toString()*/
+            convertInteger(result).toString()
             ""
         } catch (e: ParserExceptionWithoutContext) {
             "Condition " + condition + " not executed: " + e.message
@@ -219,7 +226,12 @@ class TroubleshootingRepository(
     ): String? {
         return if (ruleAction.needsContent()) {
             val actionConditionResult =
-                process(ruleAction.data(), valueMap, ruleAction.ruleActionType())
+                process(
+                    ruleAction.data(),
+                    valueMap,
+                    ruleAction.ruleActionType(),
+                    Expression.Mode.RULE_ENGINE_ACTION
+                )
             if (actionConditionResult.isNotEmpty()) {
                 actionConditionResult
             } else {
