@@ -240,7 +240,7 @@ fun DisplaySnackBar(manageStockViewModel: ManageStockViewModel, scaffoldState: S
                     val result = scaffoldState.snackbarHostState.showSnackbar(
                         message = "Snackbar # ",
                         actionLabel = "Action on ",
-                        duration = SnackbarDuration.Long
+                        duration = SnackbarDuration.Short
                     )
                     when (result) {
                         SnackbarResult.ActionPerformed -> {
