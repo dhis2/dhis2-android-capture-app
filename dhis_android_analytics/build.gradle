@@ -43,7 +43,6 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -75,5 +74,4 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$libraries.mockito"
     testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${libraries.mockito_kotlin}"
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${libraries.desugar_jdk_libs}"
 }

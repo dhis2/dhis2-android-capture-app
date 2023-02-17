@@ -39,7 +39,6 @@ android {
     flavorDimensions "default"
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -142,6 +141,4 @@ dependencies {
 
     implementation "io.sentry:sentry-android:${libraries.sentry}"
     implementation 'com.github.bmelnychuk:atv:1.2.9'
-
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${libraries.desugar_jdk_libs}"
 }

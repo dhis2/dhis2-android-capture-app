@@ -33,7 +33,6 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -72,5 +71,4 @@ dependencies {
     api "androidx.compose.ui:ui:${libraries.compose}"
     api "androidx.compose.runtime:runtime-livedata:${libraries.compose}"
     debugApi "androidx.compose.ui:ui-tooling:${libraries.compose}"
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${libraries.desugar_jdk_libs}"
 }
