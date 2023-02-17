@@ -80,4 +80,5 @@ dependencies {
     //endregion
 
     androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${libraries.desugar_jdk_libs}"
 }

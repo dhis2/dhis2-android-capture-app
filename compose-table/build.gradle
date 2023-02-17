@@ -91,4 +91,6 @@ dependencies {
 
     //Serialization library
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
+
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${libraries.desugar_jdk_libs}"
 }
