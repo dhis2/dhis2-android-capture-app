@@ -1,7 +1,9 @@
 package org.dhis2.composetable
 
 import androidx.annotation.DrawableRes
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +53,7 @@ import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
 import org.dhis2.composetable.ui.InfoIconId
 import org.dhis2.composetable.ui.IsBlocked
+import org.dhis2.composetable.ui.LocalTableColors
 import org.dhis2.composetable.ui.LocalTableSelection
 import org.dhis2.composetable.ui.MANDATORY_ICON_TEST_TAG
 import org.dhis2.composetable.ui.MainLabel

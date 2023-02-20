@@ -1,5 +1,6 @@
 package org.dhis2.composetable
 
+import androidx.compose.material.lightColors
 import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.ui.TableColors
@@ -33,7 +34,7 @@ class ColumnTableTest {
             val firstTableId = fakeModel[0].id!!
 
             clickOnHeaderElement(firstTableId, 2, 3)
-            assertColumnHeaderBackgroundColor(firstTableId, 2, 3, tableColors.primary)
+            assertColumnHeaderBackgroundColor(firstTableId, 2, 3, lightColors().primary)
         }
     }
 
