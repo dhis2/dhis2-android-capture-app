@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
@@ -81,13 +82,13 @@ class TableRobot(
     val keyboardHelper = KeyboardHelper(composeTestRule, timeout = 3000L)
 
     fun initTable(
-        context: Context,
         fakeModelType: FakeModelType,
         tableColors: TableColors = TableColors(),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
-        val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
+        var fakeModel: List<TableModel> = emptyList()
         composeTestRule.setContent {
+            fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
             var tableSelection by remember {
                 mutableStateOf<TableSelection>(TableSelection.Unselected())
             }
@@ -109,14 +110,15 @@ class TableRobot(
     }
 
     fun initTableAppScreen(
-        context: Context,
         fakeModelType: FakeModelType,
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
-        val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
-        val screenState = TableScreenState(fakeModel, false)
+        var fakeModel:List<TableModel> = emptyList()
         composeTestRule.setContent {
+            fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
+            val screenState = TableScreenState(fakeModel, false)
+
             keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(screenState) }
             DataSetTableScreen(
@@ -150,7 +152,11 @@ class TableRobot(
         return fakeModel
     }
 
-    fun assertClickOnCellShouldOpenInputComponent(tableId: String,rowIndex: Int, columnIndex: Int) {
+    fun assertClickOnCellShouldOpenInputComponent(
+        tableId: String,
+        rowIndex: Int,
+        columnIndex: Int
+    ) {
         clickOnCell(tableId, rowIndex, columnIndex)
         composeTestRule.waitForIdle()
         assertInputComponentIsDisplayed()

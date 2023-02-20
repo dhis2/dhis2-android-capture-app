@@ -81,10 +81,10 @@ dependencies {
     implementation "androidx.compose.material:material:${libraries.compose}"
     implementation "androidx.constraintlayout:constraintlayout-compose:${libraries.composeConstraintLayout}"
     implementation "com.google.android.material:compose-theme-adapter:${libraries.composeTheme}"
-    implementation "androidx.compose.ui:ui-tooling-preview:${libraries.compose}"
-    implementation "androidx.compose.ui:ui:${libraries.compose}"
-    implementation "androidx.compose.runtime:runtime-livedata:${libraries.compose}"
-    debugImplementation "androidx.compose.ui:ui-tooling:${libraries.compose}"
+    implementation "androidx.compose.ui:ui-tooling-preview:${libraries.compose_ui}"
+    implementation "androidx.compose.ui:ui:${libraries.compose_ui}"
+    implementation "androidx.compose.runtime:runtime-livedata:${libraries.compose_ui}"
+    debugImplementation "androidx.compose.ui:ui-tooling:${libraries.compose_ui}"
 
     //test
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$libraries.compose_ui_test")

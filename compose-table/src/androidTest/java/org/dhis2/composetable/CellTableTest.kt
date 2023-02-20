@@ -1,7 +1,6 @@
 package org.dhis2.composetable
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import org.dhis2.composetable.activity.TableTestActivity
+import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -12,13 +11,12 @@ import org.junit.Test
 
 class CellTableTest {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TableTestActivity>()
+    val composeTestRule = createComposeRule()
 
     @Test
     fun shouldDisplayMandatoryIcon() {
         tableRobot(composeTestRule) {
             val fakeModel = initTable(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -31,7 +29,6 @@ class CellTableTest {
     fun shouldBlockClickAndSetCorrectColorIfNonEditable() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -45,7 +42,6 @@ class CellTableTest {
     fun shouldUpdateValueWhenTypingInComponent() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -61,7 +57,6 @@ class CellTableTest {
         var savedValue: TableCell? = null
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             ) {
                 savedValue = it
@@ -78,7 +73,6 @@ class CellTableTest {
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -101,7 +95,6 @@ class CellTableTest {
     fun shouldMoveToNextRowWhenClickingNext() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -124,7 +117,6 @@ class CellTableTest {
     fun shouldClearSelectionWhenClickingNextOnLastCell() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -142,7 +134,6 @@ class CellTableTest {
         val testingTableId = "PjKGwf9WxBE"
         tableRobot(composeTestRule) {
             initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE,
                 TableAppScreenOptions(
                     inputRowsOptions = listOf(
@@ -163,7 +154,6 @@ class CellTableTest {
     fun shouldSetCorrectColorIfHasError() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!

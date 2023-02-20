@@ -15,7 +15,6 @@ class BottomBarTableTests {
     fun shouldDisplayBottomBarComponentWhenTyping() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MULTIHEADER_TABLE
             )
             val tableId = fakeModel[0].id
@@ -29,7 +28,6 @@ class BottomBarTableTests {
     fun shouldTheElementWrittenInBottomBarBeTheSameInCell() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val tableId = fakeModel[0].id
@@ -46,7 +44,6 @@ class BottomBarTableTests {
     fun shouldAssertBottomBarStateBeforeAndAfterTyping() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val tableId = fakeModel[0].id
@@ -64,7 +61,6 @@ class BottomBarTableTests {
     fun shouldClickOnNextAndSavedValue() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val tableId = fakeModel[0].id

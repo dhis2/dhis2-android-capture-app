@@ -42,7 +42,6 @@ class TextInputUiTest {
 
         tableRobot(composeTestRule) {
            val fakeModels = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MULTIHEADER_TABLE,
                 onSave = { cellToSave = it }
             )
@@ -71,7 +70,6 @@ class TextInputUiTest {
     fun shouldClearFocusWhenKeyboardIsHidden() {
         tableRobot(composeTestRule) {
             val fakeModels = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             clickOnCell(fakeModels.first().id!!, 0, 0)
