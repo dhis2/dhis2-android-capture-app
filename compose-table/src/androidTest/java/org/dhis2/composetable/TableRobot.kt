@@ -1,7 +1,7 @@
 package org.dhis2.composetable
 
-import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,9 +59,11 @@ import org.dhis2.composetable.ui.RowIndex
 import org.dhis2.composetable.ui.RowIndexHeader
 import org.dhis2.composetable.ui.SecondaryLabels
 import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableId
 import org.dhis2.composetable.ui.TableIdColumnHeader
 import org.dhis2.composetable.ui.TableSelection
+import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.utils.KeyboardHelper
 import org.junit.Assert
 
@@ -92,18 +94,22 @@ class TableRobot(
             var tableSelection by remember {
                 mutableStateOf<TableSelection>(TableSelection.Unselected())
             }
-
-            CompositionLocalProvider(
-                LocalTableSelection provides tableSelection
+            TableTheme(
+                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableConfiguration = TableConfiguration(headerActionsEnabled = false)
             ) {
-                DataTable(
-                    tableList = fakeModel,
-                    tableInteractions = object : TableInteractions {
-                        override fun onSelectionChange(newTableSelection: TableSelection) {
-                            tableSelection = newTableSelection
+                CompositionLocalProvider(
+                    LocalTableSelection provides tableSelection
+                ) {
+                    DataTable(
+                        tableList = fakeModel,
+                        tableInteractions = object : TableInteractions {
+                            override fun onSelectionChange(newTableSelection: TableSelection) {
+                                tableSelection = newTableSelection
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
         return fakeModel
@@ -114,40 +120,45 @@ class TableRobot(
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
-        var fakeModel:List<TableModel> = emptyList()
+        var fakeModel: List<TableModel> = emptyList()
         composeTestRule.setContent {
             fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
             val screenState = TableScreenState(fakeModel, false)
 
             keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(screenState) }
-            DataSetTableScreen(
-                tableScreenState = model,
-                onCellClick = { tableId, cell, _ ->
-                    if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
-                        TextInputModel(
-                            id = cell.id ?: "",
-                            mainLabel = fakeModel.find { it.id == tableId }?.tableRows?.find {
-                                cell.id?.contains(it.rowHeader.id!!) == true
-                            }?.rowHeader?.title ?: "",
-                            secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
-                                it.cells[cell.column!! % it.cells.size].value
-                            } ?: emptyList(),
-                            currentValue = cell.value,
-                            keyboardInputType = KeyboardInputType.TextInput(),
-                            error = null
-                        )
-                    } else {
-                        null
+            TableTheme(
+                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableConfiguration = TableConfiguration(headerActionsEnabled = false)
+            ) {
+                DataSetTableScreen(
+                    tableScreenState = model,
+                    onCellClick = { tableId, cell, _ ->
+                        if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
+                            TextInputModel(
+                                id = cell.id ?: "",
+                                mainLabel = fakeModel.find { it.id == tableId }?.tableRows?.find {
+                                    cell.id?.contains(it.rowHeader.id!!) == true
+                                }?.rowHeader?.title ?: "",
+                                secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
+                                    it.cells[cell.column!! % it.cells.size].value
+                                } ?: emptyList(),
+                                currentValue = cell.value,
+                                keyboardInputType = KeyboardInputType.TextInput(),
+                                error = null
+                            )
+                        } else {
+                            null
+                        }
+                    },
+                    onEdition = {},
+                    onSaveValue = { tableCell, selectNext ->
+                        onSaveTableCell = tableCell
+                        onSave(tableCell)
+                        model = TableScreenState(fakeModel, selectNext)
                     }
-                },
-                onEdition = {},
-                onSaveValue = { tableCell, selectNext ->
-                    onSaveTableCell = tableCell
-                    onSave(tableCell)
-                    model = TableScreenState(fakeModel, selectNext)
-                }
-            )
+                )
+            }
         }
         return fakeModel
     }
