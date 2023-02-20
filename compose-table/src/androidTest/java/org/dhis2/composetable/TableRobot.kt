@@ -234,7 +234,6 @@ class TableRobot(
     fun clickOnCell(tableId: String, rowIndex: Int, columnIndex: Int) {
         composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true)
             .performScrollTo()
-        composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true)
             .performClick()
     }
 
