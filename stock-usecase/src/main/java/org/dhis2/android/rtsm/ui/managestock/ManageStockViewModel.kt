@@ -478,6 +478,5 @@ class ManageStockViewModel @Inject constructor(
         ) {
             updateStep(DataEntryStep.LISTING)
         }
-//       return itemsCache.size
     }
 }
