@@ -1,11 +1,13 @@
 ext {
     versions = [
-            ndk   : "21.4.7075529",
-            sdk   : 33,
-            tools : "33.0.1",
-            minSdk: 21,
-            vCode: 119,
-            vName: "2.7.1.1"
+            ndk                           : "21.4.7075529",
+            sdk                           : 33,
+            minSdk                        : 21,
+            vCode                         : 119,
+            vName                         : "2.7.1.1",
+            'sourceCompat'      : JavaVersion.VERSION_11,
+            'targetCompat'      : JavaVersion.VERSION_11,
+            kotlinCompilerExtensionVersion: "1.4.2"
     ]
     libraries = [
             //DHIS2
@@ -128,14 +130,14 @@ ext {
             kotlinxcoroutines         : "1.6.1",
 
             //Kotlin metadata
-            kotlinmetadata             : "0.5.0",
+            kotlinmetadata            : "0.5.0",
 
-            rxrelay                     : '2.1.1',
-            preference_ktx              : '1.2.0',
+            rxrelay                   : '2.1.1',
+            preference_ktx            : '1.2.0',
 
             // DI
-            hilt                        : '2.43.2',
+            hilt                      : '2.43.2',
 
-            coroutines_test            : "1.6.4"
+            coroutines_test           : "1.6.4"
     ]
 }

@@ -44,6 +44,13 @@ android {
         animationsDisabled = true
     }
 
+    sourceSets {
+        androidTest {
+            java.srcDirs = ['src/androidTest/src']
+            resources.srcDirs = ['src/androidTest/src']
+        }
+    }
+
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
@@ -51,7 +58,8 @@ android {
 
     ndkVersion versions.ndk
     compileSdkVersion versions.sdk
-    buildToolsVersion versions.tools
+
+    testNamespace "com.dhis2"
 
     defaultConfig {
         applicationId "com.dhis2"
@@ -176,8 +184,8 @@ android {
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-        targetCompatibility = JavaVersion.VERSION_1_8
-        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
     }
 
     buildFeatures {
@@ -201,10 +209,6 @@ android {
         exclude 'META-INF/gradle/incremental.annotation.processors'
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
-
     configurations.all {
         resolutionStrategy {
             preferProjectModules()
@@ -215,11 +219,11 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_11
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0"
+        kotlinCompilerExtensionVersion = versions.kotlinCompilerExtensionVersion
     }
 }
 

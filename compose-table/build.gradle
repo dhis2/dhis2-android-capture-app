@@ -12,7 +12,6 @@ def versions = rootProject.ext.versions
 
 android {
     compileSdkVersion versions.sdk
-    buildToolsVersion versions.tools
 
     defaultConfig {
         minSdkVersion versions.minSdk
@@ -35,8 +34,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     packagingOptions {
@@ -59,11 +58,11 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_11
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0"
+        kotlinCompilerExtensionVersion = versions.kotlinCompilerExtensionVersion
     }
 }
 
