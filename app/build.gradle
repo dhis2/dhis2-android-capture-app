@@ -59,7 +59,8 @@ android {
     ndkVersion versions.ndk
     compileSdkVersion versions.sdk
 
-    testNamespace "com.dhis2"
+    namespace "org.dhis2"
+    testNamespace "org.dhis2.test"
 
     defaultConfig {
         applicationId "com.dhis2"
@@ -67,6 +68,7 @@ android {
         targetSdkVersion versions.sdk
         versionCode versions.vCode
         versionName versions.vName
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -336,8 +338,8 @@ dependencies {
 
     androidTestImplementation("com.rickbusarow.dispatch:dispatch-android-espresso:1.0.0-beta10")
 
-    androidTestUtil 'androidx.test:orchestrator:1.4.1'
-    androidTestImplementation "androidx.test:runner:$libraries.androidx_test"
+    androidTestUtil "androidx.test:orchestrator:$libraries.androidx_test_orchestrator"
+    androidTestImplementation "androidx.test:runner:$libraries.androidx_test_runner"
     androidTestImplementation "androidx.test.espresso:espresso-intents:$libraries.espresso_core"
 
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$libraries.espresso_core"
@@ -346,7 +348,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
     androidTestImplementation "androidx.test:core:$libraries.androidx_test"
     androidTestImplementation "androidx.test:rules:$libraries.androidx_test"
-    androidTestImplementation "androidx.test:core-ktx:$libraries.androidx_test"
+    androidTestImplementation "androidx.test:core-ktx:$libraries.androidx_test_core"
     androidTestImplementation "androidx.test.ext:junit-ktx:$libraries.junit_ext"
     androidTestImplementation "org.mockito:mockito-android:$libraries.mockito_android"
     androidTestImplementation "org.mockito:mockito-core:$libraries.mockito"

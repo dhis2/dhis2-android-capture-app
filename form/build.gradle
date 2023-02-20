@@ -16,6 +16,7 @@ repositories {
 
 android {
     compileSdkVersion versions.sdk
+    namespace "org.dhis2.form"
 
     defaultConfig {
         minSdkVersion versions.minSdk

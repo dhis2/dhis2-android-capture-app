@@ -12,6 +12,7 @@ def versions = rootProject.ext.versions
 
 android {
     compileSdkVersion versions.sdk
+    namespace "org.dhis2.composetable"
 
     defaultConfig {
         minSdkVersion versions.minSdk

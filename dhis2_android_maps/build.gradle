@@ -11,6 +11,7 @@ def versions = rootProject.ext.versions
 
 android {
     compileSdkVersion versions.sdk
+    namespace "org.dhis2.maps"
 
     defaultConfig {
         minSdkVersion versions.minSdk

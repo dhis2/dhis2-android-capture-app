@@ -12,6 +12,7 @@ def versions = rootProject.ext.versions
 
 android {
     compileSdkVersion versions.sdk
+    namespace "org.dhis2.ui"
 
     defaultConfig {
         minSdkVersion versions.minSdk
