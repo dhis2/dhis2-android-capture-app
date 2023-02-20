@@ -1,7 +1,6 @@
 package org.dhis2.composetable
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import org.dhis2.composetable.activity.TableTestActivity
+import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.model.FakeModelType
 import org.junit.Rule
 import org.junit.Test
@@ -9,7 +8,7 @@ import org.junit.Test
 class BottomBarTableTests {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TableTestActivity>()
+    val composeTestRule = createComposeRule()
 
     @Test
     fun shouldDisplayBottomBarComponentWhenTyping() {

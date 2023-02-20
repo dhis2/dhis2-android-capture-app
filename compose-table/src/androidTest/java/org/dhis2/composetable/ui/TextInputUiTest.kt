@@ -4,7 +4,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -15,11 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.actions.TableInteractions
-import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.input_error_message
 import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.FakeModelType
@@ -33,7 +31,7 @@ import org.junit.Test
 class TextInputUiTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TableTestActivity>()
+    val composeTestRule = createComposeRule()
 
     @Test
     fun validateTextInputRequirements() {
@@ -41,12 +39,12 @@ class TextInputUiTest {
         val expectedValue = "55"
 
         tableRobot(composeTestRule) {
-           val fakeModels = initTableAppScreen(
+            val fakeModels = initTableAppScreen(
                 FakeModelType.MULTIHEADER_TABLE,
                 onSave = { cellToSave = it }
             )
             val tableId = fakeModels[0].id!!
-            assertClickOnCellShouldOpenInputComponent(tableId,0, 0)
+            assertClickOnCellShouldOpenInputComponent(tableId, 0, 0)
             assertClickOnBackClearsFocus()
             assertClickOnEditOpensInputKeyboard()
             assertClickOnSaveHidesKeyboardAndSaveValue(expectedValue)
