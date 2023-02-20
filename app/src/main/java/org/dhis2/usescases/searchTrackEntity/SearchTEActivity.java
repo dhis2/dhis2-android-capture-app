@@ -411,6 +411,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             currentContent = Content.MAP;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.mainComponent, SearchTEMap.Companion.get(fromRelationship, tEType)).commit();
+            observeMapLoading();
         }
     }
 
@@ -466,6 +467,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             return Unit.INSTANCE;
                         }
                 ));
+    }
+
+    private void observeMapLoading() {
+        viewModel.getRefreshData().observe(this, refresh -> {
+            if (currentContent == Content.MAP) {
+                binding.toolbarProgress.show();
+            }
+        });
+        viewModel.getMapResults().observe(this, result -> binding.toolbarProgress.hide());
     }
 
     @Override
