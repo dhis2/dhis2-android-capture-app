@@ -1,17 +1,20 @@
 package org.dhis2.composetable
 
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.test.TestActivity
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
 class CellTableTest {
     @get:Rule
-    val composeTestRule = createComposeRule()
+    val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     @Test
     fun shouldDisplayMandatoryIcon() {
@@ -104,7 +107,9 @@ class CellTableTest {
             composeTestRule.waitForIdle()
             clickOnAccept()
             composeTestRule.waitForIdle()
+            Espresso.pressBack()
             assertCellSelected(firstId, 1, 0)
+            clickOnCell(firstId, 1, 0)
             assertInputComponentInfo(
                 expectedMainLabel = "Text 2",
                 expectedSecondaryLabels =

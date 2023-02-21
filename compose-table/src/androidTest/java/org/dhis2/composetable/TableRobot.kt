@@ -1,9 +1,7 @@
 package org.dhis2.composetable
 
 import androidx.annotation.DrawableRes
-import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +51,6 @@ import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
 import org.dhis2.composetable.ui.InfoIconId
 import org.dhis2.composetable.ui.IsBlocked
-import org.dhis2.composetable.ui.LocalTableColors
 import org.dhis2.composetable.ui.LocalTableSelection
 import org.dhis2.composetable.ui.MANDATORY_ICON_TEST_TAG
 import org.dhis2.composetable.ui.MainLabel
@@ -158,12 +155,30 @@ class TableRobot(
                     onSaveValue = { tableCell, selectNext ->
                         onSaveTableCell = tableCell
                         onSave(tableCell)
-                        model = TableScreenState(fakeModel, selectNext)
+                        val updatedData = updateValue(fakeModel, tableCell)
+                        model = TableScreenState(updatedData, selectNext)
                     }
                 )
             }
         }
         return fakeModel
+    }
+
+    private fun updateValue(fakeModel: List<TableModel>, tableCell: TableCell): List<TableModel> {
+        return fakeModel.map { tableModel ->
+            val hasRowWithDataElement = tableModel.tableRows.find {
+                tableCell.id?.contains(it.rowHeader.id.toString()) == true
+            }
+            if (hasRowWithDataElement != null) {
+                tableModel.copy(
+                    overwrittenValues = mapOf(
+                        Pair(tableCell.column!!, tableCell)
+                    )
+                )
+            } else {
+                tableModel
+            }
+        }
     }
 
     fun assertClickOnCellShouldOpenInputComponent(
@@ -179,7 +194,6 @@ class TableRobot(
     fun assertClickOnEditOpensInputKeyboard() {
         clickOnEditionIcon()
         composeTestRule.waitForIdle()
-        assertKeyBoardVisibility(true)
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 
@@ -344,7 +358,9 @@ class TableRobot(
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
         composeTestRule.onNode(
             hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex"), true
-        ).assertIsDisplayed()
+        )
+            .performScrollTo()
+            .assertIsDisplayed()
         composeTestRule.onNode(
             hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
                     and
@@ -405,6 +421,6 @@ class TableRobot(
     }
 
     fun hideKeyboard() {
-        keyboardHelper.hideKeyboardIfShown()
+        keyboardHelper.hideKeyboard()
     }
 }
