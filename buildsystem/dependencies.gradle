@@ -154,8 +154,6 @@ ext.libs = [
 
         kotlin        : [
                 'serialization': "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxserialization",
-                'stdlib'   : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin", //Todo: This is already provided by the kotlin plugin?
-                'stdlibJDK8'   : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin", //Todo: This is already provided by the kotlin plugin?
                 'metadataJVM'  : "org.jetbrains.kotlinx:kotlinx-metadata-jvm:$kotlinmetadata" //TODO: Why do we need this?
         ],
 

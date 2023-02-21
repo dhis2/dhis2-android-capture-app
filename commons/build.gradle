@@ -69,7 +69,6 @@ dependencies {
         exclude group: "junit", module: "junit"
     }
 
-    implementation libs.kotlin.stdlib
     kapt libs.kotlin.metadataJVM
 
     api libs.google.autoValue

@@ -240,8 +240,6 @@ dependencies {
     implementation libs.security.rootDetector
     implementation libs.security.openId
     coreLibraryDesugaring libs.android.desugar
-    implementation libs.kotlin.stdlibJDK8
-    kapt libs.kotlin.metadataJVM
     implementation libs.kotlin.serialization
     implementation libs.androidx.activityCompose
     implementation libs.androidx.annotation

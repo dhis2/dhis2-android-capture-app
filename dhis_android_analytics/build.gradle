@@ -60,7 +60,6 @@ dependencies {
     implementation project(':commons')
     implementation project(':compose-table')
 
-    implementation libs.kotlin.stdlib
     implementation libs.androidx.cardView
     implementation libs.androidx.constraintLayout
 

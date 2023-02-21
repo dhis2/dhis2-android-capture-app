@@ -64,8 +64,6 @@ dependencies {
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
 
-    implementation libs.kotlin.stdlib
-
     testImplementation libs.test.mockitoCore
     testImplementation libs.test.mockitoInline
     testImplementation libs.test.mockitoKotlin
