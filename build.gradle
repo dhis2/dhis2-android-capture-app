@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
+    apply from: 'buildsystem/dependencies.gradle'
     ext.kotlin_version = '1.8.10'
     repositories {
         google()
@@ -7,12 +8,11 @@ buildscript {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'
-        classpath 'me.tatarka:gradle-retrolambda:3.7.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:2.43.2"
-        classpath "org.jacoco:org.jacoco.core:0.8.8"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        classpath libs.gradle.gradlePlugin
+        classpath libs.gradle.kotlinPlugin
+        classpath libs.gradle.hiltPlugin
+        classpath libs.gradle.jacoco
+        classpath libs.gradle.kotlinSerialization
     }
 }
 

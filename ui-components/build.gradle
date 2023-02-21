@@ -7,9 +7,6 @@ apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
 
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
-
 android {
     compileSdkVersion versions.sdk
     namespace "org.dhis2.ui"
@@ -56,21 +53,20 @@ android {
 
 dependencies {
 
-    implementation "androidx.core:core-ktx:${libraries.corektx}"
-    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
-    implementation "com.google.android.material:material:${libraries.material}"
-    implementation "androidx.activity:activity-compose:${libraries.activityCompose}"
-    testImplementation "junit:junit:${libraries.junit}"
-    androidTestImplementation "androidx.test.ext:junit:$libraries.junit_ext"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
+    implementation libs.androidx.coreKtx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activityCompose
+    api libs.androidx.composeConstraintLayout
+    implementation libs.androidx.material3
+    api libs.androidx.composePreview
+    api libs.androidx.composeUi
+    api libs.androidx.composeLiveData
+    debugApi libs.androidx.composeUiTooling
+    implementation libs.google.material
+    api libs.google.materialThemeAdapter
+    api libs.google.material3ThemeAdapter
 
-    //Compose
-    api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-    api "com.google.android.material:compose-theme-adapter:${libraries.composeTheme}"
-    implementation "androidx.compose.material3:material3:${libraries.material3}"
-    api "com.google.accompanist:accompanist-themeadapter-material3:${libraries.themeAdapter}"
-    api "androidx.compose.ui:ui-tooling-preview:${libraries.compose}"
-    api "androidx.compose.ui:ui:${libraries.compose}"
-    api "androidx.compose.runtime:runtime-livedata:${libraries.compose}"
-    debugApi "androidx.compose.ui:ui-tooling:${libraries.compose}"
+    testImplementation libs.test.junit
+    androidTestImplementation libs.test.testJUnitExt
+    androidTestImplementation libs.test.espresso
 }

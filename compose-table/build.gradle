@@ -7,9 +7,6 @@ apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
 
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
-
 android {
     compileSdkVersion versions.sdk
     namespace "org.dhis2.composetable"
@@ -69,27 +66,22 @@ android {
 
 dependencies {
 
-    implementation "androidx.core:core-ktx:${libraries.corektx}"
-    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
-    implementation "com.google.android.material:material:${libraries.material}"
-    implementation "androidx.activity:activity-compose:${libraries.activityCompose}"
-    testImplementation "junit:junit:${libraries.junit}"
-    androidTestImplementation "androidx.test.ext:junit:$libraries.junit_ext"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
+    implementation libs.kotlin.serialization
+    implementation libs.androidx.coreKtx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activityCompose
+    implementation libs.androidx.compose
+    implementation libs.androidx.composeConstraintLayout
+    implementation libs.androidx.composePreview
+    implementation libs.androidx.composeUi
+    implementation libs.androidx.composeLiveData
+    debugImplementation libs.androidx.composeUiTooling
+    implementation libs.google.material
+    implementation libs.google.materialThemeAdapter
 
-    //Compose
-    implementation "androidx.compose.material:material:${libraries.compose}"
-    implementation "androidx.constraintlayout:constraintlayout-compose:${libraries.composeConstraintLayout}"
-    implementation "com.google.android.material:compose-theme-adapter:${libraries.composeTheme}"
-    implementation "androidx.compose.ui:ui-tooling-preview:${libraries.compose_ui}"
-    implementation "androidx.compose.ui:ui:${libraries.compose_ui}"
-    implementation "androidx.compose.runtime:runtime-livedata:${libraries.compose_ui}"
-    debugImplementation "androidx.compose.ui:ui-tooling:${libraries.compose_ui}"
-
-    //test
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$libraries.compose_ui_test")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$libraries.compose_ui_test")
-
-    //Serialization library
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
+    testImplementation libs.test.junit
+    androidTestImplementation libs.test.composeUiTestJUnit
+    debugImplementation libs.test.composeUiTestManifest
+    androidTestImplementation libs.test.testJUnitKtx
+    androidTestImplementation libs.test.espresso
 }

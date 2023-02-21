@@ -4,9 +4,6 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
-
 repositories {
     maven { url 'https://jitpack.io' }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -28,7 +25,7 @@ android {
     }
 
     buildTypes {
-        debug{
+        debug {
 
         }
         release {
@@ -63,17 +60,16 @@ dependencies {
     implementation project(':commons')
     implementation project(':compose-table')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
-    implementation "androidx.cardview:cardview:${libraries.cardview}"
-    implementation "androidx.constraintlayout:constraintlayout:${libraries.constraintlayout}"
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.cardView
+    implementation libs.androidx.constraintLayout
 
     //Graphs
-    api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    api libs.github.charts
 
-    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    kapt libs.dagger.daggerCompiler
 
-    testImplementation "org.mockito:mockito-core:$libraries.mockito"
-    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${libraries.mockito_kotlin}"
+    testImplementation libs.test.mockitoCore
+    testImplementation libs.test.mockitoInline
+    testImplementation libs.test.mockitoKotlin
 }
