@@ -150,6 +150,14 @@ class EventCaptureActivity :
         }
     }
 
+    fun openDetails(){
+        binding?.navigationBar?.selectItemAt(0)
+    }
+
+    fun openForm(){
+        binding?.navigationBar?.selectItemAt(1)
+    }
+
     override fun onResume() {
         super.onResume()
         presenter!!.refreshTabCounters()

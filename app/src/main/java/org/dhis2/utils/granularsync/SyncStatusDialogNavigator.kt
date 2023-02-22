@@ -26,7 +26,7 @@ class SyncStatusDialogNavigator(
             is SyncStatusType.TrackerProgram -> navigateToSearchScreen(syncStatusItem.type)
             is SyncStatusType.Enrollment -> navigateToEnrollmentFormScreen(syncStatusItem.type)
         }
-        context.startActivity(intent)
+        intent?.let { context.startActivity(it) }
     }
 
     private fun navigateToEnrollmentFormScreen(
@@ -66,31 +66,44 @@ class SyncStatusDialogNavigator(
         ).launchSyncDialog()
     }
 
-    private fun navigateToEvent(eventSyncItem: SyncStatusType.Event): Intent {
-        val intent = EventCaptureActivity.intent(
-            context,
-            eventSyncItem.eventUid,
-            eventSyncItem.programUid,
-            eventSyncItem.hasNullDataElementConflict,
-            EventMode.CHECK
-        )
-        return if (eventSyncItem.hasNullDataElementConflict) {
-            intent.launchSyncDialog()
+    private fun navigateToEvent(eventSyncItem: SyncStatusType.Event): Intent? {
+        return if (context !is EventCaptureActivity) {
+            val intent = EventCaptureActivity.intent(
+                context,
+                eventSyncItem.eventUid,
+                eventSyncItem.programUid,
+                eventSyncItem.hasNullDataElementConflict,
+                EventMode.CHECK
+            )
+            if (eventSyncItem.hasNullDataElementConflict) {
+                intent.launchSyncDialog()
+            } else {
+                intent
+            }
         } else {
-            intent
+            if (eventSyncItem.hasNullDataElementConflict) {
+                context.openDetails()
+            } else {
+                context.openForm()
+            }
+            null
         }
     }
 
     private fun navigateToDataSetInstanceTable(
         tableSyncItem: SyncStatusType.DataSetInstance
-    ): Intent {
-        return DataSetTableActivity.intent(
-            context,
-            tableSyncItem.dataSetUid,
-            tableSyncItem.orgUnitUid,
-            tableSyncItem.periodId,
-            tableSyncItem.attrOptComboUid
-        ).launchSyncDialog()
+    ): Intent? {
+        return if(context !is DataSetTableActivity) {
+            DataSetTableActivity.intent(
+                context,
+                tableSyncItem.dataSetUid,
+                tableSyncItem.orgUnitUid,
+                tableSyncItem.periodId,
+                tableSyncItem.attrOptComboUid
+            ).launchSyncDialog()
+        }else{
+            null
+        }
     }
 
     private fun navigateToDataSetInstances(dataSetSyncItem: SyncStatusType.DataSet): Intent {
