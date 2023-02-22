@@ -57,7 +57,7 @@ fun AccountsScreen(
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     .background(Color.White)
             ) {
-                LazyColumn(Modifier.padding(top = 16.dp, bottom = 48.dp)) {
+                LazyColumn(Modifier.weight(1f).padding(top = 16.dp)) {
                     items(accounts) {
                         AccountItem(
                             Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -69,8 +69,7 @@ fun AccountsScreen(
                 Column(Modifier.padding(16.dp)) {
                     Button(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 22.dp),
+                            .fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = colorResource(id = R.color.colorPrimary),
@@ -126,6 +125,30 @@ fun LoginHeader() {
 @Preview(showBackground = true)
 @Composable
 fun AccountsPreview() {
+    AccountsScreen(
+        listOf(
+            AccountModel("android", "https://play.dhis2.com/android-dev"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("admin", "https://play.dhis2.com/android-dev")
+        ),
+        {},
+        {}
+    )
+}
+@ExperimentalMaterialApi
+@Preview(showBackground = true)
+@Composable
+fun FewAccountsPreview() {
     AccountsScreen(
         listOf(
             AccountModel("android", "https://play.dhis2.com/android-dev"),
