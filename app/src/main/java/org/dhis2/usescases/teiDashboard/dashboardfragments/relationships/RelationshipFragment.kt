@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -58,7 +59,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
     private val addRelationshipLauncher = registerForActivityResult(AddRelationshipContract()) {
         themeManager.setProgramTheme(programUid()!!)
         when (it) {
-            is RelationshipResult.Error -> {}
+            is RelationshipResult.Error -> { /*Unused*/
+            }
             is RelationshipResult.Success -> {
                 presenter.addRelationship(it.teiUidToAddAsRelationship, relationshipType!!.uid())
             }
@@ -97,21 +99,18 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         relationshipMapManager.onCreate(savedInstanceState)
         relationshipMapManager.onMapClickListener = this
         relationshipMapManager.init(
-            presenter.fetchMapStyles(),
-            { }
+            presenter.fetchMapStyles()
         ) { permissionManager ->
-            if (locationProvider.hasLocationEnabled()) {
-                permissionManager?.requestLocationPermissions(activity)
-            } else {
-                requestEnableLocationSetting(requireContext())
-            }
+            handleMissingPermission(permissionManager)
         }
         mapButtonObservable.relationshipMap().observe(viewLifecycleOwner) { showMap ->
-            binding.relationshipRecycler.visibility = if (showMap) View.GONE else View.VISIBLE
-            binding.mapView.visibility = if (showMap) View.VISIBLE else View.GONE
-            binding.mapLayerButton.visibility = if (showMap) View.VISIBLE else View.GONE
-            binding.mapPositionButton.visibility = if (showMap) View.VISIBLE else View.GONE
-            binding.mapCarousel.visibility = if (showMap) View.VISIBLE else View.GONE
+            val mapVisibility = if (showMap) View.VISIBLE else View.GONE
+            val listVisibility = if (showMap) View.GONE else View.VISIBLE
+            binding.relationshipRecycler.visibility = listVisibility
+            binding.mapView.visibility = mapVisibility
+            binding.mapLayerButton.visibility = mapVisibility
+            binding.mapPositionButton.visibility = mapVisibility
+            binding.mapCarousel.visibility = mapVisibility
             binding.dialFabLayout.setFabVisible(!showMap)
         }
         binding.mapLayerButton.setOnClickListener {
@@ -120,18 +119,28 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             )
             layerDialog.show(childFragmentManager, MapLayerDialog::class.java.name)
         }
-        binding.mapPositionButton.setOnClickListener {
-            if (locationProvider.hasLocationEnabled()) {
-                relationshipMapManager.centerCameraOnMyPosition { permissionManager ->
-                    permissionManager?.requestLocationPermissions(
-                        activity
-                    )
-                }
-            } else {
-                requestEnableLocationSetting(requireContext())
-            }
-        }
+        binding.mapPositionButton.setOnClickListener { handleMapPositionClick() }
         return binding.root
+    }
+
+    private fun handleMapPositionClick() {
+        if (locationProvider.hasLocationEnabled()) {
+            relationshipMapManager.centerCameraOnMyPosition { permissionManager ->
+                permissionManager?.requestLocationPermissions(
+                    activity
+                )
+            }
+        } else {
+            requestEnableLocationSetting(requireContext())
+        }
+    }
+
+    private fun handleMissingPermission(permissionManager: PermissionsManager?) {
+        if (locationProvider.hasLocationEnabled()) {
+            permissionManager?.requestLocationPermissions(activity)
+        } else {
+            requestEnableLocationSetting(requireContext())
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -259,8 +268,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             getString(R.string.button_ok),
             getString(R.string.no),
             object : OnDialogClickListener {
-                override fun onPositiveClick() {}
-                override fun onNegativeClick() {}
+                override fun onPositiveClick() { /*Unused*/
+                }
+
+                override fun onNegativeClick() { /*Unused*/
+                }
             }
         )
     }
@@ -275,8 +287,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             getString(R.string.button_ok),
             getString(R.string.no),
             object : OnDialogClickListener {
-                override fun onPositiveClick() {}
-                override fun onNegativeClick() {}
+                override fun onPositiveClick() { /*Unused*/
+                }
+
+                override fun onNegativeClick() { /*Unused*/
+                }
             }
         )
     }
