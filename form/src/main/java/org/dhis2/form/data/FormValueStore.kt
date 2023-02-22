@@ -168,7 +168,17 @@ class FormValueStore(
             d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (isFile(valueType) && value != null) {
-            newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            try {
+                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            } catch (e: java.lang.NullPointerException) {
+                return Flowable.just(
+                    StoreResult(
+                        uid = uid,
+                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                        valueStoreResultMessage = e.localizedMessage
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -348,7 +358,17 @@ class FormValueStore(
         val valueType = d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (isFile(valueType) && value != null) {
-            newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            try {
+                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            } catch (e: java.lang.NullPointerException) {
+                return Flowable.just(
+                    StoreResult(
+                        uid = uid,
+                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                        valueStoreResultMessage = e.localizedMessage
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
