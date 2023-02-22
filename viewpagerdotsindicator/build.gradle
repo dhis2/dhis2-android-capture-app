@@ -1,5 +1,7 @@
+plugins{
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
+}
 apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
 android {

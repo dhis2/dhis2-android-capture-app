@@ -1,3 +1,6 @@
+plugins{
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
+}
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -182,8 +185,8 @@ android {
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-        targetCompatibility = JavaVersion.VERSION_11
-        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility versions.targetCompat
+        sourceCompatibility versions.sourceCompat
     }
 
     buildFeatures {
@@ -217,7 +220,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
+        jvmTarget = versions.targetCompat
     }
 
     composeOptions {

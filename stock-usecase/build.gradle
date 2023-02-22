@@ -4,9 +4,10 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'dagger.hilt.android.plugin'
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
-
 apply plugin: "kotlinx-serialization"
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -62,8 +63,8 @@ android {
     compileOptions {
         coreLibraryDesugaringEnabled true
 
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility versions.sourceCompat
+        targetCompatibility versions.targetCompat
     }
 
     buildFeatures {
@@ -86,7 +87,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
+        jvmTarget = versions.targetCompat
     }
 
 }
