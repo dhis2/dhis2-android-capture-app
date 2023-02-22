@@ -66,7 +66,7 @@ class MapTeisToFeatureCollectionTest {
         )
 
         val result = mapTeisToFeatureCollection.map(teiList, true)
-        val featureCollectionResults = result?.first?.get(TEI)
+        val featureCollectionResults = result.first[TEI]
 
         val pointFeatureResult = featureCollectionResults?.features()?.get(0)?.geometry() as Point
         val uid = featureCollectionResults.features()?.get(0)
@@ -94,13 +94,13 @@ class MapTeisToFeatureCollectionTest {
             mapRelationshipToRelationshipMapModel.mapList(teiList[0].relationships)
         ) doReturn relationshipModels
         whenever(mapRelationshipsToFeatureCollection.map(relationshipModels)) doReturn Pair(
-            mapOf(relationshipModels[0].displayName to FeatureCollection.fromFeature(feature)),
+            mapOf(relationshipModels[0].displayName!! to FeatureCollection.fromFeature(feature)),
             boundingBox.getEnclosingBoundingBox(listOf())
         )
 
         val result = mapTeisToFeatureCollection.map(teiList, true)
         val featureCollectionResults =
-            result?.first?.get(RelationshipUiCompomentDummy.DISPLAY_NAME_FIRST)
+            result.first[RelationshipUiCompomentDummy.DISPLAY_NAME_FIRST]
 
         val relationshipFeatureCollection =
             featureCollectionResults?.features()?.get(0)?.geometry() as LineString
@@ -142,8 +142,8 @@ class MapTeisToFeatureCollectionTest {
         ) doReturn Pair(enrollmentFeaturePoint, bounds)
 
         val result = mapTeisToFeatureCollection.map(teiList, true)
-        val featureTeiCollectionResults = result?.first?.get(TEI)
-        val featureEnrollmentCollectionResults = result?.first?.get(ENROLLMENT)
+        val featureTeiCollectionResults = result.first[TEI]
+        val featureEnrollmentCollectionResults = result.first[ENROLLMENT]
 
         val teiPointFeatureResult =
             featureTeiCollectionResults?.features()?.get(0)?.geometry() as Point
@@ -178,8 +178,8 @@ class MapTeisToFeatureCollectionTest {
         whenever(mapPolygonPointToFeature.map(any())) doReturn enrollmentFeaturePoint
 
         val result = mapTeisToFeatureCollection.map(teiList, true)
-        val featureTeiCollectionResults = result?.first?.get(TEI)
-        val featureEnrollmentCollectionResults = result?.first?.get(ENROLLMENT)
+        val featureTeiCollectionResults = result.first[TEI]
+        val featureEnrollmentCollectionResults = result.first[ENROLLMENT]
 
         val featureTeiResult =
             featureTeiCollectionResults?.features()?.get(0)?.geometry() as Polygon
