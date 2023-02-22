@@ -100,21 +100,16 @@
                             app:layout_constraintTop_toBottomOf="@id/dataPeriods" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Button
-                        android:id="@+id/buttonSyncData"
-                        style="@style/TextButton"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/syncDataButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="16dp"
-                        android:fontFamily="@font/rubik_medium"
-                        android:onClick='@{()->presenter.syncData()}'
-                        android:text="@string/SYNC_DATA"
-                        android:textAllCaps="true"
-                        android:textColor="?colorPrimary"
-                        android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/dataOptions" />
+                        app:layout_constraintTop_toBottomOf="@id/dataOptions"
+                        app:addTextButton="@{presenter.syncDataButton}"/>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
@@ -210,21 +205,15 @@
                             app:layout_constraintTop_toBottomOf="@id/metadataPeriods" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Button
-                        android:id="@+id/buttonSyncMeta"
-                        style="@style/TextButton"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/syncMetaDataButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="16dp"
-                        android:fontFamily="@font/rubik_medium"
-                        android:onClick='@{()->presenter.syncMeta()}'
-                        android:text="@string/SYNC_META"
-                        android:textAllCaps="true"
-                        android:textColor="?colorPrimary"
-                        android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/metaOptions" />
+                        app:layout_constraintTop_toBottomOf="@id/metaOptions"
+                        app:addTextButton="@{presenter.syncMetaDataButton}"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View

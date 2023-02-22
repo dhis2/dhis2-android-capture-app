@@ -1,25 +1,41 @@
 package org.dhis2.usescases.settings;
 
+import static org.dhis2.commons.Constants.DATA_NOW;
+import static org.dhis2.commons.Constants.META_NOW;
+import static org.dhis2.commons.matomo.Actions.SYNC_CONFIG;
+import static org.dhis2.commons.matomo.Actions.SYNC_DATA;
+import static org.dhis2.commons.matomo.Categories.SETTINGS;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.WorkInfo;
 
+import com.google.common.annotations.VisibleForTesting;
+
+import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkerItem;
 import org.dhis2.data.service.workManager.WorkerType;
+import org.dhis2.ui.model.ButtonUiModel;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
+import org.dhis2.usescases.settings.models.ErrorModelMapper;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SettingsViewModel;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.usescases.settings.models.ErrorModelMapper;
-import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -32,18 +48,8 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.Unit;
 import timber.log.Timber;
-
-import static org.dhis2.commons.Constants.DATA_NOW;
-import static org.dhis2.commons.Constants.META_NOW;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
-import static org.dhis2.commons.matomo.Actions.SYNC_CONFIG;
-import static org.dhis2.commons.matomo.Actions.SYNC_DATA;
-import static org.dhis2.commons.matomo.Categories.SETTINGS;
-
-import com.google.common.annotations.VisibleForTesting;
 
 
 public class SyncManagerPresenter {
@@ -55,13 +61,19 @@ public class SyncManagerPresenter {
     private final UserManager userManager;
     private final AnalyticsHelper analyticsHelper;
     private final ErrorModelMapper errorMapper;
-    private CompositeDisposable compositeDisposable;
-    private SyncManagerContracts.View view;
-    private FlowableProcessor<Boolean> checkData;
-    private GatewayValidator gatewayValidator;
-    private WorkManagerController workManagerController;
-    private MatomoAnalyticsController matomoAnalyticsController;
+    private final CompositeDisposable compositeDisposable;
+    private final SyncManagerContracts.View view;
+    private final FlowableProcessor<Boolean> checkData;
+    private final GatewayValidator gatewayValidator;
+    private final WorkManagerController workManagerController;
+    private final MatomoAnalyticsController matomoAnalyticsController;
     private SMSSettingsViewModel smsSettingsViewModel;
+    private final ResourceManager resourceManager;
+    private final MutableLiveData<ButtonUiModel> _syncDataButton = new MutableLiveData<>();
+    public final LiveData<ButtonUiModel> syncDataButton = _syncDataButton;
+
+    private final MutableLiveData<ButtonUiModel> _syncMetaDataButton = new MutableLiveData<>();
+    public final LiveData<ButtonUiModel> syncMetaDataButton = _syncMetaDataButton;
 
     SyncManagerPresenter(
             D2 d2,
@@ -74,7 +86,8 @@ public class SyncManagerPresenter {
             SyncManagerContracts.View view,
             AnalyticsHelper analyticsHelper,
             ErrorModelMapper errorMapper,
-            MatomoAnalyticsController matomoAnalyticsController) {
+            MatomoAnalyticsController matomoAnalyticsController,
+            ResourceManager resourceManager) {
         this.view = view;
         this.d2 = d2;
         this.settingsRepository = settingsRepository;
@@ -86,6 +99,7 @@ public class SyncManagerPresenter {
         this.analyticsHelper = analyticsHelper;
         this.errorMapper = errorMapper;
         this.matomoAnalyticsController = matomoAnalyticsController;
+        this.resourceManager = resourceManager;
         checkData = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
     }
@@ -119,6 +133,24 @@ public class SyncManagerPresenter {
                                 },
                                 Timber::e
                         ));
+
+        _syncDataButton.postValue(new ButtonUiModel(
+                resourceManager.getString(R.string.SYNC_DATA).toUpperCase(),
+                true,
+                () -> {
+                    syncData();
+                    return Unit.INSTANCE;
+                }
+        ));
+
+        _syncMetaDataButton.postValue(new ButtonUiModel(
+                resourceManager.getString(R.string.SYNC_META).toUpperCase(),
+                true,
+                () -> {
+                    syncMeta();
+                    return Unit.INSTANCE;
+                }
+        ));
     }
 
     public int getMetadataPeriodSetting() {
@@ -233,15 +265,15 @@ public class SyncManagerPresenter {
         FilterManager.getInstance().clearAllFilters();
     }
 
-    public void onWorkStatusesUpdate(WorkInfo.State workState,String workerTag) {
-        if(workState!=null){
-            switch (workState){
+    public void onWorkStatusesUpdate(WorkInfo.State workState, String workerTag) {
+        if (workState != null) {
+            switch (workState) {
                 case ENQUEUED:
                 case RUNNING:
                 case BLOCKED:
-                    if(workerTag.equals(META_NOW)){
+                    if (workerTag.equals(META_NOW)) {
                         view.onMetadataSyncInProgress();
-                    }else if(workerTag.equals(DATA_NOW)){
+                    } else if (workerTag.equals(DATA_NOW)) {
                         view.onDataSyncInProgress();
                     }
                     break;
@@ -249,16 +281,16 @@ public class SyncManagerPresenter {
                 case FAILED:
                 case CANCELLED:
                 default:
-                    if(workerTag.equals(META_NOW)){
+                    if (workerTag.equals(META_NOW)) {
                         view.onMetadataFinished();
-                    }else if(workerTag.equals(DATA_NOW)){
+                    } else if (workerTag.equals(DATA_NOW)) {
                         view.onDataFinished();
                     }
             }
-        }else{
-            if(workerTag.equals(META_NOW)){
+        } else {
+            if (workerTag.equals(META_NOW)) {
                 view.onMetadataFinished();
-            }else if(workerTag.equals(DATA_NOW)){
+            } else if (workerTag.equals(DATA_NOW)) {
                 view.onDataFinished();
             }
         }
@@ -358,12 +390,12 @@ public class SyncManagerPresenter {
 
     public void checkSyncErrors() {
         compositeDisposable.add(Single.fromCallable(() -> {
-            List<ErrorViewModel> errors = new ArrayList<>();
-            errors.addAll(errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet()));
-            errors.addAll(errorMapper.mapConflict(d2.importModule().trackerImportConflicts().blockingGet()));
-            errors.addAll(errorMapper.mapFKViolation(d2.maintenanceModule().foreignKeyViolations().blockingGet()));
-            return errors;
-        })
+                    List<ErrorViewModel> errors = new ArrayList<>();
+                    errors.addAll(errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet()));
+                    errors.addAll(errorMapper.mapConflict(d2.importModule().trackerImportConflicts().blockingGet()));
+                    errors.addAll(errorMapper.mapFKViolation(d2.maintenanceModule().foreignKeyViolations().blockingGet()));
+                    return errors;
+                })
                 .map(errors -> {
                     Collections.sort(
                             errors,
@@ -374,7 +406,7 @@ public class SyncManagerPresenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        errors -> view.showSyncErrors(errors),
+                        view::showSyncErrors,
                         Timber::e
                 ));
     }
@@ -392,5 +424,29 @@ public class SyncManagerPresenter {
     @VisibleForTesting
     public void setSmsSettingsViewModel(SMSSettingsViewModel settingsViewModel) {
         this.smsSettingsViewModel = settingsViewModel;
+    }
+
+    public void updateSyncDataButton(boolean canBeClicked) {
+        _syncDataButton.postValue(new ButtonUiModel(
+                resourceManager.getString(R.string.SYNC_DATA).toUpperCase(),
+                canBeClicked,
+                () -> {
+                    syncData();
+                    return Unit.INSTANCE;
+                }
+        ));
+    }
+
+    public void updateSyncMetaDataButton(boolean canBeClicked) {
+        _syncMetaDataButton.postValue(
+                new ButtonUiModel(
+                        resourceManager.getString(R.string.SYNC_META).toUpperCase(),
+                        canBeClicked,
+                        () -> {
+                            syncMeta();
+                            return Unit.INSTANCE;
+                        }
+                )
+        );
     }
 }

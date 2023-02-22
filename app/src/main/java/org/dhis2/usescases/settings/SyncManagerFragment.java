@@ -120,11 +120,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
-
+        binding.setLifecycleOwner(this);
         binding.setPresenter(presenter);
-
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
-
         return binding.getRoot();
     }
 
@@ -973,15 +971,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private void checkSyncDataButtonStatus() {
         boolean isOnline = networkUtils.isOnline();
         boolean canBeClicked = isOnline && !dataWorkRunning;
-        binding.buttonSyncData.setEnabled(canBeClicked);
-        binding.buttonSyncData.setClickable(canBeClicked);
+        presenter.updateSyncDataButton(canBeClicked);
     }
 
     private void checkSyncMetaButtonStatus() {
         boolean isOnline = networkUtils.isOnline();
         boolean canBeClicked = isOnline && !metadataInit;
-        binding.buttonSyncMeta.setEnabled(canBeClicked);
-        binding.buttonSyncMeta.setClickable(canBeClicked);
+        presenter.updateSyncMetaDataButton(canBeClicked);
     }
 
     @Override
