@@ -222,8 +222,8 @@ class FormRepositoryImpl(
                     updateValueOnList(field.uid, fieldWithNewValue.newValue, field.valueType)
                 }
             }
-        return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true ||
-            calculationLoop == loopThreshold
+        return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true &&
+            calculationLoop < loopThreshold
         ) {
             calculationLoop += 1
             ArrayList(fieldMap.values).applyRuleEffects(skipProgramRules)
