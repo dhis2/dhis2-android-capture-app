@@ -176,8 +176,8 @@ class MainActivity :
                 mainNavigator.restoreScreen(
                     screenToRestoreName = openScreen ?: restoreScreenName!!,
                     languageSelectorOpened = openScreen != null &&
-                        MainNavigator.MainScreen.valueOf(openScreen) ==
-                        MainNavigator.MainScreen.TROUBLESHOOTING
+                            MainNavigator.MainScreen.valueOf(openScreen) ==
+                            MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
             else -> {
