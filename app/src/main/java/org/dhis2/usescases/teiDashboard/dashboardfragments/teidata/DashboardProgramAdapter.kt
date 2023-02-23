@@ -27,6 +27,6 @@ class DashboardProgramAdapter(
     }
 
     override fun getItemCount(): Int {
-        return dashboardProgramModel.enrollmentPrograms.size
+        return dashboardProgramModel.programsWithActiveEnrollment.size
     }
 }

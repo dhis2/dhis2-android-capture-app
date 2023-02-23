@@ -14,7 +14,7 @@ class DashboardProgramViewHolder(
         dashboardProgramModel: DashboardProgramModel,
         position: Int
     ) {
-        val program = dashboardProgramModel.enrollmentPrograms[position]
+        val program = dashboardProgramModel.programsWithActiveEnrollment[position]
         val enrollment = dashboardProgramModel.getEnrollmentForProgram(program.uid())
         binding.setVariable(BR.presenter, presenter)
         binding.setVariable(BR.program, program)
@@ -29,7 +29,7 @@ class DashboardProgramViewHolder(
         binding.executePendingBindings()
         itemView.setOnClickListener {
             presenter.setProgram(
-                dashboardProgramModel.enrollmentPrograms[position], enrollment!!.uid()
+                dashboardProgramModel.programsWithActiveEnrollment[position], enrollment!!.uid()
             )
         }
     }

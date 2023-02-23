@@ -793,7 +793,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (searchTei.getSelectedEnrollment() != null) {
                 searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getSelectedEnrollment().organisationUnit()).blockingGet().name());
             } else {
-                // cuando no hay enrollment, coge la owning org unit. Esto deberíua ser para all person
                 searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getTei().organisationUnit()).blockingGet().name());
             }
             searchTei.setProfilePicture(profilePicturePath(tei, selectedProgram));
