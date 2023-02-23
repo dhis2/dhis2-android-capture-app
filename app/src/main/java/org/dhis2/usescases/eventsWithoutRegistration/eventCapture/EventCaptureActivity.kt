@@ -150,11 +150,11 @@ class EventCaptureActivity :
         }
     }
 
-    fun openDetails(){
+    fun openDetails() {
         binding?.navigationBar?.selectItemAt(0)
     }
 
-    fun openForm(){
+    fun openForm() {
         binding?.navigationBar?.selectItemAt(1)
     }
 
@@ -192,17 +192,14 @@ class EventCaptureActivity :
             val bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                 title = getString(R.string.title_delete_go_back),
                 message = getString(R.string.discard_go_back),
-                iconResource = R.drawable.ic_alert,
+                iconResource = R.drawable.ic_error_outline,
                 mainButton = MainButton(R.string.keep_editing),
                 secondaryButton = DiscardButton()
             )
             val dialog = BottomSheetDialog(
                 bottomSheetDialogUiModel,
-                { Unit },
-                {
-                    presenter!!.deleteEvent()
-                    Unit
-                }
+                {/*Unused*/ },
+                { presenter!!.deleteEvent() }
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else {
@@ -277,8 +274,10 @@ class EventCaptureActivity :
             FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter!!.completeEvent(true)
             FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
             FormBottomDialog.ActionType.SKIP -> presenter!!.skipEvent()
-            FormBottomDialog.ActionType.RESCHEDULE -> { /*Do nothing*/ }
-            FormBottomDialog.ActionType.CHECK_FIELDS -> { /*Do nothing*/ }
+            FormBottomDialog.ActionType.RESCHEDULE -> { /*Do nothing*/
+            }
+            FormBottomDialog.ActionType.CHECK_FIELDS -> { /*Do nothing*/
+            }
             FormBottomDialog.ActionType.FINISH -> finishDataEntry()
         }
     }
@@ -344,7 +343,8 @@ class EventCaptureActivity :
                         showTutorial(false)
                     }
                     R.id.menu_delete -> confirmDeleteEvent()
-                    else -> { /*Do nothing*/ }
+                    else -> { /*Do nothing*/
+                    }
                 }
                 false
             }
