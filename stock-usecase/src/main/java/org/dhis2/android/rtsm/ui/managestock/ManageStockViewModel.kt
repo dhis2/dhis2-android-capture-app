@@ -277,18 +277,6 @@ class ManageStockViewModel @Inject constructor(
                 )
         )
     }
-
-    fun onCellValueChanged(cell: TableCell) {
-        val entries: List<StockEntry> = _stockItems.value?.map {
-            itemsCache[it.id] ?: StockEntry(it)
-        } ?: emptyList()
-        val stockEntry = entries.find { it.item.id == cell.id }
-        stockEntry?.let { entry ->
-            addItem(entry.item, cell.value, entry.stockOnHand, false)
-        }
-        populateTable()
-    }
-
     fun onCellClick(cell: TableCell): TextInputModel {
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
@@ -470,5 +458,13 @@ class ManageStockViewModel @Inject constructor(
 
     private fun clearTransaction() {
         _transaction.value = null
+    }
+
+    fun backToListing() {
+        if (itemsCache.size == 0 && dataEntryUiState.value.step
+            == DataEntryStep.REVIEWING
+        ) {
+            updateStep(DataEntryStep.LISTING)
+        }
     }
 }

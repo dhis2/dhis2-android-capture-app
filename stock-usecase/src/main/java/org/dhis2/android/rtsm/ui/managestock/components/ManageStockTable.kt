@@ -86,7 +86,7 @@ fun ManageStockTable(
                     onEdition = { isEditing ->
                         viewModel.onEditingCell(isEditing, concealBackdropState)
                     },
-                    onCellValueChange = viewModel::onCellValueChanged,
+                    onCellValueChange = {},
                     onSaveValue = viewModel::onSaveValueChange,
                     onTableWidthChanged = { width ->
                         dimensions = dimensions.copy(totalWidth = width)
