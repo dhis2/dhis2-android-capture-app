@@ -4,6 +4,7 @@ import androidx.databinding.BaseObservable;
 
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -128,7 +129,7 @@ public class DashboardProgramModel extends BaseObservable {
 
     public Enrollment getEnrollmentForProgram(String uid) {
         for (Enrollment enrollment : teiEnrollments)
-            if (Objects.equals(enrollment.program(), uid))
+            if (Objects.equals(enrollment.program(), uid) && enrollment.status() == EnrollmentStatus.ACTIVE)
                 return enrollment;
         return null;
     }
