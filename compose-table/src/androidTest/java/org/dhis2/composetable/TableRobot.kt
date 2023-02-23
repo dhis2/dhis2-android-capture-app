@@ -25,6 +25,9 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.pressBack
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import java.io.IOException
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -194,6 +197,15 @@ class TableRobot(
     fun assertClickOnEditOpensInputKeyboard() {
         clickOnEditionIcon()
         composeTestRule.waitForIdle()
+        val checkKeyboardCmd = "dumpsys input_method | grep mInputShown"
+        try {
+            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+            val keyboardOpened = device.executeShellCommand(checkKeyboardCmd)
+                .contains("mInputShown=true")
+            Assert.assertTrue(keyboardOpened)
+        } catch (e: IOException) {
+            throw RuntimeException("Keyboard check failed", e)
+        }
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 
@@ -303,8 +315,10 @@ class TableRobot(
     }
 
     fun assertInputIcon(@DrawableRes id: Int) {
-        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id), true)
-            .assertIsDisplayed()
+        composeTestRule.waitUntil(5_000) {
+            composeTestRule.onAllNodes(SemanticsMatcher.expectValue(DrawableId, id), true)
+                .fetchSemanticsNodes().size == 1
+        }
     }
 
     fun assertIconIsVisible(@DrawableRes id: Int) {
