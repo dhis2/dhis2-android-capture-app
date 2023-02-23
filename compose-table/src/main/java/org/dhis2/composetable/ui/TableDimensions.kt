@@ -42,17 +42,13 @@ data class TableDimensions(
 
     fun defaultCellWidthWithExtraSize(
         tableId: String,
-        column: Int? = null,
         totalColumns: Int,
         hasExtra: Boolean = false
-    ): Int {
-        return (
-            columnWidth[tableId]?.get(column) ?: defaultCellWidth.withExtraSize(
-                totalColumns,
-                hasExtra
-            )
-            ) + extraWidthInTable(tableId)
-    }
+    ): Int = defaultCellWidth + extraSize(totalColumns, hasExtra) + extraWidthInTable(tableId)
+    fun columnWidthWithTableExtra(
+        tableId: String,
+        column: Int? = null
+    ): Int = (columnWidth[tableId]?.get(column) ?: defaultCellWidth) + extraWidthInTable(tableId)
 
     fun headerCellWidth(
         tableId: String,
@@ -61,26 +57,19 @@ data class TableDimensions(
         totalColumns: Int,
         hasTotal: Boolean = false
     ): Int {
-        val fullWidth = defaultCellWidth * totalColumns
         val rowHeaderRatio = totalColumns / headerRowColumns
 
         val result = when {
             rowHeaderRatio != 1 -> {
                 val maxColumn = rowHeaderRatio * (1 + column) - 1
                 val minColumn = rowHeaderRatio * column
-                val resizedColumns = columnWidth[tableId]?.filter { (columnIndex, width) ->
-                    columnIndex in minColumn..maxColumn
-                } ?: emptyMap()
-                val totalResizedWidth = resizedColumns.values.sum()
-                val remainingWidth = (rowHeaderRatio - resizedColumns.size) * defaultCellWidth
-                totalResizedWidth + remainingWidth
-                    .withExtraSize(totalColumns, hasTotal, 1)
+                (minColumn..maxColumn).sumOf {
+                    columnWidthWithTableExtra(tableId, it) + extraSize(totalColumns, hasTotal)
+                }
             }
-            else ->
-                columnWidth[tableId]?.get(column) ?: (fullWidth / headerRowColumns)
-                    .withExtraSize(totalColumns, hasTotal, rowHeaderRatio)
+            else -> columnWidthWithTableExtra(tableId, column) + extraSize(totalColumns, hasTotal)
         }
-        return result + extraWidthInTable(tableId)
+        return result
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -92,15 +81,7 @@ data class TableDimensions(
         return fullWidth / headerRowColumns
     }
 
-    private fun Int.withExtraSize(
-        totalColumns: Int,
-        hasExtra: Boolean = false,
-        extraWidthRatio: Int = 1
-    ): Int {
-        return this + extraWidth(totalColumns, hasExtra) * extraWidthRatio
-    }
-
-    private fun extraWidth(
+    fun extraSize(
         totalColumns: Int,
         hasTotal: Boolean
     ): Int {
