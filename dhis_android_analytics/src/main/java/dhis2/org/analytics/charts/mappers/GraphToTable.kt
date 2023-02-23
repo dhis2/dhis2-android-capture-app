@@ -138,7 +138,6 @@ class GraphToTable {
                     ),
                     onCellClick = { _, _, _ -> null },
                     onEdition = {},
-                    onCellValueChange = {},
                     onSaveValue = { _, _ -> },
                     onTableWidthChanged = { width ->
                         dimensions = dimensions.copy(totalWidth = width)

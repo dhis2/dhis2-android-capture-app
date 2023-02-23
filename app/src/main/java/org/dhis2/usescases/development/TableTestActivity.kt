@@ -44,7 +44,6 @@ class TableTestActivity : ComponentActivity() {
                         )
                     },
                     onEdition = { },
-                    onCellValueChange = { },
                     onSaveValue = { _, _ -> }
                 )
             }

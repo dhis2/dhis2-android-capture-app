@@ -52,7 +52,6 @@ fun DataSetTableScreen(
         updateCellValue: (TableCell) -> Unit
     ) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
-    onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
     onTableWidthChanged: (width: Int) -> Unit = {},
     onRowHeaderResize: (tableId: String, newValue: Float) -> Unit = { _, _ -> },
@@ -105,9 +104,7 @@ fun DataSetTableScreen(
 
     fun updateError(tableCell: TableCell) {
         currentInputType = currentInputType.copy(error = tableCell.error)
-        currentCell = currentCell?.copy(error = tableCell.error)?.also {
-            onCellValueChange(it)
-        }
+        currentCell = currentCell?.copy(error = tableCell.error)
     }
 
     fun updateCellValue(tableCell: TableCell?) {
@@ -180,9 +177,7 @@ fun DataSetTableScreen(
                     currentCell = currentCell?.copy(
                         value = textInputModel.currentValue,
                         error = null
-                    )?.also {
-                        onCellValueChange(it)
-                    }
+                    )
                 },
                 onSave = {
                     currentCell?.let {
@@ -276,7 +271,6 @@ fun DataSetTableScreen(
                                 value = label,
                                 error = null
                             ).also {
-                                onCellValueChange(it)
                                 onSaveValue(cell.copy(value = code), false)
                             }
                         }
