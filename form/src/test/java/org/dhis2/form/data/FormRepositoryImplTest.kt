@@ -24,7 +24,6 @@ import org.hamcrest.core.Is.`is`
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
-import org.junit.Assert
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -228,7 +227,7 @@ class FormRepositoryImplTest {
     }
 
     @Test
-    fun `Concurrent crash test`(){
+    fun `Concurrent crash test`() {
         val ruleEffects = emptyList<RuleEffect>()
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideMandatoryItemList())
         whenever(ruleEngineRepository.calculate()) doReturn ruleEffects
@@ -251,11 +250,9 @@ class FormRepositoryImplTest {
         try {
             repository.fetchFormItems()
             assertTrue(true)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             fail()
         }
-
-
     }
 
     private fun mockList(listToReturn: List<FieldUiModel>) {
