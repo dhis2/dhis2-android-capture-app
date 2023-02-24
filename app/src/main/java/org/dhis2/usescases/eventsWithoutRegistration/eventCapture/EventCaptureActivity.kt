@@ -198,7 +198,7 @@ class EventCaptureActivity :
             )
             val dialog = BottomSheetDialog(
                 bottomSheetDialogUiModel,
-                {/*Unused*/ },
+                { /*Unused*/ },
                 { presenter!!.deleteEvent() }
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)

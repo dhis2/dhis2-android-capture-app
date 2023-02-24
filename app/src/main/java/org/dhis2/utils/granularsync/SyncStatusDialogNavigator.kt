@@ -93,7 +93,7 @@ class SyncStatusDialogNavigator(
     private fun navigateToDataSetInstanceTable(
         tableSyncItem: SyncStatusType.DataSetInstance
     ): Intent? {
-        return if(context !is DataSetTableActivity) {
+        return if (context !is DataSetTableActivity) {
             DataSetTableActivity.intent(
                 context,
                 tableSyncItem.dataSetUid,
@@ -101,7 +101,7 @@ class SyncStatusDialogNavigator(
                 tableSyncItem.periodId,
                 tableSyncItem.attrOptComboUid
             ).launchSyncDialog()
-        }else{
+        } else {
             null
         }
     }
