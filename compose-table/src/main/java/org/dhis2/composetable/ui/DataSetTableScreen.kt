@@ -191,18 +191,20 @@ fun DataSetTableScreen(
                 onNextSelected = {
                     currentCell?.let { tableCell ->
                         if (tableCell.error == null) {
-                            onSaveValue(tableCell, true)
-                        } else {
-                            (tableSelection as? TableSelection.CellSelection)
-                                ?.let { cellSelected ->
-                                    val currentTable = tableScreenState.tables.first {
-                                        it.id == cellSelected.tableId
-                                    }
-                                    currentTable.getNextCell(cellSelected, true)?.let {
-                                        selectNextCell(it, cellSelected)
-                                    } ?: collapseBottomSheet(finish = true)
-                                }
+                            onSaveValue(tableCell, false)
                         }
+                        (tableSelection as? TableSelection.CellSelection)
+                            ?.let { cellSelected ->
+                                val currentTable = tableScreenState.tables.first {
+                                    it.id == cellSelected.tableId
+                                }
+                                currentTable.getNextCell(
+                                    cellSelection = cellSelected,
+                                    discardErrors = tableCell.error == null
+                                )?.let {
+                                    selectNextCell(it, cellSelected)
+                                } ?: collapseBottomSheet(finish = true)
+                            }
                     }
                 },
                 focusRequester = focusRequester
