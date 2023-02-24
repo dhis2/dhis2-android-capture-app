@@ -162,7 +162,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             onEdition = { isEditing ->
                                 presenter.editingCellValue(isEditing)
                             },
-                            onCellValueChange = { },
                             onSaveValue = { cell, selectNext ->
                                 presenterFragment.onSaveValueChange(cell, selectNext)
                             },
