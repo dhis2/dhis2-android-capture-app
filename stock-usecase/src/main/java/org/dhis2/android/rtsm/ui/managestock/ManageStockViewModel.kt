@@ -76,7 +76,7 @@ class ManageStockViewModel @Inject constructor(
     private val itemsCache = linkedMapOf<String, StockEntry>()
 
     private val _hasData = MutableStateFlow(false)
-    val hasData = _hasData
+    val hasData: StateFlow<Boolean> = _hasData
 
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(

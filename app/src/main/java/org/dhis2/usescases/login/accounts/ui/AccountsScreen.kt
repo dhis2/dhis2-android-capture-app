@@ -125,22 +125,13 @@ fun LoginHeader() {
 @Preview(showBackground = true)
 @Composable
 fun AccountsPreview() {
+    val accounts = mutableListOf<AccountModel>().apply {
+        repeat(13) {
+            add(AccountModel("android", "https://play.dhis2.com/android-dev"))
+        }
+    }
     AccountsScreen(
-        listOf(
-            AccountModel("android", "https://play.dhis2.com/android-dev"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("admin", "https://play.dhis2.com/android-dev")
-        ),
+        accounts,
         {},
         {}
     )
@@ -149,12 +140,13 @@ fun AccountsPreview() {
 @Preview(showBackground = true)
 @Composable
 fun FewAccountsPreview() {
+    val accounts = mutableListOf<AccountModel>().apply {
+        repeat(3) {
+            add(AccountModel("android", "https://play.dhis2.com/android-dev"))
+        }
+    }
     AccountsScreen(
-        listOf(
-            AccountModel("android", "https://play.dhis2.com/android-dev"),
-            AccountModel("android", "https://play.dhis2.com/android-current"),
-            AccountModel("admin", "https://play.dhis2.com/android-dev")
-        ),
+        accounts,
         {},
         {}
     )
