@@ -40,7 +40,7 @@ import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
-import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
+import org.dhis2.android.rtsm.utils.Utils.Companion.checkIfInputValuesAreValid
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.KeyboardInputType
@@ -76,6 +76,9 @@ class ManageStockViewModel @Inject constructor(
 
     private val _hasData = MutableStateFlow(false)
     val hasData: StateFlow<Boolean> = _hasData
+
+    private val _hasError = MutableStateFlow(false)
+    val hasError = _hasError.asStateFlow()
 
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(
@@ -278,6 +281,22 @@ class ManageStockViewModel @Inject constructor(
         )
     }
     fun onCellClick(cell: TableCell): TextInputModel {
+
+    fun onCellValueChanged(cell: TableCell) {
+        val entries: List<StockEntry> = _stockItems.value?.map {
+            itemsCache[it.id] ?: StockEntry(it)
+        } ?: emptyList()
+        val stockEntry = entries.find { it.item.id == cell.id }
+
+        _hasError.value = !checkIfInputValuesAreValid(cell.value)
+
+        stockEntry?.let { entry ->
+            addItem(entry.item, cell.value, entry.stockOnHand, hasError.value)
+        }
+        populateTable()
+    }
+
+    fun onCellClick(cell: TableCell, updateCellValue: (TableCell) -> Unit): TextInputModel {
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
         return TextInputModel(
@@ -288,7 +307,12 @@ class ManageStockViewModel @Inject constructor(
             keyboardInputType = KeyboardInputType.NumericInput(
                 allowDecimal = false,
                 allowSigned = false
-            )
+            ),
+            error = if (hasError.value) {
+                resources.getString(R.string.invalid_negative_value)
+            } else {
+                null
+            }
         )
     }
 
@@ -319,9 +343,8 @@ class ManageStockViewModel @Inject constructor(
                                         )
                                 ) {
                                     val data = ruleEffect.data()
-                                    val isValid: Boolean = isValidStockOnHand(data)
-                                    val stockOnHand = if (isValid) data else it.stockOnHand
-                                    addItem(it, cell.value, stockOnHand, !isValid)
+                                    val stockOnHand = if (hasError.value) data else it.stockOnHand
+                                    addItem(it, cell.value, stockOnHand, hasError.value)
                                 }
                             }
                             populateTable()
@@ -364,6 +387,7 @@ class ManageStockViewModel @Inject constructor(
     fun cleanItemsFromCache() {
         hasUnsavedData(false)
         itemsCache.clear()
+        updateReviewButton()
     }
 
     private fun hasUnsavedData(value: Boolean) {
@@ -375,6 +399,8 @@ class ManageStockViewModel @Inject constructor(
     private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
+
+    fun getData(): ReviewStockData = ReviewStockData(transaction.value!!, getPopulatedEntries())
 
     fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
         val step = when (dataEntryUiState.value.step) {
@@ -395,6 +421,7 @@ class ManageStockViewModel @Inject constructor(
         _dataEntryUiState.update { currentUiState ->
             currentUiState.copy(step = step)
         }
+        updateReviewButton()
         populateTable()
     }
 
@@ -447,7 +474,10 @@ class ManageStockViewModel @Inject constructor(
 
     fun onHandleBackNavigation() {
         val backStep = when (dataEntryUiState.value.step) {
-            DataEntryStep.REVIEWING -> DataEntryStep.LISTING
+            DataEntryStep.REVIEWING -> {
+                _hasData.value = false
+                DataEntryStep.LISTING
+            }
             else -> null
         }
 
