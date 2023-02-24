@@ -140,23 +140,6 @@ class TableRobot(
                     }
                 },
                 onEdition = {},
-                onCellValueChange = { tableCell ->
-                    val updatedData = fakeModel.map { tableModel ->
-                        val hasRowWithDataElement = tableModel.tableRows.find {
-                            tableCell.id?.contains(it.rowHeader.id.toString()) == true
-                        }
-                        if (hasRowWithDataElement != null) {
-                            tableModel.copy(
-                                overwrittenValues = mapOf(
-                                    Pair(tableCell.column!!, tableCell)
-                                )
-                            )
-                        } else {
-                            tableModel
-                        }
-                    }
-                    model = TableScreenState(updatedData, false)
-                },
                 onSaveValue = { tableCell, selectNext ->
                     onSaveTableCell = tableCell
                     onSave(tableCell)

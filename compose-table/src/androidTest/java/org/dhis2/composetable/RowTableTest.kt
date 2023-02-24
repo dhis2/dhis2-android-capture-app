@@ -117,7 +117,6 @@ class RowTableTest {
                     ),
                     onCellClick = { _, _, _ -> null },
                     onEdition = {},
-                    onCellValueChange = {},
                     onSaveValue = { _, _ -> }
                 )
             }
