@@ -52,7 +52,6 @@
 
     <style name="DhisBottomNavigationViewOverlay" parent="">
         <item name="colorPrimary">@color/white</item>
-<!--        <item name="colorOnSurface">@color/colorPrimaryLight</item>-->
     </style>
 
     <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
