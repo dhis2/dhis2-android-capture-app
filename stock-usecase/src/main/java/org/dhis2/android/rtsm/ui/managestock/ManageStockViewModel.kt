@@ -280,7 +280,6 @@ class ManageStockViewModel @Inject constructor(
                 )
         )
     }
-    fun onCellClick(cell: TableCell): TextInputModel {
 
     fun onCellValueChanged(cell: TableCell) {
         val entries: List<StockEntry> = _stockItems.value?.map {
@@ -399,8 +398,6 @@ class ManageStockViewModel @Inject constructor(
     private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
-
-    fun getData(): ReviewStockData = ReviewStockData(transaction.value!!, getPopulatedEntries())
 
     fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
         val step = when (dataEntryUiState.value.step) {
