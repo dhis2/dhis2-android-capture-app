@@ -3,23 +3,29 @@
 
     <!--region BASE THEMES -->
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
-        parent
         <!-- Customize your theme here. -->
+
+        <!--material colors-->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorOnPrimary">?primaryBgTextColor</item>
+        <item name="colorPrimaryContainer">@color/colorPrimary</item>
+        <item name="colorOnPrimaryContainer">@color/colorAccent</item>
+        <item name="colorSurface">#FFFDFCFF</item>
+        <item name="colorOnSurface">#FF1A1C1E</item>
+        <item name="colorSurfaceVariant">#FFDFE2EB</item>
+        <item name="colorOnSurfaceVariant">#FF42474E</item>
+        <item name="colorSurfaceInverse">#FF2F3033</item>
+        <item name="colorOnSurfaceInverse">#FFF1F0F4</item>
+        <!--end of material colors-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
-        <item name="colorPrimaryContainer">@color/colorPrimary</item>
-        <item name="colorOnPrimaryContainer">@color/colorAccent</item>
         <item name="primaryBgTextColor">@color/primaryBgTextColor</item>
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor</item>
         <item name="primaryDarkBgTextColor">@color/primaryDarkBgTextColor</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="button_selector">@drawable/button_selector</item>
         <item name="selector_button_round_20">@drawable/selector_button_round_20</item>
@@ -45,8 +51,8 @@
     </style>
 
     <style name="DhisBottomNavigationViewOverlay" parent="">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorOnSurface">@color/colorPrimaryLight</item>
+        <item name="colorPrimary">@color/white</item>
+<!--        <item name="colorOnSurface">@color/colorPrimaryLight</item>-->
     </style>
 
     <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -63,15 +69,15 @@
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
-    <style name="RedTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+    <style name="RedTheme" parent="AppTheme">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryRed</item>
         <item name="whiteBgTextColor">@color/colorPrimaryRed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="colorPrimaryContainer">@color/colorPrimaryRed</item>
+        <item name="colorOnPrimaryContainer">@color/colorAccent</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLightRed</item>
         <item name="button_selector">@drawable/button_selector_red</item>
@@ -87,15 +93,15 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
-    <style name="GreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+    <style name="GreenTheme" parent="AppTheme">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryGreen</item>
         <item name="whiteBgTextColor">@color/colorPrimaryGreen</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeGreen</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeGreen</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="colorPrimaryContainer">@color/colorPrimaryGreen</item>
+        <item name="colorOnPrimaryContainer">@color/colorAccent</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLightGreen</item>
         <item name="button_selector">@drawable/button_selector_green</item>
@@ -107,15 +113,29 @@
         <item name="toast_bg">@drawable/toast_bg_green</item>
     </style>
 
-    <style name="OrangeTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+    <style name="OrangeTheme" parent="AppTheme">
         <!-- Customize your theme here. -->
+        <!--material colors-->
         <item name="colorPrimary">@color/colorPrimaryOrange</item>
+        <item name="colorOnPrimary">?primaryBgTextColor</item>
+        <item name="colorPrimaryContainer">@color/colorPrimaryOrange</item>
+        <item name="colorOnPrimaryContainer">@color/colorAccent</item>
+        <item name="colorSurface">#FFFDFCFF</item>
+        <item name="colorOnSurface">#FF1A1C1E</item>
+        <item name="colorSurfaceVariant">#FFDFE2EB</item>
+        <item name="colorOnSurfaceVariant">#FF42474E</item>
+        <item name="colorSurfaceInverse">#FF2F3033</item>
+        <item name="colorOnSurfaceInverse">#FFF1F0F4</item>
+        <item name="colorTertiary">@color/green_7ed</item>
+        <item name="colorOnTertiary">@color/green_7ed</item>
+        <item name="colorOutline">@color/green_7ed</item>
+        <!--end of material colors-->
         <item name="whiteBgTextColor">@color/colorPrimaryOrange</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLightOrange</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeOrange</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeOrange</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+<!--        -->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="button_selector">@drawable/button_selector_orange</item>
@@ -136,9 +156,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_Pink</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_Pink</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -148,9 +166,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_e57</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_e57</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -160,9 +176,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_d32</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_d32</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -172,9 +186,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f06</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f06</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -184,9 +196,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_c21</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_c21</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -196,9 +206,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_880</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_880</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -208,9 +216,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f50</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f50</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -222,9 +228,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_elb</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_elb</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -234,9 +238,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_ba6</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_ba6</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -246,9 +248,7 @@
         <item name="colorPrimaryLight">@color/colorPrimaryLight_8e2</item>
         <item name="whiteBgTextColor">@color/colorPrimary_8e2</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -258,9 +258,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_aa0</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_aa0</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -270,9 +268,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_7e5</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_7e5</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -282,9 +278,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_452</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_452</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -294,9 +288,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_7c4</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_7c4</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -306,9 +298,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_620</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_620</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -320,9 +310,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_c5c</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_c5c</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -332,9 +320,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_798</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_798</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -344,9 +330,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_394</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_394</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -356,9 +340,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_304</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_304</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -370,9 +352,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_e3f</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_e3f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -382,9 +362,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_64b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_64b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -394,9 +372,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_197</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_197</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -406,9 +382,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_028</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_028</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -419,9 +393,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_40c</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_40c</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -431,9 +403,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_00b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -445,9 +415,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_80d</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_80d</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -457,9 +425,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_00a</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00a</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -469,9 +435,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_008</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_008</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -481,9 +445,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_006</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_006</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -495,9 +457,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_e0f</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_e0f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -508,9 +468,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_80c</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_80c</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -520,9 +478,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_0069</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_0069</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -534,9 +490,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_64f</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_64f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -548,9 +502,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_c8e</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_c8e</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -560,9 +512,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_66b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_66b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -572,9 +522,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_2e7</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_2e7</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -584,9 +532,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_60a</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_60a</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -596,9 +542,7 @@
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00e</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_00e</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -609,9 +553,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_aed</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_aed</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -621,9 +563,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_689</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_689</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -633,9 +573,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_336</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_336</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -647,9 +585,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_76f</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_76f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -660,9 +596,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_64d</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_64d</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -673,9 +607,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_cdd</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_cdd</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -685,9 +617,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_9e9</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_9e9</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -697,9 +627,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_827</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_827</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -711,9 +639,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_fff</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_fff</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -724,9 +650,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_fbc</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_fbc</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -736,9 +660,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f57</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f57</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -750,9 +672,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffff</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_ffff</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -763,9 +683,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffc</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_ffc</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -777,9 +695,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffcc</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_ffcc</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -790,9 +706,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffa</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_ffa</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -802,9 +716,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_bca</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_bca</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -814,9 +726,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_8d6</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_8d6</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -826,9 +736,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_4e3</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_4e3</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -840,9 +748,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_faf</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_faf</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -853,9 +759,7 @@
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_bdb</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_bdb</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -865,9 +769,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_757</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_757</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -877,9 +779,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_424</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_424</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -889,9 +789,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_cfd</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_cfd</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -901,9 +799,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_b0b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_b0b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -913,9 +809,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_607</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_607</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
 
@@ -925,9 +819,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark_607</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_607</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
     <!--endregion-->

@@ -40,6 +40,7 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -196,7 +197,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void deleteLocalData() {
-        new AlertDialog.Builder(context, R.style.CustomDialog)
+        new MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
                 .setTitle(getString(R.string.delete_local_data))
                 .setMessage(getString(R.string.delete_local_data_message))
                 .setView(R.layout.warning_layout)

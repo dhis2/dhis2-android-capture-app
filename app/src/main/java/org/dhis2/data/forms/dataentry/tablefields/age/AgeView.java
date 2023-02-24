@@ -17,6 +17,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.ViewDataBinding;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -188,7 +189,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         monthPicker.setText(month.getText());
         dayPicker.setText(day.getText());
 
-        return new AlertDialog.Builder(getContext(), R.style.CustomDialog)
+        return new MaterialAlertDialogBuilder(getContext(), R.style.MaterialDialog)
                 .setView(view)
                 .setPositiveButton(R.string.action_accept, (dialog, which) -> handleSingleInputs(
                         isEmpty(yearPicker.getText().toString()) ? 0 : -Integer.valueOf(yearPicker.getText().toString()),

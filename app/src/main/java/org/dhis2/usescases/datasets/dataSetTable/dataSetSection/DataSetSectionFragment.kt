@@ -1,8 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import android.app.TimePickerDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.res.Configuration
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -23,6 +21,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -274,26 +274,24 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         calendar: Calendar,
         updateCellValue: (TableCell) -> Unit
     ) {
-        val hour = calendar[Calendar.HOUR_OF_DAY]
-        val minute = calendar[Calendar.MINUTE]
         val is24HourFormat = DateFormat.is24HourFormat(context)
-
-        val dialog = TimePickerDialog(
-            context,
-            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minutes)
-                val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
-                val updatedCellValue = cell.copy(value = result)
-                updateCellValue(updatedCellValue)
-                presenterFragment.onSaveValueChange(updatedCellValue)
-            },
-            hour,
-            minute,
-            is24HourFormat
-        )
-        dialog.setTitle(dataElement.displayFormName())
-        dialog.show()
+        MaterialTimePicker.Builder()
+            .setTheme(org.dhis2.form.R.style.TimePicker)
+            .setTimeFormat(TimeFormat.CLOCK_24H.takeIf { is24HourFormat } ?: TimeFormat.CLOCK_12H)
+            .setHour(calendar[Calendar.HOUR_OF_DAY])
+            .setMinute(calendar[Calendar.MINUTE])
+            .setTitleText(dataElement.displayFormName())
+            .build().apply {
+                addOnPositiveButtonClickListener {
+                    calendar.set(Calendar.HOUR_OF_DAY, hour)
+                    calendar.set(Calendar.MINUTE, minute)
+                    val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
+                    val updatedCellValue = cell.copy(value = result)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+            }
+            .show(childFragmentManager, "timePicker")
     }
 
     override fun showTimePicker(
@@ -306,42 +304,39 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             c.time = DateUtils.timeFormat().parse(cell.value!!)!!
         }
 
-        val hour = c[Calendar.HOUR_OF_DAY]
-        val minute = c[Calendar.MINUTE]
-        val is24HourFormat = DateFormat.is24HourFormat(context)
         val twentyFourHourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val twelveHourFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        val dialog = TimePickerDialog(
-            context,
-            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
-                val calendar = Calendar.getInstance()
-                calendar[Calendar.HOUR_OF_DAY] = hourOfDay
-                calendar[Calendar.MINUTE] = minutes
-                val selectedDate = calendar.time
-                val calendarTime: String = if (is24HourFormat) {
-                    twentyFourHourFormat.format(selectedDate)
-                } else {
-                    twelveHourFormat.format(selectedDate)
-                }
-                val updatedCellValue = cell.copy(value = calendarTime)
-                updateCellValue(updatedCellValue)
-                presenterFragment.onSaveValueChange(updatedCellValue)
-            },
-            hour,
-            minute,
-            is24HourFormat
-        )
-        dialog.setTitle(dataElement.displayFormName())
 
-        dialog.setButton(
-            DialogInterface.BUTTON_NEGATIVE,
-            requireContext().getString(R.string.date_dialog_clear)
-        ) { _: DialogInterface?, _: Int ->
-            val updatedCellValue = cell.copy(value = null)
-            updateCellValue(updatedCellValue)
-            presenterFragment.onSaveValueChange(updatedCellValue)
-        }
-        dialog.show()
+        val is24HourFormat = DateFormat.is24HourFormat(context)
+        MaterialTimePicker.Builder()
+            .setTheme(org.dhis2.form.R.style.TimePicker)
+            .setTimeFormat(TimeFormat.CLOCK_24H.takeIf { is24HourFormat } ?: TimeFormat.CLOCK_12H)
+            .setHour(c[Calendar.HOUR_OF_DAY])
+            .setMinute(c[Calendar.MINUTE])
+            .setTitleText(dataElement.displayFormName())
+            .setNegativeButtonText(R.string.date_dialog_clear)
+            .build().apply {
+                addOnPositiveButtonClickListener {
+                    val calendar = Calendar.getInstance()
+                    calendar[Calendar.HOUR_OF_DAY] = hour
+                    calendar[Calendar.MINUTE] = minute
+                    val selectedDate = calendar.time
+                    val calendarTime: String = if (is24HourFormat) {
+                        twentyFourHourFormat.format(selectedDate)
+                    } else {
+                        twelveHourFormat.format(selectedDate)
+                    }
+                    val updatedCellValue = cell.copy(value = calendarTime)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+                addOnNegativeButtonClickListener {
+                    val updatedCellValue = cell.copy(value = null)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+            }
+            .show(childFragmentManager, "timePicker")
     }
 
     override fun showBooleanDialog(
