@@ -48,9 +48,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 import kotlin.Unit;
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
 
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity

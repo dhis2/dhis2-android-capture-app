@@ -8,9 +8,9 @@ import android.view.WindowInsetsAnimation
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import junit.framework.Assert.assertTrue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import junit.framework.Assert.assertTrue
 
 /**
  * Helper Class from Android Internals
@@ -68,7 +68,7 @@ class KeyboardHelper(
     @RequiresApi(30)
     private fun isSoftwareKeyboardShownWithInsets(): Boolean {
         return view.rootWindowInsets != null &&
-            view.rootWindowInsets.isVisible(WindowInsets.Type.ime())
+                view.rootWindowInsets.isVisible(WindowInsets.Type.ime())
     }
 
     private fun isSoftwareKeyboardShownWithImm(): Boolean {
