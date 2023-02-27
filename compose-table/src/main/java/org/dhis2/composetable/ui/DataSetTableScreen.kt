@@ -37,10 +37,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
-import org.dhis2.composetable.model.OnTextChange
+import org.dhis2.composetable.model.LocalSelectedCell
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.ValidationResult
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -52,7 +53,7 @@ fun DataSetTableScreen(
         updateCellValue: (TableCell) -> Unit
     ) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
-    onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
+    onSaveValue: (TableCell) -> Unit,
     onTableWidthChanged: (width: Int) -> Unit = {},
     onRowHeaderResize: (tableId: String, newValue: Float) -> Unit = { _, _ -> },
     onColumnHeaderResize: (tableId: String, column: Int, newValue: Float) -> Unit =
@@ -111,25 +112,6 @@ fun DataSetTableScreen(
         currentCell = tableCell
     }
 
-    val selectNextCell: (
-        Pair<TableCell, TableSelection.CellSelection>,
-        TableSelection.CellSelection
-    ) -> Unit = { (tableCell, nextCell), cellSelected ->
-        if (nextCell != cellSelected) {
-            tableSelection = nextCell
-            onCellClick(
-                tableSelection.tableId,
-                tableCell
-            ) { updateCellValue(it) }?.let { inputModel ->
-                currentCell = tableCell
-                currentInputType = inputModel
-                focusRequester.requestFocus()
-            } ?: collapseBottomSheet()
-        } else {
-            updateError(tableCell)
-        }
-    }
-
     var saveClicked by remember { mutableStateOf(false) }
 
     if (saveClicked) {
@@ -144,19 +126,9 @@ fun DataSetTableScreen(
 
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-            !bottomSheetState.bottomSheetState.isAnimationRunning
+                !bottomSheetState.bottomSheetState.isAnimationRunning
     ) {
         collapseBottomSheet(finish = true)
-    }
-    LaunchedEffect(tableScreenState) {
-        if (tableScreenState.selectNext) {
-            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-                val currentTable = tableScreenState.tables.first { it.id == cellSelected.tableId }
-                currentTable.getNextCell(cellSelected, false)?.let {
-                    selectNextCell(it, cellSelected)
-                } ?: collapseBottomSheet(finish = true)
-            }
-        }
     }
     LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
         if (
@@ -170,6 +142,7 @@ fun DataSetTableScreen(
     BottomSheetScaffold(
         scaffoldState = bottomSheetState,
         sheetContent = {
+            val validator = TableTheme.validator
             TextInput(
                 textInputModel = currentInputType,
                 onTextChanged = { textInputModel ->
@@ -180,9 +153,7 @@ fun DataSetTableScreen(
                     )
                 },
                 onSave = {
-                    currentCell?.let {
-                        onSaveValue(it, false)
-                    }
+                    currentCell?.let { onSaveValue(it) }
                     saveClicked = true
                     if (!tableScreenState.textInputCollapsedMode) {
                         collapseBottomSheet(true)
@@ -190,10 +161,12 @@ fun DataSetTableScreen(
                 },
                 onNextSelected = {
                     currentCell?.let { tableCell ->
-                        if (tableCell.error == null) {
-                            onSaveValue(tableCell, false)
-                        }
+                        val result = validator.validate(tableCell)
+                        onSaveValue(tableCell)
                         (tableSelection as? TableSelection.CellSelection)
+                            ?.takeIf {
+                                result is ValidationResult.Success || tableCell.error != null
+                            }
                             ?.let { cellSelected ->
                                 val currentTable = tableScreenState.tables.first {
                                     it.id == cellSelected.tableId
@@ -201,8 +174,20 @@ fun DataSetTableScreen(
                                 currentTable.getNextCell(
                                     cellSelection = cellSelected,
                                     discardErrors = tableCell.error == null
-                                )?.let {
-                                    selectNextCell(it, cellSelected)
+                                )?.let { (tableCell, nextCell) ->
+                                    if (nextCell != cellSelected) {
+                                        tableSelection = nextCell
+                                        onCellClick(
+                                            tableSelection.tableId,
+                                            tableCell
+                                        ) { updateCellValue(it) }?.let { inputModel ->
+                                            currentCell = tableCell
+                                            currentInputType = inputModel
+                                            focusRequester.requestFocus()
+                                        } ?: collapseBottomSheet()
+                                    } else {
+                                        updateError(tableCell)
+                                    }
                                 } ?: collapseBottomSheet(finish = true)
                             }
                     }
@@ -231,7 +216,7 @@ fun DataSetTableScreen(
             }
         }
         CompositionLocalProvider(
-            OnTextChange provides { currentCell },
+            LocalSelectedCell provides currentCell,
             LocalTableSelection provides tableSelection
         ) {
             Column(
@@ -249,9 +234,7 @@ fun DataSetTableScreen(
                         }
 
                         override fun onClick(tableCell: TableCell) {
-                            currentCell?.takeIf { it != tableCell }?.let {
-                                onSaveValue(it, false)
-                            }
+                            currentCell?.takeIf { it != tableCell }?.let { onSaveValue(it) }
                             onCellClick(
                                 tableSelection.tableId,
                                 tableCell
@@ -273,7 +256,7 @@ fun DataSetTableScreen(
                                 value = label,
                                 error = null
                             ).also {
-                                onSaveValue(cell.copy(value = code), false)
+                                onSaveValue(cell.copy(value = code))
                             }
                         }
 

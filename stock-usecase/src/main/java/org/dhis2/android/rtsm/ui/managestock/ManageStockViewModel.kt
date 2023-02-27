@@ -80,7 +80,6 @@ class ManageStockViewModel @Inject constructor(
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(
             tables = emptyList(),
-            selectNext = false,
             textInputCollapsedMode = false,
             overwrittenRowHeaderWidth = 200F
         )
@@ -205,7 +204,7 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
-    private fun populateTable(selectNext: Boolean = false) {
+    private fun populateTable() {
         val items = when (dataEntryUiState.value.step) {
             DataEntryStep.REVIEWING,
             DataEntryStep.EDITING_REVIEWING ->
@@ -230,7 +229,6 @@ class ManageStockViewModel @Inject constructor(
         _screenState.postValue(
             TableScreenState(
                 tables = tables,
-                selectNext = selectNext,
                 textInputCollapsedMode = false,
                 overwrittenRowHeaderWidth = 200F
             )
@@ -277,6 +275,7 @@ class ManageStockViewModel @Inject constructor(
                 )
         )
     }
+
     fun onCellClick(cell: TableCell): TextInputModel {
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
@@ -292,11 +291,8 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
-    fun onSaveValueChange(
-        cell: TableCell,
-        selectNext: Boolean
-    ) {
-        populateTable(selectNext)
+    fun onSaveValueChange(cell: TableCell) {
+        populateTable()
         viewModelScope.launch {
             saveValue(cell)
         }
