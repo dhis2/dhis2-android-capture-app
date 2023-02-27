@@ -17,8 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
@@ -49,6 +51,7 @@ import org.dhis2.composetable.model.TextInputModel
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
+import timber.log.Timber
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
@@ -281,21 +284,8 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
-    fun onCellValueChanged(cell: TableCell) {
-        val entries: List<StockEntry> = _stockItems.value?.map {
-            itemsCache[it.id] ?: StockEntry(it)
-        } ?: emptyList()
-        val stockEntry = entries.find { it.item.id == cell.id }
 
-        _hasError.value = !checkIfInputValuesAreValid(cell.value)
-
-        stockEntry?.let { entry ->
-            addItem(entry.item, cell.value, entry.stockOnHand, hasError.value)
-        }
-        populateTable()
-    }
-
-    fun onCellClick(cell: TableCell, updateCellValue: (TableCell) -> Unit): TextInputModel {
+    fun onCellClick(cell: TableCell): TextInputModel {
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
         return TextInputModel(
@@ -306,12 +296,7 @@ class ManageStockViewModel @Inject constructor(
             keyboardInputType = KeyboardInputType.NumericInput(
                 allowDecimal = false,
                 allowSigned = false
-            ),
-            error = if (hasError.value) {
-                resources.getString(R.string.invalid_negative_value)
-            } else {
-                null
-            }
+            )
         )
     }
 
@@ -319,9 +304,13 @@ class ManageStockViewModel @Inject constructor(
         cell: TableCell,
         selectNext: Boolean
     ) {
-        populateTable(selectNext)
-        viewModelScope.launch {
-            saveValue(cell)
+        _hasError.value = !checkIfInputValuesAreValid(cell.value)
+
+        if (!hasError.value) {
+            populateTable(selectNext)
+            viewModelScope.launch {
+                saveValue(cell)
+            }
         }
     }
 
@@ -345,6 +334,7 @@ class ManageStockViewModel @Inject constructor(
                                     val stockOnHand = if (hasError.value) data else it.stockOnHand
                                     addItem(it, cell.value, stockOnHand, hasError.value)
                                 }
+
                             }
                             populateTable()
                         }
