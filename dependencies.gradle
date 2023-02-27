@@ -5,7 +5,7 @@ def hiltCompiler = '1.0.0'
 def jacoco = '0.8.8'
 
 def dhis2sdk = "1.8.0-SNAPSHOT"
-def ruleEngine = "2.1.0-SNAPSHOT"
+def ruleEngine = "2.1.5"
 def appcompat = "1.5.1"
 def annotation = "1.4.0"
 def cardview = "1.0.0"
