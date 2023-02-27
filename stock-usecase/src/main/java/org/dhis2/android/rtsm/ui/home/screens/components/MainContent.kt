@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,6 +37,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -76,9 +79,18 @@ fun MainContent(
     val focusManager = LocalFocusManager.current
     val search by manageStockViewModel.scanText.collectAsState()
     val settingsUiState by viewModel.settingsUiState.collectAsState()
+    var columnHeightDp by remember { mutableStateOf(0.dp) }
+    val localDensity = LocalDensity.current
+    val tablePadding = if (backdropState.isRevealed) 244.dp else 20.dp
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth()
+            .onGloballyPositioned { coordinates ->
+                columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
+            }
+            .onSizeChanged { coordinates ->
+                columnHeightDp = with(localDensity) { coordinates.height.toDp() }
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -196,10 +208,12 @@ fun MainContent(
                 else -> 1f
             }
         }
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(vertical = 0.dp)
+            modifier = Modifier
+                .padding(vertical = 0.dp)
+                .absolutePadding(bottom = tablePadding)
+                .height(columnHeightDp)
         ) {
             if (manageStockViewModel.dataEntryUiState.collectAsState().value.step
                 != DataEntryStep.COMPLETED ||
