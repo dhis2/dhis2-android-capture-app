@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.LocalSelectedCell
+import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
@@ -68,6 +69,7 @@ fun DataSetTableScreen(
     )
 
     var currentCell by remember { mutableStateOf<TableCell?>(null) }
+    var updatingCell by remember { mutableStateOf<TableCell?>(null) }
     var currentInputType by remember { mutableStateOf(TextInputModel()) }
     var displayDescription by remember { mutableStateOf<TableDialogModel?>(null) }
     val coroutineScope = rememberCoroutineScope()
@@ -176,6 +178,7 @@ fun DataSetTableScreen(
                                     discardErrors = tableCell.error == null
                                 )?.let { (tableCell, nextCell) ->
                                     if (nextCell != cellSelected) {
+                                        updatingCell = currentCell
                                         tableSelection = nextCell
                                         onCellClick(
                                             tableSelection.tableId,
@@ -217,7 +220,8 @@ fun DataSetTableScreen(
         }
         CompositionLocalProvider(
             LocalSelectedCell provides currentCell,
-            LocalTableSelection provides tableSelection
+            LocalTableSelection provides tableSelection,
+            LocalUpdatingCell provides updatingCell
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -235,6 +239,7 @@ fun DataSetTableScreen(
 
                         override fun onClick(tableCell: TableCell) {
                             currentCell?.takeIf { it != tableCell }?.let { onSaveValue(it) }
+                            updatingCell = currentCell
                             onCellClick(
                                 tableSelection.tableId,
                                 tableCell
