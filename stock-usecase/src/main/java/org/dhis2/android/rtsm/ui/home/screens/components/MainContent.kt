@@ -81,7 +81,7 @@ fun MainContent(
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     var columnHeightDp by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
-    val tablePadding = if (backdropState.isRevealed) 244.dp else 20.dp
+    val tablePadding = if (backdropState.isRevealed) 244.dp else 0.dp
 
     Column(
         modifier = Modifier.fillMaxWidth()
