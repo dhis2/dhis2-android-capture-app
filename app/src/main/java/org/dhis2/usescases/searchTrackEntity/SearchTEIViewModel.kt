@@ -304,6 +304,7 @@ class SearchTEIViewModel(
                     }
                     SearchScreenState.MAP -> {
                         SearchIdlingResourceSingleton.increment()
+                        _refreshData.value = Unit
                         setMapScreen()
                         fetchMapResults()
                     }
