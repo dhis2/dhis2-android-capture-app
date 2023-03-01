@@ -128,7 +128,7 @@ fun DataSetTableScreen(
 
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-                !bottomSheetState.bottomSheetState.isAnimationRunning
+            !bottomSheetState.bottomSheetState.isAnimationRunning
     ) {
         collapseBottomSheet(finish = true)
     }
