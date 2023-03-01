@@ -17,10 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
@@ -51,7 +49,6 @@ import org.dhis2.composetable.model.TextInputModel
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
-import timber.log.Timber
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
@@ -284,7 +281,6 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
-
     fun onCellClick(cell: TableCell): TextInputModel {
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
@@ -334,7 +330,6 @@ class ManageStockViewModel @Inject constructor(
                                             if (hasError.value) data else it.stockOnHand
                                         addItem(it, cell.value, stockOnHand, hasError.value)
                                     }
-
                                 }
                                 populateTable()
                             }

@@ -1,9 +1,9 @@
 package org.dhis2.android.rtsm.utils
 
 import android.text.TextUtils
+import java.util.regex.Pattern
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
-import java.util.regex.Pattern
 import timber.log.Timber
 
 class Utils {
