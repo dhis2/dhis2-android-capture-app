@@ -86,7 +86,7 @@ class ManageStockViewModelTest {
             uid, faker.name().name(), faker.number().numberBetween(1, 800).toString()
         )
 
-        viewModel.addItem(stockItem, qty, stockItem.stockOnHand, false)
+        viewModel.addItem(stockItem, qty, stockItem.stockOnHand, null)
 
         return stockItem
     }
