@@ -166,16 +166,13 @@ fun DataSetTableScreen(
                         val result = validator.validate(tableCell)
                         onSaveValue(tableCell)
                         (tableSelection as? TableSelection.CellSelection)
-                            ?.takeIf {
-                                result is ValidationResult.Success || tableCell.error != null
-                            }
                             ?.let { cellSelected ->
                                 val currentTable = tableScreenState.tables.first {
                                     it.id == cellSelected.tableId
                                 }
                                 currentTable.getNextCell(
                                     cellSelection = cellSelected,
-                                    discardErrors = tableCell.error == null
+                                    successValidation = result is ValidationResult.Success
                                 )?.let { (tableCell, nextCell) ->
                                     if (nextCell != cellSelected) {
                                         updatingCell = currentCell
