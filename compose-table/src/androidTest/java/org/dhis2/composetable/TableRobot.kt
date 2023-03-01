@@ -126,7 +126,7 @@ class TableRobot(
         var fakeModel: List<TableModel> = emptyList()
         composeTestRule.setContent {
             fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
-            val screenState = TableScreenState(fakeModel, false)
+            val screenState = TableScreenState(fakeModel)
 
             keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(screenState) }
@@ -155,11 +155,11 @@ class TableRobot(
                         }
                     },
                     onEdition = {},
-                    onSaveValue = { tableCell, selectNext ->
+                    onSaveValue = { tableCell ->
                         onSaveTableCell = tableCell
                         onSave(tableCell)
                         val updatedData = updateValue(fakeModel, tableCell)
-                        model = TableScreenState(updatedData, selectNext)
+                        model = TableScreenState(updatedData)
                     }
                 )
             }
