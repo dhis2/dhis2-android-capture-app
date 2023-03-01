@@ -1,10 +1,8 @@
 package org.dhis2.android.rtsm.utils
 
 import android.text.TextUtils
-import java.util.regex.Pattern
-import org.hisp.dhis.android.core.arch.helpers.Result
-import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
+import java.util.regex.Pattern
 
 class Utils {
     companion object {
@@ -19,26 +17,6 @@ class Utils {
                 value.toLong() >= 0
             } catch (e: Exception) {
                 false
-            }
-        }
-
-        @JvmStatic
-        fun checkIfInputValuesAreValid(
-            value: String?
-        ): Boolean {
-            if (!isValidStockOnHand(value)) {
-                return false
-            }
-
-            return when (
-                val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value.toString())
-            ) {
-                is Result.Success -> {
-                    result.succeeded
-                }
-                is Result.Failure -> {
-                    result.succeeded
-                }
             }
         }
 

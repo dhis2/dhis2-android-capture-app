@@ -8,5 +8,5 @@ data class StockEntry(
     val item: StockItem,
     var qty: String? = null,
     var stockOnHand: String? = null,
-    var hasError: Boolean = false
+    var errorMessage: String? = null
 ) : Parcelable

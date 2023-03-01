@@ -11,6 +11,9 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
+import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerZeroOrPositiveFailure
 
 class TableModelMapper @Inject constructor(
     private val resources: ResourceManager
@@ -49,11 +52,7 @@ class TableModelMapper @Inject constructor(
                             column = 1,
                             value = entry.qty,
                             editable = true,
-                            error = if (entry.hasError) {
-                                resources.getString(R.string.stock_on_hand_exceeded_message)
-                            } else {
-                                null
-                            }
+                            error = entry.errorMessage
                         )
                     )
                 ),
@@ -81,4 +80,25 @@ class TableModelMapper @Inject constructor(
             )
         )
     }
+
+    fun getFieldValidationErrorMessage(value: String?) = when (
+        val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value.toString())
+    ) {
+        is Result.Failure -> getIntegerZeroOrPositiveErrorMessage(
+            result.failure as IntegerZeroOrPositiveFailure
+        )
+        else -> null
+    }
+
+    private fun getIntegerZeroOrPositiveErrorMessage(error: IntegerZeroOrPositiveFailure) =
+        when (error) {
+            IntegerZeroOrPositiveFailure.IntegerOverflow ->
+                resources.getString(R.string.formatting_error)
+            IntegerZeroOrPositiveFailure.NumberFormatException ->
+                resources.getString(R.string.formatting_error)
+            IntegerZeroOrPositiveFailure.ValueIsNegative ->
+                resources.getString(R.string.invalid_possitive_zero)
+            IntegerZeroOrPositiveFailure.LeadingZeroException ->
+                resources.getString(R.string.leading_zero_error)
+        }
 }

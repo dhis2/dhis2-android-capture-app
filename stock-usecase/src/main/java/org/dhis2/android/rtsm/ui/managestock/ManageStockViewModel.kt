@@ -9,10 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import java.util.Collections
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,7 +36,7 @@ import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
-import org.dhis2.android.rtsm.utils.Utils.Companion.checkIfInputValuesAreValid
+import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.KeyboardInputType
@@ -49,6 +45,10 @@ import org.dhis2.composetable.model.TextInputModel
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
+import java.util.Collections
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
@@ -76,9 +76,6 @@ class ManageStockViewModel @Inject constructor(
 
     private val _hasData = MutableStateFlow(false)
     val hasData: StateFlow<Boolean> = _hasData
-
-    private val _hasError = MutableStateFlow(false)
-    val hasError = _hasError.asStateFlow()
 
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(
@@ -300,8 +297,6 @@ class ManageStockViewModel @Inject constructor(
         cell: TableCell,
         selectNext: Boolean
     ) {
-        _hasError.value = !checkIfInputValuesAreValid(cell.value)
-
         populateTable(selectNext)
         viewModelScope.launch {
             saveValue(cell)
@@ -309,37 +304,62 @@ class ManageStockViewModel @Inject constructor(
     }
 
     private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
-        val stockItem = _stockItems.value?.find { it.id == cell.id }
-        stockItem?.let {
+        _stockItems.value?.find { it.id == cell.id }?.let { stockItem ->
             cell.value?.let { value ->
-                if (!hasError.value) {
+                val fieldValidationErrorMessage =
+                    tableModelMapper.getFieldValidationErrorMessage(cell.value)
+                if (fieldValidationErrorMessage != null) {
+                    addItem(
+                        item = stockItem,
+                        qty = cell.value,
+                        stockOnHand = stockItem.stockOnHand,
+                        errorMessage = fieldValidationErrorMessage
+                    )
+                    populateTable()
+                } else {
                     setQuantity(
-                        it, 0, value,
+                        stockItem, 0, value,
                         object : OnQuantityValidated {
                             override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                                 // When user taps on done or next. We should apply program rules here
                                 ruleEffects.forEach { ruleEffect ->
-                                    if (ruleEffect.ruleAction() is RuleActionAssign &&
-                                        (
-                                            (ruleEffect.ruleAction() as RuleActionAssign).field()
-                                                == config.value?.stockOnHand
-                                            )
-                                    ) {
-                                        val data = ruleEffect.data()
-                                        val stockOnHand =
-                                            if (hasError.value) data else it.stockOnHand
-                                        addItem(it, cell.value, stockOnHand, hasError.value)
-                                    }
+                                    applyRuleEffectOnItem(ruleEffect, stockItem, cell.value)
                                 }
                                 populateTable()
                             }
                         }
                     )
-                } else {
-                    addItem(it, cell.value, it.stockOnHand, hasError.value)
-                    populateTable()
                 }
             }
+        }
+    }
+
+    private fun applyRuleEffectOnItem(
+        ruleEffect: RuleEffect,
+        stockItem: StockItem,
+        value: String?
+    ) {
+        if (ruleEffect.ruleAction() is RuleActionAssign &&
+            (
+                (ruleEffect.ruleAction() as RuleActionAssign).field()
+                    == config.value?.stockOnHand
+                )
+        ) {
+            val data = ruleEffect.data()
+            val isValid: Boolean = isValidStockOnHand(data)
+            val errorMessage =
+                if (!isValid) {
+                    resources.getString(R.string.stock_on_hand_exceeded_message)
+                } else {
+                    null
+                }
+            val stockOnHand = if (isValid) data else stockItem.stockOnHand
+            addItem(
+                stockItem,
+                value,
+                stockOnHand,
+                errorMessage = errorMessage
+            )
         }
     }
 
@@ -361,21 +381,20 @@ class ManageStockViewModel @Inject constructor(
         return itemsCache[item.id]?.qty
     }
 
-    fun addItem(item: StockItem, qty: String?, stockOnHand: String?, hasError: Boolean) {
+    fun addItem(item: StockItem, qty: String?, stockOnHand: String?, errorMessage: String?) {
         // Remove from cache any item whose quantity has been cleared
         if (qty.isNullOrEmpty()) {
             itemsCache.remove(item.id)
             hasUnsavedData(false)
             return
         }
-        itemsCache[item.id] = StockEntry(item, qty, stockOnHand, hasError)
+        itemsCache[item.id] = StockEntry(item, qty, stockOnHand, errorMessage)
         hasUnsavedData(true)
     }
 
     fun cleanItemsFromCache() {
         hasUnsavedData(false)
         itemsCache.clear()
-        updateReviewButton()
     }
 
     private fun hasUnsavedData(value: Boolean) {
@@ -384,7 +403,9 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
+    private fun canReview(): Boolean {
+        return itemsCache.size > 0 && itemsCache.none { it.value.errorMessage != null }
+    }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
 
@@ -407,7 +428,6 @@ class ManageStockViewModel @Inject constructor(
         _dataEntryUiState.update { currentUiState ->
             currentUiState.copy(step = step)
         }
-        updateReviewButton()
         populateTable()
     }
 
@@ -461,7 +481,6 @@ class ManageStockViewModel @Inject constructor(
     fun onHandleBackNavigation() {
         val backStep = when (dataEntryUiState.value.step) {
             DataEntryStep.REVIEWING -> {
-                _hasData.value = false
                 DataEntryStep.LISTING
             }
             else -> null

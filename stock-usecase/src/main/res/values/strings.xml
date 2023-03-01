@@ -285,5 +285,7 @@
     <string name="transaction_discarted">This transaction has not been confirmed. If you change the settings, the data entered will be discarted.</string>
     <string name="count">Count</string>
     <string name="under_review">Under Review</string>
-    <string name="invalid_negative_value">Negative values are not valid</string>
+    <string name="formatting_error">Formatting error</string>
+    <string name="invalid_possitive_zero">Only positive numbers or zero allowed</string>
+    <string name="leading_zero_error">Leading zero numbers are not allowed</string>
 </resources>
