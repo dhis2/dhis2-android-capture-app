@@ -306,11 +306,9 @@ class ManageStockViewModel @Inject constructor(
     ) {
         _hasError.value = !checkIfInputValuesAreValid(cell.value)
 
-        if (!hasError.value) {
-            populateTable(selectNext)
-            viewModelScope.launch {
-                saveValue(cell)
-            }
+        populateTable(selectNext)
+        viewModelScope.launch {
+            saveValue(cell)
         }
     }
 
@@ -318,28 +316,34 @@ class ManageStockViewModel @Inject constructor(
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         stockItem?.let {
             cell.value?.let { value ->
-                setQuantity(
-                    it, 0, value,
-                    object : OnQuantityValidated {
-                        override fun validationCompleted(ruleEffects: List<RuleEffect>) {
-                            // When user taps on done or next. We should apply program rules here
-                            ruleEffects.forEach { ruleEffect ->
-                                if (ruleEffect.ruleAction() is RuleActionAssign &&
-                                    (
-                                        (ruleEffect.ruleAction() as RuleActionAssign).field()
-                                            == config.value?.stockOnHand
-                                        )
-                                ) {
-                                    val data = ruleEffect.data()
-                                    val stockOnHand = if (hasError.value) data else it.stockOnHand
-                                    addItem(it, cell.value, stockOnHand, hasError.value)
-                                }
+                if (!hasError.value) {
+                    setQuantity(
+                        it, 0, value,
+                        object : OnQuantityValidated {
+                            override fun validationCompleted(ruleEffects: List<RuleEffect>) {
+                                // When user taps on done or next. We should apply program rules here
+                                ruleEffects.forEach { ruleEffect ->
+                                    if (ruleEffect.ruleAction() is RuleActionAssign &&
+                                        (
+                                            (ruleEffect.ruleAction() as RuleActionAssign).field()
+                                                == config.value?.stockOnHand
+                                            )
+                                    ) {
+                                        val data = ruleEffect.data()
+                                        val stockOnHand =
+                                            if (hasError.value) data else it.stockOnHand
+                                        addItem(it, cell.value, stockOnHand, hasError.value)
+                                    }
 
+                                }
+                                populateTable()
                             }
-                            populateTable()
                         }
-                    }
-                )
+                    )
+                } else {
+                    addItem(it, cell.value, it.stockOnHand, hasError.value)
+                    populateTable()
+                }
             }
         }
     }
