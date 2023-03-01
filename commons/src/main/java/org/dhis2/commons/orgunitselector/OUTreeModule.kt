@@ -27,32 +27,39 @@
  */
 package org.dhis2.commons.orgunitselector
 
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import dagger.Module
 import dagger.Provides
-import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 
 @Module
 class OUTreeModule(
-    private val view: OUTreeView,
-    private val preselectedOrgUnits: List<String>
+    private val viewModelStore: ViewModelStore,
+    private val preselectedOrgUnits: List<String>,
+    private val singleSelection: Boolean,
+    private val orgUnitSelectorScope: OrgUnitSelectorScope
 ) {
 
     @Provides
     internal fun providesPresenter(
         ouTreeRepository: OUTreeRepository,
-        schedulerProvider: SchedulerProvider
-    ): OUTreePresenter {
-        return OUTreePresenter(
-            view,
-            ouTreeRepository,
-            schedulerProvider,
-            preselectedOrgUnits
-        )
+        dispatcherProvider: DispatcherProvider
+    ): OUTreeViewModel {
+        return ViewModelProvider(
+            viewModelStore,
+            OUTreeViewModelFactory(
+                ouTreeRepository,
+                dispatcherProvider,
+                preselectedOrgUnits.toMutableList(),
+                singleSelection
+            )
+        )[OUTreeViewModel::class.java]
     }
 
     @Provides
     internal fun providesOUTreeRepository(d2: D2): OUTreeRepository {
-        return OUTreeRepository(d2)
+        return OUTreeRepository(d2, orgUnitSelectorScope)
     }
 }

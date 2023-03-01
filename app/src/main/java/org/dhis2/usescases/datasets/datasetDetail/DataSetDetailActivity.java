@@ -17,16 +17,15 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -37,10 +36,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
+import kotlin.Unit;
 
 
-public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailView,
-        OnOrgUnitSelectionFinished {
+public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailView {
 
     private ActivityDatasetDetailBinding binding;
     private String dataSetUid;
@@ -153,14 +152,15 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void openOrgUnitTreeSelector() {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
-        ouTreeFragment.setSelectionCallback(this);
-        ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
-    }
-
-    @Override
-    public void onSelectionFinished(List<? extends OrganisationUnit> selectedOrgUnits) {
-        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+        new OUTreeFragment.Builder()
+                .showAsDialog()
+                .withPreselectedOrgUnits(FilterManager.getInstance().getOrgUnitUidsFilters())
+                .onSelection(selectedOrgUnits -> {
+                    presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+                    return Unit.INSTANCE;
+                })
+                .build()
+                .show(getSupportFragmentManager(), "OUTreeFragment");
     }
 
     @Override

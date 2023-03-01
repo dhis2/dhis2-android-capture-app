@@ -50,8 +50,7 @@ import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
-import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog
-import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
+import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
@@ -881,33 +880,23 @@ class FormView : Fragment() {
     }
 
     private fun showOrgUnitDialog(uiEvent: RecyclerViewUiEvents.OpenOrgUnitDialog) {
-        OrgUnitCascadeDialog(
-            uiEvent.label,
-            uiEvent.value,
-            object : CascadeOrgUnitCallbacks {
-                override fun textChangedConsumer(
-                    selectedOrgUnitUid: String,
-                    selectedOrgUnitName: String
-                ) {
-                    intentHandler(
-                        FormIntent.OnSave(
-                            uiEvent.uid,
-                            selectedOrgUnitUid,
-                            ValueType.ORGANISATION_UNIT
-                        )
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
+                uiEvent.value?.let { listOf(it) } ?: emptyList()
+            )
+            .singleSelection()
+            .onSelection { selectedOrgUnits ->
+                intentHandler(
+                    FormIntent.OnSave(
+                        uiEvent.uid,
+                        selectedOrgUnits.firstOrNull()?.uid(),
+                        ValueType.ORGANISATION_UNIT
                     )
-                }
-
-                override fun onDialogCancelled() {
-                    // We don't need to do anything when user cancels the dialog
-                }
-
-                override fun onClear() {
-                    intentHandler(FormIntent.ClearValue(uiEvent.uid))
-                }
-            },
-            OrgUnitCascadeDialog.OUSelectionType.SEARCH
-        ).show(childFragmentManager, uiEvent.label)
+                )
+            }
+            .build()
+            .show(childFragmentManager, uiEvent.label)
     }
 
     private fun displayConfigurationErrors(

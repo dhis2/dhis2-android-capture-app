@@ -33,14 +33,12 @@ import org.dhis2.android.rtsm.ui.home.screens.HomeScreen
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncDialog
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 @AndroidEntryPoint
-class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
+class HomeActivity : AppCompatActivity() {
 
     private val viewModel: HomeViewModel by viewModels()
     private val manageStockViewModel: ManageStockViewModel by viewModels()
@@ -160,15 +158,6 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
         scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(message)
         }
-    }
-
-    override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
-        viewModel.setFacility(selectedOrgUnits[0])
-        setOrgUnitFilters(selectedOrgUnits)
-    }
-
-    fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit>) {
-        filterManager.addOrgUnits(selectedOrgUnits)
     }
 
     private fun configureScanner() {

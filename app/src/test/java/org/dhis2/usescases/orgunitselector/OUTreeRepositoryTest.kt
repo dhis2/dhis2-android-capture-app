@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
 import org.dhis2.commons.orgunitselector.OUTreeRepository
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -20,7 +21,7 @@ class OUTreeRepositoryTest {
 
     @Before
     fun setUp() {
-        repository = OUTreeRepository(d2)
+        repository = OUTreeRepository(d2, OrgUnitSelectorScope.UserSearchScope())
     }
 
     @Test

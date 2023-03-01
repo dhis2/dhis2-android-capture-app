@@ -1,4 +1,4 @@
-package org.dhis2.form.model
+package org.dhis2.commons.viewmodel
 
 import kotlinx.coroutines.CoroutineDispatcher
 

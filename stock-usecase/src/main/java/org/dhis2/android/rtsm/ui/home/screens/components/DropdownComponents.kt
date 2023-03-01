@@ -52,7 +52,8 @@ import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
-import org.dhis2.commons.orgunitdialog.CommonOrgUnitDialog
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
@@ -231,7 +232,6 @@ fun DropdownComponentFacilities(
     if (interactionSource.collectIsPressedAsState().value) {
         openOrgUnitTreeSelector(
             supportFragmentManager,
-            data,
             settingsUiState,
             hasUnsavedData,
             onFacilitySelected,
@@ -273,7 +273,6 @@ fun DropdownComponentFacilities(
                     onClick = {
                         openOrgUnitTreeSelector(
                             supportFragmentManager,
-                            data,
                             settingsUiState,
                             hasUnsavedData,
                             onFacilitySelected,
@@ -463,54 +462,38 @@ fun DropdownComponentDistributedTo(
 
 fun openOrgUnitTreeSelector(
     supportFragmentManager: FragmentManager,
-    data: List<OrganisationUnit>,
     settingsUiState: SettingsUiState,
     hasUnsavedData: Boolean,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
 ) {
-    val orgUnitDialog = CommonOrgUnitDialog()
-
-    orgUnitDialog
-        .setTitle("Facilities")
-        .setMultiSelection(false)
-        .setOrgUnits(data)
-        .setProgram(settingsUiState.programUid)
-        .setPossitiveListener {
-            if (orgUnitDialog.selectedOrgUnitModel != null) {
-                if (orgUnitData != orgUnitDialog.selectedOrgUnitModel && hasUnsavedData) {
+    OUTreeFragment.Builder()
+        .showAsDialog()
+        .singleSelection()
+        .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
+        .withPreselectedOrgUnits(orgUnitData?.let { listOf(it.uid()) } ?: emptyList())
+        .onSelection { selectedOrgUnits ->
+            val selectedOrgUnit = selectedOrgUnits.firstOrNull()
+            if (selectedOrgUnit != null) {
+                if (orgUnitData != selectedOrgUnit && hasUnsavedData) {
                     launchDialog.invoke(R.string.transaction_discarted) { result ->
                         when (result) {
                             EditionDialogResult.DISCARD -> {
                                 // Perform the transaction change and clear data
-                                onFacilitySelected.invoke(orgUnitDialog.selectedOrgUnitModel)
-                                orgUnitData = orgUnitDialog.selectedOrgUnitModel
-                                orgUnitDialog.dismiss()
+                                onFacilitySelected.invoke(selectedOrgUnit)
+                                orgUnitData = selectedOrgUnit
                             }
                             EditionDialogResult.KEEP -> {
                                 // Leave it as it was
-                                orgUnitDialog.dismiss()
                             }
                         }
                     }
                 } else {
-                    onFacilitySelected.invoke(orgUnitDialog.selectedOrgUnitModel)
-                    orgUnitData = orgUnitDialog.selectedOrgUnitModel
-                    orgUnitDialog.dismiss()
+                    onFacilitySelected.invoke(selectedOrgUnit)
+                    orgUnitData = selectedOrgUnit
                 }
             }
         }
-        .setNegativeListener {
-            orgUnitDialog.dismiss()
-        }
-
-    orgUnitData?.let {
-        orgUnitDialog.setOrgUnit(orgUnitData)
-    }
-    orgUnitName = settingsUiState.facilityName()
-    orgUnitDialog.setOrgUnitName(orgUnitName)
-
-    if (!orgUnitDialog.isAdded) {
-        orgUnitDialog.show(supportFragmentManager, "")
-    }
+        .build()
+        .show(supportFragmentManager, "")
 }

@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
     id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply from: "$project.rootDir/jacoco/jacoco.gradle"

@@ -2,8 +2,8 @@ package org.dhis2.form.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.DispatcherProvider
 
 @Suppress("UNCHECKED_CAST")
 class FormViewModelFactory(

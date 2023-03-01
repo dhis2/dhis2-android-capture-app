@@ -5,7 +5,10 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-class OUTreeRepository(private val d2: D2) {
+class OUTreeRepository(
+    private val d2: D2,
+    private val orgUnitSelectorScope: OrgUnitSelectorScope
+) {
 
     fun orgUnits(
         parentUid: String? = null,
@@ -17,35 +20,63 @@ class OUTreeRepository(private val d2: D2) {
         orgUnitRepository = when {
             parentUid != null -> orgUnitRepository.byParentUid().eq(parentUid)
             name != null -> orgUnitRepository.byDisplayName().like("%$name%")
-            else -> orgUnitRepository.byRootOrganisationUnit(true)
+            else -> orgUnitRepository
         }
 
-        return when {
-            orgUnitRepository
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                .blockingCount() > 0 ->
-                orgUnitRepository
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                    .get()
-            else ->
-                orgUnitRepository
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                    .get()
+        orgUnitRepository = when (orgUnitSelectorScope) {
+            is OrgUnitSelectorScope.DataSetCaptureScope,
+            is OrgUnitSelectorScope.ProgramCaptureScope,
+            is OrgUnitSelectorScope.UserCaptureScope ->
+                orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            is OrgUnitSelectorScope.ProgramSearchScope,
+            is OrgUnitSelectorScope.DataSetSearchScope,
+            is OrgUnitSelectorScope.UserSearchScope ->
+                orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
         }
+
+        orgUnitRepository = when (orgUnitSelectorScope) {
+            is OrgUnitSelectorScope.DataSetCaptureScope,
+            is OrgUnitSelectorScope.DataSetSearchScope ->
+                orgUnitRepository.byDataSetUids(listOf(orgUnitSelectorScope.uid))
+            is OrgUnitSelectorScope.ProgramCaptureScope,
+            is OrgUnitSelectorScope.ProgramSearchScope ->
+                orgUnitRepository.byProgramUids(listOf(orgUnitSelectorScope.uid))
+            is OrgUnitSelectorScope.UserCaptureScope,
+            is OrgUnitSelectorScope.UserSearchScope ->
+                orgUnitRepository
+        }
+
+        return orgUnitRepository.get()
     }
 
     fun orgUnit(uid: String): OrganisationUnit? =
         d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet()
 
-    fun orgUnitHasChildren(uid: String): Boolean =
-        !d2.organisationUnitModule().organisationUnits().byParentUid().eq(uid).blockingIsEmpty()
+    fun orgUnitHasChildren(uid: String): Boolean {
+        var repository = d2.organisationUnitModule().organisationUnits()
+            .byParentUid().eq(uid)
+
+        repository = when (orgUnitSelectorScope) {
+            is OrgUnitSelectorScope.DataSetCaptureScope,
+            is OrgUnitSelectorScope.DataSetSearchScope ->
+                repository.byDataSetUids(listOf(orgUnitSelectorScope.uid))
+            is OrgUnitSelectorScope.ProgramCaptureScope,
+            is OrgUnitSelectorScope.ProgramSearchScope ->
+                repository.byProgramUids(listOf(orgUnitSelectorScope.uid))
+            is OrgUnitSelectorScope.UserCaptureScope,
+            is OrgUnitSelectorScope.UserSearchScope ->
+                repository
+        }
+
+        return !repository.blockingIsEmpty()
+    }
 
     fun countSelectedChildren(
-        parentOrgUnit: OrganisationUnit,
+        parentOrgUnitUid: String,
         selectedOrgUnits: List<String>
     ): Int {
         return d2.organisationUnitModule().organisationUnits()
-            .byPath().like("%${parentOrgUnit.uid()}%")
+            .byPath().like("%$parentOrgUnitUid%")
             .byUid().`in`(selectedOrgUnits).blockingCount()
     }
 }
