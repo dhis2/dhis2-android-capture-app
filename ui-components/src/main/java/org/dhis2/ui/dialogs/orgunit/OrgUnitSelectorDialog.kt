@@ -56,12 +56,7 @@ import org.dhis2.ui.theme.defaultFontFamily
 fun OrgUnitSelectorDialog(
     title: String?,
     items: List<OrgUnitTreeItem>,
-    onSearch: (String) -> Unit,
-    onOrgUnitChecked: (orgUnitUid: String, isChecked: Boolean) -> Unit,
-    onOpenOrgUnit: (orgUnitUid: String) -> Unit,
-    onDoneClick: () -> Unit,
-    onCancelClick: () -> Unit,
-    onClearClick: () -> Unit
+    actions: OrgUnitSelectorActions
 ) {
     Surface(
         modifier = Modifier
@@ -85,13 +80,13 @@ fun OrgUnitSelectorDialog(
             ) {
                 Search(
                     modifier = Modifier.weight(1f),
-                    onValueChangeListener = onSearch
+                    onValueChangeListener = actions.onSearch
                 )
                 Dhis2TextButton(
                     modifier = Modifier.testTag(CLEAR_TEST_TAG),
                     model = ButtonUiModel(
                         text = stringResource(id = R.string.action_clear_all),
-                        onClick = onClearClick
+                        onClick = actions.onClearClick
                     ),
                     leadingIcon = {
                         Icon(
@@ -107,8 +102,8 @@ fun OrgUnitSelectorDialog(
             OrgUnitTree(
                 modifier = Modifier.weight(1f),
                 items = items,
-                onOrgUnitChecked = onOrgUnitChecked,
-                onOpenOrgUnit = onOpenOrgUnit
+                onOrgUnitChecked = actions.onOrgUnitChecked,
+                onOpenOrgUnit = actions.onOpenOrgUnit
             )
             Divider()
             Row(
@@ -124,14 +119,14 @@ fun OrgUnitSelectorDialog(
                     modifier = Modifier.testTag(CANCEL_TEST_TAG),
                     model = ButtonUiModel(
                         text = stringResource(id = R.string.action_cancel),
-                        onClick = onCancelClick
+                        onClick = actions.onCancelClick
                     )
                 )
                 Dhis2Button(
                     modifier = Modifier.testTag(DONE_TEST_TAG),
                     model = ButtonUiModel(
                         text = stringResource(id = R.string.action_done),
-                        onClick = onDoneClick
+                        onClick = actions.onDoneClick
                     ),
                     leadingIcon = {
                         Icon(
@@ -270,12 +265,20 @@ fun OrgUnitSelectorDialogPreview() {
     OrgUnitSelectorDialog(
         null,
         items,
-        {},
-        { _, _ -> },
-        {},
-        {},
-        {},
-        {}
+        object : OrgUnitSelectorActions {
+            override val onSearch: (String) -> Unit
+                get() = { }
+            override val onOrgUnitChecked: (orgUnitUid: String, isChecked: Boolean) -> Unit
+                get() = { _, _ -> }
+            override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
+                get() = { }
+            override val onDoneClick: () -> Unit
+                get() = { }
+            override val onCancelClick: () -> Unit
+                get() = { }
+            override val onClearClick: () -> Unit
+                get() = { }
+        }
     )
 }
 

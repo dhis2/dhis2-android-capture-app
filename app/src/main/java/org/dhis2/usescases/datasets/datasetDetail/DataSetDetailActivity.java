@@ -81,9 +81,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     private void configureBottomNavigation() {
         boolean accessWriteData = Boolean.parseBoolean(getIntent().getStringExtra(Constants.ACCESS_DATA));
-        viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
-            binding.navigationBar.pageConfiguration(pageConfigurator);
-        });
+        viewModel.getPageConfiguration().observe(this, binding.navigationBar::pageConfiguration);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             Fragment fragment = null;
             switch (item.getItemId()) {

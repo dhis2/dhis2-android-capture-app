@@ -387,12 +387,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
                             @Override
                             public void onNegative() {
-                                if (programStageFromEvent.remindCompleted())
+                                if (Boolean.TRUE.equals(programStageFromEvent.remindCompleted()))
                                     presenter.areEventsCompleted();
                             }
                         });
                 dialog.show();
-            } else if (programStageModel.remindCompleted())
+            } else if (Boolean.TRUE.equals(programStageModel.remindCompleted()))
                 showDialogCloseProgram();
         };
     }

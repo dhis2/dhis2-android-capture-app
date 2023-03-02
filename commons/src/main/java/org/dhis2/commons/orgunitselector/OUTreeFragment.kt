@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import javax.inject.Inject
+import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
@@ -132,16 +133,21 @@ class OUTreeFragment private constructor() : DialogFragment() {
                     OrgUnitSelectorDialog(
                         title = null,
                         items = list,
-                        onSearch = presenter::searchByName,
-                        onOrgUnitChecked = presenter::onOrgUnitCheckChanged,
-                        onOpenOrgUnit = presenter::onOpenChildren,
-                        onDoneClick = {
-                            exitOuSelection()
-                        },
-                        onCancelClick = {
-                            dismiss()
-                        },
-                        onClearClick = presenter::clearAll
+                        actions = object : OrgUnitSelectorActions {
+                            override val onSearch: (String) -> Unit
+                                get() = presenter::searchByName
+                            override val onOrgUnitChecked:
+                                (orgUnitUid: String, isChecked: Boolean) -> Unit
+                                    get() = presenter::onOrgUnitCheckChanged
+                            override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
+                                get() = presenter::onOpenChildren
+                            override val onDoneClick: () -> Unit
+                                get() = this@OUTreeFragment::exitOuSelection
+                            override val onCancelClick: () -> Unit
+                                get() = this@OUTreeFragment::dismiss
+                            override val onClearClick: () -> Unit
+                                get() = presenter::clearAll
+                        }
                     )
                 }
             }

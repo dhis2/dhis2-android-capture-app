@@ -106,7 +106,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void showOrgUnitDialog(List<OrganisationUnit> data) {
-        List<String> preselectedOrgUnits = new ArrayList<String>();
+        List<String> preselectedOrgUnits = new ArrayList<>();
         if (selectedOrgUnit != null) {
             preselectedOrgUnits.add(selectedOrgUnit.uid());
         }

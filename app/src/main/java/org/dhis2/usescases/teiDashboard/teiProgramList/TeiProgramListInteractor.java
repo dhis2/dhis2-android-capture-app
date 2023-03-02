@@ -28,7 +28,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 /**
@@ -98,25 +97,9 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 compositeDisposable.add(getOrgUnits(programUid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                allOrgUnits -> {
-                                    ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
-                                    for (OrganisationUnit orgUnit : allOrgUnits) {
-                                        boolean afterOpening = false;
-                                        boolean beforeClosing = false;
-                                        if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                                            afterOpening = true;
-                                        if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                                            beforeClosing = true;
-                                        if (afterOpening && beforeClosing)
-                                            orgUnits.add(orgUnit);
-                                    }
-                                    if (orgUnits.size() > 1) {
-                                        orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                                    } else if (!orgUnits.isEmpty())
-                                        enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
-                                    else
-                                        view.displayMessage(view.getContext().getString(R.string.no_org_units));
+                        .subscribe(allOrgUnits -> {
+                                    List<OrganisationUnit> orgUnits = filterOrgUnits(allOrgUnits);
+                                    handleCalendarResult(orgUnitDialog, orgUnits, programUid, uid);
                                 },
                                 Timber::d
                         ));
@@ -124,6 +107,35 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         });
 
         dialog.show();
+    }
+
+    private List<OrganisationUnit> filterOrgUnits(List<OrganisationUnit> allOrgUnits) {
+        ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
+        for (OrganisationUnit orgUnit : allOrgUnits) {
+            boolean afterOpening = false;
+            boolean beforeClosing = false;
+            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                afterOpening = true;
+            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                beforeClosing = true;
+            if (afterOpening && beforeClosing)
+                orgUnits.add(orgUnit);
+        }
+        return orgUnits;
+    }
+
+    private void handleCalendarResult(
+            OUTreeFragment orgUnitDialog,
+            List<OrganisationUnit> orgUnits,
+            String programUid,
+            String uid) {
+        if (orgUnits.size() > 1) {
+            orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+        } else if (!orgUnits.isEmpty()) {
+            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+        } else {
+            view.displayMessage(view.getContext().getString(R.string.no_org_units));
+        }
     }
 
     @Override
