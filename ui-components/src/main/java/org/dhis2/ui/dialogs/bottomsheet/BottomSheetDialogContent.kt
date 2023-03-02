@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,7 +61,7 @@ fun BottomSheetDialogContent(
     ) {
         Column(
             horizontalAlignment = CenterHorizontally,
-            modifier = modifier.weight(1f, false)
+            modifier = modifier.wrapContentHeight()
         ) {
             Icon(
                 painter = painterResource(bottomSheetDialogUiModel.iconResource),
@@ -69,6 +72,7 @@ fun BottomSheetDialogContent(
                 text = bottomSheetDialogUiModel.title,
                 style = MaterialTheme.typography.headlineSmall,
                 color = textPrimary,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(16.dp)
             )
             if (bottomSheetDialogUiModel.clickableWord == null) {
@@ -177,7 +181,7 @@ private fun provideButtonContent(
             )
         }
         Text(
-            text = stringResource(id = style.textResource),
+            text = stringResource(id = style.textResource).capitalize(Locale.current),
             color = style.colorResource ?: Color.Unspecified
         )
     }
