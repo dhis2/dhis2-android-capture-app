@@ -69,7 +69,6 @@ fun OrgUnitSelectorDialog(
         color = Color.White,
         shape = RoundedCornerShape(16.dp)
     ) {
-
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -135,10 +134,10 @@ fun OrgUnitSelectorDialog(
                             imageVector = Icons.Default.Check,
                             contentDescription = ""
                         )
-                    })
+                    }
+                )
             }
         }
-
     }
 }
 
@@ -212,7 +211,6 @@ private fun Search(
             }
         )
     }
-
 }
 
 @Composable
@@ -261,7 +259,7 @@ fun OrgUnitSelectorDialogPreview() {
             false,
             level = 1,
             hasChildren = false
-        ),
+        )
     )
     OrgUnitSelectorDialog(
         null,
@@ -302,10 +300,12 @@ fun OrgUnitSelectorItem(
     ) {
         Icon(
             imageVector = when {
-                !orgUnitItem.hasChildren -> ImageVector.vectorResource(id = R.drawable.ic_tree_node_default)
-                orgUnitItem.isOpen -> ImageVector.vectorResource(id = R.drawable.ic_tree_node_close)
-                else -> ImageVector.vectorResource(id = R.drawable.ic_tree_node_open)
-
+                !orgUnitItem.hasChildren ->
+                    ImageVector.vectorResource(id = R.drawable.ic_tree_node_default)
+                orgUnitItem.isOpen ->
+                    ImageVector.vectorResource(id = R.drawable.ic_tree_node_close)
+                else ->
+                    ImageVector.vectorResource(id = R.drawable.ic_tree_node_open)
             },
             tint = MaterialTheme.colorScheme.primary,
             contentDescription = ""
