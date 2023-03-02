@@ -193,4 +193,9 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
         val data = result.contents
         manageStockViewModel.onSearchQueryChanged(data)
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        onBackPressed?.invoke()
+    }
 }
