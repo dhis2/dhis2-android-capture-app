@@ -80,20 +80,25 @@ class GranularSyncPresenter(
     private var disposable: CompositeDisposable = CompositeDisposable()
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
     private lateinit var statesList: ArrayList<SmsSendingService.SendingStatus>
-
+    private var refreshing = false
     private val _currentState = MutableStateFlow<SyncUiState?>(null)
     val currentState: StateFlow<SyncUiState?> = _currentState
 
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
-            val result = async {
+            val syncState = async {
                 repository.getUiState(forcedState)
+            }.await()
+            val dismissOnUpdate = refreshing && syncState.syncState == State.SYNCED
+            refreshing = false
+            _currentState.update {
+                syncState.copy(shouldDismissOnUpdate = dismissOnUpdate)
             }
-            _currentState.update { result.await() }
         }
     }
 
     fun refreshContent() {
+        refreshing = true
         loadSyncInfo()
     }
 
@@ -133,7 +138,8 @@ class GranularSyncPresenter(
                         )
                         .build()
                 }
-            ALL -> { /*Do nothing*/ }
+            ALL -> { /*Do nothing*/
+            }
         }
         var workName: String
         if (syncContext.conflictType() != ALL) {
@@ -298,8 +304,8 @@ class GranularSyncPresenter(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-            last.sent == sent &&
-            last.total == total
+                last.sent == sent &&
+                last.total == total
     }
 
     private fun updateStateList(currentStatus: SmsSendingService.SendingStatus) {
@@ -339,13 +345,13 @@ class GranularSyncPresenter(
                 onFailure = {
                     updateStatusToSentBySMS()
                     restartSmsSender()
-                    refreshContent()
+                    loadSyncInfo()
                 }
             )
         } else {
             updateStatusToSentBySMS()
             restartSmsSender()
-            refreshContent()
+            loadSyncInfo()
         }
     }
 
@@ -359,7 +365,7 @@ class GranularSyncPresenter(
                     updateStatusToSentBySMS()
                 }
             }
-            refreshContent()
+            loadSyncInfo()
         }
         restartSmsSender()
     }
