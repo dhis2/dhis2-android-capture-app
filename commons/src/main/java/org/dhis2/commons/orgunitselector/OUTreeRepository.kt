@@ -4,6 +4,7 @@ import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository
 
 class OUTreeRepository(
     private val d2: D2,
@@ -27,11 +28,11 @@ class OUTreeRepository(
             is OrgUnitSelectorScope.DataSetCaptureScope,
             is OrgUnitSelectorScope.ProgramCaptureScope,
             is OrgUnitSelectorScope.UserCaptureScope ->
-                orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                applyCaptureFilter(orgUnitRepository)
             is OrgUnitSelectorScope.ProgramSearchScope,
             is OrgUnitSelectorScope.DataSetSearchScope,
             is OrgUnitSelectorScope.UserSearchScope ->
-                orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                applySearchFilter(orgUnitRepository)
         }
 
         orgUnitRepository = when (orgUnitSelectorScope) {
@@ -79,4 +80,10 @@ class OUTreeRepository(
             .byPath().like("%$parentOrgUnitUid%")
             .byUid().`in`(selectedOrgUnits).blockingCount()
     }
+
+    private fun applyCaptureFilter(orgUnitRepository: OrganisationUnitCollectionRepository) =
+        orgUnitRepository
+
+    private fun applySearchFilter(orgUnitRepository: OrganisationUnitCollectionRepository) =
+        orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
 }

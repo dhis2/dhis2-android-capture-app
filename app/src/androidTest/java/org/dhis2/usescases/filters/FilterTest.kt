@@ -86,8 +86,7 @@ class FilterTest: BaseTest() {
         filterRobotCommon {
             openFilterAtPosition(1)
             clickOnOrgUnitTree()
-            selectTreeOrgUnit("OU TEST PARENT")
-            confirmSelection()
+            selectTreeOrgUnit(composeTestRule,"OU TEST PARENT")
         }
         homeRobot {
             openFilters()

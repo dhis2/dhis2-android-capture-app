@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -87,6 +88,7 @@ fun OrgUnitSelectorDialog(
                     onValueChangeListener = onSearch
                 )
                 Dhis2TextButton(
+                    modifier = Modifier.testTag(CLEAR_TEST_TAG),
                     model = ButtonUiModel(
                         text = stringResource(id = R.string.action_clear_all),
                         onClick = onClearClick
@@ -119,12 +121,14 @@ fun OrgUnitSelectorDialog(
                 horizontalArrangement = spacedBy(16.dp)
             ) {
                 Dhis2TextButton(
+                    modifier = Modifier.testTag(CANCEL_TEST_TAG),
                     model = ButtonUiModel(
                         text = stringResource(id = R.string.action_cancel),
                         onClick = onCancelClick
                     )
                 )
                 Dhis2Button(
+                    modifier = Modifier.testTag(DONE_TEST_TAG),
                     model = ButtonUiModel(
                         text = stringResource(id = R.string.action_done),
                         onClick = onDoneClick
@@ -179,6 +183,7 @@ private fun Search(
             tint = Color(0x8A333333)
         )
         BasicTextField(
+            modifier = Modifier.testTag(SEARCH_TEST_TAG),
             value = currentValue ?: "",
             onValueChange = {
                 currentValue = it
@@ -222,6 +227,7 @@ fun OrgUnitTree(
 ) {
     LazyColumn(
         modifier = modifier
+            .testTag(ITEM_LIST_TEST_TAG)
             .fillMaxWidth()
     ) {
         items(items = items, key = { it.uid }) { orgUnitItem ->
@@ -283,6 +289,7 @@ fun OrgUnitSelectorItem(
 ) {
     Row(
         modifier = modifier
+            .testTag("$ITEM_TEST_TAG${orgUnitItem.label}")
             .fillMaxWidth()
             .background(Color.White)
             .clickable(
@@ -326,6 +333,7 @@ fun OrgUnitSelectorItem(
             )
         )
         Checkbox(
+            modifier = Modifier.testTag("$ITEM_CHECK_TEST_TAG${orgUnitItem.label}"),
             checked = orgUnitItem.selected,
             onCheckedChange = { isChecked ->
                 onOrgUnitChecked(orgUnitItem.uid, isChecked)
@@ -333,3 +341,11 @@ fun OrgUnitSelectorItem(
         )
     }
 }
+
+const val DONE_TEST_TAG = "ORG_UNIT_DIALOG_DONE"
+const val CANCEL_TEST_TAG = "ORG_UNIT_DIALOG_CANCEL"
+const val CLEAR_TEST_TAG = "ORG_UNIT_DIALOG_CLEAR"
+const val SEARCH_TEST_TAG = "ORG_UNIT_DIALOG_SEARCH"
+const val ITEM_LIST_TEST_TAG = "ORG_UNIT_ITEM_LIST"
+const val ITEM_TEST_TAG = "ORG_UNIT_DIALOG_ITEM_"
+const val ITEM_CHECK_TEST_TAG = "ORG_UNIT_DIALOG_ITEM_CHECK_"

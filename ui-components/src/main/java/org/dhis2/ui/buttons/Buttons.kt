@@ -17,11 +17,13 @@ import org.dhis2.ui.model.ButtonUiModel
 
 @Composable
 fun Dhis2TextButton(
+    modifier: Modifier = Modifier,
     model: ButtonUiModel,
     leadingIcon: @Composable (() -> Unit)? = null
 
 ) {
     TextButton(
+        modifier = modifier,
         onClick = model.onClick,
         enabled = model.enabled
     ) {
@@ -38,10 +40,12 @@ fun Dhis2TextButton(
 
 @Composable
 fun Dhis2Button(
+    modifier: Modifier = Modifier,
     model: ButtonUiModel,
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
     Button(
+        modifier = modifier,
         onClick = model.onClick
     ) {
         leadingIcon?.let {
