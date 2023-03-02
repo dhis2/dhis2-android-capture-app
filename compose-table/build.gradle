@@ -81,7 +81,7 @@ dependencies {
     testImplementation libs.test.junit
     androidTestImplementation libs.test.composeUiTestJUnit
     debugImplementation libs.test.composeUiTestManifest
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
+    androidTestImplementation libs.test.uiautomator
     androidTestImplementation libs.test.testJUnitKtx
     androidTestImplementation libs.test.espresso
 }

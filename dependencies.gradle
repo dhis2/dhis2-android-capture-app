@@ -88,6 +88,7 @@ def kotlinxcoroutines = "1.6.1"
 def kotlinmetadata = "0.5.0"
 def rxrelay = "2.1.1"
 def preference_ktx = "1.2.0"
+def uiautomator = "2.2.0"
 
 ext.versions = [
         ndk                           : "21.4.7075529",
@@ -263,6 +264,7 @@ ext.libs = [
                 'testCoreKtx'             : "androidx.test:core-ktx:$androidx_test_core",
                 'testJUnitKtx'            : "androidx.test.ext:junit-ktx:$junit_ext",
                 'testJUnitExt'            : "androidx.test.ext:junit:$junit_ext",
+                'uiautomator'             : "androidx.test.uiautomator:uiautomator:$uiautomator",
                 'supportAnnotations'      : "com.android.support:support-annotations:28.0.0",
                 'espressoIdlingResource'  : "com.jakewharton.espresso:okhttp3-idling-resource:1.0.0",
                 'rxIdler'                 : "com.squareup.rx.idler:rx2-idler:0.11.0",
