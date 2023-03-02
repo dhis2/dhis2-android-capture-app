@@ -103,22 +103,12 @@ class OUTreeRepositoryTest {
             d2.organisationUnitModule().organisationUnits()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
         ) doReturn mock()
 
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                .blockingCount()
-        ) doReturn orgUnits.size
-
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                 .get()
         ) doReturn Single.just(orgUnits)
 

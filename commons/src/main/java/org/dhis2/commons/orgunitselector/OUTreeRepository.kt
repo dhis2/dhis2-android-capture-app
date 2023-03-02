@@ -82,8 +82,8 @@ class OUTreeRepository(
     }
 
     private fun applyCaptureFilter(orgUnitRepository: OrganisationUnitCollectionRepository) =
-        orgUnitRepository
+        orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
 
     private fun applySearchFilter(orgUnitRepository: OrganisationUnitCollectionRepository) =
-        orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+        orgUnitRepository
 }
