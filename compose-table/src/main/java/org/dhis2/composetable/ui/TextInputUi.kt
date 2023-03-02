@@ -158,6 +158,7 @@ private fun TextInputContent(
 
     val dividerColor = when {
         textInputModel.error != null -> LocalTableColors.current.errorColor
+        textInputModel.warning != null -> LocalTableColors.current.warningColor
         hasFocus -> LocalTableColors.current.primary
         else -> LocalTableColors.current.disabledCellText
     }
@@ -225,12 +226,16 @@ private fun TextInputContent(
                 onTextChanged
             )
         }
-        if (textInputModel.error != null) {
+        if (textInputModel.hasErrorOrWarning()) {
             Text(
                 modifier = Modifier.testTag(INPUT_ERROR_MESSAGE_TEST_TAG),
-                text = textInputModel.error,
+                text = textInputModel.errorOrWarningMessage()!!,
                 style = TextStyle(
-                    color = LocalTableColors.current.errorColor,
+                    color = if (textInputModel.error != null) {
+                        LocalTableColors.current.errorColor
+                    } else {
+                        LocalTableColors.current.warningColor
+                    },
                     fontSize = 10.sp
                 )
             )

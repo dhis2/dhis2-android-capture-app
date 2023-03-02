@@ -155,7 +155,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         when {
             networkUtils.isOnline() -> syncGranular()
             viewModel.canSendSMS() &&
-                    viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
+                viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
         }
     }
 

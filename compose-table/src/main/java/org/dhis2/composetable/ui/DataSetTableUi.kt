@@ -639,7 +639,7 @@ fun ItemValues(
                         .semantics {
                             rowBackground = style.backgroundColor()
                             cellSelected = isSelected
-                            hasError = cellValue.error != null
+                            hasError = cellValue.hasErrorOrWarning()
                             isBlocked = style.backgroundColor() == backgroundColor
                         }
                         .cellBorder(
@@ -730,6 +730,7 @@ fun TableCell(
                 textAlign = TextAlign.End,
                 color = LocalTableColors.current.cellTextColor(
                     hasError = cell.error != null,
+                    hasWarning = cell.warning != null,
                     isEditable = cell.editable
                 )
             )
@@ -768,13 +769,17 @@ fun TableCell(
                 )
             )
         }
-        if (cell.error != null) {
+        if (cell.hasErrorOrWarning()) {
             Divider(
                 modifier = Modifier
                     .testTag(CELL_ERROR_UNDERLINE_TEST_TAG)
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
-                color = TableTheme.colors.errorColor
+                color = if (cell.error != null) {
+                    TableTheme.colors.errorColor
+                } else {
+                    TableTheme.colors.warningColor
+                }
             )
         }
     }
@@ -1036,6 +1041,7 @@ private fun TableList(
                                     rowIndex = cellValue.row ?: -1
                                 ),
                                 hasError = cellValue.error != null,
+                                hasWarning = cellValue.warning != null,
                                 isEditable = cellValue.editable,
                                 legendColor = cellValue.legendColor
                             )
@@ -1367,6 +1373,7 @@ fun TableItem(
                                 rowIndex = cellValue.row ?: -1
                             ),
                             hasError = cellValue.error != null,
+                            hasWarning = cellValue.warning != null,
                             isEditable = cellValue.editable,
                             legendColor = cellValue.legendColor
                         )

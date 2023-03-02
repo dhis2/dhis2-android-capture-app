@@ -382,13 +382,14 @@ class GranularSyncRepository(
         errorCount > 0 && warningCount > 0 -> {
             val errorLabel = resourceManager.getPlural(R.plurals.error_count_label, errorCount)
                 .format(errorCount)
-            val warningLabel = resourceManager.getPlural(R.plurals.error_count_label, errorCount)
-                .format(errorCount)
+            val warningLabel = resourceManager
+                .getPlural(R.plurals.warning_count_label, warningCount)
+                .format(warningCount)
             "$errorLabel, $warningLabel"
         }
         errorCount == 0 && warningCount > 0 ->
             resourceManager.getPlural(R.plurals.warning_count_label, warningCount)
-                .format(errorCount)
+                .format(warningCount)
         errorCount > 0 && warningCount == 0 ->
             resourceManager.getPlural(R.plurals.error_count_label, errorCount)
                 .format(errorCount)
@@ -850,11 +851,11 @@ class GranularSyncRepository(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                stateCandidates.contains(State.UPLOADING) ||
-                stateCandidates.contains(State.TO_UPDATE) ->
+                    stateCandidates.contains(State.UPLOADING) ||
+                    stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }

@@ -314,7 +314,7 @@ fun DialogPreview4() {
 
 @Preview
 @Composable
-fun SubtitleDialogPreview(){
+fun SubtitleDialogPreview() {
     BottomSheetDialogUi(
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Title",
@@ -344,7 +344,7 @@ fun SubtitleDialogPreview(){
 
 @Preview
 @Composable
-fun SubtitleNoMessageDialogPreview(){
+fun SubtitleNoMessageDialogPreview() {
     BottomSheetDialogUi(
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Title",
@@ -373,7 +373,7 @@ fun SubtitleNoMessageDialogPreview(){
 
 @Preview
 @Composable
-fun SubtitleNoMessageNoContentDialogPreview(){
+fun SubtitleNoMessageNoContentDialogPreview() {
     BottomSheetDialogUi(
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Title",
