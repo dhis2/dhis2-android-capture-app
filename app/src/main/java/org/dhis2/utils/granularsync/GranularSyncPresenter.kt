@@ -304,8 +304,8 @@ class GranularSyncPresenter(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-                last.sent == sent &&
-                last.total == total
+            last.sent == sent &&
+            last.total == total
     }
 
     private fun updateStateList(currentStatus: SmsSendingService.SendingStatus) {

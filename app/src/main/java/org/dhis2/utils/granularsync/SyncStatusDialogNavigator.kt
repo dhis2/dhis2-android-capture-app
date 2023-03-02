@@ -39,7 +39,7 @@ class SyncStatusDialogNavigator(
                 enrollmentSyncItem.programUid,
                 EnrollmentActivity.EnrollmentMode.CHECK
             )
-        }else{
+        } else {
             null
         }
     }
