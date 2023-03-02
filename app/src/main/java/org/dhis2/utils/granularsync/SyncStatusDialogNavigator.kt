@@ -31,13 +31,17 @@ class SyncStatusDialogNavigator(
 
     private fun navigateToEnrollmentFormScreen(
         enrollmentSyncItem: SyncStatusType.Enrollment
-    ): Intent {
-        return EnrollmentActivity.getIntent(
-            context,
-            enrollmentSyncItem.enrollmentUid,
-            enrollmentSyncItem.programUid,
-            EnrollmentActivity.EnrollmentMode.CHECK
-        )
+    ): Intent? {
+        return if (context !is EnrollmentActivity) {
+            EnrollmentActivity.getIntent(
+                context,
+                enrollmentSyncItem.enrollmentUid,
+                enrollmentSyncItem.programUid,
+                EnrollmentActivity.EnrollmentMode.CHECK
+            )
+        }else{
+            null
+        }
     }
 
     private fun navigateToSearchScreen(
@@ -50,13 +54,17 @@ class SyncStatusDialogNavigator(
         ).launchSyncDialog()
     }
 
-    private fun navigateToTeiDashboard(teiSyncType: SyncStatusType.TrackedEntity): Intent {
-        return TeiDashboardMobileActivity.intent(
-            context,
-            teiSyncType.teiUid,
-            teiSyncType.programUid,
-            teiSyncType.enrollmentUid
-        ).launchSyncDialog()
+    private fun navigateToTeiDashboard(teiSyncType: SyncStatusType.TrackedEntity): Intent? {
+        return if (context !is TeiDashboardMobileActivity) {
+            return TeiDashboardMobileActivity.intent(
+                context,
+                teiSyncType.teiUid,
+                teiSyncType.programUid,
+                teiSyncType.enrollmentUid
+            ).launchSyncDialog()
+        } else {
+            null
+        }
     }
 
     private fun navigateToEventProgram(eventProgramSyncItem: SyncStatusType.EventProgram): Intent {
