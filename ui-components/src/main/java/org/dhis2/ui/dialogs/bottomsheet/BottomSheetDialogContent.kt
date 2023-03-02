@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
@@ -41,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.R
+import org.dhis2.ui.icons.SyncingIcon
+import org.dhis2.ui.items.SyncStatusItem
 import org.dhis2.ui.theme.colorPrimary
 import org.dhis2.ui.theme.textPrimary
 import org.dhis2.ui.theme.textSecondary
@@ -80,7 +84,9 @@ fun BottomSheetDialogUi(
                 style = MaterialTheme.typography.headlineSmall,
                 color = textPrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.testTag(TITLE).padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .testTag(TITLE)
+                    .padding(horizontal = 16.dp)
             )
             bottomSheetDialogUiModel.subtitle?.let { subtitle ->
                 Spacer(modifier = Modifier.size(4.dp))
@@ -92,8 +98,8 @@ fun BottomSheetDialogUi(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-            Spacer(modifier = Modifier.size(16.dp))
             bottomSheetDialogUiModel.message?.let { message ->
+                Spacer(modifier = Modifier.size(16.dp))
                 if (bottomSheetDialogUiModel.clickableWord == null) {
                     Text(
                         text = message,
@@ -304,6 +310,79 @@ fun DialogPreview4() {
     ) {
         ErrorFieldList(fieldsWithIssues = fieldsWithIssues)
     }
+}
+
+@Preview
+@Composable
+fun SubtitleDialogPreview(){
+    BottomSheetDialogUi(
+        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+            title = "Title",
+            subtitle = "subtitle",
+            message = "Content message. Content message. Content message",
+            iconResource = R.drawable.ic_alert,
+            mainButton = DialogButtonStyle.MainButton(R.string.review)
+        ),
+        onMainButtonClicked = {}
+    ) {
+        LazyColumn(
+            verticalArrangement = spacedBy(8.dp)
+        ) {
+            items(listOf("a")) {
+                SyncStatusItem(
+                    title = "Name",
+                    subtitle = "Description",
+                    onClick = {
+                    }
+                ) {
+                    SyncingIcon()
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun SubtitleNoMessageDialogPreview(){
+    BottomSheetDialogUi(
+        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+            title = "Title",
+            subtitle = "subtitle",
+            iconResource = R.drawable.ic_alert,
+            mainButton = DialogButtonStyle.MainButton(R.string.review)
+        ),
+        onMainButtonClicked = {}
+    ) {
+        LazyColumn(
+            verticalArrangement = spacedBy(8.dp)
+        ) {
+            items(listOf("a")) {
+                SyncStatusItem(
+                    title = "Name",
+                    subtitle = "Description",
+                    onClick = {
+                    }
+                ) {
+                    SyncingIcon()
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun SubtitleNoMessageNoContentDialogPreview(){
+    BottomSheetDialogUi(
+        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+            title = "Title",
+            subtitle = "subtitle",
+            iconResource = R.drawable.ic_alert,
+            mainButton = DialogButtonStyle.MainButton(R.string.review)
+        ),
+        onMainButtonClicked = {}
+    )
 }
 
 const val CLICKABLE_TEXT_TAG = "CLICKABLE_TEXT_TAG"
