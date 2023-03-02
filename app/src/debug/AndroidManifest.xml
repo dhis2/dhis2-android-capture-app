@@ -96,9 +96,6 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
-        <activity android:name=".usescases.development.TableTestActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
 
         <service android:name=".usescases.sms.SmsSendingService" />
 
