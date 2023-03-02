@@ -284,11 +284,11 @@ fun TableHeaderRow(
         if (isHeaderActionEnabled) {
             TableActions(
                 modifier = Modifier
+                    .padding(bottom = 24.dp)
                     .constrainAs(tableActions) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        height = Dimension.value(56.dp)
                     },
                 title = tableModel.title,
                 actionIcons = {
