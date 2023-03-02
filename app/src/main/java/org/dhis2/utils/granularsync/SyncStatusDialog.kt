@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -102,7 +103,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MdcTheme {
+                Mdc3Theme {
                     val syncState by viewModel.currentState.collectAsState()
                     syncState?.let { syncUiState ->
                         BottomSheetDialogUi(
