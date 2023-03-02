@@ -851,11 +851,11 @@ class GranularSyncRepository(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                stateCandidates.contains(State.UPLOADING) ||
-                stateCandidates.contains(State.TO_UPDATE) ->
+                    stateCandidates.contains(State.UPLOADING) ||
+                    stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
