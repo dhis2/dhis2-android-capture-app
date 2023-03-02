@@ -1,4 +1,4 @@
-package org.dhis2.android.rtsm.viewmodels
+package org.dhis2.android.rtsm.ui.managestock
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.javafaker.Faker
@@ -19,8 +19,6 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.OnQuantityValidated
-import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
-import org.dhis2.android.rtsm.ui.managestock.TableModelMapper
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.rules.models.RuleEffect
