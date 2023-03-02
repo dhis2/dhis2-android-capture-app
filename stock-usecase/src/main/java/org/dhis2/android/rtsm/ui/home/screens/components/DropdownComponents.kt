@@ -24,6 +24,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentManager
+import kotlinx.coroutines.flow.StateFlow
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
@@ -65,12 +67,13 @@ fun DropdownComponentTransactions(
     onTransitionSelected: (transition: TransactionType) -> Unit,
     hasUnsavedData: Boolean,
     themeColor: Color = colorResource(R.color.colorPrimary),
-    data: MutableList<TransactionItem>,
+    transactions: StateFlow<List<TransactionItem>?>,
+    dataEntryUiState: DataEntryUiState,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    var itemIcon by remember { mutableStateOf(data.first().icon) }
+    var itemIcon by remember { mutableStateOf(transactions.value!!.first().icon) }
 
     var selectedIndex by remember { mutableStateOf(0) }
     val paddingValue = if (selectedIndex >= 0) {
@@ -132,7 +135,7 @@ fun DropdownComponentTransactions(
             },
             shape = RoundedCornerShape(30.dp),
             placeholder = {
-                Text(text = capitalizeText(data.first().transactionType.name))
+                Text(text = capitalizeText(transactions.collectAsState().value!!.first().transactionType.name))
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,
@@ -151,7 +154,7 @@ fun DropdownComponentTransactions(
                     .background(shape = RoundedCornerShape(16.dp), color = Color.White),
                 offset = DpOffset(x = 0.dp, y = 2.dp)
             ) {
-                data.forEachIndexed { index, item ->
+                transactions.collectAsState().value!!.forEachIndexed { index, item ->
                     DropdownMenuItem(
                         onClick = {
                             if (selectedIndex != index && hasUnsavedData) {
@@ -216,6 +219,7 @@ fun DropdownComponentFacilities(
     themeColor: Color = colorResource(R.color.colorPrimary),
     supportFragmentManager: FragmentManager,
     data: List<OrganisationUnit>,
+    dataEntryUiState: DataEntryUiState,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
 ) {
     var selectedText by remember { mutableStateOf("") }

@@ -66,6 +66,7 @@ fun Backdrop(
         )
     }
     manageStockViewModel.backToListing()
+    viewModel.mapTransaction()
     DisplaySnackBar(manageStockViewModel, scaffoldState)
     BackdropScaffold(
         appBar = {
@@ -162,6 +163,7 @@ fun Backdrop(
         }
         manageStockViewModel.updateStep(DataEntryStep.START)
         viewModel.resetSettings()
+        viewModel.mapTransaction()
     }
 }
 

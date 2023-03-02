@@ -13,11 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
-import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
@@ -56,7 +54,8 @@ fun FilterList(
                 onTransitionSelected,
                 dataEntryUiState.hasUnsavedData,
                 themeColor,
-                mapTransaction(),
+                viewModel.transactions,
+                dataEntryUiState,
                 launchDialog
             )
         }
@@ -69,6 +68,7 @@ fun FilterList(
                 themeColor,
                 supportFragmentManager,
                 getFacilities(facilities),
+                dataEntryUiState,
                 launchDialog
             )
         }
@@ -89,15 +89,6 @@ fun FilterList(
         }
     }
 }
-
-private fun mapTransaction(): MutableList<TransactionItem> {
-    return mutableListOf(
-        TransactionItem(R.drawable.ic_distribution, DISTRIBUTION),
-        TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD),
-        TransactionItem(R.drawable.ic_correction, TransactionType.CORRECTION)
-    )
-}
-
 private fun getFacilities(ou: OperationState<List<OrganisationUnit>>?): List<OrganisationUnit> {
     return if (ou is OperationState.Success<*>) {
         ou.result as List<OrganisationUnit>

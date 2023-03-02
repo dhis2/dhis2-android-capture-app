@@ -13,6 +13,7 @@ import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.Transaction
+import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
@@ -44,6 +45,10 @@ class HomeViewModel @Inject constructor(
         MutableStateFlow<OperationState<List<Option>>>(OperationState.Loading)
     val destinationsList: StateFlow<OperationState<List<Option>>>
         get() = _destinations
+
+    private val _transactions = MutableStateFlow<List<TransactionItem>?>(null)
+    val transactions: StateFlow<List<TransactionItem>?>
+        get() = _transactions
 
     private val _settingsUiSate = MutableStateFlow(SettingsUiState(programUid = config.program))
     val settingsUiState: StateFlow<SettingsUiState> = _settingsUiSate
@@ -162,5 +167,12 @@ class HomeViewModel @Inject constructor(
             )
         }
         selectTransaction(TransactionType.DISTRIBUTION)
+    }
+    public fun mapTransaction() {
+        _transactions.value = mutableListOf(
+            TransactionItem(R.drawable.ic_distribution, TransactionType.DISTRIBUTION),
+            TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD),
+            TransactionItem(R.drawable.ic_correction, TransactionType.CORRECTION)
+        )
     }
 }
