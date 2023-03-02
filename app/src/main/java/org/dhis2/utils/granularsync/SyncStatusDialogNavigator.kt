@@ -47,10 +47,12 @@ class SyncStatusDialogNavigator(
     private fun navigateToSearchScreen(
         trackerProgramSyncItem: SyncStatusType.TrackerProgram
     ): Intent {
-        return SearchTEActivity.intent(
+        return SearchTEActivity.getIntent(
             context,
             trackerProgramSyncItem.programUid,
-            trackerProgramSyncItem.trackedEntityTypeUid
+            trackerProgramSyncItem.trackedEntityTypeUid,
+            null,
+            false
         ).launchSyncDialog()
     }
 
