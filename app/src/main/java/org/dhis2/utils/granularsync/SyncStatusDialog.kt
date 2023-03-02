@@ -22,8 +22,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.composethemeadapter.MdcTheme
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.checkSMSPermission
@@ -43,6 +43,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.MessageAmountDialog
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
+private const val SYNC_CONTEXT = "SYNC_CONTEXT"
 
 class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
@@ -64,19 +65,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     lateinit var viewModelFactory: GranularSyncViewModelFactory
 
     private val viewModel: GranularSyncPresenter by viewModels { viewModelFactory }
-
-    companion object {
-        private const val SYNC_CONTEXT = "SYNC_CONTEXT"
-
-        @JvmStatic
-        fun newInstance(
-            syncContext: SyncContext
-        ) = SyncStatusDialog().apply {
-            Bundle().apply {
-                putParcelable(SYNC_CONTEXT, syncContext)
-            }.also { arguments = it }
-        }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -167,7 +155,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         when {
             networkUtils.isOnline() -> syncGranular()
             viewModel.canSendSMS() &&
-                viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
+                    viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
         }
     }
 
@@ -198,7 +186,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 when (status) {
                     SMSSenderHelper.Status.ALL_SMS_SENT -> allSmsSent()
                     SMSSenderHelper.Status.SMS_NOT_MANUALLY_SENT -> smsNotManuallySent()
-                    SMSSenderHelper.Status.RETURNED_TO_APP -> { /*Do nothing*/ }
+                    SMSSenderHelper.Status.RETURNED_TO_APP -> { /*Do nothing*/
+                    }
                 }
             }
         ).also {
@@ -230,14 +219,27 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver.addOnGlobalLayoutListener {
-            val dialog = dialog as com.google.android.material.bottomsheet.BottomSheetDialog?
+            val dialog = dialog as BottomSheetDialog
 
             val bottomSheet =
-                dialog!!
-                    .findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+                dialog.findViewById<FrameLayout>(
+                    com.google.android.material.R.id.design_bottom_sheet
+                )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            behavior.setPeekHeight(0)
+            behavior.peekHeight = 0
+
+            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    /*NoUse*/
+                }
+            })
         }
     }
 
@@ -342,7 +344,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         }
 
         private fun build(): SyncStatusDialog {
-            return newInstance(syncContext).apply {
+            return SyncStatusDialog().apply {
+                arguments = Bundle().apply {
+                    putParcelable(SYNC_CONTEXT, syncContext)
+                }
                 dismissListenerDialog = dismissListener
                 syncStatusDialogNavigator = navigator
             }
