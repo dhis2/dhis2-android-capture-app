@@ -170,7 +170,7 @@ class FormValueStore(
         if (isFile(valueType) && value != null) {
             try {
                 newValue = saveFileResource(value, valueType == ValueType.IMAGE)
-            } catch (e: java.lang.NullPointerException) {
+            } catch (e: Exception) {
                 return Flowable.just(
                     StoreResult(
                         uid = uid,
@@ -360,7 +360,7 @@ class FormValueStore(
         if (isFile(valueType) && value != null) {
             try {
                 newValue = saveFileResource(value, valueType == ValueType.IMAGE)
-            } catch (e: java.lang.NullPointerException) {
+            } catch (e: Exception) {
                 return Flowable.just(
                     StoreResult(
                         uid = uid,

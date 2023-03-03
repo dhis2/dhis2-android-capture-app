@@ -93,7 +93,9 @@ class FormViewModel(
                     processCalculatedItems()
                 }
                 ValueStoreResult.ERROR_UPDATING_VALUE -> {
+                    loading.postValue(false)
                     showToast.value = R.string.update_field_error
+                    processCalculatedItems()
                 }
                 ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                     Timber.tag(TAG)
@@ -157,7 +159,15 @@ class FormViewModel(
                     )
                 } else {
                     val saveResult = repository.save(action.id, action.value, action.extraData)
-                    repository.updateValueOnList(action.id, action.value, action.valueType)
+                    if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
+                        repository.updateValueOnList(action.id, action.value, action.valueType)
+                    } else {
+                        repository.updateErrorList(
+                            action.copy(
+                                error = Throwable(saveResult.valueStoreResultMessage)
+                            )
+                        )
+                    }
                     saveResult ?: StoreResult(
                         action.id,
                         ValueStoreResult.VALUE_CHANGED
