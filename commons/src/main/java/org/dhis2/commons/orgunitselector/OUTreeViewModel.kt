@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.ui.dialogs.orgunit.OrgUnitTreeItem
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -100,51 +101,45 @@ class OUTreeViewModel(
     fun searchByName(name: String) {
         if (name.isEmpty()) {
             fetchInitialOrgUnits()
-        } else {
+        } else if (name.length >= 3) {
             viewModelScope.launch(dispatchers.io()) {
-                if (name.length >= 3) {
-                    val orgUnits = repository.orgUnits(name = name).blockingGet()
-                    val treeNodes = ArrayList<OrgUnitTreeItem>()
-                    val orderedList = mutableListOf<String>()
-                    orgUnits.forEach { org ->
-                        org.path()?.split("/")
-                            ?.filter { it.isNotEmpty() }
-                            ?.forEach { str ->
-                                when {
-                                    !orderedList.contains(str) -> orderedList.add(str)
-                                }
-                            }
-                        when {
-                            !orderedList.contains(org.uid()) -> orderedList.add(org.uid())
+                val orgUnits = repository.orgUnits(name = name).blockingGet()
+                val treeNodes = ArrayList<OrgUnitTreeItem>()
+                val orderedList = mutableListOf<String>()
+                orgUnits.forEach { org ->
+                    org.path()?.split("/")
+                        ?.filter { it.isNotEmpty() }
+                        ?.forEach { str ->
+                            orderedList.addIf(!orderedList.contains(str), str)
                         }
-                    }
-                    orderedList.forEach { ouUid ->
-                        val organisationUnitParent = repository.orgUnit(ouUid)
-                        organisationUnitParent?.let { org ->
-                            treeNodes.add(
-                                OrgUnitTreeItem(
-                                    uid = org.uid(),
-                                    label = org.displayName()!!,
-                                    isOpen = false,
-                                    hasChildren = repository.orgUnitHasChildren(org.uid()),
-                                    selected = selectedOrgUnits.contains(org.uid()),
-                                    level = org.level()!!,
-                                    selectedChildrenCount = repository.countSelectedChildren(
-                                        org.uid(),
-                                        selectedOrgUnits
-                                    )
+                    orderedList.addIf(!orderedList.contains(org.uid()), org.uid())
+                }
+                orderedList.forEach { ouUid ->
+                    val organisationUnitParent = repository.orgUnit(ouUid)
+                    organisationUnitParent?.let { org ->
+                        treeNodes.add(
+                            OrgUnitTreeItem(
+                                uid = org.uid(),
+                                label = org.displayName()!!,
+                                isOpen = false,
+                                hasChildren = repository.orgUnitHasChildren(org.uid()),
+                                selected = selectedOrgUnits.contains(org.uid()),
+                                level = org.level()!!,
+                                selectedChildrenCount = repository.countSelectedChildren(
+                                    org.uid(),
+                                    selectedOrgUnits
                                 )
                             )
-                        }
+                        )
                     }
-
-                    (1 until treeNodes.size)
-                        .asSequence()
-                        .filter { treeNodes[it].level > treeNodes[it - 1].level }
-                        .forEach { treeNodes[it - 1].isOpen = true }
-
-                    _treeNodes.update { treeNodes }
                 }
+
+                (1 until treeNodes.size)
+                    .asSequence()
+                    .filter { treeNodes[it].level > treeNodes[it - 1].level }
+                    .forEach { treeNodes[it - 1].isOpen = true }
+
+                _treeNodes.update { treeNodes }
             }
         }
     }
