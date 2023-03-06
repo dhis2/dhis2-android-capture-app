@@ -277,7 +277,7 @@ class ManageStockViewModel @Inject constructor(
     }
 
     fun onCellClick(cell: TableCell): TextInputModel {
-        val stockItem = _stockItems.value?.find { it.id == cell.id }
+        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell) }
         val itemName = stockItem?.name ?: ""
         return TextInputModel(
             id = cell.id ?: "",
@@ -298,8 +298,10 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
+    private fun tableCellId(cell:TableCell) = cell.id?.split("_")?.get(0)
+
     private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
-        val stockItem = _stockItems.value?.find { it.id == cell.id }
+        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell)}
         stockItem?.let {
             cell.value?.let { value ->
                 setQuantity(

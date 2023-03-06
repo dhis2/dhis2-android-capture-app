@@ -34,7 +34,7 @@ class TableModelMapper @Inject constructor(
                     Pair(
                         0,
                         TableCell(
-                            id = item.id,
+                            id = "${item.id}_soh",
                             row = index,
                             column = 0,
                             editable = false,
@@ -44,7 +44,7 @@ class TableModelMapper @Inject constructor(
                     Pair(
                         1,
                         TableCell(
-                            id = item.id,
+                            id = "${item.id}_gty",
                             row = index,
                             column = 1,
                             value = entry.qty,
