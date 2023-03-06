@@ -256,13 +256,14 @@ private fun TextInputContentActionIcon(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        IconButton(onClick = onActionIconClick) {
+        IconButton(
+            modifier = modifier
+                .semantics {
+                    drawableId = icon
+                },
+            onClick = onActionIconClick
+        ) {
             Icon(
-                modifier = modifier
-                    .semantics {
-                        drawableId = icon
-                    },
                 painter = painterResource(id = icon),
                 tint = LocalTableColors.current.primary,
                 contentDescription = ""
