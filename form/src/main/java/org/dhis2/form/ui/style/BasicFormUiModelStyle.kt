@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.common.ValueType
 data class BasicFormUiModelStyle(
     val factory: FormUiColorFactory,
     val valueType: ValueType,
-    val actionIconClickable:Boolean
+    val actionIconClickable: Boolean
 ) : FormUiModelStyle {
     private var colors = factory.getBasicColors()
 
