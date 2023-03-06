@@ -89,7 +89,8 @@ public class EventInitialModule {
                 false,
                 new UiStyleProviderImpl(
                         new FormUiModelColorFactoryImpl(activityContext, true),
-                        new LongTextUiColorFactoryImpl(activityContext, true)
+                        new LongTextUiColorFactoryImpl(activityContext, true),
+                        true
                 ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
