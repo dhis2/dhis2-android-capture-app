@@ -121,7 +121,6 @@
 
         <service android:name=".usescases.sms.SmsSendingService" />
 
-        <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
         <activity android:name=".usescases.about.PolicyView" />
 
         <activity

@@ -2,7 +2,6 @@ package org.dhis2.form.ui
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.app.TimePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -19,10 +18,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -32,6 +29,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
+import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import com.journeyapps.barcodescanner.ScanOptions
 import java.io.File
 import java.util.Calendar
@@ -639,24 +639,25 @@ class FormView : Fragment() {
         val calendar = Calendar.getInstance()
         intent.date?.let { calendar.time = it }
         val is24HourFormat = DateFormat.is24HourFormat(requireContext())
-        val dialog = TimePickerDialog(
-            requireContext(),
-            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
-                intentHandler(
-                    dialogDelegate.handleTimeInput(
-                        intent.uid,
-                        if (intent.isDateTime == true) intent.date else null,
-                        hourOfDay,
-                        minutes
+        MaterialTimePicker.Builder()
+            .setTheme(R.style.TimePicker)
+            .setTimeFormat(CLOCK_24H.takeIf { is24HourFormat } ?: CLOCK_12H)
+            .setHour(calendar[Calendar.HOUR_OF_DAY])
+            .setMinute(calendar[Calendar.MINUTE])
+            .setTitleText(intent.label)
+            .build().apply {
+                addOnPositiveButtonClickListener {
+                    intentHandler(
+                        dialogDelegate.handleTimeInput(
+                            intent.uid,
+                            if (intent.isDateTime == true) intent.date else null,
+                            hour,
+                            minute
+                        )
                     )
-                )
-            },
-            calendar[Calendar.HOUR_OF_DAY],
-            calendar[Calendar.MINUTE],
-            is24HourFormat
-        )
-        dialog.setTitle(intent.label)
-        dialog.show()
+                }
+            }
+            .show(childFragmentManager, "timePicker")
     }
 
     private fun showYearMonthDayAgeCalendar(
@@ -671,7 +672,7 @@ class FormView : Fragment() {
         monthPicker.setText(intent.month.toString())
         dayPicker.setText(intent.day.toString())
 
-        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+        MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
             .setView(alertDialogView)
             .setPositiveButton(R.string.action_accept) { _, _ ->
                 val dateIntent = dialogDelegate.handleYearMonthDayInput(
@@ -793,7 +794,7 @@ class FormView : Fragment() {
             requireContext().getString(R.string.from_gallery),
             requireContext().getString(R.string.cancel)
         )
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
             .setTitle(requireContext().getString(R.string.select_option))
             .setItems(options) { dialog: DialogInterface, item: Int ->
                 run {

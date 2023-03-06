@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -18,6 +17,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -447,7 +447,7 @@ class MainActivity :
     }
 
     private fun confirmAccountDelete() {
-        AlertDialog.Builder(context, R.style.CustomDialog)
+        MaterialAlertDialogBuilder(this, R.style.MaterialDialog)
             .setTitle(getString(R.string.delete_account))
             .setMessage(getString(R.string.wipe_data_meesage))
             .setView(R.layout.warning_layout)

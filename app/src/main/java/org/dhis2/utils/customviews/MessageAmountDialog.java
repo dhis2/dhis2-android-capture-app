@@ -9,6 +9,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.dhis2.R;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +30,7 @@ public class MessageAmountDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int amount = getArguments().getInt(ARG_AMOUNT);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog);
         builder.setMessage(getString(R.string.sms_amount_question, amount));
 
         builder.setPositiveButton(getString(R.string.yes), (dialog, which) ->
