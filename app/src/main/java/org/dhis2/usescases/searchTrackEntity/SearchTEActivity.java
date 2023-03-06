@@ -3,6 +3,8 @@ package org.dhis2.usescases.searchTrackEntity;
 import static android.view.View.GONE;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -116,6 +118,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private Content currentContent = null;
+
+    public static Intent getIntent(Context context, String programUid, String teiTypeToAdd, String teiUid, boolean fromRelationship) {
+        Intent intent = new Intent(context, SearchTEActivity.class);
+        Bundle extras = new Bundle();
+        extras.putBoolean("FROM_RELATIONSHIP", fromRelationship);
+        extras.putString("FROM_RELATIONSHIP_TEI", teiUid);
+        extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
+        extras.putString("PROGRAM_UID", programUid);
+        intent.putExtras(extras);
+        return intent;
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -409,6 +422,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             currentContent = Content.MAP;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.mainComponent, SearchTEMap.Companion.get(fromRelationship, tEType)).commit();
+            observeMapLoading();
         }
     }
 
@@ -464,6 +478,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             return Unit.INSTANCE;
                         }
                 ));
+    }
+
+    private void observeMapLoading() {
+        viewModel.getRefreshData().observe(this, refresh -> {
+            if (currentContent == Content.MAP) {
+                binding.toolbarProgress.show();
+            }
+        });
+        viewModel.getMapResults().observe(this, result -> binding.toolbarProgress.hide());
     }
 
     @Override

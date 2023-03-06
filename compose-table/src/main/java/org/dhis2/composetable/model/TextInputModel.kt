@@ -9,8 +9,11 @@ data class TextInputModel(
     val secondaryLabels: List<String> = emptyList(),
     val currentValue: String? = null,
     val keyboardInputType: KeyboardInputType = KeyboardInputType.TextInput(),
-    val error: String? = null
-)
+    val error: String? = null,
+    private val clearable: Boolean = false
+) {
+    fun showClearButton() = clearable && currentValue?.isNotEmpty() == true
+}
 
 sealed class KeyboardInputType(
     open val multiline: Boolean = false,

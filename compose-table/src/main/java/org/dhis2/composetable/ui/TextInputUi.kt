@@ -265,7 +265,7 @@ private fun TextInputContentActionIcon(
             tint = LocalTableColors.current.primary,
             contentDescription = ""
         )
-        if (textInputModel.currentValue?.isNotEmpty() == true && hasFocus) {
+        if (textInputModel.showClearButton() && hasFocus) {
             Icon(
                 modifier = Modifier
                     .clickable(role = Role.Button) {

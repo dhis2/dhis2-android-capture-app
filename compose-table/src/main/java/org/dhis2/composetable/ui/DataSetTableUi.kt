@@ -73,7 +73,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -285,11 +284,11 @@ fun TableHeaderRow(
         if (isHeaderActionEnabled) {
             TableActions(
                 modifier = Modifier
+                    .padding(bottom = 24.dp)
                     .constrainAs(tableActions) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        height = Dimension.value(56.dp)
                     },
                 title = tableModel.title,
                 actionIcons = {
@@ -432,14 +431,10 @@ fun TableItemRow(
                 cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
-                defaultHeight = TableTheme.dimensions.defaultCellHeight,
-                defaultWidth = with(LocalDensity.current) {
-                    TableTheme.dimensions.defaultCellWidthWithExtraSize(
-                        tableId = tableModel.id ?: "",
-                        totalColumns = tableModel.tableHeaderModel.tableMaxColumns(),
-                        hasExtra = tableModel.tableHeaderModel.hasTotals
-                    ).toDp()
-                },
+                headerExtraSize = TableTheme.dimensions.extraSize(
+                    tableModel.tableHeaderModel.tableMaxColumns(),
+                    tableModel.tableHeaderModel.hasTotals
+                ),
                 options = rowModel.dropDownOptions ?: emptyList(),
                 cellStyle = cellStyle,
                 nonEditableCellLayer = nonEditableCellLayer,
@@ -600,8 +595,7 @@ fun ItemValues(
     maxLines: Int,
     cellValues: Map<Int, TableCell>,
     overridenValues: Map<Int, TableCell>,
-    defaultHeight: Dp,
-    defaultWidth: Dp,
+    headerExtraSize: Int,
     options: List<String>,
     cellStyle: @Composable
     (cellValue: TableCell) -> CellStyle,
@@ -633,14 +627,14 @@ fun ItemValues(
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(
                             with(LocalDensity.current) {
-                                TableTheme.dimensions.columnWidth[tableId]
-                                    ?.get(columnIndex)
-                                    ?.toDp()
-                                    ?: defaultWidth
+                                TableTheme.dimensions.columnWidthWithTableExtra(
+                                    tableId,
+                                    columnIndex
+                                ).plus(headerExtraSize).toDp()
                             }
                         )
                         .fillMaxHeight()
-                        .defaultMinSize(minHeight = defaultHeight)
+                        .defaultMinSize(minHeight = TableTheme.dimensions.defaultCellHeight)
                         .semantics {
                             rowBackground = style.backgroundColor()
                             cellSelected = isSelected
@@ -988,7 +982,9 @@ private fun TableList(
                         },
                         onHeaderResize = { column, width ->
                             onColumnResize(
-                                currentTableModel.id ?: "", column, width
+                                currentTableModel.id ?: "",
+                                column,
+                                width
                             )
                         },
                         onResizing = { resizingCell = it },
@@ -1547,8 +1543,6 @@ const val HEADER_CELL = "HEADER_CELL"
 const val MANDATORY_ICON_TEST_TAG = "MANDATORY_ICON_TEST_TAG"
 const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
 const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
-const val CELL_NON_EDITABLE_LAYER_TEST_TAG = "CELL_NON_EDITABLE_LAYER_TEST_TAG"
-val MIN_CELL_WIDTH = 48.dp
 val MAX_CELL_WIDTH_SPACE = 96.dp
 
 /* Row Header Cell */

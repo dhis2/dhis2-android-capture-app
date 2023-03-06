@@ -7,9 +7,9 @@ import android.transition.TransitionManager
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -214,7 +214,7 @@ class ProgramEventDetailActivity :
     }
 
     override fun renderError(message: String) {
-        if (activity != null) AlertDialog.Builder(activity)
+        if (activity != null) MaterialAlertDialogBuilder(activity, R.style.MaterialDialog)
             .setPositiveButton(getString(R.string.button_ok), null)
             .setTitle(getString(R.string.error))
             .setMessage(message)

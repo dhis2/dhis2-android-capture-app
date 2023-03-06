@@ -71,7 +71,9 @@ fun DropdownComponentTransactions(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    var itemIcon by remember { mutableStateOf(data.first().icon) }
+    val itemIcon = data.find {
+        it.transactionType == settingsUiState.transactionType
+    }?.icon ?: data.first().icon
 
     var selectedIndex by remember { mutableStateOf(0) }
     val paddingValue = if (selectedIndex >= 0) {
@@ -162,7 +164,6 @@ fun DropdownComponentTransactions(
                                             // Perform the transaction change and clear data
                                             onTransitionSelected.invoke(item.transactionType)
                                             selectedIndex = index
-                                            itemIcon = item.icon
                                             isExpanded = false
                                         }
                                         EditionDialogResult.KEEP -> {
@@ -174,7 +175,6 @@ fun DropdownComponentTransactions(
                             } else {
                                 onTransitionSelected.invoke(item.transactionType)
                                 selectedIndex = index
-                                itemIcon = item.icon
                                 isExpanded = false
                             }
                         }
