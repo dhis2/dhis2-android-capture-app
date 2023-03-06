@@ -298,10 +298,10 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    private fun tableCellId(cell:TableCell) = cell.id?.split("_")?.get(0)
+    private fun tableCellId(cell: TableCell) = cell.id?.split("_")?.get(0)
 
     private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
-        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell)}
+        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell) }
         stockItem?.let {
             cell.value?.let { value ->
                 setQuantity(
