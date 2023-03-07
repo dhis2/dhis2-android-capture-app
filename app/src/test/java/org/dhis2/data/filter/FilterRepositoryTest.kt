@@ -52,7 +52,8 @@ class FilterRepositoryTest {
     private val filterResources: FilterResources = mock()
     private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig = mock()
     private val eventFilterToWorkingListItemMapper: EventFilterToWorkingListItemMapper = mock()
-    private val teiFilterToWorkingListItemMapper: TeiFilterToWorkingListItemMapper = mock()
+    private val teiFilterToWorkingListItemMapper: TeiFilterToWorkingListItemMapper =
+        TeiFilterToWorkingListItemMapper("defaultLabel")
     private val programStageToWorkingListItemMapper: ProgramStageToWorkingListItemMapper = mock()
     private lateinit var filterRepository: FilterRepository
 
@@ -311,6 +312,17 @@ class FilterRepositoryTest {
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
                 .blockingGet().displayName()
         ) doReturn program.trackedEntityType()?.displayName()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters().blockingGet()
+        ) doReturn emptyList()
 
         val result = filterRepository.programFilters(program.uid())
 
@@ -381,6 +393,17 @@ class FilterRepositoryTest {
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
                 .blockingGet().displayName()
         ) doReturn program.trackedEntityType()?.displayName()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters().blockingGet()
+        ) doReturn emptyList()
 
         val result = filterRepository.programFilters(program.uid())
 
