@@ -218,7 +218,7 @@ class ManageStockViewModel @Inject constructor(
         }
 
         val entries: List<StockEntry> = items?.map {
-            itemsCache[it.id] ?: StockEntry(it)
+            itemsCache[it.id] ?: StockEntry(item = it)
         } ?: emptyList()
 
         _hasData.value = entries.isNotEmpty()
@@ -381,7 +381,7 @@ class ManageStockViewModel @Inject constructor(
         qty: @NotNull String,
         callback: OnQuantityValidated?
     ) {
-        entryRelay.accept(RowAction(StockEntry(item, qty), position, callback))
+        entryRelay.accept(RowAction(StockEntry(item = item, qty = qty), position, callback))
     }
 
     fun getItemQuantity(item: StockItem): String? {
@@ -395,7 +395,12 @@ class ManageStockViewModel @Inject constructor(
             hasUnsavedData(false)
             return
         }
-        itemsCache[item.id] = StockEntry(item, qty, stockOnHand, errorMessage)
+        itemsCache[item.id] = StockEntry(
+            item = item,
+            qty = qty,
+            stockOnHand = stockOnHand,
+            errorMessage = errorMessage
+        )
         hasUnsavedData(true)
     }
 

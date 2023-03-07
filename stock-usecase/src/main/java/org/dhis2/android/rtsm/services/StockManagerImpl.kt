@@ -192,9 +192,7 @@ class StockManagerImpl @Inject constructor(
             )
 
             // Set the event date
-            transaction.transactionDate.toDate()?.let {
-                d2.eventModule().events().uid(eventUid).setEventDate(it)
-            }
+            d2.eventModule().events().uid(eventUid).setEventDate(item.date)
 
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 eventUid,
