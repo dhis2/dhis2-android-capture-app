@@ -17,6 +17,9 @@ import org.dhis2.commons.filters.ProgramType
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.filters.sorting.SortingItem
+import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
+import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMapper
+import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.settings.FilterSetting
@@ -48,12 +51,22 @@ class FilterRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val filterResources: FilterResources = mock()
     private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig = mock()
+    private val eventFilterToWorkingListItemMapper: EventFilterToWorkingListItemMapper = mock()
+    private val teiFilterToWorkingListItemMapper: TeiFilterToWorkingListItemMapper = mock()
+    private val programStageToWorkingListItemMapper: ProgramStageToWorkingListItemMapper = mock()
     private lateinit var filterRepository: FilterRepository
 
     @Before
     fun setUp() {
         mockFilterLabels()
-        filterRepository = FilterRepository(d2, filterResources, getFiltersApplyingWebAppConfig)
+        filterRepository = FilterRepository(
+            d2,
+            filterResources,
+            getFiltersApplyingWebAppConfig,
+            eventFilterToWorkingListItemMapper,
+            teiFilterToWorkingListItemMapper,
+            programStageToWorkingListItemMapper
+        )
     }
 
     private fun mockFilterLabels() {
