@@ -37,10 +37,7 @@ class ChartViewHolder(
         binding.chartModel = chart
         chart.observableChartType.addOnPropertyChangedCallback(
             object : Observable.OnPropertyChangedCallback() {
-                override fun onPropertyChanged(
-                    sender: Observable,
-                    propertyId: Int
-                ) {
+                override fun onPropertyChanged(sender: Observable, propertyId: Int) {
                     onChartTypeChanged()
                     loadChart(chart)
                 }

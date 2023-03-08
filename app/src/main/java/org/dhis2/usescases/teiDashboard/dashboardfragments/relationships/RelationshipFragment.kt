@@ -59,7 +59,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
     private val addRelationshipLauncher = registerForActivityResult(AddRelationshipContract()) {
         themeManager.setProgramTheme(programUid()!!)
         when (it) {
-            is RelationshipResult.Error -> { /*Unused*/
+            is RelationshipResult.Error -> { // Unused
             }
             is RelationshipResult.Success -> {
                 presenter.addRelationship(it.teiUidToAddAsRelationship, relationshipType!!.uid())
@@ -224,10 +224,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         }
     }
 
-    private fun goToRelationShip(
-        relationshipTypeModel: RelationshipType,
-        teiTypeUid: String
-    ) {
+    private fun goToRelationShip(relationshipTypeModel: RelationshipType, teiTypeUid: String) {
         relationshipType = relationshipTypeModel
         presenter.goToAddRelationship(teiTypeUid, relationshipType!!)
     }
@@ -268,10 +265,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             getString(R.string.button_ok),
             getString(R.string.no),
             object : OnDialogClickListener {
-                override fun onPositiveClick() { /*Unused*/
+                override fun onPositiveClick() { // Unused
                 }
 
-                override fun onNegativeClick() { /*Unused*/
+                override fun onNegativeClick() { // Unused
                 }
             }
         )
@@ -287,10 +284,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             getString(R.string.button_ok),
             getString(R.string.no),
             object : OnDialogClickListener {
-                override fun onPositiveClick() { /*Unused*/
+                override fun onPositiveClick() { // Unused
                 }
 
-                override fun onNegativeClick() { /*Unused*/
+                override fun onNegativeClick() { // Unused
                 }
             }
         )

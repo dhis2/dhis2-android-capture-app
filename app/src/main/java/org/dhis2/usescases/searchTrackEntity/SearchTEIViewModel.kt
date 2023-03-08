@@ -469,9 +469,9 @@ class SearchTEIViewModel(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
                         uiData = UnableToSearchOutsideData(
                             trackedEntityTypeAttributes =
-                                searchRepository.trackedEntityTypeFields(),
+                            searchRepository.trackedEntityTypeFields(),
                             trackedEntityTypeName =
-                                searchRepository.trackedEntityType.displayName()!!
+                            searchRepository.trackedEntityType.displayName()!!
                         )
                     )
                 )

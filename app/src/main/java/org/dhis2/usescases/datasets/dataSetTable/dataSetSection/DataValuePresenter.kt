@@ -148,15 +148,15 @@ class DataValuePresenter(
         handleElementInteraction(dataElement, cell, updateCellValue)
         return dataElement.takeIf { it.optionSetUid() == null }
             ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
-            TextInputModel(
-                id = cell.id ?: "",
-                mainLabel = dataElement.displayFormName() ?: "-",
-                secondaryLabels = repository.getCatOptComboOptions(ids[1]),
-                currentValue = cell.value,
-                keyboardInputType = inputType,
-                error = errors[cell.id]
-            )
-        }
+                TextInputModel(
+                    id = cell.id ?: "",
+                    mainLabel = dataElement.displayFormName() ?: "-",
+                    secondaryLabels = repository.getCatOptComboOptions(ids[1]),
+                    currentValue = cell.value,
+                    keyboardInputType = inputType,
+                    error = errors[cell.id]
+                )
+            }
     }
 
     private fun handleElementInteraction(
@@ -171,21 +171,27 @@ class DataValuePresenter(
                 getSpinnerViewModel(dataElement, cell),
                 updateCellValue
             )
-        } else when (dataElement.valueType()) {
-            ValueType.BOOLEAN,
-            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
-            ValueType.DATE -> view.showCalendar(dataElement, cell, false, updateCellValue)
-            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true, updateCellValue)
-            ValueType.TIME -> view.showTimePicker(dataElement, cell, updateCellValue)
-            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell, updateCellValue)
-            ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
-                dataElement,
-                cell,
-                repository.orgUnits(),
-                updateCellValue
-            )
-            ValueType.AGE -> view.showAgeDialog(dataElement, cell, updateCellValue)
-            else -> {}
+        } else {
+            when (dataElement.valueType()) {
+                ValueType.BOOLEAN,
+                ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
+                ValueType.DATE -> view.showCalendar(dataElement, cell, false, updateCellValue)
+                ValueType.DATETIME -> view.showCalendar(dataElement, cell, true, updateCellValue)
+                ValueType.TIME -> view.showTimePicker(dataElement, cell, updateCellValue)
+                ValueType.COORDINATE -> view.showCoordinatesDialog(
+                    dataElement,
+                    cell,
+                    updateCellValue
+                )
+                ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
+                    dataElement,
+                    cell,
+                    repository.orgUnits(),
+                    updateCellValue
+                )
+                ValueType.AGE -> view.showAgeDialog(dataElement, cell, updateCellValue)
+                else -> {}
+            }
         }
     }
 

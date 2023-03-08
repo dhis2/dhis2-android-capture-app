@@ -18,11 +18,7 @@ import org.dhis2.android.rtsm.R
 class ActivityManager {
     companion object {
         @JvmStatic
-        fun startActivity(
-            activity: Activity,
-            intent: Intent,
-            closeCurrentActivity: Boolean
-        ) {
+        fun startActivity(activity: Activity, intent: Intent, closeCurrentActivity: Boolean) {
             activity.startActivity(intent)
 
             if (closeCurrentActivity) {
@@ -94,9 +90,9 @@ class ActivityManager {
         @JvmStatic
         fun checkPermission(activity: Activity, requestCode: Int) {
             if (ContextCompat.checkSelfPermission(
-                activity.applicationContext,
-                Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
+                    activity.applicationContext,
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(
                     activity,

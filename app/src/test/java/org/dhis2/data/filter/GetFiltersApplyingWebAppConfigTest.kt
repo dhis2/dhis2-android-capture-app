@@ -66,7 +66,8 @@ class GetFiltersApplyingWebAppConfigTest {
         ),
         ProgramFilter.ENROLLMENT_DATE to EnrollmentDateFilter(
             ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             ENROLLMENT_DATE
         ),
         ProgramFilter.ORG_UNIT to OrgUnitFilter(
@@ -78,17 +79,20 @@ class GetFiltersApplyingWebAppConfigTest {
         ),
         ProgramFilter.SYNC_STATUS to SyncStateFilter(
             ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             SYNC_STATUS
         ),
         ProgramFilter.ENROLLMENT_STATUS to EnrollmentStatusFilter(
             ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             ENROLLMENT_STATUS
         ),
         ProgramFilter.EVENT_STATUS to EventStatusFilter(
             ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             EVENT_STATUS
         )
     )

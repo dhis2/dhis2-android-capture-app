@@ -17,6 +17,8 @@ class UiStyleProviderImpl(
 
         return if (valueType === ValueType.LONG_TEXT) {
             LongTextDecorator(style, longTextColorFactory)
-        } else style
+        } else {
+            style
+        }
     }
 }

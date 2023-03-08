@@ -34,22 +34,24 @@ class Transaction(
     override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<Transaction> {
-        override fun createFromParcel(parcel: Parcel): Transaction =
-            Transaction(parcel)
+        override fun createFromParcel(parcel: Parcel): Transaction = Transaction(parcel)
 
-        override fun newArray(size: Int): Array<Transaction?> =
-            arrayOfNulls(size)
+        override fun newArray(size: Int): Array<Transaction?> = arrayOfNulls(size)
     }
 
     override fun toString(): String {
         return if (transactionType == TransactionType.DISTRIBUTION && distributedTo != null) {
             "Transaction[Type: %s, Facility: %s, Date: %s, Distributed to: %s]".format(
-                transactionType.name, facility.displayName, transactionDate,
+                transactionType.name,
+                facility.displayName,
+                transactionDate,
                 distributedTo.displayName
             )
         } else {
             "Transaction[Type: %s, Facility: %s, Date: %s]".format(
-                transactionType.name, facility.displayName, transactionDate
+                transactionType.name,
+                facility.displayName,
+                transactionDate
             )
         }
     }

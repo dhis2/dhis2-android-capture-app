@@ -72,7 +72,9 @@ class EventDetailsRepository(
         val programStage = getProgramStage()
         return if (programStage.minDaysFromStart() != null) {
             programStage.minDaysFromStart()!!
-        } else 0
+        } else {
+            0
+        }
     }
 
     fun getStageLastDate(enrollmentUid: String?): Date {
@@ -114,10 +116,7 @@ class EventDetailsRepository(
         return enrollment.enrollmentDate()
     }
 
-    fun getFilteredOrgUnits(
-        date: String?,
-        parentUid: String?
-    ): List<OrganisationUnit> {
+    fun getFilteredOrgUnits(date: String?, parentUid: String?): List<OrganisationUnit> {
         val organisationUnits = parentUid?.let {
             getOrgUnitsByParentUid(it)
         } ?: getOrganisationUnits()
@@ -294,11 +293,10 @@ class EventDetailsRepository(
         it.status() == EventStatus.COMPLETED && hasReopenAuthority()
     } ?: false
 
-    private fun hasReopenAuthority(): Boolean =
-        d2.userModule().authorities()
-            .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
-            .one()
-            .blockingExists()
+    private fun hasReopenAuthority(): Boolean = d2.userModule().authorities()
+        .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
+        .one()
+        .blockingExists()
 
     fun reopenEvent() = try {
         eventUid?.let {

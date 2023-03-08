@@ -22,11 +22,7 @@ class DhisPeriodUtils(
 
     private val periodHelper = d2.periodModule().periodHelper()
 
-    fun getPeriodUIString(
-        periodType: PeriodType?,
-        date: Date,
-        locale: Locale
-    ): String {
+    fun getPeriodUIString(periodType: PeriodType?, date: Date, locale: Locale): String {
         val formattedDate: String
         var periodString = defaultPeriodLabel
         val period =
@@ -84,10 +80,7 @@ class DhisPeriodUtils(
         return WordUtils.capitalize(formattedDate)
     }
 
-    private fun weekOfTheYear(
-        periodType: PeriodType,
-        periodId: String
-    ): Int {
+    private fun weekOfTheYear(periodType: PeriodType, periodId: String): Int {
         val pattern =
             Pattern.compile(periodType.pattern)
         val matcher = pattern.matcher(periodId)

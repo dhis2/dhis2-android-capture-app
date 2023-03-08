@@ -40,7 +40,8 @@ class SMSSenderHelper(
     }
 
     private val launcher = registry.register(
-        generateActivityResultKey(), ActivityResultContracts.StartActivityForResult()
+        generateActivityResultKey(),
+        ActivityResultContracts.StartActivityForResult()
     ) {
         onReturningFromSmsApp()
     }

@@ -120,15 +120,14 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     abstract fun setSource()
     abstract fun setLayer()
 
-    fun initCameraPosition(
-        boundingBox: BoundingBox
-    ) {
+    fun initCameraPosition(boundingBox: BoundingBox) {
         val bounds = LatLngBounds.Builder()
             .include(pointToLatLn(boundingBox.northeast()))
             .include(pointToLatLn(boundingBox.southwest()))
             .build()
         map?.initCameraToViewAllElements(
-            mapView.context, bounds
+            mapView.context,
+            bounds
         )
     }
 

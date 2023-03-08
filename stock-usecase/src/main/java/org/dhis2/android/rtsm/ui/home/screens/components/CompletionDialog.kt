@@ -51,7 +51,8 @@ fun CompletionDialog(dataEntryUiState: DataEntryUiState) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource, contentDescription = "",
+                        painter = painterResource,
+                        contentDescription = "",
                         modifier = Modifier.padding(end = (11.23).dp)
                     )
                     Text(

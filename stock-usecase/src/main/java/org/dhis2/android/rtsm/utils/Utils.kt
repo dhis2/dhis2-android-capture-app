@@ -43,7 +43,9 @@ class Utils {
             return if (signedNumberWithSpace) {
                 Timber.w("Extraneous space after negative sign removed from speech input: %s", s)
                 s.replace("\\s".toRegex(), "")
-            } else s
+            } else {
+                s
+            }
         }
 
         @JvmStatic

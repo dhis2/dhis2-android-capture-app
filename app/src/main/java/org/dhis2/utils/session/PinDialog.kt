@@ -109,7 +109,8 @@ class PinDialog(
 
     private fun blockSession() {
         Handler().postDelayed(
-            { Process.killProcess(Process.myPid()) }, 1500
+            { Process.killProcess(Process.myPid()) },
+            1500
         )
     }
 

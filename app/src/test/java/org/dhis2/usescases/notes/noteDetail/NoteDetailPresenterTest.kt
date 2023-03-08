@@ -77,6 +77,5 @@ class NoteDetailPresenterTest {
         Assert.assertTrue(result == 0)
     }
 
-    private fun dummyNote() =
-        Note.builder().uid("uid").build()
+    private fun dummyNote() = Note.builder().uid("uid").build()
 }

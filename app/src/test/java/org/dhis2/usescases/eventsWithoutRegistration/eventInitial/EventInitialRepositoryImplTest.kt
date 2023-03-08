@@ -36,7 +36,8 @@ class EventInitialRepositoryImplTest {
     fun setUp() {
         repository = EventInitialRepositoryImpl(
             eventUid,
-            stageUid, d2,
+            stageUid,
+            d2,
             fieldFactory,
             ruleEngineRepository
         )

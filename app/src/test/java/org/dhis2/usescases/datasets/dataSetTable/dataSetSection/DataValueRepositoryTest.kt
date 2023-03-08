@@ -841,11 +841,10 @@ class DataValueRepositoryTest {
         testObserver.dispose()
     }
 
-    private fun dummyPeriod(
-        periodId: String = UUID.randomUUID().toString()
-    ): Period = Period.builder()
-        .periodId(periodId)
-        .build()
+    private fun dummyPeriod(periodId: String = UUID.randomUUID().toString()): Period =
+        Period.builder()
+            .periodId(periodId)
+            .build()
 
     private fun dummyDataInputPeriod(
         periodId: String = UUID.randomUUID().toString()
@@ -853,36 +852,31 @@ class DataValueRepositoryTest {
         .period(ObjectWithUid.create(periodId))
         .build()
 
-    private fun dummyDataSetElement(): DataSetElement =
-        DataSetElement.builder()
-            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .dataSet(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .build()
+    private fun dummyDataSetElement(): DataSetElement = DataSetElement.builder()
+        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .dataSet(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .build()
 
-    private fun dummyDataSetElementWithNoCatCombo(): DataSetElement =
-        DataSetElement.builder()
-            .dataSet(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .build()
+    private fun dummyDataSetElementWithNoCatCombo(): DataSetElement = DataSetElement.builder()
+        .dataSet(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .build()
 
-    private fun dummyDataSet(): DataSet =
-        DataSet.builder()
-            .uid(UUID.randomUUID().toString())
-            .access(Access.create(true, true, DataAccess.create(true, true)))
-            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .build()
+    private fun dummyDataSet(): DataSet = DataSet.builder()
+        .uid(UUID.randomUUID().toString())
+        .access(Access.create(true, true, DataAccess.create(true, true)))
+        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .build()
 
-    private fun dummyCategoryCombo(): CategoryCombo =
-        CategoryCombo.builder()
-            .uid(UUID.randomUUID().toString())
-            .build()
+    private fun dummyCategoryCombo(): CategoryCombo = CategoryCombo.builder()
+        .uid(UUID.randomUUID().toString())
+        .build()
 
-    private fun dummySection(): Section =
-        Section.builder()
-            .uid(UUID.randomUUID().toString())
-            .greyedFields(
-                listOf(DataElementOperand.builder().uid(UUID.randomUUID().toString()).build())
-            )
-            .build()
+    private fun dummySection(): Section = Section.builder()
+        .uid(UUID.randomUUID().toString())
+        .greyedFields(
+            listOf(DataElementOperand.builder().uid(UUID.randomUUID().toString()).build())
+        )
+        .build()
 }

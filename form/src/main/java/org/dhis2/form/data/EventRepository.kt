@@ -93,10 +93,10 @@ class EventRepository(
                         .byProgramStage().eq(event.programStage())
                         .byDataElement().eq(dataElement.uid())
                         .one().blockingGet()?.let {
-                        fields.add(
-                            transform(it)
-                        )
-                    }
+                            fields.add(
+                                transform(it)
+                            )
+                        }
                 }
             }
             return@fromCallable fields
@@ -122,11 +122,19 @@ class EventRepository(
         val mandatory = programStageDataElement.compulsory() ?: false
         val optionSet = de.optionSetUid()
         var dataValue =
-            if (valueRepository.blockingExists()) valueRepository.blockingGet()
-                .value() else null
+            if (valueRepository.blockingExists()) {
+                valueRepository.blockingGet()
+                    .value()
+            } else {
+                null
+            }
         val friendlyValue =
-            if (dataValue != null) valueRepository.blockingGetValueCheck(d2, uid)
-                .userFriendlyValue(d2) else null
+            if (dataValue != null) {
+                valueRepository.blockingGetValueCheck(d2, uid)
+                    .userFriendlyValue(d2)
+            } else {
+                null
+            }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de.displayFormName()
         val description = de.displayDescription()
@@ -223,14 +231,17 @@ class EventRepository(
         if (de.style() != null) de.style() else ObjectStyle.builder().build()
 
     private fun getValueTypeDeviceRendering(programStageDataElement: ProgramStageDataElement) =
-        if (programStageDataElement.renderType() != null) programStageDataElement.renderType()!!
-            .mobile() else null
-
-    private fun getFeatureType(valueType: ValueType?) =
-        when (valueType) {
-            ValueType.COORDINATE -> FeatureType.POINT
-            else -> null
+        if (programStageDataElement.renderType() != null) {
+            programStageDataElement.renderType()!!
+                .mobile()
+        } else {
+            null
         }
+
+    private fun getFeatureType(valueType: ValueType?) = when (valueType) {
+        ValueType.COORDINATE -> FeatureType.POINT
+        else -> null
+    }
 
     private fun getSectionRenderingType(programStageSection: ProgramStageSection?) =
         programStageSection?.renderType()?.mobile()?.type()

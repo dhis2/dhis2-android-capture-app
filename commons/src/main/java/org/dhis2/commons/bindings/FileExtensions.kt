@@ -38,7 +38,8 @@ fun File.rotateImage(context: Context): File {
     val orientation =
         ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
     var bitmap = BitmapFactory.decodeFile(
-        this.path, BitmapFactory.Options().apply { inSampleSize = 4 }
+        this.path,
+        BitmapFactory.Options().apply { inSampleSize = 4 }
     )
 
     bitmap = when (orientation) {
@@ -49,7 +50,8 @@ fun File.rotateImage(context: Context): File {
     }
 
     return File(
-        FileResourceDirectoryHelper.getFileResourceDirectory(context), "tempFile.png"
+        FileResourceDirectoryHelper.getFileResourceDirectory(context),
+        "tempFile.png"
     ).apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
 }
 
@@ -80,7 +82,8 @@ fun getFileFromGallery(context: Context, imageUri: Uri?): File? {
 fun getFileFrom(context: Context, fileUri: Uri): File? {
     val file = getFilePath(context, fileUri)?.let { File(it) }
     val tempFile = File(
-        FileResourceDirectoryHelper.getFileResourceDirectory(context), file?.name ?: "temp"
+        FileResourceDirectoryHelper.getFileResourceDirectory(context),
+        file?.name ?: "temp"
     )
     context.contentResolver.openInputStream(fileUri)?.let { inputStream ->
         FileUtils.copyToFile(inputStream, tempFile)
@@ -97,7 +100,8 @@ private fun getFilePath(context: Context, uri: Uri): String? {
             isDownloadsDocument(copy) -> {
                 val id = DocumentsContract.getDocumentId(copy)
                 copy = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), id.toLong()
+                    Uri.parse("content://downloads/public_downloads"),
+                    id.toLong()
                 )
             }
             isExternalStorageDocument(copy) -> {
@@ -135,7 +139,11 @@ private fun getFilePath(context: Context, uri: Uri): String? {
         try {
             val projection = arrayOf(MediaStore.MediaColumns.DATA)
             cursor = context.contentResolver?.query(
-                copy, projection, selection, selectionArgs, null
+                copy,
+                projection,
+                selection,
+                selectionArgs,
+                null
             )
             if (cursor != null && cursor.moveToFirst()) {
                 return cursor.getString(0)

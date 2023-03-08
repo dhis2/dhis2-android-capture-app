@@ -37,11 +37,7 @@ interface MatomoAnalyticsController {
     fun setUserId(identification: String?)
 
     fun updateDefaultTracker()
-    fun updateDhisImplementationTracker(
-        matomoUrl: String,
-        siteId: Int,
-        trackerName: String
-    )
+    fun updateDhisImplementationTracker(matomoUrl: String, siteId: Int, trackerName: String)
 
     fun trackDownload()
     fun clearDhisImplementation()

@@ -85,7 +85,8 @@ class TrackerFilterSearchHelperTest {
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
         verify(filterRepository, times(0)).applyEnrollmentStatusFilter(any(), any())
         verify(filterRepository, times(0)).applyEventStatusFilter(
-            any<TrackedEntityInstanceQueryCollectionRepository>(), any()
+            any<TrackedEntityInstanceQueryCollectionRepository>(),
+            any()
         )
         verify(filterRepository, times(1)).rootOrganisationUnitUids()
         verify(

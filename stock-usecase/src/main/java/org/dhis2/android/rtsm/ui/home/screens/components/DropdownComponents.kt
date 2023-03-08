@@ -445,8 +445,10 @@ fun DropdownComponentDistributedTo(
                                     shape = RoundedCornerShape(16.dp)
                                 )
                                 .padding(
-                                    start = 8.dp, top = paddingValue,
-                                    end = 8.dp, bottom = paddingValue
+                                    start = 8.dp,
+                                    top = paddingValue,
+                                    end = 8.dp,
+                                    bottom = paddingValue
                                 ),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start

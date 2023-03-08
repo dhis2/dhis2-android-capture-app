@@ -101,5 +101,7 @@ private fun mapTransaction(): MutableList<TransactionItem> {
 private fun getFacilities(ou: OperationState<List<OrganisationUnit>>?): List<OrganisationUnit> {
     return if (ou is OperationState.Success<*>) {
         ou.result as List<OrganisationUnit>
-    } else emptyList()
+    } else {
+        emptyList()
+    }
 }

@@ -173,7 +173,8 @@ class GroupAnalyticsFragment : Fragment() {
             )
             .onSelection { selectedOrgUnits ->
                 groupViewModel.filterByOrgUnit(
-                    chartModel, selectedOrgUnits,
+                    chartModel,
+                    selectedOrgUnits,
                     OrgUnitFilterType.SELECTION
                 )
             }
@@ -227,7 +228,8 @@ class GroupAnalyticsFragment : Fragment() {
             binding?.analyticChipGroup?.addView(
                 AnalyticsItemBinding.inflate(
                     layoutInflater,
-                    binding?.analyticChipGroup, false
+                    binding?.analyticChipGroup,
+                    false
                 ).apply {
                     chip.id = idChip
                     chip.text = analyticGroup.name

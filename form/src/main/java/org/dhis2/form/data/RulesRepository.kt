@@ -101,9 +101,7 @@ class RulesRepository(private val d2: D2) {
             }
     }
 
-    private fun queryRules(
-        programUid: String
-    ): Single<List<ProgramRule>> {
+    private fun queryRules(programUid: String): Single<List<ProgramRule>> {
         return d2.programModule().programRules()
             .byProgramUid().eq(programUid)
             .withProgramRuleActions()

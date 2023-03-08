@@ -173,9 +173,13 @@ class DataSetTableRepositoryImpl(
             if (state == State.SYNCED && dscr != null) {
                 state = dscr.state()
             }
-            if (state != null) Flowable.just<State>(
-                state
-            ) else Flowable.empty()
+            if (state != null) {
+                Flowable.just<State>(
+                    state
+                )
+            } else {
+                Flowable.empty()
+            }
         }
     }
 
@@ -187,9 +191,13 @@ class DataSetTableRepositoryImpl(
     }
 
     fun getCatOptComboFromOptionList(catOpts: List<String>): String {
-        return if (catOpts.isEmpty()) d2.categoryModule().categoryOptionCombos().byDisplayName()
-            .like("default").one().blockingGet().uid() else d2.categoryModule()
-            .categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid()
+        return if (catOpts.isEmpty()) {
+            d2.categoryModule().categoryOptionCombos().byDisplayName()
+                .like("default").one().blockingGet().uid()
+        } else {
+            d2.categoryModule()
+                .categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid()
+        }
     }
 
     fun getDataSetCatComboName(): Single<String> {
