@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
@@ -429,7 +430,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             if (isKeyboardOpened) {
                 hideKeyboard();
-                new Handler().postDelayed(() -> {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }, 100);
             } else {
