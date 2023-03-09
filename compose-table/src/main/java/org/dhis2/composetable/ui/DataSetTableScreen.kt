@@ -80,6 +80,8 @@ fun DataSetTableScreen(
 
     var alreadyFinish by remember { mutableStateOf(false) }
 
+    val textInputViewMode = TableTheme.configuration.textInputViewMode
+
     fun finishEdition() {
         focusManager.clearFocus(true)
         tableSelection = TableSelection.Unselected()
@@ -155,11 +157,11 @@ fun DataSetTableScreen(
                     )
                 },
                 onSave = {
-                    currentCell?.let { onSaveValue(it) }
-                    saveClicked = true
-                    if (!tableScreenState.textInputCollapsedMode) {
+                    if (!textInputViewMode) {
                         collapseBottomSheet(true)
                     }
+                    currentCell?.let { onSaveValue(it) }
+                    saveClicked = true
                 },
                 onNextSelected = {
                     currentCell?.let { tableCell ->
