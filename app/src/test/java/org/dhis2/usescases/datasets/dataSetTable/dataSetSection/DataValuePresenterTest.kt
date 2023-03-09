@@ -336,7 +336,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
@@ -391,7 +391,7 @@ class DataValuePresenterTest {
 
         val tableStateValue = presenter.mutableTableData()
         tableStateValue.value = TableScreenState(
-            listOf(mockedTableModel, mockedIndicatorTableModel), false
+            listOf(mockedTableModel, mockedIndicatorTableModel)
         )
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
@@ -443,7 +443,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(

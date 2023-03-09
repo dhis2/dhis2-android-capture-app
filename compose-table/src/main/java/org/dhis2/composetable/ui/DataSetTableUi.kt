@@ -88,7 +88,8 @@ import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.ItemColumnHeaderUiState
 import org.dhis2.composetable.model.ItemHeaderUiState
-import org.dhis2.composetable.model.OnTextChange
+import org.dhis2.composetable.model.LocalSelectedCell
+import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -658,7 +659,6 @@ fun ItemValues(
                         )
                     },
                     onClick = onClick,
-                    onTextChange = if (isSelected) OnTextChange.current else null,
                     onOptionSelected = onOptionSelected
                 )
                 if (isSelected) {
@@ -688,16 +688,16 @@ fun TableCell(
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit,
-    onTextChange: (() -> TableCell?)? = null,
     onOptionSelected: (TableCell, String, String) -> Unit
 ) {
+    val localSelectedCell = LocalSelectedCell.current
+    val localUpdatingCell = LocalUpdatingCell.current
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
     val cellValue = remember { mutableStateOf<String?>(null) }
-    cellValue.value = cell.value
-    onTextChange?.let {
-        it()?.takeIf { it.id == cell.id }?.let {
-            cellValue.value = it.value
-        }
+    cellValue.value = when {
+        localSelectedCell?.id == cell.id -> localSelectedCell?.value
+        localUpdatingCell?.id == cell.id -> localUpdatingCell?.value
+        else -> cell.value
     }
 
     CellLegendBox(
@@ -742,10 +742,8 @@ fun TableCell(
                 onSelected = { code, label ->
                     setExpanded(false)
                     onOptionSelected(cell, code, label)
-                    onTextChange?.let {
-                        it()?.takeIf { it.id == cell.id }?.let {
-                            cellValue.value = it.value
-                        }
+                    if (localSelectedCell?.id == cell.id) {
+                        cellValue.value = label
                     }
                 }
             )

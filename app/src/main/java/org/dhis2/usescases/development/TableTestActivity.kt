@@ -24,8 +24,7 @@ class TableTestActivity : ComponentActivity() {
                 val fakeTableModel = getMultiHeaderTables(FakeModelType.MANDATORY_TABLE)
                 val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
                     TableScreenState(
-                        tables = fakeTableModel,
-                        selectNext = false
+                        tables = fakeTableModel
                     )
                 )
 
@@ -44,7 +43,7 @@ class TableTestActivity : ComponentActivity() {
                         )
                     },
                     onEdition = { },
-                    onSaveValue = { _, _ -> }
+                    onSaveValue = { }
                 )
             }
         }

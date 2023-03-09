@@ -146,7 +146,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
                         ),
                         tableDimensions = dimensions,
-                        tableConfiguration = TableConfiguration()
+                        tableConfiguration = TableConfiguration(),
+                        tableValidator = presenterFragment
                     ) {
                         val screenState by presenterFragment.currentState().collectAsState()
 
@@ -161,9 +162,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             onEdition = { isEditing ->
                                 presenter.editingCellValue(isEditing)
                             },
-                            onSaveValue = { cell, selectNext ->
-                                presenterFragment.onSaveValueChange(cell, selectNext)
-                            },
+                            onSaveValue = presenterFragment::onSaveValueChange,
                             onTableWidthChanged = { width ->
                                 dimensions = dimensions.copy(totalWidth = width)
                             },

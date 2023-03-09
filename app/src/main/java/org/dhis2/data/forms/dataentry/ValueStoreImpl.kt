@@ -38,6 +38,15 @@ class ValueStoreImpl(
         overrideProgramUid = programUid
     }
 
+    override fun validate(dataElementUid: String, value: String?): Result<String, Throwable> {
+        if (value.isNullOrEmpty()) return Result.Success("")
+        val dataElement = d2.dataElementModule()
+            .dataElements()
+            .uid(dataElementUid)
+            .blockingGet()
+        return dataElement.valueType()?.validator?.validate(value) ?: Result.Success("")
+    }
+
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
         return when (entryMode) {
             EntryMode.DE -> saveDataElement(uid, value)
