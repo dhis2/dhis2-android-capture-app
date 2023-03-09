@@ -95,7 +95,7 @@ class FormViewModel(
                 ValueStoreResult.ERROR_UPDATING_VALUE -> {
                     loading.postValue(false)
                     showToast.value = R.string.update_field_error
-                    processCalculatedItems()
+                    processCalculatedItems(true)
                 }
                 ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                     Timber.tag(TAG)
@@ -249,18 +249,20 @@ class FormViewModel(
         ValueStoreResult.VALUE_HAS_NOT_CHANGED
     )
 
-    fun valueTypeIsTextField(valueType: ValueType, renderType: UiRenderType? = null): Boolean {
-        return valueType.isNumeric ||
-            valueType.isText && renderType?.isPolygon() != true ||
-            valueType == ValueType.URL ||
-            valueType == ValueType.EMAIL ||
-            valueType == ValueType.PHONE_NUMBER
+    fun valueTypeIsTextField(valueType: ValueType?, renderType: UiRenderType? = null): Boolean {
+        return if (valueType == null) {
+            false
+        } else {
+            valueType.isNumeric ||
+                    valueType.isText && renderType?.isPolygon() != true ||
+                    valueType == ValueType.URL ||
+                    valueType == ValueType.EMAIL ||
+                    valueType == ValueType.PHONE_NUMBER
+        }
     }
 
     private fun getLastFocusedTextItem() = repository.currentFocusedItem()?.takeIf {
-        it.valueType?.let { valueType ->
-            valueTypeIsTextField(valueType, it.renderingType)
-        } ?: false
+        it.optionSet == null && valueTypeIsTextField(it.valueType, it.renderingType)
     }
 
     private fun getSaveIntent(field: FieldUiModel) = when (field.valueType) {
