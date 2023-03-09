@@ -7,7 +7,6 @@ import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.form.model.DispatcherProvider;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
