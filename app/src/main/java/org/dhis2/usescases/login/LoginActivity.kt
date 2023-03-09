@@ -15,8 +15,6 @@ import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -37,7 +35,6 @@ import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.Constants.SERVER
 import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.Constants.USER
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
@@ -75,10 +72,9 @@ const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var loginViewModel: LoginViewModel
 
     @Inject
-    lateinit var presenter: LoginPresenter
+    lateinit var presenter: LoginViewModel
 
     @Inject
     lateinit var openIdProviders: OpenIdProviders
@@ -122,14 +118,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.LoginTheme)
-        var loginComponent = app().loginComponent()
-        if (loginComponent == null) {
-            // in case if we don't have cached presenter
-            loginComponent = (applicationContext as App).createLoginComponent(this)
-        }
-        val serverComponent = (applicationContext as App).serverComponent
-        serverComponent?.let {
-            userManager = serverComponent.userManager()
+        val loginComponent = app().loginComponent() ?: app().createLoginComponent(
+            LoginModule(this, this)
+        )
+
+        app().serverComponent?.let {
+            userManager = it.userManager()
         }
 
         loginComponent.inject(this)
@@ -143,27 +137,22 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
 
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
-        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
         binding.presenter = presenter
-        binding.loginModel = loginViewModel
         setLoginVisibility(false)
 
-        loginViewModel.isDataComplete.observe(
-            this,
-            Observer<Boolean> { this.setLoginVisibility(it) }
-        )
+        presenter.isDataComplete.observe(this) { this.setLoginVisibility(it) }
 
-        loginViewModel.isTestingEnvironment.observe(
-            this,
-            Observer<Trio<String, String, String>> { testingEnvironment ->
-                binding.root.closeKeyboard()
-                binding.serverUrlEdit.setText(testingEnvironment.val0())
-                binding.userNameEdit.setText(testingEnvironment.val1())
-                binding.userPassEdit.setText(testingEnvironment.val2())
-            }
-        )
+        presenter.isTestingEnvironment.observe(
+            this
+        ) { testingEnvironment ->
+            binding.root.closeKeyboard()
+            binding.serverUrlEdit.setText(testingEnvironment.val0())
+            binding.userNameEdit.setText(testingEnvironment.val1())
+            binding.userPassEdit.setText(testingEnvironment.val2())
+        }
 
         openIdProviders.loadOpenIdProvider {
             showLoginOptions(it.takeIf { it.hasConfiguration() })
@@ -238,7 +227,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 writer.toString(),
                 object : TypeToken<List<TestingCredential>>() {}.type
             )
-            loginViewModel.setTestingCredentials(testingCredentials)
+            presenter.setTestingCredentials(testingCredentials)
         }
     }
 
@@ -514,7 +503,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
         serverUrl?.let { binding.serverUrlEdit.setText(it) }
         binding.userNameEdit.setText(userName ?: "")
-        loginViewModel.setAccountInfo(serverUrl, userName)
+        presenter.setAccountInfo(serverUrl, userName)
         binding.userPassEdit.text = null
 //        skipSync = wasAccountClicked
         if (wasAccountClicked) {
