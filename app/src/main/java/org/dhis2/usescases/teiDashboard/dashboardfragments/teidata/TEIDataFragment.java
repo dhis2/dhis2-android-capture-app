@@ -47,7 +47,6 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.databinding.FragmentTeiDataBinding;
@@ -86,7 +85,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
+public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -388,12 +387,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
                             @Override
                             public void onNegative() {
-                                if (programStageFromEvent.remindCompleted())
+                                if (Boolean.TRUE.equals(programStageFromEvent.remindCompleted()))
                                     presenter.areEventsCompleted();
                             }
                         });
                 dialog.show();
-            } else if (programStageModel.remindCompleted())
+            } else if (Boolean.TRUE.equals(programStageModel.remindCompleted()))
                 showDialogCloseProgram();
         };
     }
@@ -619,9 +618,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
-        ouTreeFragment.setSelectionCallback(this);
-        ouTreeFragment.show(getChildFragmentManager(), "OUTreeFragment");
+        new OUTreeFragment.Builder()
+                .showAsDialog()
+                .withPreselectedOrgUnits(
+                        FilterManager.getInstance().getOrgUnitUidsFilters()
+                )
+                .onSelection(selectedOrgUnits -> {
+                    presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+                    return Unit.INSTANCE;
+                })
+                .build().show(getChildFragmentManager(), "OUTreeFragment");
     }
 
     @Override
@@ -648,10 +654,5 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     return null;
                 }
         );
-    }
-
-    @Override
-    public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
-        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 }

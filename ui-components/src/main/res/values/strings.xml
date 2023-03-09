@@ -10,4 +10,8 @@
     <string name="clear">Clear</string>
     <string name="draw_here">Draw here</string>
     <string name="button_extended">Extended Button</string>
+    <string name="action_done">Done</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="hint_search">Search</string>
+    <string name="action_clear_all">Clear all</string>
 </resources>

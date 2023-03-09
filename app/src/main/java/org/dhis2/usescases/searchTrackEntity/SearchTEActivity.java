@@ -29,7 +29,6 @@ import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
@@ -59,7 +58,7 @@ import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
 
-public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
+public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View {
 
     ActivitySearchBinding binding;
     SearchScreenConfigurator searchScreenConfigurator;
@@ -581,14 +580,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openOrgUnitTreeSelector() {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
-        ouTreeFragment.setSelectionCallback(this);
-        ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
-    }
-
-    @Override
-    public void onSelectionFinished(List<? extends OrganisationUnit> selectedOrgUnits) {
-        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+        new OUTreeFragment.Builder()
+                .showAsDialog()
+                .withPreselectedOrgUnits(
+                        FilterManager.getInstance().getOrgUnitUidsFilters()
+                )
+                .onSelection(selectedOrgUnits -> {
+                    presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+                    return Unit.INSTANCE;
+                })
+                .build()
+                .show(getSupportFragmentManager(), "OUTreeFragment");
     }
 
     @Override

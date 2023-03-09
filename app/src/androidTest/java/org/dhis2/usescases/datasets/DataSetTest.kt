@@ -10,6 +10,7 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,8 +58,9 @@ class DataSetTest : BaseTest() {
         }
         dataSetInitialRobot {
             clickOnInputOrgUnit()
-            selectOrgUnit(orgUnit)
-            clickOnAcceptButton()
+            orgUnitSelectorRobot(composeTestRule){
+                selectTreeOrgUnit(orgUnit)
+            }
             clickOnInputPeriod()
             selectPeriod(period)
             clickOnActionButton()

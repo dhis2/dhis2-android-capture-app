@@ -24,8 +24,7 @@ import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.orgunitselector.OUTreeFragment.Companion.newInstance
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
+import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
@@ -42,14 +41,12 @@ import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 
 class ProgramEventDetailActivity :
     ActivityGlobalAbstract(),
-    ProgramEventDetailView,
-    OnOrgUnitSelectionFinished {
+    ProgramEventDetailView {
 
     private lateinit var binding: ActivityProgramEventDetailBinding
 
@@ -329,13 +326,14 @@ class ProgramEventDetailActivity :
     }
 
     override fun openOrgUnitTreeSelector() {
-        val ouTreeFragment = newInstance(true, FilterManager.getInstance().orgUnitUidsFilters)
-        ouTreeFragment.selectionCallback = this
-        ouTreeFragment.show(supportFragmentManager, "OUTreeFragment")
-    }
-
-    override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
-        presenter.setOrgUnitFilters(selectedOrgUnits)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(FilterManager.getInstance().orgUnitUidsFilters)
+            .onSelection { selectedOrgUnits ->
+                presenter.setOrgUnitFilters(selectedOrgUnits)
+            }
+            .build()
+            .show(supportFragmentManager, "OUTreeFragment")
     }
 
     override fun showTutorial(shaked: Boolean) {

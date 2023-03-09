@@ -36,6 +36,7 @@ import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
@@ -52,7 +53,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
-import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.optionset.OptionSetDialog
 import org.dhis2.utils.optionset.OptionSetDialog.Companion.TAG
@@ -455,25 +455,17 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         orgUnits: List<OrganisationUnit>,
         updateCellValue: (TableCell) -> Unit
     ) {
-        val orgUnitDialog = OrgUnitDialog()
-        orgUnitDialog.setTitle(dataElement.displayFormName())
-            .setMultiSelection(false)
-            .setOrgUnits(orgUnits)
-            .setPossitiveListener {
-                val updatedCellValue = cell.copy(value = orgUnitDialog.selectedOrgUnit)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .singleSelection()
+            .withPreselectedOrgUnits(cell.value?.let { listOf(it) } ?: emptyList())
+            .onSelection { selectedOrgUnits ->
+                val updatedCellValue = cell.copy(value = selectedOrgUnits[0].uid())
                 updateCellValue(updatedCellValue)
                 presenterFragment.onSaveValueChange(updatedCellValue)
-                orgUnitDialog.dismiss()
             }
-            .setNegativeListener {
-                orgUnitDialog.dismiss()
-            }
-        if (!orgUnitDialog.isAdded) {
-            orgUnitDialog.show(
-                parentFragmentManager,
-                dataElement.displayFormName()
-            )
-        }
+            .build()
+            .show(childFragmentManager, dataElement.displayFormName())
     }
 
     override fun showOptionSetDialog(

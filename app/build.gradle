@@ -257,7 +257,6 @@ dependencies {
     dhisPlayServicesImplementation libs.google.authApiPhone
     implementation libs.google.flexbox
     implementation libs.google.guava
-    implementation libs.github.androidTreeView
     implementation libs.github.pinlock
     implementation libs.github.fancyshowcase
     implementation libs.animation.lottie
@@ -309,4 +308,5 @@ dependencies {
     implementation(platform(libs.dispatcher.dispatchBOM))
     implementation(libs.dispatcher.dispatchCore)
     androidTestImplementation(libs.dispatcher.dispatchEspresso)
+    testImplementation libs.test.turbine
 }

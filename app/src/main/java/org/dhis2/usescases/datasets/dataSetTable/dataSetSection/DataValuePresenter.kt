@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
@@ -19,7 +20,6 @@ import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_HAS_NOT_CHANGED

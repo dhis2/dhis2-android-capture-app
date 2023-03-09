@@ -8,12 +8,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.SuccessfulResult
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.intent.FormIntent

@@ -31,7 +31,6 @@ def material = "1.8.0"
 def flexbox = "3.0.0"
 def material3 = "1.0.1"
 def themeAdapter = "0.28.0"
-def atv = "1.2.9"
 def pinlock = "2.1.0"
 def fancyshowcase = "1.1.5"
 def lottie = "3.4.0"
@@ -198,7 +197,6 @@ ext.libs = [
         ],
 
         github        : [
-                'androidTreeView': "com.github.bmelnychuk:atv:$atv",
                 'pinlock'        : "com.github.aritraroy:PinLockView:$pinlock",
                 'fancyshowcase'  : "com.github.faruktoptas:FancyShowCaseView:$fancyshowcase",
                 'glide'          : "com.github.bumptech.glide:glide:$glide",
@@ -272,7 +270,7 @@ ext.libs = [
                 'composeUiTestJUnit'      : "androidx.compose.ui:ui-test-junit4:$compose_ui_test",
                 'composeUiTestManifest'   : "androidx.compose.ui:ui-test-manifest:$compose_ui_test",
                 'hamcrest'                : "org.hamcrest:hamcrest:$hamcrest",
-                'turbine'                 : "app.cash.turbine:turbine:0.3.0", //Todo: I think we are not using this,
+                'turbine'                 : "app.cash.turbine:turbine:0.12.1", //Todo: I think we are not using this,
                 'javafaker'               : "com.github.javafaker:javafaker:$javafaker"
         ],
 

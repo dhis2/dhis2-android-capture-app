@@ -3,7 +3,7 @@ package org.dhis2.usescases.searchTrackEntity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
 
 @Suppress("UNCHECKED_CAST")
