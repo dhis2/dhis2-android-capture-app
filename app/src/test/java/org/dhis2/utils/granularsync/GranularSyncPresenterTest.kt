@@ -17,9 +17,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.SyncContext
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State

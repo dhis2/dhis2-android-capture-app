@@ -56,10 +56,10 @@ import org.dhis2.commons.sync.ConflictType.EVENT
 import org.dhis2.commons.sync.ConflictType.PROGRAM
 import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.commons.sync.SyncContext
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -140,7 +142,13 @@ fun BottomSheetDialogUi(
         }
         extraContent?.let {
             Divider()
-            it.invoke()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 250.dp)
+            ) {
+                it.invoke()
+            }
         }
 
         if (bottomSheetDialogUiModel.hasButtons()) {
@@ -295,6 +303,12 @@ fun DialogPreview3() {
 fun DialogPreview4() {
     val fieldsWithIssues = listOf(
         FieldWithIssue("Uid", "Age", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
         FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text")
     )
     BottomSheetDialogUi(
