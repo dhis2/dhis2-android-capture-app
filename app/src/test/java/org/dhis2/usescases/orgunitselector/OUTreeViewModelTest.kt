@@ -2,12 +2,10 @@ package org.dhis2.usescases.orgunitselector
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doReturnConsecutively
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Single
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,41 +47,53 @@ class OUTreeViewModelTest {
     }
 
     @Test
-    fun `Should set top level org unit`() {
-        val orgUnits = mutableListOf(dummyOrgUnit(1), dummyOrgUnit(2))
+    fun `Should set initial org units`() {
+        val orgUnit1 = dummyOrgUnit(1)
+        val orgUnit2 = dummyOrgUnit(2, parent = orgUnit1)
+        val orgUnits = listOf(orgUnit1, orgUnit2)
 
         whenever(
             repository.orgUnits()
-        ) doReturn Single.just(orgUnits)
+        ) doReturn orgUnits.map { it.uid() }
 
         whenever(
-            repository.orgUnitHasChildren(orgUnits[0].uid())
-        ) doReturn false
+            repository.orgUnit(any())
+        ) doReturnConsecutively orgUnits
 
         whenever(
-            repository.countSelectedChildren(orgUnits[0].uid(), emptyList())
-        ) doReturn 0
+            repository.canBeSelected(any())
+        ) doReturnConsecutively listOf(true, true)
 
         whenever(
-            repository.orgUnits(orgUnits[0].uid())
-        ) doReturn Single.just(mutableListOf())
+            repository.orgUnitHasChildren(any())
+        ) doReturnConsecutively listOf(true, false)
+
+        whenever(
+            repository.countSelectedChildren(any(), any())
+        ) doReturnConsecutively listOf(0, 0)
 
         viewModel = OUTreeViewModel(repository, mutableListOf(), false, dispatchers)
         testingDispatcher.scheduler.advanceUntilIdle()
 
-        assertTrue(viewModel.treeNodes.value.size == 1)
+        assertTrue(viewModel.treeNodes.value.size == 2)
         assertTrue(viewModel.treeNodes.value[0].uid == orgUnits[0].uid())
+        assertTrue(viewModel.treeNodes.value[1].uid == orgUnits[1].uid())
     }
 
     @Test
     fun `Should open and close children`() {
-        val orgUnits = mutableListOf(dummyOrgUnit(1))
-        val childOrgUnits = mutableListOf(dummyOrgUnit(2), dummyOrgUnit(2))
-        val parentOrgUnit = orgUnits[0].uid()
-        defaultViewModelInit(orgUnits, childOrgUnits)
-
+        val parentOrgUnit = dummyOrgUnit(1)
+        val childOrgUnits = listOf(
+            dummyOrgUnit(2, parent = parentOrgUnit),
+            dummyOrgUnit(2, parent = parentOrgUnit)
+        )
+        val orgUnits = listOf(parentOrgUnit) + childOrgUnits
+        defaultViewModelInit(orgUnits)
         assertTrue(viewModel.treeNodes.value.size == 3)
-        viewModel.onOpenChildren(parentOrgUnit)
+
+        whenever(repository.childrenOrgUnits(parentOrgUnit.uid())) doReturn childOrgUnits
+
+        viewModel.onOpenChildren(parentOrgUnit.uid())
         testingDispatcher.scheduler.advanceUntilIdle()
         assertTrue(viewModel.treeNodes.value.size == 1)
     }
@@ -91,33 +101,34 @@ class OUTreeViewModelTest {
     @Test
     fun `Should search by name`() {
         val parentOrgUnit = dummyOrgUnit(1)
-        val orgUnits = mutableListOf(parentOrgUnit)
-        val childOrgUnits = mutableListOf(
+        val childOrgUnits = listOf(
             dummyOrgUnit(2, "ABC", parentOrgUnit),
             dummyOrgUnit(2, "DEF", parentOrgUnit)
         )
+        val orgUnits = listOf(parentOrgUnit) + childOrgUnits
         val searchInput = "ABC"
-        defaultViewModelInit(orgUnits, childOrgUnits)
+
+        defaultViewModelInit(orgUnits)
 
         whenever(
             repository.orgUnits(searchInput)
-        ) doReturn Single.just(mutableListOf(childOrgUnits[0]))
+        ) doReturn listOf(parentOrgUnit.uid(), childOrgUnits[0].uid())
 
         whenever(
-            repository.orgUnit(parentOrgUnit.uid())
-        ) doReturn parentOrgUnit
-        whenever(
             repository.orgUnit(childOrgUnits[0].uid())
-        ) doReturn childOrgUnits[0]
+        ) doReturnConsecutively listOf(parentOrgUnit, childOrgUnits[0])
+
         whenever(
-            repository.orgUnitHasChildren(childOrgUnits[0].uid())
-        ) doReturn false
+            repository.canBeSelected(any())
+        ) doReturnConsecutively listOf(true, true)
+
         whenever(
-            repository.countSelectedChildren(
-                childOrgUnits[0].uid(),
-                emptyList()
-            )
-        ) doReturn 0
+            repository.orgUnitHasChildren(any())
+        ) doReturnConsecutively listOf(true, false)
+
+        whenever(
+            repository.countSelectedChildren(any(), any())
+        ) doReturnConsecutively listOf(0, 0)
 
         viewModel.searchByName(searchInput)
         testingDispatcher.scheduler.advanceUntilIdle()
@@ -127,12 +138,13 @@ class OUTreeViewModelTest {
     @Test
     fun `Should only check one item`() {
         val parentOrgUnit = dummyOrgUnit(1)
-        val orgUnits = mutableListOf(parentOrgUnit)
         val childOrgUnits = mutableListOf(
             dummyOrgUnit(2, "ABC", parentOrgUnit),
             dummyOrgUnit(2, "DEF", parentOrgUnit)
         )
-        defaultViewModelInit(orgUnits, childOrgUnits, true)
+        val orgUnits = mutableListOf(parentOrgUnit) + childOrgUnits
+
+        defaultViewModelInit(orgUnits, true)
 
         assertTrue(
             viewModel.treeNodes.value.all { !it.selected }
@@ -156,12 +168,13 @@ class OUTreeViewModelTest {
     @Test
     fun `Should only check multiple items`() {
         val parentOrgUnit = dummyOrgUnit(1)
-        val orgUnits = mutableListOf(parentOrgUnit)
         val childOrgUnits = mutableListOf(
             dummyOrgUnit(2, "ABC", parentOrgUnit),
             dummyOrgUnit(2, "DEF", parentOrgUnit)
         )
-        defaultViewModelInit(orgUnits, childOrgUnits)
+        val orgUnits = mutableListOf(parentOrgUnit) + childOrgUnits
+
+        defaultViewModelInit(orgUnits)
 
         assertTrue(
             viewModel.treeNodes.value.all { !it.selected }
@@ -186,7 +199,7 @@ class OUTreeViewModelTest {
             dummyOrgUnit(2, "ABC", parentOrgUnit),
             dummyOrgUnit(2, "DEF", parentOrgUnit)
         )
-        defaultViewModelInit(orgUnits, childOrgUnits)
+        defaultViewModelInit(orgUnits)
 
         viewModel.onOrgUnitCheckChanged(childOrgUnits[0].uid(), true)
         testingDispatcher.scheduler.advanceUntilIdle()
@@ -199,24 +212,28 @@ class OUTreeViewModelTest {
     }
 
     private fun defaultViewModelInit(
-        orgUnits: MutableList<OrganisationUnit>,
-        childOrgUnits: MutableList<OrganisationUnit>,
+        orgUnits: List<OrganisationUnit>,
         singleSelection: Boolean = false
     ) {
         whenever(
-            repository.orgUnits(anyOrNull(), anyOrNull())
-        ) doReturnConsecutively listOf(
-            Single.just(orgUnits),
-            Single.just(childOrgUnits)
-        )
+            repository.orgUnits()
+        ) doReturn orgUnits.map { it.uid() }
+
+        whenever(
+            repository.orgUnit(any())
+        ) doReturnConsecutively orgUnits
+
+        whenever(
+            repository.canBeSelected(any())
+        ) doReturnConsecutively listOf(true, true)
 
         whenever(
             repository.orgUnitHasChildren(any())
-        ) doReturnConsecutively listOf(true, false, false)
+        ) doReturnConsecutively listOf(true, false)
 
         whenever(
-            repository.countSelectedChildren(orgUnits[0].uid(), emptyList())
-        ) doReturnConsecutively listOf(0, 0, 0)
+            repository.countSelectedChildren(any(), any())
+        ) doReturnConsecutively listOf(0, 0)
 
         viewModel = OUTreeViewModel(repository, mutableListOf(), singleSelection, dispatchers)
         testingDispatcher.scheduler.advanceUntilIdle()
