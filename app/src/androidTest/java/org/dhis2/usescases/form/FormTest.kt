@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
@@ -197,7 +198,9 @@ class FormTest: BaseTest() {
             typeAttributeAtPosition("optionGroup", 1)
             clickOnSearch()
             clickOnEnroll()
-            selectAnOrgUnit("Ngelehun CHC")
+            orgUnitSelectorRobot(composeTestRule){
+                selectTreeOrgUnit("Ngelehun CHC")
+            }
             clickOnAcceptButton()
             acceptDate()
         }
@@ -234,7 +237,9 @@ class FormTest: BaseTest() {
             typeAttributeAtPosition("abc", 1)
             clickOnSearch()
             clickOnEnroll()
-            selectAnOrgUnit("Ngelehun CHC")
+            orgUnitSelectorRobot(composeTestRule){
+                selectTreeOrgUnit("Ngelehun CHC")
+            }
             clickOnAcceptButton()
             acceptDate()
         }

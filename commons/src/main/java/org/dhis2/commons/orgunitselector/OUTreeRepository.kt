@@ -1,6 +1,6 @@
 package org.dhis2.commons.orgunitselector
 
-import io.reactivex.Single
+import org.dhis2.commons.bindings.addIf
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -10,17 +10,15 @@ class OUTreeRepository(
     private val d2: D2,
     private val orgUnitSelectorScope: OrgUnitSelectorScope
 ) {
+    private var cachedOrgUnits: List<String> = emptyList()
+    private var availableOrgUnits: List<String> = emptyList()
 
-    fun orgUnits(
-        parentUid: String? = null,
-        name: String? = null
-    ): Single<MutableList<OrganisationUnit>> {
+    fun orgUnits(name: String? = null): List<String> {
         var orgUnitRepository = d2.organisationUnitModule().organisationUnits()
             .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
 
         orgUnitRepository = when {
-            parentUid != null -> orgUnitRepository.byParentUid().eq(parentUid)
-            name != null -> orgUnitRepository.byDisplayName().like("%$name%")
+            !name.isNullOrEmpty() -> orgUnitRepository.byDisplayName().like("%$name%")
             else -> orgUnitRepository
         }
 
@@ -47,26 +45,55 @@ class OUTreeRepository(
                 orgUnitRepository
         }
 
-        return orgUnitRepository.get()
+        val orderedList = mutableListOf<String>()
+        val orgUnits = orgUnitRepository.blockingGet()
+        availableOrgUnits = orgUnits.map { it.uid() }
+        orgUnits.forEach { org ->
+            org.path()?.split("/")
+                ?.filter { it.isNotEmpty() }
+                ?.forEach { str ->
+                    orderedList.addIf(!orderedList.contains(str), str)
+                }
+            orderedList.addIf(!orderedList.contains(org.uid()), org.uid())
+        }
+        cachedOrgUnits = orderedList
+
+        return orderedList
+    }
+
+    fun childrenOrgUnits(parentUid: String? = null): List<OrganisationUnit> {
+        val childrenOrgUnits = d2.organisationUnitModule().organisationUnits()
+            .byParentUid().eq(parentUid)
+            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+            .blockingGet()
+        return childrenOrgUnits.filter {
+            cachedOrgUnits.contains(it.uid())
+        }
     }
 
     fun orgUnit(uid: String): OrganisationUnit? =
         d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet()
 
+    fun canBeSelected(orgUnitUid: String): Boolean =
+        availableOrgUnits.any { it == orgUnitUid }
+
     fun orgUnitHasChildren(uid: String): Boolean {
         var repository = d2.organisationUnitModule().organisationUnits()
             .byParentUid().eq(uid)
+        val byScope = availableOrgUnits.contains(uid)
 
-        repository = when (orgUnitSelectorScope) {
-            is OrgUnitSelectorScope.DataSetCaptureScope,
-            is OrgUnitSelectorScope.DataSetSearchScope ->
-                repository.byDataSetUids(listOf(orgUnitSelectorScope.uid))
-            is OrgUnitSelectorScope.ProgramCaptureScope,
-            is OrgUnitSelectorScope.ProgramSearchScope ->
-                repository.byProgramUids(listOf(orgUnitSelectorScope.uid))
-            is OrgUnitSelectorScope.UserCaptureScope,
-            is OrgUnitSelectorScope.UserSearchScope ->
-                repository
+        if (byScope) {
+            repository = when (orgUnitSelectorScope) {
+                is OrgUnitSelectorScope.DataSetCaptureScope,
+                is OrgUnitSelectorScope.DataSetSearchScope ->
+                    repository.byDataSetUids(listOf(orgUnitSelectorScope.uid))
+                is OrgUnitSelectorScope.ProgramCaptureScope,
+                is OrgUnitSelectorScope.ProgramSearchScope ->
+                    repository.byProgramUids(listOf(orgUnitSelectorScope.uid))
+                is OrgUnitSelectorScope.UserCaptureScope,
+                is OrgUnitSelectorScope.UserSearchScope ->
+                    repository
+            }
         }
 
         return !repository.blockingIsEmpty()
