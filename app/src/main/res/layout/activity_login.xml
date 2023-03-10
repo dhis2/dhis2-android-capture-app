@@ -292,7 +292,7 @@
                     style="@style/LoginButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="@{()-> presenter.onButtonClick()}"
+                    android:onClick="@{()-> presenter.onLoginButtonClick()}"
                     android:text="@string/log_in_button"
                     app:layout_constraintTop_toTopOf="parent"/>
 

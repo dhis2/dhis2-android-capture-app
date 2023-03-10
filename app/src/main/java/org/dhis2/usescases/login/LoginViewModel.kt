@@ -2,8 +2,6 @@ package org.dhis2.usescases.login
 
 import android.content.Intent
 import android.os.Build
-import androidx.annotation.RestrictTo
-import androidx.annotation.RestrictTo.Scope
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,9 +12,6 @@ import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
-import org.dhis2.commons.Constants.SERVER
-import org.dhis2.commons.Constants.USER
-import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.network.NetworkUtils
@@ -39,6 +34,7 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.dhis2.utils.analytics.USER_PROPERTY_SERVER
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
@@ -55,11 +51,11 @@ class LoginViewModel(
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
-    private val network: NetworkUtils
+    private val network: NetworkUtils,
+    private var userManager: UserManager?
 ) : ViewModel() {
 
-    private var userManager: UserManager? = null
-    private lateinit var syncIsPerformedInteractor: SyncIsPerformedInteractor
+    private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
@@ -70,10 +66,10 @@ class LoginViewModel(
     val isDataComplete = MutableLiveData<Boolean>()
     val isTestingEnvironment = MutableLiveData<Trio<String, String, String>>()
     var testingCredentials: MutableMap<String, TestingCredential>? = null
+    private val _loginProgressVisible = MutableLiveData(false)
+    val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
 
-    fun init(userManager: UserManager?) {
-        this.userManager = userManager
-        syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
+    init {
         this.userManager?.let {
             disposable.add(
                 it.isUserLoggedIn
@@ -109,9 +105,9 @@ class LoginViewModel(
         } ?: view.setUrl(view.getDefaultServerProtocol())
     }
 
-    fun trackServerVersion() {
+    private fun trackServerVersion() {
         userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version()
-            ?.let { analyticsHelper.trackMatomoEvent(SERVER, VERSION, it) }
+            ?.let { analyticsHelper.trackMatomoEvent(USER_PROPERTY_SERVER, VERSION, it) }
     }
 
     fun checkServerInfoAndShowBiometricButton() {
@@ -124,9 +120,7 @@ class LoginViewModel(
                         { systemInfo ->
                             if (systemInfo.contextPath() != null) {
                                 view.setUrl(systemInfo.contextPath() ?: "")
-                                preferenceProvider.getString(USER, "")?.also {
-                                    view.setUser(it)
-                                }
+                                view.setUser(userManager.userName().blockingGet())
                             } else {
                                 val isSessionLocked =
                                     preferenceProvider.getBoolean(SESSION_LOCKED, false)
@@ -182,53 +176,42 @@ class LoginViewModel(
         }
     }
 
-    fun onButtonClick() {
+    fun onLoginButtonClick() {
         view.hideKeyboard()
         analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-        if (!preferenceProvider.getBoolean(USER_ASKED_CRASHLYTICS, false)) {
-            view.showCrashlyticsDialog()
-        } else {
-            view.showLoginProgress(true)
-        }
+        logIn()
     }
 
-    fun logIn(serverUrl: String, userName: String, pass: String) {
+    private fun logIn() {
+        _loginProgressVisible.postValue(true)
         disposable.add(
             Observable.just(
                 (view.abstracContext.applicationContext as App).createServerComponent()
                     .userManager()
             )
                 .flatMap { userManager ->
-                    preferenceProvider.setValue(SERVER, "$serverUrl/api")
                     this.userManager = userManager
-                    userManager.logIn(userName.trim { it <= ' ' }, pass, serverUrl)
-                        .map<Response<Any>> { user ->
+                    userManager.logIn(
+                        userName.value!!.trim { it <= ' ' },
+                        password.value!!,
+                        serverUrl.value!!
+                    )
+                        .map {
                             run {
                                 with(preferenceProvider) {
-                                    setValue(
-                                        USER,
-                                        userManager.d2.userModule()
-                                            .userCredentials()
-                                            .blockingGet()
-                                            .username()
-                                    )
                                     setValue(SESSION_LOCKED, false)
                                 }
                                 deletePin()
-                                trackUserInfo()
                                 Response.success<Any>(null)
                             }
                         }
                 }
+                .doOnNext { _loginProgressVisible.postValue(false) }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
-                    {
-                        this.handleResponse(it, userName, serverUrl)
-                    },
-                    {
-                        this.handleError(it, serverUrl, userName, pass)
-                    }
+                    this::handleResponse,
+                    this::handleError
                 )
         )
     }
@@ -263,40 +246,24 @@ class LoginViewModel(
                     .map<Response<Any>> { user ->
                         run {
                             with(preferenceProvider) {
-                                setValue(
-                                    USER,
-                                    userManager.d2.userModule()
-                                        .userCredentials()
-                                        .blockingGet()
-                                        .username()
-                                )
                                 setValue(SESSION_LOCKED, false)
-                                setValue(SERVER, "$serverUrl/api")
                             }
                             deletePin()
-                            trackUserInfo()
-                            Response.success<Any>(null)
+                            Response.success(null)
                         }
                     }.subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe(
-                        {
-                            this.handleResponse(it, "", serverUrl)
-                        },
-                        {
-                            this.handleError(it, serverUrl, "", "")
-                        }
+                        this::handleResponse,
+                        this::handleError
                     )
             )
         }
     }
 
     private fun trackUserInfo() {
-        val username = preferenceProvider.getString(USER)
-        val server = preferenceProvider.getString(SERVER)
-
-        crashReportController.trackServer(server)
-        crashReportController.trackUser(username, server)
+        crashReportController.trackServer(serverUrl.value)
+        crashReportController.trackUser(userName.value, serverUrl.value)
     }
 
     fun onQRClick() {
@@ -326,42 +293,52 @@ class LoginViewModel(
     }
 
     @VisibleForTesting
-    fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
-        view.showLoginProgress(false)
-
+    fun handleResponse(userResponse: Response<*>) {
         if (userResponse.isSuccessful) {
-            trackServerVersion()
+            updateServerUrls()
+            updateLoginUsers()
+            val displayTrackingMessage = hasToDisplayTrackingMessage()
             val isInitialSyncDone = syncIsPerformedInteractor.execute()
-            val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
-            if (!updatedServer.contains(server)) {
-                updatedServer.add(server)
-            }
-            val updatedUsers = (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet)
-            if (!updatedUsers.contains(userName)) {
-                updatedUsers.add(userName)
-            }
-
-            preferenceProvider.setValue(PREFS_URLS, updatedServer)
-            preferenceProvider.setValue(PREFS_USERS, updatedUsers)
-
-            view.saveUsersData(isInitialSyncDone)
+            view.saveUsersData(displayTrackingMessage, isInitialSyncDone)
         }
     }
 
-    private fun handleError(
-        throwable: Throwable,
-        serverUrl: String,
-        userName: String,
-        pass: String
-    ) {
+    private fun updateServerUrls() {
+        (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet).apply {
+            serverUrl.value?.let {
+                if (!contains(it)) {
+                    add(it)
+                }
+                preferenceProvider.setValue(PREFS_URLS, this)
+            }
+        }
+    }
+
+    private fun updateLoginUsers() {
+        (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet).apply {
+            userName.value?.let {
+                if (!contains(it)) {
+                    add(it)
+                }
+                preferenceProvider.setValue(PREFS_USERS, this)
+            }
+        }
+    }
+
+    private fun handleError(throwable: Throwable) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
             userManager?.d2?.userModule()?.blockingLogOut()
-            logIn(serverUrl, userName, pass)
+            logIn()
         } else {
             view.renderError(throwable)
         }
-        view.showLoginProgress(false)
+    }
+
+    private fun hasToDisplayTrackingMessage(): Boolean {
+        return userManager?.d2?.dataStoreModule()?.localDataStore()
+            ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
+            ?.blockingGet()?.value() == null
     }
 
     fun stopReadingFingerprint() {
@@ -372,13 +349,23 @@ class LoginViewModel(
         return canHandleBiometrics
     }
 
-    fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
+    fun areSameCredentials(): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+            preferenceProvider.areSameCredentials(
+                serverUrl.value!!,
+                userName.value!!,
+                password.value!!
+            ).also { areSameCredentials ->
+                if (!areSameCredentials) saveUserCredentials()
+            }
     }
 
-    fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
-        preferenceProvider.saveUserCredentials(serverUrl, userName, pass)
+    private fun saveUserCredentials() {
+        preferenceProvider.saveUserCredentials(
+            serverUrl.value!!,
+            userName.value!!,
+            ""
+        )
     }
 
     fun onFingerprintClick() {
@@ -468,16 +455,14 @@ class LoginViewModel(
         view.openAccountsActivity()
     }
 
-    // TODO Remove this when we remove the userManager from the presenter
-    @RestrictTo(Scope.TESTS)
-    fun setUserManager(userManager: UserManager) {
-        this.userManager = userManager
-    }
-
-    fun updateAnalytics(activate: Boolean) {
+    fun grantTrackingPermissions(granted: Boolean) {
         userManager?.d2?.dataStoreModule()?.localDataStore()
             ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            ?.set(activate.toString())
+            ?.blockingSet(granted.toString())
+        if (granted) {
+            trackServerVersion()
+            trackUserInfo()
+        }
     }
 
     private fun deletePin() {
@@ -490,14 +475,6 @@ class LoginViewModel(
     companion object {
         const val EMPTY_CREDENTIALS = "Empty credentials"
         const val AUTH_ERROR = "AUTH ERROR"
-    }
-
-    fun isDataComplete(): LiveData<Boolean> {
-        return isDataComplete
-    }
-
-    fun isTestingEnvironment(): LiveData<Trio<String, String, String>> {
-        return isTestingEnvironment
     }
 
     fun onServerChanged(serverUrl: CharSequence, start: Int, before: Int, count: Int) {

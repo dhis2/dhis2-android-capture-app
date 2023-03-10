@@ -21,13 +21,14 @@ class LoginContracts {
         fun setAutocompleteAdapters()
 
         @UiThread
-        fun saveUsersData(isInitialSyncDone: Boolean)
+        fun saveUsersData(
+            displayTrackingMessage: Boolean,
+            isInitialSyncDone: Boolean
+        )
 
         fun handleLogout()
 
         fun setLoginVisibility(isVisible: Boolean)
-
-        fun showLoginProgress(showLogin: Boolean)
 
         fun goToNextScreen()
 

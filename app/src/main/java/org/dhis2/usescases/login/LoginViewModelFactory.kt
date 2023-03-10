@@ -7,6 +7,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.fingerprint.FingerPrintController
+import org.dhis2.data.server.UserManager
 import org.dhis2.utils.analytics.AnalyticsHelper
 
 class LoginViewModelFactory(
@@ -16,7 +17,8 @@ class LoginViewModelFactory(
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
-    private val networkUtils: NetworkUtils
+    private val networkUtils: NetworkUtils,
+    private val userManager: UserManager?
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return LoginViewModel(
@@ -26,7 +28,8 @@ class LoginViewModelFactory(
             fingerPrintController,
             analyticsHelper,
             crashReportController,
-            networkUtils
+            networkUtils,
+            userManager
         ) as T
     }
 }

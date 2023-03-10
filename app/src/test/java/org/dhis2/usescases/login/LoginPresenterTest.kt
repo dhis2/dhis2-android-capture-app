@@ -41,7 +41,7 @@ import retrofit2.Response
 
 class LoginPresenterTest {
 
-    private lateinit var loginPresenter: LoginPresenter
+    private lateinit var loginPresenter: LoginViewModel
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
 
     private val preferenceProvider: PreferenceProvider = mock()
@@ -56,7 +56,7 @@ class LoginPresenterTest {
     @Before
     fun setup() {
         loginPresenter =
-            LoginPresenter(
+            LoginViewModel(
                 view,
                 preferenceProvider,
                 schedulers,
@@ -148,7 +148,7 @@ class LoginPresenterTest {
                 false
             )
         ) doReturn false
-        loginPresenter.onButtonClick()
+        loginPresenter.onLoginButtonClick()
 
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
@@ -163,7 +163,7 @@ class LoginPresenterTest {
                 false
             )
         ) doReturn true
-        loginPresenter.onButtonClick()
+        loginPresenter.onLoginButtonClick()
 
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
@@ -255,11 +255,11 @@ class LoginPresenterTest {
     fun `Should display message when authenticate throws an error`() {
         whenever(
             goldfinger.authenticate(view.getPromptParams())
-        ) doReturn Observable.error(Exception(LoginPresenter.AUTH_ERROR))
+        ) doReturn Observable.error(Exception(LoginViewModel.AUTH_ERROR))
 
         loginPresenter.onFingerprintClick()
 
-        verify(view).displayMessage(LoginPresenter.AUTH_ERROR)
+        verify(view).displayMessage(LoginViewModel.AUTH_ERROR)
     }
 
     @Test
@@ -361,7 +361,7 @@ class LoginPresenterTest {
         ) doReturn false
 
         loginPresenter.init(userManager)
-        loginPresenter.handleResponse(response, "userName", "serverUrl")
+        loginPresenter.handleResponse(response)
 
         verify(view).saveUsersData(false)
     }

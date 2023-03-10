@@ -28,18 +28,13 @@ import org.dhis2.Bindings.app
 import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
-import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ACCOUNT_RECOVERY
-import org.dhis2.commons.Constants.ACCOUNT_USED
 import org.dhis2.commons.Constants.EXTRA_DATA
-import org.dhis2.commons.Constants.SERVER
 import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
-import org.dhis2.commons.Constants.USER
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
-import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -68,6 +63,9 @@ const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
 const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
 const val IS_DELETION = "IS_DELETION"
 const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
+const val RESULT_ACCOUNT_SERVER = "RESULT_ACCOUNT_SERVER"
+const val RESULT_ACCOUNT_USERNAME = "RESULT_ACCOUNT_USERNAME"
+const val RESULT_ACCOUNT_CLICKED = "RESULT_ACCOUNT_CLICKED"
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -86,7 +84,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var qrUrl: String? = null
 
     private var testingCredentials: List<TestingCredential> = ArrayList()
-    var userManager: UserManager? = null
     private var skipSync = false
     private var openIDRequestCode = -1
 
@@ -113,18 +110,27 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 }
             }
         }
+
+        fun accountIntentResult(
+            serverUrl: String?,
+            userName: String?,
+            wasAccountClicked: Boolean
+        ): Intent = Intent().apply {
+            serverUrl?.let { putExtra(RESULT_ACCOUNT_SERVER, serverUrl) }
+            userName?.let { putExtra(RESULT_ACCOUNT_USERNAME, userName) }
+            putExtra(RESULT_ACCOUNT_CLICKED, wasAccountClicked)
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.LoginTheme)
         val loginComponent = app().loginComponent() ?: app().createLoginComponent(
-            LoginModule(this, this)
+            LoginModule(
+                view = this, viewModelStoreOwner = this,
+                userManager = app().serverComponent?.userManager()
+            )
         )
-
-        app().serverComponent?.let {
-            userManager = it.userManager()
-        }
 
         loginComponent.inject(this)
 
@@ -184,12 +190,15 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
         binding.clearUrl.setOnClickListener { binding.serverUrlEdit.text = null }
 
+        presenter.loginProgressVisible.observe(this) { show ->
+            showLoginProgress(show)
+        }
+
         setTestingCredentials()
         setAutocompleteAdapters()
         setUpLoginInfo()
         checkMessage()
         presenter.apply {
-            init(userManager)
             checkServerInfoAndShowBiometricButton()
         }
 
@@ -283,7 +292,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.login.isEnabled = isVisible
     }
 
-    override fun showLoginProgress(showLogin: Boolean) {
+    private fun showLoginProgress(showLogin: Boolean) {
         if (showLogin) {
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
@@ -291,12 +300,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             )
             binding.credentialLayout.visibility = View.GONE
             binding.progressLayout.visibility = View.VISIBLE
-
-            presenter.logIn(
-                binding.serverUrl.editText?.text.toString(),
-                binding.userName.editText?.text.toString(),
-                binding.userPass.editText?.text.toString()
-            )
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             binding.credentialLayout.visibility = View.VISIBLE
@@ -319,25 +322,17 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.no)
             ),
             onMainButtonClicked = {
-                onAnalyticsPermission(true)
+                presenter.grantTrackingPermissions(true)
+                onLoginDataUpdated(false)
             },
             onSecondaryButtonClicked = {
-                onAnalyticsPermission(false)
+                presenter.grantTrackingPermissions(false)
+                onLoginDataUpdated(false)
             },
             onMessageClick = {
                 navigateToPrivacyPolicy()
             }
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
-    }
-
-    private fun onAnalyticsPermission(granted: Boolean) {
-        presenter.updateAnalytics(granted)
-        sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
-            .apply()
-        sharedPreferences.edit()
-            .putString(USER, binding.userName.editText?.text.toString())
-            .apply()
-        showLoginProgress(true)
     }
 
     override fun onUnlockClick(android: View) {
@@ -377,53 +372,53 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun saveUsersData(isInitialSyncDone: Boolean) {
-        (context.applicationContext as App).createUserComponent()
+    override fun saveUsersData(displayTrackingMessage: Boolean, isInitialSyncDone: Boolean) {
+        app().createUserComponent()
         skipSync = isInitialSyncDone
-        if (!presenter.areSameCredentials(
-            binding.serverUrlEdit.text.toString(),
-            binding.userNameEdit.text.toString(),
-            binding.userPassEdit.text.toString()
-        )
-        ) {
-            // This is commented until fingerprint login for multiuser is supported
-            /* if (presenter.canHandleBiometrics() == true) {
-                showInfoDialog(
-                    getString(R.string.biometrics_security_title),
-                    getString(R.string.biometrics_security_text),
-                    object : OnDialogClickListener {
-                        override fun onPositiveClick() {
-                            presenter.saveUserCredentials(
-                                binding.serverUrlEdit.text.toString(),
-                                binding.userNameEdit.text.toString(),
-                                binding.userPassEdit.text.toString()
-                            )
-                            goToNextScreen()
-                        }
+        onLoginDataUpdated(displayTrackingMessage)
+    }
 
-                        override fun onNegativeClick() {
-                            goToNextScreen()
-                        }
-                    }
-                )
-               goToNextScreen()
-            } else {
-                presenter.saveUserCredentials(
-                    binding.serverUrlEdit.text.toString(),
-                    binding.userNameEdit.text.toString(),
-                    ""
-                )
+    private fun onLoginDataUpdated(displayTrackingMessage: Boolean) {
+        when {
+            displayTrackingMessage -> showCrashlyticsDialog()
+            !presenter.areSameCredentials() -> {
+                handleFingerPrint()
                 goToNextScreen()
-            } */
+            }
+            else -> goToNextScreen()
+        }
+    }
+
+    private fun handleFingerPrint() {
+        // This is commented until fingerprint login for multiuser is supported
+        /* if (presenter.canHandleBiometrics() == true) {
+            showInfoDialog(
+                getString(R.string.biometrics_security_title),
+                getString(R.string.biometrics_security_text),
+                object : OnDialogClickListener {
+                    override fun onPositiveClick() {
+                        presenter.saveUserCredentials(
+                            binding.serverUrlEdit.text.toString(),
+                            binding.userNameEdit.text.toString(),
+                            binding.userPassEdit.text.toString()
+                        )
+                        goToNextScreen()
+                    }
+
+                    override fun onNegativeClick() {
+                        goToNextScreen()
+                    }
+                }
+            )
+           goToNextScreen()
+        } else {
             presenter.saveUserCredentials(
                 binding.serverUrlEdit.text.toString(),
                 binding.userNameEdit.text.toString(),
                 ""
             )
             goToNextScreen()
-        } else {
-            goToNextScreen()
-        }
+        } */
     }
 
     override fun onBackPressed() {
@@ -467,10 +462,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
-            val wasAccountClicked = result.data?.extras?.getBoolean(ACCOUNT_USED) ?: false
+            val wasAccountClicked = result.data?.extras?.getBoolean(RESULT_ACCOUNT_CLICKED) ?: false
             setAccount(
-                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol(),
-                result.data?.extras?.getString(USER),
+                result.data?.extras?.getString(RESULT_ACCOUNT_SERVER) ?: getDefaultServerProtocol(),
+                result.data?.extras?.getString(RESULT_ACCOUNT_USERNAME),
                 wasAccountClicked
             )
         }
@@ -518,7 +513,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.serverUrlEdit.setText(args[0])
             binding.userNameEdit.setText(args[1])
             binding.userPassEdit.setText(args[2])
-            showLoginProgress(true)
         } else if (type == Goldfinger.Type.ERROR && args[0] != getString(R.string.cancel)) {
             showInfoDialog(getString(R.string.biometrics_dialog_title), args[0])
         }
