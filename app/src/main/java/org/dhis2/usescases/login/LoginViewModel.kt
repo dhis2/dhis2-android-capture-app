@@ -185,10 +185,7 @@ class LoginViewModel(
     private fun logIn() {
         _loginProgressVisible.postValue(true)
         disposable.add(
-            Observable.just(
-                (view.abstracContext.applicationContext as App).createServerComponent()
-                    .userManager()
-            )
+            Observable.just(view.initLogin())
                 .flatMap { userManager ->
                     this.userManager = userManager
                     userManager.logIn(
@@ -511,8 +508,8 @@ class LoginViewModel(
     }
 
     private fun checkTestingEnvironment(serverUrl: String) {
-        if (testingCredentials!!.containsKey(serverUrl) &&
-            testingCredentials!![serverUrl] != null
+        if (testingCredentials?.containsKey(serverUrl) == true &&
+            testingCredentials?.get(serverUrl) != null
         ) {
             isTestingEnvironment.value = Trio.create(
                 serverUrl,

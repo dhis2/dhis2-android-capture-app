@@ -35,6 +35,7 @@ import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
+import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -311,7 +312,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         startActivity(MainActivity::class.java, null, true, true, null)
     }
 
-    override fun showCrashlyticsDialog() {
+    private fun showCrashlyticsDialog() {
         BottomSheetDialog(
             BottomSheetDialogUiModel(
                 title = getString(R.string.improve_app_msg_title),
@@ -472,6 +473,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (result.resultCode == RESULT_CANCELED) {
             resetLoginInfo()
         }
+    }
+
+    override fun initLogin(): UserManager {
+        return app().createServerComponent().userManager()
     }
 
     private fun resetLoginInfo() {

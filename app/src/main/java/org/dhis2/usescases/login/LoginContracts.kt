@@ -2,6 +2,7 @@ package org.dhis2.usescases.login
 
 import androidx.annotation.UiThread
 import co.infinum.goldfinger.Goldfinger
+import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 
@@ -36,8 +37,6 @@ class LoginContracts {
 
         fun setUser(user: String)
 
-        fun showCrashlyticsDialog()
-
         fun navigateToQRActivity()
 
         @UiThread
@@ -59,5 +58,6 @@ class LoginContracts {
         fun openOpenIDActivity(it: IntentWithRequestCode?)
         fun openAccountsActivity()
         fun showNoConnectionDialog()
+        fun initLogin(): UserManager?
     }
 }
