@@ -81,7 +81,7 @@ class TableModelMapper @Inject constructor(
         )
     }
 
-    fun getFieldValidationErrorMessage(value: String?) = when (
+    fun validate(value: String?) = when (
         val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value.toString())
     ) {
         is Result.Failure -> getIntegerZeroOrPositiveErrorMessage(

@@ -28,13 +28,13 @@ class TableModelMapperTest {
 
     @Test
     fun shouldReturnNegativeValueError() {
-        val result = mapper.getFieldValidationErrorMessage("-5")
+        val result = mapper.validate("-5")
         assertEquals(result, ONLY_POSITIVE_NUMBERS)
     }
 
     @Test
     fun shouldReturnNumberFormatException() {
-        val result = mapper.getFieldValidationErrorMessage("999999999999999")
+        val result = mapper.validate("999999999999999")
         assertEquals(result, FORMATTING_ERROR)
     }
 
