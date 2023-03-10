@@ -61,11 +61,10 @@ class ManageStockViewModel @Inject constructor(
     speechRecognitionManager: SpeechRecognitionManager,
     private val resources: ResourceManager,
     private val tableModelMapper: TableModelMapper
-) : SpeechRecognitionAwareViewModel(
+) : Validator, SpeechRecognitionAwareViewModel(
     schedulerProvider,
     speechRecognitionManager
-),
-    Validator {
+) {
     private val _config = MutableLiveData<AppConfig>()
     val config: LiveData<AppConfig> = _config
 
