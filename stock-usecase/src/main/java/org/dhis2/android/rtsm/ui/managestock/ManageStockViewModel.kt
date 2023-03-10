@@ -278,9 +278,15 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
+    private fun getStockEntry(cell: TableCell): StockEntry? {
+        val cellId = tableCellId(cell)
+        return itemsCache.values.find { it.item.id == cellId }
+            ?: _stockItems.value?.find { it.id == cellId }?.let { StockEntry(it) }
+    }
+
     fun onCellClick(cell: TableCell): TextInputModel {
-        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell) }
-        val itemName = stockItem?.name ?: ""
+        val stockEntry = getStockEntry(cell)
+        val itemName = stockEntry?.item?.name ?: ""
         return TextInputModel(
             id = cell.id ?: "",
             mainLabel = itemName,
@@ -289,7 +295,8 @@ class ManageStockViewModel @Inject constructor(
             keyboardInputType = KeyboardInputType.NumericInput(
                 allowDecimal = false,
                 allowSigned = false
-            )
+            ),
+            error = stockEntry?.errorMessage
         )
     }
 
@@ -302,21 +309,33 @@ class ManageStockViewModel @Inject constructor(
     private fun tableCellId(cell: TableCell) = cell.id?.split("_")?.get(0)
 
     private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
-        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell) }
-        stockItem?.let {
+        _stockItems.value?.find { it.id == tableCellId(cell) }?.let { stockItem ->
             cell.value?.let { value ->
-                setQuantity(
-                    stockItem, 0, value,
-                    object : OnQuantityValidated {
-                        override fun validationCompleted(ruleEffects: List<RuleEffect>) {
-                            // When user taps on done or next. We should apply program rules here
-                            ruleEffects.forEach { ruleEffect ->
-                                applyRuleEffectOnItem(ruleEffect, stockItem, cell.value)
-                            }
-                            populateTable()
-                        }
+                when (val result = validate(cell)) {
+                    is ValidationResult.Error -> {
+                        addItem(
+                            item = stockItem,
+                            qty = value,
+                            stockOnHand = stockItem.stockOnHand,
+                            errorMessage = result.message
+                        )
+                        populateTable()
                     }
-                )
+                    is ValidationResult.Success -> {
+                        setQuantity(
+                            stockItem, 0, value,
+                            object : OnQuantityValidated {
+                                override fun validationCompleted(ruleEffects: List<RuleEffect>) {
+                                    // When user taps on done or next. We should apply program rules here
+                                    ruleEffects.forEach { ruleEffect ->
+                                        applyRuleEffectOnItem(ruleEffect, stockItem, cell.value)
+                                    }
+                                    populateTable()
+                                }
+                            }
+                        )
+                    }
+                }
             }
         }
     }
