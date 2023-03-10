@@ -3,6 +3,7 @@ package org.dhis2.android.rtsm.ui.managestock
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.javafaker.Faker
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.dhis2.android.rtsm.MainDispatcherRule
@@ -21,6 +22,7 @@ import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.OnQuantityValidated
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -31,6 +33,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import timber.log.Timber
 
@@ -64,6 +67,7 @@ class ManageStockViewModelTest {
 
     private val resourceManager: ResourceManager = mock()
     private val tableModelMapper: TableModelMapper = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     private fun getModel() = ManageStockViewModel(
         disposable,
@@ -72,7 +76,8 @@ class ManageStockViewModelTest {
         ruleValidationHelperImpl,
         speechRecognitionManagerImpl,
         resourceManager,
-        tableModelMapper
+        tableModelMapper,
+        dispatcherProvider
     )
 
     private fun createStockEntry(

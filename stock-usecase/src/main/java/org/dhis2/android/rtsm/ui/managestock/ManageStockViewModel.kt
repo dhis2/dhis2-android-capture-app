@@ -13,7 +13,6 @@ import java.util.Collections
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,6 +41,7 @@ import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.KeyboardInputType
@@ -60,7 +60,8 @@ class ManageStockViewModel @Inject constructor(
     private val ruleValidationHelper: RuleValidationHelper,
     speechRecognitionManager: SpeechRecognitionManager,
     private val resources: ResourceManager,
-    private val tableModelMapper: TableModelMapper
+    private val tableModelMapper: TableModelMapper,
+    private val dispatcherProvider: DispatcherProvider
 ) : Validator, SpeechRecognitionAwareViewModel(
     schedulerProvider,
     speechRecognitionManager
@@ -301,14 +302,14 @@ class ManageStockViewModel @Inject constructor(
     }
 
     fun onSaveValueChange(cell: TableCell) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io()) {
             saveValue(cell)
         }
     }
 
     private fun tableCellId(cell: TableCell) = cell.id?.split("_")?.get(0)
 
-    private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
+    private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
         _stockItems.value?.find { it.id == tableCellId(cell) }?.let { stockItem ->
             cell.value?.let { value ->
                 when (val result = validate(cell)) {
