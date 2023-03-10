@@ -3,7 +3,6 @@ package org.dhis2.android.rtsm.ui.managestock
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.javafaker.Faker
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.dhis2.android.rtsm.MainDispatcherRule
@@ -33,7 +32,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import timber.log.Timber
 
