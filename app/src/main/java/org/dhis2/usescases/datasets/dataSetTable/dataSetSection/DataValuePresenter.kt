@@ -12,17 +12,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.ValidationResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import timber.log.Timber
@@ -35,13 +38,10 @@ class DataValuePresenter(
     private val schedulerProvider: SchedulerProvider,
     private val mapper: TableDataToTableModelMapper,
     private val dispatcherProvider: DispatcherProvider
-) : CoroutineScope {
+) : CoroutineScope, Validator {
     var disposable: CompositeDisposable = CompositeDisposable()
     private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
-        TableScreenState(
-            emptyList(),
-            false
-        )
+        TableScreenState(emptyList())
     )
     private val tableConfigurationState = MutableStateFlow(
         TableConfigurationState(
@@ -70,10 +70,7 @@ class DataValuePresenter(
                     indicators?.let { list.add(indicators) }
                 }
             }.map {
-                TableScreenState(
-                    tables = it,
-                    selectNext = false
-                )
+                TableScreenState(tables = it)
             }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
@@ -103,7 +100,7 @@ class DataValuePresenter(
         null
     }
 
-    private fun updateData(catComboUid: String, selectNext: Boolean) {
+    private fun updateData(catComboUid: String) {
         val dataTableModel =
             repository.getDataTableModel(catComboUid)
                 .blockingFirst()
@@ -123,7 +120,7 @@ class DataValuePresenter(
         }
 
         screenState.update { currentScreenState ->
-            currentScreenState.copy(tables = updatedTables, selectNext = selectNext)
+            currentScreenState.copy(tables = updatedTables)
         }
     }
 
@@ -200,14 +197,23 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onSaveValueChange(cell: TableCell, selectNext: Boolean = false) {
+    fun onSaveValueChange(cell: TableCell) {
         launch(dispatcherProvider.io()) {
-            saveValue(cell, selectNext)
+            saveValue(cell)
             view.onValueProcessed()
         }
     }
 
-    private suspend fun saveValue(cell: TableCell, selectNext: Boolean) =
+    override fun validate(tableCell: TableCell): ValidationResult {
+        val ids = tableCell.id?.split("_")
+        val dataElementUid = ids!![0]
+        return when (val result = valueStore.validate(dataElementUid, tableCell.value)) {
+            is Result.Failure -> ValidationResult.Error(result.failure.message ?: "")
+            is Result.Success -> ValidationResult.Success(tableCell.value)
+        }
+    }
+
+    private suspend fun saveValue(cell: TableCell) =
         withContext(dispatcherProvider.io()) {
             val ids = cell.id?.split("_")
             val dataElementUid = ids!![0]
@@ -235,7 +241,7 @@ class DataValuePresenter(
                 } else {
                     errors.remove(cell.id!!)
                 }
-                updateData(catComboUid!!, selectNext)
+                updateData(catComboUid!!)
             }
         }
 

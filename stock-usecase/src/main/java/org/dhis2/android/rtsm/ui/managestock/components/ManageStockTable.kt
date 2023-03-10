@@ -39,7 +39,6 @@ fun ManageStockTable(
     val screenState by viewModel.screenState.observeAsState(
         initial = TableScreenState(
             tables = emptyList(),
-            selectNext = false,
             textInputCollapsedMode = false,
             overwrittenRowHeaderWidth = 200F
         )
@@ -86,7 +85,6 @@ fun ManageStockTable(
                     onEdition = { isEditing ->
                         viewModel.onEditingCell(isEditing, concealBackdropState)
                     },
-                    onCellValueChange = {},
                     onSaveValue = viewModel::onSaveValueChange,
                     onTableWidthChanged = { width ->
                         dimensions = dimensions.copy(totalWidth = width)

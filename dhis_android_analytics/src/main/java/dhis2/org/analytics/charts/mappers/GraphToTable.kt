@@ -133,13 +133,11 @@ class GraphToTable {
             ) {
                 DataSetTableScreen(
                     tableScreenState = TableScreenState(
-                        tables = listOf(tableModel),
-                        selectNext = false
+                        tables = listOf(tableModel)
                     ),
                     onCellClick = { _, _, _ -> null },
                     onEdition = {},
-                    onCellValueChange = {},
-                    onSaveValue = { _, _ -> },
+                    onSaveValue = {},
                     onTableWidthChanged = { width ->
                         dimensions = dimensions.copy(totalWidth = width)
                     },

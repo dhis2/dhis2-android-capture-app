@@ -8,9 +8,9 @@ import android.content.pm.PackageManager
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.android.rtsm.R
@@ -82,7 +82,7 @@ class ActivityManager {
             messageRes: String,
             confirmationCallback: () -> Unit
         ) {
-            AlertDialog.Builder(context)
+            MaterialAlertDialogBuilder(context, R.style.MaterialDialog)
                 .setMessage(messageRes)
                 .setTitle(titleRes)
                 .setPositiveButton(android.R.string.ok) { _, _ -> confirmationCallback() }

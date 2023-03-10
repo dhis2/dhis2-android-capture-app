@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
@@ -18,7 +19,6 @@ import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
@@ -93,7 +93,9 @@ class FormViewModel(
                     processCalculatedItems()
                 }
                 ValueStoreResult.ERROR_UPDATING_VALUE -> {
+                    loading.postValue(false)
                     showToast.value = R.string.update_field_error
+                    processCalculatedItems()
                 }
                 ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                     Timber.tag(TAG)
@@ -157,7 +159,15 @@ class FormViewModel(
                     )
                 } else {
                     val saveResult = repository.save(action.id, action.value, action.extraData)
-                    repository.updateValueOnList(action.id, action.value, action.valueType)
+                    if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
+                        repository.updateValueOnList(action.id, action.value, action.valueType)
+                    } else {
+                        repository.updateErrorList(
+                            action.copy(
+                                error = Throwable(saveResult.valueStoreResultMessage)
+                            )
+                        )
+                    }
                     saveResult ?: StoreResult(
                         action.id,
                         ValueStoreResult.VALUE_CHANGED

@@ -29,7 +29,6 @@ import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.databinding.FragmentProgramBinding
@@ -42,11 +41,10 @@ import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
-class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectionFinished {
+class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     private lateinit var binding: FragmentProgramBinding
 
@@ -142,16 +140,16 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     }
 
     override fun openOrgUnitTreeSelector() {
-        OUTreeFragment.newInstance(
-            true,
-            FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
-        ).apply {
-            selectionCallback = this@ProgramFragment
-        }.show(childFragmentManager, "OUTreeFragment")
-    }
-
-    override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
-        presenter.setOrgUnitFilters(selectedOrgUnits)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
+                FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
+            )
+            .onSelection { selectedOrgUnits ->
+                presenter.setOrgUnitFilters(selectedOrgUnits)
+            }
+            .build()
+            .show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun setTutorial() {

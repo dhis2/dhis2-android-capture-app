@@ -2,7 +2,7 @@ package org.dhis2.usescases.datasets.datasetDetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 
 @Suppress("UNCHECKED_CAST")
 class DataSetDetailViewModelFactory(

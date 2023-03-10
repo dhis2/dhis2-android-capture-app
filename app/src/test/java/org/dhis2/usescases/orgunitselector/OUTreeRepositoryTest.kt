@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
 import org.dhis2.commons.orgunitselector.OUTreeRepository
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -20,7 +21,7 @@ class OUTreeRepositoryTest {
 
     @Before
     fun setUp() {
-        repository = OUTreeRepository(d2)
+        repository = OUTreeRepository(d2, OrgUnitSelectorScope.UserSearchScope())
     }
 
     @Test
@@ -102,22 +103,12 @@ class OUTreeRepositoryTest {
             d2.organisationUnitModule().organisationUnits()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
         ) doReturn mock()
 
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                .blockingCount()
-        ) doReturn orgUnits.size
-
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                 .get()
         ) doReturn Single.just(orgUnits)
 

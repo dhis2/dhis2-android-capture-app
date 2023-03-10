@@ -1,8 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import android.app.TimePickerDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.res.Configuration
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -10,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import android.widget.TimePicker
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,6 +20,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -37,6 +36,7 @@ import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
@@ -53,7 +53,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
-import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.optionset.OptionSetDialog
 import org.dhis2.utils.optionset.OptionSetDialog.Companion.TAG
@@ -147,7 +146,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
                         ),
                         tableDimensions = dimensions,
-                        tableConfiguration = TableConfiguration()
+                        tableConfiguration = TableConfiguration(),
+                        tableValidator = presenterFragment
                     ) {
                         val screenState by presenterFragment.currentState().collectAsState()
 
@@ -162,10 +162,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             onEdition = { isEditing ->
                                 presenter.editingCellValue(isEditing)
                             },
-                            onCellValueChange = { },
-                            onSaveValue = { cell, selectNext ->
-                                presenterFragment.onSaveValueChange(cell, selectNext)
-                            },
+                            onSaveValue = presenterFragment::onSaveValueChange,
                             onTableWidthChanged = { width ->
                                 dimensions = dimensions.copy(totalWidth = width)
                             },
@@ -275,26 +272,24 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         calendar: Calendar,
         updateCellValue: (TableCell) -> Unit
     ) {
-        val hour = calendar[Calendar.HOUR_OF_DAY]
-        val minute = calendar[Calendar.MINUTE]
         val is24HourFormat = DateFormat.is24HourFormat(context)
-
-        val dialog = TimePickerDialog(
-            context,
-            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minutes)
-                val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
-                val updatedCellValue = cell.copy(value = result)
-                updateCellValue(updatedCellValue)
-                presenterFragment.onSaveValueChange(updatedCellValue)
-            },
-            hour,
-            minute,
-            is24HourFormat
-        )
-        dialog.setTitle(dataElement.displayFormName())
-        dialog.show()
+        MaterialTimePicker.Builder()
+            .setTheme(org.dhis2.form.R.style.TimePicker)
+            .setTimeFormat(TimeFormat.CLOCK_24H.takeIf { is24HourFormat } ?: TimeFormat.CLOCK_12H)
+            .setHour(calendar[Calendar.HOUR_OF_DAY])
+            .setMinute(calendar[Calendar.MINUTE])
+            .setTitleText(dataElement.displayFormName())
+            .build().apply {
+                addOnPositiveButtonClickListener {
+                    calendar.set(Calendar.HOUR_OF_DAY, hour)
+                    calendar.set(Calendar.MINUTE, minute)
+                    val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
+                    val updatedCellValue = cell.copy(value = result)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+            }
+            .show(childFragmentManager, "timePicker")
     }
 
     override fun showTimePicker(
@@ -307,42 +302,39 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             c.time = DateUtils.timeFormat().parse(cell.value!!)!!
         }
 
-        val hour = c[Calendar.HOUR_OF_DAY]
-        val minute = c[Calendar.MINUTE]
-        val is24HourFormat = DateFormat.is24HourFormat(context)
         val twentyFourHourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val twelveHourFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        val dialog = TimePickerDialog(
-            context,
-            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
-                val calendar = Calendar.getInstance()
-                calendar[Calendar.HOUR_OF_DAY] = hourOfDay
-                calendar[Calendar.MINUTE] = minutes
-                val selectedDate = calendar.time
-                val calendarTime: String = if (is24HourFormat) {
-                    twentyFourHourFormat.format(selectedDate)
-                } else {
-                    twelveHourFormat.format(selectedDate)
-                }
-                val updatedCellValue = cell.copy(value = calendarTime)
-                updateCellValue(updatedCellValue)
-                presenterFragment.onSaveValueChange(updatedCellValue)
-            },
-            hour,
-            minute,
-            is24HourFormat
-        )
-        dialog.setTitle(dataElement.displayFormName())
 
-        dialog.setButton(
-            DialogInterface.BUTTON_NEGATIVE,
-            requireContext().getString(R.string.date_dialog_clear)
-        ) { _: DialogInterface?, _: Int ->
-            val updatedCellValue = cell.copy(value = null)
-            updateCellValue(updatedCellValue)
-            presenterFragment.onSaveValueChange(updatedCellValue)
-        }
-        dialog.show()
+        val is24HourFormat = DateFormat.is24HourFormat(context)
+        MaterialTimePicker.Builder()
+            .setTheme(org.dhis2.form.R.style.TimePicker)
+            .setTimeFormat(TimeFormat.CLOCK_24H.takeIf { is24HourFormat } ?: TimeFormat.CLOCK_12H)
+            .setHour(c[Calendar.HOUR_OF_DAY])
+            .setMinute(c[Calendar.MINUTE])
+            .setTitleText(dataElement.displayFormName())
+            .setNegativeButtonText(R.string.date_dialog_clear)
+            .build().apply {
+                addOnPositiveButtonClickListener {
+                    val calendar = Calendar.getInstance()
+                    calendar[Calendar.HOUR_OF_DAY] = hour
+                    calendar[Calendar.MINUTE] = minute
+                    val selectedDate = calendar.time
+                    val calendarTime: String = if (is24HourFormat) {
+                        twentyFourHourFormat.format(selectedDate)
+                    } else {
+                        twelveHourFormat.format(selectedDate)
+                    }
+                    val updatedCellValue = cell.copy(value = calendarTime)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+                addOnNegativeButtonClickListener {
+                    val updatedCellValue = cell.copy(value = null)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+            }
+            .show(childFragmentManager, "timePicker")
     }
 
     override fun showBooleanDialog(
@@ -462,25 +454,17 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         orgUnits: List<OrganisationUnit>,
         updateCellValue: (TableCell) -> Unit
     ) {
-        val orgUnitDialog = OrgUnitDialog()
-        orgUnitDialog.setTitle(dataElement.displayFormName())
-            .setMultiSelection(false)
-            .setOrgUnits(orgUnits)
-            .setPossitiveListener {
-                val updatedCellValue = cell.copy(value = orgUnitDialog.selectedOrgUnit)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .singleSelection()
+            .withPreselectedOrgUnits(cell.value?.let { listOf(it) } ?: emptyList())
+            .onSelection { selectedOrgUnits ->
+                val updatedCellValue = cell.copy(value = selectedOrgUnits[0].uid())
                 updateCellValue(updatedCellValue)
                 presenterFragment.onSaveValueChange(updatedCellValue)
-                orgUnitDialog.dismiss()
             }
-            .setNegativeListener {
-                orgUnitDialog.dismiss()
-            }
-        if (!orgUnitDialog.isAdded) {
-            orgUnitDialog.show(
-                parentFragmentManager,
-                dataElement.displayFormName()
-            )
-        }
+            .build()
+            .show(childFragmentManager, dataElement.displayFormName())
     }
 
     override fun showOptionSetDialog(

@@ -4,12 +4,10 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'dagger.hilt.android.plugin'
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
-
 apply plugin: "kotlinx-serialization"
-
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -17,6 +15,7 @@ repositories {
 
 android {
     compileSdk versions.sdk
+    namespace "org.dhis2.android.rtsm"
 
     defaultConfig {
         minSdk versions.minSdk
@@ -64,8 +63,8 @@ android {
     compileOptions {
         coreLibraryDesugaringEnabled true
 
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility versions.sourceCompat
+        targetCompatibility versions.targetCompat
     }
 
     buildFeatures {
@@ -84,11 +83,11 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0"
+        kotlinCompilerExtensionVersion = versions.kotlinCompilerExtensionVersion
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = versions.targetCompat
     }
 
 }
@@ -98,74 +97,43 @@ dependencies {
     implementation project(":commons")
     implementation project(":compose-table")
 
-    implementation "androidx.activity:activity-compose:$libraries.compose"
+    implementation libs.kotlin.serialization
 
-    implementation "org.hisp.dhis.rules:rule-engine:$libraries.ruleEngine"
+    implementation libs.androidx.activityCompose
+    implementation libs.androidx.annotation
+    implementation libs.androidx.legacySupport
+    coreLibraryDesugaring libs.android.desugar
+    implementation libs.androidx.constraintLayout
+    implementation libs.rx.rxRelay
+    implementation libs.security.openId
+    implementation libs.androidx.preferencesKtx
+    implementation libs.androidx.work
+    implementation libs.androidx.workRuntimeKtx
+    implementation libs.androidx.workRx
+    implementation libs.androidx.workGCM
 
-    implementation "androidx.annotation:annotation:$libraries.annotation"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$libraries.lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$libraries.lifecycle"
-
-
-    implementation "androidx.legacy:legacy-support-v4:$libraries.legacysupport"
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$libraries.desugar_jdk_libs"
-
-    implementation "androidx.appcompat:appcompat:$libraries.appcompat"
-    implementation "com.google.android.material:material:$libraries.material"
-    implementation "androidx.constraintlayout:constraintlayout:$libraries.constraintlayout"
-
-    implementation "io.reactivex.rxjava2:rxjava:$libraries.rxjava"
-    implementation "com.jakewharton.rxrelay2:rxrelay:$libraries.rxrelay"
-
-    // Security
-    implementation "net.openid:appauth:$libraries.openid"
-
-    // Preferences
-    implementation "androidx.preference:preference-ktx:$libraries.preference_ktx"
-
-    // WorkManager
-    implementation "androidx.work:work-runtime:$libraries.work"
-    implementation "androidx.work:work-runtime-ktx:$libraries.work"
-    implementation "androidx.work:work-rxjava2:$libraries.work"
-    implementation "androidx.work:work-gcm:$libraries.work"
-
-    // Activity KTX for viewModels()
-    implementation "androidx.activity:activity-ktx:$libraries.activityCompose"
-    implementation "androidx.fragment:fragment-ktx:$libraries.fragmentCompose"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$libraries.viewModelCompose"
-
-    // DI
-    implementation "com.google.dagger:hilt-android:$libraries.hilt"
-    kapt "com.google.dagger:hilt-compiler:$libraries.hilt"
-
-    // Barcode scanner
-    implementation "com.journeyapps:zxing-android-embedded:$libraries.zxingandroid"
-
-    // Logging
-    implementation "com.jakewharton.timber:timber:$libraries.timber"
-    implementation "cat.ereza:customactivityoncrash:$libraries.crashactivity"
-
-    debugImplementation "com.facebook.flipper:flipper:$libraries.flipper"
-    debugImplementation "com.facebook.soloader:soloader:$libraries.soloader"
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:$libraries.flipper") {
+    implementation libs.androidx.activityKtx
+    implementation libs.androidx.fragmentKtx
+    implementation libs.androidx.viewModelCompose
+    implementation libs.dagger.hilt
+    kapt libs.dagger.hiltCompilerNew
+    implementation libs.analytics.crashActivity
+    debugImplementation libs.analytics.flipper
+    debugImplementation libs.analytics.soloader
+    debugImplementation(libs.analytics.flipperNetwork) {
         exclude group: 'com.squareup.okhttp3'
     }
+    releaseImplementation libs.analytics.flipperNoop
 
-    releaseImplementation "com.facebook.flipper:flipper-noop:$libraries.flipper"
-
-    testImplementation "junit:junit:$libraries.junit"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:$libraries.mockito"
-    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
-    testImplementation "androidx.arch.core:core-testing:$libraries.android_core_testing"
-    testImplementation "com.github.javafaker:javafaker:$libraries.javafaker"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$libraries.coroutines_test"
-
-    androidTestImplementation "androidx.test.ext:junit:$libraries.junit_ext"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
-    androidTestImplementation "androidx.arch.core:core-testing:$libraries.android_core_testing"
-
-    //Serialization library
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
+    testImplementation libs.test.junit
+    testImplementation libs.test.mockitoKotlinLegacy
+    testImplementation libs.test.mockitoInline
+    testImplementation libs.test.archCoreTesting
+    testImplementation libs.test.javafaker
+    testImplementation libs.test.kotlinCoroutines
+    androidTestImplementation libs.test.testJUnitExt
+    androidTestImplementation libs.test.espresso
+    androidTestImplementation libs.test.archCoreTesting
 }
 
 kapt {

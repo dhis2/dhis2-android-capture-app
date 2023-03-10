@@ -38,6 +38,15 @@ class ValueStoreImpl(
         overrideProgramUid = programUid
     }
 
+    override fun validate(dataElementUid: String, value: String?): Result<String, Throwable> {
+        if (value.isNullOrEmpty()) return Result.Success("")
+        val dataElement = d2.dataElementModule()
+            .dataElements()
+            .uid(dataElementUid)
+            .blockingGet()
+        return dataElement.valueType()?.validator?.validate(value) ?: Result.Success("")
+    }
+
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
         return when (entryMode) {
             EntryMode.DE -> saveDataElement(uid, value)
@@ -140,7 +149,17 @@ class ValueStoreImpl(
             d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (isFile(valueType) && value != null) {
-            newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            try {
+                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            } catch (e: Exception) {
+                return Flowable.just(
+                    StoreResult(
+                        uid = uid,
+                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                        valueStoreResultMessage = e.localizedMessage
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -172,7 +191,17 @@ class ValueStoreImpl(
         val valueType = d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (isFile(valueType) && value != null) {
-            newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            try {
+                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            } catch (e: Exception) {
+                return Flowable.just(
+                    StoreResult(
+                        uid = uid,
+                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                        valueStoreResultMessage = e.localizedMessage
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
