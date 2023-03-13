@@ -6,12 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.ui.dialogs.orgunit.OrgUnitTreeItem
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-
-private const val minNumberOfOpenOrgUnits = 15
 
 class OUTreeViewModel(
     private val repository: OUTreeRepository,
@@ -26,42 +23,47 @@ class OUTreeViewModel(
         fetchInitialOrgUnits()
     }
 
-    private fun fetchInitialOrgUnits() {
+    private fun fetchInitialOrgUnits(name: String? = null) {
         viewModelScope.launch(dispatchers.io()) {
-            val orgUnits = repository.orgUnits().blockingGet()
-            var treeNodeList = orgUnits.filter { orgUnit ->
-                orgUnit.level() == orgUnits.minByOrNull { it.level()!! }?.level()
-            }.map { orgUnit ->
-                val hasChildren = repository.orgUnitHasChildren(orgUnit.uid())
-                OrgUnitTreeItem(
-                    uid = orgUnit.uid(),
-                    label = orgUnit.displayName()!!,
-                    isOpen = !hasChildren,
-                    hasChildren = hasChildren,
-                    selected = selectedOrgUnits.contains(orgUnit.uid()),
-                    level = orgUnit.level()!!,
-                    selectedChildrenCount = repository.countSelectedChildren(
-                        orgUnit.uid(),
-                        selectedOrgUnits
-                    )
-                )
-            }
+            val orgUnits = repository.orgUnits(name)
+            val treeNodes = ArrayList<OrgUnitTreeItem>()
 
-            while (!initialOrgUnitsCheck(treeNodeList)) {
-                val closedOrgUnits = treeNodeList.filter { !it.isOpen && it.hasChildren }
-                closedOrgUnits.forEach {
-                    treeNodeList = openChildren(treeNodeList, it.uid)
+            orgUnits.forEach { ouUid ->
+                repository.orgUnit(ouUid)?.let { org ->
+                    val canBeSelected = repository.canBeSelected(org.uid())
+                    treeNodes.add(
+                        OrgUnitTreeItem(
+                            uid = org.uid(),
+                            label = org.displayName()!!,
+                            isOpen = false,
+                            hasChildren = repository.orgUnitHasChildren(org.uid()),
+                            selected = selectedOrgUnits.contains(org.uid()),
+                            level = org.level()!!,
+                            selectedChildrenCount = repository.countSelectedChildren(
+                                org.uid(),
+                                selectedOrgUnits
+                            ),
+                            canBeSelected = canBeSelected
+                        )
+                    )
                 }
             }
 
-            _treeNodes.update { treeNodeList }
+            (1 until treeNodes.size)
+                .asSequence()
+                .filter { treeNodes[it].level > treeNodes[it - 1].level }
+                .forEach { treeNodes[it - 1].isOpen = true }
+
+            _treeNodes.update { treeNodes }
         }
     }
 
-    private fun initialOrgUnitsCheck(initialOrgUnits: List<OrgUnitTreeItem>): Boolean {
-        val currentSizeCheck = initialOrgUnits.size >= minNumberOfOpenOrgUnits
-        val allOpened = initialOrgUnits.all { it.isOpen }
-        return currentSizeCheck || allOpened
+    fun searchByName(name: String) {
+        if (name.isEmpty()) {
+            fetchInitialOrgUnits()
+        } else if (name.length >= 3) {
+            fetchInitialOrgUnits(name)
+        }
     }
 
     fun onOpenChildren(parentOrgUnitUid: String) {
@@ -75,7 +77,7 @@ class OUTreeViewModel(
         parentOrgUnitUid: String
     ): List<OrgUnitTreeItem> {
         val parentIndex = currentList.indexOfFirst { it.uid == parentOrgUnitUid }
-        val orgUnits = repository.orgUnits(parentOrgUnitUid).blockingGet()
+        val orgUnits = repository.childrenOrgUnits(parentOrgUnitUid)
         val treeNodes = orgUnits.map { org ->
             val hasChildren = repository.orgUnitHasChildren(org.uid())
             OrgUnitTreeItem(
@@ -88,7 +90,8 @@ class OUTreeViewModel(
                 selectedChildrenCount = repository.countSelectedChildren(
                     org.uid(),
                     selectedOrgUnits
-                )
+                ),
+                canBeSelected = repository.canBeSelected(org.uid())
             )
         }
         return rebuildOrgUnitList(
@@ -96,52 +99,6 @@ class OUTreeViewModel(
             location = parentIndex,
             nodes = treeNodes
         )
-    }
-
-    fun searchByName(name: String) {
-        if (name.isEmpty()) {
-            fetchInitialOrgUnits()
-        } else if (name.length >= 3) {
-            viewModelScope.launch(dispatchers.io()) {
-                val orgUnits = repository.orgUnits(name = name).blockingGet()
-                val treeNodes = ArrayList<OrgUnitTreeItem>()
-                val orderedList = mutableListOf<String>()
-                orgUnits.forEach { org ->
-                    org.path()?.split("/")
-                        ?.filter { it.isNotEmpty() }
-                        ?.forEach { str ->
-                            orderedList.addIf(!orderedList.contains(str), str)
-                        }
-                    orderedList.addIf(!orderedList.contains(org.uid()), org.uid())
-                }
-                orderedList.forEach { ouUid ->
-                    val organisationUnitParent = repository.orgUnit(ouUid)
-                    organisationUnitParent?.let { org ->
-                        treeNodes.add(
-                            OrgUnitTreeItem(
-                                uid = org.uid(),
-                                label = org.displayName()!!,
-                                isOpen = false,
-                                hasChildren = repository.orgUnitHasChildren(org.uid()),
-                                selected = selectedOrgUnits.contains(org.uid()),
-                                level = org.level()!!,
-                                selectedChildrenCount = repository.countSelectedChildren(
-                                    org.uid(),
-                                    selectedOrgUnits
-                                )
-                            )
-                        )
-                    }
-                }
-
-                (1 until treeNodes.size)
-                    .asSequence()
-                    .filter { treeNodes[it].level > treeNodes[it - 1].level }
-                    .forEach { treeNodes[it - 1].isOpen = true }
-
-                _treeNodes.update { treeNodes }
-            }
-        }
     }
 
     fun onOrgUnitCheckChanged(orgUnitUid: String, isChecked: Boolean) {

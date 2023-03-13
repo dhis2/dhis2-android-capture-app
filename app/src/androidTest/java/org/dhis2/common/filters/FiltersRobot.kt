@@ -54,13 +54,6 @@ class FiltersRobot : BaseRobot() {
         onView(withId(R.id.addButton)).perform(click())
     }
 
-    fun selectTreeOrgUnit(composeTestRule: ComposeTestRule, orgUnitName: String) {
-        composeTestRule.onNodeWithTag("$ITEM_CHECK_TEST_TAG$orgUnitName")
-            .performScrollTo()
-            .performClick()
-        composeTestRule.onNodeWithTag(DONE_TEST_TAG).performClick()
-    }
-
     fun selectNotSyncedState() {
         onView(withId(R.id.stateNotSynced)).perform(click())
     }

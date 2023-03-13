@@ -8,10 +8,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +25,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -99,12 +102,23 @@ fun OrgUnitSelectorDialog(
                 )
             }
             Divider()
-            OrgUnitTree(
-                modifier = Modifier.weight(1f),
-                items = items,
-                onOrgUnitChecked = actions.onOrgUnitChecked,
-                onOpenOrgUnit = actions.onOpenOrgUnit
-            )
+            if (items.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                OrgUnitTree(
+                    modifier = Modifier.weight(1f),
+                    items = items,
+                    onOrgUnitChecked = actions.onOrgUnitChecked,
+                    onOpenOrgUnit = actions.onOpenOrgUnit
+                )
+            }
             Divider()
             Row(
                 modifier = Modifier
@@ -294,6 +308,7 @@ fun OrgUnitSelectorItem(
         modifier = modifier
             .testTag("$ITEM_TEST_TAG${orgUnitItem.label}")
             .fillMaxWidth()
+            .heightIn(min = 48.dp)
             .background(Color.White)
             .clickable(
                 enabled = orgUnitItem.hasChildren,
@@ -335,13 +350,15 @@ fun OrgUnitSelectorItem(
                 }
             )
         )
-        Checkbox(
-            modifier = Modifier.testTag("$ITEM_CHECK_TEST_TAG${orgUnitItem.label}"),
-            checked = orgUnitItem.selected,
-            onCheckedChange = { isChecked ->
-                onOrgUnitChecked(orgUnitItem.uid, isChecked)
-            }
-        )
+        if (orgUnitItem.canBeSelected) {
+            Checkbox(
+                modifier = Modifier.testTag("$ITEM_CHECK_TEST_TAG${orgUnitItem.label}"),
+                checked = orgUnitItem.selected,
+                onCheckedChange = { isChecked ->
+                    onOrgUnitChecked(orgUnitItem.uid, isChecked)
+                }
+            )
+        }
     }
 }
 
