@@ -72,7 +72,8 @@ fun ManageStockTable(
                 tableDimensions = dimensions,
                 tableConfiguration = TableConfiguration(
                     headerActionsEnabled = false
-                )
+                ),
+                tableValidator = viewModel
             ) {
                 DataSetTableScreen(
                     tableScreenState = screenState,

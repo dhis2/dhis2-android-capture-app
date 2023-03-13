@@ -1,4 +1,4 @@
-package org.dhis2.android.rtsm.viewmodels
+package org.dhis2.android.rtsm.ui.managestock
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.javafaker.Faker
@@ -19,10 +19,9 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.OnQuantityValidated
-import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
-import org.dhis2.android.rtsm.ui.managestock.TableModelMapper
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -66,6 +65,7 @@ class ManageStockViewModelTest {
 
     private val resourceManager: ResourceManager = mock()
     private val tableModelMapper: TableModelMapper = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     private fun getModel() = ManageStockViewModel(
         disposable,
@@ -74,7 +74,8 @@ class ManageStockViewModelTest {
         ruleValidationHelperImpl,
         speechRecognitionManagerImpl,
         resourceManager,
-        tableModelMapper
+        tableModelMapper,
+        dispatcherProvider
     )
 
     private fun createStockEntry(
@@ -86,7 +87,7 @@ class ManageStockViewModelTest {
             uid, faker.name().name(), faker.number().numberBetween(1, 800).toString()
         )
 
-        viewModel.addItem(stockItem, qty, stockItem.stockOnHand, false)
+        viewModel.addItem(stockItem, qty, stockItem.stockOnHand, null)
 
         return stockItem
     }

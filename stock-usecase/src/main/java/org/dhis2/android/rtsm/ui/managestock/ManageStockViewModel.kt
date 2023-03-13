@@ -13,7 +13,6 @@ import java.util.Collections
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,10 +41,13 @@ import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.ValidationResult
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
@@ -58,8 +60,9 @@ class ManageStockViewModel @Inject constructor(
     private val ruleValidationHelper: RuleValidationHelper,
     speechRecognitionManager: SpeechRecognitionManager,
     private val resources: ResourceManager,
-    private val tableModelMapper: TableModelMapper
-) : SpeechRecognitionAwareViewModel(
+    private val tableModelMapper: TableModelMapper,
+    private val dispatcherProvider: DispatcherProvider
+) : Validator, SpeechRecognitionAwareViewModel(
     schedulerProvider,
     speechRecognitionManager
 ) {
@@ -276,9 +279,15 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
+    private fun getStockEntry(cell: TableCell): StockEntry? {
+        val cellId = tableCellId(cell)
+        return itemsCache.values.find { it.item.id == cellId }
+            ?: _stockItems.value?.find { it.id == cellId }?.let { StockEntry(it) }
+    }
+
     fun onCellClick(cell: TableCell): TextInputModel {
-        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell) }
-        val itemName = stockItem?.name ?: ""
+        val stockEntry = getStockEntry(cell)
+        val itemName = stockEntry?.item?.name ?: ""
         return TextInputModel(
             id = cell.id ?: "",
             mainLabel = itemName,
@@ -287,46 +296,77 @@ class ManageStockViewModel @Inject constructor(
             keyboardInputType = KeyboardInputType.NumericInput(
                 allowDecimal = false,
                 allowSigned = false
-            )
+            ),
+            error = stockEntry?.errorMessage
         )
     }
 
     fun onSaveValueChange(cell: TableCell) {
-        populateTable()
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io()) {
             saveValue(cell)
         }
     }
 
     private fun tableCellId(cell: TableCell) = cell.id?.split("_")?.get(0)
 
-    private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
-        val stockItem = _stockItems.value?.find { it.id == tableCellId(cell) }
-        stockItem?.let {
+    private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
+        _stockItems.value?.find { it.id == tableCellId(cell) }?.let { stockItem ->
             cell.value?.let { value ->
-                setQuantity(
-                    it, 0, value,
-                    object : OnQuantityValidated {
-                        override fun validationCompleted(ruleEffects: List<RuleEffect>) {
-                            // When user taps on done or next. We should apply program rules here
-                            ruleEffects.forEach { ruleEffect ->
-                                if (ruleEffect.ruleAction() is RuleActionAssign &&
-                                    (
-                                        (ruleEffect.ruleAction() as RuleActionAssign).field()
-                                            == config.value?.stockOnHand
-                                        )
-                                ) {
-                                    val data = ruleEffect.data()
-                                    val isValid: Boolean = isValidStockOnHand(data)
-                                    val stockOnHand = if (isValid) data else it.stockOnHand
-                                    addItem(it, cell.value, stockOnHand, !isValid)
+                when (val result = validate(cell)) {
+                    is ValidationResult.Error -> {
+                        addItem(
+                            item = stockItem,
+                            qty = value,
+                            stockOnHand = stockItem.stockOnHand,
+                            errorMessage = result.message
+                        )
+                        populateTable()
+                    }
+                    is ValidationResult.Success -> {
+                        setQuantity(
+                            stockItem, 0, value,
+                            object : OnQuantityValidated {
+                                override fun validationCompleted(ruleEffects: List<RuleEffect>) {
+                                    // When user taps on done or next. We should apply program rules here
+                                    ruleEffects.forEach { ruleEffect ->
+                                        applyRuleEffectOnItem(ruleEffect, stockItem, cell.value)
+                                    }
+                                    populateTable()
                                 }
                             }
-                            populateTable()
-                        }
+                        )
                     }
-                )
+                }
             }
+        }
+    }
+
+    private fun applyRuleEffectOnItem(
+        ruleEffect: RuleEffect,
+        stockItem: StockItem,
+        value: String?
+    ) {
+        if (ruleEffect.ruleAction() is RuleActionAssign &&
+            (
+                (ruleEffect.ruleAction() as RuleActionAssign).field()
+                    == config.value?.stockOnHand
+                )
+        ) {
+            val data = ruleEffect.data()
+            val isValid: Boolean = isValidStockOnHand(data)
+            val errorMessage =
+                if (!isValid) {
+                    resources.getString(R.string.stock_on_hand_exceeded_message)
+                } else {
+                    null
+                }
+            val stockOnHand = if (isValid) data else stockItem.stockOnHand
+            addItem(
+                stockItem,
+                value,
+                stockOnHand,
+                errorMessage = errorMessage
+            )
         }
     }
 
@@ -348,14 +388,14 @@ class ManageStockViewModel @Inject constructor(
         return itemsCache[item.id]?.qty
     }
 
-    fun addItem(item: StockItem, qty: String?, stockOnHand: String?, hasError: Boolean) {
+    fun addItem(item: StockItem, qty: String?, stockOnHand: String?, errorMessage: String?) {
         // Remove from cache any item whose quantity has been cleared
         if (qty.isNullOrEmpty()) {
             itemsCache.remove(item.id)
             hasUnsavedData(false)
             return
         }
-        itemsCache[item.id] = StockEntry(item, qty, stockOnHand, hasError)
+        itemsCache[item.id] = StockEntry(item, qty, stockOnHand, errorMessage)
         hasUnsavedData(true)
     }
 
@@ -370,7 +410,9 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
+    private fun canReview(): Boolean {
+        return itemsCache.size > 0 && itemsCache.none { it.value.errorMessage != null }
+    }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
 
@@ -445,7 +487,9 @@ class ManageStockViewModel @Inject constructor(
 
     fun onHandleBackNavigation() {
         val backStep = when (dataEntryUiState.value.step) {
-            DataEntryStep.REVIEWING -> DataEntryStep.LISTING
+            DataEntryStep.REVIEWING -> {
+                DataEntryStep.LISTING
+            }
             else -> null
         }
 
@@ -463,6 +507,15 @@ class ManageStockViewModel @Inject constructor(
             == DataEntryStep.REVIEWING
         ) {
             updateStep(DataEntryStep.LISTING)
+        }
+    }
+
+    override fun validate(tableCell: TableCell): ValidationResult {
+        val fieldError = tableModelMapper.validate(tableCell.value)
+        return if (fieldError != null) {
+            ValidationResult.Error(fieldError)
+        } else {
+            ValidationResult.Success(tableCell.value)
         }
     }
 }

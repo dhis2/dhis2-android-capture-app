@@ -8,10 +8,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.SpeechRecognitionManagerImpl
 import org.dhis2.android.rtsm.utils.Sdk
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -41,5 +43,10 @@ class AppModule {
     @Singleton
     fun provideResourcesProvider(@ApplicationContext appContext: Context): ResourceManager {
         return ResourceManager(appContext)
+    }
+
+    @Provides
+    fun provideDispatcherProvider(): DispatcherProvider {
+        return StockDispatcherProvider()
     }
 }
