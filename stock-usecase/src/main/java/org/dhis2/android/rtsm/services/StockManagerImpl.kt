@@ -111,7 +111,7 @@ class StockManagerImpl @Inject constructor(
             .byDataValue(stockOnHandUid).like("")
             .byDeleted().isFalse
             .withTrackedEntityDataValues()
-            .orderByLastUpdated(RepositoryScope.OrderByDirection.DESC)
+            .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
             .blockingGet()
 
         events.forEach { event ->
