@@ -23,6 +23,7 @@ import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,11 +77,13 @@ fun DataSetTableScreen(
     var tableSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
 
     val focusManager = LocalFocusManager.current
+    val tableConfiguration = LocalTableConfiguration.current
     val focusRequester = remember { FocusRequester() }
 
     var alreadyFinish by remember { mutableStateOf(false) }
 
     val textInputViewMode = TableTheme.configuration.textInputViewMode
+    val isKeyboardOpen by keyboardAsState()
 
     fun finishEdition() {
         focusManager.clearFocus(true)
@@ -140,6 +143,16 @@ fun DataSetTableScreen(
             !alreadyFinish
         ) {
             finishEdition()
+        }
+    }
+
+    SideEffect {
+        if (tableConfiguration.shouldHideInput(
+            isKeyboardOpen == Keyboard.Closed,
+            bottomSheetState.bottomSheetState.isExpanded
+        )
+        ) {
+            collapseBottomSheet(true)
         }
     }
 
