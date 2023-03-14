@@ -20,7 +20,6 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.utils.AttributeHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils.getTransactionDataElement
-import org.dhis2.android.rtsm.utils.toDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
