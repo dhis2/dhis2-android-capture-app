@@ -122,6 +122,30 @@ class DataSetTableRepositoryImpl(
             }.toFlowable()
     }
 
+    fun getSectionIndexWithErrors(defaultSectionIndex: Int = 0): Int {
+        val sections = d2.dataSetModule().sections()
+            .byDataSetUid().eq(dataSetUid)
+            .withDataElements()
+            .blockingGet().associate {
+                it.uid() to it.dataElements()?.map { dataElement -> dataElement.uid() }
+            }
+
+        val sectionWithError = d2.dataValueModule().dataValueConflicts()
+            .byDataSet(dataSetUid)
+            .byPeriod().eq(periodId)
+            .byOrganisationUnitUid().eq(orgUnitUid)
+            .byAttributeOptionCombo().eq(catOptCombo)
+            .blockingGet()?.mapNotNull { dataValueConflict ->
+            dataValueConflict.dataElement()?.let { dataElementUid ->
+                sections.filter { it.value?.contains(dataElementUid) == true }.keys
+            }
+        }?.flatten()
+
+        return sectionWithError?.firstOrNull()?.let {
+            sections.keys.indexOf(it)
+        } ?: defaultSectionIndex
+    }
+
     fun dataSetStatus(): Flowable<Boolean> {
         val dscr = d2.dataSetModule().dataSetCompleteRegistrations()
             .byDataSetUid().eq(dataSetUid)
@@ -155,9 +179,9 @@ class DataSetTableRepositoryImpl(
         }
     }
 
-    fun getCatComboName(catcomboUid: String): Flowable<String> {
+    fun getCatComboName(): Flowable<String> {
         return Flowable.fromCallable {
-            d2.categoryModule().categoryOptionCombos().uid(catcomboUid).blockingGet()
+            d2.categoryModule().categoryOptionCombos().uid(catOptCombo).blockingGet()
                 .displayName()
         }
     }

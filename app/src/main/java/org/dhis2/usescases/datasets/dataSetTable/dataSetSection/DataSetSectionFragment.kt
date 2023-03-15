@@ -49,7 +49,7 @@ import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTablePresenter
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
@@ -68,7 +68,7 @@ const val ARG_ATTR_OPT_COMB = "ARG_ATTR_OPT_COMB"
 class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View {
 
     private lateinit var activity: DataSetTableActivity
-    private lateinit var presenter: DataSetTableContract.Presenter
+    private lateinit var presenter: DataSetTablePresenter
 
     @Inject
     lateinit var presenterFragment: DataValuePresenter
@@ -84,7 +84,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         activity = context as DataSetTableActivity
         presenter = activity.presenter
 
-        activity.dataSetTableComponent.plus(
+        activity.dataSetTableComponent?.plus(
             DataValueModule(
                 arguments?.getString(DATA_SET_UID)!!,
                 arguments?.getString(DATA_SET_SECTION)!!,
@@ -94,7 +94,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 this,
                 activity
             )
-        ).inject(this)
+        )?.inject(this)
     }
 
     override fun onCreateView(
@@ -215,12 +215,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun onValueProcessed() {
         if (activity.isBackPressed) {
             activity.abstractActivity.back()
-        }
-    }
-
-    override fun update(modified: Boolean) {
-        if (modified) {
-            activity.update()
         }
     }
 

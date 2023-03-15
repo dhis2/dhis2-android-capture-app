@@ -8,7 +8,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class DataValueContract {
     interface View : AbstractActivityContracts.View {
-        fun update(modified: Boolean)
         fun onValueProcessed()
         fun showCalendar(
             dataElement: DataElement,
