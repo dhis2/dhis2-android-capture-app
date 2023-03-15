@@ -115,7 +115,8 @@ class EnrollmentModule(
             false,
             UiStyleProviderImpl(
                 FormUiModelColorFactoryImpl(activityContext, true),
-                LongTextUiColorFactoryImpl(activityContext, true)
+                LongTextUiColorFactoryImpl(activityContext, true),
+                true
             ),
             LayoutProviderImpl(),
             HintProviderImpl(context),

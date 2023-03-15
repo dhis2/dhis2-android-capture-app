@@ -20,7 +20,7 @@ class BasicFormUiModelStyleTest {
 
     @Before
     fun setUp() {
-        basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory, valueType)
+        basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory, valueType, true)
     }
 
     @Test

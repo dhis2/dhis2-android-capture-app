@@ -197,7 +197,8 @@ object Injector {
         isBackgroundTransparent: Boolean
     ): UiStyleProvider = UiStyleProviderImpl(
         colorFactory = FormUiModelColorFactoryImpl(context, isBackgroundTransparent),
-        longTextColorFactory = LongTextUiColorFactoryImpl(context, isBackgroundTransparent)
+        longTextColorFactory = LongTextUiColorFactoryImpl(context, isBackgroundTransparent),
+        actionIconClickable = isBackgroundTransparent
     )
 
     private fun provideFormValueStore(

@@ -81,7 +81,8 @@ class EventDetailsModule(
                 false,
                 UiStyleProviderImpl(
                     FormUiModelColorFactoryImpl(context, true),
-                    LongTextUiColorFactoryImpl(context, true)
+                    LongTextUiColorFactoryImpl(context, true),
+                    true
                 ),
                 LayoutProviderImpl(),
                 HintProviderImpl(context),
