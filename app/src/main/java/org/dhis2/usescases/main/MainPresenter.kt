@@ -1,7 +1,10 @@
 package org.dhis2.usescases.main
 
+import android.content.Context
+import android.net.Uri
 import android.view.Gravity
 import androidx.lifecycle.LiveData
+import androidx.work.ExistingPeriodicWorkPolicy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
@@ -25,6 +28,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
+import org.dhis2.data.service.VersionStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -53,10 +57,12 @@ class MainPresenter(
     private val userManager: UserManager,
     private val deleteUserData: DeleteUserData,
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
-    private val syncStatusController: SyncStatusController
+    private val syncStatusController: SyncStatusController,
+    private val versionStatusController: VersionStatusController
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
+    val versionUpdate: LiveData<Boolean> = versionStatusController.newAppVersion
 
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
@@ -301,5 +307,19 @@ class MainPresenter(
 
     fun trackJiraReport() {
         matomoAnalyticsController.trackEvent(HOME, JIRA_REPORT, CLICK)
+    }
+
+    fun remindLaterAlertNewVersion() {
+        val workerItem = WorkerItem(
+            Constants.NEW_APP_VERSION,
+            WorkerType.NEW_VERSION,
+            delayInSeconds = 24 * 60 * 60,
+            periodicPolicy = ExistingPeriodicWorkPolicy.REPLACE
+        )
+        workManagerController.beginUniqueWork(workerItem)
+    }
+
+    fun downloadVersion(context: Context, onDownloadCompleted: (Uri) -> Unit) {
+        versionStatusController.download(context, onDownloadCompleted)
     }
 }

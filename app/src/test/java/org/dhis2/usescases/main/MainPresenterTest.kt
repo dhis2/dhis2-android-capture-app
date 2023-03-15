@@ -28,6 +28,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.VersionStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
@@ -56,6 +57,8 @@ class MainPresenterTest {
     private val deleteUserData: DeleteUserData = mock()
     private val syncIsPerfomedInteractor: SyncIsPerformedInteractor = mock()
     private val syncStatusController: SyncStatusController = mock()
+    private val versionStatusController: VersionStatusController = mock()
+
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
@@ -75,7 +78,8 @@ class MainPresenterTest {
                 userManager,
                 deleteUserData,
                 syncIsPerfomedInteractor,
-                syncStatusController
+                syncStatusController,
+                versionStatusController
             )
     }
 

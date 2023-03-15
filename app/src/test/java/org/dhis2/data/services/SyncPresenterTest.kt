@@ -15,6 +15,7 @@ import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.SyncRepository
 import org.dhis2.data.service.SyncResult
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.VersionStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -40,6 +41,7 @@ class SyncPresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val syncRepository: SyncRepository = mock()
+    private val versionStatusController: VersionStatusController = mock()
 
     @Before
     fun setUp() {
@@ -49,7 +51,8 @@ class SyncPresenterTest {
             workManagerController,
             analyticsHelper,
             syncStatusController,
-            syncRepository
+            syncRepository,
+            versionStatusController
         )
     }
 

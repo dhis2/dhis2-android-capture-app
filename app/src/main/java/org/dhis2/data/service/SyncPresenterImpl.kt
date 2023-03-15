@@ -46,7 +46,8 @@ class SyncPresenterImpl(
     private val workManagerController: WorkManagerController,
     private val analyticsHelper: AnalyticsHelper,
     private val syncStatusController: SyncStatusController,
-    private val syncRepository: SyncRepository
+    private val syncRepository: SyncRepository,
+    private val versionStatusController: VersionStatusController
 ) : SyncPresenter {
 
     override fun initSyncControllerMap() {
@@ -72,6 +73,10 @@ class SyncPresenterImpl(
 
     override fun setNetworkUnavailable() {
         syncStatusController.onNetworkUnavailable()
+    }
+
+    override fun checkVersionUpdate() {
+        versionStatusController.checkVersionUpdates()
     }
 
     override fun syncAndDownloadEvents() {

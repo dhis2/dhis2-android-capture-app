@@ -4,8 +4,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
@@ -28,6 +30,8 @@ import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
+import org.dhis2.ui.dialogs.alert.AlertDialog
+import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
@@ -190,6 +194,11 @@ class MainActivity :
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
+        }
+        presenter.versionUpdate.observe(this) { newVersion ->
+            if (newVersion) {
+                showNewVersionAlert("2.7.1.1")
+            }
         }
     }
 
@@ -492,5 +501,54 @@ class MainActivity :
         val notificationManager: NotificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
+    }
+
+    private fun showNewVersionAlert(version: String) {
+        AlertDialog(
+            labelText = getString(R.string.software_update),
+            descriptionText = getString(R.string.new_version_message).format(version),
+            iconResource = R.drawable.ic_notification_alert,
+            spanText = version,
+            dismissButton = ButtonUiModel(
+                getString(R.string.remind_me_later),
+                onClick = { presenter.remindLaterAlertNewVersion() }
+            ),
+            confirmButton = ButtonUiModel(
+                getString(R.string.download_now),
+                onClick = {
+                    presenter.downloadVersion(context) { apkUri ->
+                        installAPK(apkUri)
+                    }
+                }
+            )
+        ).show(supportFragmentManager)
+    }
+
+    private fun installAPK(apkUri: Uri) {
+        if (hasPermissionToInstall()) {
+            Intent(Intent.ACTION_VIEW).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setDataAndType(apkUri, "application/vnd.android.package-archive")
+                startActivity(this)
+            }
+        } else {
+            manageUnknownSources.launch(
+                Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    .setData(Uri.parse(String.format("package:%s", packageName)))
+            )
+        }
+    }
+
+    private val manageUnknownSources =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            presenter.downloadVersion(context) { apkUri ->
+                installAPK(apkUri)
+            }
+        }
+
+    private fun hasPermissionToInstall(): Boolean = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> packageManager.canRequestPackageInstalls()
+        else -> true
     }
 }

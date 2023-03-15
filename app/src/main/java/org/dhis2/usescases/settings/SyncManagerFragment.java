@@ -311,6 +311,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     break;
+                case VERSION_UPDATE:
+                    ViewAnimationsKt.expand(binding.versionButton,true, () -> {
+                        binding.versionButton.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
                 default:
                     break;
             }
@@ -370,6 +376,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.smsContent.setVisibility(View.GONE);
                         binding.smsTopShadow.setVisibility(View.GONE);
                         binding.smsBottomShadow.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case VERSION_UPDATE:
+                    ViewAnimationsKt.collapse(binding.versionButton, () -> {
+                        binding.versionButton.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;

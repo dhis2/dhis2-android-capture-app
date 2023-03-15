@@ -74,4 +74,6 @@ interface SyncPresenter {
     void finishSync();
 
     void setNetworkUnavailable();
+
+    void checkVersionUpdate();
 }

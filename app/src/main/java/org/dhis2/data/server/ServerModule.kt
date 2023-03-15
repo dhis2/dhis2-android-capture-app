@@ -15,6 +15,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.VersionStatusController
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.metadata.usecases.DataSetConfiguration
@@ -113,6 +114,12 @@ class ServerModule {
     @PerServer
     fun providesSyncStatusController(): SyncStatusController {
         return SyncStatusController()
+    }
+
+    @Provides
+    @PerServer
+    fun providesVersionStatusController(d2: D2): VersionStatusController {
+        return VersionStatusController(d2)
     }
 
     companion object {

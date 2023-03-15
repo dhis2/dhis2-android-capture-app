@@ -8,6 +8,7 @@ import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.UserManager;
+import org.dhis2.data.service.VersionStatusController;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
@@ -39,7 +40,9 @@ public final class SyncManagerModule {
             SettingsRepository settingsRepository,
             AnalyticsHelper analyticsHelper,
             MatomoAnalyticsController matomoAnalyticsController,
-            ResourceManager resourceManager) {
+            ResourceManager resourceManager,
+            VersionStatusController versionStatusController
+    ) {
         return new SyncManagerPresenter(d2,
                 schedulerProvider,
                 gatewayValidator,
@@ -51,7 +54,7 @@ public final class SyncManagerModule {
                 analyticsHelper,
                 new ErrorModelMapper(view.getContext().getString(R.string.fk_message)),
                 matomoAnalyticsController,
-                resourceManager);
+                resourceManager, versionStatusController);
     }
 
     @Provides

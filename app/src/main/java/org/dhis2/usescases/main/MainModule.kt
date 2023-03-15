@@ -12,6 +12,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.VersionStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
@@ -34,7 +35,8 @@ class MainModule(val view: MainView) {
         userManager: UserManager,
         deleteUserData: DeleteUserData,
         syncIsPerformedInteractor: SyncIsPerformedInteractor,
-        syncStatusController: SyncStatusController
+        syncStatusController: SyncStatusController,
+        versionStatusController: VersionStatusController
     ): MainPresenter {
         return MainPresenter(
             view,
@@ -48,7 +50,8 @@ class MainModule(val view: MainView) {
             userManager,
             deleteUserData,
             syncIsPerformedInteractor,
-            syncStatusController
+            syncStatusController,
+            versionStatusController
         )
     }
 
