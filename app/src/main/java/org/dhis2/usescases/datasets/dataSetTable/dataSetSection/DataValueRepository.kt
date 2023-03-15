@@ -6,9 +6,8 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.SortedMap
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import org.dhis2.Bindings.decimalFormat
+import org.dhis2.commons.bindings.dataValueConflicts
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
@@ -24,6 +23,7 @@ import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataapproval.DataApprovalState
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -584,6 +584,10 @@ class DataValueRepository(
             dataTableModel.catOptionOrder
         )
 
+        val conflicts = d2.dataValueConflicts(
+            dataSetUid, periodId, orgUnitUid, attributeOptionComboUid
+        )
+
         for (dataElement in dataTableModel.rows ?: emptyList()) {
             val values = ArrayList<String>()
             val fields = ArrayList<FieldViewModel>()
@@ -621,7 +625,7 @@ class DataValueRepository(
                         dataSetTableModel.categoryOptionCombo == categoryOptionCombo.uid()
                 }?.value
 
-                val fieldViewModel = fieldFactory.create(
+                var fieldViewModel = fieldFactory.create(
                     dataElement.uid() + "_" + categoryOptionCombo.uid(),
                     dataElement.displayFormName()!!,
                     dataElement.valueType()!!,
@@ -642,9 +646,59 @@ class DataValueRepository(
                     dataTableModel.catCombo?.uid()
                 )
 
-                errors[fieldViewModel.uid()]?.let { error ->
-                    fields.add(fieldViewModel.withError(error))
-                } ?: fields.add(fieldViewModel)
+                val valueStateSyncState = d2.dataValueModule().dataValues()
+                    .byDataSetUid(dataSetUid)
+                    .byPeriod().eq(periodId)
+                    .byOrganisationUnitUid().eq(orgUnitUid)
+                    .byAttributeOptionComboUid().eq(attributeOptionComboUid)
+                    .byDataElementUid().eq(dataElement.uid())
+                    .byCategoryOptionComboUid().eq(categoryOptionCombo.uid())
+                    .blockingGet()
+                    ?.find { it.dataElement() == dataElement.uid() }
+                    ?.syncState()
+
+                val conflictInField =
+                    conflicts.takeIf {
+                        when (valueStateSyncState) {
+                            State.ERROR,
+                            State.WARNING -> true
+                            else -> false
+                        }
+                    }?.filter {
+                        "${it.dataElement()}_${it.categoryOptionCombo()}" == fieldViewModel.uid()
+                    }?.takeIf { it.isNotEmpty() }?.map { it.displayDescription() ?: "" }
+
+                val error = errors[fieldViewModel.uid()]
+
+                val errorList = when {
+                    valueStateSyncState == State.ERROR &&
+                        conflictInField != null
+                        && error != null ->
+                        conflictInField + listOf(error)
+                    valueStateSyncState == State.ERROR && conflictInField != null ->
+                        conflictInField
+                    error != null ->
+                        listOf(error)
+                    else -> null
+                }
+
+                val warningList = when {
+                    valueStateSyncState == State.WARNING
+                        && conflictInField != null ->
+                        conflictInField
+                    else ->
+                        null
+                }
+
+                fieldViewModel = errorList?.let {
+                    fieldViewModel.withError(it.joinToString(".\n"))
+                } ?: fieldViewModel
+
+                fieldViewModel = warningList?.let {
+                    fieldViewModel.withWarning(warningList.joinToString(".\n"))
+                } ?: fieldViewModel
+
+                fields.add(fieldViewModel)
 
                 values.add(fieldViewModel.value().toString())
 

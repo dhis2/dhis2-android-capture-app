@@ -48,7 +48,7 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.resources.ObjectStyleUtils;
-import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -631,18 +631,17 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showSyncDialog(String uid) {
-        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.TEI)
-                .setUid(uid)
+    public void showSyncDialog(String eventUid, String enrollmentUid) {
+        new SyncStatusDialog.Builder()
+                .withContext(this)
+                .withSyncContext(
+                        new SyncContext.EnrollmentEvent(eventUid, enrollmentUid)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged)
                         FilterManager.getInstance().publishData();
 
-                })
-                .build();
-
-        dialog.show(getChildFragmentManager(), uid);
+                }).show(enrollmentUid);
     }
 
     @Override

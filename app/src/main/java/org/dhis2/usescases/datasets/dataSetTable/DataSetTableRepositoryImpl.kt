@@ -50,6 +50,12 @@ class DataSetTableRepositoryImpl(
         return d2.periodModule().periodHelper().getPeriodForPeriodId(periodId)
     }
 
+    fun getOrgUnit(): Single<OrganisationUnit> {
+        return d2.organisationUnitModule().organisationUnits()
+            .uid(orgUnitUid)
+            .get()
+    }
+
     fun dataSetInstance(): Flowable<DataSetInstance> {
         return dataSetInstanceProcessor.startWith(Unit())
             .switchMap {

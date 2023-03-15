@@ -11,7 +11,9 @@ import io.reactivex.Single
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.Date
+import java.util.Locale
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -20,6 +22,7 @@ import org.dhis2.utils.validationrules.Violation
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSet
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.validation.engine.ValidationResult
@@ -33,6 +36,7 @@ class DataSetTablePresenterTest {
 
     private val view: DataSetTableContract.View = mock()
     private val repository: DataSetTableRepositoryImpl = mock()
+    private val periodUtils: DhisPeriodUtils = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val updateProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
@@ -42,6 +46,7 @@ class DataSetTablePresenterTest {
         presenter = DataSetTablePresenter(
             view,
             repository,
+            periodUtils,
             scheduler,
             analyticsHelper,
             updateProcessor
@@ -50,14 +55,12 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should initialize the DataSet table presenter`() {
-        val orgUnit = "orgUnitUid"
-        val periodTypeName = "daily"
+        val orgUnitUid = "orgUnitUid"
         val catCombo = "catComboUid"
-        val periodFinalDate = "12/05/2018"
         val periodId = "periodId"
 
         val sections = listOf(DataSetSection("section_1_uid", "section_1"))
-        val dataSet = DataSet.builder().uid("datasetUid").build()
+        val dataSet = DataSet.builder().uid("datasetUid").displayName("name").build()
         val catComboName = "catComboName"
         val period = Period.builder().periodType(PeriodType.Daily)
             .startDate(Date())
@@ -65,19 +68,39 @@ class DataSetTablePresenterTest {
             .periodId("periodId")
             .build()
 
+        val orgUnit: OrganisationUnit = mock {
+            on { displayName() } doReturn "orgUnitName"
+        }
+
+        val renderDetails = DataSetRenderDetails(
+            dataSet.displayName()!!,
+            "orgUnitName",
+            "periodLabel",
+            catComboName,
+            false
+        )
+
         whenever(repository.getSections()) doReturn Flowable.just(sections)
         whenever(repository.getDataSet()) doReturn Single.just(dataSet)
         whenever(repository.getCatComboName(catCombo)) doReturn Flowable.just(catComboName)
         whenever(repository.getPeriod()) doReturn Single.just(period)
+        whenever(
+            periodUtils.getPeriodUIString(
+                period.periodType(),
+                period.startDate()!!,
+                Locale.getDefault()
+            )
+        ) doReturn "periodLabel"
+        whenever(repository.getOrgUnit()) doReturn Single.just(orgUnit)
         whenever(repository.isComplete()) doReturn Single.just(false)
         whenever(repository.dataSetStatus()) doReturn Flowable.just(true)
         whenever(repository.dataSetState()) doReturn Flowable.just(State.SYNCED)
         whenever(view.observeSaveButtonClicks()) doReturn Observable.empty()
 
-        presenter.init(orgUnit, periodTypeName, catCombo, periodFinalDate, periodId)
+        presenter.init(orgUnitUid, catCombo, periodId)
 
         verify(view).setSections(sections)
-        verify(view).renderDetails(dataSet, catComboName, period, false)
+        verify(view).renderDetails(renderDetails)
     }
 
     @Test

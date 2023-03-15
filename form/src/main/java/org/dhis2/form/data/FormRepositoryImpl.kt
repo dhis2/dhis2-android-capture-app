@@ -290,12 +290,16 @@ class FormRepositoryImpl(
             } != null
         }?.size ?: 0
 
+        val errorFields = fields.count {
+            it.programStageSection == sectionFieldUiModel.uid && it.error != null
+        }
+
         return dataEntryRepository?.updateSection(
             sectionFieldUiModel,
             isOpen,
             total,
             values,
-            errorCount + mandatoryCount,
+            errorCount + mandatoryCount + errorFields,
             warningCount
         ) ?: sectionFieldUiModel
     }

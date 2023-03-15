@@ -10,9 +10,14 @@ data class TextInputModel(
     val currentValue: String? = null,
     val keyboardInputType: KeyboardInputType = KeyboardInputType.TextInput(),
     val error: String? = null,
+    val warning: String? = null,
     private val clearable: Boolean = false
 ) {
     fun showClearButton() = clearable && currentValue?.isNotEmpty() == true
+    fun errorOrWarningMessage() = error ?: warning
+    fun hasErrorOrWarning() = errorOrWarningMessage() != null
+
+    fun actionIconCanBeClicked(hasFocus: Boolean) = hasFocus && error == null
 }
 
 sealed class KeyboardInputType(

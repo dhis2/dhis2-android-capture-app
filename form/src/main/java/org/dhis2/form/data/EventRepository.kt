@@ -153,7 +153,7 @@ class EventRepository(
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
         val objectStyle = getObjectStyle(de)
-        val error: String = checkConflicts(de.uid(), dataValue)
+        val error: String = checkConflicts(de.uid())
         val isOrgUnit =
             valueType === ValueType.ORGANISATION_UNIT
         val isDate = valueType != null && valueType.isDate
@@ -206,14 +206,13 @@ class EventRepository(
 
     private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
-    private fun checkConflicts(dataElementUid: String, value: String?): String {
+    private fun checkConflicts(dataElementUid: String): String {
         return d2.importModule().trackerImportConflicts()
             .byEventUid().eq(eventUid)
             .blockingGet()
             .firstOrNull { conflict ->
                 conflict.event() == eventUid &&
-                    conflict.dataElement() == dataElementUid &&
-                    conflict.value() == value
+                    conflict.dataElement() == dataElementUid
             }?.displayDescription() ?: ""
     }
 }

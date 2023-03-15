@@ -256,7 +256,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         BottomSheetDialog(
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                 title = getString(R.string.not_saved),
-                subtitle = getString(R.string.discard_go_back),
+                message = getString(R.string.discard_go_back),
                 iconResource = R.drawable.ic_error_outline,
                 mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
                 secondaryButton = DialogButtonStyle.DiscardButton()

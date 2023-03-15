@@ -323,7 +323,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         BottomSheetDialog(
             BottomSheetDialogUiModel(
                 title = getString(R.string.improve_app_msg_title),
-                subtitle = getString(R.string.improve_app_msg_text),
+                message = getString(R.string.improve_app_msg_text),
                 clickableWord = getString(R.string.improve_app_msg_clickable_word),
                 iconResource = R.drawable.ic_line_chart,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),

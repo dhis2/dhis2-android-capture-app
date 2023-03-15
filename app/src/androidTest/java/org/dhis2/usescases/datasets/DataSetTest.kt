@@ -33,9 +33,6 @@ class DataSetTest : BaseTest() {
         startDataSetActivity(
             "BfMAe6Itzgt",
             "DiszpKrYNg8",
-            "Ngelehun CHC",
-            "periodName",
-            "",
             "202001",
             "HllvX50cXC0",
             ruleDataSet

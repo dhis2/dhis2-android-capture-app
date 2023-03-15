@@ -1,5 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.Transition
@@ -25,8 +27,8 @@ import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -41,6 +43,7 @@ import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 
@@ -116,6 +119,10 @@ class ProgramEventDetailActivity :
         binding.filterLayout.adapter = filtersAdapter
         presenter.init()
         binding.syncButton.setOnClickListener { showSyncDialogProgram() }
+
+        if (intent.shouldLaunchSyncDialog()) {
+            showSyncDialogProgram()
+        }
     }
 
     private fun initExtras() {
@@ -175,16 +182,14 @@ class ProgramEventDetailActivity :
     }
 
     private fun showSyncDialogProgram() {
-        val syncDialog = SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.PROGRAM)
-            .setUid(programUid)
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(SyncContext.EventProgram(programUid))
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            })
-            .build()
-        syncDialog.show(supportFragmentManager, "EVENT_SYNC")
+            }).show("EVENT_SYNC")
     }
 
     public override fun onPause() {
@@ -354,16 +359,14 @@ class ProgramEventDetailActivity :
     }
 
     override fun showSyncDialog(uid: String) {
-        val dialog = SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.EVENT)
-            .setUid(uid)
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(SyncContext.Event(uid))
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            })
-            .build()
-        dialog.show(supportFragmentManager, FRAGMENT_TAG)
+            }).show(FRAGMENT_TAG)
     }
 
     private fun showList() {
@@ -425,6 +428,12 @@ class ProgramEventDetailActivity :
             val bundle = Bundle()
             bundle.putString(EXTRA_PROGRAM_UID, programUid)
             return bundle
+        }
+
+        fun intent(context: Context, programUid: String): Intent {
+            return Intent(context, ProgramEventDetailActivity::class.java).apply {
+                putExtra(EXTRA_PROGRAM_UID, programUid)
+            }
         }
     }
 }

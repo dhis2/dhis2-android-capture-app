@@ -29,8 +29,8 @@ import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -248,15 +248,15 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun showSyncDialog(program: ProgramViewModel) {
-        val dialog = SyncStatusDialog.Builder()
-            .setConflictType(
-                if (program.programType.isNotEmpty()) {
-                    ConflictType.PROGRAM
-                } else {
-                    ConflictType.DATA_SET
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(
+                when (program.programType) {
+                    "WITH_REGISTRATION" -> SyncContext.GlobalTrackerProgram(program.uid)
+                    "WITHOUT_REGISTRATION" -> SyncContext.GlobalEventProgram(program.uid)
+                    else -> SyncContext.GlobalDataSet(program.uid)
                 }
             )
-            .setUid(program.uid)
             .onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
@@ -264,10 +264,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                             presenter.updateProgramQueries()
                         }
                     }
-                })
-            .build()
-
-        dialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
+                }).show(FRAGMENT_TAG)
     }
 
     fun sharedView() = binding.drawerLayout

@@ -59,9 +59,9 @@ class ConfigureEventCompletionDialogTest {
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, NOT_SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, ERROR_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, ERROR_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 0)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 3)
+        assertEquals(resultDialog.fieldsWithIssues.size, 3)
     }
 
     @Test
@@ -81,9 +81,9 @@ class ConfigureEventCompletionDialogTest {
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, MANDATORY_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, MANDATORY_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 2)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 2)
+        assertEquals(resultDialog.fieldsWithIssues.size, 2)
     }
 
     @Test
@@ -102,9 +102,9 @@ class ConfigureEventCompletionDialogTest {
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, WARNING_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, WARNING_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 1)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 1)
+        assertEquals(resultDialog.fieldsWithIssues.size, 1)
     }
 
     @Test
@@ -121,9 +121,9 @@ class ConfigureEventCompletionDialogTest {
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, COMPLETE_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, COMPLETE_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 2)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 0)
+        assertEquals(resultDialog.fieldsWithIssues.size, 0)
     }
 
     @Test
@@ -140,9 +140,9 @@ class ConfigureEventCompletionDialogTest {
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, COMPLETE_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, COMPLETE_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 2)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 1)
+        assertEquals(resultDialog.fieldsWithIssues.size, 1)
     }
 
     @Test
@@ -159,9 +159,9 @@ class ConfigureEventCompletionDialogTest {
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, ON_COMPLETE_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, ON_COMPLETE_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 0)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 1)
+        assertEquals(resultDialog.fieldsWithIssues.size, 1)
     }
 
     companion object {

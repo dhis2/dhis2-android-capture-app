@@ -95,6 +95,7 @@ data class TableCell(
     val editable: Boolean = true,
     val mandatory: Boolean? = false,
     val error: String? = null,
+    val warning: String? = null,
     val legendColor: Int? = null
 ) {
     fun isSelected(selectionState: SelectionState): Boolean {
@@ -102,6 +103,9 @@ data class TableCell(
             selectionState.row == row &&
             selectionState.column == column
     }
+
+    fun hasErrorOrWarning() = errorOrWarningMessage() != null
+    fun errorOrWarningMessage() = error ?: warning
 }
 
 @Serializable

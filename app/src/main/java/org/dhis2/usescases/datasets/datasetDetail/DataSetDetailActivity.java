@@ -1,11 +1,14 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
@@ -28,7 +31,9 @@ import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragmen
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
@@ -61,6 +66,14 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     private DataSetDetailViewModel viewModel;
 
+    public static Intent intent(
+            @NonNull Context context,
+            @NonNull String dataSetUid) {
+        Intent intent = new Intent(context, DataSetDetailActivity.class);
+        intent.putExtra("DATASET_UID", dataSetUid);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         dataSetUid = getIntent().getStringExtra("DATASET_UID");
@@ -77,6 +90,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
         configureBottomNavigation();
+
+        if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
+            showGranularSync();
+        }
     }
 
     private void configureBottomNavigation() {
@@ -214,11 +231,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void showGranularSync() {
         presenter.trackDataSetGranularSync();
-        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.DATA_SET)
-                .setUid(dataSetUid)
-                .onDismissListener(hasChanged -> presenter.refreshList()).build();
-
-        dialog.show(getSupportFragmentManager(), "DATASET_SYNC");
+        new SyncStatusDialog.Builder()
+                .withContext(this)
+                .withSyncContext(new SyncContext.DataSet(dataSetUid))
+                .onDismissListener(hasChanged -> presenter.refreshList())
+                .show("DATASET_SYNC");
     }
 }

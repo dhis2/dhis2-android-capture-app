@@ -4,10 +4,13 @@ import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
@@ -31,24 +34,21 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailFragment;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
-import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -60,9 +60,6 @@ import kotlin.Unit;
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
     String orgUnitUid;
-    String orgUnitName;
-    String periodTypeName;
-    String periodInitialDate;
     String catOptCombo;
     String dataSetUid;
     String periodId;
@@ -71,8 +68,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Inject
     DataSetTableContract.Presenter presenter;
-    @Inject
-    DhisPeriodUtils periodUtils;
 
     private ActivityDatasetTableBinding binding;
     private boolean backPressed;
@@ -86,30 +81,32 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
-                                   @NonNull String orgUnitName,
-                                   @NonNull String periodTypeName,
-                                   @NonNull String periodInitialDate,
                                    @NonNull String periodId,
                                    @NonNull String catOptCombo) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
         bundle.putString(Constants.ORG_UNIT, orgUnitUid);
-        bundle.putString(Constants.ORG_UNIT_NAME, orgUnitName);
-        bundle.putString(Constants.PERIOD_TYPE, periodTypeName);
-        bundle.putString(Constants.PERIOD_TYPE_DATE, periodInitialDate);
         bundle.putString(Constants.PERIOD_ID, periodId);
         bundle.putString(Constants.CAT_COMB, catOptCombo);
         return bundle;
+    }
+
+    public static Intent intent(
+            @NonNull Context context,
+            @NonNull String dataSetUid,
+            @NonNull String orgUnitUid,
+            @NonNull String periodId,
+            @NonNull String catOptCombo) {
+        Intent intent = new Intent(context, DataSetTableActivity.class);
+        intent.putExtras(getBundle(dataSetUid, orgUnitUid, periodId, catOptCombo));
+        return intent;
     }
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         orgUnitUid = getIntent().getStringExtra(Constants.ORG_UNIT);
-        orgUnitName = getIntent().getStringExtra(Constants.ORG_UNIT_NAME);
-        periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
         periodId = getIntent().getStringExtra(Constants.PERIOD_ID);
-        periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
         catOptCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
@@ -129,7 +126,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.setPresenter(presenter);
         ViewExtensionsKt.clipWithRoundedCorners(binding.container, ExtensionsKt.getDp(16));
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
-        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, catOptCombo, periodId);
         binding.navigationView.selectItemAt(1);
         binding.navigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -148,6 +145,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         });
         openSection(presenter.getFirstSection());
         binding.syncButton.setOnClickListener(view -> showGranularSync());
+
+        if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
+            showGranularSync();
+        }
     }
 
     private void openDetails() {
@@ -172,18 +173,19 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     private void showGranularSync() {
         presenter.onClickSyncStatus();
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.DATA_VALUES)
-                .setUid(dataSetUid)
-                .setPeriodId(periodId)
-                .setOrgUnit(orgUnitUid)
-                .setAttributeOptionCombo(catOptCombo)
+        new SyncStatusDialog.Builder()
+                .withContext(this)
+                .withSyncContext(
+                        new SyncContext.DataSetInstance(
+                                dataSetUid,
+                                periodId,
+                                orgUnitUid,
+                                catOptCombo
+                        )
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) presenter.updateData();
-                })
-                .build();
-
-        syncDialog.show(getSupportFragmentManager(), DATAVALUE_SYNC);
+                }).show(DATAVALUE_SYNC);
     }
 
     @Override
@@ -260,27 +262,13 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public String getOrgUnitName() {
-        return orgUnitName;
-    }
-
-    @Override
-    public void renderDetails(DataSet dataSet, String catComboName, Period period, boolean isComplete) {
-        binding.dataSetName.setText(dataSet.displayName());
-        StringBuilder subtitle = new StringBuilder(
-                periodUtils.getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
-        )
-                .append(" | ")
-                .append(orgUnitName);
-        if (!catComboName.equals("default")) {
-            subtitle.append(" | ")
-                    .append(catComboName);
-        }
-        binding.dataSetSubtitle.setText(subtitle);
+    public void renderDetails(DataSetRenderDetails dataSetRenderDetails) {
+        binding.dataSetName.setText(dataSetRenderDetails.title());
+        binding.dataSetSubtitle.setText(dataSetRenderDetails.subtitle());
     }
 
     public void update() {
-        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, catOptCombo, periodId);
     }
 
     @Override
@@ -442,7 +430,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             if (isKeyboardOpened) {
                 hideKeyboard();
-                new Handler().postDelayed(() -> {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }, 100);
             } else {

@@ -215,7 +215,7 @@ private fun launchBottomSheet(
     BottomSheetDialog(
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = title,
-            subtitle = subtitle,
+            message = subtitle,
             iconResource = R.drawable.ic_outline_error_36,
             mainButton = DialogButtonStyle.MainButton(org.dhis2.commons.R.string.keep_editing),
             secondaryButton = DialogButtonStyle.DiscardButton()

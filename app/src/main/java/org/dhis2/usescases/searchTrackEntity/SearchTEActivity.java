@@ -30,6 +30,7 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
@@ -43,6 +44,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
@@ -124,8 +126,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         Bundle extras = new Bundle();
         extras.putBoolean("FROM_RELATIONSHIP", fromRelationship);
         extras.putString("FROM_RELATIONSHIP_TEI", teiUid);
-        extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
-        extras.putString("PROGRAM_UID", programUid);
+        extras.putString(Extra.TEI_UID.key, teiTypeToAdd);
+        extras.putString(Extra.PROGRAM_UID.key, programUid);
         intent.putExtras(extras);
         return intent;
     }
@@ -192,6 +194,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         configureBottomNavigation();
         observeScreenState();
         observeDownload();
+
+        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+            openSyncDialog();
+        }
     }
 
     private void initializeVariables(Bundle savedInstanceState) {
@@ -313,14 +319,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void openSyncDialog() {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.PROGRAM)
-                .setUid(initialProgram)
+        new SyncStatusDialog.Builder()
+                .withContext(this)
+                .withSyncContext(
+                        new SyncContext.TrackerProgram(initialProgram)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                })
-                .build();
-        syncDialog.show(getSupportFragmentManager(), "PROGRAM_SYNC");
+                }).show("PROGRAM_SYNC");
     }
 
     @Override
@@ -519,15 +525,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void showSyncDialog(String teiUid) {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.TEI)
-                .setUid(teiUid)
+    public void showSyncDialog(String enrollmentUid) {
+        new SyncStatusDialog.Builder()
+                .withContext(this)
+                .withSyncContext(
+                        new SyncContext.TrackerProgramTei(enrollmentUid)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                })
-                .build();
-        syncDialog.show(getSupportFragmentManager(), "TEI_SYNC");
+                }).show("TEI_SYNC");
     }
 
     private void setInitialProgram(List<ProgramSpinnerModel> programs) {

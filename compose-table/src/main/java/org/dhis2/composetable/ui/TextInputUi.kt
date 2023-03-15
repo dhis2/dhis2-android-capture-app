@@ -156,11 +156,11 @@ private fun TextInputContent(
 
     var hasFocus by remember { mutableStateOf(false) }
 
-    val dividerColor = when {
-        textInputModel.error != null -> LocalTableColors.current.errorColor
-        hasFocus -> LocalTableColors.current.primary
-        else -> LocalTableColors.current.disabledCellText
-    }
+    val dividerColor = dividerColor(
+        hasError = textInputModel.error != null,
+        hasWarning = textInputModel.warning != null,
+        hasFocus = hasFocus
+    )
 
     Column {
         Row(
@@ -215,7 +215,7 @@ private fun TextInputContent(
                 hasFocus = hasFocus,
                 textInputModel,
                 onActionIconClick = {
-                    if (hasFocus && textInputModel.error == null) {
+                    if (textInputModel.actionIconCanBeClicked(hasFocus)) {
                         focusManager.clearFocus(force = true)
                         onSave()
                     } else {
@@ -225,17 +225,29 @@ private fun TextInputContent(
                 onTextChanged
             )
         }
-        if (textInputModel.error != null) {
+        if (textInputModel.hasErrorOrWarning()) {
             Text(
                 modifier = Modifier.testTag(INPUT_ERROR_MESSAGE_TEST_TAG),
-                text = textInputModel.error,
+                text = textInputModel.errorOrWarningMessage()!!,
                 style = TextStyle(
-                    color = LocalTableColors.current.errorColor,
+                    color = LocalTableColors.current.cellTextColor(
+                        textInputModel.error != null,
+                        textInputModel.warning != null,
+                        true
+                    ),
                     fontSize = 10.sp
                 )
             )
         }
     }
+}
+
+@Composable
+private fun dividerColor(hasError: Boolean, hasWarning: Boolean, hasFocus: Boolean) = when {
+    hasError -> LocalTableColors.current.errorColor
+    hasWarning -> LocalTableColors.current.warningColor
+    hasFocus -> LocalTableColors.current.primary
+    else -> LocalTableColors.current.disabledCellText
 }
 
 @Composable
