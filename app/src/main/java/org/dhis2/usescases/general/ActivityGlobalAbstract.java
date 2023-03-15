@@ -5,16 +5,13 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,37 +25,32 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.ActivityResultObservable;
+import org.dhis2.commons.ActivityResultObserver;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
-import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.locationprovider.LocationProvider;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.resources.LocaleSelector;
-import org.dhis2.data.server.OpenIdSession;
-import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.login.accounts.AccountsActivity;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.qrScanner.ScanActivity;
 import org.dhis2.usescases.splash.SplashActivity;
-import org.dhis2.utils.ActivityResultObservable;
-import org.dhis2.utils.ActivityResultObserver;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
 import kotlin.Unit;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
-import timber.log.Timber;
 
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
@@ -80,29 +72,20 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     private ActivityResultObserver activityResultObserver;
 
-    public void requestEnableLocation() {
-        displayMessage(getString(R.string.enable_location_message));
-    }
-
     public enum Status {
         ON_PAUSE,
         ON_RESUME
     }
 
-
-    public void setScreenName(String name) {
-        crashReportController.trackScreenName(name);
-    }
-
     @Override
     protected void attachBaseContext(Context newBase) {
-        ServerComponent serverComponent = ((App) newBase.getApplicationContext()).getServerComponent();
-        if (serverComponent != null && serverComponent.getD2().userModule().blockingIsLogged()) {
-            ContextWrapper localeUpdatedContext = new LocaleSelector(newBase, serverComponent.getD2()).updateUiLanguage();
-            super.attachBaseContext(localeUpdatedContext);
-        } else {
-            super.attachBaseContext(newBase);
-        }
+        super.attachBaseContext(
+                ActivityGlobalAbstractExtensionsKt.wrappedContextForLanguage(
+                        this,
+                        ((App) newBase.getApplicationContext()).getServerComponent(),
+                        newBase
+                )
+        );
     }
 
     @Override
@@ -123,12 +106,24 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         SharedPreferences prefs = getSharedPreferences();
-        if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
+        if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity || this instanceof AccountsActivity) {
+            if (serverComponent != null) {
+                serverComponent.themeManager().clearProgramTheme();
+            }
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity))
-            setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        if (!(this instanceof SplashActivity) &&
+                !(this instanceof LoginActivity) &&
+                !(this instanceof AccountsActivity) &&
+                !(this instanceof ScanActivity)
+        ) {
+            if (serverComponent != null) {
+                setTheme(serverComponent.themeManager().getProgramTheme());
+            } else {
+                setTheme(R.style.AppTheme);
+            }
+        }
 
         super.onCreate(savedInstanceState);
     }

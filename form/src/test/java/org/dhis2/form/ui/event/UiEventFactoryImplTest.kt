@@ -68,6 +68,7 @@ class UiEventFactoryImplTest {
         uid = "uid",
         label = "label",
         layoutId = 1,
-        valueType = ValueType.TEXT
+        valueType = ValueType.TEXT,
+        optionSetConfiguration = null
     )
 }

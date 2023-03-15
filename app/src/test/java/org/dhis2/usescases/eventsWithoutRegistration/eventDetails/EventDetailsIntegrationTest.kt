@@ -8,10 +8,10 @@ import java.util.Date
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
@@ -129,6 +129,7 @@ class EventDetailsIntegrationTest {
         configureEventCatCombo = createConfigureEventCatCombo(),
         configureEventTemp = createConfigureEventTemp(eventCreationType),
         periodType = periodType,
+        eventUid = EVENT_UID,
         geometryController = createGeometryController(),
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
@@ -190,6 +191,7 @@ class EventDetailsIntegrationTest {
     companion object {
         const val ENROLLMENT_UID = "enrollmentUid"
         const val PROGRAM_UID = "programUid"
+        const val EVENT_UID = "eventUid"
         const val INITIAL_ORG_UNIT_UID = "initialOrgUnitUid"
         const val PROGRAM_STAGE_NAME = "Marvellous Program Stage"
         const val EXECUTION_DATE = "Date of Marvellous Program Stage"

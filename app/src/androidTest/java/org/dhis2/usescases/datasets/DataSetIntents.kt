@@ -4,10 +4,9 @@ import android.content.Intent
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
-import org.dhis2.utils.Constants.ACCESS_DATA
-import org.dhis2.utils.Constants.DATASET_UID
-import org.dhis2.utils.Constants.DATA_SET_NAME
+import org.dhis2.commons.Constants.ACCESS_DATA
+import org.dhis2.commons.Constants.DATASET_UID
+import org.dhis2.commons.Constants.DATA_SET_NAME
 
 fun startDataSetActivity(
     dataSetUid: String,

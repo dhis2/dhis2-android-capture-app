@@ -2,15 +2,11 @@ package org.dhis2.usescases.settings
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.TypeTextAction
-import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
-import androidx.test.espresso.matcher.ViewMatchers.supportsInputMethods
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -53,10 +49,6 @@ class SettingsRobot : BaseRobot() {
         onView(withId(R.id.settingsItemDeleteData)).perform(click())
     }
 
-    fun clickOnResetApp() {
-        onView(withId(R.id.settingsReset)).perform(click())
-    }
-
     fun clickOnSMSSettings() {
         onView(withId(R.id.smsSettings)).perform(click())
     }
@@ -72,7 +64,8 @@ class SettingsRobot : BaseRobot() {
         onView(withId(R.id.buttonSyncMeta)).check(
             matches(
                 allOf(
-                    withText("SYNC CONFIGURATION NOW"), isDisplayed()
+                    withText("SYNC CONFIGURATION NOW"),
+                    isDisplayed()
                 )
             )
         )
@@ -140,16 +133,12 @@ class SettingsRobot : BaseRobot() {
             .check(matches(withText("Delete local data finished successfully.")))
     }
 
-    fun checkOnAcceptReset() {
-        onView(withId(R.id.resetButton)).perform(click())
-    }
-
     fun checkGatewayNumberFieldIsNotEnabled() {
         onView(withId(R.id.settings_sms_receiver))
             .check(matches(allOf(not(isEnabled()))))
     }
 
-    fun checkGatewayNumberFieldIs(number: String){
+    fun checkGatewayNumberFieldIs(number: String) {
         onView(withId(R.id.settings_sms_receiver))
             .check(matches(withText(containsString(number))))
     }

@@ -5,12 +5,13 @@ import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
+import org.dhis2.data.service.SyncStatusController
 import org.dhis2.ui.ThemeManager
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -23,7 +24,8 @@ class ProgramModule(private val view: ProgramView) {
         schedulerProvider: SchedulerProvider,
         themeManager: ThemeManager,
         filterManager: FilterManager,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
+        syncStatusController: SyncStatusController
     ): ProgramPresenter {
         return ProgramPresenter(
             view,
@@ -31,7 +33,8 @@ class ProgramModule(private val view: ProgramView) {
             schedulerProvider,
             themeManager,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            syncStatusController
         )
     }
 
@@ -42,23 +45,16 @@ class ProgramModule(private val view: ProgramView) {
         filterPresenter: FilterPresenter,
         dhisProgramUtils: DhisProgramUtils,
         dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
-        schedulerProvider: SchedulerProvider,
-        resourceManager: ResourceManager
+        schedulerProvider: SchedulerProvider
     ): ProgramRepository {
         return ProgramRepositoryImpl(
             d2,
             filterPresenter,
             dhisProgramUtils,
             dhisTrackedEntityInstanceUtils,
-            resourceManager,
+            ResourceManager(view.context),
             schedulerProvider
         )
-    }
-
-    @Provides
-    @PerFragment
-    internal fun providesAdapter(presenter: ProgramPresenter): ProgramModelAdapter {
-        return ProgramModelAdapter(presenter)
     }
 
     @Provides

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_bar_graph">Панел сифатида кўриш</string>
+    <string name="show_line_graph">Қатор сифатида кўриш</string>
+    <string name="show_table_graph">Жадвал сифатида кўриш</string>
+    <string name="show_table_value">Қиймат сифатида кўриш</string>
+    <string name="action_accept">Қабул қилинг</string>
+    <string name="period">Давр</string>
+    <string name="none">Йўқ</string>
+    <string name="daily">Кунлик</string>
+    <string name="today">Бугун</string>
+    <string name="other">Бошқа</string>
+    <string name="yesterday">Кеча</string>
+    <string name="lastweek">Охирги ҳафта</string>
+    <string name="thisyear">Ушбу йил</string>
+    <string name="weekly">Ҳафталик</string>
+    <string name="monthly">Ойлик</string>
+    <string name="yearly">Йиллик</string>
+    <string name="all">Барчаси</string>
+    <string name="reset">Қайта кўриб чиқиб янгилаш</string>
+    </resources>

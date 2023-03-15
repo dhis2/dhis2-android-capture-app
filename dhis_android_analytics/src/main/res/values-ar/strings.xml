@@ -36,11 +36,15 @@
     <string name="monthly">شهري</string>
     <string name="yearly">سنوي</string>
     <string name="all">الجميع</string>
+    <string name="selection">الإختيار</string>
     <string name="reset">إعادة تعيين</string>
     <string name="include_this_period_title">هل تريد تضمين الفترة الحالية؟</string>
     <string name="include_this_period_body">سيعرض الفترة الحالية في الرسم البياني.</string>
     <string name="no_data_for_selected_filters">لا تُرجع عوامل التصفية التي قمت بتطبيقها أية بيانات</string>
     <string name="no_data_to_display">ليس لديك أي بيانات ليتم عرضها</string>
     <string name="pie_chart_no_data">كل البيانات صفر</string>
+    <string name="error_invalid_arguments">لم يتم تكوين هذا العرض البياني بشكل جيد ، يرجى الاتصال بالمسؤول.</string>
+    <string name="error_invalid_visualization">العرض البياني %s مفقود</string>
+    <string name="error_parsing_visualization">لم يتم تكوين هذا العرض البياني بشكل جيد ، يرجى الاتصال بالمسؤول.</string>
     <string name="error_database">لا يمكن الوصول إلى قاعدة البيانات. الرجاء الاتصال بالمسؤول الخاص بك.</string>
-</resources>
+    </resources>

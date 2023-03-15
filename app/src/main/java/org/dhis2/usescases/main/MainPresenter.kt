@@ -1,22 +1,36 @@
 package org.dhis2.usescases.main
 
 import android.view.Gravity
+import androidx.lifecycle.LiveData
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
+import org.dhis2.commons.matomo.Actions.Companion.JIRA_REPORT
+import org.dhis2.commons.matomo.Actions.Companion.OPEN_ANALYTICS
+import org.dhis2.commons.matomo.Actions.Companion.QR_SCANNER
+import org.dhis2.commons.matomo.Actions.Companion.SETTINGS
+import org.dhis2.commons.matomo.Categories.Companion.HOME
+import org.dhis2.commons.matomo.Labels.Companion.CLICK
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.SyncStatusData
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.data.service.workManager.WorkerItem
+import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
-import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
-import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
-import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
+import org.dhis2.utils.TRUE
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
@@ -36,7 +50,9 @@ class MainPresenter(
     private val filterRepository: FilterRepository,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val userManager: UserManager,
-    private val deleteUserData: DeleteUserData
+    private val deleteUserData: DeleteUserData,
+    private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
+    private val syncStatusController: SyncStatusController
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -157,15 +173,18 @@ class MainPresenter(
 
     fun logOut() {
         disposable.add(
-            repository.logOut()
+            Completable.fromCallable {
+                workManagerController.cancelAllWork()
+                FilterManager.getInstance().clearAllFilters()
+                preferences.setValue(Preference.SESSION_LOCKED, false)
+                preferences.setValue(Preference.PIN, null)
+            }.andThen(
+                repository.logOut()
+            )
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        workManagerController.cancelAllWork()
-                        FilterManager.getInstance().clearAllFilters()
-                        preferences.setValue(Preference.SESSION_LOCKED, false)
-                        preferences.setValue(Preference.PIN, null)
                         view.goToLogin(repository.accountsCount(), isDeletion = false)
                     },
                     { Timber.e(it) }
@@ -175,13 +194,17 @@ class MainPresenter(
 
     fun onDeleteAccount() {
         view.showProgressDeleteNotification()
+        try {
+            workManagerController.cancelAllWork()
+            deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
+            userManager.d2?.wipeModule()?.wipeEverything()
+            userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
+            view.cancelNotifications()
 
-        deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
-        userManager.d2?.wipeModule()?.wipeEverything()
-        userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
-        view.cancelNotifications()
-
-        view.goToLogin(repository.accountsCount(), isDeletion = true)
+            view.goToLogin(repository.accountsCount(), isDeletion = true)
+        } catch (exception: Exception) {
+            Timber.e(exception)
+        }
     }
 
     fun onSyncAllClick() {
@@ -228,5 +251,52 @@ class MainPresenter(
 
     fun setOpeningFilterToNone() {
         filterRepository.collapseAllFilters()
+    }
+
+    fun launchInitialDataSync() {
+        workManagerController
+            .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
+        val workerItem = WorkerItem(
+            Constants.RESERVED,
+            WorkerType.RESERVED,
+            null,
+            null,
+            null,
+            null
+        )
+        workManagerController.cancelAllWorkByTag(workerItem.workerName)
+        workManagerController.syncDataForWorker(workerItem)
+    }
+
+    fun observeDataSync(): LiveData<SyncStatusData> {
+        return syncStatusController.observeDownloadProcess()
+    }
+
+    fun wasSyncAlreadyDone(): Boolean {
+        if (view.hasToNotSync()) {
+            return true
+        }
+        return syncIsPerformedInteractor.execute()
+    }
+
+    fun onDataSuccess() {
+        userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+            .blockingSet(TRUE)
+    }
+
+    fun trackHomeAnalytics() {
+        matomoAnalyticsController.trackEvent(HOME, OPEN_ANALYTICS, CLICK)
+    }
+
+    fun trackPinDialog() {
+        matomoAnalyticsController.trackEvent(HOME, BLOCK_SESSION_PIN, CLICK)
+    }
+
+    fun trackQRScanner() {
+        matomoAnalyticsController.trackEvent(HOME, QR_SCANNER, CLICK)
+    }
+
+    fun trackJiraReport() {
+        matomoAnalyticsController.trackEvent(HOME, JIRA_REPORT, CLICK)
     }
 }

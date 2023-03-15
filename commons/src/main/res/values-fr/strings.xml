@@ -170,4 +170,10 @@
     <string name="add_image">Ajouter une image</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">L\'emplacement de votre appareil est déconnecté. Veuillez l\'activer pour capturer les coordonnées</string>
-</resources>
+    <string name="keep_editing">Continuer l’édition</string>
+    <string name="not_now">Pas maintenant</string>
+    <string name="review">Vérifier</string>
+    <string name="complete">Terminer</string>
+    <string name="default_table_header_label">Valeur</string>
+    <string name="discard_changes">Annuler les modifications</string>
+    </resources>

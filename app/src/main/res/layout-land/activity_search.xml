@@ -38,7 +38,9 @@
         <variable
             name="totalFilters"
             type="Integer" />
-
+        <variable
+            name="navigationInitialPage"
+            type="Integer" />
     </data>
 
     <RelativeLayout
@@ -225,6 +227,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:elevation="12dp"
+                app:initialPage="@{navigationInitialPage}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"

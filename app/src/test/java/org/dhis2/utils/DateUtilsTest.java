@@ -2,6 +2,7 @@ package org.dhis2.utils;
 
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.date.Period;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -17,8 +18,10 @@ import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
 public class DateUtilsTest {
 
@@ -624,5 +627,56 @@ public class DateUtilsTest {
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0));
 
+    }
+
+    @Test
+    public void isInputPeriodDateInsideFutureOpenDayConfiguration() throws ParseException {
+        DateUtils.getInstance().setCurrentDate(DateUtils.oldUiDateFormat().parse("2022-11-03"));
+        DateRangeInputPeriodModel inputPeriod = DateRangeInputPeriodModel.create(
+                "datasetUid",
+                "periodUid",
+                DateUtils.oldUiDateFormat().parse("2022-11-01"),
+                DateUtils.oldUiDateFormat().parse("2022-11-07"),
+                DateUtils.oldUiDateFormat().parse("2022-11-05"),
+                DateUtils.oldUiDateFormat().parse("2022-11-05")
+        );
+
+        assertEquals(true, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod, 5));
+    }
+
+    @Test
+    public void isInputPeriodDateOutsideFutureOpenDayConfiguration() throws ParseException {
+        DateUtils.getInstance().setCurrentDate(DateUtils.oldUiDateFormat().parse("2022-11-03"));
+        DateRangeInputPeriodModel inputPeriod = DateRangeInputPeriodModel.create(
+                "datasetUid",
+                "periodUid",
+                DateUtils.oldUiDateFormat().parse("2022-11-01"),
+                DateUtils.oldUiDateFormat().parse("2022-11-07"),
+                DateUtils.oldUiDateFormat().parse("2022-11-15"),
+                DateUtils.oldUiDateFormat().parse("2022-11-15")
+        );
+
+        assertEquals(false, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod, 5));
+    }
+
+    @Test
+    public void isFutureInputPeriodsNotConfigured() {
+        DateRangeInputPeriodModel inputPeriod = DateRangeInputPeriodModel.create(
+                "",
+                "",
+                new Date(),
+                new Date(),
+                new Date(),
+                new Date()
+        );
+
+        assertEquals(false, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod, 0));
+    }
+
+    @Test
+    public void shouldParseDate(){
+        String testDate = "2022-01-01'T'12:01:01.001";
+        Date date = StringExtensionsKt.toDate(testDate);
+        assertNotNull(date);
     }
 }

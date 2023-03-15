@@ -9,11 +9,13 @@ import okhttp3.Interceptor
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.data.service.SyncStatusController
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.metadata.usecases.DataSetConfiguration
@@ -25,12 +27,17 @@ import org.dhis2.utils.analytics.AnalyticsInterceptor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.D2Manager.blockingInstantiateD2
 
 @Module
 class ServerModule {
     @Provides
     @PerServer
-    fun sdk(): D2 {
+    fun sdk(context: Context): D2 {
+        if (!D2Manager.isD2Instantiated()) {
+            blockingInstantiateD2(getD2Configuration(context))
+                ?.userModule()?.accountManager()?.setMaxAccounts(Constants.MAX_ACCOUNTS)
+        }
         return D2Manager.getD2()
     }
 
@@ -89,13 +96,24 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesThemeManager(d2: D2, preferenceProvider: PreferenceProvider): ThemeManager {
+    fun providesThemeManager(
+        userManager: UserManager,
+        d2: D2,
+        preferenceProvider: PreferenceProvider
+    ): ThemeManager {
         return ThemeManager(
+            userManager,
             ProgramConfiguration(d2),
             DataSetConfiguration(d2),
             TrackedEntityTypeConfiguration(d2),
             preferenceProvider
         )
+    }
+
+    @Provides
+    @PerServer
+    fun providesSyncStatusController(): SyncStatusController {
+        return SyncStatusController()
     }
 
     companion object {

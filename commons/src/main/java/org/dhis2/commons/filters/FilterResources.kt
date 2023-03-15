@@ -130,7 +130,8 @@ class FilterResources(val resourceManager: ResourceManager) {
     fun eventStatusToText(eventStatus: EventStatus): String =
         when (eventStatus) {
             EventStatus.ACTIVE -> resourceManager.getString(R.string.filter_event_status_open)
-            EventStatus.COMPLETED -> resourceManager.getString(R.string.filter_event_status_completed)
+            EventStatus.COMPLETED ->
+                resourceManager.getString(R.string.filter_event_status_completed)
             EventStatus.SCHEDULE -> resourceManager.getString(R.string.filter_event_status_schedule)
             EventStatus.SKIPPED -> resourceManager.getString(R.string.filter_event_status_skipped)
             EventStatus.VISITED -> resourceManager.getString(R.string.filter_event_status_visited)

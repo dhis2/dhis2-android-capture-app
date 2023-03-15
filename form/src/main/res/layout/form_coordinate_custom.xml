@@ -69,9 +69,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="@{item.editable? 1f : 0.5f}"
-                android:text="@{item.formattedLabel}"
                 android:enabled="@{item.editable}"
                 android:onClick="@{() -> item.onItemClick()}"
+                android:text="@{item.formattedLabel}"
                 app:field_edition_alpha="@{item.editable}"
                 app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
@@ -111,9 +111,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/polygon"
                     android:theme="@style/formInputText"
                     android:visibility="@{item.renderingType == UiRenderType.POINT ? View.GONE : View.VISIBLE}"
+                    app:hintEnabled="false"
                     app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -122,12 +122,13 @@
                         android:layout_height="wrap_content"
                         android:clickable="false"
                         android:focusable="false"
+                        android:hint="@string/polygon"
                         android:imeOptions="actionNext"
                         android:longClickable="false"
                         android:textSize="@dimen/form_edit_text_size"
-                        app:setOnTouchListener="@{item}"
                         app:geometry_polygon_value="@{item}"
-                        app:input_style="@{item}" />
+                        app:input_style="@{item}"
+                        app:setOnTouchListener="@{item}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -136,30 +137,33 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/latitude"
                     android:theme="@style/formInputText"
                     android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
                     app:field_edition_alpha="@{item.editable}"
-                    app:input_layout_style="@{item.style}">
+                    app:hintEnabled="false"
+                    app:input_layout_style="@{item.style}"
+                    app:prefixText="@string/form_latitude_prefix"
+                    app:prefixTextColor="@color/textSecondary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/latitude"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
+                        android:cursorVisible="@{item.focused}"
                         android:enabled="@{item.editable}"
                         android:focusable="true"
+                        android:hint="@string/latitude"
                         android:imeOptions="actionNext"
                         android:inputType="numberDecimal|numberSigned"
                         android:textSize="@dimen/form_edit_text_size"
-                        android:cursorVisible="@{item.focused}"
-                        app:setOnTouchListener="@{item}"
                         app:error_view="@{errorMessage}"
                         app:geometry_editor_latitude_listener="@{item}"
                         app:geometry_editor_latitude_listener_view="@{longitude}"
                         app:input_style="@{item}"
                         app:onLatitudeTyping="@{item}"
-                        app:textWatcher="@{coordinateWatcher}"/>
+                        app:setOnTouchListener="@{item}"
+                        app:textWatcher="@{coordinateWatcher}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -168,30 +172,33 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/longitude"
                     android:theme="@style/formInputText"
                     android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
                     app:field_edition_alpha="@{item.editable}"
-                    app:input_layout_style="@{item.style}">
+                    app:hintEnabled="false"
+                    app:input_layout_style="@{item.style}"
+                    app:prefixText="@string/form_longitude_prefix"
+                    app:prefixTextColor="@color/textSecondary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/longitude"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
+                        android:cursorVisible="@{item.focused}"
                         android:enabled="@{item.editable}"
                         android:focusable="true"
+                        android:hint="@string/longitude"
                         android:imeOptions="actionDone"
                         android:inputType="numberDecimal|numberSigned"
                         android:textSize="@dimen/form_edit_text_size"
-                        android:cursorVisible="@{item.focused}"
                         app:error_view="@{errorMessage}"
-                        app:setOnTouchListener="@{item}"
                         app:geometry_editor_longitude_listener="@{item}"
                         app:geometry_editor_longitude_listener_view="@{latitude}"
                         app:input_style="@{item}"
                         app:onLongitudeTyping="@{item}"
-                        app:textWatcher="@{coordinateWatcher}"/>
+                        app:setOnTouchListener="@{item}"
+                        app:textWatcher="@{coordinateWatcher}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -203,11 +210,24 @@
                     android:enabled="@{item.editable}"
                     android:onClick="@{()->item.invokeUiEvent(UiEventType.REQUEST_CURRENT_LOCATION)}"
                     android:padding="8dp"
-                    android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
+                    app:currentLocationVisibility = "@{item}"
                     app:field_edition_alpha="@{item.editable}"
-                    app:srcCompat="@drawable/ic_my_location"
                     app:icon_color="@{item.style}"
+                    app:loadingView="@{location1Loading}"
+                    app:model="@{item}"
+                    app:srcCompat="@drawable/ic_my_location"
                     tools:ignore="ContentDescription" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/location1Loading"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:indeterminate="true"
+                    app:trackThickness="2dp"
+                    app:indicatorColor="?colorPrimary"
+                    app:indicatorSize="24dp"
+                    app:progressVisibility="@{item}"
+                    tools:visibility="visible" />
 
                 <ImageButton
                     android:id="@+id/location2"
@@ -218,8 +238,8 @@
                     android:onClick="@{()->item.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP)}"
                     android:padding="8dp"
                     app:field_edition_alpha="@{item.editable}"
-                    app:srcCompat="@drawable/ic_map"
                     app:icon_color="@{item.style}"
+                    app:srcCompat="@drawable/ic_map"
                     tools:ignore="ContentDescription" />
 
                 <ImageButton
@@ -232,8 +252,8 @@
                     android:padding="8dp"
                     android:visibility="@{item.value != null &amp;&amp; item.editable ? View.VISIBLE : View.GONE}"
                     app:field_edition_alpha="@{item.editable}"
-                    app:srcCompat="@drawable/ic_close"
                     app:icon_color="@{item.style}"
+                    app:srcCompat="@drawable/ic_close"
                     tools:ignore="ContentDescription" />
             </LinearLayout>
 
@@ -243,7 +263,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:padding="4dp"
-                android:textSize="@dimen/textSize_12"
                 android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
                 app:error="@{item.error}"
                 app:input_style="@{item}"

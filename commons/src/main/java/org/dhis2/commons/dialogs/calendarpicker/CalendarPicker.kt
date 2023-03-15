@@ -100,10 +100,11 @@ class CalendarPicker(
 
         binding.acceptBtn.setOnClickListener {
             listener?.onPositiveClick(
-                if (datePicker.visibility == View.VISIBLE)
+                if (datePicker.visibility == View.VISIBLE) {
                     datePicker
-                else
+                } else {
                     calendarPicker
+                }
             )
             dialog.dismiss()
         }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_bar_graph">View as Bar</string>
+    <string name="action_accept">ຍອມຮັບ</string>
+    <string name="period">ຊ່ວງເວລາ</string>
+    <string name="orgUnit">ຫົວໜ່ວຍອົງກອນ</string>
+    <string name="none">ບໍ່ມີ</string>
+    <string name="daily">ທຸກໆມື້</string>
+    <string name="today">ມື້ນີ້</string>
+    <string name="other">ອື່ນໆ</string>
+    <string name="yesterday">ມື້ວານນີ</string>
+    <string name="thisweek">ອາທິດນີ້</string>
+    <string name="lastweek">ອາທິດທີ່ແລ້ວ</string>
+    <string name="thismonth">ເດືອນນີ້</string>
+    <string name="weekly">ເປັນອາທິດ</string>
+    <string name="monthly">ລາຍເດືອນ</string>
+    <string name="yearly">ລາຍປີ</string>
+    <string name="all">ທັງໝົດ</string>
+    <string name="reset">Reset</string>
+    </resources>

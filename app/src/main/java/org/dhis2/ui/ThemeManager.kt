@@ -1,21 +1,21 @@
 package org.dhis2.ui
 
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.data.server.UserManager
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
-import org.dhis2.utils.Constants
 
 class ThemeManager(
+    private val userManager: UserManager,
     private val programConfiguration: ProgramConfiguration,
     private val dataSetConfiguration: DataSetConfiguration,
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration,
     private val preferenceProvider: PreferenceProvider
 ) {
-
-    private val defaultAppStyle = R.style.AppTheme
 
     fun setProgramTheme(programUid: String) {
         val programColor = getProgramColor(programUid)
@@ -52,7 +52,7 @@ class ThemeManager(
         preferenceProvider.removeValue(Constants.PROGRAM_THEME)
     }
 
-    fun getAppTheme() = preferenceProvider.getInt(Constants.THEME, defaultAppStyle)
+    fun getAppTheme() = userManager.theme.blockingGet().second
 
     fun getProgramTheme() = preferenceProvider.getInt(Constants.PROGRAM_THEME, getAppTheme())
 

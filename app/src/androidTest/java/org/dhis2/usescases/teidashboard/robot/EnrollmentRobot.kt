@@ -1,11 +1,13 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -16,11 +18,11 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.form.ui.FormViewHolder
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.containsString
+import org.dhis2.usescases.teiDashboard.teiProgramList.ui.PROGRAM_TO_ENROLL
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.containsString
 
 fun enrollmentRobot(enrollmentRobot: EnrollmentRobot.() -> Unit) {
     EnrollmentRobot().apply {
@@ -30,22 +32,9 @@ fun enrollmentRobot(enrollmentRobot: EnrollmentRobot.() -> Unit) {
 
 class EnrollmentRobot : BaseRobot() {
 
-    fun clickOnAProgramForEnrollment(program: String) {
-        onView(withId(R.id.recycler))
-            .perform(
-                scrollTo<SearchTEViewHolder>(hasDescendant(withText(program))),
-                actionOnItem<DashboardProgramViewHolder>(hasDescendant(withText(program)), clickChildViewWithId(R.id.action_button))
-            )
-    }
-
-    fun clickOnSameProgramForEnrollment(program: String) {
-        onView(withId(R.id.recycler))
-            .perform(
-                scrollTo<SearchTEViewHolder>(allOf(hasDescendant(withText(program)), hasDescendant(
-                    withText(ENROLL)))),
-                actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(program)), hasDescendant(
-                    withText(ENROLL))), clickChildViewWithId(R.id.action_button))
-            )
+    fun clickOnAProgramForEnrollment(composeTestRule: ComposeTestRule, program: String) {
+        composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program))
+            .performClick()
     }
 
     fun clickOnAcceptEnrollmentDate() {
@@ -59,7 +48,14 @@ class EnrollmentRobot : BaseRobot() {
     fun clickOnPersonAttributes(attribute: String) {
         onView(withId(R.id.recyclerView))
             .perform(actionOnItem<FormViewHolder>(
-                hasDescendant(withText(containsString(attribute))), click()))
+                hasDescendant(withText(containsString(attribute))), clickChildViewWithId(R.id.section_details)))
+    }
+
+    fun clickOnPersonAttributesUsingButton(attribute: String){
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItem<FormViewHolder>(
+                hasDescendant(withText(containsString(attribute))), clickChildViewWithId(R.id.sectionButton)
+            ))
     }
 
     fun typeOnRequiredTextField(text: String, position: Int) {

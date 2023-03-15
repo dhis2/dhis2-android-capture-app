@@ -28,7 +28,7 @@ class AppMenuHelper private constructor(
         val contextWrapper = ContextThemeWrapper(context, R.style.PopupMenuMarginStyle)
         popupMenu = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             PopupMenu(contextWrapper, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
-        }else{
+        } else {
             PopupMenu(contextWrapper, anchor, Gravity.END)
         }
         try {
@@ -61,7 +61,7 @@ class AppMenuHelper private constructor(
         popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
     }
 
-    fun addIconToItemInvisible(@IdRes id: Int, @DrawableRes icon: Int){
+    fun addIconToItemInvisible(@IdRes id: Int, @DrawableRes icon: Int) {
         popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
         popupMenu.menu.findItem(id)?.icon?.alpha = 0
     }

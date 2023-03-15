@@ -9,7 +9,5 @@ interface SyncView : AbstractActivityContracts.View {
     fun setMetadataSyncStarted()
     fun setMetadataSyncSucceed()
     fun showMetadataFailedMessage(message: String?)
-    fun setDataSyncStarted()
-    fun setDataSyncSucceed()
     fun goToMain()
 }

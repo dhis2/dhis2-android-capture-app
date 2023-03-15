@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">Випадок</string>
+    <string name="no_data">Немає даних</string>
+    <string name="feature_configuration">Конфігурація функції</string>
+    <string name="change_calendar_view">Змінити вид календаря</string>
+    <string name="clear">Очистити</string>
+    <string name="action_accept">Прийняти</string>
+    <string name="next">Далі</string>
+    <string name="cancel">Скасувати</string>
+    <string name="yes">Так</string>
+    <string name="no">Ні</string>
+    <string name="clear_all">очистити вибір</string>
+    <string name="navigation_list_view">У вигляді списку</string>
+    <string name="navigation_table_view">У вигляді таблиці</string>
+    <string name="navigation_map_view">У вигляді карті</string>
+    <string name="navigation_analytics">Аналітика</string>
+    <string name="navigation_tasks">Завдання</string>
+    <string name="navigation_programs">Програми</string>
+    <string name="navigation_events">Випадки</string>
+    <string name="navigation_relationships">Зв\'язки</string>
+    <string name="navigation_notes">Примітки</string>
+    <string name="navigation_data_entry">Введення даних</string>
+    <string name="navigation_tei_data">Деталі</string>
+    <string name="event_overview">Деталі</string>
+    <string name="select_option">Обрати опцію</string>
+    <string name="search">Пошук</string>
+    <string name="jira_issue_sent">Надіслано сповіщення про проблему</string>
+    <string name="jira_issue_sent_error">Помилка при надсиланні сповіщення про проблему</string>
+    <string name="events">випадки</string>
+    <string name="data_sets">Набори даних</string>
+    <string name="tei">Об’єкт, який відстежується</string>
+    <string name="info">Інформація</string>
+    <string name="done">Обрати</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Застосовано фільтри</string>
+    <string name="filters_disabled">Фільтрів не застосовано</string>
+    <string name="filters_title_period">Період</string>
+    <string name="filters_title_org_unit">Орг. підрозділ</string>
+    <string name="filters_title_sorting">Сортування</string>
+    <string name="filters_title_status">Статус</string>
+    <string name="filters_title_state">Синхронізувати</string>
+    <string name="filters_title_assigned">Призначено мені</string>
+    <string name="filters_title_date">Дата</string>
+    <string name="filters_title_event_date">Дата випадку</string>
+    <string name="enrollment_date">Дата реєстрації</string>
+    <string name="filters_title_event_status">Статус випадку</string>
+    <string name="filters_title_enrollment_status">Статус реєстрації</string>
+    <string name="filter_follow_up_label">Для подальших дій %s</string>
+
+    <!-- State -->
+    <string name="state_synced">Синхронізувати</string>
+    <string name="state_to_post">Надіслати</string>
+    <string name="state_to_update">Оновити</string>
+    <string name="state_to_delete">Видалити</string>
+    <string name="state_error">Помилка</string>
+    <string name="state_warning">Попередження</string>
+    <string name="state_uploading">Завантаження</string>
+    <string name="state_relationship">Зв\'язок</string>
+    <string name="sent_by_sms">Надіслано через SMS</string>
+    <string name="sync_by_sms">Синхронізовано через SMS</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Відкрити</string>
+    <string name="filter_event_status_schedule">Запланувати</string>
+    <string name="filter_event_status_overdue">Прострочено</string>
+    <string name="filter_event_status_visited">Відвідано</string>
+    <string name="filter_event_status_completed">Завершено</string>
+    <string name="filter_event_status_skipped">Пропущено</string>
+    <string name="active">Активно</string>
+    <string name="cancelled">Скасовано</string>
+    <string name="enrollment_status_active">Відкрити</string>
+    <string name="enrollment_status_completed">Завершити</string>
+    <string name="enrollment_status_cancelled">Скасовано</string>
+    <string name="record_marked_for_deletion">Цей запис позначено для видалення. Ви не можете отримати до нього доступ.</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">Сьогодні</string>
+    <string name="filter_period_yesterday">Вчора</string>
+    <string name="filter_period_tomorrow">Завтра</string>
+    <string name="filter_period_this_week">Поточний тиждень</string>
+    <string name="filter_period_last_week">Минулий тиждень</string>
+    <string name="filter_perdior_next_week">Наступний тиждень</string>
+    <string name="filter_period_this_month">Поточний місяць</string>
+    <string name="filter_period_last_month">Минулий місяць</string>
+    <string name="filter_period_next_month">Наступний місяць</string>
+    <string name="filter_period_form_to">Від - До</string>
+    <string name="filter_period_other">Інше</string>
+    <string name="filter_period_any">Будь-коли</string>
+    <string name="working_list_default_label">Робочий список %s</string>
+    <string name="filter_period_last_n_days">Останні %d днів</string>
+    <string name="filter_period_this_year">Поточний рік</string>
+    <string name="filter_period_this_bimonth">Поточний двомісячний період</string>
+    <string name="filter_period_last_bimonth">Минулий двомісячний період</string>
+    <string name="filter_period_this_quarter">Поточний квартал</string>
+    <string name="filter_period_last_quarter">Минулий квартал</string>
+    <string name="filter_period_six_months">Поточні шість місяців </string>
+    <string name="filter_period_last_six_months">Попередні шість місяців</string>
+    <string name="filter_period_last_n_years">Попередні %d років</string>
+    <string name="filter_period_last_n_months">Попередні %d місяці</string>
+    <string name="filter_period__last_n_weeks">Попередні %d тижні</string>
+    <string name="filter_period_weeks_this_year">Тижні поточного року</string>
+    <string name="filter_period_months_this_year">Місяці поточного року</string>
+    <string name="filter_period_bimonths_this_year">Двомісячні періоди поточного року</string>
+    <string name="filter_period_quarters_this_year">Квартали поточного року</string>
+    <string name="filter_period_months_last_year">Місяці минулого року</string>
+    <string name="filter_period_quarters_last_year">Квартали попередніх років</string>
+    <string name="filter_period_last_year">Минулий рік</string>
+    <string name="filter_period_this_biweek">Поточний двотижневий період</string>
+    <string name="filter_period_last_biweek">Минулий двотижневий період</string>
+    <string name="filter_period_last_n_bimonths">Минулі %d двомісячні періоди </string>
+    <string name="filter_period_last_n_quarters">Минулі %d квартали </string>
+    <string name="last_n_months">Минулі %d місяців</string>
+    <string name="filter_period_this_financial_year">Поточний фінансовий рік</string>
+    <string name="filter_period_last_financial_year">Минулий фінансовий рік</string>
+    <string name="filter_period_last_n_financial_years">Минулі %d фінансові роки</string>
+    <string name="filter_period_last_n_biweeks">Минулі %d двотижневі періоди</string>
+    <string name="period">Період</string>
+    <string name="DAILY">Щодня</string>
+    <string name="WEEKLY">Щотижня</string>
+    <string name="MONTHLY">Щомісячно</string>
+    <string name="YEARLY">Щорічно</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Синхронізовано</string>
+    <string name="filter_sync_not_synced">Не синхронізовано</string>
+    <string name="filter_sync_error">Помилка синхронізації</string>
+    <string name="filter_sync_sms">Синхронізовано через SMS</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">зараз</string>
+    <string name="interval_minute_ago">%d хв. тому</string>
+    <string name="interval_hour_ago">%d годин тому</string>
+    <string name="interval_yesterday">Вчора</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Відгук</string>
+    <string name="section_indicators">Індикатори</string>
+    <string name="section_charts">Діаграми</string>
+    <string name="section_charts_indicators">Діаграми та індикатори</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Зареєстровано в:</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">Пароль відсутній. Будь ласка, введіть пароль.</string>
+    <string name="login_error_null_username">Ім\'я користувача відсутнє. Будь ласка, введіть ім\'я користувача.</string>
+    <string name="login_error_dhis_version">На цьому сервері працює інша версія dhis, ніж 2.29. Щоб продовжити, оновіть версію серверу або скористайтеся середовищем тестування.</string>
+    <string name="login_error_dhis_version_v2">На цьому сервері працює версія DHIS2, що відрізняється від %s. Оновіть версію серверу або сконтактуйте з системним адміністратором.</string>
+    <string name="login_error_unsuccessful_response">Сталася помилка. Будь ласка, перевірте правильність URL-адреси серверу, імені користувача та пароля і повторіть спробу.</string>
+    <string name="login_error_error_response">Вибачте! На сервері сталася помилка. </string>
+    <string name="login_error_no_dhis_instance">Надана URL-адреса не є сервером DHIS2.</string>
+    <string name="login_error_bad_credentials">Ім\'я користувача або пароль неправильні</string>
+    <string name="login_error_unknown_host">Невідомий сервер</string>
+    <string name="online_search_parsing_error">Помилка аналізу результатів</string>
+    <string name="error_unexpected">Неочікувана помилка.</string>
+    <string name="error_too_manu_org_units">Ваш користувач має більше одного кореневого організаційного підрозділу. Перегляньте свою конфігурацію або зверніться до адміністратора.</string>
+    <string name="error_max_tei_count_reached">Онлайн-результати перевищують максимальну кількість об\'єктів, які можливо показати. Будь ласка, уточніть свій пошук.</string>
+    <string name="error_many_requests">На даний момент сервер трохи зайнятий. Будь ласка, спробуйте пізніше.</string>
+    <string name="error_already_authenticated">Користувач уже авторизований.</string>
+    <string name="error_already_executed">Запит уже виконано.</string>
+    <string name="error_api_invalid_query">Запит на сервер недійсний.</string>
+    <string name="error_app_name_not_set">Ім\'я додатку не встановлено.</string>
+    <string name="error_app_version_not_set">Версію додатку не встановлено.</string>
+    <string name="error_access_keystore">Неможливо отримати доступ до сховища ключів пристрою.</string>
+    <string name="error_create_existing_error">Створення перервано. Об\'єкт вже існує.</string>
+    <string name="error_delete_non_existing_object">Видалення перервано. Об\'єкт не існує.</string>
+    <string name="error_instance_keystore">Не вдалося створити екземпляр сховища ключів.</string>
+    <string name="error_reserve_value_on_server">Ми не змогли зарезервувати значення для цих записів. Будь ласка, зверніться до свого адміністратора.</string>
+    <string name="error_export_login">Увійдіть в систему, щоб експортувати базу даних.</string>
+    <string name="error_export_encrypted">Експорт зашифрованої бази даних не підтримується.</string>
+    <string name="error_import_exist">Ви імпортуєте вже існуючу базу даних.</string>
+    <string name="error_import_logout">Вийдіть з системи, щоб імпортувати нову базу даних.</string>
+    <string name="error_import_version">Версія імпортованої бази даних новіша за підтримувану.</string>
+    <string name="error_file_not_found">Файл не знайдено.</string>
+    <string name="error_file_resize">Сталася помилка при зміні розміру зображення.</string>
+    <string name="error_generate_coordinate">Неможливо згенерувати координати.</string>
+    <string name="error_job">Звіт про роботу недоступний.</string>
+    <string name="error_low_on_available_values">Можливо, Вам бракує доступних значень.</string>
+    <string name="error_user_no_authenticated">Немає автентифікованого користувача.</string>
+    <string name="error_user_no_authenticated_offline">Немає користувача автентифікованого офлайн.</string>
+    <string name="error_no_values_left_on_server">На сервері недостатньо значень для резервування. Будь ласка, зверніться до свого адміністратора.</string>
+    <string name="error_different_offline_user">Ви намагаєтесь увійти в систему, перебуваючи офлайн, під іншим користувачем.</string>
+    <string name="error_invalid_geometry">Значення геометрії недійсне.</string>
+    <string name="error_no_reserved_values">Немає доступних зарезервованих значень. Перейдіть до налаштувань і поповніть значення, коли у Вас з\'явиться підключення до Інтернету.</string>
+    <string name="error_object_update">Об\'єкт не вдалося оновити.</string>
+    <string name="error_object_insert">Не вдалося вставити об’єкт.</string>
+    <string name="error_ownership_access">Ви не маєте доступу.</string>
+    <string name="error_null_url">Відсутня URL-адреса сервера. Будь ласка, введіть URL-адресу.</string>
+    <string name="error_server_malformed">URL-адреса сервера неправильно сформована. Будь ласка, перевірте її.</string>
+    <string name="error_settings_app_not_supported">Ця версія налаштувань веб-програми не підтримується.</string>
+    <string name="error_settings_app_not_intalled">Налаштування веб-програми не встановлено на сервері.</string>
+    <string name="error_socket_timeout">Сервер надто довго відповідав. Ми скасували запит.</string>
+    <string name="error_relationship_updated">Зв\'язки не можна оновити.</string>
+    <string name="error_too_many_periods">Надто багато періодів.</string>
+    <string name="error_url_not_found">Не вдалося знайти URL-адресу. Будь ласка, перевірте це.</string>
+    <string name="error_account_disabled">Ваш обліковий запис користувача вимкнено. Якщо це помилка, зверніться до адміністратора.</string>
+    <string name="error_account_locked">Ваш обліковий запис користувача заблоковано. Якщо це помилка, зверніться до адміністратора.</string>
+    <string name="error_set_value">Не вдалося встановити значення.</string>
+    <string name="error_value_reservation_time">Запит на резервування значень зайняв забагато часу. Будь ласка, повторіть спробу.</string>
+    <string name="error_ssl">Виникла проблема із сертифікатами сервера. Будь ласка, зверніться до свого адміністратора.</string>
+    <string name="error_sms_not_supported">SMS не підтримується.</string>
+    <string name="error_min_attributes">Недостатньо атрибутів для виконання пошуку. Уточніть пошук за допомогою додаткових атрибутів.</string>
+    <string name="error_org_unit_scope">Онлайн-пошук доступний лише для організаційних підрозділів  користувача.</string>
+    <string name="error_invalid_characters">У запиті є недійсні символи. Попросіть адміністратора перевірити конфігурацію сервера (relaxedQueryChars,...).</string>
+    <string name="unsupported_field_description">Це поле недоступне в мобільній версії</string>
+    <string name="add_image">Додати зображення</string>
+    <string name="action_ok">OK</string>
+    <string name="enable_location_message">Розташування Вашого пристрою відключено. Будь ласка, увімкніть його для отримання координат</string>
+    <string name="keep_editing">Продовжити редагування</string>
+    <string name="not_now">Не зараз</string>
+    <string name="review">Перегляд</string>
+    <string name="complete">Завершити</string>
+    <string name="default_table_header_label">Значення</string>
+    <string name="discard_changes">Відхилити внесені зміни</string>
+    </resources>

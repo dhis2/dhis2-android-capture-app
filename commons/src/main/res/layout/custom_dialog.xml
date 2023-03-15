@@ -64,6 +64,7 @@
             android:textSize="14sp"
             android:visibility="@{ TextUtils.isEmpty(message) ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintTop_toBottomOf="@id/title_dialog"
+            app:scrollingTextView="@{true}"
             tools:text="@tools:sample/lorem/random"
             android:textColorLink="?colorPrimary"
             android:autoLink="all"
@@ -72,9 +73,6 @@
         <Button
             android:id="@+id/negative"
             style="@style/TextButton"
-            android:minWidth="0dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="0.5"
@@ -91,9 +89,6 @@
         <Button
             android:id="@+id/possitive"
             style="@style/TextButton"
-            android:minWidth="0dp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="0.5"

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">Hendelse</string>
+    <string name="no_data">Ingen data</string>
+    <string name="change_calendar_view">Endre kalendervisning</string>
+    <string name="clear">tøm</string>
+    <string name="action_accept">Aksepter</string>
+    <string name="next">Neste</string>
+    <string name="cancel">Avbryt</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nei</string>
+    <string name="clear_all">tøm valg</string>
+    <string name="navigation_list_view">Listevisning</string>
+    <string name="navigation_table_view">Tabellvisning</string>
+    <string name="navigation_map_view">Kartvisning</string>
+    <string name="navigation_analytics">Analyser</string>
+    <string name="navigation_tasks">Oppgaver</string>
+    <string name="navigation_programs">Programmer</string>
+    <string name="navigation_events">Hendelser</string>
+    <string name="navigation_relationships">Relasjoner</string>
+    <string name="navigation_notes">Notater</string>
+    <string name="navigation_data_entry">Dataregistrering</string>
+    <string name="navigation_tei_data">Detaljer</string>
+    <string name="event_overview">Detaljer</string>
+    <string name="select_option">Velg et alternativ</string>
+    <string name="search">Søk</string>
+    <string name="jira_issue_sent">Sak sendt</string>
+    <string name="jira_issue_sent_error">Feil ved sending av sak</string>
+    <string name="events">hendelser</string>
+    <string name="data_sets">Datasett</string>
+    <string name="tei">TEI</string>
+    <string name="info">Info</string>
+    <string name="done">Fullfør</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Filtere som brukes</string>
+    <string name="filters_disabled">Ingen filter brukt</string>
+    <string name="filters_title_period">Periode</string>
+    <string name="filters_title_org_unit">Org. Enhet</string>
+    <string name="filters_title_sorting">Sorterer</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Synk</string>
+    <string name="filters_title_assigned">Tildelt til meg</string>
+    <string name="filters_title_date">Dato</string>
+    <string name="filters_title_event_date">Hendelsesdato</string>
+    <string name="enrollment_date">Registreringsdato</string>
+    <string name="filters_title_event_status">Hendelsesstatus</string>
+    <string name="filters_title_enrollment_status">Registreringsstatus</string>
+    <!-- State -->
+    <string name="state_synced">Synk</string>
+    <string name="state_to_post">Å sende</string>
+    <string name="state_to_update">Å oppdatere</string>
+    <string name="state_to_delete">Å slette</string>
+    <string name="state_error">Feil</string>
+    <string name="state_warning">Advarsel</string>
+    <string name="state_relationship">Relasjon</string>
+    <string name="sync_by_sms">Synkronisert ved SMS</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Åpne</string>
+    <string name="filter_event_status_schedule">Planlegg</string>
+    <string name="filter_event_status_overdue">Forfalt</string>
+    <string name="filter_event_status_visited">Besøkte</string>
+    <string name="filter_event_status_completed">Fullført</string>
+    <string name="filter_event_status_skipped">Hoppet over</string>
+    <string name="active">Aktiv</string>
+    <string name="cancelled">Kansellert</string>
+    <string name="enrollment_status_active">Åpne</string>
+    <string name="enrollment_status_completed">Fullfør</string>
+    <string name="enrollment_status_cancelled">Kansellert</string>
+    <string name="record_marked_for_deletion">Denne oppføringen er merket for sletting. Du har ikke tilgang til den.</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">I dag</string>
+    <string name="filter_period_yesterday">I går</string>
+    <string name="filter_period_tomorrow">I morgen</string>
+    <string name="filter_period_this_week">Denne uken</string>
+    <string name="filter_period_last_week">Forrige uke</string>
+    <string name="filter_perdior_next_week">Neste uke</string>
+    <string name="filter_period_this_month">Denne måneden</string>
+    <string name="filter_period_last_month">Forrige måned</string>
+    <string name="filter_period_next_month">Neste måned</string>
+    <string name="filter_period_form_to">Fra - Til</string>
+    <string name="filter_period_other">Annet</string>
+    <string name="filter_period_any">Når som helst</string>
+    <string name="filter_period_this_year">Dette året</string>
+    <string name="filter_period_this_bimonth">Denne tomåned</string>
+    <string name="filter_period_last_bimonth">Siste tomåned</string>
+    <string name="filter_period_this_quarter">Dette kvartalet</string>
+    <string name="filter_period_last_quarter">Siste kvartal</string>
+    <string name="filter_period_weeks_this_year">Uker inneværende år</string>
+    <string name="filter_period_months_this_year">Måneder i år</string>
+    <string name="filter_period_bimonths_this_year">Tomåneder inneværende år</string>
+    <string name="filter_period_quarters_this_year">Kvartaler i år</string>
+    <string name="filter_period_months_last_year">Måneder i fjor</string>
+    <string name="filter_period_last_year">Forrige år</string>
+    <string name="filter_period_this_financial_year">Dette regnskapsåret</string>
+    <string name="filter_period_last_financial_year">Siste regnskapsår</string>
+    <string name="period">Periode</string>
+    <string name="DAILY">Daglig</string>
+    <string name="WEEKLY">Ukentlig</string>
+    <string name="MONTHLY">Månedlig</string>
+    <string name="YEARLY">Årlig</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Synkronisert</string>
+    <string name="filter_sync_not_synced">Ikke synkronisert</string>
+    <string name="filter_sync_error">Synkroniseringsfeil</string>
+    <string name="filter_sync_sms">SMS synkronisert</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">nå</string>
+    <string name="interval_minute_ago">%dmin. siden</string>
+    <string name="interval_hour_ago">%dtimer siden</string>
+    <string name="interval_yesterday">I går</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Tilbakemelding</string>
+    <string name="section_indicators">Indikatorer</string>
+    <string name="section_charts">Diagrammer</string>
+    <string name="login_error_dhis_version">Denne serveren kjører en dhis versjon som er forskjellig fra 2.29. Oppdater din serverversjon eller bruk testmiljøet for å fortsette.</string>
+    <string name="online_search_parsing_error">Feil under analyse av resultater</string>
+    <string name="add_image">Legg til bilde</string>
+    <string name="action_ok">Ok</string>
+    <string name="enable_location_message">Enhetsplasseringen din er koblet fra. Aktiver den for å registrere koordinater</string>
+    <string name="keep_editing">Fortsett å rediger</string>
+    <string name="complete">Fullfør</string>
+    <string name="default_table_header_label">Verdi</string>
+    <string name="discard_changes">Forkast endringer</string>
+    </resources>

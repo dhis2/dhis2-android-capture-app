@@ -6,10 +6,10 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
 import org.dhis2.commons.data.EventViewModel;
-import org.dhis2.data.search.SearchParametersModel;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.SearchTeiModel;
+import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.filters.sorting.SortingItem;
+import org.dhis2.data.search.SearchParametersModel;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -68,7 +67,9 @@ public interface SearchRepository {
 
     boolean canCreateInProgramWithoutSearch();
 
-    void setCurrentTheme(@org.jetbrains.annotations.Nullable Program selectedProgram);
+    void setCurrentTheme(@org.jetbrains.annotations.Nullable ProgramSpinnerModel selectedProgram);
 
     List<String> trackedEntityTypeFields();
+
+    boolean filtersApplyOnGlobalSearch();
 }

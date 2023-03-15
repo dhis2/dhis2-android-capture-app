@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.settings.SyncManagerContracts.Presenter" />
+            type="org.dhis2.usescases.settings.SyncManagerPresenter" />
 
         <variable
             name="dataSyncMessage"
@@ -55,18 +55,6 @@
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/syncDataLayout"
                     tools:visibility="visible">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_top"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_bottom"
-                        app:layout_constraintBottom_toBottomOf="parent" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/dataOptions"
@@ -130,6 +118,22 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
+                    android:id="@+id/dataSyncTopShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_top"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@+id/syncDataActions" />
+
+                <View
+                    android:id="@+id/dataSyncBottomShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_bottom"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/syncDataActions" />
+
+                <View
                     android:id="@+id/dataDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -161,18 +165,6 @@
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/syncMetaLayout"
                     tools:visibility="visible">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_top"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_bottom"
-                        app:layout_constraintBottom_toBottomOf="parent" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/metaOptions"
@@ -236,6 +228,24 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
+                    android:id="@+id/metaDataTopShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_top"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@id/syncMetadataActions"
+                    tools:visibility="visible"/>
+
+                <View
+                    android:id="@+id/metaDataBottomShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_bottom"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/syncMetadataActions" />
+
+
+                <View
                     android:id="@+id/metaDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -270,18 +280,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/parameterLayout"
                     tools:visibility="visible">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_top"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_bottom"
-                        app:layout_constraintBottom_toBottomOf="parent" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/parameterOptions"
@@ -412,6 +410,22 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
+                    android:id="@+id/itemParamsSyncTopShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_top"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@+id/parameterData" />
+
+                <View
+                    android:id="@+id/itemParamsSyncBottomShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_bottom"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/parameterData" />
+
+                <View
                     android:id="@+id/parameterDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -443,12 +457,6 @@
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/reservedValueLayout"
                     tools:visibility="visible">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_top"
-                        app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/reservedValuesInputLayout"
@@ -501,13 +509,23 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/reservedValueNoEdition" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_bottom"
-                        app:layout_constraintBottom_toBottomOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/reservedValueTopShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_top"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@+id/reservedValuesActions" />
+
+                <View
+                    android:id="@+id/reservedValueBottomShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_bottom"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/reservedValuesActions" />
 
                 <View
                     android:id="@+id/reservedValueDivider"
@@ -584,46 +602,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/settingsReset"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(SettingItem.RESET_APP)}">
-
-                <include
-                    android:id="@+id/resetLayout"
-                    layout="@layout/fragment_settings_item"
-                    app:icon="@{R.drawable.ic_reset}"
-                    app:message="@{@string/settingsReset_descr}"
-                    app:title="@{@string/settingsReset}" />
-
-                <Button
-                    android:id="@+id/resetButton"
-                    style="@style/TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:fontFamily="@font/rubik_medium"
-                    android:onClick="@{()->presenter.onWipeData()}"
-                    android:text="@string/action_accept"
-                    android:textAllCaps="true"
-                    android:textColor="#EB5757"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/resetLayout"
-                    tools:visibility="visible" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="72dp"
-                    android:background="@color/gray_afa"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/resetButton" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/smsSettings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -640,22 +618,11 @@
                     android:id="@+id/smsContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/padding_16"
                     android:background="@color/form_field_background"
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/smsLayout"
                     tools:visibility="visible">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_top"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/inner_shadow_bottom"
-                        app:layout_constraintBottom_toBottomOf="parent" />
 
                     <include
                         android:id="@+id/settings_sms"
@@ -665,8 +632,25 @@
                         android:layout_marginStart="72dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="56dp"
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/smsTopShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_top"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@+id/smsContent" />
+
+                <View
+                    android:id="@+id/smsBottomShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/inner_shadow_bottom"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/smsContent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

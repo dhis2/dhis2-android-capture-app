@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">事件</string>
+    <string name="no_data">无数据</string>
+    <string name="feature_configuration">特征配置</string>
+    <string name="change_calendar_view">改变日历视图。</string>
+    <string name="clear">清除</string>
+    <string name="action_accept">接受</string>
+    <string name="next">下一个</string>
+    <string name="cancel">取消</string>
+    <string name="yes">是的</string>
+    <string name="no">不</string>
+    <string name="clear_all">清除选择</string>
+    <string name="navigation_list_view">列表显示</string>
+    <string name="navigation_table_view">表格显示</string>
+    <string name="navigation_map_view">地图显示</string>
+    <string name="navigation_analytics">分析工具</string>
+    <string name="navigation_tasks">任务</string>
+    <string name="navigation_programs">项目</string>
+    <string name="navigation_events">事件</string>
+    <string name="navigation_relationships">关系</string>
+    <string name="navigation_notes">笔记</string>
+    <string name="navigation_data_entry">数据输入</string>
+    <string name="navigation_tei_data">详情</string>
+    <string name="event_overview">详情</string>
+    <string name="select_option">选择选项</string>
+    <string name="search">搜索</string>
+    <string name="jira_issue_sent">问题已发送</string>
+    <string name="jira_issue_sent_error">发送问题时出错</string>
+    <string name="events">事件</string>
+    <string name="data_sets">数据集</string>
+    <string name="tei">跟踪实体</string>
+    <string name="info">信息</string>
+    <string name="done">完成</string>
+
+    <!-- Filters -->
+    <string name="filters_active">应用过滤器</string>
+    <string name="filters_disabled">无过滤器</string>
+    <string name="filters_title_period">期间</string>
+    <string name="filters_title_org_unit">机构</string>
+    <string name="filters_title_sorting">排序</string>
+    <string name="filters_title_status">状态</string>
+    <string name="filters_title_state">同步</string>
+    <string name="filters_title_assigned">指派给我</string>
+    <string name="filters_title_date">日期</string>
+    <string name="filters_title_event_date">事件日期</string>
+    <string name="enrollment_date">登记日期</string>
+    <string name="filters_title_event_status">事件状态</string>
+    <string name="filters_title_enrollment_status">登记状态</string>
+    <string name="filter_follow_up_label">跟进%s</string>
+
+    <!-- State -->
+    <string name="state_synced">同步</string>
+    <string name="state_to_post">发送</string>
+    <string name="state_to_update">更新</string>
+    <string name="state_to_delete">删除</string>
+    <string name="state_error">错误</string>
+    <string name="state_warning">警告</string>
+    <string name="state_uploading">上传</string>
+    <string name="state_relationship">关系</string>
+    <string name="sent_by_sms">通过短信发送</string>
+    <string name="sync_by_sms">通过短信同步。</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">打开</string>
+    <string name="filter_event_status_schedule">调度</string>
+    <string name="filter_event_status_overdue">逾期</string>
+    <string name="filter_event_status_visited">已随访</string>
+    <string name="filter_event_status_completed">完成</string>
+    <string name="filter_event_status_skipped">跳过</string>
+    <string name="active">活跃的</string>
+    <string name="cancelled">已取消</string>
+    <string name="enrollment_status_active">打开</string>
+    <string name="enrollment_status_completed">完成</string>
+    <string name="enrollment_status_cancelled">已取消</string>
+    <string name="record_marked_for_deletion">该记录被标记为删除。你不能访问。</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">今天</string>
+    <string name="filter_period_yesterday">昨天</string>
+    <string name="filter_period_tomorrow">明天</string>
+    <string name="filter_period_this_week">本周</string>
+    <string name="filter_period_last_week">上周</string>
+    <string name="filter_perdior_next_week">下周</string>
+    <string name="filter_period_this_month">本月</string>
+    <string name="filter_period_last_month">上月</string>
+    <string name="filter_period_next_month">下月</string>
+    <string name="filter_period_form_to">从——到</string>
+    <string name="filter_period_other">其它</string>
+    <string name="filter_period_any">任何时候</string>
+    <string name="working_list_default_label">工作清单 %s</string>
+    <string name="filter_period_last_n_days">最近 %d 天</string>
+    <string name="filter_period_this_year">今年</string>
+    <string name="filter_period_this_bimonth">本俩月</string>
+    <string name="filter_period_last_bimonth">最近俩月</string>
+    <string name="filter_period_this_quarter">本季度</string>
+    <string name="filter_period_last_quarter">最近一季</string>
+    <string name="filter_period_six_months">这六个月</string>
+    <string name="filter_period_last_six_months">过去六个月</string>
+    <string name="filter_period_last_n_years">最近 %d 年</string>
+    <string name="filter_period_last_n_months">最近 %d 个月</string>
+    <string name="filter_period__last_n_weeks">过去 %d 周</string>
+    <string name="filter_period_weeks_this_year">今年的周</string>
+    <string name="filter_period_months_this_year">今年的月份</string>
+    <string name="filter_period_bimonths_this_year">今年的俩月</string>
+    <string name="filter_period_quarters_this_year">今年的季度</string>
+    <string name="filter_period_months_last_year">去年的月份</string>
+    <string name="filter_period_quarters_last_year">去年的季度</string>
+    <string name="filter_period_last_year">去年</string>
+    <string name="filter_period_this_biweek">这个双周</string>
+    <string name="filter_period_last_biweek">上两周</string>
+    <string name="filter_period_last_n_bimonths">最后一个 %d 双月</string>
+    <string name="filter_period_last_n_quarters">最后一个 %d 季度</string>
+    <string name="last_n_months">最近 %d 个月</string>
+    <string name="filter_period_this_financial_year">本财年</string>
+    <string name="filter_period_last_financial_year">上一财政年</string>
+    <string name="filter_period_last_n_financial_years">最近的 %d 财政年度</string>
+    <string name="filter_period_last_n_biweeks">最后一个 %d 双周</string>
+    <string name="period">期间</string>
+    <string name="DAILY">每日</string>
+    <string name="WEEKLY">每周</string>
+    <string name="MONTHLY">每月</string>
+    <string name="YEARLY">每年</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">已同步</string>
+    <string name="filter_sync_not_synced">未同步</string>
+    <string name="filter_sync_error">同步错误</string>
+    <string name="filter_sync_sms">短信已同步</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">现在</string>
+    <string name="interval_minute_ago">%d分钟前</string>
+    <string name="interval_hour_ago">%d小时前</string>
+    <string name="interval_yesterday">昨天</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">反馈</string>
+    <string name="section_indicators">指标</string>
+    <string name="section_charts">图表</string>
+    <string name="section_charts_indicators">图表和指标</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">报名参加：</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">密码丢失。请输入密码。</string>
+    <string name="login_error_null_username">缺少用户名。请输入用户名。</string>
+    <string name="login_error_dhis_version">服务器运行版本不是2.29，请更新服务器版本或使用测试环境继续</string>
+    <string name="login_error_dhis_version_v2">此服务器正在运行与 %s 不同的 DHIS2 版本。更新您的服务器版本或联系您的管理员。</string>
+    <string name="login_error_unsuccessful_response">出了些问题。请检查服务器 URL、用户名和密码是否正确，然后重试。</string>
+    <string name="login_error_error_response">对不起！服务器端出现问题。</string>
+    <string name="login_error_no_dhis_instance">提供的 URL 不是 DHIS2 服务器。</string>
+    <string name="login_error_bad_credentials">用户名或密码不正确</string>
+    <string name="login_error_unknown_host">未知服务器</string>
+    <string name="online_search_parsing_error">解析结果发生错误</string>
+    <string name="error_unexpected">出乎意料的事情发生了。</string>
+    <string name="error_too_manu_org_units">您的用户拥有多个根组织单位。检查您的配置或联系您的管理员。</string>
+    <string name="error_max_tei_count_reached">在线结果超过了可以显示的最大跟踪器实例数。请细化您的搜索。</string>
+    <string name="error_many_requests">服务器此时有点忙。请稍后再试。</string>
+    <string name="error_already_authenticated">用户已经登录。</string>
+    <string name="error_already_executed">请求已被执行。</string>
+    <string name="error_api_invalid_query">服务器请求无效。</string>
+    <string name="error_app_name_not_set">尚未设置应用程序名称。</string>
+    <string name="error_app_version_not_set">尚未设置应用程序版本。</string>
+    <string name="error_access_keystore">无法访问设备密钥库。</string>
+    <string name="error_create_existing_error">创作中止。对象已经存在。</string>
+    <string name="error_delete_non_existing_object">删除已中止。对象不存在。</string>
+    <string name="error_instance_keystore">无法实例化密钥库。</string>
+    <string name="error_reserve_value_on_server">我们无法为这些记录保留值。请联系您的管理员。</string>
+    <string name="error_export_login">请登录以导出数据库。</string>
+    <string name="error_export_encrypted">不支持导出加密数据库。</string>
+    <string name="error_import_exist">您正在导入一个已经存在的数据库。</string>
+    <string name="error_import_logout">请注销以导入新数据库。</string>
+    <string name="error_import_version">导入的数据库版本高于支持的版本。</string>
+    <string name="error_file_not_found">未找到该文件。</string>
+    <string name="error_file_resize">调整图像大小时出错。</string>
+    <string name="error_generate_coordinate">无法生成坐标。</string>
+    <string name="error_job">工作报告不可用。</string>
+    <string name="error_low_on_available_values">您的可用值可能不足。</string>
+    <string name="error_user_no_authenticated">没有经过身份验证的用户。</string>
+    <string name="error_user_no_authenticated_offline">没有经过离线身份验证的用户。</string>
+    <string name="error_no_values_left_on_server">没有足够的值可以在服务器上保留。请联系您的管理员。</string>
+    <string name="error_different_offline_user">您正在尝试使用其他用户离线登录。</string>
+    <string name="error_invalid_geometry">几何值无效。</string>
+    <string name="error_no_reserved_values">没有可用的保留值。当您有互联网连接时，转到设置并重新填充值。</string>
+    <string name="error_object_update">无法更新对象。</string>
+    <string name="error_object_insert">无法插入对象。</string>
+    <string name="error_ownership_access">您无权访问。</string>
+    <string name="error_null_url">缺少服务器 URL。请输入网址。</string>
+    <string name="error_server_malformed">服务器 URL 格式不正确。请检查一下。</string>
+    <string name="error_settings_app_not_supported">不支持此版本的设置 Web 应用程序。</string>
+    <string name="error_settings_app_not_intalled">设置 Web 应用程序未安装在服务器中。</string>
+    <string name="error_socket_timeout">服务器花费了太多时间来响应。我们取消了请求。</string>
+    <string name="error_relationship_updated">关系无法更新。</string>
+    <string name="error_too_many_periods">期间太多了。</string>
+    <string name="error_url_not_found">我们找不到 URL。请验证一下。</string>
+    <string name="error_account_disabled">您的用户帐户已被禁用。如果这是错误，请联系您的管理员。</string>
+    <string name="error_account_locked">您的用户帐户被锁定。如果这是错误，请联系您的管理员。</string>
+    <string name="error_set_value">无法设置该值。</string>
+    <string name="error_value_reservation_time">保留值的请求花费了太多时间。请重试。</string>
+    <string name="error_ssl">服务器证书有问题。请联系您的管理员。</string>
+    <string name="error_sms_not_supported">不支持短信。</string>
+    <string name="error_min_attributes">没有足够的属性来执行搜索。请使用更多属性优化您的搜索。</string>
+    <string name="error_org_unit_scope">在线搜索仅适用于您的用户搜索组织单位。</string>
+    <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
+    <string name="unsupported_field_description">该字段不可用于移动采集</string>
+    <string name="add_image">添加图片</string>
+    <string name="action_ok">Ok!</string>
+    <string name="enable_location_message">您的设备定位已断开或关闭。请启用它以便捕获地理坐标</string>
+    <string name="keep_editing">继续编辑</string>
+    <string name="not_now">现在不要</string>
+    <string name="review">审查</string>
+    <string name="complete">完成</string>
+    <string name="default_table_header_label">值</string>
+    <string name="discard_changes">忽略修改</string>
+    </resources>

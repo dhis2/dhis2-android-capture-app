@@ -29,4 +29,11 @@
     <style name="searchFormInputText" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorControlActivated">?colorAccent</item>
     </style>
+
+    <style name="ageInputText"><!--parent="TextAppearance.AppCompat"-->
+        <item name="android:textColorHint">@color/textSecondary</item>
+        <item name="colorControlNormal">@color/textPrimary</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="colorControlActivated">?colorPrimary</item>
+    </style>
 </resources>

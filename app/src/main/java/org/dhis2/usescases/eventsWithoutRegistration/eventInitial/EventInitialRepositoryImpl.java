@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.OptionSetConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -39,6 +40,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -309,21 +311,38 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
 
-        int optionCount = 0;
-        if (!option.isEmpty()) {
-            dataValue = option.get(0).displayName();
-            option.size();
+        OptionSetConfiguration optionSetConfig = null;
+        if(optionSet!=null){
+            List<Option> dataValueOptions = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
+            if(!dataValueOptions.isEmpty()){
+                dataValue = option.get(0).displayName();
+            }
+            optionSetConfig = OptionSetConfiguration.Companion.config(
+                    d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount(),
+                    ()-> d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingGet()
+            );
         }
 
         ValueTypeDeviceRendering fieldRendering = stage.renderType() == null ? null : stage.renderType().mobile();
 
         ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
 
-        return fieldFactory.create(uid, formName == null ? displayName : formName,
-                ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
-                programStageSection, allowFutureDates,
+        return fieldFactory.create(uid,
+                formName == null ? displayName : formName,
+                ValueType.valueOf(valueTypeName),
+                mandatory,
+                optionSet,
+                dataValue,
+                programStageSection,
+                allowFutureDates,
                 eventStatus == EventStatus.ACTIVE,
-                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null);
+                null,
+                description,
+                fieldRendering,
+                objectStyle,
+                dataElement.fieldMask(),
+                optionSetConfig,
+                null);
     }
 
     private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {
@@ -338,6 +357,35 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Flowable<EventEditableStatus> getEditableStatus() {
         return d2.eventModule().eventService().getEditableStatus(eventUid).toFlowable();
+    }
+
+    @Override
+    public Observable<String> permanentReferral(
+            String enrollmentUid,
+            @NonNull String teiUid,
+            @NonNull String programUid,
+            @NonNull String programStage,
+            @NonNull Date dueDate,
+            @NonNull String orgUnitUid,
+            @Nullable String categoryOptionsUid,
+            @Nullable String categoryOptionComboUid,
+            @NonNull Geometry geometry
+    ) {
+
+        d2.trackedEntityModule().ownershipManager()
+                .blockingTransfer(teiUid, programUid, orgUnitUid);
+        return scheduleEvent(
+                enrollmentUid,
+                teiUid,
+                programUid,
+                programStage,
+                dueDate,
+                orgUnitUid,
+                categoryOptionsUid,
+                categoryOptionComboUid,
+                geometry
+        );
+
     }
 
 }

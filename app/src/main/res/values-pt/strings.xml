@@ -5,6 +5,11 @@
     <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Erro</string>
+    <plurals name="error_message">
+        <item quantity="one">Erro</item>
+        <item quantity="many">Erros</item>
+        <item quantity="other">Erros</item>
+    </plurals>
     <string name="error_wrong_server_url">URL do servidor errado</string>
     <string name="error_wrong_credentials">Credenciais erradas</string>
     <string name="error_unexpected_error">Erro inesperado</string>
@@ -15,6 +20,7 @@
     <string name="no_reserved_values">Não há mais valores reservados. Entre em contato com o administrador do sistema</string>
     <string name="no_reserved_values_connection">Não há mais valores reservados. Conecte-se à rede para recarregá-los</string>
     <string name="errors">erros</string>
+    <string name="something_wrong">Ocorreu algo de errado</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Sincronize agora</string>
     <string name="sync_text">Sincronizando com o servidor</string>
@@ -54,7 +60,6 @@
     <string name="configuration_sync_failed">Falha na sincronização da configuração</string>
     <string name="data_sync_failed">Falha na sincronização de dados</string>
     <string name="account_recovery">Recuperar Conta</string>
-
     <!--PERIOD-->
     <string name="DAILY">Diário</string>
     <string name="WEEKLY">Semanal</string>
@@ -93,12 +98,13 @@
     <string name="event_approved">Evento Aprovado</string>
     <string name="event_inactive">Evento Inativo</string>
     <string name="read_only">Apenas leitura</string>
-    <string name="complete">Completo</string>
     <string name="finish_and_complete">Terminar e concluir</string>
     <string name="completed">Completo</string>
     <string name="cancelled">Cancelado</string>
     <string name="re_open">reabrir</string>
     <string name="activate">Activar</string>
+    <string name="active">Activo</string>
+
     <!-- State -->
     <string name="state_synced">Sincronizar</string>
     <string name="state_to_post">Para enviar</string>
@@ -106,6 +112,7 @@
     <string name="state_to_delete">Suprimir</string>
     <string name="state_error">Erro</string>
     <string name="action_sync">SINCRONIZAR</string>
+    <string name="action_send">ENVIAR</string>
     <string name="action_sync_sms">SINCRONIZAR SMS</string>
 
     <!--Completion-->
@@ -132,6 +139,7 @@
     <string name="cat_option">Opção de gato</string>
     <string name="field_required">Se você definir um valor, a linha inteira precisa de todos os valores para concluir o conjunto de dados.</string>
     <string name="field_mandatory">Alguns valores necessários estão ausentes. Você precisa definir valores obrigatórios para concluir o conjunto de dados.</string>
+    <string name="field_mandatory_v2">Estão faltando campos obrigatórios. Por favor, preencha-os para completar o conjunto de dados.</string>
     <string name="datavalue_saved">O valor é salvo!</string>
     <string name="there_is_no_available_period">Não há períodos disponíveis para seleção.</string>
     <!--Event Detail-->
@@ -145,6 +153,8 @@
     <string name="confirm_delete_event">Tem certeza de que deseja excluir este evento?</string>
     <string name="event_was_deleted">Evento excluído com sucesso</string>
     <string name="total">Total</string>
+    <string name="most_recent_event_date">Data do evento mais recente</string>
+
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Lista de Inscrições</string>
     <string name="active_programs">Programas activos</string>
@@ -434,8 +444,10 @@
     <string name="dashboard_overview">Visão global</string>
     <string name="dashboard_relationships">Relacionamentos</string>
     <string name="dashboard_indicators">Indicadores</string>
+    <string name="dashboard_analytics">Google Analytics</string>
     <string name="empty_indicators">Não há indicadores para este programa.</string>
     <string name="dashboard_notes">Notas</string>
+    <string name="unable_to_complete">Não foi possível concluir</string>
     <string name="field_errors">Alguns campos possuem erros. Por favor, verifique-os para poder concluir</string>
     <string name="unselect_enrollment">Todas as inscrições</string>
     <string name="unselect_enrollment_description">Mostrar painel com todos os programas ativos</string>
@@ -483,6 +495,7 @@
     <string name="check_mandatory_field">Verificar campos</string>
     <string name="error_no_network_during_sync">Você perdeu sua conexão com a Internet ao executar sua sincronização de configuração. Por favor tente novamente mais tarde</string>
     <string name="action_agree">Aceita</string>
+    <string name="action_continue">Continuar</string>
     <string name="login_server_info_title">url do servidor</string>
     <string name="login_server_info_message">Digite o URL do servidor DHIS 2 da sua organização, conforme fornecido pelo administrador do sistema.\n\nAlternativamente, você pode digitalizar um código QR contendo o URL do seu servido</string>
     <string name="forgot_your_code">Esqueceu seu código?</string>
@@ -492,6 +505,7 @@
     <string name="relationship_not_found_message">O registro que você está tentando acessar não está disponível. Deseja procurar?</string>
     <string name="sync_by_sms">Sincronizado por SMS</string>
     <string name="state_warning">Advertência</string>
+    <string name="state_relationship">Relação</string>
     <string name="no_conflicts_message">Não há conflitos para este programa</string>
     <string name="network_unavailable_sms">A conexão de rede não está disponível, mas parece que existem serviços telefônicos - você pode usar o SMS.</string>
     <string name="network_unavailable">A conexão de rede não está disponível.</string>
@@ -501,6 +515,8 @@
     <string name="no_conflicts_synced_message">Você esta atualizado! Todos os seus dados são enviados para o servidor.</string>
     <string name="relationship_error_recursive">Você não pode relacionar um registro consigo mesmo</string>
     <string name="unblock_session">Desbloquear sessão</string>
+    <string name="data_set_complete">Completo</string>
+    <string name="data_set_open">Abrir</string>
     <string name="unsupported_value_type">Tipo de valor não suportado</string>
     <string name="change_calendar_view">Alterar visualização da agenda</string>
     <string name="data_every_fifteen_minutes">15 minutos</string>
@@ -554,6 +570,7 @@
     <string name="syncing">Sincronizando...</string>
     <string name="end_sync_granular">Sincronização concluída.</string>
     <string name="error_sync">Ocorreu um erro durante a sincronização.</string>
+    <string name="error_sync_check_logs">Ocorreu um erro durante a sincronização. Clique aqui para verificar os logs de erros</string>
     <string name="cancel_sync">Sincronização cancelada.</string>
 
     <string name="copied_text">Copiado</string>
@@ -577,6 +594,7 @@
     <string name="filters_disabled">Nenhum filtro aplicado</string>
     <string name="filters_title_period">Período</string>
     <string name="filters_title_org_unit">Unidade Org.</string>
+    <string name="filters_title_sorting">Ordem</string>
     <string name="filters_title_status">Estado</string>
     <string name="filters_title_state">Sincronizar</string>
     <string name="filters_title_assigned">Atribuído a mim</string>
@@ -662,4 +680,104 @@
     <string name="filter_sync_not_synced">Não sincronizado</string>
     <string name="filter_sync_error">Erro de Sincronização</string>
     <string name="filter_sync_sms">SMS sincronizado</string>
+    <string name="dataset_overview">Detalhes</string>
+    <string name="dataset_comments">Comentarios</string>
+    <string name="saved">Gravado!</string>
+    <string name="run_validation_rules">Você quer verificar a qualidade dos dados?</string>
+    <string name="validation_success_title">Tudo parece bem!</string>
+    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados?</string>
+    <string name="dataset_completed">Marcar como completado</string>
+    <string name="name">Nome</string>
+    <string name="formula">Fórmula</string>
+    <string name="complete_anyway">Completar mesmo assim</string>
+    <string name="fk_message">Ausência de %s %s de %s %s</string>
+    <string name="filters_title_event_status">Estado do evento </string>
+    <string name="filters_title_enrollment_status">Status da inscrição</string>
+    <string name="enrollment_date">Data de inscrição</string>
+    <string name="dataset_empty_list_can_create">Não existem dados. Clique em \"+\" para adicionar um novo registro</string>
+    <string name="dataset_emtpy_list_can_not_create">Não existem dados. Você não tem permissão para adicionar novos registros.</string>
+    <string name="validation_rules_empty_description">Nenhuma descrição ou instrução fornecida</string>
+    <string name="validation_rules_data_to_review">Dados para revisar</string>
+    <string name="dataset_saved_completed">Salvo e concluído!</string>
+    <string name="status_change_error_active_exist">Já existe uma inscrição ativa</string>
+    <string name="enrollment_status_active">Abrir</string>
+    <string name="enrollment_status_completed">Completo</string>
+    <string name="enrollment_status_cancelled">Cancelado</string>
+    <string name="event_data">Dados</string>
+    <string name="download_tei_error">O selecionado %s não pôde ser baixado.</string>
+    <string name="completed_by">Completado por %s: %s</string>
+    <string name="updated_time">Atualizado: %s</string>
+    <string name="action_done">Feito!</string>
+    <string name="validation_internal_error_datasets">Não foi possível verificar a qualidade dos dados. Contate seu administrador</string>
+    <string name="are_you_sure">Tem certeza?</string>
+    <string name="reopen_question">Você deseja reabrir o conjunto de dados?</string>
+    <string name="group_events_by_stage">Eventos de grupo por estágio</string>
+    <string name="show_events_timeline">Mostrar cronograma de eventos</string>
+    <string name="filters_title_date">Data</string>
+    <string name="filters_title_event_date">Data de incidente</string>
+    <string name="tei_type_has_no_attributes">%s não tem atributos públicos. Selecione um programa</string>
+    <string name="privacy_policy_title">Política de Privacidade</string>
+    <string name="open_privacy_policy">Clique aqui para conferir nosso <a href=""> política de privacidade </a></string>
+    <string name="coordinates_error">Os valores das coordenadas não são válidos</string>
+    <string name="break_glass_error">Você não pode inscrever TEIs de outras unidades organizacionais neste programa porque está protegido.\nContate seu administrador.</string>
+    <string name="field_is_mandatory">Este campo é obrigatório</string>
+    <string name="security_debugger_message">Por razões de segurança, esta versão do aplicativo não pode ser usada com o adb. Por favor, use a versão de treinamento.</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Ops! Algo não saiu como planejado.\nDeixe-nos colocar você de volta em ação.</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Voltar</string>
+    <string name="customactivityoncrash_error_activity_close_app">Fechar aplicativo</string>
+    <string name="customactivityoncrash_error_activity_error_details">Mais detalhes</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">Mais detalhes</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Fechar</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">Copiar para área de transferência</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">Copiado para área de transferência</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Informação de erro</string>
+    <string name="metada_first_sync_error">Encontramos um erro ao sincronizar com seu servidor. Compartilhe o erro com o administrador do sistema, se for possível.</string>
+    <string name="error_init_session">Não foi possível fazer login com seu nome de usuário</string>
+    <string name="enrollment_date_edition_warning">Existem eventos planejados que não serão reprogramados</string>
+    <string name="jira_issue_sent">Problema Enviado</string>
+    <string name="jira_issue_sent_error">Erro ao enviar Problema</string>
+    <string name="section_charts">Gráficos</string>
+    <string name="navigation_list_view">Vista de lista</string>
+    <string name="navigation_table_view">Vista de tabela</string>
+    <string name="navigation_map_view">Vista de mapa</string>
+    <string name="navigation_analytics">Google Analytics</string>
+    <string name="navigation_tasks">Tarefas</string>
+    <string name="navigation_programs">Programas</string>
+    <string name="navigation_events">Eventos</string>
+    <string name="navigation_relationships">Relacionamentos</string>
+    <string name="navigation_notes">Notas</string>
+    <string name="navigation_data_entry">Entrada de dados</string>
+    <string name="navigation_tei_data">Detalhes</string>
+    <string name="show_bar_graph">Ver como barra</string>
+    <string name="show_line_graph">Ver como linha</string>
+    <string name="show_table_graph">Ver como tabela</string>
+    <string name="show_table_value">Ver como valor</string>
+    <string name="show_pie_value">Ver como gráfico circular</string>
+    <string name="filter_period_this_year">Este ano</string>
+    <string name="filter_period_this_bimonth">Este bimensal</string>
+    <string name="filter_period_last_bimonth">Ultimo bimensal</string>
+    <string name="filter_period_this_quarter">Este Trimestre</string>
+    <string name="filter_period_last_quarter">Último trimestre</string>
+    <string name="filter_period_weeks_this_year">Semanas deste ano </string>
+    <string name="filter_period_months_this_year">Meses deste ano</string>
+    <string name="filter_period_bimonths_this_year">Bimensais deste ano</string>
+    <string name="filter_period_quarters_this_year">Trimestres deste ano</string>
+    <string name="filter_period_months_last_year">Meses do ano passado</string>
+    <string name="filter_period_last_year">Último ano</string>
+    <string name="filter_period_this_financial_year">Ano financeiro</string>
+    <string name="filter_period_last_financial_year">Último ano fiscal</string>
+    <string name="section_feedback">Retroinformacão</string>
+    <string name="section_indicators">Indicadores</string>
+    <string name="value">Valor</string>
+    <string name="data_set_quality_check_done">Feito!</string>
+    <string name="login_error_bad_credentials">Credenciais erradas</string>
+    <string name="invalid_integer">Valor deve ser um número inteiro</string>
+    <string name="dataset_column_default">Valores</string>
+    <string name="show_radar_graph">Mostrar como radar</string>
+    <string name="available">Disponível</string>
+    <string name="unknown_date">Desconhecido</string>
+    <string name="troubleshooting_language_title">Idioma</string>
+    <string name="search_create_new">Crie um novo</string>
+    <string name="action_ok">Esta bem</string>
     </resources>

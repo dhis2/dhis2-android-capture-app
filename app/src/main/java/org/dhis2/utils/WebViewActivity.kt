@@ -1,6 +1,7 @@
 package org.dhis2.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebResourceRequest
@@ -9,9 +10,8 @@ import android.webkit.WebViewClient
 import androidx.databinding.DataBindingUtil
 import org.dhis2.R
 import org.dhis2.databinding.ActivityWebviewBinding
-import org.dhis2.usescases.general.ActivityGlobalAbstract
 
-class WebViewActivity : ActivityGlobalAbstract() {
+class WebViewActivity : Activity() {
 
     companion object {
         const val WEB_VIEW_URL = "url"

@@ -36,6 +36,14 @@ class AnalyticsModelTest {
     }
 
     @Test
+    fun `Pie chart should not display zero data message if error`() {
+        val chartModel = ChartModel(
+            mockedPieChartWithZeroData().copy(hasError = true, errorMessage = "Has error")
+        )
+        assertTrue(!chartModel.pieChartDataIsZero())
+    }
+
+    @Test
     fun `Chart model should display no data for filters and hide chart`() {
         val chartModel = ChartModel(mockedChartModelWithEmptyDataForFilters())
         assertTrue(chartModel.showNoDataForFiltersMessage())

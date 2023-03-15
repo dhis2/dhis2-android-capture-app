@@ -63,4 +63,6 @@
     <string name="error_parsing_visualization">Biểu đồ này cấu hình chưa đúng, xin vui lòng liên hệ quản lý của bạn</string>
     <string name="error_invalid_custom_boundaries">Phạm vi tự chọn không được hỗ trợ cho Chỉ Số Chương Trình %s</string>
     <string name="error_database">Không thể truy cập cơ sở dữ liệu. Xin vui lòng liên hệ quản lý của bạn. </string>
+    <string name="error_invalid_program">Bạn không có quyền truy cập đến chương trình %s</string>
+    <string name="error_invalid_attribute">Bạn không có quyền truy cập đến thuộc tính %s</string>
 </resources>
