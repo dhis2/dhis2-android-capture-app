@@ -2,7 +2,6 @@ package org.dhis2.usescases.login
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -22,9 +21,7 @@ import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
-import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.not
-import org.hamcrest.Matchers.isEmptyString
 
 fun loginRobot(loginBody: LoginRobot.() -> Unit) {
     LoginRobot().apply {
@@ -82,11 +79,11 @@ class LoginRobot : BaseRobot() {
     }
 
     fun checkUsernameFieldIsClear() {
-        onView(withId(R.id.user_name_edit)).check(matches(withText(isEmptyString())))
+        onView(withId(R.id.user_name_edit)).check(matches(withText("")))
     }
 
     fun checkPasswordFieldIsClear() {
-        onView(withId(R.id.user_pass_edit)).check(matches(withText(isEmptyString())))
+        onView(withId(R.id.user_pass_edit)).check(matches(withText("")))
     }
 
     fun checkURL(url: String) {

@@ -57,77 +57,14 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent=".5" />
 
-
-        <LinearLayout
-            android:id="@+id/shareContainer"
-            style="@style/ButtonRoundedGrey"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/detailsButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="3.5dp"
-            android:gravity="center"
-            android:onClick="@{(view)->presenter.onShareClick(view)}"
-            android:padding="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/divider">
-
-            <ImageView
-                android:id="@+id/shareIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_share"
-                app:tint="@color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:fontFamily="@font/rubik_medium"
-                android:text="@string/share"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/viewMore"
-            style="@style/ButtonRoundedGrey"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="3.5dp"
-            android:gravity="center"
-            android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"
-            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider">
-
-            <ImageView
-                android:id="@+id/viewMoreIcon"
-                android:layout_width="27dp"
-                android:layout_height="27dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_visibility"
-                app:tint="@color/white"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/view_tei"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:fontFamily="@font/rubik_medium"
-                android:text="@string/see_details"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/viewMoreIcon"
-                app:layout_constraintTop_toTopOf="parent" />
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/data_layout"
+            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
             android:id="@+id/follow_up"
@@ -240,7 +177,7 @@
             app:alignContent="stretch"
             app:alignItems="stretch"
             app:flexWrap="wrap"
-            app:layout_constraintBottom_toTopOf="@id/viewMore"
+            app:layout_constraintBottom_toTopOf="@id/detailsButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/teiData">

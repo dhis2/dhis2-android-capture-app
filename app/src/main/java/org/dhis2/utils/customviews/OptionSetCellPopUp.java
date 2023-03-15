@@ -35,7 +35,7 @@ public class OptionSetCellPopUp extends PopupMenu {
     private HashMap<String, Option> optionsMap;
 
     public OptionSetCellPopUp(Context context, View anchor, SpinnerViewModel model,
-                          OptionSetView optionSetView) {
+                          OptionSetOnClickListener optionSetListener) {
         super(context, anchor);
         d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
         this.optionsToHide = model.getOptionsToHide();
@@ -43,7 +43,7 @@ public class OptionSetCellPopUp extends PopupMenu {
         setOnDismissListener(menu -> dismiss());
         setOnMenuItemClickListener(item -> {
             Option selectedOption = optionsMap.get(item.getTitle().toString());
-            optionSetView.onSelectOption(selectedOption);
+            optionSetListener.onSelectOption(selectedOption);
             return false;
         });
         disposable = new CompositeDisposable();

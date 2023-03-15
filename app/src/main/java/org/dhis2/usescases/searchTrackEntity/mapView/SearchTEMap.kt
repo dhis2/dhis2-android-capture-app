@@ -16,6 +16,8 @@ import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchMapBinding
 import org.dhis2.maps.ExternalMapNavigation
@@ -31,7 +33,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isPortrait
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
@@ -100,8 +101,12 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         }
 
         binding.mapPositionButton.setOnClickListener {
-            teiMapManager?.centerCameraOnMyPosition { permissionManager ->
-                permissionManager?.requestLocationPermissions(requireActivity())
+            if (locationProvider.hasLocationEnabled()) {
+                teiMapManager?.centerCameraOnMyPosition { permissionManager ->
+                    permissionManager?.requestLocationPermissions(requireActivity())
+                }
+            } else {
+                LocationSettingLauncher.requestEnableLocationSetting(requireContext())
             }
         }
 
@@ -130,6 +135,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             )
         initializeCarousel()
         teiMapManager?.init(
+            viewModel.fetchMapStyles(),
             onInitializationFinished = {
                 presenter.getMapData()
 

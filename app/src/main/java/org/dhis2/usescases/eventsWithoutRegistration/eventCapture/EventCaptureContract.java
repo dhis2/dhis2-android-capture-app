@@ -90,6 +90,8 @@ public class EventCaptureContract {
 
         void refreshTabCounters();
 
+        void refreshProgramStage();
+
         void hideProgress();
 
         void showProgress();

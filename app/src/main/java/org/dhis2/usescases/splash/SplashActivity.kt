@@ -114,12 +114,25 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
     override fun goToNextScreen(
         isUserLogged: Boolean,
         sessionLocked: Boolean,
-        initialSyncDone: Boolean
+        initialSyncDone: Boolean,
+        initialDataSyncDone: Boolean
     ) {
         if (isUserLogged && initialSyncDone && !sessionLocked) {
-            startActivity(MainActivity::class.java, null, true, true, null)
+            startActivity(
+                MainActivity::class.java,
+                MainActivity.bundle(launchDataSync = initialDataSyncDone),
+                true,
+                true,
+                null
+            )
         } else if (isUserLogged && !initialSyncDone) {
-            startActivity(SyncActivity::class.java, null, true, true, null)
+            startActivity(
+                SyncActivity::class.java,
+                null,
+                true,
+                true,
+                null
+            )
         } else {
             startActivity(
                 LoginActivity::class.java,

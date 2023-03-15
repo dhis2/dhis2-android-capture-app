@@ -2,4 +2,5 @@
 <resources>
     <string name="event_event">Ҳодиса/Тадбир</string>
     <string name="no_data">Маълумот йўқ</string>
+    <string name="default_empty_dataset_section_label">Маълумот</string>
 </resources>

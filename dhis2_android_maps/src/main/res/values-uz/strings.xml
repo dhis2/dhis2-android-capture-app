@@ -2,8 +2,6 @@
 <resources>
     <string name="select_location">Жойни танланг</string>
     <string name="map_layers">Харита қаватлари</string>
-    <string name="dialog_layer_street_base_map">Кўча кўриниши</string>
-    <string name="dialog_layer_satellite_base_map">Суньий йўлдош кўриниши</string>
     <string name="action_apply">Мурожаат қилиш</string>
     <string name="dialog_layer_satellite">Суньий йўлдош кўринишини кўрсатиш</string>
     <string name="dialog_layer_event">Ҳодиса/тадбирларни кўрсатиш</string>

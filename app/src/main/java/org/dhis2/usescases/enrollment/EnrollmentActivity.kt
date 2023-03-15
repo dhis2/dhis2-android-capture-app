@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -15,27 +16,27 @@ import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.FormView
+import org.dhis2.commons.Constants
+import org.dhis2.commons.Constants.ENROLLMENT_UID
+import org.dhis2.commons.Constants.PROGRAM_UID
+import org.dhis2.commons.Constants.TEI_UID
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.databinding.EnrollmentActivityBinding
-import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
-import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.form.model.EnrollmentRecords
+import org.dhis2.form.ui.FormView
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
-import org.dhis2.ui.DataEntryDialogUiModel
-import org.dhis2.ui.DialogButtonStyle
-import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.ENROLLMENT_UID
-import org.dhis2.utils.Constants.PROGRAM_UID
-import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
-import org.dhis2.utils.customviews.DataEntryBottomDialog
-import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -50,13 +51,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     lateinit var presenter: EnrollmentPresenterImpl
 
     @Inject
-    lateinit var formRepository: FormRepository
-
-    @Inject
     lateinit var enrollmentResultDialogUiProvider: EnrollmentResultDialogUiProvider
-
-    @Inject
-    lateinit var dispatchers: DispatcherProvider
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -69,7 +64,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         const val RQ_ENROLLMENT_GEOMETRY = 1023
         const val RQ_INCIDENT_GEOMETRY = 1024
         const val RQ_EVENT = 1025
-        const val RQ_GO_BACK = 1026
 
         fun getIntent(
             context: Context,
@@ -108,9 +102,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         ).inject(this)
 
         formView = FormView.Builder()
-            .repository(formRepository)
             .locationProvider(locationProvider)
-            .dispatcher(dispatchers)
             .onItemChangeListener { action -> presenter.updateFields(action) }
             .onLoadingListener { loading ->
                 if (loading) {
@@ -123,6 +115,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .onFinishDataEntry { presenter.finish(mode) }
             .resultDialogUiProvider(enrollmentResultDialogUiProvider)
             .factory(supportFragmentManager)
+            .setRecords(
+                EnrollmentRecords(
+                    enrollmentUid = enrollmentUid,
+                    enrollmentMode = org.dhis2.form.model.EnrollmentMode.valueOf(
+                        enrollmentMode.name
+                    )
+                )
+            )
             .build()
 
         super.onCreate(savedInstanceState)
@@ -169,7 +169,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                             FeatureType.valueOfFeatureType(
                                 data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
                             ),
-                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!, requestCode
+                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!,
+                            requestCode
                         )
                     }
                 }
@@ -180,7 +181,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        if (presenter.openInitial(eventUid)) {
+        if (presenter.isEventScheduleOrSkipped(eventUid)) {
+            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
+            openEventForResult.launch(scheduleEventIntent)
+        } else if (presenter.openInitial(eventUid)) {
             val bundle = EventInitialActivity.getBundle(
                 presenter.getProgram().uid(),
                 eventUid,
@@ -211,6 +215,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
         }
+    }
+
+    private val openEventForResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        openDashboard(presenter.getEnrollment()!!.uid()!!)
     }
 
     override fun openDashboard(enrollmentUid: String) {
@@ -246,8 +256,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     private fun showDeleteDialog() {
-        DataEntryBottomDialog(
-            dataEntryDialogUiModel = DataEntryDialogUiModel(
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                 title = getString(R.string.not_saved),
                 subtitle = getString(R.string.discard_go_back),
                 iconResource = R.drawable.ic_alert,
@@ -258,7 +268,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.deleteAllSavedData()
                 finish()
             }
-        ).show(supportFragmentManager, DataEntryDialogUiModel::class.java.simpleName)
+        ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {

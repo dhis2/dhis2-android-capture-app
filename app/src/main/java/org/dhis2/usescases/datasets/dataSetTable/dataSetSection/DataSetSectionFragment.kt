@@ -1,36 +1,53 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.Gravity
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.view.children
-import androidx.core.widget.NestedScrollView
-import androidx.lifecycle.MutableLiveData
-import com.evrencoskun.tableview.TableView
-import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
-import java.util.ArrayList
-import java.util.SortedMap
+import android.widget.DatePicker
+import android.widget.TimePicker
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import com.google.android.material.composethemeadapter.MdcTheme
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
-import org.dhis2.Bindings.calculateWidth
-import org.dhis2.Bindings.dp
-import org.dhis2.Bindings.measureText
+import org.dhis2.Bindings.toDate
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.tablefields.RowAction
-import org.dhis2.databinding.FragmentDatasetSectionBinding
+import org.dhis2.commons.Constants.ACCESS_DATA
+import org.dhis2.commons.Constants.DATA_SET_SECTION
+import org.dhis2.commons.Constants.DATA_SET_UID
+import org.dhis2.commons.dialogs.DialogClickListener
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.ui.DataSetTableScreen
+import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
+import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
+import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.Constants.ACCESS_DATA
-import org.dhis2.utils.Constants.DATA_SET_SECTION
-import org.dhis2.utils.Constants.DATA_SET_UID
-import org.dhis2.utils.isPortrait
+import org.dhis2.utils.DateUtils
+import org.dhis2.utils.customviews.OptionSetOnClickListener
+import org.dhis2.utils.customviews.OrgUnitDialog
+import org.dhis2.utils.customviews.TableFieldDialog
+import org.dhis2.utils.optionset.OptionSetDialog
+import org.dhis2.utils.optionset.OptionSetDialog.Companion.TAG
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -38,24 +55,11 @@ const val ARG_ATTR_OPT_COMB = "ARG_ATTR_OPT_COMB"
 
 class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View {
 
-    private lateinit var binding: FragmentDatasetSectionBinding
     private lateinit var activity: DataSetTableActivity
     private lateinit var presenter: DataSetTableContract.Presenter
 
-    private val adapters = ArrayList<DataSetTableAdapter>()
-
     @Inject
     lateinit var presenterFragment: DataValuePresenter
-
-    private var heights = ArrayList<Int>()
-    private val currentTablePosition = MutableLiveData<Int>()
-    private var tablesCount: Int = 0
-    private var indicatorsTable: TableView? = null
-    private val saveToast: Toast by lazy {
-        Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT).apply {
-            setGravity(Gravity.TOP or Gravity.START, 16.dp, 110.dp)
-        }
-    }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -75,7 +79,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 arguments?.getString(ARG_ORG_UNIT)!!,
                 arguments?.getString(ARG_PERIOD_ID)!!,
                 arguments?.getString(ARG_ATTR_OPT_COMB)!!,
-                this
+                this,
+                activity
             )
         ).inject(this)
     }
@@ -85,14 +90,38 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return FragmentDatasetSectionBinding.inflate(inflater, container, false)
-            .also { binding = it }
-            .root
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MdcTheme {
+                    val screenState by presenterFragment.currentState().collectAsState()
+
+                    DataSetTableScreen(
+                        tableScreenState = screenState,
+                        onCellClick = { _, cell, updateCellValue ->
+                            presenterFragment.onCellClick(
+                                cell = cell,
+                                updateCellValue = updateCellValue
+                            )
+                        },
+                        onEdition = { isEditing ->
+                            presenter.editingCellValue(isEditing)
+                        },
+                        onCellValueChange = { },
+                        onSaveValue = { cell, selectNext ->
+                            presenterFragment.onSaveValueChange(cell, selectNext)
+                        },
+                        onRowHeaderResize = { widthDpValue ->
+                            presenterFragment.saveWidth(widthDpValue)
+                        }
+                    )
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        currentTablePosition.observe(viewLifecycleOwner, { loadHeader(it) })
         presenterFragment.init()
     }
 
@@ -101,273 +130,304 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         presenterFragment.onDettach()
     }
 
-    override fun setTableData(tableData: TableData) {
-        binding.programProgress.visibility = View.GONE
-
-        val tableView = TableView(requireContext()).apply {
-            isShowHorizontalSeparators = false
-            setHasFixedWidth(true)
-            shadowColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
-            selectedColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
-            unSelectedColor = ContextCompat.getColor(requireContext(), android.R.color.transparent)
-        }
-
-        val adapter = DataSetTableAdapter(
-            abstracContext,
-            presenterFragment.getProcessor(),
-            presenterFragment.getProcessorOptionSet(),
-            if (tableData.catCombo()?.isDefault == true) {
-                getString(R.string.dataset_column_default)
-            } else {
-                null
-            }
-        ).apply {
-            showColumnTotal = tableData.showColumnTotals
-            showRowTotal = tableData.showRowTotals
-            catCombo = tableData.catCombo()!!.uid()
-            setTableView(tableView)
-            initializeRows(tableData.accessDataWrite)
-            setDataElementDecoration(presenter.dataSetHasDataElementDecoration())
-        }
-
-        adapters.add(adapter)
-
-        val hasNumericDataElement = tableData.dataTableModel.rows
-            ?.any { it.valueType()?.isNumeric == true } ?: false
-
-        binding.tableLayout.addView(tableView)
-
-        addSeparatorView()
-
-        tableView.adapter = adapter
-        tableView.headerCount = tableData.columnHeaders()!!.size
-
-        adapter.swap(tableData.fieldViewModels)
-
-        val overriddenWidth = tableData.overriddenMeasure.width
-        val overrideHeight = tableData.overriddenMeasure.height
-
-        if (overriddenWidth != 0) {
-            adapter.setMaxLabel(tableData.maxLengthLabel())
-            tableView.setRowHeaderWidth(overriddenWidth)
-            adapter.columnHeaderHeight = overrideHeight
-        } else {
-            val widthFactor: Int = if (isPortrait()) {
-                2
-            } else {
-                if (tableData.maxColumns() > 1) {
-                    3
-                } else {
-                    2
-                }
-            }
-
-            val (maxLabel, rowHeaderWidth, columnHeaderHeight) = tableData.rows()!!.measureText(
-                requireContext(),
-                widthFactor
-            )
-            adapter.setMaxLabel(maxLabel)
-            tableView.setRowHeaderWidth(rowHeaderWidth)
-            if (columnHeaderHeight != 0) {
-                adapter.columnHeaderHeight = columnHeaderHeight +
-                    requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
-            }
-            presenterFragment.saveCurrentSectionMeasures(
-                adapter.rowHeaderWidth,
-                adapter.columnHeaderHeight
-            )
-        }
-
-        adapter.setAllItems(
-            tableData.columnHeaders(),
-            tableData.rows(),
-            tableData.cells,
-            adapter.showRowTotal && hasNumericDataElement
-        )
-
-        binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
-            _: Int,
-            scrollY: Int,
-            _: Int,
-            _: Int ->
-            var position = -1
-            if (checkTableHeights()) {
-                for (i in heights.indices) {
-                    if (scrollY < heights[i]) {
-                        position = if (position == -1) i else position
-                    }
-                }
-            }
-
-            if (position != -1 && currentTablePosition.value != position) {
-                currentTablePosition.value = position
-            }
-        }
-        currentTablePosition.value = 0
-
-        if (tablesCount == binding.tableLayout.childCount / 2) {
-            presenterFragment.getDataSetIndicators()
-        }
-    }
-
-    private fun addSeparatorView() {
-        val view = View(context)
-        view.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15)
-        view.setBackgroundResource(R.color.white)
-        binding.tableLayout.addView(view)
-    }
-
-    override fun renderIndicators(indicators: SortedMap<String, String>) {
-        binding.tableLayout.removeView(indicatorsTable)
-        indicatorsTable = TableView(requireContext())
-        val adapter = DataSetIndicatorAdapter(requireContext())
-        indicatorsTable?.adapter = adapter
-        indicatorsTable?.headerCount = 1
-        indicatorsTable?.setPadding(0, 48.dp, 0, 48.dp)
-        indicatorsTable?.clipToPadding = false
-        val width = indicators.keys.toList().calculateWidth(requireContext()).second + 16.dp
-        val max = resources.displayMetrics.widthPixels * 2 / 3
-        indicatorsTable?.setRowHeaderWidth(if (width < max) width else max)
-        adapter.setAllItems(
-            listOf(listOf(getString(R.string.value))),
-            indicators.keys.toList(),
-            indicators.values.map { listOf(it) },
-            false
-        )
-        binding.tableLayout.addView(indicatorsTable)
-        binding.programProgress.visibility = View.GONE
-    }
-
-    override fun updateTabLayout(count: Int) {
-        this.tablesCount = count
-        activity.updateTabLayout()
-    }
-
-    private fun loadHeader(position: Int) {
-        val tableView =
-            (binding.scroll.getChildAt(0) as LinearLayout).getChildAt(position * 2) as TableView
-        if (tableView != null) {
-            val rvs = tableView.backupHeaders
-            binding.headerContainer.removeAllViews()
-            for (crv in rvs) {
-                binding.headerContainer.addView(crv)
-            }
-
-            val cornerView =
-                LayoutInflater.from(context).inflate(R.layout.table_view_corner_layout, null)
-            val cornerParams = LinearLayout.LayoutParams(
-                tableView.adapter.rowHeaderWidth,
-                binding.headerContainer.children.toList().sumBy { it.layoutParams.height }
-            )
-            cornerView.layoutParams = cornerParams
-            if (binding.headerContainer.childCount > 1) {
-                cornerView.top =
-                    (binding.headerContainer.childCount - 2) *
-                    binding.headerContainer.getChildAt(0).layoutParams.height
-            }
-
-            val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
-            val buttonMinusWidth = cornerView.findViewById<View>(R.id.buttonRowScaleMinus)
-
-            buttonAddWidth.setOnClickListener { resizeHeaderRowWidth(true, cornerView, rvs) }
-            buttonMinusWidth.setOnClickListener { resizeHeaderRowWidth(false, cornerView, rvs) }
-
-            binding.headerContainer.addView(cornerView)
-        }
-    }
-
-    private fun resizeHeaderRowWidth(
-        add: Boolean,
-        cornerView: View,
-        rvs: MutableList<CellRecyclerView>
-    ) {
-        for (i in 0 until binding.tableLayout.childCount) {
-            if (binding.tableLayout.getChildAt(i) is TableView) {
-                val table = binding.tableLayout.getChildAt(i) as TableView
-                if (table.adapter is DataSetTableAdapter) {
-                    val adapter = table.adapter as DataSetTableAdapter
-                    adapter.scaleRowWidth(add)
-                    val params = cornerView.layoutParams
-                    params.width = adapter.rowHeaderWidth
-                    cornerView.layoutParams = params
-                    if (i == 0) {
-                        presenterFragment.saveCurrentSectionMeasures(
-                            adapter.rowHeaderWidth,
-                            adapter.columnHeaderHeight
-                        )
-                        val scrollPos = table.scrollHandler.columnPosition
-                        table.scrollToColumnPosition(scrollPos)
-                        for (rv in rvs) {
-                            rv.layoutManager!!.scrollToPosition(scrollPos)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun checkTableHeights(): Boolean {
-        if (heights.isEmpty()) {
-            heights = ArrayList()
-
-            for (i in 0 until (binding.scroll.getChildAt(0) as LinearLayout).childCount) {
-                val view = (binding.scroll.getChildAt(0) as LinearLayout).getChildAt(i)
-                if (view is TableView) {
-                    if (i == (binding.scroll.getChildAt(0) as LinearLayout).childCount - 1) {
-                        heights.add(
-                            if (i != 0) {
-                                heights[heights.size - 1] + view.getHeight()
-                            } else {
-                                view.getHeight()
-                            }
-                        )
-                    } else {
-                        val separator =
-                            (binding.scroll.getChildAt(0) as LinearLayout)
-                                .getChildAt(i + 1)
-                        heights.add(
-                            if (i / 2 != 0) {
-                                heights[i / 2 - 1] + view.getHeight() + separator.height
-                            } else {
-                                view.getHeight() + separator.height
-                            }
-                        )
-                    }
-                }
-            }
-        }
-        return heights.isNotEmpty()
-    }
-
-    override fun updateData(rowAction: RowAction, catCombo: String?) {
-        for (adapter in adapters)
-            if (adapter.catCombo == catCombo) {
-                adapter.updateValue(rowAction)
-                adapter.tableView.selectionHandler.clearIfCellSelected(
-                    rowAction.rowPos(),
-                    rowAction.columnPos()
-                )
-            }
-    }
-
     override fun onValueProcessed() {
         if (activity.isBackPressed) {
             activity.abstractActivity.back()
         }
     }
 
-    override fun clearTables() {
-        binding.tableLayout.removeAllViews()
-        adapters.clear()
-    }
-
-    override fun showSnackBar() {
-        saveToast.show()
-    }
-
     override fun update(modified: Boolean) {
         if (modified) {
             activity.update()
+        }
+    }
+
+    override fun showCalendar(
+        dataElement: DataElement,
+        cell: TableCell,
+        showTimePicker: Boolean,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val dialog = CalendarPicker(requireContext())
+        dialog.setTitle(dataElement.displayFormName())
+
+        val calendar = Calendar.getInstance()
+        if (!cell.value.isNullOrEmpty()) {
+            dialog.setInitialDate(cell.value!!.toDate())
+            calendar.time = cell.value!!.toDate()
+        }
+        dialog.isFutureDatesAllowed(true)
+        dialog.setListener(object : OnDatePickerListener {
+            override fun onNegativeClick() {
+                val updatedCellValue = cell.copy(value = null)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
+            }
+
+            override fun onPositiveClick(datePicker: DatePicker) {
+                calendar.set(Calendar.YEAR, datePicker.year)
+                calendar.set(Calendar.MONTH, datePicker.month)
+                calendar.set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
+                if (showTimePicker) {
+                    showDateTime(dataElement, cell, calendar, updateCellValue)
+                } else {
+                    calendar.set(Calendar.HOUR_OF_DAY, 0)
+                    calendar.set(Calendar.MINUTE, 0)
+                    val selectedDate: Date = calendar.time
+                    val result = DateUtils.oldUiDateFormat().format(selectedDate)
+                    val updatedCellValue = cell.copy(value = result)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+            }
+        })
+        dialog.show()
+    }
+
+    private fun showDateTime(
+        dataElement: DataElement,
+        cell: TableCell,
+        calendar: Calendar,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val hour = calendar[Calendar.HOUR_OF_DAY]
+        val minute = calendar[Calendar.MINUTE]
+        val is24HourFormat = DateFormat.is24HourFormat(context)
+
+        val dialog = TimePickerDialog(
+            context,
+            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minutes)
+                val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
+                val updatedCellValue = cell.copy(value = result)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
+            },
+            hour,
+            minute,
+            is24HourFormat
+        )
+        dialog.setTitle(dataElement.displayFormName())
+        dialog.show()
+    }
+
+    override fun showTimePicker(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val c = Calendar.getInstance()
+        if (!cell.value.isNullOrEmpty()) {
+            c.time = DateUtils.timeFormat().parse(cell.value!!)!!
+        }
+
+        val hour = c[Calendar.HOUR_OF_DAY]
+        val minute = c[Calendar.MINUTE]
+        val is24HourFormat = DateFormat.is24HourFormat(context)
+        val twentyFourHourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val twelveHourFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val dialog = TimePickerDialog(
+            context,
+            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
+                val calendar = Calendar.getInstance()
+                calendar[Calendar.HOUR_OF_DAY] = hourOfDay
+                calendar[Calendar.MINUTE] = minutes
+                val selectedDate = calendar.time
+                val calendarTime: String = if (is24HourFormat) {
+                    twentyFourHourFormat.format(selectedDate)
+                } else {
+                    twelveHourFormat.format(selectedDate)
+                }
+                val updatedCellValue = cell.copy(value = calendarTime)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
+            },
+            hour,
+            minute,
+            is24HourFormat
+        )
+        dialog.setTitle(dataElement.displayFormName())
+
+        dialog.setButton(
+            DialogInterface.BUTTON_NEGATIVE,
+            requireContext().getString(R.string.date_dialog_clear)
+        ) { _: DialogInterface?, _: Int ->
+            val updatedCellValue = cell.copy(value = null)
+            updateCellValue(updatedCellValue)
+            presenterFragment.onSaveValueChange(updatedCellValue)
+        }
+        dialog.show()
+    }
+
+    override fun showBooleanDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val yesNoView = YesNoView(context)
+        yesNoView.setIsBgTransparent(true)
+        yesNoView.setValueType(dataElement.valueType())
+        yesNoView.setRendering(ValueTypeRenderingType.DEFAULT)
+        yesNoView.clearButton.visibility = View.GONE
+
+        if (!cell.value.isNullOrEmpty()) {
+            if (cell.value.toBoolean()) {
+                yesNoView.radioGroup.check(R.id.yes)
+            } else {
+                yesNoView.radioGroup.check(R.id.no)
+            }
+        }
+
+        TableFieldDialog(
+            requireContext(),
+            dataElement.displayFormName()!!,
+            dataElement.displayDescription() ?: "",
+            yesNoView,
+            object : DialogClickListener {
+                override fun onPositive() {
+                    val newValue = when (yesNoView.radioGroup.checkedRadioButtonId) {
+                        R.id.yes -> true.toString()
+                        R.id.no -> false.toString()
+                        else -> null
+                    }
+                    val updatedCellValue = cell.copy(value = newValue)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
+                }
+
+                override fun onNegative() {}
+            }
+        ) {
+            yesNoView.radioGroup.clearCheck()
+        }.show()
+    }
+
+    override fun showAgeDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val ageView = AgeView(context)
+        ageView.setIsBgTransparent()
+        if (!cell.value.isNullOrEmpty()) {
+            ageView.setInitialValue(cell.value)
+        }
+
+        TableFieldDialog(
+            requireContext(),
+            dataElement.displayFormName()!!,
+            dataElement.displayDescription() ?: "",
+            ageView,
+            object : DialogClickListener {
+
+                override fun onPositive() {
+                    val date: String = ageView.selectedDate?.let {
+                        DateUtils.oldUiDateFormat().format(it)
+                    } ?: ""
+                    if (cell.value != date) {
+                        val updatedCellValue = cell.copy(value = date)
+                        presenterFragment.onSaveValueChange(updatedCellValue)
+                        updateCellValue(cell.copy(value = date))
+                    }
+                }
+
+                override fun onNegative() {}
+            },
+            null
+        ).show()
+    }
+
+    override fun showCoordinatesDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val coordinatesView = CoordinatesView(context)
+        coordinatesView.setIsBgTransparent(true)
+        coordinatesView.featureType = FeatureType.POINT
+        if (!cell.value.isNullOrEmpty()) {
+            coordinatesView.setInitialValue(cell.value)
+        }
+
+        TableFieldDialog(
+            requireContext(),
+            dataElement.displayFormName()!!,
+            dataElement.displayDescription() ?: "",
+            coordinatesView,
+            object : DialogClickListener {
+                override fun onPositive() {
+                    if (cell.value != coordinatesView.currentCoordinates()) {
+                        val updatedCellValue =
+                            cell.copy(value = coordinatesView.currentCoordinates())
+                        updateCellValue(updatedCellValue)
+                        presenterFragment.onSaveValueChange(updatedCellValue)
+                    }
+                }
+
+                override fun onNegative() {}
+            },
+            null
+        ).show()
+    }
+
+    override fun showOtgUnitDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        orgUnits: List<OrganisationUnit>,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val orgUnitDialog = OrgUnitDialog()
+        orgUnitDialog.setTitle(dataElement.displayFormName())
+            .setMultiSelection(false)
+            .setOrgUnits(orgUnits)
+            .setPossitiveListener {
+                val updatedCellValue = cell.copy(value = orgUnitDialog.selectedOrgUnit)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
+                orgUnitDialog.dismiss()
+            }
+            .setNegativeListener {
+                orgUnitDialog.dismiss()
+            }
+        if (!orgUnitDialog.isAdded) {
+            orgUnitDialog.show(
+                parentFragmentManager,
+                dataElement.displayFormName()
+            )
+        }
+    }
+
+    override fun showOptionSetDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        spinnerViewModel: SpinnerViewModel,
+        updateCellValue: (TableCell) -> Unit
+    ) {
+        val dialog = OptionSetDialog()
+        dialog.create(requireContext())
+        dialog.optionSetTable = spinnerViewModel
+
+        /**
+         * This code is commented because I can't find a way to anchor PopUpMenu to compose item
+         * I have created a issue() to refactor OptionSetCellPopUp to compose in order to use it in both sides
+         * After implement new menu, please, uncomment this code
+         */
+        if (dialog.showDialog()) {
+            dialog.listener = OptionSetOnClickListener {
+                val updatedCellValue = cell.copy(value = it.code())
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
+            }
+            dialog.clearListener = View.OnClickListener {
+                val updatedCellValue = cell.copy(value = null)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
+            }
+            dialog.show(parentFragmentManager, TAG)
+        } else {
+            dialog.dismiss()
+            presenterFragment.onSaveValueChange(cell)
         }
     }
 

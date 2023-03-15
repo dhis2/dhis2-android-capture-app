@@ -5,7 +5,6 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -13,44 +12,46 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import org.dhis2.commons.network.NetworkUtilsModule;
-import org.dhis2.maps.MapController;
-import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
-import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.commons.di.dagger.PerUser;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.network.NetworkUtilsModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
-import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceModule;
-import org.dhis2.data.appinspector.AppInspector;
-import org.dhis2.data.dispatcher.DispatcherModule;
+import org.dhis2.commons.reporting.CrashReportModule;
 import org.dhis2.commons.schedulers.SchedulerModule;
 import org.dhis2.commons.schedulers.SchedulersProviderImpl;
+import org.dhis2.commons.sync.SyncComponentProvider;
+import org.dhis2.data.appinspector.AppInspector;
+import org.dhis2.data.dispatcher.DispatcherModule;
+import org.dhis2.data.server.SSLContextInitializer;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
+import org.dhis2.maps.MapController;
+import org.dhis2.usescases.crash.CrashActivity;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsModule;
-import org.dhis2.utils.reporting.CrashReportModule;
+import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,9 +71,6 @@ import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
-    static {
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-    }
 
     @NonNull
     @Singleton
@@ -109,19 +107,24 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         appInspector = new AppInspector(this).init();
 
-        MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
+        MapController.Companion.init(this);
 
         setUpAppComponent();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));
 
+        setUpSecurityProvider();
         setUpServerComponent();
         setUpRxPlugin();
         initCustomCrashActivity();
     }
 
+    private void setUpSecurityProvider() {
+        SSLContextInitializer.INSTANCE.initializeSSLContext(this);
+    }
+
     private void initCustomCrashActivity() {
         CaocConfig.Builder.create()
-                .errorDrawable(R.drawable.ic_dhis)
+                .errorActivity(CrashActivity.class)
                 .apply();
     }
 
@@ -137,17 +140,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     protected void setUpServerComponent() {
-        boolean isLogged = false;
-        try {
-            D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
-            d2Configuration.userModule().accountManager().setMaxAccounts(Constants.MAX_ACCOUNTS);
-            isLogged = d2Configuration.userModule().isLogged().blockingGet();
-        } catch (Exception e) {
-            appComponent.injectCrashReportController().trackError(e, e.getMessage());
-        }
         serverComponent = appComponent.plus(new ServerModule());
-
-        if (isLogged)
+        if (Boolean.TRUE.equals(serverComponent.userManager().isUserLoggedIn().blockingFirst()))
             setUpUserComponent();
     }
 
@@ -358,5 +352,12 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public OUTreeComponent provideOUTreeComponent(@NotNull OUTreeModule module) {
         return serverComponent.plus(module);
+    }
+
+
+    @NonNull
+    @Override
+    public SyncComponentProvider getSyncComponentProvider() {
+        return new SyncStatusDialogProvider();
     }
 }

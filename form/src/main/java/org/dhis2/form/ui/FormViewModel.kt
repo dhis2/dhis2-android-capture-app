@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -27,6 +26,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.binding.getFeatureType
+import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -84,36 +84,42 @@ class FormViewModel(
     }
 
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
-        when (result.second.valueStoreResult) {
-            ValueStoreResult.VALUE_CHANGED -> {
-                _savedValue.value = result.first
-                processCalculatedItems()
-            }
-            ValueStoreResult.ERROR_UPDATING_VALUE -> {
-                showToast.value = R.string.update_field_error
-            }
-            ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
-                Timber.tag(TAG)
-                    .d("${result.first.id} is not a data element or attribute")
-                processCalculatedItems()
-            }
-            ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                showInfo.value = InfoUiModel(
-                    R.string.error,
-                    R.string.unique_warning
-                )
-                processCalculatedItems()
-            }
-            ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                processCalculatedItems()
-            }
-            ValueStoreResult.TEXT_CHANGING -> {
-                Timber.d("${result.first.id} is changing its value")
-                _queryData.value = result.first
-            }
-            ValueStoreResult.FINISH -> {
-                processCalculatedItems()
-                runDataIntegrityCheck()
+        result.second.valueStoreResult?.let {
+            when (it) {
+                ValueStoreResult.VALUE_CHANGED -> {
+                    result.first.let {
+                        _savedValue.value = it
+                    }
+                    processCalculatedItems()
+                }
+                ValueStoreResult.ERROR_UPDATING_VALUE -> {
+                    showToast.value = R.string.update_field_error
+                }
+                ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
+                    Timber.tag(TAG)
+                        .d("${result.first.id} is not a data element or attribute")
+                    processCalculatedItems()
+                }
+                ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                    showInfo.value = InfoUiModel(
+                        R.string.error,
+                        R.string.unique_warning
+                    )
+                    processCalculatedItems()
+                }
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
+                    processCalculatedItems(true)
+                }
+                ValueStoreResult.TEXT_CHANGING -> {
+                    result.first.let {
+                        Timber.d("${result.first.id} is changing its value")
+                        _queryData.value = it
+                    }
+                }
+                ValueStoreResult.FINISH -> {
+                    processCalculatedItems()
+                    runDataIntegrityCheck()
+                }
             }
         }
     }
@@ -140,6 +146,9 @@ class FormViewModel(
     private fun processUserAction(action: RowAction): StoreResult {
         return when (action.type) {
             ActionType.ON_SAVE -> {
+                if (action.valueType == ValueType.COORDINATE) {
+                    repository.setFieldRequestingCoordinates(action.id, false)
+                }
                 repository.updateErrorList(action)
                 if (action.error != null) {
                     StoreResult(
@@ -187,6 +196,20 @@ class FormViewModel(
                 StoreResult(
                     "",
                     ValueStoreResult.FINISH
+                )
+            }
+            ActionType.ON_REQUEST_COORDINATES -> {
+                repository.setFieldRequestingCoordinates(action.id, true)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                )
+            }
+            ActionType.ON_CANCELL_REQUEST_COORDINATES -> {
+                repository.setFieldRequestingCoordinates(action.id, false)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
                 )
             }
         }
@@ -321,6 +344,18 @@ class FormViewModel(
                 value = null,
                 actionType = ActionType.ON_FINISH
             )
+            is FormIntent.OnRequestCoordinates ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = null,
+                    actionType = ActionType.ON_REQUEST_COORDINATES
+                )
+            is FormIntent.OnCancelRequestCoordinates ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = null,
+                    actionType = ActionType.ON_CANCELL_REQUEST_COORDINATES
+                )
         }
     }
 
@@ -405,8 +440,14 @@ class FormViewModel(
         return items.value?.first { it.focused }?.uid
     }
 
-    private fun processCalculatedItems() {
-        _items.value = repository.composeList()
+    private fun processCalculatedItems(skipProgramRules: Boolean = false) {
+        FormCountingIdlingResource.increment()
+        viewModelScope.launch(dispatcher.io()) {
+            val result = async {
+                repository.composeList(skipProgramRules)
+            }
+            _items.postValue(result.await())
+        }
     }
 
     fun updateConfigurationErrors() {
@@ -480,6 +521,10 @@ class FormViewModel(
                 _items.postValue(emptyList())
             }
         }
+    }
+
+    fun clearFocus() {
+        repository.clearFocusItem()
     }
 
     companion object {

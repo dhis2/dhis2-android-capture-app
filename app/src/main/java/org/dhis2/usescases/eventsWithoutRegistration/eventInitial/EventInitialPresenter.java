@@ -1,9 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
-import static org.dhis2.utils.analytics.matomo.Actions.CREATE_EVENT;
-import static org.dhis2.utils.analytics.matomo.Categories.EVENT_LIST;
-import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+import static org.dhis2.commons.matomo.Actions.CREATE_EVENT;
+import static org.dhis2.commons.matomo.Categories.EVENT_LIST;
+import static org.dhis2.commons.matomo.Labels.CLICK;
 
 import android.util.ArrayMap;
 
@@ -21,7 +21,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapp
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -40,7 +40,6 @@ import timber.log.Timber;
 
 public class EventInitialPresenter {
 
-    public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
     private final PreferenceProvider preferences;
     private final AnalyticsHelper analyticsHelper;
 
@@ -97,9 +96,9 @@ public class EventInitialPresenter {
             compositeDisposable
                     .add(
                             Flowable.zip(
-                                    eventInitialRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
-                                    eventInitialRepository.programStageForEvent(eventId),
-                                    Pair::create)
+                                            eventInitialRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
+                                            eventInitialRepository.programStageForEvent(eventId),
+                                            Pair::create)
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                                     .subscribe(septet -> {
                                         this.program = septet.val0();
@@ -205,7 +204,16 @@ public class EventInitialPresenter {
         if (program != null) {
             preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid);
             compositeDisposable.add(
-                    eventInitialRepository.scheduleEvent(enrollmentUid, null, program.uid(), programStageModel, dueDate, orgUnitUid, categoryOptionComboUid, categoryOptionsUid, geometry)
+                    eventInitialRepository.permanentReferral(
+                                    enrollmentUid,
+                                    trackedEntityInstanceUid,
+                                    program.uid(),
+                                    programStageModel,
+                                    dueDate,
+                                    orgUnitUid,
+                                    categoryOptionComboUid,
+                                    categoryOptionsUid,
+                                    geometry)
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(

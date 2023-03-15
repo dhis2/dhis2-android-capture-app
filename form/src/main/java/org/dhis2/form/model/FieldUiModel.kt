@@ -55,11 +55,7 @@ interface FieldUiModel {
 
     val renderingType: UiRenderType?
 
-    val options: List<Option>?
-
-    var optionsToHide: List<String>?
-
-    var optionsToShow: List<String>?
+    var optionSetConfiguration: OptionSetConfiguration?
 
     val hasImage: Boolean
 
@@ -71,7 +67,7 @@ interface FieldUiModel {
 
     val isNegativeChecked: Boolean
 
-    val optionsToDisplay: List<Option>?
+    val isLoadingData: Boolean
 
     val url: String?
 
@@ -100,6 +96,8 @@ interface FieldUiModel {
     fun invokeIntent(intent: FormIntent)
 
     fun setValue(value: String?): FieldUiModel
+
+    fun setIsLoadingData(isLoadingData: Boolean): FieldUiModel
 
     fun setFocus(): FieldUiModel
 

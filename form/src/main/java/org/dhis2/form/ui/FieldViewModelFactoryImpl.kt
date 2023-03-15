@@ -4,6 +4,7 @@ import androidx.databinding.ObservableField
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.DisplayNameProvider
@@ -17,7 +18,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
@@ -47,40 +47,39 @@ class FieldViewModelFactoryImpl(
         renderingType: SectionRenderingType?,
         description: String?,
         fieldRendering: ValueTypeDeviceRendering?,
-        optionCount: Int?,
         objectStyle: ObjectStyle,
         fieldMask: String?,
-        options: List<Option>?,
+        optionSetConfiguration: OptionSetConfiguration?,
         featureType: FeatureType?,
-        url: String?,
+        url: String?
     ): FieldUiModel {
         var isMandatory = mandatory
         isNull(valueType, "type must be supplied")
         if (noMandatoryFields) isMandatory = false
         return FieldUiModelImpl(
-            id,
-            layoutProvider.getLayoutByType(
+            uid = id,
+            layoutId = layoutProvider.getLayoutByType(
                 valueType,
                 fieldRendering?.type(),
                 optionSet,
                 renderingType
             ),
-            value,
-            false,
-            null,
-            editable,
-            null,
-            isMandatory,
-            label,
-            programStageSection,
-            uiStyleProvider.provideStyle(valueType),
-            hintProvider.provideDateHint(valueType),
-            description,
-            valueType,
-            legendValueProvider.provideLegendValue(id, value),
-            optionSet,
-            allowFutureDates,
-            UiEventFactoryImpl(
+            value = value,
+            focused = false,
+            error = null,
+            editable = editable,
+            warning = null,
+            mandatory = isMandatory,
+            label = label,
+            programStageSection = programStageSection,
+            style = uiStyleProvider.provideStyle(valueType),
+            hint = hintProvider.provideDateHint(valueType),
+            description = description,
+            valueType = valueType,
+            legend = legendValueProvider.provideLegendValue(id, value),
+            optionSet = optionSet,
+            allowFutureDates = allowFutureDates,
+            uiEventFactory = UiEventFactoryImpl(
                 id,
                 label,
                 description,
@@ -88,16 +87,16 @@ class FieldViewModelFactoryImpl(
                 allowFutureDates,
                 optionSet
             ),
-            displayNameProvider.provideDisplayName(valueType, value, optionSet),
-            uiEventTypesProvider.provideUiRenderType(
+            displayName = displayNameProvider.provideDisplayName(valueType, value, optionSet),
+            renderingType = uiEventTypesProvider.provideUiRenderType(
                 featureType,
                 fieldRendering?.type(),
                 renderingType
             ),
-            options,
-            keyboardActionProvider.provideKeyboardAction(valueType),
-            fieldMask,
-            url,
+            optionSetConfiguration = optionSetConfiguration,
+            keyboardActionType = keyboardActionProvider.provideKeyboardAction(valueType),
+            fieldMask = fieldMask,
+            url = url
         )
     }
 
@@ -106,7 +105,7 @@ class FieldViewModelFactoryImpl(
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
         value: String?,
         editable: Boolean,
-        options: List<Option>?
+        optionSetConfiguration: OptionSetConfiguration?
     ): FieldUiModel {
         isNull(trackedEntityAttribute.valueType(), "type must be supplied")
         return create(
@@ -123,10 +122,9 @@ class FieldViewModelFactoryImpl(
             description = programTrackedEntityAttribute?.displayDescription()
                 ?: trackedEntityAttribute.displayDescription(),
             fieldRendering = programTrackedEntityAttribute?.renderType()?.mobile(),
-            optionCount = null,
             objectStyle = trackedEntityAttribute.style() ?: ObjectStyle.builder().build(),
             fieldMask = trackedEntityAttribute.fieldMask(),
-            options = options!!,
+            optionSetConfiguration = optionSetConfiguration,
             featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) {
                 FeatureType.POINT
             } else null,
@@ -159,14 +157,13 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             null,
-            null,
             true,
             0,
             0,
             0,
             0,
             SectionRenderingType.LISTING.name,
-            currentSection,
+            currentSection
         )
     }
 
@@ -193,7 +190,6 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             description,
-            null,
             null,
             null,
             null,
@@ -233,7 +229,6 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             false,
-            null,
             null,
             null,
             null,

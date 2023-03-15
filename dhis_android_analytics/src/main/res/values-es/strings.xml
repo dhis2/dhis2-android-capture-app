@@ -63,4 +63,7 @@
     <string name="error_parsing_visualization">Esta visualización no se encuentra bien configurada, por favor contacte a su administrador.</string>
     <string name="error_invalid_custom_boundaries">Los límites personalizados de indicadores de programa no son compatibles con los graficos de Android%s</string>
     <string name="error_database">No se puede acceder a la base de datos. Por favor, contacta con tu administrador.</string>
+    <string name="error_invalid_program">No tiene permiso para acceder al programa %s</string>
+    <string name="error_invalid_attribute">No tiene permiso para acceder al atributo %s</string>
+    <string name="error_unsupported_aggregation_type">El tipo de agregación %s no está soportado</string>
 </resources>

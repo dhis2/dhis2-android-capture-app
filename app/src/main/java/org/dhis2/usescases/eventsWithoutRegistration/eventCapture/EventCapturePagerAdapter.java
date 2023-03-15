@@ -1,7 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
 
 import android.os.Bundle;
 
@@ -18,7 +18,7 @@ import org.dhis2.usescases.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 
 import java.util.ArrayList;
 import java.util.List;

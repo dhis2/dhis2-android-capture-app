@@ -2,7 +2,6 @@ package org.dhis2.usescases.sync
 
 import androidx.work.Data
 import androidx.work.WorkInfo
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
@@ -11,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.UUID
+import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -18,7 +18,6 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.METADATA_MESSAGE
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.utils.Constants
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -47,9 +46,8 @@ class SyncPresenterTest {
     @Test
     fun `Should start initial sync`() {
         presenter.sync()
-        verify(workManagerController, times(1)).syncDataForWorkers(
+        verify(workManagerController, times(1)).syncMetaDataForWorker(
             Constants.META_NOW,
-            Constants.DATA_NOW,
             Constants.INITIAL_SYNC
         )
     }
@@ -81,18 +79,6 @@ class SyncPresenterTest {
     }
 
     @Test
-    fun `Should set data sync started`() {
-        presenter.handleSyncInfo(arrayListOf(dataWorkInfo(WorkInfo.State.RUNNING)))
-        verify(view, times(1)).setDataSyncStarted()
-    }
-
-    @Test
-    fun `Should set data sync succeeded`() {
-        presenter.handleSyncInfo(arrayListOf(dataWorkInfo(WorkInfo.State.SUCCEEDED)))
-        verify(view, times(1)).setDataSyncSucceed()
-    }
-
-    @Test
     fun `Should get flag and theme after metadata sync`() {
         val flagAndTheme = Pair<String?, Int>("flag", -1)
         whenever(userManager.theme) doReturn Single.just(flagAndTheme)
@@ -101,14 +87,6 @@ class SyncPresenterTest {
         verify(preferences, times(1)).setValue(Preference.THEME, flagAndTheme.second)
         verify(view, times(1)).setFlag(flagAndTheme.first)
         verify(view, times(1)).setServerTheme(flagAndTheme.second)
-    }
-
-    @Test
-    fun `Should sync reserved values after data sync`() {
-        presenter.onDataSyncSuccess()
-        verify(preferences, times(1)).setValue(Preference.INITIAL_SYNC_DONE, true)
-        verify(workManagerController, times(1)).cancelAllWorkByTag(Constants.RESERVED)
-        verify(workManagerController, times(1)).syncDataForWorker(any())
         verify(view, times(1)).goToMain()
     }
 
@@ -125,17 +103,6 @@ class SyncPresenterTest {
             state,
             Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
             arrayListOf(Constants.META_NOW),
-            Data.EMPTY,
-            0
-        )
-    }
-
-    private fun dataWorkInfo(state: WorkInfo.State): WorkInfo {
-        return WorkInfo(
-            UUID.randomUUID(),
-            state,
-            Data.Builder().build(),
-            arrayListOf(Constants.DATA_NOW),
             Data.EMPTY,
             0
         )

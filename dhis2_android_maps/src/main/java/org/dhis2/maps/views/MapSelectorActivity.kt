@@ -5,24 +5,25 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mapbox.android.core.location.LocationEngineProvider
-import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.engine.LocationEngineProvider
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
+import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -43,23 +44,17 @@ import org.dhis2.maps.geometry.point.PointAdapter
 import org.dhis2.maps.geometry.point.PointViewModel
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.geometry.polygon.PolygonViewModel
+import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.location.MapActivityLocationCallback
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 
 class MapSelectorActivity :
     AppCompatActivity(),
     MapActivityLocationCallback.OnLocationChanged {
 
     override fun onLocationChanged(latLng: LatLng) {
-        Log.d(
-            this::class.simpleName,
-            "NEW LOCATION %s, %s".format(latLng.latitude, latLng.longitude)
-        )
-
         if (!init) {
             init = true
             if (initialCoordinates == null) {
@@ -79,6 +74,10 @@ class MapSelectorActivity :
 
     private var initialCoordinates: String? = null
 
+    private val baseMapManager by lazy {
+        BaseMapManager(this, emptyList())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
@@ -94,7 +93,11 @@ class MapSelectorActivity :
         mapView.getMapAsync { mapboxMap ->
             mapView.contentDescription = "LOADED"
             map = mapboxMap
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+            mapboxMap.setStyle(
+                baseMapManager.styleJson(
+                    baseMapManager.getDefaultBasemap()
+                )
+            ) { style ->
                 this.style = style
                 enableLocationComponent()
                 centerMapOnCurrentLocation()
@@ -358,9 +361,9 @@ class MapSelectorActivity :
 
     private fun centerMapOnCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
                 this,

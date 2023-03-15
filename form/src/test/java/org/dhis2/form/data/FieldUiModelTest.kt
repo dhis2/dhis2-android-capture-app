@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.OptionSetConfiguration
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.junit.Test
@@ -11,18 +12,38 @@ class FieldUiModelTest {
     fun `should set optionsToDisplay when there is optionsToHide`() {
         val optionsToHide = listOf("1", "2")
         val matrixOptionSetModel = fieldUiModel().also {
-            it.optionsToHide = optionsToHide
+            val conf = it.optionSetConfiguration
+            it.optionSetConfiguration = when (conf) {
+                is OptionSetConfiguration.BigOptionSet ->
+                    conf.copy(optionsToHide = optionsToHide)
+                is OptionSetConfiguration.DefaultOptionSet ->
+                    conf.copy(optionsToHide = optionsToHide)
+                null -> conf
+            }
         }
-        assert(matrixOptionSetModel.optionsToDisplay?.map { it.uid() } == listOf("3", "4", "5"))
+        assert(
+            matrixOptionSetModel.optionSetConfiguration?.optionsToDisplay()
+                ?.map { it.uid() } == listOf("3", "4", "5")
+        )
     }
 
     @Test
     fun `should set optionsToDisplay when there is optionsToShow`() {
         val optionsInGroupToShow = listOf("1", "2")
         val matrixOptionSetModel = fieldUiModel().also {
-            it.optionsToShow = optionsInGroupToShow
+            val conf = it.optionSetConfiguration
+            it.optionSetConfiguration = when (conf) {
+                is OptionSetConfiguration.BigOptionSet ->
+                    conf.copy(optionsToShow = optionsInGroupToShow)
+                is OptionSetConfiguration.DefaultOptionSet ->
+                    conf.copy(optionsToShow = optionsInGroupToShow)
+                null -> conf
+            }
         }
-        assert(matrixOptionSetModel.optionsToDisplay?.map { it.uid() } == listOf("1", "2"))
+        assert(
+            matrixOptionSetModel.optionSetConfiguration?.optionsToDisplay()
+                ?.map { it.uid() } == listOf("1", "2")
+        )
     }
 
     @Test
@@ -31,23 +52,38 @@ class FieldUiModelTest {
         val optionsInGroupToShow = listOf("3", "5")
 
         val matrixOptionSetModel = fieldUiModel().also {
-            it.optionsToHide = optionsToHide
-            it.optionsToShow = optionsInGroupToShow
+            val conf = it.optionSetConfiguration
+            it.optionSetConfiguration = when (conf) {
+                is OptionSetConfiguration.BigOptionSet -> conf.copy(
+                    optionsToHide = optionsToHide,
+                    optionsToShow = optionsInGroupToShow
+                )
+                is OptionSetConfiguration.DefaultOptionSet -> conf.copy(
+                    optionsToHide = optionsToHide,
+                    optionsToShow = optionsInGroupToShow
+                )
+                null -> conf
+            }
         }
-        assert(matrixOptionSetModel.optionsToDisplay?.map { it.uid() } == listOf("3", "5"))
+        assert(
+            matrixOptionSetModel.optionSetConfiguration?.optionsToDisplay()
+                ?.map { it.uid() } == listOf("3", "5")
+        )
     }
 
     private fun fieldUiModel() = FieldUiModelImpl(
         "uid",
         1,
         label = "label",
-        options = listOf(
-            Option.builder().uid("1").build(),
-            Option.builder().uid("2").build(),
-            Option.builder().uid("3").build(),
-            Option.builder().uid("4").build(),
-            Option.builder().uid("5").build()
-        ),
-        valueType = ValueType.TEXT
+        valueType = ValueType.TEXT,
+        optionSetConfiguration = OptionSetConfiguration.config(5) {
+            listOf(
+                Option.builder().uid("1").build(),
+                Option.builder().uid("2").build(),
+                Option.builder().uid("3").build(),
+                Option.builder().uid("4").build(),
+                Option.builder().uid("5").build()
+            )
+        }
     )
 }

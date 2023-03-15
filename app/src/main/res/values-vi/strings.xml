@@ -61,7 +61,6 @@
     <string name="configuration_sync_failed">Đồng bộ Cấu Hình thất bại</string>
     <string name="data_sync_failed">Đồng bộ Dữ Liệu thất bại</string>
     <string name="account_recovery">Phục hồi tài khoản</string>
-
     <!--PERIOD-->
     <string name="DAILY">Hàng Ngày</string>
     <string name="WEEKLY">Hàng Tuần</string>
@@ -100,7 +99,6 @@
     <string name="event_approved">Sự kiện được được duyệt</string>
     <string name="event_inactive">Sự kiện không hoạt động</string>
     <string name="read_only">Chỉ Xem</string>
-    <string name="complete">Hoàn tất</string>
     <string name="finish_and_complete">Lưu và Hoàn Tất</string>
     <string name="completed">Hoàn tất</string>
     <string name="cancelled">Đã hủy</string>
@@ -262,7 +260,6 @@
     <string name="missing_mandatory_fields_events">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="title_delete_go_back">Dữ liệu của bạn chưa được lưu</string>
     <string name="delete_go_back">Nếu bạn quay lại bây giờ, tất cả thông tin đã nhập sẽ bị xóa.</string>
-    <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
     <string name="missing_mandatory_fields_events_2.0">Một số trường bắt buộc nhập bị thiếu:\n %s\n Bạn có thể quay trở lại bây giờ, nhưng sự kiện này sẽ không thể hoàn tất.</string>
     <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
     <string name="error_fields">Một vài trường dữ liệu có lỗi:\n %s\nVui lòng kiểm tra.</string>
@@ -454,7 +451,6 @@
     <string name="unable_to_save">Không thể lưu</string>
     <string name="warnings_in_form">Có cảnh báo trong biểu nhập.</string>
     <string name="what_to_do">Bạn muốn làm gì?</string>
-    <string name="review">Xem xét</string>
     <string name="field_errors">Một số trường dữ liệu có lỗi. Vui lòng kiểm tra chúng để có thể hoàn tất.</string>
     <string name="unselect_enrollment">Tất cả đăng ký</string>
     <string name="unselect_enrollment_description">Bảng hiển thị dữ liệu với tất cả chương trình đang hoạt động</string>
@@ -727,7 +723,6 @@
     <string name="show_events_timeline">Hiển thị dòng thời gian sự kiện</string>
     <string name="filters_title_date">Ngày</string>
     <string name="filters_title_event_date">Ngày sự kiện</string>
-    <string name="dataset_data">Dữ liệu</string>
     <string name="tei_type_has_no_attributes">%s không có các thuộc tính công khai. Vui lòng chọn một chương trình.</string>
     <string name="privacy_policy_title">Chính Sách Bảo Mật</string>
     <string name="open_privacy_policy">Bấm vào đây để kiểm tra<a href="">chính sách bảo mật</a></string>
@@ -752,7 +747,6 @@
     <string name="jira_issue_sent">Đã gửi vấn đề</string>
     <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="section_charts">Biểu đồ</string>
-    <string name="enable_location_message">Tính năng chia sẻ vị trí thiết bị của bạn bị tắt. Vui lòng mở nó để thu thập tọa độ.</string>
     <string name="navigation_list_view">Xem danh sách</string>
     <string name="navigation_table_view">Xem bảng</string>
     <string name="navigation_map_view">Xem bản đồ</string>
@@ -854,14 +848,11 @@
     <string name="troubleshooting_pass_rule_validation">Không tìm thấy cảnh báo</string>
     <string name="troobleshooting_pass_rule_validation_title">Mọi thứ đều ổn</string>
     <string name="not_saved">Chưa lưu</string>
-    <string name="discard_changes">Hủy bỏ các thay đổi</string>
-    <string name="keep_editing">Tiếp tục chỉnh sửa</string>
     <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
-    <string name="not_now">Không phải bây giờ</string>
     <string name="search_loading_more">Đang tải thêm kết quả</string>
-    <string name="search_no_results_in_program">Không có kết quả cho %s</string>
+    <string name="search_no_results_in_program">Không còn kết quả nào khác cho %s</string>
     <string name="search_outside_action">Tìm kiếm ngoài chương trình này</string>
-    <string name="string_no_more_results">Không có kết quả</string>
+    <string name="string_no_more_results">Không còn kết quả khác</string>
     <string name="search_no_more_results_offline">Tìm kiếm thêm nhiều kết quả khác</string>
     <string name="search_no_results">Không có kết quả cho tìm kiếm này</string>
     <string name="search_too_many_results">Có quá nhiều kết quả</string>
@@ -875,13 +866,16 @@
     <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
     <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\n Bạn có muốn xem xét không?</string>
-    <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.\n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
-    <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
-    <string name="fields_mandatory_missing">Thiếu một số trường dữ liệu bắt buộc và Không thể lưu biểu nhập.</string>
-    <string name="fields_mandatory_missing_discard">Thiếu một số trường dữ liệu bắt buộc và không thể lưu biểu nhập. \n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="changes_will_be_discarted">Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="re_opened">Đã Mở-lại</string>
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>
     <string name="account_disable_message">Tài khoản của bạn đã bị vô hiệu hóa bởi quản lý chương trình.</string>
     <string name="search_unable_search_outside">Để tìm kiếm bên ngoài chương trình này, mở biểu tìm kiếm và điền một trong những trường %ssau:</string>
+    <string name="enrollment_org_unit">Đơn vị đăng ký</string>
+    <string name="customactivityoncrash_error_activity_build_version">Phiên bản cài đặt: %s</string>
+    <string name="customactivityoncrash_error_activity_buid_date">Ngày cài đặt: %s</string>
+    <string name="customactivityoncrash_error_activity_current_date">Ngày hiện tại: %s</string>
+    <string name="customactivityoncrash_error_activity_device">Thiết bị: %s</string>
+    <string name="customactivityoncrash_error_activity_os_version">Phiên bản hệ điều hành: %s</string>
+    <string name="open_details">Mở chi tiết %s</string>
     </resources>

@@ -1,27 +1,28 @@
 package org.dhis2.usescases.main
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onChildAt
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.NavigationViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.common.viewactions.scrollToPositionRecyclerview
-import org.dhis2.usescases.about.AboutTest
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.usescases.main.program.ProgramModelHolder
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
+import org.dhis2.usescases.main.program.HOME_ITEM
+import org.dhis2.usescases.main.program.HOME_ITEMS
 import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit) {
@@ -63,31 +64,26 @@ class MainRobot : BaseRobot() {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.delete_account))
     }
 
-    fun checkViewIsNotEmpty() {
-        onView(withId(R.id.program_recycler))
-            .check(matches(allOf(isDisplayed(), isNotEmpty())))
+    fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
     }
 
     fun checkLogInIsLaunched() {
         Intents.intended(allOf(IntentMatchers.hasComponent(LoginActivity::class.java.name)))
     }
 
-    fun checkHomeIsDisplayed() {
-        onView(withId(R.id.program_recycler))
-            .check(matches(isDisplayed()))
+    fun checkHomeIsDisplayed(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
     }
 
-    fun openFilters(){
+    fun openFilters() {
         onView(withId(R.id.filterActionButton)).perform(click())
     }
 
-    fun openProgramByName(program: String){
-        onView(withId(R.id.program_recycler)).perform(actionOnItem<ProgramModelHolder>(
-            hasDescendant(withText(program)), click()))
-    }
-
-    fun openProgramByPosition(position: Int){
-        onView(withId(R.id.program_recycler)).perform(actionOnItemAtPosition<ProgramModelHolder>(position, click()))
+    fun openProgramByPosition(composeTestRule: ComposeTestRule, position: Int) {
+        composeTestRule.onNodeWithTag(HOME_ITEMS)
+            .onChildAt(position)
+            .performClick()
     }
 
     fun filterByPeriodToday() {
@@ -96,13 +92,18 @@ class MainRobot : BaseRobot() {
         onView(withId(R.id.today)).perform(click())
     }
 
-    fun checkItemsInProgram(position: Int, program: String, items: String) {
-        onView(withId(R.id.program_recycler))
-            .perform(scrollToPositionRecyclerview(position))
-            .check(matches(allOf(
-                hasDescendant(withText(program)),
-                hasDescendant(withText(items))
-            )))
+    @OptIn(ExperimentalTestApi::class)
+    fun checkItemsInProgram(
+        composeTestRule: ComposeTestRule,
+        position: Int,
+        program: String,
+        items: String
+    ) {
+        composeTestRule.onNodeWithTag(HOME_ITEMS, useUnmergedTree = true)
+            .performScrollToIndex(position)
+        composeTestRule.onNodeWithTag(HOME_ITEM.format(position))
+            .assert(hasText(program))
+            .assert(hasText(items, substring = true))
     }
 
     companion object {

@@ -9,6 +9,10 @@ import dhis2.org.analytics.charts.data.AnalyticGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.dhis2.commons.matomo.Actions
+import org.dhis2.commons.matomo.Categories
+import org.dhis2.commons.matomo.Labels
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
@@ -17,7 +21,8 @@ const val MIN_SIZE_TO_SHOW = 2
 class GroupAnalyticsViewModel(
     private val mode: AnalyticMode,
     private val uid: String?,
-    private val charts: Charts
+    private val charts: Charts,
+    private val matomoAnalyticsController: MatomoAnalyticsController
 ) : ViewModel() {
 
     private val _chipItems = MutableLiveData<Result<List<AnalyticGroup>>>()
@@ -95,7 +100,7 @@ class GroupAnalyticsViewModel(
                         charts.geEnrollmentCharts(uid)
                             .map { ChartModel(it) }
                     } ?: emptyList()
-                    AnalyticMode.PROGRAM -> uid?.let {
+                    AnalyticMode.TRACKER_PROGRAM, AnalyticMode.EVENT_PROGRAM -> uid?.let {
                         charts.getProgramVisualizations(groupUid, uid)
                             .map { ChartModel(it) }
                     } ?: emptyList()
@@ -114,6 +119,48 @@ class GroupAnalyticsViewModel(
                 e.printStackTrace()
                 _analytics.value = Result.failure(e)
             }
+        }
+    }
+
+    fun trackAnalyticsPeriodFilter(mode: AnalyticMode) {
+        matomoAnalyticsController.trackEvent(
+            analyticsCategory(mode),
+            Actions.ANALYTICS_FILTERS,
+            Labels.PERIOD_FILTER
+        )
+    }
+
+    fun trackAnalyticsOrgUnitFilter(mode: AnalyticMode) {
+        matomoAnalyticsController.trackEvent(
+            analyticsCategory(mode),
+            Actions.ANALYTICS_FILTERS,
+            Labels.ORG_UNIT_FILTER
+        )
+    }
+
+    fun trackAnalyticsFilterReset(mode: AnalyticMode) {
+        matomoAnalyticsController.trackEvent(
+            analyticsCategory(mode),
+            Actions.ANALYTICS_FILTERS,
+            Labels.RESET_FILTER
+        )
+    }
+
+    fun trackChartTypeChanged(mode: AnalyticMode) {
+        matomoAnalyticsController.trackEvent(
+            analyticsCategory(mode),
+            Actions.VISUALIZATION_CHANGE,
+            Labels.CLICK
+        )
+    }
+
+    private fun analyticsCategory(mode: AnalyticMode): String {
+        return when (mode) {
+            AnalyticMode.ENROLLMENT -> Categories.DASHBOARD
+            AnalyticMode.HOME -> Categories.HOME
+            AnalyticMode.DATASET -> Categories.DATASET_LIST
+            AnalyticMode.EVENT_PROGRAM -> Categories.EVENT_LIST
+            AnalyticMode.TRACKER_PROGRAM -> Categories.SEARCH
         }
     }
 }

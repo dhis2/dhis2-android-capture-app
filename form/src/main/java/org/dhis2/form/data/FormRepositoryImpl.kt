@@ -12,6 +12,7 @@ import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
+import org.hisp.dhis.rules.models.RuleEffect
 
 private const val loopThreshold = 5
 
@@ -31,6 +32,7 @@ class FormRepositoryImpl(
     private var openedSectionUid: String? = null
     private var itemList: List<FieldUiModel> = emptyList()
     private var focusedItemId: String? = null
+    private var ruleEffects: List<RuleEffect> = emptyList()
     private var ruleEffectsResult: RuleUtilsProviderResult? = null
     private var runDataIntegrity: Boolean = false
     private var calculationLoop: Int = 0
@@ -44,10 +46,10 @@ class FormRepositoryImpl(
         return composeList()
     }
 
-    override fun composeList(): List<FieldUiModel> {
+    override fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
         calculationLoop = 0
         return itemList
-            .applyRuleEffects()
+            .applyRuleEffects(skipProgramRules)
             .mergeListWithErrorFields(itemsWithError)
             .also {
                 calculateCompletionPercentage(it)
@@ -104,7 +106,7 @@ class FormRepositoryImpl(
                 !unsupportedValueTypes.contains(it.valueType)
         }
         val totalFields = fields.size
-        val fieldsWithValue = fields.filter { it.value != null }.size
+        val fieldsWithValue = fields.filter { !it.value.isNullOrEmpty() }.size
         completionPercentage = if (totalFields == 0) {
             0f
         } else {
@@ -200,20 +202,32 @@ class FormRepositoryImpl(
         } ?: emptyList()
     )
 
-    private fun List<FieldUiModel>.applyRuleEffects(): List<FieldUiModel> {
-        val ruleEffects = ruleEffects()
-        val fieldMap = this.map { it.uid to it }.toMap().toMutableMap()
+    private fun List<FieldUiModel>.applyRuleEffects(
+        skipProgramRules: Boolean = false
+    ): List<FieldUiModel> {
+        ruleEffects = if (skipProgramRules) {
+            ruleEffects
+        } else {
+            ruleEffects()
+        }
+        val fieldMap = this.associateBy { it.uid }.toMutableMap()
         ruleEffectsResult = rulesUtilsProvider?.applyRuleEffects(
             applyForEvent = dataEntryRepository?.isEvent == true,
             fieldViewModels = fieldMap,
             ruleEffects,
             valueStore = formValueStore
         )
+        ruleEffectsResult?.fieldsToUpdate?.takeIf { it.isNotEmpty() }
+            ?.forEach { fieldWithNewValue ->
+                itemList.find { it.uid == fieldWithNewValue.fieldUid }?.let { field ->
+                    updateValueOnList(field.uid, fieldWithNewValue.newValue, field.valueType)
+                }
+            }
         return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true ||
             calculationLoop == loopThreshold
         ) {
             calculationLoop += 1
-            ArrayList(fieldMap.values).applyRuleEffects()
+            ArrayList(fieldMap.values).applyRuleEffects(skipProgramRules)
         } else {
             ArrayList(fieldMap.values)
         }
@@ -271,13 +285,11 @@ class FormRepositoryImpl(
             mandatory.value == sectionFieldUiModel.uid
         }?.size ?: 0
 
-        val errorCount = getFieldsWithError().associate {
-            it.fieldUid to it.message
-        }.filter { error ->
+        val errorCount = ruleEffectsResult?.errorMap()?.filter { error ->
             fields.firstOrNull { field ->
                 field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
             } != null
-        }.size
+        }?.size ?: 0
 
         return dataEntryRepository?.updateSection(
             sectionFieldUiModel,
@@ -291,7 +303,7 @@ class FormRepositoryImpl(
 
     private fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
         val needsMandatoryWarning = fieldUiModel.mandatory &&
-            fieldUiModel.value == null
+            fieldUiModel.value.isNullOrEmpty()
 
         if (needsMandatoryWarning) {
             mandatoryItemsWithoutValue[fieldUiModel.label] = fieldUiModel.programStageSection ?: ""
@@ -351,12 +363,25 @@ class FormRepositoryImpl(
         }
     }
 
+    override fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean) {
+        itemList.let { list ->
+            list.find { item ->
+                item.uid == uid
+            }?.let { item ->
+                itemList = list.updated(
+                    list.indexOf(item),
+                    item.setIsLoadingData(requestInProcess)
+                )
+            }
+        }
+    }
+
     private fun List<FieldUiModel>.mergeListWithErrorFields(
         fieldsWithError: MutableList<RowAction>
     ): List<FieldUiModel> {
         mandatoryItemsWithoutValue.clear()
         val mergedList = this.map { item ->
-            if (item.mandatory && item.value == null) {
+            if (item.mandatory && item.value.isNullOrEmpty()) {
                 mandatoryItemsWithoutValue[item.label] = item.programStageSection ?: ""
             }
             fieldsWithError.find { it.id == item.uid }?.let { action ->
@@ -397,6 +422,10 @@ class FormRepositoryImpl(
             ActionType.ON_FINISH -> null
             else -> action.id
         }
+    }
+
+    override fun clearFocusItem() {
+        focusedItemId = null
     }
 
     override fun currentFocusedItem(): FieldUiModel? {

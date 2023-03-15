@@ -1,12 +1,17 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
+import android.graphics.Color
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import org.dhis2.commons.R
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentService
 import org.junit.Assert.assertTrue
@@ -73,7 +78,7 @@ class TeiProgramListPresenterTest {
             )
         ) doReturn EnrollmentAccess.CLOSED_PROGRAM_DENIED
         presenter.onEnrollClick(testingProgram)
-        verify(view).displayBreakGlassError(testingProgram.typeName())
+        verify(view).displayBreakGlassError(testingProgram.typeName)
     }
 
     @Test
@@ -86,7 +91,7 @@ class TeiProgramListPresenterTest {
             )
         ) doReturn EnrollmentAccess.PROTECTED_PROGRAM_DENIED
         presenter.onEnrollClick(testingProgram)
-        verify(view).displayBreakGlassError(testingProgram.typeName())
+        verify(view).displayBreakGlassError(testingProgram.typeName)
     }
 
     @Test
@@ -151,11 +156,13 @@ class TeiProgramListPresenterTest {
     }
 
     private fun mockedProgramViewModel(): ProgramViewModel {
-        return ProgramViewModel.create(
+        return ProgramViewModel(
             "uid",
             "programName",
-            null,
-            null,
+            MetadataIconData(
+                programColor = Color.parseColor("#84FFFF"),
+                iconResource = R.drawable.ic_home_positive
+            ),
             0,
             "type",
             "typeName",
@@ -163,7 +170,10 @@ class TeiProgramListPresenterTest {
             null,
             true,
             accessDataWrite = true,
-            state = "Open"
+            state = State.SYNCED,
+            hasOverdueEvent = false,
+            filtersAreActive = false,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 

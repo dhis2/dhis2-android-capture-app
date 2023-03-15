@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions

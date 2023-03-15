@@ -3,10 +3,13 @@ package org.dhis2.data.forms.dataentry
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.utils.reporting.CrashReportController
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -25,9 +28,11 @@ class ValueStoreTest {
     private lateinit var dvValueStore: ValueStore
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dhisEnrollmentUtils: DhisEnrollmentUtils = DhisEnrollmentUtils(d2)
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val crashReportController: CrashReportController = mock()
     private val networkUtils: NetworkUtils = mock()
     private val searchTEIRepository: SearchTEIRepository = mock()
+    private val resourceManager: ResourceManager = mock()
 
     @Before
     fun setUp() {
@@ -35,28 +40,37 @@ class ValueStoreTest {
             ValueStoreImpl(
                 d2,
                 "recordUid",
-                DataEntryStore.EntryMode.ATTR,
+                EntryMode.ATTR,
                 dhisEnrollmentUtils,
                 crashReportController,
-                networkUtils, searchTEIRepository
+                networkUtils,
+                searchTEIRepository,
+                fieldErrorMessageProvider,
+                resourceManager
             )
         deValueStore =
             ValueStoreImpl(
                 d2,
                 "recordUid",
-                DataEntryStore.EntryMode.DE,
+                EntryMode.DE,
                 dhisEnrollmentUtils,
                 crashReportController,
-                networkUtils, searchTEIRepository
+                networkUtils,
+                searchTEIRepository,
+                fieldErrorMessageProvider,
+                resourceManager
             )
         dvValueStore =
             ValueStoreImpl(
                 d2,
                 "recordUid",
-                DataEntryStore.EntryMode.DV,
+                EntryMode.DV,
                 dhisEnrollmentUtils,
                 crashReportController,
-                networkUtils, searchTEIRepository
+                networkUtils,
+                searchTEIRepository,
+                fieldErrorMessageProvider,
+                resourceManager
             )
     }
 

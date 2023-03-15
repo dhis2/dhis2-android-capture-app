@@ -25,6 +25,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
+import androidx.core.widget.TextViewCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -96,6 +97,22 @@ fun TextView.setInputStyle(styleItem: FieldUiModel?) {
             )
         }
     }
+
+    styleItem?.style?.let {
+        it.getColors()[FormUiColorType.FIELD_LABEL_TEXT]?.let { color ->
+            val colorStateList = ColorStateList(
+                arrayOf(
+                    intArrayOf(android.R.attr.state_focused),
+                    intArrayOf(-android.R.attr.state_focused)
+                ),
+                intArrayOf(
+                    color,
+                    color
+                )
+            )
+            setHintTextColor(colorStateList)
+        }
+    }
 }
 
 @BindingAdapter("input_layout_style")
@@ -121,8 +138,10 @@ fun TextInputLayout.setInputLayoutStyle(style: FormUiModelStyle?) {
 @BindingAdapter("warning", "error")
 fun TextView.setWarningOrError(warning: String?, error: String?) {
     if (warning != null) {
+        TextViewCompat.setTextAppearance(this, R.style.warning_appearance)
         this.text = warning
     } else if (error != null) {
+        TextViewCompat.setTextAppearance(this, R.style.error_appearance)
         this.text = error
     }
 }

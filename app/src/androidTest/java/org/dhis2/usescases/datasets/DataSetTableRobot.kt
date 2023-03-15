@@ -1,36 +1,48 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.form.ui.FormViewHolder
+import org.dhis2.composetable.ui.CELL_TEST_TAG
+import org.dhis2.composetable.ui.CellSelected
+import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
-import org.hamcrest.Matchers.allOf
 import org.junit.Assert.assertTrue
 
-
-fun dataSetTableRobot(dataSetTableRobot: DataSetTableRobot.() -> Unit) {
-    DataSetTableRobot().apply {
+fun dataSetTableRobot(
+    composeTestRule: ComposeContentTestRule,
+    dataSetTableRobot: DataSetTableRobot.() -> Unit
+) {
+    DataSetTableRobot(composeTestRule).apply {
         dataSetTableRobot()
     }
 }
 
-class DataSetTableRobot : BaseRobot() {
+class DataSetTableRobot(
+    private val composeTestRule: ComposeContentTestRule
+) : BaseRobot() {
+
     fun clickOnSaveButton() {
-        onView(withId(R.id.saveButton)).perform(click())
+        waitForView(withId(R.id.saveButton)).perform(click())
     }
-    fun clickOnPositiveButton(){
+
+    fun clickOnPositiveButton() {
         onView(withId(R.id.positive)).perform(click())
     }
 
-    fun clickOnNegativeButton(){
+    fun clickOnNegativeButton() {
         onView(withId(R.id.negative)).perform(click())
     }
 
@@ -42,29 +54,38 @@ class DataSetTableRobot : BaseRobot() {
         onView(withText(R.string.re_open)).perform(click())
     }
 
-    fun typeOnEditTextCell(text: String, column: Int, row: Int) {
-        onView(allOf(withId(row), isDisplayed()))
-            .perform(
-                RecyclerViewActions.actionOnItemAtPosition<FormViewHolder>( //EditTextCustomHolder
-                    column, typeChildViewWithId(text, R.id.input_editText)
-                )
-            )
+    fun typeOnCell(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNodeWithTag("$tableId$CELL_TEST_TAG$rowIndex$columnIndex", true)
+            .performScrollTo()
+        composeTestRule.onNodeWithTag("$tableId$CELL_TEST_TAG$rowIndex$columnIndex", true)
+            .performClick()
     }
 
-    fun clickOnEditTextCell(column: Int, row: Int){
-        onView(withId(row))
-            .perform(
-                RecyclerViewActions.actionOnItemAtPosition<FormViewHolder>(
-                    column, clickChildViewWithId(R.id.inputEditText)
-                )
-            )
+    fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int){
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                    and
+                    SemanticsMatcher.expectValue(CellSelected, true), true
+        ).assertIsDisplayed()
     }
 
-    fun acceptDateSelected(){
-        onView(withId(R.id.acceptButton)).perform(click())
+    fun clickOnEditValue() {
+        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performClick()
+    }
+
+    fun typeInput(text: String) {
+        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextInput(text)
+    }
+
+    fun clickOnAccept() {
+        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
     }
 
     fun checkActivityHasNotFinished(activity: DataSetTableActivity) {
         assertTrue(!activity.isDestroyed)
+    }
+
+    fun clickOnAcceptDate() {
+        onView(withText(R.string.action_accept)).perform(click())
     }
 }

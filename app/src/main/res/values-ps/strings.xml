@@ -10,7 +10,6 @@
     <string name="user_hint">کارېدونکی نوم</string>
     <string name="password_hint">پټنوم</string>
     <string name="account_recovery">حساب بېرته ترلاسه کړئ</string>
-
     <!--PERIOD-->
     <string name="DAILY">ورځني [ د مودې ډول ]</string>
     <string name="WEEKLY">اوونیز</string>
@@ -22,7 +21,6 @@
     <string name="search">جستجو</string>
     <string name="event_open">خلاص یې کړئ</string>
     <string name="read_only">یوازې یې ولولئ</string>
-    <string name="complete">بشپړ یې کړئ</string>
     <string name="completed">بشپړ شوی</string>
     <string name="cancelled">لغوه شوی</string>
     <string name="state_error">تېروته</string>

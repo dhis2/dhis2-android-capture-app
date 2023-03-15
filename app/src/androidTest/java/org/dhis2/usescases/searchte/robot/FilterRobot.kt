@@ -6,7 +6,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -17,7 +16,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsWithHolderTypeHave
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.dateIsInRange
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
@@ -25,7 +23,7 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.commons.filters.FilterHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
-import org.hamcrest.Matchers.allOf
+import org.hamcrest.CoreMatchers.allOf
 
 fun filterRobot(filterRobot: FilterRobot.() -> Unit) {
     FilterRobot().apply {

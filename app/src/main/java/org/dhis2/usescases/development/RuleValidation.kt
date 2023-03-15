@@ -1,6 +1,6 @@
 package org.dhis2.usescases.development
 
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.rules.models.Rule
 
 data class ProgramRuleValidation(

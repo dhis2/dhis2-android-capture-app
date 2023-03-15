@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">Оберіть місцезнаходження</string>
+    <string name="map_layers">Шари карти</string>
+    <string name="action_apply">Застосувати</string>
+    <string name="dialog_layer_satellite">Показати як вид із супутника</string>
+    <string name="dialog_layer_event">Показати випадки</string>
+    <string name="dialog_layer_tei_coordinates">Показати координати об\'єкту, який відстежується</string>
+    <string name="dialog_layer_enrollment_coordinates">Показати координати реєстрації</string>
+    <string name="dialog_layer_heatmap">Показати шар теплової карти</string>
+</resources>

@@ -10,7 +10,6 @@ import io.reactivex.Single
 import org.dhis2.Bindings.toDate
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValueType
@@ -37,6 +36,7 @@ class DashboardRepositoryImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val resources: ResourceManager = mock()
     private val charts: Charts = mock()
+    private val teiAttributesProvider: TeiAttributesProvider = mock()
 
     @Before
     fun setUp() {
@@ -46,7 +46,8 @@ class DashboardRepositoryImplTest {
             "teiUid",
             "programUid",
             "enrollmentUid",
-            resources
+            resources,
+            teiAttributesProvider
         )
     }
 
@@ -217,76 +218,29 @@ class DashboardRepositoryImplTest {
     fun `Should get program attributes if program is not null`() {
         val programUid = "programUid"
         val teiUid = "teiUid"
-        val expectedResults = arrayListOf<String>("1", "", "3")
+        val expectedResults = arrayListOf("1", "", "3")
 
         whenever(
-            d2.programModule().programTrackedEntityAttributes()
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programTrackedEntityAttributes()
-                .byDisplayInList()
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programTrackedEntityAttributes()
-                .byDisplayInList().isTrue
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programTrackedEntityAttributes()
-                .byDisplayInList().isTrue
-                .byProgram()
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programTrackedEntityAttributes()
-                .byDisplayInList().isTrue
-                .byProgram().eq(programUid)
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programTrackedEntityAttributes()
-                .byDisplayInList().isTrue
-                .byProgram().eq(programUid)
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programTrackedEntityAttributes()
-                .byDisplayInList().isTrue
-                .byProgram().eq(programUid)
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
-        ) doReturn Single.just(programAttributeValues())
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-        ) doReturn mock()
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(anyString(), anyString())
-        ) doReturn mock()
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(anyString(), anyString())
-                .blockingExists()
-        ) doReturnConsecutively arrayListOf(true, false, true)
-
-        whenever(
-            d2.trackedEntityModule()
-                .trackedEntityAttributeValues().value(anyString(), anyString())
-                .blockingGet()
-        ) doReturnConsecutively arrayListOf(
-            TrackedEntityAttributeValue.builder()
-                .trackedEntityAttribute("attr1")
-                .trackedEntityInstance(teiUid)
-                .value("1")
-                .build(),
-            TrackedEntityAttributeValue.builder()
-                .trackedEntityAttribute("attr3")
-                .trackedEntityInstance(teiUid)
-                .value("3")
-                .build()
+            teiAttributesProvider
+                .getValuesFromProgramTrackedEntityAttributesByProgram(programUid, teiUid)
+        ) doReturn Single.just(
+            arrayListOf(
+                TrackedEntityAttributeValue.builder()
+                    .trackedEntityAttribute("attr1")
+                    .trackedEntityInstance(teiUid)
+                    .value("1")
+                    .build(),
+                TrackedEntityAttributeValue.builder()
+                    .trackedEntityAttribute("attr2")
+                    .trackedEntityInstance(teiUid)
+                    .value(null)
+                    .build(),
+                TrackedEntityAttributeValue.builder()
+                    .trackedEntityAttribute("attr3")
+                    .trackedEntityInstance(teiUid)
+                    .value("3")
+                    .build()
+            )
         )
 
         whenever(
@@ -303,6 +257,146 @@ class DashboardRepositoryImplTest {
         )
 
         val testObserver = repository.getTEIAttributeValues(programUid, teiUid).test()
+        testObserver
+            .assertNoErrors()
+            .assertValue {
+                it[0].value() == expectedResults[0] &&
+                    it[1].value() == expectedResults[1] &&
+                    it[2].value() == expectedResults[2]
+            }
+    }
+
+    @Test
+    fun `Should display TrackedEntityType attributes if there is no program selected`() {
+        val teType = "teType"
+        val teiUid = "teiUid"
+        val expectedResults = arrayListOf("attrValue1", "attrValue2", "attrValue4")
+
+        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().uid(anyString())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().uid(anyString()).blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .uid(anyString()).blockingGet().trackedEntityType()
+        ) doReturn teType
+
+        whenever(
+            teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)
+        ) doReturn arrayListOf(
+            TrackedEntityAttributeValue.builder()
+                .id(1)
+                .value("attrValue1")
+                .trackedEntityAttribute("attr1")
+                .build(),
+            TrackedEntityAttributeValue.builder()
+                .id(2)
+                .value("attrValue2")
+                .trackedEntityAttribute("attr2")
+                .build(),
+            TrackedEntityAttributeValue.builder()
+                .id(3)
+                .value("attrValue4")
+                .trackedEntityAttribute("attr4")
+                .build()
+        )
+
+        whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid(anyString())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid(anyString()).blockingGet()
+        ) doReturnConsecutively arrayListOf(
+            TrackedEntityAttribute.builder()
+                .uid("attr1")
+                .valueType(ValueType.TEXT)
+                .build(),
+            TrackedEntityAttribute.builder()
+                .uid("attr2")
+                .valueType(ValueType.TEXT)
+                .build(),
+            TrackedEntityAttribute.builder()
+                .uid("attr4")
+                .valueType(ValueType.TEXT)
+                .build()
+        )
+
+        val testObserver = repository.getTEIAttributeValues(null, "teiUid").test()
+        testObserver
+            .assertNoErrors()
+            .assertValue {
+                it[0].value() == expectedResults[0] &&
+                    it[1].value() == expectedResults[1] &&
+                    it[2].value() == expectedResults[2]
+            }
+    }
+
+    @Test
+    fun `Should display program attributes when tracked entity type has no attributes`() {
+        val teType = "teType"
+        val teiUid = "teiUid"
+        val expectedResults = arrayListOf("attrValue1", "attrValue2", "attrValue3")
+
+        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().uid(anyString())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().uid(anyString()).blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .uid(anyString()).blockingGet().trackedEntityType()
+        ) doReturn teType
+        whenever(
+            teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)
+        ) doReturn emptyList()
+        whenever(
+            teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid)
+        ) doReturn arrayListOf(
+            TrackedEntityAttributeValue.builder()
+                .id(1)
+                .value("attrValue1")
+                .trackedEntityAttribute("attr1")
+                .build(),
+            TrackedEntityAttributeValue.builder()
+                .id(2)
+                .value("attrValue2")
+                .trackedEntityAttribute("attr2")
+                .build(),
+            TrackedEntityAttributeValue.builder()
+                .id(3)
+                .value("attrValue3")
+                .trackedEntityAttribute("attr3")
+                .build()
+        )
+
+        whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid(anyString())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid(anyString()).blockingGet()
+        ) doReturnConsecutively arrayListOf(
+            TrackedEntityAttribute.builder()
+                .uid("attr1")
+                .valueType(ValueType.TEXT)
+                .build(),
+            TrackedEntityAttribute.builder()
+                .uid("attr2")
+                .valueType(ValueType.TEXT)
+                .build(),
+            TrackedEntityAttribute.builder()
+                .uid("attr3")
+                .valueType(ValueType.TEXT)
+                .build()
+        )
+
+        val testObserver = repository.getTEIAttributeValues(null, "teiUid").test()
         testObserver
             .assertNoErrors()
             .assertValue {

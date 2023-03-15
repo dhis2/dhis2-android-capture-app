@@ -110,9 +110,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
                 android:alpha="@{item.editable? 1f : 0.5f}"
-                android:hint='@{item.hint}'
-                android:paddingTop="10dp"
                 android:theme="@style/formInputText"
+                app:hintEnabled="false"
                 app:inputError="@{item.error}"
                 app:inputWarning="@{item.warning}"
                 app:input_layout_style="@{item.style}"
@@ -125,8 +124,10 @@
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:enabled="@{item.editable}"
+                    android:focusable="@{item.editable}"
+                    android:focusableInTouchMode="@{item.editable}"
                     android:gravity="start"
+                    android:hint='@{item.hint}'
                     app:onTyping="@{item}"
                     app:textWatcher="@{textWatcher}"
                     android:paddingTop="8dp"

@@ -105,11 +105,11 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         propertyName: String,
         propertyValue: String
     ): Feature? {
-        return if(source == EVENTS){
+        return if (source == EVENTS) {
             featureCollection?.features()?.firstOrNull {
                 it.getStringProperty(propertyName) == propertyValue
             }
-        }else{
+        } else {
             deFeatureCollection[source]?.features()?.firstOrNull {
                 it.getStringProperty(propertyName) == propertyValue
             }
@@ -151,7 +151,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         )
         var featureToReturn: Feature? = null
         for (propertyLabel in mainProperties) {
-            val feature = findFeature(LayerType.EVENT_LAYER.name, propertyLabel, propertyValue)
+            val feature = findFeature(EVENTS, propertyLabel, propertyValue)
             if (feature != null) {
                 featureToReturn = feature
                 mapLayerManager.getLayer(LayerType.EVENT_LAYER.name, true)

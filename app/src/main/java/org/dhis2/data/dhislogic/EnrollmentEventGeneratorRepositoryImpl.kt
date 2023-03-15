@@ -66,7 +66,10 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
         stageUid: String,
         orgUnitUid: String
     ): String {
-        val catComboUid = d2.programModule().programs().uid(programUid).blockingGet().categoryComboUid()
+        val catComboUid = d2.programModule().programs()
+            .uid(programUid)
+            .blockingGet()
+            .categoryComboUid()
         val catCombo = d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet()
         val catOptionCombo = if (catCombo.isDefault == true) {
             d2.categoryModule().categoryOptionCombos()
@@ -92,14 +95,20 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
             .startDate()!!
     }
 
-    override fun setEventDate(eventUid: String, isScheduled: Boolean, date: Date) {
+    override fun setEventDate(eventUid: String, date: Date) {
         val eventRepository = d2.eventModule().events().uid(eventUid)
+        eventRepository.setEventDate(date)
+    }
 
-        if (isScheduled) {
-            eventRepository.setDueDate(date)
-            eventRepository.setStatus(EventStatus.SCHEDULE)
-        } else {
-            eventRepository.setEventDate(date)
-        }
+    override fun setDueDate(eventUid: String, date: Date, isOverdue: Boolean) {
+        val eventRepository = d2.eventModule().events().uid(eventUid)
+        eventRepository.setDueDate(date)
+        eventRepository.setStatus(
+            if (isOverdue) {
+                EventStatus.OVERDUE
+            } else {
+                EventStatus.SCHEDULE
+            }
+        )
     }
 }

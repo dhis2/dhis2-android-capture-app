@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts.data
 
 import android.content.Context
 import android.view.View
+import androidx.compose.runtime.Composable
 import dhis2.org.analytics.charts.mappers.GraphToBarChart
 import dhis2.org.analytics.charts.mappers.GraphToLineChart
 import dhis2.org.analytics.charts.mappers.GraphToNutritionChart
@@ -9,6 +10,7 @@ import dhis2.org.analytics.charts.mappers.GraphToPieChart
 import dhis2.org.analytics.charts.mappers.GraphToRadarChart
 import dhis2.org.analytics.charts.mappers.GraphToTable
 import dhis2.org.analytics.charts.mappers.GraphToValue
+import java.lang.IllegalArgumentException
 
 class Chart private constructor(
     private val chartType: ChartType,
@@ -29,11 +31,18 @@ class Chart private constructor(
             ChartType.LINE_CHART -> graphToLineChartMapper.map(context, graphData)
             ChartType.NUTRITION -> graphToNutritionChartMapper.map(context, graphData)
             ChartType.BAR_CHART -> graphToBarChartMapper.map(context, graphData)
-            ChartType.TABLE -> graphToTableMapper.map(context, graphData)
             ChartType.SINGLE_VALUE -> graphToValueMapper.map(context, graphData)
             ChartType.RADAR -> graphToRadarMapper.map(context, graphData)
             ChartType.PIE_CHART -> graphToPieChartMapper.map(context, graphData)
             else -> graphToLineChartMapper.map(context, graphData)
+        }
+    }
+
+    @Composable
+    fun getComposeChart() {
+        return when (chartType) {
+            ChartType.TABLE -> graphToTableMapper.mapToCompose(graphData)
+            else -> throw IllegalArgumentException("Not supported")
         }
     }
 

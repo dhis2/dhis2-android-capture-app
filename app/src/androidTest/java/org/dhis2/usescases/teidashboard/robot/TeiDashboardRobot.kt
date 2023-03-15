@@ -20,6 +20,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.common.matchers.isToast
+import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
@@ -29,10 +30,10 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Sta
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.utils.dialFloatingActionButton.FAB_ID
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.equalTo
-import org.hamcrest.Matchers.isOneOf
-import org.hamcrest.Matchers.not
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.anyOf
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.not
 
 fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
     TeiDashboardRobot().apply {
@@ -194,7 +195,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnShareButton() {
-        onView(withId(R.id.shareContainer)).perform(click())
+        onView(withText(R.string.share)).perform(click())
     }
 
     fun clickOnNextQR() {
@@ -220,7 +221,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnSeeDetails() {
-        onView(withId(R.id.viewMore)).perform(click())
+        onView(withId(R.id.detailsButton)).perform(click())
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
@@ -284,7 +285,14 @@ class TeiDashboardRobot : BaseRobot() {
         )
 
         onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
+            .perform(
+                actionOnItemAtPosition<DashboardProgramViewHolder>(
+                    6,
+                    clickChildViewWithId(R.id.section_details)
+                )
+            )
+
+        waitToDebounce(5000)
 
         onView(withId(R.id.recyclerView)).check(
             matches(
@@ -364,9 +372,9 @@ class TeiDashboardRobot : BaseRobot() {
                                 hasDescendant(withText(eventName)),
                                 hasDescendant(
                                     withTagValue(
-                                        isOneOf(
-                                            R.drawable.ic_event_status_complete,
-                                            R.drawable.ic_event_status_complete_read
+                                        anyOf(
+                                            equalTo(R.drawable.ic_event_status_complete),
+                                            equalTo(R.drawable.ic_event_status_complete_read)
                                         )
                                     )
                                 )
@@ -400,9 +408,9 @@ class TeiDashboardRobot : BaseRobot() {
                                 hasDescendant(withText(eventName)),
                                 hasDescendant(
                                     withTagValue(
-                                        isOneOf(
-                                            R.drawable.ic_event_status_schedule,
-                                            R.drawable.ic_event_status_schedule_read
+                                        anyOf(
+                                            equalTo(R.drawable.ic_event_status_schedule),
+                                            equalTo(R.drawable.ic_event_status_schedule_read)
                                         )
                                     )
                                 )
@@ -422,12 +430,12 @@ class TeiDashboardRobot : BaseRobot() {
                         atPosition(
                             position, hasDescendant(
                                 withTagValue(
-                                    isOneOf(
-                                        R.drawable.ic_event_status_open_read,
-                                        R.drawable.ic_event_status_overdue_read,
-                                        R.drawable.ic_event_status_complete_read,
-                                        R.drawable.ic_event_status_skipped_read,
-                                        R.drawable.ic_event_status_schedule_read
+                                    anyOf(
+                                        equalTo(R.drawable.ic_event_status_open_read),
+                                        equalTo(R.drawable.ic_event_status_overdue_read),
+                                        equalTo(R.drawable.ic_event_status_complete_read),
+                                        equalTo(R.drawable.ic_event_status_skipped_read),
+                                        equalTo(R.drawable.ic_event_status_schedule_read)
                                     )
                                 )
                             )
@@ -447,9 +455,9 @@ class TeiDashboardRobot : BaseRobot() {
                             position,
                             hasDescendant(
                                 withTagValue(
-                                    isOneOf(
-                                        R.drawable.ic_event_status_open,
-                                        R.drawable.ic_event_status_open_read
+                                    anyOf(
+                                        equalTo(R.drawable.ic_event_status_open),
+                                        equalTo(R.drawable.ic_event_status_open_read)
                                     )
                                 )
                             )
@@ -469,9 +477,9 @@ class TeiDashboardRobot : BaseRobot() {
                             position,
                             hasDescendant(
                                 withTagValue(
-                                    isOneOf(
-                                        R.drawable.ic_event_status_complete,
-                                        R.drawable.ic_event_status_complete_read
+                                    anyOf(
+                                        equalTo(R.drawable.ic_event_status_complete),
+                                        equalTo(R.drawable.ic_event_status_complete_read)
                                     )
                                 )
                             )
@@ -489,12 +497,12 @@ class TeiDashboardRobot : BaseRobot() {
                         isDisplayed(), isNotEmpty(), atPosition(
                             position, hasDescendant(
                                 withTagValue(
-                                    isOneOf(
-                                        R.drawable.ic_event_status_open_read,
-                                        R.drawable.ic_event_status_overdue_read,
-                                        R.drawable.ic_event_status_complete_read,
-                                        R.drawable.ic_event_status_skipped_read,
-                                        R.drawable.ic_event_status_schedule_read
+                                    anyOf(
+                                        equalTo(R.drawable.ic_event_status_open_read),
+                                        equalTo(R.drawable.ic_event_status_overdue_read),
+                                        equalTo(R.drawable.ic_event_status_complete_read),
+                                        equalTo(R.drawable.ic_event_status_skipped_read),
+                                        equalTo(R.drawable.ic_event_status_schedule_read)
                                     )
                                 )
                             )
@@ -609,7 +617,7 @@ class TeiDashboardRobot : BaseRobot() {
                         allOf(
                             hasDescendant(withText(eventDetails.date)),
                             hasDescendant(withText(eventDetails.orgUnit)),
-                            hasDescendant(withTagValue(isOneOf(status)))
+                            hasDescendant(withTagValue(equalTo(status)))
                         )
                     )
                 )

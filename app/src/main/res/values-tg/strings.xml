@@ -7,7 +7,6 @@
     <string name="user_hint">Номи корбар</string>
     <string name="password_hint">Парол</string>
     <string name="account_recovery">Барқароркунии ҳисоб</string>
-
     <!--PERIOD-->
     <string name="DAILY">Ҳаррӯза</string>
     <string name="WEEKLY">Ҳафтаина</string>
@@ -17,7 +16,6 @@
     <!-- Input hints -->
     <string name="search">Ҷустуҷӯ</string>
     <string name="read_only">Танҳо барои хондан</string>
-    <string name="complete">Анҷом ёфт</string>
     <string name="completed">Анҷомёфта</string>
     <string name="state_error">Хатогӣ</string>
     <!--Event initial-->
