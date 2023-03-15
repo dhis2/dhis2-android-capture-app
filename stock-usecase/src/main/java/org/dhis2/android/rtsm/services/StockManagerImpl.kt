@@ -5,7 +5,6 @@ import androidx.paging.LivePagedListBuilder
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.util.Collections
-import java.util.Date
 import javax.inject.Inject
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.commons.Constants
@@ -228,7 +227,7 @@ class StockManagerImpl @Inject constructor(
         appConfig: AppConfig
     ) {
         disposable.add(
-            ruleValidationHelper.evaluate(entry, Date(), program, transaction, eventUid, appConfig)
+            ruleValidationHelper.evaluate(entry, program, transaction, eventUid, appConfig)
                 .doOnError { it.printStackTrace() }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())

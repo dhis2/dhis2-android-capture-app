@@ -37,7 +37,6 @@ class RuleValidationHelperImpl @Inject constructor(
 
     override fun evaluate(
         entry: StockEntry,
-        eventDate: Date,
         program: String,
         transaction: Transaction,
         eventUid: String?,
@@ -47,7 +46,7 @@ class RuleValidationHelperImpl @Inject constructor(
             val programStage = programStage(program)
 
             Flowable.fromCallable(
-                prepareForDataEntry(ruleEngine, programStage, transaction, eventDate)
+                prepareForDataEntry(ruleEngine, programStage, transaction, entry.date)
             ).flatMap { prelimRuleEffects ->
                 val dataValues = mutableListOf<RuleDataValue>().apply {
                     addAll(
@@ -55,7 +54,7 @@ class RuleValidationHelperImpl @Inject constructor(
                             entry.qty,
                             programStage.uid(),
                             transaction,
-                            eventDate,
+                            entry.date,
                             appConfig
                         )
                     )
@@ -68,7 +67,7 @@ class RuleValidationHelperImpl @Inject constructor(
                             ruleEffect.data()?.let { data ->
                                 dataValues.add(
                                     RuleDataValue.create(
-                                        eventDate,
+                                        entry.date,
                                         programStage.uid(),
                                         ruleAction.field(),
                                         data
@@ -87,7 +86,7 @@ class RuleValidationHelperImpl @Inject constructor(
                             programStage,
                             transaction.facility.uid,
                             dataValues,
-                            eventDate,
+                            entry.date,
                             null
                         )
                     )

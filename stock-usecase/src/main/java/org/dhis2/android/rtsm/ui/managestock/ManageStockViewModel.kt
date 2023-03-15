@@ -10,7 +10,6 @@ import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import java.util.Collections
-import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -195,7 +194,6 @@ class ManageStockViewModel @Inject constructor(
                                 it,
                                 config.value?.program!!,
                                 transaction.value!!,
-                                Date(),
                                 config.value!!
                             )
                         )
