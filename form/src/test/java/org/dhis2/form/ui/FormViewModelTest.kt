@@ -45,7 +45,8 @@ class FormViewModelTest {
         viewModel = FormViewModel(
             repository,
             dispatcher,
-            geometryController
+            geometryController,
+            false
         )
     }
 

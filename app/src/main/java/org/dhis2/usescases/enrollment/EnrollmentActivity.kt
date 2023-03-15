@@ -37,6 +37,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.EventMode
+import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -88,13 +89,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
         val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
             ?: EnrollmentMode.NEW
+        val openErrorLocation = intent.getBooleanExtra(OPEN_ERROR_LOCATION, false)
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
                 enrollmentUid,
                 programUid,
                 enrollmentMode,
-                context
+                context,
+                openErrorLocation
             )
         ).inject(this)
 
@@ -120,6 +123,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     )
                 )
             )
+            .openErrorLocation(openErrorLocation)
             .build()
 
         super.onCreate(savedInstanceState)

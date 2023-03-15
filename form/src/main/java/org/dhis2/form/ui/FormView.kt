@@ -99,6 +99,7 @@ class FormView : Fragment() {
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
     private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
     private var actionIconsActivate: Boolean = true
+    private var openErrorLocation: Boolean = false
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -239,7 +240,8 @@ class FormView : Fragment() {
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(
             context = requireContext(),
-            repositoryRecords = arguments?.get(RECORDS) as FormRepositoryRecords
+            repositoryRecords = arguments?.get(RECORDS) as FormRepositoryRecords,
+            openErrorLocation = openErrorLocation
         )
     }
 
@@ -993,13 +995,15 @@ class FormView : Fragment() {
         needToForceUpdate: Boolean,
         completionListener: ((percentage: Float) -> Unit)?,
         resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
-        actionIconsActivate: Boolean
+        actionIconsActivate: Boolean,
+        openErrorLocation: Boolean
     ) {
         this.locationProvider = locationProvider
         this.needToForceUpdate = needToForceUpdate
         this.completionListener = completionListener
         this.resultDialogUiProvider = resultDialogUiProvider
         this.actionIconsActivate = actionIconsActivate
+        this.openErrorLocation = openErrorLocation
     }
 
     internal fun setCallbackConfiguration(
@@ -1035,6 +1039,7 @@ class FormView : Fragment() {
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
         private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
         private var actionIconsActive: Boolean = true
+        private var openErrorLocation: Boolean = false
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -1104,6 +1109,9 @@ class FormView : Fragment() {
         fun setActionIconsActivation(activate: Boolean) =
             apply { this.actionIconsActive = activate }
 
+        fun openErrorLocation(openErrorLocation: Boolean) =
+            apply { this.openErrorLocation = openErrorLocation }
+
         fun build(): FormView {
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
@@ -1124,7 +1132,8 @@ class FormView : Fragment() {
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
                     resultDialogUiProvider,
-                    actionIconsActive
+                    actionIconsActive,
+                    openErrorLocation
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(
