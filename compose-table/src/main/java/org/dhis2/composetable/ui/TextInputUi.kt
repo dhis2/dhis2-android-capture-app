@@ -3,7 +3,6 @@ package org.dhis2.composetable.ui
 import android.graphics.Rect
 import android.view.ViewTreeObserver
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -37,7 +37,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.semantics
@@ -212,17 +211,17 @@ private fun TextInputContent(
             Spacer(modifier = Modifier.size(8.dp))
             TextInputContentActionIcon(
                 modifier = Modifier
-                    .testTag(INPUT_ICON_TEST_TAG)
-                    .clickable(role = Role.Button) {
-                        if (hasFocus && textInputModel.error == null) {
-                            focusManager.clearFocus(force = true)
-                            onSave()
-                        } else {
-                            focusRequester.requestFocus()
-                        }
-                    },
+                    .testTag(INPUT_ICON_TEST_TAG),
                 hasFocus = hasFocus,
                 textInputModel,
+                onActionIconClick = {
+                    if (hasFocus && textInputModel.error == null) {
+                        focusManager.clearFocus(force = true)
+                        onSave()
+                    } else {
+                        focusRequester.requestFocus()
+                    }
+                },
                 onTextChanged
             )
         }
@@ -244,6 +243,7 @@ private fun TextInputContentActionIcon(
     modifier: Modifier = Modifier,
     hasFocus: Boolean,
     textInputModel: TextInputModel,
+    onActionIconClick: () -> Unit,
     onTextChanged: (TextInputModel) -> Unit
 ) {
     val icon = if (hasFocus) {
@@ -256,25 +256,32 @@ private fun TextInputContentActionIcon(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
+        IconButton(
             modifier = modifier
                 .semantics {
                     drawableId = icon
                 },
-            painter = painterResource(id = icon),
-            tint = LocalTableColors.current.primary,
-            contentDescription = ""
-        )
-        if (textInputModel.showClearButton() && hasFocus) {
+            onClick = onActionIconClick
+        ) {
             Icon(
-                modifier = Modifier
-                    .clickable(role = Role.Button) {
-                        onTextChanged(textInputModel.copy(currentValue = ""))
-                    },
-                painter = painterResource(id = R.drawable.ic_clear),
-                tint = Color(0x61000000),
+                painter = painterResource(id = icon),
+                tint = LocalTableColors.current.primary,
                 contentDescription = ""
             )
+        }
+
+        if (textInputModel.showClearButton() && hasFocus) {
+            IconButton(
+                onClick = {
+                    onTextChanged(textInputModel.copy(currentValue = ""))
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_clear),
+                    tint = Color(0x61000000),
+                    contentDescription = ""
+                )
+            }
         }
     }
 }
