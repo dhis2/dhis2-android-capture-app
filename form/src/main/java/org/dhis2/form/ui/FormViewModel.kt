@@ -37,7 +37,7 @@ class FormViewModel(
     private val repository: FormRepository,
     private val dispatcher: DispatcherProvider,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
-    private val openErrorLocation: Boolean
+    private val openErrorLocation: Boolean = false
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
