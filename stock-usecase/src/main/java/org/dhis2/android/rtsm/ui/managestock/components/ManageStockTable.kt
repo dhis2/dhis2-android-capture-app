@@ -39,7 +39,6 @@ fun ManageStockTable(
     val screenState by viewModel.screenState.observeAsState(
         initial = TableScreenState(
             tables = emptyList(),
-            selectNext = false,
             overwrittenRowHeaderWidth = 200F
         )
     )
