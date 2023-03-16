@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.view.Gravity
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.work.ExistingPeriodicWorkPolicy
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -63,6 +64,7 @@ class MainPresenter(
 
     var disposable: CompositeDisposable = CompositeDisposable()
     val versionUpdate: LiveData<Boolean> = versionStatusController.newAppVersion
+    val downloadingVersion = MutableLiveData(false)
 
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
@@ -320,6 +322,13 @@ class MainPresenter(
     }
 
     fun downloadVersion(context: Context, onDownloadCompleted: (Uri) -> Unit) {
-        versionStatusController.download(context, onDownloadCompleted)
+        versionStatusController.download(
+            context = context,
+            onDownloadCompleted = {
+                onDownloadCompleted(it)
+                downloadingVersion.value = false
+            },
+            onDownloading = { downloadingVersion.value = true }
+        )
     }
 }

@@ -14,7 +14,6 @@ import androidx.lifecycle.MutableLiveData
 import java.io.File
 import org.dhis2.BuildConfig
 import org.hisp.dhis.android.core.D2
-import timber.log.Timber
 
 class VersionStatusController(val d2: D2) {
 
@@ -23,45 +22,45 @@ class VersionStatusController(val d2: D2) {
 
     fun checkVersionUpdates() {
         val currentVersion = BuildConfig.VERSION_NAME
-        if (true /* currentVersion == d2.serverVersion()*/) {
+        if (true /* currentVersion == d2.versionName()*/) {
             _newAppVersion.postValue(true)
         }
     }
 
-    fun download(context: Context, onDownloadCompleted: (Uri) -> Unit) {
-        var destination: String = Environment.getExternalStoragePublicDirectory(
+    fun download(context: Context, onDownloadCompleted: (Uri) -> Unit, onDownloading: () -> Unit) {
+        val url = "https://github.com/dhis2/dhis2-android-capture-app/releases/download/2.7.1.1/dhis2-v2.7.1.1.apk" // d2.versionUrl()
+        val fileName = url.substringAfterLast("/")
+
+        val destination = "${Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS
-        ).toString()
-        destination += "/dhis2-v2.7.1.1.apk"
+        )}$fileName"
 
         val apkFile = File(destination)
         val apkUri = uriFromFile(context, apkFile)
         if (apkFile.exists()) {
-            if (apkFile.canRead()) {
-                onDownloadCompleted(apkUri)
-            } else {
-                Timber.e("APK", "Cant read " + apkFile.absoluteFile)
-            }
+            onDownloadCompleted(apkUri)
         } else {
-            val uri = Uri.parse("file://$destination")
-            val url = Uri.parse("https://github.com/dhis2/dhis2-android-capture-app/releases/download/2.7.1.1/dhis2-v2.7.1.1.apk")
-            val request = DownloadManager.Request(url).apply {
-                setDestinationUri(uri)
-                setMimeType("application/vnd.android.package-archive")
-                setNotificationVisibility(
+            val request = DownloadManager.Request(Uri.parse(url))
+                .setAllowedNetworkTypes(
+                    DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE
+                )
+                .setTitle(fileName)
+                .setNotificationVisibility(
                     DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
                 )
-            }
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(false)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
 
             val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val downloadID = manager.enqueue(request)
+            manager.enqueue(request)
+            onDownloading()
 
             val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(ctxt: Context, intent: Intent?) {
                     onDownloadCompleted(apkUri)
                 }
             }
-
             context.registerReceiver(
                 onComplete,
                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)

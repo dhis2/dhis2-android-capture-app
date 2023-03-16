@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
@@ -22,6 +24,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
+import org.dhis2.Bindings.hasPermissions
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.filters.FilterItem
@@ -180,8 +183,8 @@ class MainActivity :
                 mainNavigator.restoreScreen(
                     screenToRestoreName = openScreen ?: restoreScreenName!!,
                     languageSelectorOpened = openScreen != null &&
-                        MainNavigator.MainScreen.valueOf(openScreen) ==
-                        MainNavigator.MainScreen.TROUBLESHOOTING
+                            MainNavigator.MainScreen.valueOf(openScreen) ==
+                            MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
             else -> {
@@ -199,6 +202,9 @@ class MainActivity :
             if (newVersion) {
                 showNewVersionAlert("2.7.1.1")
             }
+        }
+
+        presenter.downloadingVersion.observe(this) {
         }
     }
 
@@ -516,39 +522,44 @@ class MainActivity :
             confirmButton = ButtonUiModel(
                 getString(R.string.download_now),
                 onClick = {
-                    presenter.downloadVersion(context) { apkUri ->
-                        installAPK(apkUri)
-                    }
+                    presenter.downloadVersion(context) { installAPK(it) }
                 }
             )
         ).show(supportFragmentManager)
     }
 
     private fun installAPK(apkUri: Uri) {
-        if (hasPermissionToInstall()) {
-            Intent(Intent.ACTION_VIEW).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        when {
+            hasNoPermissionToInstall() ->
+                manageUnknownSources.launch(
+                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                        .setData(Uri.parse(String.format("package:%s", packageName)))
+            )
+            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) ->
+                requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            else -> Intent(Intent.ACTION_VIEW).apply {
+                val mime = MimeTypeMap.getSingleton()
+                val ext = apkUri.path?.substringAfterLast(("."))
+                val type: String? = mime.getMimeTypeFromExtension(ext)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                setDataAndType(apkUri, "application/vnd.android.package-archive")
+                setDataAndType(apkUri, type)
                 startActivity(this)
             }
-        } else {
-            manageUnknownSources.launch(
-                Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                    .setData(Uri.parse(String.format("package:%s", packageName)))
-            )
         }
     }
+    private fun hasNoPermissionToInstall(): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                !packageManager.canRequestPackageInstalls()
 
     private val manageUnknownSources =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            presenter.downloadVersion(context) { apkUri ->
-                installAPK(apkUri)
-            }
+            presenter.downloadVersion(context) { installAPK(it) }
         }
 
-    private fun hasPermissionToInstall(): Boolean = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> packageManager.canRequestPackageInstalls()
-        else -> true
-    }
+    private val requestReadStoragePermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                presenter.downloadVersion(context) { installAPK(it) }
+            }
+        }
 }
