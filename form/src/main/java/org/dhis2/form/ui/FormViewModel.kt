@@ -254,10 +254,10 @@ class FormViewModel(
             false
         } else {
             valueType.isNumeric ||
-                    valueType.isText && renderType?.isPolygon() != true ||
-                    valueType == ValueType.URL ||
-                    valueType == ValueType.EMAIL ||
-                    valueType == ValueType.PHONE_NUMBER
+                valueType.isText && renderType?.isPolygon() != true ||
+                valueType == ValueType.URL ||
+                valueType == ValueType.EMAIL ||
+                valueType == ValueType.PHONE_NUMBER
         }
     }
 
