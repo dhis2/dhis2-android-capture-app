@@ -28,7 +28,8 @@ class VersionStatusController(val d2: D2) {
     }
 
     fun download(context: Context, onDownloadCompleted: (Uri) -> Unit, onDownloading: () -> Unit) {
-        val url = "https://github.com/dhis2/dhis2-android-capture-app/releases/download/2.7.1.1/dhis2-v2.7.1.1.apk" // d2.versionUrl()
+        val url = "https://github.com/dhis2/dhis2-android-capture-app/releases/download/2.7.1.1/" +
+                "dhis2-v2.7.1.1.apk" // d2.versionUrl()
         val fileName = url.substringAfterLast("/")
 
         val destination = "${Environment.getExternalStoragePublicDirectory(

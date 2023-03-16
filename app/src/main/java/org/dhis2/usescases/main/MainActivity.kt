@@ -183,8 +183,8 @@ class MainActivity :
                 mainNavigator.restoreScreen(
                     screenToRestoreName = openScreen ?: restoreScreenName!!,
                     languageSelectorOpened = openScreen != null &&
-                            MainNavigator.MainScreen.valueOf(openScreen) ==
-                            MainNavigator.MainScreen.TROUBLESHOOTING
+                        MainNavigator.MainScreen.valueOf(openScreen) ==
+                        MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
             else -> {
@@ -534,7 +534,7 @@ class MainActivity :
                 manageUnknownSources.launch(
                     Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                         .setData(Uri.parse(String.format("package:%s", packageName)))
-            )
+                )
             !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) ->
                 requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             else -> Intent(Intent.ACTION_VIEW).apply {
@@ -549,7 +549,7 @@ class MainActivity :
     }
     private fun hasNoPermissionToInstall(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                !packageManager.canRequestPackageInstalls()
+            !packageManager.canRequestPackageInstalls()
 
     private val manageUnknownSources =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
