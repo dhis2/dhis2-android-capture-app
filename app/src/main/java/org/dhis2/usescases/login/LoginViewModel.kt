@@ -240,7 +240,7 @@ class LoginViewModel(
         userManager?.let { userManager ->
             disposable.add(
                 userManager.handleAuthData(serverUrl, data, requestCode)
-                    .map<Response<Any>> { user ->
+                    .map<Response<Any>> {
                         run {
                             with(preferenceProvider) {
                                 setValue(SESSION_LOCKED, false)
