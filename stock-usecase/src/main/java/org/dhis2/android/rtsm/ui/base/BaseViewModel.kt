@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.Disposable
-import java.util.Date
 import javax.inject.Inject
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.RowAction
@@ -32,12 +31,10 @@ open class BaseViewModel @Inject constructor(
         action: RowAction,
         program: String,
         transaction: Transaction,
-        date: Date,
         appConfig: AppConfig
     ): Disposable {
         return ruleValidationHelper.evaluate(
             entry = action.entry,
-            eventDate = date,
             program = program,
             transaction = transaction,
             appConfig = appConfig

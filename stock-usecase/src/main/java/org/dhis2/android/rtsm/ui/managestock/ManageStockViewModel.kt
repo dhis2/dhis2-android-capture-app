@@ -10,7 +10,6 @@ import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import java.util.Collections
-import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -195,7 +194,6 @@ class ManageStockViewModel @Inject constructor(
                                 it,
                                 config.value?.program!!,
                                 transaction.value!!,
-                                Date(),
                                 config.value!!
                             )
                         )
@@ -218,7 +216,7 @@ class ManageStockViewModel @Inject constructor(
         }
 
         val entries: List<StockEntry> = items?.map {
-            itemsCache[it.id] ?: StockEntry(it)
+            itemsCache[it.id] ?: StockEntry(item = it)
         } ?: emptyList()
 
         _hasData.value = entries.isNotEmpty()
@@ -381,7 +379,7 @@ class ManageStockViewModel @Inject constructor(
         qty: @NotNull String,
         callback: OnQuantityValidated?
     ) {
-        entryRelay.accept(RowAction(StockEntry(item, qty), position, callback))
+        entryRelay.accept(RowAction(StockEntry(item = item, qty = qty), position, callback))
     }
 
     fun getItemQuantity(item: StockItem): String? {
@@ -395,7 +393,12 @@ class ManageStockViewModel @Inject constructor(
             hasUnsavedData(false)
             return
         }
-        itemsCache[item.id] = StockEntry(item, qty, stockOnHand, errorMessage)
+        itemsCache[item.id] = StockEntry(
+            item = item,
+            qty = qty,
+            stockOnHand = stockOnHand,
+            errorMessage = errorMessage
+        )
         hasUnsavedData(true)
     }
 

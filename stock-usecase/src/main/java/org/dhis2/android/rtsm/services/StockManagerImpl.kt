@@ -5,7 +5,6 @@ import androidx.paging.LivePagedListBuilder
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.util.Collections
-import java.util.Date
 import javax.inject.Inject
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.commons.Constants
@@ -20,7 +19,6 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.utils.AttributeHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils.getTransactionDataElement
-import org.dhis2.android.rtsm.utils.toDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -111,7 +109,7 @@ class StockManagerImpl @Inject constructor(
             .byDataValue(stockOnHandUid).like("")
             .byDeleted().isFalse
             .withTrackedEntityDataValues()
-            .orderByLastUpdated(RepositoryScope.OrderByDirection.DESC)
+            .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
             .blockingGet()
 
         events.forEach { event ->
@@ -192,9 +190,7 @@ class StockManagerImpl @Inject constructor(
             )
 
             // Set the event date
-            transaction.transactionDate.toDate()?.let {
-                d2.eventModule().events().uid(eventUid).setEventDate(it)
-            }
+            d2.eventModule().events().uid(eventUid).setEventDate(item.date)
 
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 eventUid,
@@ -231,7 +227,7 @@ class StockManagerImpl @Inject constructor(
         appConfig: AppConfig
     ) {
         disposable.add(
-            ruleValidationHelper.evaluate(entry, Date(), program, transaction, eventUid, appConfig)
+            ruleValidationHelper.evaluate(entry, program, transaction, eventUid, appConfig)
                 .doOnError { it.printStackTrace() }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())
