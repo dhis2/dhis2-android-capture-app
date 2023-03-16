@@ -96,8 +96,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 enrollmentUid,
                 programUid,
                 enrollmentMode,
-                context,
-                openErrorLocation
+                context
             )
         ).inject(this)
 
