@@ -30,6 +30,8 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
                     UiRenderType.QR_CODE
                 ValueTypeRenderingType.BAR_CODE ->
                     UiRenderType.BAR_CODE
+                ValueTypeRenderingType.CANVAS ->
+                    UiRenderType.CANVAS
                 else -> when (featureType) {
                     FeatureType.POINT -> UiRenderType.POINT
                     FeatureType.POLYGON -> UiRenderType.POLYGON
