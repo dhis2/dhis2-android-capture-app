@@ -2,6 +2,7 @@ package org.dhis2.composetable
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.model.FakeModelType
+import org.dhis2.composetable.ui.TableConfiguration
 import org.junit.Rule
 import org.junit.Test
 
@@ -70,6 +71,48 @@ class BottomBarTableTests {
             clickOnAccept()
             composeTestRule.waitForIdle()
             assertOnSavedTableCellValue("test")
+        }
+    }
+
+    @Test
+    fun shouldHideInputFieldIfTextInputViewModeIsOff() {
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                fakeModelType = FakeModelType.MANDATORY_TABLE,
+                tableConfiguration = TableConfiguration(
+                    headerActionsEnabled = false,
+                    textInputViewMode = false
+                )
+            )
+            val tableId = fakeModel[0].id
+            clickOnCell(tableId!!, 1, 0)
+            composeTestRule.waitForIdle()
+            typeOnInputComponent("test")
+            assertCellHasText(tableId, 1, 0, "test")
+            clickOnBack()
+            composeTestRule.waitForIdle()
+            assertBottomBarIsNotVisible()
+        }
+    }
+
+    @Test
+    fun shouldShowInputFieldIfTextInputViewModeIsOn() {
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                fakeModelType = FakeModelType.MANDATORY_TABLE,
+                tableConfiguration = TableConfiguration(
+                    headerActionsEnabled = false,
+                    textInputViewMode = true
+                )
+            )
+            val tableId = fakeModel[0].id
+            clickOnCell(tableId!!, 1, 0)
+            composeTestRule.waitForIdle()
+            typeOnInputComponent("test")
+            assertCellHasText(tableId, 1, 0, "test")
+            clickOnBack()
+            composeTestRule.waitForIdle()
+            assertBottomBarIsVisible()
         }
     }
 }

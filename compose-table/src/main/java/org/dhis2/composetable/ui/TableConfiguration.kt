@@ -8,13 +8,6 @@ data class TableConfiguration(
     val headerActionsEnabled: Boolean = true,
     val editable: Boolean = true,
     val textInputViewMode: Boolean = true
-) {
-    fun shouldHideInput(
-        keyboardIsClosed: Boolean,
-        inputIsShown: Boolean
-    ): Boolean = !textInputViewMode &&
-        keyboardIsClosed &&
-        inputIsShown
-}
+)
 
 val LocalTableConfiguration = staticCompositionLocalOf { TableConfiguration() }

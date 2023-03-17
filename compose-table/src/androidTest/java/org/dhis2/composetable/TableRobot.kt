@@ -27,7 +27,6 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import java.io.IOException
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -69,6 +68,7 @@ import org.dhis2.composetable.ui.TableSelection
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.utils.KeyboardHelper
 import org.junit.Assert
+import java.io.IOException
 
 fun tableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -121,6 +121,7 @@ class TableRobot(
     fun initTableAppScreen(
         fakeModelType: FakeModelType,
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
+        tableConfiguration: TableConfiguration = TableConfiguration(headerActionsEnabled = false),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         var fakeModel: List<TableModel> = emptyList()
@@ -132,7 +133,7 @@ class TableRobot(
             var model by remember { mutableStateOf(screenState) }
             TableTheme(
                 tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
-                tableConfiguration = TableConfiguration(headerActionsEnabled = false)
+                tableConfiguration = tableConfiguration
             ) {
                 DataSetTableScreen(
                     tableScreenState = model,
@@ -308,6 +309,10 @@ class TableRobot(
 
     fun clickOnAccept() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
+    }
+
+    fun clickOnBack()  {
+        pressBack()
     }
 
     fun assertInputComponentIsDisplayed() {

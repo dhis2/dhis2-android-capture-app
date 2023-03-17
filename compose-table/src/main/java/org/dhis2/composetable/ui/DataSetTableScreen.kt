@@ -1,5 +1,6 @@
 package org.dhis2.composetable.ui
 
+import android.view.ViewTreeObserver
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -22,8 +23,8 @@ import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,8 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.LocalSelectedCell
@@ -81,9 +86,6 @@ fun DataSetTableScreen(
     val focusRequester = remember { FocusRequester() }
 
     var alreadyFinish by remember { mutableStateOf(false) }
-
-    val textInputViewMode = TableTheme.configuration.textInputViewMode
-    val isKeyboardOpen by keyboardAsState()
 
     fun finishEdition() {
         focusManager.clearFocus(true)
@@ -146,13 +148,26 @@ fun DataSetTableScreen(
         }
     }
 
-    SideEffect {
-        if (tableConfiguration.shouldHideInput(
-            isKeyboardOpen == Keyboard.Closed,
-            bottomSheetState.bottomSheetState.isExpanded
-        )
-        ) {
-            collapseBottomSheet(true)
+    val view = LocalView.current
+    DisposableEffect(view) {
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            val isKeyboardOpen = ViewCompat.getRootWindowInsets(view)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: true
+
+            if (!isKeyboardOpen) {
+                if (tableConfiguration.textInputViewMode) {
+                    focusManager.clearFocus(true)
+                } else if (bottomSheetState.bottomSheetState.isExpanded) {
+                    runBlocking {
+                        collapseBottomSheet(true)
+                    }
+                }
+            }
+        }
+
+        view.viewTreeObserver.addOnGlobalLayoutListener(listener)
+        onDispose {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
         }
     }
 
@@ -170,7 +185,7 @@ fun DataSetTableScreen(
                     )
                 },
                 onSave = {
-                    if (!textInputViewMode) {
+                    if (!tableConfiguration.textInputViewMode) {
                         collapseBottomSheet(true)
                     }
                     currentCell?.let { onSaveValue(it) }
