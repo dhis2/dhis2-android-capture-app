@@ -11,11 +11,12 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.SyncRepository
 import org.dhis2.data.service.SyncResult
 import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.VersionStatusController
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -41,7 +42,8 @@ class SyncPresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val syncRepository: SyncRepository = mock()
-    private val versionStatusController: VersionStatusController = mock()
+    private val versionRepository: VersionRepository = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     @Before
     fun setUp() {
@@ -52,7 +54,8 @@ class SyncPresenterTest {
             analyticsHelper,
             syncStatusController,
             syncRepository,
-            versionStatusController
+            versionRepository,
+            dispatcherProvider
         )
     }
 

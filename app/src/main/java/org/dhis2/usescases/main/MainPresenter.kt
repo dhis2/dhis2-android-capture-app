@@ -29,7 +29,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
-import org.dhis2.data.service.VersionStatusController
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -59,11 +59,11 @@ class MainPresenter(
     private val deleteUserData: DeleteUserData,
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
     private val syncStatusController: SyncStatusController,
-    private val versionStatusController: VersionStatusController
+    private val versionRepository: VersionRepository
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
-    val versionUpdate: LiveData<Boolean> = versionStatusController.newAppVersion
+    val versionUpdate: LiveData<Boolean> = versionRepository.newAppVersion
     val downloadingVersion = MutableLiveData(false)
 
     fun init() {
@@ -322,7 +322,7 @@ class MainPresenter(
     }
 
     fun downloadVersion(context: Context, onDownloadCompleted: (Uri) -> Unit) {
-        versionStatusController.download(
+        versionRepository.download(
             context = context,
             onDownloadCompleted = {
                 onDownloadCompleted(it)

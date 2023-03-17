@@ -15,9 +15,10 @@ import org.dhis2.commons.Constants.META_NOW
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.service.VersionStatusController
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -50,7 +51,8 @@ class SyncManagerPresenterTest {
     private val errorMapper: ErrorModelMapper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val resourcesManager: ResourceManager = mock()
-    private val versionStatusController: VersionStatusController = mock()
+    private val versionRepository: VersionRepository = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     @Before
     fun setUp() {
@@ -67,7 +69,8 @@ class SyncManagerPresenterTest {
             errorMapper,
             matomoAnalyticsController,
             resourcesManager,
-            versionStatusController
+            versionRepository,
+            dispatcherProvider
         )
     }
 

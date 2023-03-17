@@ -513,7 +513,7 @@ class MainActivity :
         AlertDialog(
             labelText = getString(R.string.software_update),
             descriptionText = getString(R.string.new_version_message).format(version),
-            iconResource = R.drawable.ic_notification_alert,
+            iconResource = R.drawable.ic_software_update,
             spanText = version,
             dismissButton = ButtonUiModel(
                 getString(R.string.remind_me_later),

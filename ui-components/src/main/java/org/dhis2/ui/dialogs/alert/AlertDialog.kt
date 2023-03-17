@@ -20,10 +20,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import org.dhis2.ui.R
 import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.ui.theme.Dhis2Theme
-import org.dhis2.ui.theme.warningColor
 
 const val TAG = "NotificationDialog"
 
@@ -111,7 +109,7 @@ fun Dhis2AlertDialogUi(
         icon = {
             Icon(
                 painter = painterResource(id = iconResource),
-                tint = warningColor,
+                tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "notification alert"
             )
         },

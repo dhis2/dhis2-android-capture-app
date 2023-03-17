@@ -15,12 +15,12 @@ import java.io.File
 import org.dhis2.BuildConfig
 import org.hisp.dhis.android.core.D2
 
-class VersionStatusController(val d2: D2) {
+class VersionRepository(val d2: D2) {
 
-    private val _newAppVersion = MutableLiveData(false)
+    private val _newAppVersion = MutableLiveData<Boolean>()
     val newAppVersion: LiveData<Boolean> = _newAppVersion
 
-    fun checkVersionUpdates() {
+    suspend fun checkVersionUpdates() {
         val currentVersion = BuildConfig.VERSION_NAME
         if (true /* currentVersion == d2.versionName()*/) {
             _newAppVersion.postValue(true)

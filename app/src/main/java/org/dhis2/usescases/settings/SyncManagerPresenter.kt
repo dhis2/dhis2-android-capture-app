@@ -12,6 +12,10 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.Locale
 import kotlin.collections.ArrayList
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.matomo.Actions
@@ -20,8 +24,9 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.service.VersionStatusController
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -58,8 +63,14 @@ class SyncManagerPresenter internal constructor(
     private val errorMapper: ErrorModelMapper,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val resourceManager: ResourceManager,
-    private val versionStatusController: VersionStatusController
-) {
+    private val versionRepository: VersionRepository,
+    private val dispatcherProvider: DispatcherProvider
+) : CoroutineScope {
+
+    private var job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = job + dispatcherProvider.io()
+
     private val compositeDisposable: CompositeDisposable
     private val checkData: FlowableProcessor<Boolean>
     private var smsSettingsViewModel: SMSSettingsViewModel? = null
@@ -68,8 +79,11 @@ class SyncManagerPresenter internal constructor(
     val syncDataButton: LiveData<ButtonUiModel> = _syncDataButton
     private val _syncMetaDataButton = MutableLiveData<ButtonUiModel>()
     val syncMetaDataButton: LiveData<ButtonUiModel> = _syncMetaDataButton
-    private val _checkVersionsButton = MutableLiveData<ButtonUiModel>()
-    val checkVersionsButton: LiveData<ButtonUiModel> = _checkVersionsButton
+    private val _checkVersionsButton = MutableLiveData<ButtonUiModel?>()
+    val checkVersionsButton: LiveData<ButtonUiModel?> = _checkVersionsButton
+    private val _updatesLoading = MutableLiveData<Boolean>()
+    val updatesLoading: LiveData<Boolean> = _updatesLoading
+    val versionUpdate: LiveData<Boolean> = versionRepository.newAppVersion
 
     init {
         checkData = PublishProcessor.create()
@@ -142,9 +156,14 @@ class SyncManagerPresenter internal constructor(
         )
         _checkVersionsButton.postValue(
             ButtonUiModel(
-                "Check app version".uppercase(Locale.getDefault()),
+                resourceManager.getString(R.string.check_for_updates),
                 true
-            ) { versionStatusController.checkVersionUpdates() }
+            ) {
+                _updatesLoading.value = true
+                launch {
+                    versionRepository.checkVersionUpdates()
+                }
+            }
         )
     }
 

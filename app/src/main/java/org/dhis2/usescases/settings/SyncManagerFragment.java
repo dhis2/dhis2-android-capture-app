@@ -37,6 +37,7 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
 import androidx.work.WorkInfo;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -123,6 +124,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.setLifecycleOwner(this);
         binding.setPresenter(presenter);
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
+        binding.setVersionName(ContextExtensionsKt.buildInfo(requireContext()));
         return binding.getRoot();
     }
 
@@ -147,6 +149,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             checkSyncDataButtonStatus();
         });
         presenter.init();
+        observeVersionUpdates();
 
         if (!getResources().getBoolean(R.bool.sms_enabled)) {
             binding.settingsSms.getRoot().setVisibility(View.GONE);
@@ -1012,5 +1015,22 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     private void enabledResponseWaitSwitch() {
         binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(networkUtils.isOnline());
+    }
+
+    private void observeVersionUpdates() {
+        presenter.getUpdatesLoading().observe(getViewLifecycleOwner(), loading -> {
+            if (loading) {
+                ViewAnimationsKt.expand(binding.loadingCheckVersion, true, () -> {return Unit.INSTANCE;});
+            }
+        });
+        presenter.getVersionUpdate().observe(getViewLifecycleOwner(), newVersion -> {
+            binding.loadingCheckVersion.setVisibility(View.INVISIBLE);
+            if (!newVersion) {
+                Snackbar.make(
+                        binding.getRoot(),
+                        R.string.no_updates,
+                        BaseTransientBottomBar.LENGTH_SHORT).show();
+            }
+        });
     }
 }
