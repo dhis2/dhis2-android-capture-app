@@ -21,7 +21,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,15 +62,6 @@ fun TextInput(
     onNextSelected: () -> Unit,
     focusRequester: FocusRequester
 ) {
-    val focusManager = LocalFocusManager.current
-    val isKeyboardOpen by keyboardAsState()
-
-    LaunchedEffect(isKeyboardOpen) {
-        if (isKeyboardOpen == Keyboard.Closed) {
-            focusManager.clearFocus(true)
-        }
-    }
-
     Column(
         modifier = Modifier
             .testTag(INPUT_TEST_TAG)

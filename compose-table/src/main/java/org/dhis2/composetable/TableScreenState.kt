@@ -6,8 +6,7 @@ import org.dhis2.composetable.model.TableModel
 data class TableScreenState(
     val tables: List<TableModel>,
     val id: UUID = UUID.randomUUID(),
-    val overwrittenRowHeaderWidth: Float? = null,
-    val textInputCollapsedMode: Boolean = true
+    val overwrittenRowHeaderWidth: Float? = null
 )
 
 data class TableConfigurationState(

@@ -82,7 +82,6 @@ class ManageStockViewModel @Inject constructor(
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(
             tables = emptyList(),
-            textInputCollapsedMode = false,
             overwrittenRowHeaderWidth = 200F
         )
     )
@@ -230,7 +229,6 @@ class ManageStockViewModel @Inject constructor(
         _screenState.postValue(
             TableScreenState(
                 tables = tables,
-                textInputCollapsedMode = false,
                 overwrittenRowHeaderWidth = 200F
             )
         )

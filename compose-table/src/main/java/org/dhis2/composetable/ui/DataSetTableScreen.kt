@@ -76,9 +76,12 @@ fun DataSetTableScreen(
     var tableSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
 
     val focusManager = LocalFocusManager.current
+    val tableConfiguration = LocalTableConfiguration.current
     val focusRequester = remember { FocusRequester() }
 
     var alreadyFinish by remember { mutableStateOf(false) }
+
+    val isKeyboardOpen by keyboardAsState()
 
     fun finishEdition() {
         focusManager.clearFocus(true)
@@ -141,6 +144,17 @@ fun DataSetTableScreen(
         }
     }
 
+    LaunchedEffect(isKeyboardOpen) {
+        if (isKeyboardOpen == Keyboard.Closed) {
+            if (tableConfiguration.textInputViewMode) {
+                focusManager.clearFocus(true)
+            } else if (bottomSheetState.bottomSheetState.isExpanded) {
+                collapseBottomSheet(true)
+                bottomSheetState.bottomSheetState.collapse()
+            }
+        }
+    }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetState,
         sheetContent = {
@@ -155,11 +169,11 @@ fun DataSetTableScreen(
                     )
                 },
                 onSave = {
-                    currentCell?.let { onSaveValue(it) }
-                    saveClicked = true
-                    if (!tableScreenState.textInputCollapsedMode) {
+                    if (!tableConfiguration.textInputViewMode) {
                         collapseBottomSheet(true)
                     }
+                    currentCell?.let { onSaveValue(it) }
+                    saveClicked = true
                 },
                 onNextSelected = {
                     currentCell?.let { tableCell ->

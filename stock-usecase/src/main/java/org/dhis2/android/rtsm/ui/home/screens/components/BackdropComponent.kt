@@ -2,6 +2,7 @@ package org.dhis2.android.rtsm.ui.home.screens.components
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
@@ -57,14 +58,15 @@ fun Backdrop(
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
 
-    (activity as HomeActivity).onBackPressed = {
+    BackHandler {
         handleBackNavigation(
-            activity,
+            activity as HomeActivity,
             dataEntryUiState,
             supportFragmentManager,
             manageStockViewModel
         )
     }
+
     manageStockViewModel.backToListing()
     DisplaySnackBar(manageStockViewModel, scaffoldState)
     BackdropScaffold(
@@ -76,7 +78,7 @@ fun Backdrop(
                 themeColor,
                 launchBottomSheet = {
                     handleBackNavigation(
-                        activity,
+                        activity as HomeActivity,
                         dataEntryUiState,
                         supportFragmentManager,
                         manageStockViewModel
@@ -191,13 +193,13 @@ fun handleBackNavigation(
             }
         }
         DataEntryStep.EDITING_LISTING -> {
-            activity.onBackPressed()
+            activity.onBackPressedDispatcher.onBackPressed()
         }
         DataEntryStep.REVIEWING -> {
             viewModel.onHandleBackNavigation()
         }
         DataEntryStep.EDITING_REVIEWING -> {
-            activity.onBackPressed()
+            activity.onBackPressedDispatcher.onBackPressed()
         }
         DataEntryStep.COMPLETED -> {
             viewModel.onHandleBackNavigation()

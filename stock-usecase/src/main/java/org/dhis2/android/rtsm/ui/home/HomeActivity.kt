@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
@@ -45,17 +44,9 @@ class HomeActivity : AppCompatActivity() {
     private var themeColor = R.color.colorPrimary
     private lateinit var filterManager: FilterManager
     private lateinit var barcodeLauncher: ActivityResultLauncher<ScanOptions>
-    var onBackPressed: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                onBackPressed?.invoke()
-            }
-        }
-        onBackPressedDispatcher.addCallback(this, callback)
 
         filterManager = FilterManager.getInstance()
         intent.getParcelableExtra<AppConfig>(INTENT_EXTRA_APP_CONFIG)
