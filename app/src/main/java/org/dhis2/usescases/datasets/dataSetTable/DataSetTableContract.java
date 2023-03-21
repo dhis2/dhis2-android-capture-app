@@ -16,15 +16,13 @@ public class DataSetTableContract {
 
         void finishInputEdition();
 
-        void setSections(List<DataSetSection> sections);
+        void setSections(List<DataSetSection> sections, String sectionToOpenUid);
 
         Boolean accessDataWrite();
 
         String getDataSetUid();
 
         void renderDetails(DataSetRenderDetails dataSetRenderDetails);
-
-        Observable<Object> observeSaveButtonClicks();
 
         void showMandatoryMessage(boolean isMandatoryFields);
 
@@ -51,47 +49,7 @@ public class DataSetTableContract {
         void saveAndFinish();
 
         boolean isErrorBottomSheetShowing();
+
+        void selectOpenedSection(int sectionIndexToOpen);
     }
-
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-
-        void onBackClick();
-
-        void init(String orgUnitUid, String catCombo, String periodId);
-
-        String getOrgUnitUid();
-
-        String getCatCombo();
-
-        String getPeriodId();
-
-        void executeValidationRules();
-
-        void completeDataSet();
-
-        void collapseExpandBottomSheet();
-
-        void closeBottomSheet();
-
-        void onCompleteBottomSheet();
-
-        boolean isValidationMandatoryToComplete();
-
-        void reopenDataSet();
-
-        boolean shouldAllowCompleteAnyway();
-
-        boolean isComplete();
-
-        void updateData();
-
-        void onClickSyncStatus();
-
-        boolean dataSetHasDataElementDecoration();
-
-        void editingCellValue(boolean isEditing);
-
-        String getFirstSection();
-    }
-
 }

@@ -12,6 +12,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.EventMode
 
 const val LAUNCH_SYNC_DIALOG = "LAUNCH_SYNC_DIALOG"
+const val OPEN_ERROR_LOCATION = "OPEN_ERROR_LOCATION"
 
 class SyncStatusDialogNavigator(
     private val context: Context
@@ -39,6 +40,7 @@ class SyncStatusDialogNavigator(
                 enrollmentSyncItem.programUid,
                 EnrollmentActivity.EnrollmentMode.CHECK
             )
+                .openErrorLocation()
         } else {
             null
         }
@@ -88,7 +90,7 @@ class SyncStatusDialogNavigator(
             if (eventSyncItem.hasNullDataElementConflict) {
                 intent.launchSyncDialog()
             } else {
-                intent
+                intent.openErrorLocation()
             }
         } else {
             if (eventSyncItem.hasNullDataElementConflict) {
@@ -110,7 +112,7 @@ class SyncStatusDialogNavigator(
                 tableSyncItem.orgUnitUid,
                 tableSyncItem.periodId,
                 tableSyncItem.attrOptComboUid
-            ).launchSyncDialog()
+            ).openErrorLocation()
         } else {
             null
         }
@@ -125,6 +127,11 @@ class SyncStatusDialogNavigator(
 
     private fun Intent.launchSyncDialog(): Intent {
         this.putExtra(LAUNCH_SYNC_DIALOG, true)
+        return this
+    }
+
+    private fun Intent.openErrorLocation(): Intent {
+        this.putExtra(OPEN_ERROR_LOCATION, true)
         return this
     }
 }

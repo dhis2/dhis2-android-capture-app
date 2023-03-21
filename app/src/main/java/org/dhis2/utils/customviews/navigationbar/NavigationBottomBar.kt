@@ -87,6 +87,16 @@ class NavigationBottomBar @JvmOverloads constructor(
         }
     }
 
+    override fun setOnItemSelectedListener(listener: OnItemSelectedListener?) {
+        super.setOnItemSelectedListener { item ->
+            currentItemId = item.itemId
+            findViewById<View>(item.itemId)?.let { itemView ->
+                animateItemIndicatorPosition(itemView)
+            }
+            updateBadges()
+            listener?.onNavigationItemSelected(item) ?: false
+        }
+    }
     override fun setOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener?) {
         super.setOnNavigationItemSelectedListener { item ->
             currentItemId = item.itemId
