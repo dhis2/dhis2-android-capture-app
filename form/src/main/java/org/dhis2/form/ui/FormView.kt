@@ -47,6 +47,7 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
@@ -65,6 +66,7 @@ import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.form.model.exception.RepositoryRecordsException
 import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
@@ -240,7 +242,8 @@ class FormView : Fragment() {
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(
             context = requireContext(),
-            repositoryRecords = arguments?.get(RECORDS) as FormRepositoryRecords,
+            repositoryRecords = arguments?.serializable(RECORDS)
+                ?: throw RepositoryRecordsException(),
             openErrorLocation = openErrorLocation
         )
     }
