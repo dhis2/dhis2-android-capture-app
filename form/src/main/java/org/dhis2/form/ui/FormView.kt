@@ -515,7 +515,7 @@ class FormView : Fragment() {
     }
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {
-        if (actionIconsActivate) {
+        if (actionIconsActivate && !uiEvent.value.isNullOrEmpty()) {
             val intent = Intent(uiEvent.action).apply {
                 when (uiEvent.action) {
                     Intent.ACTION_DIAL -> {
