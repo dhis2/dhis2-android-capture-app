@@ -46,12 +46,10 @@ public class Constants {
 
     // LOGIN
     public static final String ACCOUNT_RECOVERY = "/dhis-web-commons/security/recovery.action";
-    public static final String ACCOUNT_USED = "ACCOUNT_USED";
 
     //EVENT_CREATION
     public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";
     public static final String PROGRAM_THEME = "PROGRAM_THEME";
-    public static final String SERVER = "SERVER";
     public static final String THEME = "THEME";
     public static final String DATA_SET_UID = "DATA_SET_UID";
     public static final String DATA_SET_NAME = "DATA_SET_NAME";
@@ -66,7 +64,6 @@ public class Constants {
     public static final int RQ_MANDATORY_EVENTS = 2001;
     public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
     public static final String USER_TEST_ANDROID = "android";
-    public static final String USER = "USER";
     public static final String USER_ASKED_CRASHLYTICS = "USER_ACCEPT_CRASHLYTICS";
     public static final String ENROLLMENT_STATUS = "ENROLLMENT_STATUS";
 

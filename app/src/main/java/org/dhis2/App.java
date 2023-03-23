@@ -186,8 +186,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @NonNull
     @Override
-    public LoginComponent createLoginComponent(LoginContracts.View view) {
-        return (loginComponent = appComponent.plus(new LoginModule(view)));
+    public LoginComponent createLoginComponent(LoginModule loginModule) {
+        return (loginComponent = appComponent.plus(loginModule));
     }
 
     @Nullable

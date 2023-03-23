@@ -74,7 +74,6 @@ class LoginTest : BaseTest() {
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clickLoginButton()
-            acceptTrackerDialog(composeTestRule)
             checkAuthErrorAlertIsVisible()
         }
     }
