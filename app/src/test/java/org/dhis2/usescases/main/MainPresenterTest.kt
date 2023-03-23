@@ -12,6 +12,11 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
 import java.io.File
 import java.util.Date
 import org.dhis2.commons.filters.FilterManager
@@ -43,6 +48,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainPresenterTest {
 
     private lateinit var presenter: MainPresenter
@@ -59,7 +65,11 @@ class MainPresenterTest {
     private val syncIsPerfomedInteractor: SyncIsPerformedInteractor = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val versionRepository: VersionRepository = mock()
-    private val dispatcherProvider: DispatcherProvider = mock()
+    private val testingDispatcher = UnconfinedTestDispatcher()
+    private val dispatcherProvider: DispatcherProvider = mock {
+        on { io() } doReturn testingDispatcher
+        on { ui() } doReturn testingDispatcher
+    }
 
     @Rule
     @JvmField
@@ -67,6 +77,8 @@ class MainPresenterTest {
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
+        whenever(versionRepository.newAppVersion) doReturn MutableSharedFlow()
         presenter =
             MainPresenter(
                 view,
