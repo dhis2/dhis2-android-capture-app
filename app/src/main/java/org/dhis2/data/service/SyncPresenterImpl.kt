@@ -7,11 +7,7 @@ import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
 import java.util.Calendar
-import kotlin.coroutines.CoroutineContext
 import kotlin.math.ceil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.commons.prefs.Preference.Companion.DATA
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
@@ -25,7 +21,6 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_DATA
 import org.dhis2.commons.prefs.Preference.Companion.TIME_META
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -51,14 +46,9 @@ class SyncPresenterImpl(
     private val workManagerController: WorkManagerController,
     private val analyticsHelper: AnalyticsHelper,
     private val syncStatusController: SyncStatusController,
-    private val syncRepository: SyncRepository,
-    private val versionRepository: VersionRepository,
-    private val dispatcherProvider: DispatcherProvider
-) : SyncPresenter, CoroutineScope {
+    private val syncRepository: SyncRepository
+) : SyncPresenter {
 
-    private var job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = job + dispatcherProvider.io()
     override fun initSyncControllerMap() {
         Completable.fromCallable {
             val programMap: Map<String, D2ProgressStatus> =
@@ -82,12 +72,6 @@ class SyncPresenterImpl(
 
     override fun setNetworkUnavailable() {
         syncStatusController.onNetworkUnavailable()
-    }
-
-    override fun checkVersionUpdate() {
-        launch {
-            versionRepository.checkVersionUpdates()
-        }
     }
 
     override fun syncAndDownloadEvents() {

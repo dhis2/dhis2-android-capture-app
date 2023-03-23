@@ -25,6 +25,7 @@ import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMB
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
@@ -58,6 +59,7 @@ class MainPresenterTest {
     private val syncIsPerfomedInteractor: SyncIsPerformedInteractor = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val versionRepository: VersionRepository = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     @Rule
     @JvmField
@@ -79,7 +81,8 @@ class MainPresenterTest {
                 deleteUserData,
                 syncIsPerfomedInteractor,
                 syncStatusController,
-                versionRepository
+                versionRepository,
+                dispatcherProvider
             )
     }
 

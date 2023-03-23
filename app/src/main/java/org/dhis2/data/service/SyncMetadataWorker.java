@@ -108,7 +108,6 @@ public class SyncMetadataWorker extends Worker {
                 return Result.failure(createOutputData(false, message.toString()));
 
             presenter.startPeriodicMetaWork();
-            presenter.checkVersionUpdate();
 
             return Result.success(createOutputData(true, message.toString()));
         } else {

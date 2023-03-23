@@ -1023,9 +1023,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 ViewAnimationsKt.expand(binding.loadingCheckVersion, true, () -> {return Unit.INSTANCE;});
             }
         });
-        presenter.getVersionUpdate().observe(getViewLifecycleOwner(), newVersion -> {
+        presenter.getVersionToUpdate().observe(getViewLifecycleOwner(), newVersion -> {
             binding.loadingCheckVersion.setVisibility(View.INVISIBLE);
-            if (!newVersion) {
+            if (newVersion == null) {
                 Snackbar.make(
                         binding.getRoot(),
                         R.string.no_updates,

@@ -2,6 +2,7 @@ package org.dhis2.usescases.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
@@ -83,7 +84,8 @@ class SyncManagerPresenter internal constructor(
     val checkVersionsButton: LiveData<ButtonUiModel?> = _checkVersionsButton
     private val _updatesLoading = MutableLiveData<Boolean>()
     val updatesLoading: LiveData<Boolean> = _updatesLoading
-    val versionUpdate: LiveData<Boolean> = versionRepository.newAppVersion
+    val versionToUpdate: LiveData<String?> =
+        versionRepository.newAppVersion.asLiveData(coroutineContext)
 
     init {
         checkData = PublishProcessor.create()
@@ -161,7 +163,7 @@ class SyncManagerPresenter internal constructor(
             ) {
                 _updatesLoading.value = true
                 launch {
-                    versionRepository.checkVersionUpdates()
+                    versionRepository.downloadLatestVersionInfo()
                 }
             }
         )

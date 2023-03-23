@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import javax.inject.Inject
+import org.dhis2.usescases.main.MainPresenter
 
 class CheckVersionWorker(
     context: Context,
@@ -11,7 +12,7 @@ class CheckVersionWorker(
 ) : Worker(context, workerParams) {
 
     @Inject
-    internal lateinit var presenter: SyncPresenter
+    internal lateinit var presenter: MainPresenter
 
     override fun doWork(): Result {
         presenter.checkVersionUpdate()

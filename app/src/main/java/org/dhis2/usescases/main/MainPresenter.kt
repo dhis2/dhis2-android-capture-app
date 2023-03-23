@@ -5,10 +5,15 @@ import android.net.Uri
 import android.view.Gravity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.lifecycle.asLiveData
+import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
@@ -26,6 +31,7 @@ import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
@@ -59,11 +65,17 @@ class MainPresenter(
     private val deleteUserData: DeleteUserData,
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
     private val syncStatusController: SyncStatusController,
-    private val versionRepository: VersionRepository
-) {
+    private val versionRepository: VersionRepository,
+    private val dispatcherProvider: DispatcherProvider
+) : CoroutineScope {
+
+    private var job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = job + dispatcherProvider.io()
 
     var disposable: CompositeDisposable = CompositeDisposable()
-    val versionUpdate: LiveData<Boolean> = versionRepository.newAppVersion
+
+    val versionToUpdate = versionRepository.newAppVersion.asLiveData(coroutineContext)
     val downloadingVersion = MutableLiveData(false)
 
     fun init() {
@@ -265,6 +277,7 @@ class MainPresenter(
     fun isPinStored() = repository.isPinStored()
 
     fun launchInitialDataSync() {
+        checkVersionUpdate()
         workManagerController
             .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
         val workerItem = WorkerItem(
@@ -277,6 +290,7 @@ class MainPresenter(
         )
         workManagerController.cancelAllWorkByTag(workerItem.workerName)
         workManagerController.syncDataForWorker(workerItem)
+        checkVersionUpdate()
     }
 
     fun observeDataSync(): LiveData<SyncStatusData> {
@@ -311,12 +325,18 @@ class MainPresenter(
         matomoAnalyticsController.trackEvent(HOME, JIRA_REPORT, CLICK)
     }
 
+    fun checkVersionUpdate() {
+        launch {
+            versionRepository.checkVersionUpdates()
+        }
+    }
+
     fun remindLaterAlertNewVersion() {
         val workerItem = WorkerItem(
             Constants.NEW_APP_VERSION,
             WorkerType.NEW_VERSION,
             delayInSeconds = 24 * 60 * 60,
-            periodicPolicy = ExistingPeriodicWorkPolicy.REPLACE
+            policy = ExistingWorkPolicy.REPLACE
         )
         workManagerController.beginUniqueWork(workerItem)
     }

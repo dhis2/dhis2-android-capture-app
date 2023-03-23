@@ -10,6 +10,7 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
@@ -36,7 +37,8 @@ class MainModule(val view: MainView) {
         deleteUserData: DeleteUserData,
         syncIsPerformedInteractor: SyncIsPerformedInteractor,
         syncStatusController: SyncStatusController,
-        versionRepository: VersionRepository
+        versionRepository: VersionRepository,
+        dispatcherProvider: DispatcherProvider
     ): MainPresenter {
         return MainPresenter(
             view,
@@ -51,7 +53,8 @@ class MainModule(val view: MainView) {
             deleteUserData,
             syncIsPerformedInteractor,
             syncStatusController,
-            versionRepository
+            versionRepository,
+            dispatcherProvider
         )
     }
 

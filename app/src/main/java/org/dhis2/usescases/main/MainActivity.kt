@@ -194,17 +194,10 @@ class MainActivity :
         }
 
         observeSyncState()
+        observeVersionUpdate()
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
-        }
-        presenter.versionUpdate.observe(this) { newVersion ->
-            if (newVersion) {
-                showNewVersionAlert("2.7.1.1")
-            }
-        }
-
-        presenter.downloadingVersion.observe(this) {
         }
     }
 
@@ -241,6 +234,17 @@ class MainActivity :
         }
     }
 
+    private fun observeVersionUpdate() {
+        presenter.versionToUpdate.observe(this) { versionName ->
+            versionName?.let { showNewVersionAlert(it) }
+        }
+        presenter.downloadingVersion.observe(this) {
+            binding.progress.visibility = when (it) {
+                true -> View.VISIBLE
+                else -> View.GONE
+            }
+        }
+    }
     override fun showGranularSync() {
         SyncStatusDialog.Builder()
             .withContext(this)
@@ -252,7 +256,8 @@ class MainActivity :
                             mainNavigator.getCurrentIfProgram()?.presenter?.updateProgramQueries()
                         }
                     }
-                })
+                }
+            )
             .show("ALL_SYNC")
     }
 

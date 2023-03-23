@@ -9,28 +9,31 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import androidx.core.content.FileProvider
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import java.io.File
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import org.dhis2.Bindings.newVersion
 import org.dhis2.BuildConfig
 import org.hisp.dhis.android.core.D2
 
 class VersionRepository(val d2: D2) {
 
-    private val _newAppVersion = MutableLiveData<Boolean>()
-    val newAppVersion: LiveData<Boolean> = _newAppVersion
+    private val _newAppVersion = MutableSharedFlow<String?>(replay = 1)
+    val newAppVersion: SharedFlow<String?> get() = _newAppVersion
+    suspend fun downloadLatestVersionInfo() {
+        d2.settingModule().latestAppVersion().blockingDownload()
+        checkVersionUpdates()
+    }
 
     suspend fun checkVersionUpdates() {
-        val currentVersion = BuildConfig.VERSION_NAME
-        if (true /* currentVersion == d2.versionName()*/) {
-            _newAppVersion.postValue(true)
-        }
+        val versionNameOrNull = d2.settingModule().latestAppVersion().blockingGet()?.version()
+            .takeIf { it?.newVersion(BuildConfig.VERSION_NAME) ?: false }
+        _newAppVersion.emit(versionNameOrNull)
     }
 
     fun download(context: Context, onDownloadCompleted: (Uri) -> Unit, onDownloading: () -> Unit) {
-        val url = "https://github.com/dhis2/dhis2-android-capture-app/releases/download/2.7.1.1/" +
-            "dhis2-v2.7.1.1.apk" // d2.versionUrl()
-        val fileName = url.substringAfterLast("/")
+        val url = d2.settingModule().latestAppVersion().blockingGet()?.downloadURL()
+        val fileName = url?.substringAfterLast("/")
 
         val destination = "${Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS
