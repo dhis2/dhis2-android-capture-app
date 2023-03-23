@@ -111,7 +111,7 @@ class MainActivity :
 
         fun bundle(
             initScreen: MainNavigator.MainScreen? = null,
-            launchDataSync: Boolean = false,
+            launchDataSync: Boolean = false
         ) = Bundle().apply {
             initScreen?.let {
                 putString(FRAGMENT, initScreen.name)
