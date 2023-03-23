@@ -38,13 +38,20 @@ class FormRepositoryImpl(
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
 
-    override fun fetchFormItems(): List<FieldUiModel> {
-        openedSectionUid =
-            dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+    override fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
+        openedSectionUid = getInitialOpenedSection(shouldOpenErrorLocation)
         backupList = itemList
         return composeList()
     }
+
+    private fun getInitialOpenedSection(shouldOpenErrorLocation: Boolean) =
+        if (shouldOpenErrorLocation) {
+            itemList.firstOrNull { it.error != null || it.warning != null }?.programStageSection
+                ?: dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+        } else {
+            dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+        }
 
     override fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
         calculationLoop = 0

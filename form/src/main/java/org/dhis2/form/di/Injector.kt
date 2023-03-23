@@ -46,14 +46,16 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 object Injector {
     fun provideFormViewModelFactory(
         context: Context,
-        repositoryRecords: FormRepositoryRecords
+        repositoryRecords: FormRepositoryRecords,
+        openErrorLocation: Boolean
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
                 repositoryRecords
             ),
-            provideDispatchers()
+            provideDispatchers(),
+            openErrorLocation
         )
     }
 

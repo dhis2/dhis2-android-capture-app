@@ -8,12 +8,14 @@ import org.dhis2.form.data.FormRepository
 @Suppress("UNCHECKED_CAST")
 class FormViewModelFactory(
     private val repository: FormRepository,
-    private val dispatcher: DispatcherProvider
+    private val dispatcher: DispatcherProvider,
+    private val openErrorLocation: Boolean
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return FormViewModel(
             repository = repository,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            openErrorLocation = openErrorLocation
         ) as T
     }
 }

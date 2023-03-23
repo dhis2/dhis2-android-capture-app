@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -37,7 +36,8 @@ import timber.log.Timber
 class FormViewModel(
     private val repository: FormRepository,
     private val dispatcher: DispatcherProvider,
-    private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
+    private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
+    private val openErrorLocation: Boolean = false
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
@@ -468,7 +468,7 @@ class FormViewModel(
 
     fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
-            val result = async(Dispatchers.IO) {
+            val result = async(dispatcher.io()) {
                 repository.runDataIntegrityCheck(allowDiscard = backButtonPressed ?: false)
             }
             try {
@@ -483,7 +483,7 @@ class FormViewModel(
 
     fun calculateCompletedFields() {
         viewModelScope.launch {
-            val result = async(Dispatchers.IO) {
+            val result = async(dispatcher.io()) {
                 repository.completedFieldsPercentage(_items.value ?: emptyList())
             }
             try {
@@ -496,7 +496,7 @@ class FormViewModel(
 
     fun displayLoopWarningIfNeeded() {
         viewModelScope.launch {
-            val result = async(Dispatchers.IO) {
+            val result = async(dispatcher.io()) {
                 repository.calculationLoopOverLimit()
             }
             try {
@@ -522,9 +522,9 @@ class FormViewModel(
 
     fun loadData() {
         loading.postValue(true)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.io()) {
             val result = async {
-                repository.fetchFormItems()
+                repository.fetchFormItems(openErrorLocation)
             }
             try {
                 _items.postValue(result.await())

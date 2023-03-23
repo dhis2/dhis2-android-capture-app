@@ -87,10 +87,11 @@ class SyncStatusDialogNavigator(
                 eventSyncItem.hasNullDataElementConflict,
                 EventMode.CHECK
             )
+            intent.openErrorLocation()
             if (eventSyncItem.hasNullDataElementConflict) {
                 intent.launchSyncDialog()
             } else {
-                intent.openErrorLocation()
+                intent
             }
         } else {
             if (eventSyncItem.hasNullDataElementConflict) {
