@@ -37,7 +37,7 @@ class VersionRepository(val d2: D2) {
 
         val destination = "${Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS
-        )}$fileName"
+        )}/$fileName"
 
         val apkFile = File(destination)
         val apkUri = uriFromFile(context, apkFile)

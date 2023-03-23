@@ -290,7 +290,6 @@ class MainPresenter(
         )
         workManagerController.cancelAllWorkByTag(workerItem.workerName)
         workManagerController.syncDataForWorker(workerItem)
-        checkVersionUpdate()
     }
 
     fun observeDataSync(): LiveData<SyncStatusData> {

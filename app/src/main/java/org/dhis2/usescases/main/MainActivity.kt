@@ -21,8 +21,6 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.hasPermissions
 import org.dhis2.BuildConfig
@@ -46,6 +44,8 @@ import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import java.io.File
+import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
@@ -111,7 +111,7 @@ class MainActivity :
 
         fun bundle(
             initScreen: MainNavigator.MainScreen? = null,
-            launchDataSync: Boolean = false
+            launchDataSync: Boolean = false,
         ) = Bundle().apply {
             initScreen?.let {
                 putString(FRAGMENT, initScreen.name)
@@ -238,10 +238,11 @@ class MainActivity :
         presenter.versionToUpdate.observe(this) { versionName ->
             versionName?.let { showNewVersionAlert(it) }
         }
-        presenter.downloadingVersion.observe(this) {
-            binding.progress.visibility = when (it) {
-                true -> View.VISIBLE
-                else -> View.GONE
+        presenter.downloadingVersion.observe(this) { downloading ->
+            if (downloading) {
+                binding.toolbarProgress.show()
+            } else {
+                binding.toolbarProgress.hide()
             }
         }
     }
