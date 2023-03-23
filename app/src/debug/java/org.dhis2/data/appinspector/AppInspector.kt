@@ -1,6 +1,7 @@
 package org.dhis2.data.appinspector
 
 import android.content.Context
+import android.os.Build
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
@@ -17,25 +18,27 @@ class AppInspector(private val context: Context) {
         private set
 
     fun init(): AppInspector {
-        SoLoader.init(context, false)
-        if (BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhisUITesting") {
-            AndroidFlipperClient.getInstance(context).apply {
-                addPlugin(
-                    layoutInspectorPlugin()
-                )
-                addPlugin(
-                    databaseInspectorPlugin()
-                )
-                addPlugin(
-                    networkInspectorPlugin()
-                )
-                addPlugin(
-                    sharedPreferencesPlugin()
-                )
-                addPlugin(
-                    crashPlugin()
-                )
-                start()
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            SoLoader.init(context, false)
+            if (BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhisUITesting") {
+                AndroidFlipperClient.getInstance(context).apply {
+                    addPlugin(
+                        layoutInspectorPlugin()
+                    )
+                    addPlugin(
+                        databaseInspectorPlugin()
+                    )
+                    addPlugin(
+                        networkInspectorPlugin()
+                    )
+                    addPlugin(
+                        sharedPreferencesPlugin()
+                    )
+                    addPlugin(
+                        crashPlugin()
+                    )
+                    start()
+                }
             }
         }
         return this
