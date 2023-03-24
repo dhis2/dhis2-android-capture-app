@@ -16,6 +16,7 @@
         <item name="colorOnSurfaceVariant">#FF42474E</item>
         <item name="colorSurfaceInverse">#FF2F3033</item>
         <item name="colorOnSurfaceInverse">#FFF1F0F4</item>
+        <item name="colorOutline">#FFFDFCFF</item>
         <!--end of material colors-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
@@ -127,7 +128,6 @@
         <item name="colorOnSurfaceInverse">#FFF1F0F4</item>
         <item name="colorTertiary">@color/green_7ed</item>
         <item name="colorOnTertiary">@color/green_7ed</item>
-        <item name="colorOutline">@color/green_7ed</item>
         <!--end of material colors-->
         <item name="whiteBgTextColor">@color/colorPrimaryOrange</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
