@@ -70,7 +70,7 @@ fun TextInput(
                 color = Color.White,
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
-            .padding(16.dp)
+            .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp)
     ) {
         InputTitle(textInputModel)
         TextInputContent(
@@ -117,6 +117,7 @@ fun keyboardAsState(): State<Keyboard> {
 private fun InputTitle(textInputModel: TextInputModel) {
     Row(
         modifier = Modifier
+            .padding(end = 12.dp)
             .fillMaxWidth()
             .semantics {
                 mainLabel = textInputModel.mainLabel
