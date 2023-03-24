@@ -1,5 +1,6 @@
 package org.dhis2.data.service
 
+import android.Manifest
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -67,7 +68,9 @@ class VersionRepository(val d2: D2) {
             }
             context.registerReceiver(
                 onComplete,
-                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                null
             )
         }
     }
