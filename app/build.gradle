@@ -72,6 +72,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         def mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") != null ? System.getenv("MAPBOX_ACCESS_TOKEN") : "pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
@@ -257,6 +259,7 @@ dependencies {
     dhisPlayServicesImplementation libs.google.authApiPhone
     implementation libs.google.flexbox
     implementation libs.google.guava
+//    implementation libs.github.androidTreeView
     implementation libs.github.pinlock
     implementation libs.github.fancyshowcase
     implementation libs.animation.lottie
@@ -308,5 +311,4 @@ dependencies {
     implementation(platform(libs.dispatcher.dispatchBOM))
     implementation(libs.dispatcher.dispatchCore)
     androidTestImplementation(libs.dispatcher.dispatchEspresso)
-    testImplementation libs.test.turbine
 }

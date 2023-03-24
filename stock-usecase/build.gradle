@@ -34,7 +34,6 @@ android {
                 ]
             }
         }
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -89,6 +88,21 @@ android {
     kotlinOptions {
         jvmTarget = versions.targetCompat
     }
+    sourceSets {
+        main {
+            java {
+                srcDirs 'src\\main\\java', 'src\\androidTest\\java\\org\\dhis2\\android\\rtsm'
+            }
+            resources {
+                srcDirs 'src\\main\\resources', 'src\\androidTest\\org\\dhis2\\android\\rtsm'
+            }
+        }
+        debug {
+            resources {
+                srcDirs 'src\\debug\\resources', 'src\\androidTest\\org\\dhis2\\android\\rtsm'
+            }
+        }
+    }
 
 }
 
@@ -132,8 +146,18 @@ dependencies {
     testImplementation libs.test.javafaker
     testImplementation libs.test.kotlinCoroutines
     androidTestImplementation libs.test.testJUnitExt
-    androidTestImplementation libs.test.espresso
     androidTestImplementation libs.test.archCoreTesting
+
+    testImplementation libs.test.junit
+    androidTestImplementation libs.test.composeUiTestJUnit
+    debugImplementation libs.test.composeUiTestManifest
+    androidTestImplementation libs.test.testJUnitKtx
+    debugImplementation libs.androidx.composeUiTooling
+    androidTestImplementation libs.test.espresso
+
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
+
 }
 
 kapt {
