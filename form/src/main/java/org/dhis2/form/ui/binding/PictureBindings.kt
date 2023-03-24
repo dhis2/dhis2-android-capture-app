@@ -44,7 +44,7 @@ fun ComposeView.setPicture(fieldUiModel: FieldUiModel) {
                     imageValue = fieldUiModel.value?.getBitmap(),
                     enabled = fieldUiModel.editable,
                     addButtonData =
-                        when (fieldUiModel.renderingType != UiRenderType.SIGNATURE) {
+                        when (fieldUiModel.renderingType != UiRenderType.CANVAS) {
                             true -> AddButtonData(
                                 onClick = { fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE) },
                                 icon = painterResource(id = R.drawable.ic_add_image),
