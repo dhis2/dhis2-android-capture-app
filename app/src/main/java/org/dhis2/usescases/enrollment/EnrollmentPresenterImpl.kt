@@ -4,6 +4,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.profilePicturePath
+import org.dhis2.commons.bindings.trackedEntityTypeForTei
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_TEI
 import org.dhis2.commons.matomo.Categories.Companion.TRACKER_LIST
 import org.dhis2.commons.matomo.Labels.Companion.CLICK
@@ -76,18 +77,22 @@ class EnrollmentPresenterImpl(
                                     .one()
                                     .blockingGet()?.value() ?: ""
                             }
-                            val icon =
-                                tei.profilePicturePath(d2, programRepository.blockingGet().uid())
-                            Pair(attrList, icon)
+
+                            TeiInfo(
+                                attributes = attrList,
+                                profileImage = tei.profilePicturePath(
+                                    d2,
+                                    programRepository.blockingGet().uid()
+                                ),
+                                teTypeName = d2.trackedEntityTypeForTei(tei.uid()).displayName()!!
+                            )
                         }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { mainAttributes ->
-                        view.displayTeiInfo(mainAttributes.first, mainAttributes.second)
-                    },
-                    { Timber.tag(TAG).e(it) }
+                    view::displayTeiInfo,
+                    Timber.tag(TAG)::e
                 )
         )
 
@@ -185,7 +190,8 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid)
+            .blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
