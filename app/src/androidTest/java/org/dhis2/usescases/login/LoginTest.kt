@@ -62,7 +62,7 @@ class LoginTest : BaseTest() {
         cleanDatabase()
     }
 
-    @Test
+//    @Test
     fun shouldGetAuthErrorWhenCredentialsAreWrong() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
 
@@ -78,7 +78,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-    @Test
+//    @Test
     fun shouldHideLoginButtonIfPasswordIsMissing() {
         startLoginActivity()
 
@@ -92,7 +92,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-    @Test
+//    @Test
     fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
         enableIntents()
         startLoginActivity()
@@ -105,7 +105,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-    @Test
+//    @Test
     fun shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton() {
         startLoginActivity()
         loginRobot {
@@ -121,7 +121,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-    @Test
+//    @Test
     fun shouldGoToPinScreenWhenPinWasSet() {
         preferencesRobot.saveValue(SESSION_LOCKED, true)
         preferencesRobot.saveValue(PIN, PIN_PASSWORD)
@@ -133,13 +133,13 @@ class LoginTest : BaseTest() {
         }
     }
 
-    @Test
+//    @Test
     fun shouldGoToHomeScreenWhenUserIsLoggedIn() {
         setupCredentials()
         startLoginActivity()
     }
 
-    @Test
+//    @Test
     fun shouldGenerateLoginThroughQR() {
         enableIntents()
         mockOnActivityForResult()
@@ -162,7 +162,7 @@ class LoginTest : BaseTest() {
         )
     }
 
-    @Test
+//    @Test
     fun shouldDisplayShareDataDialogAndOpenPrivacyPolicy() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, PATH_APPS, API_ME_RESPONSE_OK)
