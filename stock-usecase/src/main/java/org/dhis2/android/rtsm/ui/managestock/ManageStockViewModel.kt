@@ -50,7 +50,6 @@ import org.dhis2.composetable.model.ValidationResult
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
-import timber.log.Timber
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
