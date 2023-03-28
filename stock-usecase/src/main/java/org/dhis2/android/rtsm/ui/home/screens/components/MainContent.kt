@@ -24,18 +24,12 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -107,6 +101,14 @@ fun MainContent(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Top
         ) {
+            var isHintDisplayed by remember { mutableStateOf(false) }
+            if(isHintDisplayed) {
+                LaunchedEffect(Unit) {
+                    scope.launch {
+                        backdropState.conceal()
+                    }
+                }
+            }
             OutlinedTextField(
                 value = search,
                 onValueChange = manageStockViewModel::onSearchQueryChanged,
@@ -123,12 +125,8 @@ fun MainContent(
                     .weight(1 - (weightValue + weightValueArrow))
                     .alignBy(FirstBaseline)
                     .align(alignment = Alignment.CenterVertically)
-                    .onFocusEvent {
-                        if (it.toString() == "Active") {
-                            scope.launch {
-                                backdropState.conceal()
-                            }
-                        }
+                    .onFocusChanged {
+                        isHintDisplayed = it.hasFocus
                     },
                 shape = RoundedCornerShape(30.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
