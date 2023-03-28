@@ -108,14 +108,6 @@ fun MainContent(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Top
         ) {
-            var isHintDisplayed by remember { mutableStateOf(false) }
-            if(isHintDisplayed) {
-                LaunchedEffect(Unit) {
-                    scope.launch {
-                        backdropState.conceal()
-                    }
-                }
-            }
             OutlinedTextField(
                 value = search,
                 onValueChange = manageStockViewModel::onSearchQueryChanged,
@@ -133,7 +125,11 @@ fun MainContent(
                     .alignBy(FirstBaseline)
                     .align(alignment = Alignment.CenterVertically)
                     .onFocusChanged {
-                        isHintDisplayed = it.hasFocus
+                        if (it.hasFocus) {
+                            scope.launch {
+                                backdropState.conceal()
+                            }
+                        }
                     },
                 shape = RoundedCornerShape(30.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
