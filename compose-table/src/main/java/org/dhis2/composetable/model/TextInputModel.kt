@@ -36,6 +36,11 @@ sealed class KeyboardInputType(
         val allowSigned: Boolean = true
     ) : KeyboardInputType(multiline, forceCapitalize)
 
+    data class NumberPassword(
+        override val multiline: Boolean = false,
+        override val forceCapitalize: Boolean = false
+    ) : KeyboardInputType(multiline, forceCapitalize)
+
     data class PhoneInput(
         override val multiline: Boolean = false,
         override val forceCapitalize: Boolean = false
@@ -54,6 +59,7 @@ sealed class KeyboardInputType(
 
 fun KeyboardInputType.toKeyboardType(): KeyboardType = when (this) {
     is KeyboardInputType.NumericInput -> KeyboardType.Number
+    is KeyboardInputType.NumberPassword -> KeyboardType.NumberPassword
     is KeyboardInputType.EmailInput -> KeyboardType.Email
     is KeyboardInputType.TextInput -> KeyboardType.Text
     is KeyboardInputType.PhoneInput -> KeyboardType.Phone
