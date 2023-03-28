@@ -44,7 +44,7 @@ class VersionRepository(val d2: D2) {
         val apkUri = uriFromFile(context, apkFile)
         if (apkFile.exists()) {
             onDownloadCompleted(apkUri)
-        } else {
+        } else if (fileName?.endsWith("apk") == true) {
             val request = DownloadManager.Request(Uri.parse(url))
                 .setAllowedNetworkTypes(
                     DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE
@@ -72,6 +72,8 @@ class VersionRepository(val d2: D2) {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 null
             )
+        } else {
+            onDownloadCompleted(Uri.parse(url))
         }
     }
 
