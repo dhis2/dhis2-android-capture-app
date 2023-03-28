@@ -7,12 +7,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
-import org.dhis2.commons.Constants.EXTRA_DATA
 import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
@@ -61,7 +61,7 @@ class LoginTest : BaseTest() {
         cleanDatabase()
     }
 
-//    @Test
+    @Test
     fun shouldGetAuthErrorWhenCredentialsAreWrong() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
 
@@ -77,7 +77,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-//    @Test
+    @Test
     fun shouldHideLoginButtonIfPasswordIsMissing() {
         startLoginActivity()
 
@@ -91,7 +91,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-//    @Test
+    @Test
     fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
         enableIntents()
         startLoginActivity()
@@ -104,7 +104,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-//    @Test
+    @Test
     fun shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton() {
         startLoginActivity()
         loginRobot {
@@ -120,7 +120,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-//    @Test
+    @Test
     fun shouldGoToPinScreenWhenPinWasSet() {
         preferencesRobot.saveValue(SESSION_LOCKED, true)
         preferencesRobot.saveValue(PIN, PIN_PASSWORD)
@@ -132,7 +132,7 @@ class LoginTest : BaseTest() {
         }
     }
 
-//    @Test
+    @Test
     fun shouldGoToHomeScreenWhenUserIsLoggedIn() {
         setupCredentials()
         startLoginActivity()
@@ -161,7 +161,7 @@ class LoginTest : BaseTest() {
         )
     }
 
-//    @Test
+    @Test
     fun shouldDisplayShareDataDialogAndOpenPrivacyPolicy() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, PATH_APPS, API_ME_RESPONSE_OK)
