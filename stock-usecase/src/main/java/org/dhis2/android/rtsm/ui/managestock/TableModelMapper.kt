@@ -82,7 +82,7 @@ class TableModelMapper @Inject constructor(
     }
 
     fun validate(value: String?) = when (
-        val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value.toString())
+            val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value ?: "0")
     ) {
         is Result.Failure -> getIntegerZeroOrPositiveErrorMessage(
             result.failure as IntegerZeroOrPositiveFailure
