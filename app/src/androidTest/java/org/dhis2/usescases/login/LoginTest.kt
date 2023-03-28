@@ -138,7 +138,7 @@ class LoginTest : BaseTest() {
         startLoginActivity()
     }
 
-//    @Test
+    @Test
     fun shouldGenerateLoginThroughQR() {
         enableIntents()
         mockOnActivityForResult()
