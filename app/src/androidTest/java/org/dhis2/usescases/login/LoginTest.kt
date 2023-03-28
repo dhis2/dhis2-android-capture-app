@@ -8,18 +8,17 @@ import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
-import org.dhis2.commons.Constants.EXTRA_DATA
 import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,7 +41,6 @@ class LoginTest : BaseTest() {
         D2Manager.removeCredentials()
     }
 
-    @Ignore("To be fixed in the mock server issue")
     @Test
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
@@ -164,7 +162,6 @@ class LoginTest : BaseTest() {
         )
     }
 
-    @Ignore("To be fixed in the mock server issue")
     @Test
     fun shouldDisplayShareDataDialogAndOpenPrivacyPolicy() {
         enableIntents()
