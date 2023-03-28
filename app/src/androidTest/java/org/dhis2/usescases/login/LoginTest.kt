@@ -6,7 +6,6 @@ import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -21,7 +20,6 @@ import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_IN
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 class LoginTest : BaseTest() {
 
@@ -45,7 +43,8 @@ class LoginTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, PATH_APPS, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_REGEX, API_METADATA_SETTINGS_RESPONSE_ERROR)
+        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_GENERAL_SETTINGS, API_METADATA_SETTINGS_RESPONSE_ERROR)
+        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_INFO, API_METADATA_SETTINGS_INFO_ERROR)
 
         enableIntents()
         startLoginActivity()
@@ -167,7 +166,7 @@ class LoginTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, PATH_APPS, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_REGEX, API_METADATA_SETTINGS_RESPONSE_ERROR)
+        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_GENERAL_SETTINGS, API_METADATA_SETTINGS_RESPONSE_ERROR)
 
         enableIntents()
         startLoginActivity()
@@ -207,7 +206,9 @@ class LoginTest : BaseTest() {
             "mocks/settingswebapp/programsettings_404.json"
         const val API_METADATA_SETTINGS_DATASET_RESPONSE_ERROR =
             "mocks/settingswebapp/datasetsettings_404.json"
-        const val PATH_WEBAPP_REGEX = "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*"
+        const val API_METADATA_SETTINGS_INFO_ERROR = "mocks/settingswebapp/infosettings_404.json"
+        const val PATH_WEBAPP_GENERAL_SETTINGS = "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*"
+        const val PATH_WEBAPP_INFO = "/api/dataStore/ANDROID_SETTING_APP/info?.*"
         const val PATH_APPS = "/api/apps?.*"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
         const val PIN_PASSWORD = 1234
