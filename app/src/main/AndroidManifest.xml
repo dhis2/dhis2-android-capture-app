@@ -78,6 +78,7 @@
             android:name=".usescases.login.LoginActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".usescases.main.MainActivity" />
+        <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
         <activity
             android:name=".usescases.searchTrackEntity.SearchTEActivity"
             android:configChanges="keyboardHidden|screenSize" />
