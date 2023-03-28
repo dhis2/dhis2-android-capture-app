@@ -37,7 +37,6 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.work.WorkInfo;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -46,6 +45,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
+import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
@@ -124,7 +124,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.setLifecycleOwner(this);
         binding.setPresenter(presenter);
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
-        binding.setVersionName(ContextExtensionsKt.buildInfo(requireContext()));
+        binding.setVersionName(BuildConfig.VERSION_NAME);
         return binding.getRoot();
     }
 

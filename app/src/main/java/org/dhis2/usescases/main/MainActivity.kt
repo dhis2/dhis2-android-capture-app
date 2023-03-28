@@ -14,6 +14,7 @@ import android.transition.TransitionManager
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
@@ -559,13 +560,27 @@ class MainActivity :
 
     private val manageUnknownSources =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            presenter.downloadVersion(context) { installAPK(it) }
+            if (hasNoPermissionToInstall()) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.unknow_sources_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                presenter.downloadVersion(context) { installAPK(it) }
+            }
         }
 
     private val requestReadStoragePermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
                 presenter.downloadVersion(context) { installAPK(it) }
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.storage_denied),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 }

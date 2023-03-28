@@ -948,4 +948,7 @@
     <string name="check_for_updates">Check for updates</string>
     <string name="checking_for_updates">Checking for updates</string>
     <string name="no_updates">There are no new updates</string>
+    <string name="unknow_sources_denied">Unknown sources permission is denied.\nYou need to enable it to install version.</string>
+    <string name="storage_denied">Storage permission is denied.\nYou need to enable it to install version.</string>
+    <string name="app_version">App version</string>
 </resources>
