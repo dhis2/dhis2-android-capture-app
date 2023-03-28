@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -73,7 +74,7 @@ public class TEIDataContracts {
 
         void setEnrollmentData(Program program, Enrollment enrollment);
 
-        void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit);
+        void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues);
 
         void setAttributeValues (List<TrackedEntityAttributeValue> attributeValues);
 
@@ -86,6 +87,8 @@ public class TEIDataContracts {
         void showSyncDialog(String uid);
 
         void setRiskColor(String risk);
+
+        void setProgramAttributes(List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

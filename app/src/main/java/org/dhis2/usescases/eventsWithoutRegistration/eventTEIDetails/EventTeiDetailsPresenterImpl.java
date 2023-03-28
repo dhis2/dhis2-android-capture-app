@@ -155,6 +155,10 @@ public class EventTeiDetailsPresenterImpl implements EventTeiDetailsContracts.Pr
 
         if (programUid != null) {
 
+            System.out.println("just before calling observe");
+            System.out.println(programUid);
+            System.out.println(enrollmentUid);
+
             Flowable<StageSection> sectionFlowable = view.observeStageSelection(
                             d2.programModule().programs().uid(programUid).blockingGet(),
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
@@ -385,7 +389,8 @@ public class EventTeiDetailsPresenterImpl implements EventTeiDetailsContracts.Pr
 
     @Override
     public void onScheduleSelected(String uid, View sharedView) {
-        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
+        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid, teiUid, enrollmentUid);
+//        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }
@@ -398,13 +403,13 @@ public class EventTeiDetailsPresenterImpl implements EventTeiDetailsContracts.Pr
 
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
-            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid, null));
+            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid));
             view.openEventCapture(intent);
         } else {
             Event event = d2.eventModule().events().uid(uid).blockingGet();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
-                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status(), null
+                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status()
             ));
             view.openEventInitial(intent);
         }

@@ -41,6 +41,7 @@
             name="canAddEvents"
             type="java.lang.Boolean" />
 
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -77,6 +78,7 @@
                     app:presenter="@{presenter}"
                     app:program="@{program}"
                     app:trackEntity="@{trackEntity}" />
+
             </androidx.cardview.widget.CardView>
 
             <androidx.recyclerview.widget.RecyclerView

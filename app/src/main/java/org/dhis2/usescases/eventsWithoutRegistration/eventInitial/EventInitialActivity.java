@@ -81,7 +81,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Program program;
     private Boolean accessData;
     private EventDetails eventDetails = new EventDetails();
-    private Set<String> setOfAttributeNames;
+//    private Set<String> setOfAttributeNames;
 
     private final CompositeDisposable disposable = new CompositeDisposable();
 
@@ -89,7 +89,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
-                                   String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus, @Nullable ArrayList<String> attributeNames) {
+                                   String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.PROGRAM_UID, programUid);
         bundle.putString(Constants.EVENT_UID, eventUid);
@@ -102,9 +102,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
         bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus);
         System.out.println("hiiiiiii");
-        if (attributeNames != null) {
-            bundle.putStringArrayList("ATTRIBUTE_NAMES", attributeNames);
-        }
+//        if (attributeNames != null) {
+//            bundle.putStringArrayList("ATTRIBUTE_NAMES", attributeNames);
+//        }
 
         return bundle;
     }
@@ -125,7 +125,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
-        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+//        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
     }
 
     @Override
@@ -273,10 +273,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void startFormActivity(String eventUid, boolean isNew) {
+
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         // TODO: remove empty strings
-        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, getTrackedEntityInstance, enrollmentUid, setOfAttributeNames));
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, getTrackedEntityInstance, enrollmentUid));
         startActivity(intent);
         finish();
     }

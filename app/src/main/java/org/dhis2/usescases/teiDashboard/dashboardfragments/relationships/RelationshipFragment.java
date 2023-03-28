@@ -284,7 +284,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         Bundle bundle = EventCaptureActivity.getActivityBundle(
                 eventUid,
                 programUid,
-                EventMode.CHECK, "", "", null
+                EventMode.CHECK, "", ""
         );
         Intent intent = new Intent(getContext(), EventCaptureActivity.class);
         intent.putExtras(bundle);

@@ -73,7 +73,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private ActivityEventCaptureBinding binding;
     @Inject
-    EventCaptureContract.Presenter presenter;
+    public EventCaptureContract.Presenter presenter;
     @Inject
     NavigationPageConfigurator pageConfigurator;
     @Inject
@@ -91,9 +91,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private OnEditionListener onEditionListener;
     private EventCapturePagerAdapter adapter;
     private DashboardViewModel dashboardViewModel;
-    private Set<String> setOfAttributeNames;
+//    private Set<String> setOfAttributeNames;
 
-    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode, @Nullable String teiUid, @Nullable String enrollmentUid, @Nullable Set<String> attributeNames) {
+    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode, @Nullable String teiUid, @Nullable String enrollmentUid
+//            , @Nullable Set<String> attributeNames
+    ) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EVENT_UID, eventUid);
         bundle.putString(Constants.PROGRAM_UID, programUid);
@@ -107,12 +109,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
         }
 
-        if (attributeNames != null) {
-
-            ArrayList<String> x = new ArrayList<>(attributeNames);
-
-            bundle.putStringArrayList("ATTRIBUTE_NAMES", x);
-        }
+//        if (attributeNames != null) {
+//
+//            ArrayList<String> x = new ArrayList<>(attributeNames);
+//
+//            bundle.putStringArrayList("ATTRIBUTE_NAMES", x);
+//        }
 
         return bundle;
     }
@@ -139,7 +141,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         System.out.println(programStageUid);
 
         // TODO: fails due to lack of dynamism
-        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+//        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
 
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(new EventCaptureModule(this, eventUid, OrientationUtilsKt.isPortrait(this)));
 
@@ -171,7 +173,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
             getSupportFragmentManager().beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid)).commitAllowingStateLoss();
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, eventUid, programStageUid, setOfAttributeNames)).commitAllowingStateLoss();
+            getSupportFragmentManager().beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, eventUid, programStageUid, new HashSet<>()
+//                    setOfAttributeNames
+            )).commitAllowingStateLoss();
 
         }
 

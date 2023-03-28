@@ -73,27 +73,35 @@
                 <LinearLayout
                     android:id="@+id/sectionSelectedMark"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_width="6dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="64dp"
                     android:background="@color/primaryAlpha"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
+<!--                <include-->
+<!--                    android:id="@+id/card_front"-->
+<!--                    layout="@layout/fragment_tei_data_card_front"-->
+<!--                    app:dashboardModel="@{dashboardModel}"-->
+<!--                    app:enrollment="@{enrollment}"-->
+<!--                    app:followup="@{followup}"-->
+<!--                    app:presenter="@{presenter}"-->
+<!--                    app:highRisk="@{highRisk}"-->
+<!--                    app:lowRisk="@{lowRisk}"-->
+<!--                    app:program="@{program}"-->
+<!--                    app:trackEntity="@{trackEntity}" />-->
+
                 <include
-                    android:id="@+id/card_front"
-                    layout="@layout/fragment_tei_data_card_front"
-                    app:dashboardModel="@{dashboardModel}"
-                    app:enrollment="@{enrollment}"
-                    app:followup="@{followup}"
-                    app:presenter="@{presenter}"
+                    android:id="@+id/card_front_land"
+                    layout="@layout/item_search_tracked_entity"
+                    app:teiSyncState="@{trackEntity.syncState()}"
                     app:highRisk="@{highRisk}"
                     app:lowRisk="@{lowRisk}"
-                    app:program="@{program}"
-                    app:trackEntity="@{trackEntity}" />
+                    app:followUp="@{enrollment.followUp()}"/>
             </androidx.cardview.widget.CardView>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/filterLayout"
@@ -108,7 +116,6 @@
                 tools:listitem="@layout/item_header_filter" />
 
         </LinearLayout>
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tei_recycler"

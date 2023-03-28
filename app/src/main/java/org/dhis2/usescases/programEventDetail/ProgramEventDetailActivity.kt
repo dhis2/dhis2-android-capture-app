@@ -294,7 +294,6 @@ class ProgramEventDetailActivity :
                 null,
                 0,
                 null,
-                null
         )
         startActivity(
                 EventInitialActivity::class.java,
@@ -354,7 +353,7 @@ class ProgramEventDetailActivity :
                 EventCaptureActivity::class.java,
 
                 // TODO: remove empty strings
-                EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK, "", "", null),
+                EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK, "", ""),
                 false, false, null
         )
     }

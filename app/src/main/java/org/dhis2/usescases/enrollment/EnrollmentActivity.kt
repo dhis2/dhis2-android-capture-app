@@ -192,8 +192,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     presenter.getEventStage(eventUid),
                     presenter.getEnrollment()!!.uid(),
                     0,
-                    presenter.getEnrollment()!!.status(),
-                    null
+                    presenter.getEnrollment()!!.status()
             )
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)
@@ -207,7 +206,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                             eventUid,
                             presenter.getProgram().uid(),
                             EventMode.CHECK,
-                            "", "", null
+                            "", ""
                     )
             )
             eventCreationIntent.putExtra(

@@ -12,6 +12,11 @@ class SearchTEViewHolder(
 ) : BaseTeiViewHolder(binding) {
 
     override fun itemConfiguration() {
+
+        System.out.println("on search tei view holder");
+        System.out.println(teiModel.sortingKey);
+        System.out.println(teiModel.sortingValue)
+
         binding.sortingFieldName.text = teiModel.sortingKey
         binding.sortingFieldValue.text = teiModel.sortingValue
     }

@@ -50,6 +50,14 @@
             name="canAddEvents"
             type="java.lang.Boolean" />
 
+        <variable
+            name="highRisk"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="lowRisk"
+            type="java.lang.Boolean" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,16 +102,24 @@
                 <!--                                    app:sortingValue="@{}"-->
                 <!--                                    app:attributeListOpened="@{true}"-->
                 <!--                                    app:orgUnit="Cardinal Hospital Gatewey PHC"/>-->
+<!--                <include-->
+<!--                    android:id="@+id/card_front"-->
+<!--                    layout="@layout/item_search_tracked_entity"-->
+<!--                    app:followUp="@{enrollment.followUp()}"-->
+<!--                    app:overdue="@{false}"-->
+<!--                    app:teiSyncState="@{trackEntity.syncState()}"-->
+<!--                    app:attribute="@{attributeValues}"-->
+<!--                    app:attributeListOpened="@{false}"-->
+<!--                    app:attributeNames="@{attributeNames}"-->
+<!--                    app:orgUnit='@{"Cardinal Hospital Gatewey PHC"}'/>-->
+
                 <include
-                    android:id="@+id/card_front"
+                    android:id="@+id/card_front_land"
                     layout="@layout/item_search_tracked_entity"
-                    app:followUp="@{enrollment.followUp()}"
-                    app:overdue="@{false}"
                     app:teiSyncState="@{trackEntity.syncState()}"
-                    app:attribute="@{attributeValues}"
-                    app:attributeListOpened="@{false}"
-                    app:attributeNames="@{attributeNames}"
-                    app:orgUnit='@{"Cardinal Hospital Gatewey PHC"}'/>
+                    app:highRisk="@{highRisk}"
+                    app:lowRisk="@{lowRisk}"
+                    app:followUp="@{enrollment.followUp()}"/>
             </androidx.cardview.widget.CardView>
 
             <androidx.recyclerview.widget.RecyclerView

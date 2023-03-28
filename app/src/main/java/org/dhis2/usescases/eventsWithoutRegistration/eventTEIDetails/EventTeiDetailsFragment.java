@@ -23,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
+import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.StageSection;
@@ -45,9 +46,13 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.usescases.teiDashboard.ui.FollowupButtonKt;
+import org.dhis2.usescases.teiDashboard.ui.LockButtonKt;
+import org.dhis2.utils.CustomComparator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.resources.ObjectStyleUtils;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
@@ -61,16 +66,20 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -136,6 +145,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     String programUid;
     String enrollmentUid;
     String programStageUid;
+    public SearchTeiModel teiModel;
+    List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes;
+    List<TrackedEntityAttributeValue> attributeValues;
 
     public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid, String eventUid, String stageUid, Set<String> attributeNames) {
         EventTeiDetailsFragment fragment = new EventTeiDetailsFragment();
@@ -187,9 +199,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        System.out.println("EVENT TEI DATA : onCreate()");
-        System.out.println(presenter);
-
+        if (this.teiModel == null) {
+            this.teiModel = new SearchTeiModel();
+        }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_event_tei_details, container, false);
         binding.setPresenter(presenter);
@@ -201,18 +213,18 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 //        activity.observeFilters().observe(getViewLifecycleOwner(), this::showHideFilters);
 //        activity.updatedEnrollment().observe(getViewLifecycleOwner(), this::updateEnrollment);
 
-        binding.cardFront.showAttributesButton.setOnClickListener(new View.OnClickListener() {
+        binding.cardFrontLand.showAttributesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("i got clicked");
 
 
-                binding.cardFront.setAttributeListOpened(!binding.cardFront.getAttributeListOpened());
+                binding.cardFrontLand.setAttributeListOpened(!binding.cardFrontLand.getAttributeListOpened());
 
-                if (binding.cardFront.getAttributeListOpened() == true) {
-                    binding.cardFront.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
+                if (binding.cardFrontLand.getAttributeListOpened() == true) {
+                    binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
                 } else {
-                    binding.cardFront.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
+                    binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
                 }
             }
         });
@@ -227,9 +239,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     }
 
-    private void updateEnrollment(String enrollmentUid) {
-        presenter.getEnrollment(enrollmentUid);
-    }
+//    private void updateEnrollment(String enrollmentUid) {
+//        presenter.getEnrollment(enrollmentUid);
+//    }
 
     private void updateFabItems() {
         List<DialItem> dialItems = new ArrayList<>();
@@ -288,26 +300,26 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
 
-        binding.cardFront.setCustomImplementation(true);
+//        binding.cardFront.setCustomImplementation(true);
 
-        List<TrackedEntityAttributeValue> attributeValuesToSet = new ArrayList<>();
-
-        // TODO:
-        List<String> attributesUids = new ArrayList<>();
-        attributesUids.add("PpEGiQurAll");
-        attributesUids.add("TfdH5KvFmMy");
-        attributesUids.add("aW66s2QSosT");
-        attributesUids.add("gHGyrwKPzej");
-        attributesUids.add("Rv8WM2mTuS5");
-        attributesUids.add("ciCR6BBvIT4");
-        attributesUids.add("qJdyXIggXXJ");
-
-
-        for (String attributeUid : attributesUids) {
-            attributeValuesToSet.add(getMatchingAttriburteValue(attributeValues, attributeUid));
-        }
-
-        binding.setAttributeValues(attributeValuesToSet);
+//        List<TrackedEntityAttributeValue> attributeValuesToSet = new ArrayList<>();
+//
+//        // TODO:
+//        List<String> attributesUids = new ArrayList<>();
+//        attributesUids.add("PpEGiQurAll");
+//        attributesUids.add("TfdH5KvFmMy");
+//        attributesUids.add("aW66s2QSosT");
+//        attributesUids.add("gHGyrwKPzej");
+//        attributesUids.add("Rv8WM2mTuS5");
+//        attributesUids.add("ciCR6BBvIT4");
+//        attributesUids.add("qJdyXIggXXJ");
+//
+//
+//        for (String attributeUid : attributesUids) {
+//            attributeValuesToSet.add(getMatchingAttriburteValue(attributeValues, attributeUid));
+//        }
+//
+//        binding.setAttributeValues(attributeValuesToSet);
 
 
     }
@@ -326,6 +338,11 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public void setEnrollmentData(Program program, Enrollment enrollment) {
+
+        System.out.println("on set enr data");
+        System.out.println(enrollment);
+        System.out.println(program);
+
         if (adapter != null) {
             adapter.setEnrollment(enrollment);
         }
@@ -335,19 +352,168 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             followUp.set(enrollment.followUp() != null ? enrollment.followUp() : false);
         }
         binding.setFollowup(followUp);
+
+
+        if (this.teiModel == null) {
+            this.teiModel = new SearchTeiModel();
+        }
+        this.teiModel.setCurrentEnrollment(enrollment);
+
+        System.out.println("on set enr data 22222222222222222222222222222");
+        System.out.println(this.teiModel.getAttributeValues());
+        System.out.println(this.teiModel.getSelectedEnrollment());
+    }
+
+    TrackedEntityAttributeValue getAttributeValue(String attributeUid) {
+        List<TrackedEntityAttributeValue> filteredValue = this.attributeValues.stream().filter(value -> {
+            System.out.println(value.trackedEntityAttribute().toString() + "===================" + attributeUid.toString());
+            return value.trackedEntityAttribute().equals(attributeUid);
+        }).collect(Collectors.toList());
+
+        System.out.println("attribute getting");
+        System.out.println(this.attributeValues.size());
+        System.out.println(filteredValue);
+
+        return filteredValue.size() > 0 ? filteredValue.get(0) : null;
+
+    }
+
+
+    public void setAttributesAndValues(List<TrackedEntityAttributeValue> trackedEntityAttributeValues, List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
+
+        System.out.println("hellooooooooooo????");
+        System.out.println(trackedEntityAttributeValues);
+        System.out.println(programTrackedEntityAttributes);
+
+        LinkedHashMap<String, TrackedEntityAttributeValue> linkedHashMapOfAttrValues = new LinkedHashMap<>();
+
+        int teiAttributesLoopCounter = 0;
+        while (teiAttributesLoopCounter < programTrackedEntityAttributes.size()) {
+
+            System.out.println("-------------------------");
+            System.out.println(programTrackedEntityAttributes.get(teiAttributesLoopCounter).uid());
+            TrackedEntityAttributeValue value = getAttributeValue(programTrackedEntityAttributes.get(teiAttributesLoopCounter).trackedEntityAttribute().uid());
+
+            linkedHashMapOfAttrValues.put(programTrackedEntityAttributes.get(teiAttributesLoopCounter).displayShortName().replace("Mother program ", "").replace("Newborn program ", ""), value);
+            teiAttributesLoopCounter++;
+        }
+
+        this.teiModel.setAttributeValues(linkedHashMapOfAttrValues);
+
+        System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+        System.out.println(this.teiModel.getAttributeValues().keySet());
+        System.out.println(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
+
+        if (OrientationUtilsKt.isLandscape()) {
+            binding.cardFrontLand.setAttributeNames(this.teiModel.getAttributeValues().keySet());
+            binding.cardFrontLand.setAttribute(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
+        }
+
+        if (OrientationUtilsKt.isPortrait()) {
+
+            DetailsButtonKt.setButtonContent(
+                    binding.cardFrontLand.detailsButton,
+                    "Person",
+                    () -> {
+                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
+                        return Unit.INSTANCE;
+                    }
+            );
+
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+            LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
+                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+        } else {
+
+            System.out.println("******************************************************************");
+            System.out.println(binding.getProgram());
+
+            DetailsButtonKt.setButtonContent(
+                    binding.cardFrontLand.detailsButton,
+                    "Person",
+                    () -> {
+//                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
+                        return Unit.INSTANCE;
+                    }
+            );
+
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+                presenter.onFollowUp(dashboardModel);
+                presenter.init();
+                return Unit.INSTANCE;
+            });
+
+            LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
+//                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+        }
+
     }
 
     @Override
-    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit) {
+    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
 
-        System.out.println("checking for tei attr values");
-        System.out.println(trackedEntityInstance);
-        System.out.println(trackedEntityInstance.trackedEntityAttributeValues());
+        System.out.println("on set tei data 1111111111111111111111111");
+        System.out.println(this.programTrackedEntityAttributes);
+
+        if (OrientationUtilsKt.isLandscape()) {
+            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
+            this.attributeValues = trackedEntityAttributeValues;
+
+            if (this.programTrackedEntityAttributes != null) {
+
+                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+
+            }
+//            binding.cardFrontLand.setAttribute(trackedEntityAttributeValues);
+
+//            Set<String> attributeNames = new HashSet<>();
+//
+//            for (TrackedEntityAttributeValue attributeValue : trackedEntityAttributeValues) {
+//                attributeNames.add(attributeValue.trackedEntityAttribute());
+//
+//            }
+//
+//            System.out.println("namesssssssssssssss");
+//            System.out.println(attributeNames);
+//
+//            binding.cardFrontLand.setAttributeNames(attributeNames);
+
+//            binding.cardFrontLand.set
+        }
 
         binding.setTrackEntity(trackedEntityInstance);
-        binding.setAttributeNames(attributeNames);
 //        binding.cardFront.orgUnit.setText(organisationUnit.displayName());
+
+        if (this.teiModel == null) {
+            this.teiModel = new SearchTeiModel();
+        }
+
+        this.teiModel.setTei(trackedEntityInstance);
+        this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
+
+        if (teiModel.getSelectedEnrollment() != null) {
+            System.out.println("on set tei 333333333333333333333333333333");
+            System.out.println(this.teiModel.getAttributeValues());
+            System.out.println(this.teiModel.getSelectedEnrollment());
+        }
+
+        System.out.println("on set tei data");
+        System.out.println(this.teiModel.getAttributeValues());
+        System.out.println(this.teiModel.getSelectedEnrollment());
+
+
     }
+
 
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
@@ -375,10 +541,55 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 //                    return Unit.INSTANCE;
 //                }
 //        );
+        if (OrientationUtilsKt.isPortrait()) {
+
+            DetailsButtonKt.setButtonContent(
+                    binding.cardFrontLand.detailsButton,
+                    "Person",
+                    () -> {
+                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
+                        return Unit.INSTANCE;
+                    }
+            );
+
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+            LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
+                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+        } else {
+
+            System.out.println("******************************************************************");
+            System.out.println(binding.getProgram());
+
+            DetailsButtonKt.setButtonContent(
+                    binding.cardFrontLand.detailsButton,
+                    "Person",
+                    () -> {
+                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
+                        return Unit.INSTANCE;
+                    }
+            );
+
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+                presenter.onFollowUp(dashboardModel);
+                presenter.init();
+                return Unit.INSTANCE;
+            });
+
+            LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
+                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+        }
 
         binding.executePendingBindings();
-
-        System.out.println(dashboardModel.getTrackedEntityAttributeValues());
 
         if (getSharedPreferences().getString(PREF_COMPLETED_EVENT, null) != null) {
             presenter.displayGenerateEvent(getSharedPreferences().getString(PREF_COMPLETED_EVENT, null));
@@ -769,10 +980,66 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void setRiskColor(String risk) {
 
+        if (risk == "High Risk") {
+            System.out.println("High");
+
+            binding.setHighRisk(true);
+            binding.setLowRisk(false);
+        }
+
+        if (risk == "Low Risk") {
+
+            System.out.println("Low");
+            binding.setLowRisk(true);
+            binding.setHighRisk(false);
+        }
+
+    }
+
+    @Override
+    public void setProgramAttributes(List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
+
+        System.out.println("attributes size");
+        System.out.println(programTrackedEntityAttributes.size());
+
+        this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
+                .filter(attr -> attr.displayInList())
+                .collect(Collectors.toList());
+
+        Collections.sort(this.programTrackedEntityAttributes, new CustomComparator());
+
+        if (OrientationUtilsKt.isLandscape()) {
+
+            System.out.println("do i have attr values");
+            if (this.attributeValues != null) {
+
+                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+
+            }
+
+//            Set<String> attributeNames = new HashSet<>();
+//
+//            for (ProgramTrackedEntityAttribute attributeValue : this.programTrackedEntityAttributes) {
+//
+//                attributeNames.add(attributeValue.displayShortName().replace("Mother program ","").replace("Newborn program ", ""));
+//
+//                System.out.println("-----------------------------------");
+//                System.out.println(attributeValue.displayShortName());
+//
+//
+//
+//            }
+//
+//            System.out.println("namesssssssssssssss");
+//            System.out.println(attributeNames);
+//
+//            binding.cardFrontLand.setAttributeNames(attributeNames);
+        }
     }
 
     @Override
     public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
         presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
+
 }

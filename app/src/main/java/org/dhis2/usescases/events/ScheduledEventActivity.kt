@@ -28,13 +28,18 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 
 const val EXTRA_EVENT_UID = "EVENT_UID"
+const val TEI_UID = "TEI_UID"
+const val ENROLLMENT_UID = "ENROLLMENT_UID"
 
 class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.View {
 
     companion object {
-        fun getIntent(context: Context, eventUid: String): Intent {
+        fun getIntent(context: Context, eventUid: String, teiUid: String, enrollmentUid: String): Intent {
             val intent = Intent(context, ScheduledEventActivity::class.java)
             intent.putExtra(EXTRA_EVENT_UID, eventUid)
+            intent.putExtra(TEI_UID, teiUid)
+            intent.putExtra(ENROLLMENT_UID, enrollmentUid)
+
             return intent
         }
     }
@@ -43,6 +48,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     private lateinit var program: Program
     private lateinit var event: Event
     private lateinit var binding: ActivityEventScheduledBinding
+    private var teiUid: String? = ""
+    private var enrollmentUid: String? = ""
 
     @Inject
     lateinit var presenter: ScheduledEventContract.Presenter
@@ -61,6 +68,17 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_scheduled)
         binding.presenter = presenter
+
+        teiUid = intent.extras!!.getString(
+                TEI_UID
+        )
+
+        enrollmentUid = intent.extras!!.getString(
+                ENROLLMENT_UID
+        )
+
+        System.out.println("checkinnnngggggg")
+        System.out.println(enrollmentUid);
     }
 
     override fun onResume() {
@@ -226,21 +244,19 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 stage.uid(),
                 event.enrollment(),
                 stage.standardInterval() ?: 0,
-                presenter.getEnrollment().status(),
-                null)
+                presenter.getEnrollment().status()
+        )
         startActivity(Intent(this, EventInitialActivity::class.java).apply { putExtras(bundle) })
         finish()
     }
 
     override fun openFormActivity() {
-        // TODO: remove empty strings
         val bundle = EventCaptureActivity.getActivityBundle(
                 event.uid(),
                 program.uid(),
                 EventMode.CHECK,
-                "",
-                "",
-                null
+                this.teiUid,
+                this.enrollmentUid
         )
         Intent(activity, EventCaptureActivity::class.java).apply {
             putExtras(bundle)

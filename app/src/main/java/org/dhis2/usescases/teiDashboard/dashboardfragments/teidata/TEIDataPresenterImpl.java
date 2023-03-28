@@ -42,6 +42,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -108,6 +109,10 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void init() {
+
+        List<ProgramTrackedEntityAttribute> attributes = dashboardRepository.getProgramTrackedEntityAttributes(programUid).blockingFirst();
+        view.setProgramAttributes(attributes);
+
         compositeDisposable.add(filterManager.asFlowable().startWith(filterManager).flatMap(fManager -> Flowable.just(filterRepository.dashboardFilters(programUid))).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(filters -> {
             if (filters.isEmpty()) {
                 view.hideFilters();
@@ -121,6 +126,9 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         }).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(fileNameAndDefault -> view.showTeiImage(fileNameAndDefault.val0(), fileNameAndDefault.val1()), Timber::e));
 
         if (programUid != null) {
+
+            System.out.println("just before on observe");
+            System.out.println(enrollmentUid);
 
             Flowable<StageSection> sectionFlowable = view.observeStageSelection(d2.programModule().programs().uid(programUid).blockingGet(), d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()).startWith(new StageSection("", false)).map(selectedStage -> {
                 currentStage = selectedStage.getStageUid().equals(currentStage) && !selectedStage.getShowOptions() ? "" : selectedStage.getStageUid();
@@ -138,12 +146,10 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             view.setEnrollmentData(null, null);
         }
 
-        System.out.println("this gets executed??");
-
         view.setAttributeValues(teiDataRepository.getAttributeValues(teiUid));
 
         compositeDisposable.add(Single.zip(teiDataRepository.getTrackedEntityInstance(), teiDataRepository.enrollingOrgUnit(),
-                Pair::create).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(teiAndOrgUnit -> view.setTrackedEntityInstance(teiAndOrgUnit.val0(), teiAndOrgUnit.val1()
+                Pair::create).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(teiAndOrgUnit -> view.setTrackedEntityInstance(teiAndOrgUnit.val0(), teiAndOrgUnit.val1(), teiDataRepository.getAttributeValues(teiUid)
         ), Timber::e));
 
         compositeDisposable.add(filterManager.getPeriodRequest().subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(periodRequest -> view.showPeriodRequest(periodRequest.getFirst()), Timber::e));
@@ -154,7 +160,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private List<EventViewModel> applyEffects(@NonNull List<EventViewModel> events, @NonNull Result<RuleEffect> calcResult) {
 
         System.out.println("rule results");
-        System.out.println(calcResult.items().get(0));
+//        System.out.println(calcResult.items().get(0));
 
         Boolean followpuSet = false;
 
@@ -162,12 +168,24 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
             System.out.println(ruleResult.ruleId());
 
-            if (ruleResult.ruleId().toString().equals("ra0NoOXo4rW")) {
+            if ((ruleResult.ruleId().toString().equals("ra0NoOXo4rW") || ruleResult.ruleId().toString().equals("uZWJUu8ymQq") || ruleResult.ruleId().toString().equals("iAq6DstMfjk") || ruleResult.ruleId().toString().equals("BRsgh8KW2nO")) && ruleResult.ruleAction() instanceof RuleActionDisplayKeyValuePair) {
 
-                System.out.println("----------------------------------");
-                System.out.println(ruleResult.ruleAction());
-                System.out.println(ruleResult.ruleAction());
-                System.out.println(ruleResult.data());
+                if(((RuleActionDisplayKeyValuePair) ruleResult.ruleAction()).location() == "feedback" && ((RuleActionDisplayKeyValuePair) ruleResult.ruleAction()).content() == "High Risk"){
+//                    ((RuleActionDisplayKeyValuePair) ruleResult.ruleAction()).location();
+                    followpuSet = true;
+                    onSetSpecificFollowup(this.dashboardModel, followpuSet);
+
+                    view.setRiskColor("High Risk");
+
+                }
+
+//                System.out.println("----------------------------------");
+//                System.out.println(ruleResult.ruleAction());
+//                System.out.println(ruleResult.ruleAction());
+//                System.out.println(ruleResult.data());
+//                System.out.println("wayaaaaaaaaaaa");
+
+
 
                 followpuSet = true;
                 onSetSpecificFollowup(this.dashboardModel, followpuSet);
@@ -246,7 +264,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
 
-        boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
+        boolean followup = dashboardRepository.setFollowUp(enrollmentUid);
         analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
         view.showToast(followup ? view.getContext().getString(R.string.follow_up_enabled) : view.getContext().getString(R.string.follow_up_disabled));
 
@@ -285,7 +303,13 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onScheduleSelected(String uid, View sharedView) {
-        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
+
+        System.out.println(this.enrollmentUid);
+        System.out.println("traciiinnnggggg");
+        System.out.println(enrollmentUid);
+
+//        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
+        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid, this.teiUid, this.enrollmentUid);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }
@@ -293,74 +317,78 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onEventSelected(String uid, EventStatus eventStatus, View sharedView) {
 
-        List<ProgramTrackedEntityAttribute> attributes = dashboardRepository.getProgramTrackedEntityAttributes(programUid).blockingFirst();
-
-        System.out.println("attribures hereree???");
-        System.out.println(attributes);
-
-        List<String> listOfAttributeNames = new ArrayList<>();
-
-        for (ProgramTrackedEntityAttribute attribute : attributes) {
-            String[] x = attribute.displayName().split("Mother program ");
-            String y;
-
-            if (x.length > 1) {
-                y = x[1];
-            } else {
-                y = x[0];
-            }
-
-            x = y.split("ANC.A7. ");
-
-            if (x.length > 1) {
-                y = x[1];
-            } else {
-                y = x[0];
-            }
-
-            listOfAttributeNames.add(y);
-        }
-
-        revlist(listOfAttributeNames);
+//        List<ProgramTrackedEntityAttribute> attributes = dashboardRepository.getProgramTrackedEntityAttributes(programUid).blockingFirst();
+//
+//        System.out.println("attribures hereree???");
+//        System.out.println(attributes);
+//
+//        List<String> listOfAttributeNames = new ArrayList<>();
+//
+//        for (ProgramTrackedEntityAttribute attribute : attributes) {
+//            String[] x = attribute.displayName().split("Mother program ");
+//            String y;
+//
+//            if (x.length > 1) {
+//                y = x[1];
+//            } else {
+//                y = x[0];
+//            }
+//
+//            x = y.split("ANC.A7. ");
+//
+//            if (x.length > 1) {
+//                y = x[1];
+//            } else {
+//                y = x[0];
+//            }
+//
+//            listOfAttributeNames.add(y);
+//        }
+//
+//        revlist(listOfAttributeNames);
 
         // TODO: Softcode arrangement of attribute names to use fetched attributenames
-        List<String> f = new ArrayList<>();
-        f.add("Unique ID");
-        f.add("Given name");
-        f.add("Family name");
-        f.add("Date of birth");
-        f.add("Age");
-        f.add("Mobile number");
-        f.add("Woman wants to receive reminders during pregnancy");
+//        List<String> f = new ArrayList<>();
+//        f.add("Unique ID");
+//        f.add("Given name");
+//        f.add("Family name");
+//        f.add("Date of birth");
+//        f.add("Age");
+//        f.add("Mobile number");
+//        f.add("Woman wants to receive reminders during pregnancy");
 
 
 //        Set<String> attributeNames = new HashSet<>(listOfAttributeNames);
-        Set<String> attributeNames = new HashSet<>(f);
-
-        System.out.println("do i get the attributes?");
-        System.out.println(attributeNames);
+//        Set<String> attributeNames = new HashSet<>(f);
+//
+//        System.out.println("do i get the attributes?");
+//        System.out.println(attributeNames);
 
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Event event = d2.eventModule().events().uid(uid).blockingGet();
 
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
-            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid, attributeNames));
+            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid));
             view.openEventCapture(intent);
         } else {
             Event event = d2.eventModule().events().uid(uid).blockingGet();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
 
-            ArrayList<String> x = null;
-            if (attributeNames != null) {
+//            ArrayList<String> x = null;
+//            if (attributeNames != null) {
+//
+//                System.out.println("hellooooooo");
+//                System.out.println(attributeNames);
+//                x = new ArrayList<>(attributeNames);
+//
+//            }
 
-                System.out.println("hellooooooo");
-                System.out.println(attributeNames);
-                x = new ArrayList<>(attributeNames);
-
-            }
+            System.out.println("Hapaaaa????");
+            System.out.println(dashboardModel.getCurrentEnrollment().uid());
+            System.out.println(dashboardModel.getCurrentEnrollment().status());
 
 
-            intent.putExtras(EventInitialActivity.getBundle(programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status(), x));
+            intent.putExtras(EventInitialActivity.getBundle(programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status()));
             view.openEventInitial(intent);
         }
     }

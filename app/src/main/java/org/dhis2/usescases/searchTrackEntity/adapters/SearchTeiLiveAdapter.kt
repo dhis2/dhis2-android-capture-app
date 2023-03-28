@@ -28,6 +28,9 @@ class SearchTeiLiveAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+        System.out.println("serach tei live adapter");
+
         val inflater = LayoutInflater.from(parent.context)
         return when (SearchItem.values()[viewType]) {
             SearchItem.TEI -> SearchTEViewHolder(

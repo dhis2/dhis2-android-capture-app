@@ -57,6 +57,11 @@ fun ComposeView?.setButtonContent(
     trackedEntityName: String,
     onButtonClicked: () -> Unit
 ) {
+
+    System.out.println("seting details button");
+    System.out.println(trackedEntityName);
+    System.out.println(onButtonClicked);
+
     this?.setContent {
         MdcTheme {
             DetailsButton(

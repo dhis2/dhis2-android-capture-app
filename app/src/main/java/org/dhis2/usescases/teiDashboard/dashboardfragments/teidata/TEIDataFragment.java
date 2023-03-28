@@ -17,19 +17,18 @@ import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
+import org.dhis2.commons.data.SearchTeiModel;
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
+import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
@@ -40,16 +39,15 @@ import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
 import org.dhis2.usescases.teiDashboard.ui.FollowupButtonKt;
 import org.dhis2.usescases.teiDashboard.ui.LockButtonKt;
+import org.dhis2.utils.CustomComparator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
-import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -61,14 +59,17 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -93,6 +94,9 @@ import static org.dhis2.commons.Constants.PROGRAM_UID;
 import static org.dhis2.commons.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
 
@@ -132,6 +136,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private DashboardProgramModel dashboardModel;
     private TeiDashboardMobileActivity activity;
     private PopupMenu popupMenu;
+    public SearchTeiModel teiModel;
+    List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes;
+    List<TrackedEntityAttributeValue> attributeValues;
 
     public static TEIDataFragment newInstance(String programUid, String teiUid, String enrollmentUid) {
         TEIDataFragment fragment = new TEIDataFragment();
@@ -168,10 +175,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        System.out.println("TEI DATA : onCreate()");
-        System.out.println(presenter);
-
-
+        if (this.teiModel == null) {
+            this.teiModel = new SearchTeiModel();
+        }
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
         activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
@@ -186,6 +192,30 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.filterLayout.setAdapter(filtersAdapter);
         } catch (Exception e) {
             Timber.e(e);
+        }
+
+        System.out.println("on create view");
+        System.out.println(this.teiModel.getAttributeValues());
+        System.out.println(this.teiModel.getSelectedEnrollment());
+
+//        binding.cardFront.setFollowUp(false);
+        if (OrientationUtilsKt.isLandscape()) {
+
+            binding.cardFrontLand.setAttributeListOpened(false);
+            binding.cardFrontLand.showAttributesButton.setOnClickListener((event) -> {
+
+                if (binding.cardFrontLand.getAttributeListOpened()) {
+
+//                    showAttributeList();
+//                    binding.cardFrontLand.setAttributeListOpened(true);
+                } else {
+//                    hideAttributeList();
+//                    binding.cardFrontLand.setAttributeListOpened(true);
+
+                }
+
+            });
+
         }
 
         return binding.getRoot();
@@ -257,6 +287,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void setEnrollmentData(Program program, Enrollment enrollment) {
+
+        System.out.println("on set enr data");
+        System.out.println(enrollment);
+        System.out.println(program);
+
         if (adapter != null) {
             adapter.setEnrollment(enrollment);
         }
@@ -266,16 +301,124 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             followUp.set(enrollment.followUp() != null ? enrollment.followUp() : false);
         }
         binding.setFollowup(followUp);
+
+
+        if (this.teiModel == null) {
+            this.teiModel = new SearchTeiModel();
+        }
+        this.teiModel.setCurrentEnrollment(enrollment);
+
+        System.out.println("on set enr data 22222222222222222222222222222");
+        System.out.println(this.teiModel.getAttributeValues());
+        System.out.println(this.teiModel.getSelectedEnrollment());
+    }
+
+    TrackedEntityAttributeValue getAttributeValue(String attributeUid) {
+        List<TrackedEntityAttributeValue> filteredValue = this.attributeValues.stream().filter(value -> {
+            System.out.println(value.trackedEntityAttribute().toString() + "===================" + attributeUid.toString());
+            return value.trackedEntityAttribute().equals(attributeUid);
+        }).collect(Collectors.toList());
+
+        System.out.println("attribute getting");
+        System.out.println(this.attributeValues.size());
+        System.out.println(filteredValue);
+
+        return filteredValue.size() > 0 ? filteredValue.get(0) : null;
+
+    }
+
+
+    public void setAttributesAndValues(List<TrackedEntityAttributeValue> trackedEntityAttributeValues, List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
+
+        System.out.println("hellooooooooooo????");
+        System.out.println(trackedEntityAttributeValues);
+        System.out.println(programTrackedEntityAttributes);
+
+        LinkedHashMap<String, TrackedEntityAttributeValue> linkedHashMapOfAttrValues = new LinkedHashMap<>();
+
+        int teiAttributesLoopCounter = 0;
+        while (teiAttributesLoopCounter < programTrackedEntityAttributes.size()) {
+
+            System.out.println("-------------------------");
+            System.out.println(programTrackedEntityAttributes.get(teiAttributesLoopCounter).uid());
+            TrackedEntityAttributeValue value = getAttributeValue(programTrackedEntityAttributes.get(teiAttributesLoopCounter).trackedEntityAttribute().uid());
+
+            linkedHashMapOfAttrValues.put(programTrackedEntityAttributes.get(teiAttributesLoopCounter).displayShortName().replace("Mother program ", "").replace("Newborn program ", ""), value);
+            teiAttributesLoopCounter++;
+        }
+
+        this.teiModel.setAttributeValues(linkedHashMapOfAttrValues);
+
+        System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+        System.out.println(this.teiModel.getAttributeValues().keySet());
+        System.out.println(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
+
+        if (OrientationUtilsKt.isLandscape()) {
+            binding.cardFrontLand.setAttributeNames(this.teiModel.getAttributeValues().keySet());
+            binding.cardFrontLand.setAttribute(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
+        }
+
     }
 
     @Override
-    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit) {
+    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
+
+        System.out.println("on set tei data 1111111111111111111111111");
+        System.out.println(trackedEntityInstance);
+        System.out.println(organisationUnit);
+
+        if (OrientationUtilsKt.isLandscape()) {
+            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
+            this.attributeValues = trackedEntityAttributeValues;
+
+            if (this.programTrackedEntityAttributes != null) {
+
+                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+
+            }
+//            binding.cardFrontLand.setAttribute(trackedEntityAttributeValues);
+
+//            Set<String> attributeNames = new HashSet<>();
+//
+//            for (TrackedEntityAttributeValue attributeValue : trackedEntityAttributeValues) {
+//                attributeNames.add(attributeValue.trackedEntityAttribute());
+//
+//            }
+//
+//            System.out.println("namesssssssssssssss");
+//            System.out.println(attributeNames);
+//
+//            binding.cardFrontLand.setAttributeNames(attributeNames);
+
+//            binding.cardFrontLand.set
+        }
+
         binding.setTrackEntity(trackedEntityInstance);
-        binding.cardFront.orgUnit.setText(organisationUnit.displayName());
+//        binding.cardFront.orgUnit.setText(organisationUnit.displayName());
+
+        if (this.teiModel == null) {
+            this.teiModel = new SearchTeiModel();
+        }
+
+        this.teiModel.setTei(trackedEntityInstance);
+        this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
+
+        if (teiModel.getSelectedEnrollment() != null) {
+            System.out.println("on set tei 333333333333333333333333333333");
+            System.out.println(this.teiModel.getAttributeValues());
+            System.out.println(this.teiModel.getSelectedEnrollment());
+        }
+
+        System.out.println("on set tei data");
+        System.out.println(this.teiModel.getAttributeValues());
+        System.out.println(this.teiModel.getSelectedEnrollment());
+
+
     }
 
     @Override
     public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
+
 
     }
 
@@ -297,24 +440,54 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             showLoadingProgress(false);
         }
 
-        DetailsButtonKt.setButtonContent(
-                binding.cardFront.detailsButton,
-                activity.presenter.getTEType(),
-                () -> {
-                    presenter.seeDetails(binding.cardFront.cardData, dashboardModel);
-                    return Unit.INSTANCE;
-                }
-        );
 
-        FollowupButtonKt.setFollowupButtonContent(binding.cardFront.followupButton, activity.presenter.getTEType(), () -> {
-            presenter.onFollowUp(dashboardModel);
-            return Unit.INSTANCE;
-        });
+        if(OrientationUtilsKt.isPortrait()) {
 
-        LockButtonKt.setLockButtonContent(binding.cardFront.lockButton, activity.presenter.getTEType(), () -> {
-            presenter.onFollowUp(dashboardModel);
-            return Unit.INSTANCE;
-        });
+            DetailsButtonKt.setButtonContent(
+                    binding.cardFront.detailsButton,
+                    activity.presenter.getTEType(),
+                    () -> {
+                        presenter.seeDetails(binding.cardFront.cardData, dashboardModel);
+                        return Unit.INSTANCE;
+                    }
+            );
+
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFront.followupButton, activity.presenter.getTEType(), () -> {
+                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+            LockButtonKt.setLockButtonContent(binding.cardFront.lockButton, activity.presenter.getTEType(), () -> {
+//                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+        }else{
+
+            System.out.println("******************************************************************");
+            System.out.println(binding.getProgram());
+
+            DetailsButtonKt.setButtonContent(
+                    binding.cardFrontLand.detailsButton,
+                    activity.presenter.getTEType(),
+                    () -> {
+                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
+                        return Unit.INSTANCE;
+                    }
+            );
+
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, activity.presenter.getTEType(), () -> {
+                presenter.onFollowUp(dashboardModel);
+                presenter.init();
+                return Unit.INSTANCE;
+            });
+
+            LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, activity.presenter.getTEType(), () -> {
+                presenter.onFollowUp(dashboardModel);
+                return Unit.INSTANCE;
+            });
+
+        }
 
         binding.executePendingBindings();
 
@@ -401,27 +574,27 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
             } else { */
 
-                System.out.println("i do not get in here ");
+            System.out.println("i do not get in here ");
 
-                for (EventViewModel eventViewModel : events) {
-                    if (eventViewModel.getType() == EventViewModelType.EVENT) {
-                        Event event = eventViewModel.getEvent();
+            for (EventViewModel eventViewModel : events) {
+                if (eventViewModel.getType() == EventViewModelType.EVENT) {
+                    Event event = eventViewModel.getEvent();
 
-                        System.out.println(event.eventDate());
-                        System.out.println(event.completedDate());
-                        System.out.println("ddddddddddddddddddddddddddd");
+                    System.out.println(event.eventDate());
+                    System.out.println(event.completedDate());
+                    System.out.println("ddddddddddddddddddddddddddd");
 
-                        if (event.eventDate() != null) {
-                            if (event.eventDate().after(DateUtils.getInstance().getToday()))
-                                binding.teiRecycler.scrollToPosition(events.indexOf(event));
-                        }
-                        if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                            presenter.getCatComboOptions(event);
-                            catComboShowed.add(event);
-                        } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                            presenter.setDefaultCatOptCombToEvent(event.uid());
+                    if (event.eventDate() != null) {
+                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                            binding.teiRecycler.scrollToPosition(events.indexOf(event));
                     }
+                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
+                        presenter.getCatComboOptions(event);
+                        catComboShowed.add(event);
+                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
+                        presenter.setDefaultCatOptCombToEvent(event.uid());
                 }
+            }
 //            }
         }
         showLoadingProgress(false);
@@ -600,28 +773,52 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showTeiImage(String filePath, String defaultIcon) {
-        if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-            binding.cardFront.teiImage.setVisibility(View.GONE);
-        } else {
-            binding.cardFront.teiImage.setVisibility(View.VISIBLE);
-            Glide.with(this)
-                    .load(new File(filePath))
-                    .error(
-                            ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
-                    )
-                    .transition(withCrossFade())
-                    .transform(new CircleCrop())
-                    .into(binding.cardFront.teiImage);
-            binding.cardFront.teiImage.setOnClickListener(view -> {
-                File fileToShow = new File(filePath);
-                if (fileToShow.exists()) {
-                    new ImageDetailBottomDialog(
-                            null,
-                            fileToShow
-                    ).show(getChildFragmentManager(), ImageDetailBottomDialog.TAG);
-                }
-            });
-        }
+//        if (filePath.isEmpty() && defaultIcon.isEmpty()) {
+//            if (OrientationUtilsKt.isPortrait()) {
+//                binding.cardFront.teiImage.setVisibility(View.GONE);
+//            }
+//        } else {
+//
+//            if (OrientationUtilsKt.isLandscape()) {
+//                binding.cardFrontLand.trackedEntityImage.setVisibility(View.VISIBLE);
+//                Glide.with(this)
+//                        .load(new File(filePath))
+//                        .error(
+//                                ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+//                        )
+//                        .transition(withCrossFade())
+//                        .transform(new CircleCrop())
+//                        .into(binding.cardFrontLand.trackedEntityImage);
+//                binding.cardFrontLand.trackedEntityImage.setOnClickListener(view -> {
+//                    File fileToShow = new File(filePath);
+//                    if (fileToShow.exists()) {
+//                        new ImageDetailBottomDialog(
+//                                null,
+//                                fileToShow
+//                        ).show(getChildFragmentManager(), ImageDetailBottomDialog.TAG);
+//                    }
+//                });
+//            } else {
+//                binding.cardFront.teiImage.setVisibility(View.VISIBLE);
+//                Glide.with(this)
+//                        .load(new File(filePath))
+//                        .error(
+//                                ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+//                        )
+//                        .transition(withCrossFade())
+//                        .transform(new CircleCrop())
+//                        .into(binding.cardFront.teiImage);
+//                binding.cardFront.teiImage.setOnClickListener(view -> {
+//                    File fileToShow = new File(filePath);
+//                    if (fileToShow.exists()) {
+//                        new ImageDetailBottomDialog(
+//                                null,
+//                                fileToShow
+//                        ).show(getChildFragmentManager(), ImageDetailBottomDialog.TAG);
+//                    }
+//                });
+//            }
+//        }
     }
 
     @Override
@@ -752,13 +949,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         System.out.println("999999999999999999999999999999999");
         System.out.println(risk);
 
-        if(risk == "High Risk"){
+        if (risk == "High Risk") {
             System.out.println("High");
             binding.setHighRisk(true);
             binding.setLowRisk(false);
         }
 
-        if(risk == "Low Risk"){
+        if (risk == "Low Risk") {
 
             System.out.println("Low");
             binding.setLowRisk(true);
@@ -768,7 +965,70 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
+    public void setProgramAttributes(List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
+
+        System.out.println("attributes size");
+        System.out.println(programTrackedEntityAttributes.size());
+
+        this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
+                .filter(attr -> attr.displayInList())
+                .collect(Collectors.toList());
+
+        Collections.sort(this.programTrackedEntityAttributes, new CustomComparator());
+
+        if (OrientationUtilsKt.isLandscape()) {
+
+            System.out.println("do i have attr values");
+            if (this.attributeValues != null) {
+
+                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+
+            }
+
+//            Set<String> attributeNames = new HashSet<>();
+//
+//            for (ProgramTrackedEntityAttribute attributeValue : this.programTrackedEntityAttributes) {
+//
+//                attributeNames.add(attributeValue.displayShortName().replace("Mother program ","").replace("Newborn program ", ""));
+//
+//                System.out.println("-----------------------------------");
+//                System.out.println(attributeValue.displayShortName());
+//
+//
+//
+//            }
+//
+//            System.out.println("namesssssssssssssss");
+//            System.out.println(attributeNames);
+//
+//            binding.cardFrontLand.setAttributeNames(attributeNames);
+        }
+
+    }
+
+    @Override
     public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
         presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+    }
+
+
+    private void showAttributeList() {
+        binding.cardFrontLand.attributeBName.setVisibility(View.GONE);
+        binding.cardFrontLand.enrolledOrgUnit.setVisibility(View.GONE);
+        binding.cardFrontLand.sortingFieldName.setVisibility(View.GONE);
+        binding.cardFrontLand.entityAttribute2.setVisibility(View.GONE);
+        binding.cardFrontLand.entityOrgUnit.setVisibility(View.GONE);
+        binding.cardFrontLand.sortingFieldValue.setVisibility(View.GONE);
+        binding.cardFrontLand.attributeList.setVisibility(View.VISIBLE);
+    }
+
+    private void hideAttributeList() {
+        binding.cardFrontLand.attributeList.setVisibility(View.GONE);
+        binding.cardFrontLand.attributeBName.setVisibility(View.VISIBLE);
+        binding.cardFrontLand.enrolledOrgUnit.setVisibility(View.VISIBLE);
+        binding.cardFrontLand.sortingFieldName.setVisibility(View.VISIBLE);
+        binding.cardFrontLand.entityAttribute2.setVisibility(View.VISIBLE);
+        binding.cardFrontLand.entityOrgUnit.setVisibility(View.VISIBLE);
+        binding.cardFrontLand.sortingFieldValue.setVisibility(View.VISIBLE);
     }
 }
