@@ -145,10 +145,11 @@ class ValueStoreImpl(
 
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, teiUid)
-        val valueType =
-            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType()
+        val attr = d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()
+        val valueType = attr.valueType()
+        val optionSet = attr.optionSet()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (isFile(valueType) && value != null) {
+        if (optionSet == null && isFile(valueType) && value != null) {
             try {
                 newValue = saveFileResource(value, valueType == ValueType.IMAGE)
             } catch (e: Exception) {
@@ -188,9 +189,11 @@ class ValueStoreImpl(
     private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
-        val valueType = d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
+        val de = d2.dataElementModule().dataElements().uid(uid).blockingGet()
+        val valueType = de.valueType()
+        val optionSet = de.optionSet()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (isFile(valueType) && value != null) {
+        if (optionSet == null && isFile(valueType) && value != null) {
             try {
                 newValue = saveFileResource(value, valueType == ValueType.IMAGE)
             } catch (e: Exception) {
