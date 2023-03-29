@@ -14,6 +14,8 @@ import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
 import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.decrement
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.increment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -179,7 +181,9 @@ class LoginViewModel(
     fun onLoginButtonClick() {
         view.hideKeyboard()
         analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
+        increment()
         logIn()
+        decrement()
     }
 
     private fun logIn() {
