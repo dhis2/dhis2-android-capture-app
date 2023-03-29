@@ -260,7 +260,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .commitAllowingStateLoss();
         }
 
-        ViewExtensionsKt.clipWithRoundedCorners(binding.mainView, ExtensionsKt.getDp(16));
+        if (OrientationUtilsKt.isLandscape()) {
+            ViewExtensionsKt.clipWithRoundedCorners(binding.mainView, ExtensionsKt.getDp(16));
+        }
     }
 
     @Override

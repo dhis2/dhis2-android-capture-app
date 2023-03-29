@@ -219,7 +219,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             });
 
             ViewExtensionsKt.clipWithAllRoundedCorners(binding.sectionSelectedMark, ExtensionsKt.getDp(2));
-            binding.cardLayout.getBackground().setAlpha(11);
+//            binding.cardLayout.getBackground().setAlpha(11);
 
         }
 
