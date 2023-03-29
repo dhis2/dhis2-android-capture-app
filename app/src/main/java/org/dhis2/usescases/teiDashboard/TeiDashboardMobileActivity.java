@@ -41,6 +41,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterManager;
@@ -258,6 +259,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_form_view, formView)
                     .commitAllowingStateLoss();
         }
+
+        ViewExtensionsKt.clipWithRoundedCorners(binding.mainView, ExtensionsKt.getDp(16));
     }
 
     @Override

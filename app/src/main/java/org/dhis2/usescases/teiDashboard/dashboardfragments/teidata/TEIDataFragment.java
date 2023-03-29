@@ -18,6 +18,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.data.SearchTeiModel;
@@ -215,6 +217,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 }
 
             });
+
+            ViewExtensionsKt.clipWithAllRoundedCorners(binding.sectionSelectedMark, ExtensionsKt.getDp(2));
+            binding.cardLayout.getBackground().setAlpha(11);
 
         }
 

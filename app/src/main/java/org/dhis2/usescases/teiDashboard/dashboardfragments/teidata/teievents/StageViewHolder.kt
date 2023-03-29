@@ -4,6 +4,8 @@ import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.Bindings.clipWithAllRoundedCorners
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
@@ -83,6 +85,8 @@ internal class StageViewHolder(
         if (stageSelected == stage.uid()) {
             System.out.println("pre show events and mark");
             binding.sectionSelectedMark.visibility = View.VISIBLE;
+
+            binding.sectionSelectedMark.clipWithAllRoundedCorners(2.dp)
             stageSelector.onNext(StageSection(stage.uid(), false))
         }
 

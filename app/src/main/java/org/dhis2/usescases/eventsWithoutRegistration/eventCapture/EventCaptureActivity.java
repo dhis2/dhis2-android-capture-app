@@ -203,7 +203,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
             binding.eventViewLandPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);
 
-            ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewLandPager, ExtensionsKt.getDp(16));
+            ViewExtensionsKt.clipWithRoundedCorners(binding.layoutContainer, ExtensionsKt.getDp(16));
 
             registerOnPageChangeCallback(binding.eventViewLandPager);
         } else {

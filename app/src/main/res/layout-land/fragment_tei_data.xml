@@ -65,17 +65,16 @@
                 android:id="@+id/tei_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardElevation="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
                     android:id="@+id/sectionSelectedMark"
-                    android:layout_marginTop="8dp"
-                    android:layout_width="6dp"
-                    android:layout_height="64dp"
-                    android:background="@color/primaryAlpha"
+                    android:layout_marginTop="18dp"
+                    android:layout_width="4dp"
+                    android:layout_height="60dp"
+                    android:background="?colorPrimary"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

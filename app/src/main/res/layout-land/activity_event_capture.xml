@@ -118,6 +118,22 @@
                 app:layout_constraintTop_toBottomOf="@id/guideline" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/top_dummy_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="?colorPrimary"
+            app:layout_constraintBottom_toTopOf="@id/bottom_dummy_view"
+            app:layout_constraintTop_toBottomOf="@id/activityToolbar" />
+
+        <View
+            android:id="@+id/bottom_dummy_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/form_field_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_dummy_view" />
+
         <include
             android:id="@+id/calculationIndicator"
             layout="@layout/indicator_progress"
@@ -129,27 +145,75 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/layoutContainer"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:weightSum="100"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activityToolbar">
+
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/layoutContainer"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:weightSum="100"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/activityToolbar">-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activityToolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline25"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".3" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_50"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".50" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline625"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".70" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline75"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".75" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/tei_column"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="30">
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toStartOf="@id/guideline25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/form_column"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="40">
+                android:layout_height="0dp"
+                android:elevation="8dp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline625"
+                app:layout_constraintStart_toEndOf="@id/guideline25"
+                app:layout_constraintTop_toTopOf="parent" >
 
 
                 <FrameLayout
@@ -166,9 +230,11 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/stats_column"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="30"
-                app:layout_constraintTop_toBottomOf="@+id/calculationIndicator">
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline625"
+                app:layout_constraintTop_toTopOf="parent" >
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/eventViewLandPager"
@@ -194,8 +260,8 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </LinearLayout>
-
+<!--        </LinearLayout>-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
