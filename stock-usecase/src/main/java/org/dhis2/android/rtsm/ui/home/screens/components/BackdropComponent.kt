@@ -201,6 +201,7 @@ fun handleBackNavigation(
         DataEntryStep.COMPLETED -> {
             viewModel.onHandleBackNavigation()
         }
+        DataEntryStep.EDITING_LISTING -> {}
     }
 }
 
