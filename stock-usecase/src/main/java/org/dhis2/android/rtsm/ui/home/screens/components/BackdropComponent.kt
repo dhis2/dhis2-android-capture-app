@@ -192,9 +192,6 @@ fun handleBackNavigation(
                 activity.finish()
             }
         }
-        DataEntryStep.EDITING_LISTING -> {
-            activity.onBackPressedDispatcher.onBackPressed()
-        }
         DataEntryStep.REVIEWING -> {
             viewModel.onHandleBackNavigation()
         }
