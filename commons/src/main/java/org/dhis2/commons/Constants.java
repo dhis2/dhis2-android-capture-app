@@ -1,5 +1,6 @@
 package org.dhis2.commons;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Constants {
@@ -132,6 +133,8 @@ public class Constants {
     public static final String NO_SECTION = "NO_SECTION";
 
     public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
+
+    public static final String NEW_APP_VERSION = "NEW_APP_VERSION";
 
 
     private Constants() {

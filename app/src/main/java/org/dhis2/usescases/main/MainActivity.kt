@@ -1,15 +1,20 @@
 package org.dhis2.usescases.main
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
@@ -20,6 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
+import org.dhis2.Bindings.hasPermissions
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.filters.FilterItem
@@ -28,6 +34,8 @@ import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
+import org.dhis2.ui.dialogs.alert.AlertDialog
+import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
@@ -187,6 +195,7 @@ class MainActivity :
         }
 
         observeSyncState()
+        observeVersionUpdate()
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
@@ -226,6 +235,18 @@ class MainActivity :
         }
     }
 
+    private fun observeVersionUpdate() {
+        presenter.versionToUpdate.observe(this) { versionName ->
+            versionName?.let { showNewVersionAlert(it) }
+        }
+        presenter.downloadingVersion.observe(this) { downloading ->
+            if (downloading) {
+                binding.toolbarProgress.show()
+            } else {
+                binding.toolbarProgress.hide()
+            }
+        }
+    }
     override fun showGranularSync() {
         SyncStatusDialog.Builder()
             .withContext(this)
@@ -237,7 +258,8 @@ class MainActivity :
                             mainNavigator.getCurrentIfProgram()?.presenter?.updateProgramQueries()
                         }
                     }
-                })
+                }
+            )
             .show("ALL_SYNC")
     }
 
@@ -493,4 +515,72 @@ class MainActivity :
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
     }
+
+    private fun showNewVersionAlert(version: String) {
+        AlertDialog(
+            labelText = getString(R.string.software_update),
+            descriptionText = getString(R.string.new_version_message).format(version),
+            iconResource = R.drawable.ic_software_update,
+            spanText = version,
+            dismissButton = ButtonUiModel(
+                getString(R.string.remind_me_later),
+                onClick = { presenter.remindLaterAlertNewVersion() }
+            ),
+            confirmButton = ButtonUiModel(
+                getString(R.string.download_now),
+                onClick = {
+                    presenter.downloadVersion(context) { installAPK(it) }
+                }
+            )
+        ).show(supportFragmentManager)
+    }
+
+    private fun installAPK(apkUri: Uri) {
+        when {
+            hasNoPermissionToInstall() ->
+                manageUnknownSources.launch(
+                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                        .setData(Uri.parse(String.format("package:%s", packageName)))
+                )
+            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) ->
+                requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            else -> Intent(Intent.ACTION_VIEW).apply {
+                val mime = MimeTypeMap.getSingleton()
+                val ext = apkUri.path?.substringAfterLast(("."))
+                val type: String? = mime.getMimeTypeFromExtension(ext)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setDataAndType(apkUri, type)
+                startActivity(this)
+            }
+        }
+    }
+    private fun hasNoPermissionToInstall(): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            !packageManager.canRequestPackageInstalls()
+
+    private val manageUnknownSources =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (hasNoPermissionToInstall()) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.unknow_sources_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                presenter.downloadVersion(context) { installAPK(it) }
+            }
+        }
+
+    private val requestReadStoragePermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                presenter.downloadVersion(context) { installAPK(it) }
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.storage_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
 }

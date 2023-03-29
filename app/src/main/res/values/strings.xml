@@ -245,6 +245,8 @@
     <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
     <string name="settingsSms">SMS Settings</string>
     <string name="settingsSms_descr">Check and edit parameters related to the sms gateway</string>
+    <string name="settingsCheckVersion">Software update</string>
+    <string name="settingsCheckVersionMessage">Software</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>
@@ -939,4 +941,14 @@
         <item quantity="one">%s warning</item>
         <item quantity="other">%s warnings</item>
     </plurals>
+    <string name="new_version_message">App version <b>%s</b> is now available.\nDo you want to download it?</string>
+    <string name="software_update">"Software update"</string>
+    <string name="remind_me_later">Later</string>
+    <string name="download_now">Download now</string>
+    <string name="check_for_updates">Check for updates</string>
+    <string name="checking_for_updates">Checking for updates</string>
+    <string name="no_updates">There are no new updates</string>
+    <string name="unknow_sources_denied">Unknown sources permission is denied.\nYou need to enable it to install version.</string>
+    <string name="storage_denied">Storage permission is denied.\nYou need to enable it to install version.</string>
+    <string name="app_version">App version</string>
 </resources>
