@@ -29,7 +29,6 @@ import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
@@ -195,7 +194,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         observeScreenState();
         observeDownload();
 
-        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+        if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
             openSyncDialog();
         }
     }
@@ -320,7 +319,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void openSyncDialog() {
         new SyncStatusDialog.Builder()
-                .withContext(this)
+                .withContext(this, null)
                 .withSyncContext(
                         new SyncContext.TrackerProgram(initialProgram)
                 )
@@ -527,7 +526,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showSyncDialog(String enrollmentUid) {
         new SyncStatusDialog.Builder()
-                .withContext(this)
+                .withContext(this, null)
                 .withSyncContext(
                         new SyncContext.TrackerProgramTei(enrollmentUid)
                 )

@@ -1,4 +1,4 @@
-package org.dhis2.utils.granularsync
+package org.dhis2.commons.sync
 
 import org.hisp.dhis.android.core.common.State
 

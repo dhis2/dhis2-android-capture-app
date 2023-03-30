@@ -633,7 +633,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void showSyncDialog(String eventUid, String enrollmentUid) {
         new SyncStatusDialog.Builder()
-                .withContext(this)
+                .withContext(this, null)
                 .withSyncContext(
                         new SyncContext.EnrollmentEvent(eventUid, enrollmentUid)
                 )

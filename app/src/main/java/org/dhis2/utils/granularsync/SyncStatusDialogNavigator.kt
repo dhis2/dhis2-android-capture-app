@@ -2,6 +2,9 @@ package org.dhis2.utils.granularsync
 
 import android.content.Context
 import android.content.Intent
+import org.dhis2.commons.sync.OnSyncNavigationListener
+import org.dhis2.commons.sync.SyncStatusItem
+import org.dhis2.commons.sync.SyncStatusType
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -15,19 +18,40 @@ const val LAUNCH_SYNC_DIALOG = "LAUNCH_SYNC_DIALOG"
 const val OPEN_ERROR_LOCATION = "OPEN_ERROR_LOCATION"
 
 class SyncStatusDialogNavigator(
-    private val context: Context
+    private val context: Context,
+    private val onSyncNavigationListener: OnSyncNavigationListener?
 ) {
     fun navigateTo(syncStatusItem: SyncStatusItem) {
         val intent = when (syncStatusItem.type) {
-            is SyncStatusType.DataSet -> navigateToDataSetInstances(syncStatusItem.type)
-            is SyncStatusType.DataSetInstance -> navigateToDataSetInstanceTable(syncStatusItem.type)
-            is SyncStatusType.Event -> navigateToEvent(syncStatusItem.type)
-            is SyncStatusType.EventProgram -> navigateToEventProgram(syncStatusItem.type)
-            is SyncStatusType.TrackedEntity -> navigateToTeiDashboard(syncStatusItem.type)
-            is SyncStatusType.TrackerProgram -> navigateToSearchScreen(syncStatusItem.type)
-            is SyncStatusType.Enrollment -> navigateToEnrollmentFormScreen(syncStatusItem.type)
+            is SyncStatusType.DataSet ->
+                navigateToDataSetInstances(syncStatusItem.type as SyncStatusType.DataSet)
+            is SyncStatusType.DataSetInstance ->
+                navigateToDataSetInstanceTable(
+                    syncStatusItem.type as SyncStatusType.DataSetInstance
+                )
+            is SyncStatusType.Event ->
+                navigateToEvent(syncStatusItem.type as SyncStatusType.Event)
+            is SyncStatusType.EventProgram ->
+                navigateToEventProgram(syncStatusItem.type as SyncStatusType.EventProgram)
+            is SyncStatusType.TrackedEntity ->
+                navigateToTeiDashboard(syncStatusItem.type as SyncStatusType.TrackedEntity)
+            is SyncStatusType.TrackerProgram ->
+                navigateToSearchScreen(syncStatusItem.type as SyncStatusType.TrackerProgram)
+            is SyncStatusType.Enrollment ->
+                navigateToEnrollmentFormScreen(syncStatusItem.type as SyncStatusType.Enrollment)
         }
-        intent?.let { context.startActivity(it) }
+
+        if (onSyncNavigationListener != null) {
+            intent?.let {
+                onSyncNavigationListener.intercept(syncStatusItem, it)?.let { interceptedIntent ->
+                    context.startActivity(interceptedIntent)
+                }
+            }
+        } else {
+            intent?.let {
+                context.startActivity(it)
+            }
+        }
     }
 
     private fun navigateToEnrollmentFormScreen(

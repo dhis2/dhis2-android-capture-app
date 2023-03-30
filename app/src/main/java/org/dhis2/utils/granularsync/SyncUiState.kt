@@ -1,5 +1,6 @@
 package org.dhis2.utils.granularsync
 
+import org.dhis2.commons.sync.SyncStatusItem
 import org.hisp.dhis.android.core.common.State
 
 data class SyncUiState(
