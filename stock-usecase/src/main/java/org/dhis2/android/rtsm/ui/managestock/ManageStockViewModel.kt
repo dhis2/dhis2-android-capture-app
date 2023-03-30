@@ -289,10 +289,7 @@ class ManageStockViewModel @Inject constructor(
             mainLabel = itemName,
             secondaryLabels = mutableListOf(resources.getString(R.string.quantity)),
             currentValue = cell.value,
-            keyboardInputType = KeyboardInputType.NumericInput(
-                allowDecimal = false,
-                allowSigned = false
-            ),
+            keyboardInputType = KeyboardInputType.NumberPassword(),
             error = stockEntry?.errorMessage
         )
     }
