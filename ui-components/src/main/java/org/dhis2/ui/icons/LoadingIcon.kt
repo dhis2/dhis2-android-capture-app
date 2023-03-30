@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.dhis2.ui.theme.colorPrimary
 
 @Preview
 @Composable
@@ -82,7 +83,7 @@ fun SyncingIcon() {
 
 @Composable
 fun syncAnimation(radius: Float, delayMillis: Int): TransitionData {
-    val startColor = MaterialTheme.colorScheme.primary
+    val startColor = colorPrimary
     val endColor = startColor.copy(alpha = 0.3f)
 
     val infiniteTransition = rememberInfiniteTransition()
