@@ -192,6 +192,12 @@ fun handleBackNavigation(
                 activity.finish()
             }
         }
+        DataEntryStep.EDITING_LISTING -> {
+            if (viewModel.initBackClick.value >0) {
+                activity.onBackPressedDispatcher.onBackPressed()
+            }
+            viewModel.updateBackClick(1)
+        }
         DataEntryStep.REVIEWING -> {
             viewModel.onHandleBackNavigation()
         }
@@ -201,7 +207,6 @@ fun handleBackNavigation(
         DataEntryStep.COMPLETED -> {
             viewModel.onHandleBackNavigation()
         }
-        DataEntryStep.EDITING_LISTING -> {}
     }
 }
 

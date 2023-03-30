@@ -98,6 +98,9 @@ class ManageStockViewModel @Inject constructor(
     private val _scanText = MutableStateFlow("")
     val scanText = _scanText.asStateFlow()
 
+    private val _initBackClick = MutableStateFlow(0)
+    val initBackClick = _initBackClick.asStateFlow()
+
     init {
         configureRelays()
     }
@@ -114,8 +117,8 @@ class ManageStockViewModel @Inject constructor(
     private fun didTransactionParamsChange(transaction: Transaction): Boolean {
         return if (_transaction.value != null) {
             _transaction.value!!.transactionType != transaction.transactionType ||
-                _transaction.value!!.facility != transaction.facility ||
-                _transaction.value!!.distributedTo != transaction.distributedTo
+                    _transaction.value!!.facility != transaction.facility ||
+                    _transaction.value!!.distributedTo != transaction.distributedTo
         } else {
             true
         }
@@ -180,8 +183,8 @@ class ManageStockViewModel @Inject constructor(
                 .debounce(QUANTITY_ENTRY_DEBOUNCE, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged { t1, t2 ->
                     t1.entry.item.id == t2.entry.item.id &&
-                        t1.position == t2.position &&
-                        t1.entry.qty == t2.entry.qty
+                            t1.position == t2.position &&
+                            t1.entry.qty == t2.entry.qty
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -345,9 +348,9 @@ class ManageStockViewModel @Inject constructor(
     ) {
         if (ruleEffect.ruleAction() is RuleActionAssign &&
             (
-                (ruleEffect.ruleAction() as RuleActionAssign).field()
-                    == config.value?.stockOnHand
-                )
+                    (ruleEffect.ruleAction() as RuleActionAssign).field()
+                            == config.value?.stockOnHand
+                    )
         ) {
             val data = ruleEffect.data()
             val isValid: Boolean = isValidStockOnHand(data)
@@ -519,5 +522,9 @@ class ManageStockViewModel @Inject constructor(
         } else {
             ValidationResult.Success(tableCell.value)
         }
+    }
+
+    fun updateBackClick(value: Int) {
+        _initBackClick.value = value
     }
 }
