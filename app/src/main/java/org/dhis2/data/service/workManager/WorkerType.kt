@@ -32,5 +32,6 @@ enum class WorkerType {
     METADATA,
     DATA,
     RESERVED,
-    GRANULAR
+    GRANULAR,
+    NEW_VERSION
 }

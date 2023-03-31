@@ -10,13 +10,20 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.Constants.DATA_NOW
 import org.dhis2.commons.Constants.META_NOW
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -33,6 +40,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SyncManagerPresenterTest {
 
     private lateinit var presenter: SyncManagerPresenter
@@ -49,9 +57,17 @@ class SyncManagerPresenterTest {
     private val errorMapper: ErrorModelMapper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val resourcesManager: ResourceManager = mock()
+    private val versionRepository: VersionRepository = mock()
+    private val testingDispatcher = UnconfinedTestDispatcher()
+    private val dispatcherProvider: DispatcherProvider = mock {
+        on { io() } doReturn testingDispatcher
+        on { ui() } doReturn testingDispatcher
+    }
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
+        whenever(versionRepository.newAppVersion) doReturn MutableSharedFlow()
         presenter = SyncManagerPresenter(
             d2,
             schedulers,
@@ -64,7 +80,9 @@ class SyncManagerPresenterTest {
             analyticsHelper,
             errorMapper,
             matomoAnalyticsController,
-            resourcesManager
+            resourcesManager,
+            versionRepository,
+            dispatcherProvider
         )
     }
 

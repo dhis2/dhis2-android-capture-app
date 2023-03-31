@@ -99,8 +99,10 @@ class GranularSyncRepository(
         }
     }
 
-    private fun getLastSynced(): Single<SyncDate> {
-        return when (syncContext.conflictType()) {
+    private fun getLastSynced(returnEmpty: Boolean = true): Single<SyncDate> {
+        return if (returnEmpty) {
+            Single.just(SyncDate(null))
+        } else when (syncContext.conflictType()) {
             ConflictType.PROGRAM ->
                 d2.observeProgram(syncContext.recordUid()).map { SyncDate(it.lastUpdated()) }
             ConflictType.TEI -> {

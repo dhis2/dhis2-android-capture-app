@@ -76,3 +76,13 @@ fun String.toDate(): Date {
 fun String.toTime(): Date? = DateUtils.timeFormat().parse(this)
 
 fun String.parseToDouble() = this.toDoubleOrNull()?.toString() ?: "0.0"
+
+fun String.newVersion(oldVersion: String): Boolean {
+    if (this == oldVersion) return false
+    val new = this.split(".")
+    val old = oldVersion.split(".")
+    new.forEachIndexed { index, vNumber ->
+        if (vNumber < (old.getOrElse(index) { "0" })) return false
+    }
+    return true
+}

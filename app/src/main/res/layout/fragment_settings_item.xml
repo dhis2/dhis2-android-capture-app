@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="title"
             type="String" />
@@ -15,6 +17,10 @@
 
         <variable
             name="message"
+            type="String" />
+
+        <variable
+            name="spanMessage"
             type="String" />
     </data>
 
@@ -51,7 +57,7 @@
 
         <TextView
             android:id="@+id/message"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/rubik_light"
@@ -61,10 +67,30 @@
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/spanMessage"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/icon"
             app:layout_constraintTop_toBottomOf="@id/title"
-            tools:text="Message" />
+            tools:text="Message"/>
+        <TextView
+            android:id="@+id/spanMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:fontFamily="@font/rubik_light"
+            android:includeFontPadding="false"
+            android:text="@{spanMessage}"
+            android:textColor="?colorPrimary"
+            android:textSize="12sp"
+            android:visibility="@{spanMessage == null ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/message"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:visibility="gone"
+            tools:text="span" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

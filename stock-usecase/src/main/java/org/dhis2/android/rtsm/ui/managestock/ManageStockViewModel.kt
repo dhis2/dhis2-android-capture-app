@@ -289,10 +289,7 @@ class ManageStockViewModel @Inject constructor(
             mainLabel = itemName,
             secondaryLabels = mutableListOf(resources.getString(R.string.quantity)),
             currentValue = cell.value,
-            keyboardInputType = KeyboardInputType.NumericInput(
-                allowDecimal = false,
-                allowSigned = false
-            ),
+            keyboardInputType = KeyboardInputType.NumberPassword(),
             error = stockEntry?.errorMessage
         )
     }
@@ -307,12 +304,13 @@ class ManageStockViewModel @Inject constructor(
 
     private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
         _stockItems.value?.find { it.id == tableCellId(cell) }?.let { stockItem ->
+
             cell.value?.let { value ->
                 when (val result = validate(cell)) {
                     is ValidationResult.Error -> {
                         addItem(
                             item = stockItem,
-                            qty = value,
+                            qty = cell.value?.ifEmpty { "0" },
                             stockOnHand = stockItem.stockOnHand,
                             errorMessage = result.message
                         )
@@ -320,7 +318,7 @@ class ManageStockViewModel @Inject constructor(
                     }
                     is ValidationResult.Success -> {
                         setQuantity(
-                            stockItem, 0, value,
+                            stockItem, 0, cell.value?.ifEmpty { "0" }.toString(),
                             object : OnQuantityValidated {
                                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                                     // When user taps on done or next. We should apply program rules here
