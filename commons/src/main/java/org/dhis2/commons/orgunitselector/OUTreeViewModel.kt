@@ -49,11 +49,6 @@ class OUTreeViewModel(
                 }
             }
 
-            (1 until treeNodes.size)
-                .asSequence()
-                .filter { treeNodes[it].level > treeNodes[it - 1].level }
-                .forEach { treeNodes[it - 1].isOpen = true }
-
             _treeNodes.update { treeNodes }
         }
     }

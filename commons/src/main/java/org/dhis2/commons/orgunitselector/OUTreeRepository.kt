@@ -47,18 +47,50 @@ class OUTreeRepository(
 
         val orderedList = mutableListOf<String>()
         val orgUnits = orgUnitRepository.blockingGet()
+        val minLevel = orgUnits.minOfOrNull { it.level() ?: 0 }
         availableOrgUnits = orgUnits.map { it.uid() }
-        orgUnits.forEach { org ->
+        cachedOrgUnits = availableOrgUnits
+        orderList(
+            orgUnits.filter { it.level() == minLevel },
+            orderedList
+        )
+        /*orgUnits.filter { it.level() == minLevel }.forEach {org->
+            org.path()?.split("/")
+                ?.filter { it.isNotEmpty() }
+                ?.forEach { str ->
+                    orderedList.addIf(!orderedList.contains(str), str)
+                }
+            if (orgUnitHasChildren(org.uid())){
+                childrenOrgUnits()
+            }
+        }*/
+        /*orgUnits.forEach { org ->
             org.path()?.split("/")
                 ?.filter { it.isNotEmpty() }
                 ?.forEach { str ->
                     orderedList.addIf(!orderedList.contains(str), str)
                 }
             orderedList.addIf(!orderedList.contains(org.uid()), org.uid())
-        }
-        cachedOrgUnits = orderedList
+        }*/
+        cachedOrgUnits = availableOrgUnits
 
         return orderedList
+    }
+
+    private fun orderList(
+        orgUnitToOrder: List<OrganisationUnit>,
+        orderedList: MutableList<String>
+    ) {
+        orgUnitToOrder.forEach { org ->
+            org.path()?.split("/")
+                ?.filter { it.isNotEmpty() }
+                ?.forEach { str ->
+                    orderedList.addIf(!orderedList.contains(str), str)
+                }
+            if (orgUnitHasChildren(org.uid())) {
+                orderList(childrenOrgUnits(org.uid()), orderedList)
+            }
+        }
     }
 
     fun childrenOrgUnits(parentUid: String? = null): List<OrganisationUnit> {
