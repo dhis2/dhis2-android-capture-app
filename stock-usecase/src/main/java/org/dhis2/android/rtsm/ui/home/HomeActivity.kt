@@ -48,6 +48,11 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        manageStockViewModel.shouldCloseActivity.observe(this) { finish() }
+        manageStockViewModel.shouldNavigateBack.observe(this) {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         filterManager = FilterManager.getInstance()
         intent.getParcelableExtra<AppConfig>(INTENT_EXTRA_APP_CONFIG)
             ?.let { manageStockViewModel.setConfig(it) }

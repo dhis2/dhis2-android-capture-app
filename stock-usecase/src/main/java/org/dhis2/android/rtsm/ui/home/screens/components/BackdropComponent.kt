@@ -29,10 +29,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
-import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
-import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
@@ -57,14 +55,25 @@ fun Backdrop(
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
+    val bottomSheetState = manageStockViewModel.bottomSheetState.collectAsState()
+
+    if (bottomSheetState.value) {
+        launchBottomSheet(
+            activity.getString(R.string.not_saved),
+            activity.getString(R.string.transaction_not_confirmed),
+            supportFragmentManager,
+            onKeepEdition = {
+                manageStockViewModel.onBottomSheetClosed()
+            },
+            onDiscard = {
+                manageStockViewModel.onBottomSheetClosed()
+                activity.finish()
+            }
+        )
+    }
 
     BackHandler {
-        handleBackNavigation(
-            activity as HomeActivity,
-            dataEntryUiState,
-            supportFragmentManager,
-            manageStockViewModel
-        )
+        manageStockViewModel.onHandleBackNavigation()
     }
 
     manageStockViewModel.backToListing()
@@ -77,12 +86,7 @@ fun Backdrop(
                 settingsUiState.deliverToLabel()?.asString(),
                 themeColor,
                 launchBottomSheet = {
-                    handleBackNavigation(
-                        activity as HomeActivity,
-                        dataEntryUiState,
-                        supportFragmentManager,
-                        manageStockViewModel
-                    )
+                    manageStockViewModel.onHandleBackNavigation()
                 },
                 backdropState,
                 scaffoldState,
@@ -164,46 +168,6 @@ fun Backdrop(
         }
         manageStockViewModel.updateStep(DataEntryStep.START)
         viewModel.resetSettings()
-    }
-}
-
-fun handleBackNavigation(
-    activity: HomeActivity,
-    dataEntryUiState: DataEntryUiState,
-    supportFragmentManager: FragmentManager,
-    viewModel: ManageStockViewModel
-) {
-    when (dataEntryUiState.step) {
-        DataEntryStep.START -> {
-            activity.finish()
-        }
-        DataEntryStep.LISTING -> {
-            if (dataEntryUiState.hasUnsavedData) {
-                launchBottomSheet(
-                    activity.getString(R.string.not_saved),
-                    activity.getString(R.string.transaction_not_confirmed),
-                    supportFragmentManager,
-                    onKeepEdition = { },
-                    onDiscard = {
-                        activity.finish()
-                    }
-                )
-            } else {
-                activity.finish()
-            }
-        }
-        DataEntryStep.EDITING_LISTING -> {
-            activity.onBackPressedDispatcher.onBackPressed()
-        }
-        DataEntryStep.REVIEWING -> {
-            viewModel.onHandleBackNavigation()
-        }
-        DataEntryStep.EDITING_REVIEWING -> {
-            activity.onBackPressedDispatcher.onBackPressed()
-        }
-        DataEntryStep.COMPLETED -> {
-            viewModel.onHandleBackNavigation()
-        }
     }
 }
 
