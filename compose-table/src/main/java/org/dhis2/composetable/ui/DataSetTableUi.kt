@@ -156,7 +156,15 @@ fun TableHeader(
                                     onHeaderResize = onHeaderResize,
                                     onResizing = onResizing,
                                     isLastRow = tableHeaderModel.rows.lastIndex == rowIndex
-                                )
+                                ) { dimensions, currentOffsetX ->
+                                    dimensions.canUpdateColumnHeaderWidth(
+                                        tableId = tableId ?: "",
+                                        currentOffsetX = currentOffsetX,
+                                        columnIndex = columnIndex,
+                                        tableHeaderModel.tableMaxColumns(),
+                                        tableHeaderModel.hasTotals
+                                    )
+                                }
                             )
                         }
                     )
@@ -185,7 +193,8 @@ fun TableHeader(
                     onCellSelected = {},
                     onHeaderResize = { _, _ -> },
                     onResizing = {},
-                    isLastRow = false
+                    isLastRow = false,
+                    checkMaxCondition = { _, _ -> false }
                 )
             )
         }
@@ -243,13 +252,7 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .zIndex(2f),
-                checkMaxMinCondition = { dimensions, currentOffsetX ->
-                    dimensions.canUpdateColumnHeaderWidth(
-                        tableId = itemHeaderUiState.tableId ?: "",
-                        currentOffsetX = currentOffsetX,
-                        columnIndex = itemHeaderUiState.columnIndex
-                    )
-                },
+                checkMaxMinCondition = itemHeaderUiState.checkMaxCondition,
                 onHeaderResize = { newValue ->
                     itemHeaderUiState.onHeaderResize(
                         itemHeaderUiState.columnIndex,
@@ -1180,7 +1183,7 @@ fun VerticalResizingRule(
     var dimensions by remember { mutableStateOf<TableDimensions?>(null) }
     dimensions = TableTheme.dimensions
 
-    val minOffset = with(LocalDensity.current) { 11.dp.toPx() }
+    val minOffset = with(LocalDensity.current) { 5.dp.toPx() }
     var offsetX by remember { mutableStateOf(minOffset) }
     var positionInRoot by remember { mutableStateOf(Offset.Zero) }
 
