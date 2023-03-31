@@ -35,8 +35,7 @@ data class TableModel(
         cellSelection: TableSelection.CellSelection,
         successValidation: Boolean
     ): Pair<TableCell, TableSelection.CellSelection>? = when {
-        !successValidation &&
-            tableRows[cellSelection.rowIndex].values[cellSelection.columnIndex]?.error == null ->
+        !successValidation ->
             cellSelection
         cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
             cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)

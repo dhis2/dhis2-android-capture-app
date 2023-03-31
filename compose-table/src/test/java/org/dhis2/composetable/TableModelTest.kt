@@ -125,6 +125,16 @@ class TableModelTest {
     }
 
     @Test
+    fun stayInSameCellWheValidationsErrors() {
+        val currentSelection = TableSelection.CellSelection("table", 0, 1, 1)
+        tableModel.getNextCell(currentSelection, false)?.let { (tableCell, nextSelection) ->
+            assert(tableCell.id == "10")
+            assert(nextSelection.rowIndex == 1)
+            assert(nextSelection.columnIndex == 0)
+        }
+    }
+
+    @Test
     fun shouldCheckThatAllTableModelsAreNotEmpty() {
         val result = tableModel.areAllValuesEmpty()
         assert(!result)
