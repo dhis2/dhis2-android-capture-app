@@ -422,7 +422,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent=".625" />
+                app:layout_constraintGuide_percent=".65" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline_65625"
@@ -454,11 +454,11 @@
                 app:layout_constraintTop_toBottomOf="@id/sorting_field_name" />
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_75"
+                android:id="@+id/guideline_69"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent=".75" />
+                app:layout_constraintGuide_percent=".69" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline_9375"
@@ -471,12 +471,14 @@
                 android:id="@+id/followupButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/guideline_65625"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@id/guideline_69"
                 app:layout_constraintTop_toBottomOf="@id/sorting_field_name" />
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/lockButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 app:layout_constraintEnd_toStartOf="@id/guideline_9375"
                 app:layout_constraintTop_toBottomOf="@id/sorting_field_name" />
 
