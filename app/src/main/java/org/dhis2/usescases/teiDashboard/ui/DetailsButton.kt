@@ -33,6 +33,7 @@ fun DetailsButton(
         shape = RoundedCornerShape(20.dp),
         onClick = onButtonClicked,
         modifier = Modifier.fillMaxWidth()
+                .padding(vertical = 16.dp)
     ) {
 
         trackedEntityName.replaceFirstChar { it.uppercase() };

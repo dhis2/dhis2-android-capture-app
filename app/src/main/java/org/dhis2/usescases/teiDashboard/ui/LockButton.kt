@@ -32,7 +32,7 @@ fun LockButton(
             shape = RoundedCornerShape(20.dp),
             contentPadding = PaddingValues(0.dp),
             onClick = onButtonClicked,
-            modifier= Modifier.size(40.dp),
+            modifier= Modifier.size(height = 72.dp, width = 40.dp).padding(vertical = 16.dp)
     ) {
 
         trackedEntityName.replaceFirstChar { it.uppercase() };
