@@ -137,7 +137,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
 
-        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+//        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
         System.out.println(programStageUid);
 
         // TODO: fails due to lack of dynamism
