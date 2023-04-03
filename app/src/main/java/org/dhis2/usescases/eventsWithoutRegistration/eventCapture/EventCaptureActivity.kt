@@ -157,6 +157,11 @@ class EventCaptureActivity :
     }
 
     fun openForm() {
+        supportFragmentManager.findFragmentByTag("EVENT_SYNC")?.let {
+            if (it is SyncStatusDialog) {
+                it.dismiss()
+            }
+        }
         binding?.navigationBar?.selectItemAt(1)
     }
 
