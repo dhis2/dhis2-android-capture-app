@@ -54,6 +54,6 @@ class OUTreeModule(
 
     @Provides
     internal fun providesOUTreeRepository(d2: D2): OUTreeRepository {
-        return OUTreeRepository(d2, orgUnitSelectorScope)
+        return OUTreeRepository(OURepositoryConfiguration(d2, orgUnitSelectorScope))
     }
 }

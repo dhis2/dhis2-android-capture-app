@@ -35,7 +35,7 @@ class OUTreeViewModel(
                         OrgUnitTreeItem(
                             uid = org.uid(),
                             label = org.displayName()!!,
-                            isOpen = false,
+                            isOpen = true,
                             hasChildren = repository.orgUnitHasChildren(org.uid()),
                             selected = selectedOrgUnits.contains(org.uid()),
                             level = org.level()!!,
