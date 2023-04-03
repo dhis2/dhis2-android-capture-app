@@ -142,6 +142,12 @@ class StockManagerImpl @Inject constructor(
         enrollment: Enrollment,
         programUid: String
     ): String {
+        Timber.tag("EVENT_CREATION").i(
+            "Enrollment: ${enrollment.uid()}\n" +
+                "Program: ${programUid}\n" +
+                "Stage: ${programStage.uid()}\n" +
+                "OU: ${facility.uid}\n"
+        )
         return d2.eventModule().events().blockingAdd(
             EventCreateProjection.builder()
                 .enrollment(enrollment.uid())
@@ -156,23 +162,22 @@ class StockManagerImpl @Inject constructor(
         items: List<StockEntry>,
         transaction: Transaction,
         appConfig: AppConfig
-    ):
-        Single<Unit> {
-            return Single.defer {
-                d2.programModule()
-                    .programStages()
-                    .byProgramUid()
-                    .eq(appConfig.program)
-                    .one()
-                    .get()
-                    .map { programStage ->
-                        items.forEach { entry ->
-                            val enrollment = getEnrollment(entry.item.id)
-                            createEvent(entry, programStage, enrollment, transaction, appConfig)
-                        }
-                    }
-            }
+    ): Single<Unit> {
+        Timber.i("SAVING TRANSACTION")
+
+        val programStage = d2.programModule()
+            .programStages()
+            .byProgramUid()
+            .eq(appConfig.program)
+            .one()
+            .blockingGet()
+
+        items.forEach { entry ->
+            val enrollment = getEnrollment(entry.item.id)
+            createEvent(entry, programStage, enrollment, transaction, appConfig)
         }
+        return Single.just(Unit)
+    }
 
     private fun createEvent(
         item: StockEntry,
@@ -181,40 +186,82 @@ class StockManagerImpl @Inject constructor(
         transaction: Transaction,
         appConfig: AppConfig
     ) {
-        try {
-            val eventUid = createEventProjection(
+        val eventUid = try {
+            createEventProjection(
                 transaction.facility,
                 programStage,
                 enrollment,
                 appConfig.program
             )
-
-            // Set the event date
-            d2.eventModule().events().uid(eventUid).setEventDate(item.date)
-
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                eventUid,
-                getTransactionDataElement(transaction.transactionType, appConfig)
-            ).blockingSet(item.qty.toString())
-
-            transaction.distributedTo?.let {
-                val destination = d2.optionModule()
-                    .options()
-                    .uid(it.uid)
-                    .blockingGet()
-
-                d2.trackedEntityModule().trackedEntityDataValues().value(
-                    eventUid,
-                    appConfig.distributedTo
-                ).blockingSet(destination.code())
+        } catch (e: Exception) {
+            if (e is D2Error) {
+                e.originalException()?.printStackTrace()
+                Timber.e("Unable to save event: %s", e.errorCode().toString())
+            } else {
+                e.printStackTrace()
+            }
+            null
+        }
+        if (eventUid != null) {
+            try {
+                // Set the event date
+                d2.eventModule().events().uid(eventUid).setEventDate(item.date)
+            } catch (e: Exception) {
+                if (e is D2Error) {
+                    e.originalException()?.printStackTrace()
+                    Timber.e("Unable to set event date: %s", e.errorCode().toString())
+                } else {
+                    e.printStackTrace()
+                }
             }
 
-            updateStockOnHand(item, appConfig.program, transaction, eventUid, appConfig)
-        } catch (e: Exception) {
-            e.printStackTrace()
+            try {
+                Timber.i("event:$eventUid")
+                Timber.i("de:${getTransactionDataElement(transaction.transactionType, appConfig)}")
+                Timber.i("data to save:${item.qty}")
+                d2.trackedEntityModule().trackedEntityDataValues().value(
+                    eventUid,
+                    getTransactionDataElement(transaction.transactionType, appConfig)
+                ).blockingSet(item.qty.toString())
+            } catch (e: Exception) {
+                if (e is D2Error) {
+                    e.originalException()?.printStackTrace()
+                    Timber.e("Unable to set value for event: %s\n", e.errorCode().toString())
+                } else {
+                    e.printStackTrace()
+                }
+            }
 
-            if (e is D2Error) {
-                Timber.e("Unable to save event: %s", e.errorCode().toString())
+            try {
+                transaction.distributedTo?.let {
+                    val destination = d2.optionModule()
+                        .options()
+                        .uid(it.uid)
+                        .blockingGet()
+
+                    d2.trackedEntityModule().trackedEntityDataValues().value(
+                        eventUid,
+                        appConfig.distributedTo
+                    ).blockingSet(destination.code())
+                }
+            } catch (e: Exception) {
+                if (e is D2Error) {
+                    e.originalException()?.printStackTrace()
+                    Timber.e("Unable to set destination for event: %s", e.errorCode().toString())
+                } else {
+                    e.printStackTrace()
+                }
+            }
+
+            try {
+                updateStockOnHand(item, appConfig.program, transaction, eventUid, appConfig)
+            } catch (e: Exception) {
+                if (e is D2Error) {
+                    e.originalException()?.printStackTrace()
+                    Timber.e("Unable to update", e.errorCode().toString())
+                } else {
+                    e.printStackTrace()
+                }
             }
         }
     }
