@@ -98,7 +98,7 @@ class GranularSyncPresenter(
     }
 
     fun refreshContent() {
-        refreshing = true
+        refreshing = _currentState.value != null
         loadSyncInfo()
     }
 
