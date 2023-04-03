@@ -306,8 +306,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 text = teiInfo.teiMainLabel(getString(R.string.tracked_entity_type_details))
                 setTextColor(Color.WHITE)
             }
-            when(val secondaryLabel = teiInfo.teiSecondaryLabel()){
-                null-> binding.teiDataHeader.secundaryAttribute.visibility = View.GONE
+            when (val secondaryLabel = teiInfo.teiSecondaryLabel()) {
+                null -> binding.teiDataHeader.secundaryAttribute.visibility = View.GONE
                 else -> {
                     binding.teiDataHeader.secundaryAttribute.text = secondaryLabel
                     binding.teiDataHeader.secundaryAttribute.setTextColor(Color.WHITE)
