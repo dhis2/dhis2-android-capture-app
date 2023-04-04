@@ -420,7 +420,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                     }
             );
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get() ,() -> {
                 presenter.onFollowUp(dashboardModel);
                 return Unit.INSTANCE;
             });
@@ -444,7 +444,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                     }
             );
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();
                 return Unit.INSTANCE;
@@ -552,7 +552,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                     }
             );
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 return Unit.INSTANCE;
             });
@@ -576,7 +576,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                     }
             );
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person", () -> {
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();
                 return Unit.INSTANCE;
