@@ -148,4 +148,10 @@
         <item name="colorAccent">@color/text_black_333</item>
         <item name="colorPrimary">@color/colorPrimary</item>
     </style>
+
+
+    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.Switch">
+        <item name="thumbTint">@drawable/selector_material_thumb</item>
+        <item name="trackTint">@drawable/selector_material_thumb</item>
+    </style>
 </resources>
