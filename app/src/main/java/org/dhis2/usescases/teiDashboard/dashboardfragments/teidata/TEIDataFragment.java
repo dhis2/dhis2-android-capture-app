@@ -445,7 +445,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             showLoadingProgress(false);
         }
 
-        System.out.println("TrackedEntityInstance:::" + binding.getTrackEntity()   );
+        System.out.println("TrackedEntityInstance:::" + dashboardModel.getCurrentEnrollment().followUp()   );
 
         if(OrientationUtilsKt.isPortrait()) {
 
@@ -483,7 +483,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             );
 
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, activity.presenter.getTEType(), followUp.get(),() -> {
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, activity.presenter.getTEType(), dashboardModel.getCurrentEnrollment().followUp(),() -> {
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();
                 return Unit.INSTANCE;
