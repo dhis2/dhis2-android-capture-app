@@ -40,7 +40,8 @@ fun FollowupButton(
         trackedEntityName.replaceFirstChar { it.uppercase() };
 
         Icon(
-                painter = painterResource(id = R.drawable.ic_follow_up),
+                painter = painterResource(id = R.drawable.ic_follow_up_outlined),
+//                painter = painterResource(id = R.drawable.ic_follow_up),
                 contentDescription = "details",
                 tint = MaterialTheme.colors.primary
         )
