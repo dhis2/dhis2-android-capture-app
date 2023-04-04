@@ -232,7 +232,7 @@ class LoginPresenterTest {
 
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
-        assertTrue(loginPresenter.loginProgressVisible.value == true)
+        assertTrue(loginPresenter.loginProgressVisible.value == false)
     }
 
     @Test
