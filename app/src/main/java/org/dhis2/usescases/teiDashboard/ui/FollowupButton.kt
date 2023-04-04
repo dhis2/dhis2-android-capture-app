@@ -40,7 +40,7 @@ fun FollowupButton(
 //        println(followUp)
         if (followUp) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_follow_up_outlined),
+                painter = painterResource(id = R.drawable.ic_follow_up_outlined_warn),
 //                painter = painterResource(id = R.drawable.ic_follow_up),
                 contentDescription = "details",
                 tint = MaterialTheme.colors.error
