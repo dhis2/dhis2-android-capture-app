@@ -59,12 +59,13 @@ fun FollowupButton(
             trackedEntityName.replaceFirstChar { it.uppercase() };
             Icon(
 //                painter = painterResource(id = R.drawable.ic_follow_up_outlined_warn),
-                painter = painterResource(id = R.drawable.ic_follow_up),
+                painter = painterResource(id = R.drawable.ic_follow_up_outlined),
                 contentDescription = "details",
                 tint = MaterialTheme.colors.primary
             )
         }
     }
+}
 
     fun ComposeView?.setFollowupButtonContent(
         trackedEntityName: String,
@@ -83,7 +84,7 @@ fun FollowupButton(
             }
         }
     }
-}
+
 
     @Preview
     @Composable
