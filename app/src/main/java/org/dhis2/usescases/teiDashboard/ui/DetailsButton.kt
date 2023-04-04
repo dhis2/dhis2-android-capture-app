@@ -39,7 +39,7 @@ fun DetailsButton(
         trackedEntityName.replaceFirstChar { it.uppercase() };
 
         Icon(
-            painter = painterResource(id = R.drawable.ic_navigation_details),
+            painter = painterResource(id = R.drawable.ic_navigation_details_outline),
             contentDescription = "details",
             tint = MaterialTheme.colors.primary
         )
