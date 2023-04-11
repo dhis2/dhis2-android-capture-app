@@ -207,7 +207,7 @@ class LoginViewModel(
                             }
                         }
                 }
-                .doOnNext { _loginProgressVisible.postValue(false) }
+                .doOnTerminate { _loginProgressVisible.postValue(false) }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
