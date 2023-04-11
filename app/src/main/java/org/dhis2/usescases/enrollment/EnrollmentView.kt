@@ -12,7 +12,7 @@ interface EnrollmentView : AbstractActivityContracts.View {
 
     fun setSaveButtonVisible(visible: Boolean)
 
-    fun displayTeiInfo(attrList: List<String>, profileImage: String)
+    fun displayTeiInfo(teiInfo: TeiInfo)
     fun openEvent(eventUid: String)
     fun openDashboard(enrollmentUid: String)
     fun goBack()

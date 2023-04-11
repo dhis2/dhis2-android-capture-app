@@ -297,33 +297,28 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     /*region TEI*/
-    override fun displayTeiInfo(attrList: List<String>, profileImage: String) {
+    override fun displayTeiInfo(teiInfo: TeiInfo) {
         if (mode != EnrollmentMode.NEW) {
             binding.title.visibility = View.GONE
             binding.teiDataHeader.root.visibility = View.VISIBLE
 
-            val attrListNotEmpty = attrList.filter { it.isNotEmpty() }
             binding.teiDataHeader.mainAttributes.apply {
-                when (attrListNotEmpty.size) {
-                    0 -> visibility = View.GONE
-                    1 -> text = attrListNotEmpty[0]
-                    else -> text = String.format("%s %s", attrListNotEmpty[0], attrListNotEmpty[1])
-                }
+                text = teiInfo.teiMainLabel(getString(R.string.tracked_entity_type_details))
                 setTextColor(Color.WHITE)
             }
-            binding.teiDataHeader.secundaryAttribute.apply {
-                when (attrListNotEmpty.size) {
-                    0, 1, 2 -> visibility = View.GONE
-                    else -> text = attrListNotEmpty[2]
+            when (val secondaryLabel = teiInfo.teiSecondaryLabel()) {
+                null -> binding.teiDataHeader.secundaryAttribute.visibility = View.GONE
+                else -> {
+                    binding.teiDataHeader.secundaryAttribute.text = secondaryLabel
+                    binding.teiDataHeader.secundaryAttribute.setTextColor(Color.WHITE)
                 }
-                setTextColor(Color.WHITE)
             }
 
-            if (profileImage.isEmpty()) {
+            if (teiInfo.profileImage.isEmpty()) {
                 binding.teiDataHeader.teiImage.visibility = View.GONE
                 binding.teiDataHeader.imageSeparator.visibility = View.GONE
             } else {
-                Glide.with(this).load(File(profileImage))
+                Glide.with(this).load(File(teiInfo.profileImage))
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .transform(CircleCrop())
                     .into(binding.teiDataHeader.teiImage)

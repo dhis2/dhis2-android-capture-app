@@ -50,6 +50,11 @@ fun D2.categoryOptionCombo(uid: String): CategoryOptionCombo =
     categoryModule().categoryOptionCombos()
         .uid(uid).blockingGet()
 
+fun D2.trackedEntityTypeForTei(teiUid: String): TrackedEntityType =
+    trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet().let { tei ->
+        trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet()
+    }
+
 fun D2.trackedEntityType(uid: String): TrackedEntityType =
     trackedEntityModule().trackedEntityTypes()
         .uid(uid).blockingGet()
