@@ -22,7 +22,6 @@ class ProgramModule(private val view: ProgramView) {
     internal fun programPresenter(
         programRepository: ProgramRepository,
         schedulerProvider: SchedulerProvider,
-        themeManager: ThemeManager,
         filterManager: FilterManager,
         matomoAnalyticsController: MatomoAnalyticsController,
         syncStatusController: SyncStatusController,
@@ -33,7 +32,6 @@ class ProgramModule(private val view: ProgramView) {
             view,
             programRepository,
             schedulerProvider,
-            themeManager,
             filterManager,
             matomoAnalyticsController,
             syncStatusController,

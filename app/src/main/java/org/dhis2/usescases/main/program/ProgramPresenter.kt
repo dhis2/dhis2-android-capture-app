@@ -20,7 +20,6 @@ class ProgramPresenter internal constructor(
     private val view: ProgramView,
     private val programRepository: ProgramRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val themeManager: ThemeManager,
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val syncStatusController: SyncStatusController,
@@ -98,11 +97,6 @@ class ProgramPresenter internal constructor(
     }
 
     fun onItemClick(programModel: ProgramViewModel) {
-        if (programModel.programType.isNotEmpty()) {
-            themeManager.setProgramTheme(programModel.uid)
-        } else {
-            themeManager.setDataSetTheme(programModel.uid)
-        }
         when (getHomeItemType(programModel)) {
             HomeItemType.PROGRAM_STOCK ->
                 view.navigateToStockManagement(stockManagementMapper.map(programModel))
