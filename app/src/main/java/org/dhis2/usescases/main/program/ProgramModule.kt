@@ -11,7 +11,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusController
-import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.D2
 
 @Module
