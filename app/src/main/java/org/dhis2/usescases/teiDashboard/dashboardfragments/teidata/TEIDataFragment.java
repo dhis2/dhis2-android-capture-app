@@ -480,7 +480,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     binding.cardFrontLand.detailsButton,
                     activity.presenter.getTEType(),
                     () -> {
-                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
+//                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
                         return Unit.INSTANCE;
                     }
             );
