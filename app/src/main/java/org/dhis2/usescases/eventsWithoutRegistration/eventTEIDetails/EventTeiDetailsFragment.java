@@ -24,6 +24,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.data.SearchTeiModel;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.StageSection;
@@ -426,7 +427,8 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             });
 
             LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
-                presenter.onFollowUp(dashboardModel);
+//                presenter.onFollowUp(dashboardModel);
+                showEnrollmentStatusOptions();
                 return Unit.INSTANCE;
             });
 
@@ -452,12 +454,51 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
             LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
 //                presenter.onFollowUp(dashboardModel);
+                showEnrollmentStatusOptions();
                 return Unit.INSTANCE;
             });
 
         }
 
     }
+
+    public void showEnrollmentStatusOptions() {
+
+        int menu;
+
+        if (teiModel.getSelectedEnrollment().status() == EnrollmentStatus.ACTIVE) {
+            menu = R.menu.tei_detail_options_active;
+        } else if (teiModel.getSelectedEnrollment().status() == EnrollmentStatus.COMPLETED) {
+            menu = R.menu.tei_detail_options_completed;
+        } else {
+            menu = R.menu.tei_detail_options_cancelled;
+        }
+
+        new AppMenuHelper.Builder()
+                .anchor(binding.teiData)
+                .menu(activity, menu)
+                .onMenuInflated(popupMenu -> {
+                            return Unit.INSTANCE;
+                        }
+                )
+                .onMenuItemClicked(itemId -> {
+                    switch (itemId) {
+                        case R.id.complete:
+//                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.COMPLETED);
+                            break;
+                        case R.id.deactivate:
+//                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.CANCELLED);
+                            break;
+                        case R.id.reOpen:
+//                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.ACTIVE);
+                            break;
+                    }
+                    return true;
+                })
+                .build().show();
+
+    }
+
 
     @Override
     public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -24,6 +25,7 @@ import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.data.EventViewModel;
@@ -94,7 +96,9 @@ import static org.dhis2.commons.Constants.EVENT_SCHEDULE_INTERVAL;
 import static org.dhis2.commons.Constants.ORG_UNIT;
 import static org.dhis2.commons.Constants.PROGRAM_UID;
 import static org.dhis2.commons.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
 import com.bumptech.glide.Glide;
@@ -445,9 +449,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             showLoadingProgress(false);
         }
 
-        System.out.println("TrackedEntityInstance:::" + binding.getTrackEntity()   );
+        System.out.println("TrackedEntityInstance:::" + binding.getTrackEntity());
 
-        if(OrientationUtilsKt.isPortrait()) {
+        if (OrientationUtilsKt.isPortrait()) {
 
             DetailsButtonKt.setButtonContent(
                     binding.cardFront.detailsButton,
@@ -458,7 +462,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     }
             );
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFront.followupButton ,activity.presenter.getTEType(), followUp.get(), () -> {
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFront.followupButton, activity.presenter.getTEType(), followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 return Unit.INSTANCE;
             });
@@ -468,7 +472,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 return Unit.INSTANCE;
             });
 
-        }else{
+        } else {
 
             System.out.println("******************************************************************");
             System.out.println(binding.getProgram());
@@ -483,14 +487,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             );
 
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, activity.presenter.getTEType(), followUp.get(),() -> {
+            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, activity.presenter.getTEType(), followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();
                 return Unit.INSTANCE;
             });
 
             LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, activity.presenter.getTEType(), () -> {
-                presenter.onFollowUp(dashboardModel);
+//                presenter.onFollowUp(dashboardModel);
+                showEnrollmentStatusOptions();
                 return Unit.INSTANCE;
             });
 
@@ -517,6 +522,44 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         }
     }
 
+
+    public void showEnrollmentStatusOptions() {
+
+        int menu;
+
+        if (teiModel.getSelectedEnrollment().status() == EnrollmentStatus.ACTIVE) {
+            menu = R.menu.tei_detail_options_active;
+        } else if (teiModel.getSelectedEnrollment().status() == EnrollmentStatus.COMPLETED) {
+            menu = R.menu.tei_detail_options_completed;
+        } else {
+            menu = R.menu.tei_detail_options_cancelled;
+        }
+
+        new AppMenuHelper.Builder()
+                .anchor(binding.teiData)
+                .menu(activity, menu)
+                .onMenuInflated(popupMenu -> {
+                            return Unit.INSTANCE;
+                        }
+                )
+                .onMenuItemClicked(itemId -> {
+                    switch (itemId) {
+                        case R.id.complete:
+                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.COMPLETED);
+                            break;
+                        case R.id.deactivate:
+                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.CANCELLED);
+                            break;
+                        case R.id.reOpen:
+                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.ACTIVE);
+                            break;
+                    }
+                    return true;
+                })
+                .build().show();
+
+    }
+
     @Override
     public void setFilters(List<FilterItem> filterItems) {
         filtersAdapter.submitList(filterItems);
@@ -529,9 +572,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
-
-        System.out.println("observing stage selector :: ");
-        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 
         if (adapter == null) {
             adapter = new EventAdapter(presenter, currentProgram, "", "");
