@@ -8,21 +8,24 @@ class OUTreeRepository(
 ) {
     private var cachedOrgUnits: List<String> = emptyList()
     private var availableOrgUnits: List<String> = emptyList()
+    private val parentOrgUnits: MutableList<String> = mutableListOf()
 
     fun orgUnits(name: String? = null): List<String> {
         val orgUnits =
             orgUnitRepositoryConfiguration.orgUnitRepository(name)
+                .sortedWith(compareBy({ it.level() }, { it.parent()?.uid() }, { it.displayName() }))
 
         val orderedList = mutableListOf<String>()
         val minLevel = orgUnits.minOfOrNull { it.level() ?: 0 }
         availableOrgUnits = orgUnits.map { it.uid() }
-        cachedOrgUnits = availableOrgUnits
+
         orderList(
-            orgUnits.filter { it.level() == minLevel },
+            orgUnits,
             orderedList
         )
+        cachedOrgUnits = orderedList
 
-        return orderedList
+        return cachedOrgUnits
     }
 
     private fun orderList(
@@ -30,9 +33,12 @@ class OUTreeRepository(
         orderedList: MutableList<String>
     ) {
         orgUnitToOrder.forEach { org ->
-            org.path()?.split("/")
-                ?.filter { it.isNotEmpty() }
+            val parentPath = org.path()?.split("/")
+            parentPath?.filter { it.isNotEmpty() }
                 ?.forEach { str ->
+                    if (str != org.uid()) {
+                        parentOrgUnits.add(str)
+                    }
                     orderedList.addIf(!orderedList.contains(str), str)
                 }
             if (orgUnitHasChildren(org.uid())) {
@@ -55,7 +61,7 @@ class OUTreeRepository(
         availableOrgUnits.any { it == orgUnitUid }
 
     fun orgUnitHasChildren(uid: String): Boolean {
-        return orgUnitRepositoryConfiguration.hasChildren(
+        return parentOrgUnits.contains(uid) or orgUnitRepositoryConfiguration.hasChildren(
             uid,
             availableOrgUnits.contains(uid)
         )

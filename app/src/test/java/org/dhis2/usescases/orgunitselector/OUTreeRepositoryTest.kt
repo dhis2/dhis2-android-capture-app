@@ -48,7 +48,7 @@ class OUTreeRepositoryTest {
 
         whenever(
             ouRepositoryConfiguration.childrenOrgUnits(any())
-        )doReturn orgUnits
+        ) doReturn orgUnits
 
         repository.orgUnits()
         val result = repository.childrenOrgUnits(parentUid)
