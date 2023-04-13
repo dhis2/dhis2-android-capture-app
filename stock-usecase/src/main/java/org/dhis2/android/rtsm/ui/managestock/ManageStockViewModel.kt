@@ -321,7 +321,7 @@ class ManageStockViewModel @Inject constructor(
                     is ValidationResult.Error -> {
                         addItem(
                             item = stockItem,
-                            qty = cell.value?.ifEmpty { "0" },
+                            qty = cell.value,
                             stockOnHand = stockItem.stockOnHand,
                             errorMessage = result.message
                         )
