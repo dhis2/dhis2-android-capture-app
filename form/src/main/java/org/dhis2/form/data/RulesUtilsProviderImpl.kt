@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.bindings.formatData
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
@@ -322,11 +323,11 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
             fieldViewModels[assign.field()] =
                 fieldViewModels[assign.field()]!!
-                    .setValue(ruleEffect.data())
+                    .setValue(ruleEffect.formatData(field.valueType))
                     .setDisplayName(valueToShow)
                     .setEditable(false)
         } else if (!hiddenFields.contains(assign.field())) {
-            valuesToChange[assign.field()] = ruleEffect.data()
+            valuesToChange[assign.field()] = ruleEffect.formatData()
         }
     }
 
