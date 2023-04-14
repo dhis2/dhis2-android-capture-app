@@ -16,7 +16,6 @@ class OUTreeRepository(
                 .sortedWith(compareBy({ it.level() }, { it.parent()?.uid() }, { it.displayName() }))
 
         val orderedList = mutableListOf<String>()
-        val minLevel = orgUnits.minOfOrNull { it.level() ?: 0 }
         availableOrgUnits = orgUnits.map { it.uid() }
 
         orderList(
