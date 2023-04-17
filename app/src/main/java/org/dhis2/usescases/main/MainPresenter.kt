@@ -10,10 +10,10 @@ import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
@@ -46,11 +46,13 @@ import org.dhis2.utils.TRUE
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 
 const val DEFAULT = "default"
 const val MIN_USERS = 1
 const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
+const val PLAY_FLAVOR = "dhisPlayServices"
 
 class MainPresenter(
     private val view: MainView,
@@ -340,14 +342,23 @@ class MainPresenter(
         workManagerController.beginUniqueWork(workerItem)
     }
 
-    fun downloadVersion(context: Context, onDownloadCompleted: (Uri) -> Unit) {
-        versionRepository.download(
-            context = context,
-            onDownloadCompleted = {
-                onDownloadCompleted(it)
-                downloadingVersion.value = false
-            },
-            onDownloading = { downloadingVersion.value = true }
-        )
+    fun downloadVersion(
+        context: Context,
+        onDownloadCompleted: (Uri) -> Unit,
+        onLaunchUrl: (Uri) -> Unit
+    ) {
+        if (BuildConfig.FLAVOR == PLAY_FLAVOR) {
+            val url = versionRepository.getUrl()
+            onLaunchUrl(Uri.parse(url))
+        } else {
+            versionRepository.download(
+                context = context,
+                onDownloadCompleted = {
+                    onDownloadCompleted(it)
+                    downloadingVersion.value = false
+                },
+                onDownloading = { downloadingVersion.value = true }
+            )
+        }
     }
 }
