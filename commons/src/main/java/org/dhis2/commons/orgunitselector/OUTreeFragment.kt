@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import javax.inject.Inject
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
@@ -80,7 +81,9 @@ class OUTreeFragment private constructor() : DialogFragment() {
     }
 
     @Inject
-    lateinit var presenter: OUTreeViewModel
+    lateinit var viewModelFactory: OUTreeViewModelFactory
+
+    private val presenter: OUTreeViewModel by viewModels { viewModelFactory }
 
     var selectionCallback: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
 
@@ -89,7 +92,6 @@ class OUTreeFragment private constructor() : DialogFragment() {
 
         (context.applicationContext as OUTreeComponentProvider).provideOUTreeComponent(
             OUTreeModule(
-                viewModelStore = requireActivity().viewModelStore,
                 preselectedOrgUnits = requireArguments().getStringArrayList(ARG_PRE_SELECTED_OU)
                     ?.toList() ?: emptyList(),
                 singleSelection = requireArguments().getBoolean(ARG_SINGLE_SELECTION, false),
