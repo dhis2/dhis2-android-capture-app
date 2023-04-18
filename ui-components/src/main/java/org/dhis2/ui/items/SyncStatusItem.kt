@@ -68,7 +68,7 @@ fun SyncStatusItemPreview() {
         onClick = {}
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_alert),
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_warning_alert),
             contentDescription = ""
         )
     }

@@ -223,7 +223,7 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
                     IssueType.ERROR,
                     IssueType.ERROR_ON_COMPLETE,
                     IssueType.MANDATORY -> R.drawable.ic_error_outline
-                    else -> R.drawable.ic_alert
+                    else -> R.drawable.ic_warning_alert
                 }
             ),
             contentDescription = "",
@@ -289,7 +289,7 @@ fun DialogPreview3() {
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Not saved",
             message = "Some mandatory fields are missing and the form cannot be saved.",
-            iconResource = R.drawable.ic_alert,
+            iconResource = R.drawable.ic_warning_alert,
             mainButton = DialogButtonStyle.MainButton(R.string.review)
         ),
         onMainButtonClicked = {}
@@ -334,7 +334,7 @@ fun SubtitleDialogPreview() {
             title = "Title",
             subtitle = "subtitle",
             message = "Content message. Content message. Content message",
-            iconResource = R.drawable.ic_alert,
+            iconResource = R.drawable.ic_warning_alert,
             mainButton = DialogButtonStyle.MainButton(R.string.review)
         ),
         onMainButtonClicked = {}
@@ -363,7 +363,7 @@ fun SubtitleNoMessageDialogPreview() {
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Title",
             subtitle = "subtitle",
-            iconResource = R.drawable.ic_alert,
+            iconResource = R.drawable.ic_warning_alert,
             mainButton = DialogButtonStyle.MainButton(R.string.review)
         ),
         onMainButtonClicked = {}
@@ -392,7 +392,7 @@ fun SubtitleNoMessageNoContentDialogPreview() {
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Title",
             subtitle = "subtitle",
-            iconResource = R.drawable.ic_alert,
+            iconResource = R.drawable.ic_warning_alert,
             mainButton = DialogButtonStyle.MainButton(R.string.review)
         ),
         onMainButtonClicked = {}
