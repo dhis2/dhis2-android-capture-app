@@ -10,6 +10,7 @@ import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -46,10 +47,8 @@ import org.dhis2.utils.TRUE
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
-import kotlin.coroutines.CoroutineContext
 
 const val DEFAULT = "default"
-const val MIN_USERS = 1
 const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
 const val PLAY_FLAVOR = "dhisPlayServices"
@@ -257,10 +256,6 @@ class MainPresenter(
             if (user.firstName().isNullOrEmpty()) "" else user.firstName(),
             if (user.surname().isNullOrEmpty()) "" else user.surname()
         )
-    }
-
-    fun hasProgramWithAssignment(): Boolean {
-        return repository.hasProgramWithAssignment()
     }
 
     fun onNavigateBackToHome() {
