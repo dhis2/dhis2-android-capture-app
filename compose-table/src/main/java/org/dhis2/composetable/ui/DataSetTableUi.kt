@@ -757,15 +757,14 @@ fun TableCell(
                 modifier = Modifier
                     .testTag(MANDATORY_ICON_TEST_TAG)
                     .padding(4.dp)
-                    .width(6.dp)
-                    .height(6.dp)
+                    .size(6.dp)
                     .align(
                         alignment = mandatoryIconAlignment(
-                            cell.value?.isNotEmpty() == true
+                            cellValue.value?.isNotEmpty() == true
                         )
                     ),
                 tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cell.value?.isNotEmpty() == true
+                    cellValue.value?.isNotEmpty() == true
                 )
             )
         }
