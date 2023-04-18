@@ -2,6 +2,13 @@ package org.dhis2.utils.granularsync
 
 import android.content.Context
 import android.content.Intent
+import org.dhis2.android.rtsm.commons.Constants
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.ui.home.HomeActivity
+import org.dhis2.commons.bindings.distributedTo
+import org.dhis2.commons.bindings.stockCount
+import org.dhis2.commons.bindings.stockDiscarded
+import org.dhis2.commons.bindings.stockDistribution
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
@@ -37,6 +44,8 @@ class SyncStatusDialogNavigator(
                 navigateToTeiDashboard(syncStatusItem.type as SyncStatusType.TrackedEntity)
             is SyncStatusType.TrackerProgram ->
                 navigateToSearchScreen(syncStatusItem.type as SyncStatusType.TrackerProgram)
+            is SyncStatusType.StockProgram ->
+                navigateToStockUsecase(syncStatusItem.type as SyncStatusType.StockProgram)
             is SyncStatusType.Enrollment ->
                 navigateToEnrollmentFormScreen(syncStatusItem.type as SyncStatusType.Enrollment)
         }
@@ -80,6 +89,33 @@ class SyncStatusDialogNavigator(
             null,
             false
         ).launchSyncDialog()
+    }
+
+    private fun navigateToStockUsecase(
+        stockProgramSyncItem: SyncStatusType.StockProgram
+    ): Intent? {
+        return if (context !is HomeActivity) {
+            Intent(
+                context,
+                HomeActivity::class.java
+            ).apply {
+                putExtra(
+                    Constants.INTENT_EXTRA_APP_CONFIG,
+                    AppConfig(
+                        program = stockProgramSyncItem.programUid,
+                        itemCode = stockProgramSyncItem.stockUsecase.itemCode,
+                        itemName = stockProgramSyncItem.stockUsecase.itemDescription,
+                        stockOnHand = stockProgramSyncItem.stockUsecase.stockOnHand,
+                        distributedTo = stockProgramSyncItem.stockUsecase.distributedTo(),
+                        stockDistribution = stockProgramSyncItem.stockUsecase.stockDistribution(),
+                        stockCount = stockProgramSyncItem.stockUsecase.stockCount(),
+                        stockDiscarded = stockProgramSyncItem.stockUsecase.stockDiscarded()
+                    )
+                )
+            }
+        } else {
+            null
+        }
     }
 
     private fun navigateToTeiDashboard(teiSyncType: SyncStatusType.TrackedEntity): Intent? {

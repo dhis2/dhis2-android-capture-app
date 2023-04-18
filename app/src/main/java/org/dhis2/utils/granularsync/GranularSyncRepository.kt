@@ -19,6 +19,7 @@ import org.dhis2.commons.bindings.enrollmentInProgram
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.eventImportConflictsBy
 import org.dhis2.commons.bindings.eventsBy
+import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.observeDataSetInstancesBy
 import org.dhis2.commons.bindings.observeEvent
 import org.dhis2.commons.bindings.observeProgram
@@ -306,7 +307,8 @@ class GranularSyncRepository(
                     ProgramType.WITHOUT_REGISTRATION -> SyncStatusType.EventProgram(program.uid())
                     ProgramType.WITH_REGISTRATION -> SyncStatusType.TrackerProgram(
                         programUid = program.uid(),
-                        trackedEntityTypeUid = program.trackedEntityType()!!.uid()
+                        trackedEntityTypeUid = program.trackedEntityType()!!.uid(),
+                        isStock = d2.isStockProgram(program.uid())
                     )
                     null ->
                         throw NullPointerException(
@@ -352,7 +354,8 @@ class GranularSyncRepository(
             }
             SyncStatusType.TrackerProgram(
                 programUid = programUid,
-                trackedEntityTypeUid = program.trackedEntityType()!!.uid()
+                trackedEntityTypeUid = program.trackedEntityType()!!.uid(),
+                isStock = d2.isStockProgram(program.uid())
             )
         } else {
             d2.eventsBy(

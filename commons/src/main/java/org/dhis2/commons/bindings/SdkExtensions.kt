@@ -31,6 +31,11 @@ fun D2.program(programUid: String): Program =
 fun D2.observeProgram(programUid: String): Single<Program> =
     programModule().programs().uid(programUid).get()
 
+fun D2.isStockProgram(programUid: String): Boolean = useCaseModule()
+    .stockUseCases()
+    .uid(programUid)
+    .blockingExists()
+
 fun D2.dataSetSummaryBy(
     dataSetUid: String
 ): DataSetInstanceSummary {
