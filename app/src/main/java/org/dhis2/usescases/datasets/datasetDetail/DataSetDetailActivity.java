@@ -27,6 +27,7 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
@@ -60,6 +61,9 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     FiltersAdapter filtersAdapter;
 
     @Inject
+    ThemeManager themeManager;
+
+    @Inject
     DataSetDetailViewModelFactory viewModelFactory;
 
     private boolean backDropActive;
@@ -79,6 +83,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         dataSetUid = getIntent().getStringExtra("DATASET_UID");
         dataSetDetailComponent = ((App) getApplicationContext()).userComponent().plus(new DataSetDetailModule(this, dataSetUid));
         dataSetDetailComponent.inject(this);
+        themeManager.setDataSetTheme(dataSetUid);
         super.onCreate(savedInstanceState);
 
         viewModel = new ViewModelProvider(this, viewModelFactory).get(DataSetDetailViewModel.class);

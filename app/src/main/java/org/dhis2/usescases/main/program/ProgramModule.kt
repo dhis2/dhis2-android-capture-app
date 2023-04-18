@@ -11,7 +11,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusController
-import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -22,7 +21,6 @@ class ProgramModule(private val view: ProgramView) {
     internal fun programPresenter(
         programRepository: ProgramRepository,
         schedulerProvider: SchedulerProvider,
-        themeManager: ThemeManager,
         filterManager: FilterManager,
         matomoAnalyticsController: MatomoAnalyticsController,
         syncStatusController: SyncStatusController,
@@ -33,7 +31,6 @@ class ProgramModule(private val view: ProgramView) {
             view,
             programRepository,
             schedulerProvider,
-            themeManager,
             filterManager,
             matomoAnalyticsController,
             syncStatusController,

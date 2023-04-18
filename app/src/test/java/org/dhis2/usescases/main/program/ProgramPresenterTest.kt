@@ -18,7 +18,6 @@ import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.common.State
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -31,7 +30,6 @@ class ProgramPresenterTest {
     private val view: ProgramView = mock()
     private val programRepository: ProgramRepository = mock()
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
-    private val themeManager: ThemeManager = mock()
     private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
@@ -44,7 +42,6 @@ class ProgramPresenterTest {
             view,
             programRepository,
             schedulers,
-            themeManager,
             filterManager,
             matomoAnalyticsController,
             syncStatusController,
@@ -114,7 +111,6 @@ class ProgramPresenterTest {
 
         presenter.onItemClick(programViewModel)
 
-        verify(themeManager).setProgramTheme(programViewModel.uid)
         verify(view).navigateTo(programViewModel)
     }
 
@@ -124,7 +120,6 @@ class ProgramPresenterTest {
 
         presenter.onItemClick(dataSetViewModel)
 
-        verify(themeManager).setDataSetTheme(dataSetViewModel.uid)
         verify(view).navigateTo(dataSetViewModel)
     }
 
