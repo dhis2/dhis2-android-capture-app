@@ -81,8 +81,12 @@ fun String.newVersion(oldVersion: String): Boolean {
     if (this == oldVersion) return false
     val new = this.split(".")
     val old = oldVersion.split(".")
-    new.forEachIndexed { index, vNumber ->
-        if (vNumber < (old.getOrElse(index) { "0" })) return false
+    try {
+        new.forEachIndexed { index, vNumber ->
+            if (vNumber.toInt() < (old.getOrElse(index) { "0" }).toInt()) return false
+        }
+    } catch (e: Exception) {
+        return false
     }
     return true
 }

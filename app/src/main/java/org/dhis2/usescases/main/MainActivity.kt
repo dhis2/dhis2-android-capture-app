@@ -240,7 +240,7 @@ class MainActivity :
 
     private fun observeVersionUpdate() {
         presenter.versionToUpdate.observe(this) { versionName ->
-            versionName?.let { showNewVersionAlert(it) }
+            versionName?.takeIf { it.isNotEmpty() }?.let { showNewVersionAlert(it) }
         }
         presenter.downloadingVersion.observe(this) { downloading ->
             if (downloading) {

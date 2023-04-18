@@ -335,6 +335,7 @@ class MainPresenter(
             policy = ExistingWorkPolicy.REPLACE
         )
         workManagerController.beginUniqueWork(workerItem)
+        versionRepository.removeVersionInfo()
     }
 
     fun downloadVersion(
