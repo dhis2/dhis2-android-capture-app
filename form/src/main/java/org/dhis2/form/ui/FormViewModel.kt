@@ -382,10 +382,7 @@ class FormViewModel(
 
         return fieldValue.let { value ->
             var error =
-                when (
-                    val result = valueType?.takeIf { it != ValueType.IMAGE && !it.isFile }
-                        ?.validator?.validate(value)
-                ) {
+                when (val result = valueType?.validator?.validate(value)) {
                     is Result.Failure -> result.failure
                     else -> null
                 }
