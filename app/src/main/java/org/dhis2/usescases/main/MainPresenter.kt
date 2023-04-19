@@ -14,6 +14,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
@@ -48,9 +49,9 @@ import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
 const val DEFAULT = "default"
-const val MIN_USERS = 1
 const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
+const val PLAY_FLAVOR = "dhisPlayServices"
 
 class MainPresenter(
     private val view: MainView,
@@ -257,10 +258,6 @@ class MainPresenter(
         )
     }
 
-    fun hasProgramWithAssignment(): Boolean {
-        return repository.hasProgramWithAssignment()
-    }
-
     fun onNavigateBackToHome() {
         view.goToHome()
         initFilters()
@@ -340,14 +337,23 @@ class MainPresenter(
         workManagerController.beginUniqueWork(workerItem)
     }
 
-    fun downloadVersion(context: Context, onDownloadCompleted: (Uri) -> Unit) {
-        versionRepository.download(
-            context = context,
-            onDownloadCompleted = {
-                onDownloadCompleted(it)
-                downloadingVersion.value = false
-            },
-            onDownloading = { downloadingVersion.value = true }
-        )
+    fun downloadVersion(
+        context: Context,
+        onDownloadCompleted: (Uri) -> Unit,
+        onLaunchUrl: (Uri) -> Unit
+    ) {
+        if (BuildConfig.FLAVOR == PLAY_FLAVOR) {
+            val url = versionRepository.getUrl()
+            onLaunchUrl(Uri.parse(url))
+        } else {
+            versionRepository.download(
+                context = context,
+                onDownloadCompleted = {
+                    onDownloadCompleted(it)
+                    downloadingVersion.value = false
+                },
+                onDownloading = { downloadingVersion.value = true }
+            )
+        }
     }
 }
