@@ -59,7 +59,7 @@ fun ManageStockTable(
                         rowHeaderWidths = emptyMap(),
                         columnWidth = emptyMap(),
                         defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt(),
-                        tableBottomPadding = 16.dp
+                        tableBottomPadding = 48.dp
                     )
                 )
             }
