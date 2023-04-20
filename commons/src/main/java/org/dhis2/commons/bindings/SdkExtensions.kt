@@ -39,6 +39,7 @@ fun D2.isStockProgram(programUid: String): Boolean = useCaseModule()
 
 fun D2.stockUseCase(programUid: String): StockUseCase = useCaseModule()
     .stockUseCases()
+    .withTransactions()
     .uid(programUid)
     .blockingGet()
 
