@@ -201,7 +201,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         observeScreenState();
         observeDownload();
 
-        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+        if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
             openSyncDialog();
         }
     }
@@ -326,7 +326,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void openSyncDialog() {
         new SyncStatusDialog.Builder()
-                .withContext(this)
+                .withContext(this, null)
                 .withSyncContext(
                         new SyncContext.TrackerProgram(initialProgram)
                 )
@@ -533,7 +533,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showSyncDialog(String enrollmentUid) {
         new SyncStatusDialog.Builder()
-                .withContext(this)
+                .withContext(this, null)
                 .withSyncContext(
                         new SyncContext.TrackerProgramTei(enrollmentUid)
                 )

@@ -237,7 +237,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     public void showGranularSync() {
         presenter.trackDataSetGranularSync();
         new SyncStatusDialog.Builder()
-                .withContext(this)
+                .withContext(this, null)
                 .withSyncContext(new SyncContext.DataSet(dataSetUid))
                 .onDismissListener(hasChanged -> presenter.refreshList())
                 .show("DATASET_SYNC");

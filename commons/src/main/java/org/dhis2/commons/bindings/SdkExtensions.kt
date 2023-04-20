@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 fun D2.programs(): List<Program> =
     programModule().programs().blockingGet()
@@ -30,6 +31,17 @@ fun D2.program(programUid: String): Program =
 
 fun D2.observeProgram(programUid: String): Single<Program> =
     programModule().programs().uid(programUid).get()
+
+fun D2.isStockProgram(programUid: String): Boolean = useCaseModule()
+    .stockUseCases()
+    .uid(programUid)
+    .blockingExists()
+
+fun D2.stockUseCase(programUid: String): StockUseCase = useCaseModule()
+    .stockUseCases()
+    .withTransactions()
+    .uid(programUid)
+    .blockingGet()
 
 fun D2.dataSetSummaryBy(
     dataSetUid: String

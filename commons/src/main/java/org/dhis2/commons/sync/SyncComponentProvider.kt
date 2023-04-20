@@ -6,6 +6,7 @@ interface SyncComponentProvider {
     fun showSyncStatusDialog(
         activity: FragmentActivity,
         syncContext: SyncContext,
-        dismissListener: OnDismissListener? = null
+        dismissListener: OnDismissListener? = null,
+        onSyncNavigationListener: OnSyncNavigationListener? = null
     )
 }

@@ -1,6 +1,7 @@
-package org.dhis2.utils.granularsync
+package org.dhis2.commons.sync
 
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 data class SyncStatusItem(
     val type: SyncStatusType,
@@ -13,6 +14,11 @@ sealed class SyncStatusType {
     data class TrackerProgram(
         val programUid: String,
         val trackedEntityTypeUid: String
+    ) : SyncStatusType()
+
+    data class StockProgram(
+        val programUid: String,
+        val stockUsecase: StockUseCase
     ) : SyncStatusType()
 
     data class TrackedEntity(

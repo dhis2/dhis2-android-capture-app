@@ -264,7 +264,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private void openSyncDialog() {
        new SyncStatusDialog.Builder()
-                .withContext(this)
+                .withContext(this, null)
                .withSyncContext(
                        new SyncContext.Enrollment(enrollmentUid)
                )
