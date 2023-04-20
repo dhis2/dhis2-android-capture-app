@@ -28,6 +28,7 @@ import org.dhis2.commons.bindings.organisationUnit
 import org.dhis2.commons.bindings.period
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.programs
+import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.bindings.tei
 import org.dhis2.commons.bindings.teiAttribute
 import org.dhis2.commons.bindings.teiImportConflictsBy
@@ -305,11 +306,18 @@ class GranularSyncRepository(
             SyncStatusItem(
                 type = when (program.programType()) {
                     ProgramType.WITHOUT_REGISTRATION -> SyncStatusType.EventProgram(program.uid())
-                    ProgramType.WITH_REGISTRATION -> SyncStatusType.TrackerProgram(
-                        programUid = program.uid(),
-                        trackedEntityTypeUid = program.trackedEntityType()!!.uid(),
-                        isStock = d2.isStockProgram(program.uid())
-                    )
+                    ProgramType.WITH_REGISTRATION ->
+                        if (d2.isStockProgram(program.uid())) {
+                            SyncStatusType.StockProgram(
+                                programUid = program.uid(),
+                                stockUsecase = d2.stockUseCase(program.uid())
+                            )
+                        } else {
+                            SyncStatusType.TrackerProgram(
+                                programUid = program.uid(),
+                                trackedEntityTypeUid = program.trackedEntityType()!!.uid()
+                            )
+                        }
                     null ->
                         throw NullPointerException(
                             "Program ${program.uid()}: program type can't be null"
@@ -352,11 +360,17 @@ class GranularSyncRepository(
                     warningCount += getNumberOfConflictsForEvent(tei.uid())
                 }
             }
-            SyncStatusType.TrackerProgram(
-                programUid = programUid,
-                trackedEntityTypeUid = program.trackedEntityType()!!.uid(),
-                isStock = d2.isStockProgram(program.uid())
-            )
+            if (d2.isStockProgram(program.uid())) {
+                SyncStatusType.StockProgram(
+                    programUid = program.uid(),
+                    stockUsecase = d2.stockUseCase(programUid)
+                )
+            } else {
+                SyncStatusType.TrackerProgram(
+                    programUid = program.uid(),
+                    trackedEntityTypeUid = program.trackedEntityType()!!.uid()
+                )
+            }
         } else {
             d2.eventsBy(
                 programUid = programUid,
@@ -909,7 +923,8 @@ fun SyncStatusItem.priority(): Int {
     return when (this.type) {
         is SyncStatusType.DataSet,
         is SyncStatusType.EventProgram,
-        is SyncStatusType.TrackerProgram -> 1
+        is SyncStatusType.TrackerProgram,
+        is SyncStatusType.StockProgram -> 1
         is SyncStatusType.Enrollment -> 2
         is SyncStatusType.DataSetInstance,
         is SyncStatusType.Event,
