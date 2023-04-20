@@ -89,6 +89,13 @@ class StringExtensionsTest {
     }
 
     @Test
+    fun `Should return true when new version has a level with 2 digits`() {
+        val new = "1.2.10"
+        val old = "1.2.3"
+        assert(new.newVersion(old))
+    }
+
+    @Test
     fun `Should return false when same version`() {
         val new = "1.2.3"
         val old = "1.2.3"
@@ -98,6 +105,13 @@ class StringExtensionsTest {
     @Test
     fun `Should return false when old is bigger`() {
         val new = "1.2.3"
+        val old = "1.2.4"
+        assert(!new.newVersion(old))
+    }
+
+    @Test
+    fun `Should return false when version has no integer char`() {
+        val new = "1.2.3f"
         val old = "1.2.4"
         assert(!new.newVersion(old))
     }
