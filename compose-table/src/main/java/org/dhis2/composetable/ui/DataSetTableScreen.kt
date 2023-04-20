@@ -5,12 +5,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
@@ -31,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -62,7 +58,7 @@ fun DataSetTableScreen(
     onTableDimensionResize: (tableId: String, newValue: Float) -> Unit =
         { _, _ -> },
     onTableDimensionReset: (tableId: String) -> Unit = {},
-    bottomContent: @Composable (ColumnScope.() -> Unit)? = null
+    bottomContent: @Composable (() -> Unit)? = null
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -299,17 +295,9 @@ fun DataSetTableScreen(
                         override fun onTableWidthChanged(tableId: String, newValue: Float) {
                             onTableDimensionResize(tableId, newValue)
                         }
-                    }
+                    },
+                    bottomContent = bottomContent
                 )
-                if (bottomContent != null) {
-                    Column(
-                        content = bottomContent,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    )
-                }
             }
         }
         displayDescription?.let {

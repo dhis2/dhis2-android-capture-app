@@ -834,7 +834,8 @@ fun DropDownOptions(
 @Composable
 fun DataTable(
     tableList: List<TableModel>,
-    tableInteractions: TableInteractions = object : TableInteractions {}
+    tableInteractions: TableInteractions = object : TableInteractions {},
+    bottomContent: @Composable (() -> Unit)? = null
 ) {
     if (!TableTheme.configuration.editable && !tableList.all { it.areAllValuesEmpty() }) {
         TableItem(
@@ -894,7 +895,8 @@ fun DataTable(
             },
             onResetResize = { tableId ->
                 tableInteractions.onTableWidthReset(tableId)
-            }
+            },
+            bottomContent = bottomContent
         )
     }
 }
@@ -908,7 +910,8 @@ private fun TableList(
     onColumnResize: (String, Int, Float) -> Unit,
     onHeaderResize: (String, Float) -> Unit,
     onTableResize: (String, Float) -> Unit,
-    onResetResize: (String) -> Unit
+    onResetResize: (String) -> Unit,
+    bottomContent: @Composable (() -> Unit)? = null
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
@@ -1121,6 +1124,7 @@ private fun TableList(
                     }
                 }
             }
+            bottomContent?.let { item { it.invoke() } }
         }
 
         VerticalResizingView(provideResizingCell = { resizingCell })
