@@ -1,5 +1,6 @@
 package org.dhis2.composetable.model
 
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 
@@ -9,6 +10,7 @@ data class TextInputModel(
     val secondaryLabels: List<String> = emptyList(),
     val currentValue: String? = null,
     val keyboardInputType: KeyboardInputType = KeyboardInputType.TextInput(),
+    val selection: TextRange? = null,
     val error: String? = null,
     val warning: String? = null,
     private val clearable: Boolean = false
