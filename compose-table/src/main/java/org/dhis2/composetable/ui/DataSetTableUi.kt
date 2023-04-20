@@ -628,10 +628,13 @@ fun ItemValues(
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(
                             with(LocalDensity.current) {
-                                TableTheme.dimensions.columnWidthWithTableExtra(
-                                    tableId,
-                                    columnIndex
-                                ).plus(headerExtraSize).toDp()
+                                TableTheme.dimensions
+                                    .columnWidthWithTableExtra(
+                                        tableId,
+                                        columnIndex
+                                    )
+                                    .plus(headerExtraSize)
+                                    .toDp()
                             }
                         )
                         .fillMaxHeight()
@@ -933,7 +936,10 @@ private fun TableList(
             state = verticalScrollState
         ) {
             tableList.forEachIndexed { index, currentTableModel ->
-                stickyHeader {
+                fixedStickyHeader(
+                    fixHeader = keyboardState == Keyboard.Closed,
+                    key = currentTableModel.id
+                ) {
                     TableHeaderRow(
                         modifier = Modifier
                             .background(Color.White),
@@ -997,6 +1003,7 @@ private fun TableList(
                         }
                     )
                 }
+
                 itemsIndexed(
                     items = currentTableModel.tableRows,
                     key = { _, item -> item.rowHeader.id!! }
@@ -1104,12 +1111,14 @@ private fun TableList(
                         )
                     }
                 }
-                stickyHeader {
-                    Spacer(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .background(color = Color.White)
-                    )
+                if (keyboardState == Keyboard.Closed) {
+                    stickyHeader {
+                        Spacer(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .background(color = Color.White)
+                        )
+                    }
                 }
             }
         }
