@@ -5,6 +5,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.commons.bindings.trackedEntityTypeForTei
+import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_TEI
 import org.dhis2.commons.matomo.Categories.Companion.TRACKER_LIST
 import org.dhis2.commons.matomo.Labels.Companion.CLICK
@@ -63,10 +64,11 @@ class EnrollmentPresenterImpl(
                 .map { tei ->
                     val attrList = mutableListOf<String>()
                     val attributesValues =
-                        teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(
-                            tei.trackedEntityType(),
-                            tei.uid()
-                        )
+                        teiAttributesProvider
+                            .getListOfValuesFromProgramTrackedEntityAttributesByProgram(
+                                programRepository.blockingGet().uid(),
+                                tei.uid()
+                            )
                     val teiTypeAttributeValue = mutableListOf<TrackedEntityAttributeValue>()
                     if (attributesValues.isEmpty()) {
                         teiTypeAttributeValue.addAll(
@@ -80,7 +82,7 @@ class EnrollmentPresenterImpl(
                         attrList.addAll(attributesValues.map { it.value() ?: "" })
                     }
 
-                    TeiInfo(
+                    TeiAttributesInfo(
                         attributes = attrList,
                         profileImage = tei.profilePicturePath(
                             d2,

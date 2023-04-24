@@ -1,12 +1,13 @@
 package org.dhis2.usescases.enrollment
 
+import org.dhis2.commons.data.TeiAttributesInfo
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class TeiInfoTest {
+class TeiAttributesInfoTest {
     @Test
     fun shouldReturnOneAttributeAsMainLabel() {
-        val teiInfo = TeiInfo(
+        val teiInfo = TeiAttributesInfo(
             attributes = listOf("attr1"),
             profileImage = "path",
             teTypeName = "name"
@@ -18,7 +19,7 @@ class TeiInfoTest {
 
     @Test
     fun shouldReturnTwoAttributesAsMainLabel() {
-        val teiInfo = TeiInfo(
+        val teiInfo = TeiAttributesInfo(
             attributes = listOf("attr1", "attr2"),
             profileImage = "path",
             teTypeName = "name"
@@ -30,7 +31,7 @@ class TeiInfoTest {
 
     @Test
     fun shouldReturnTwoAttributesAsMainLabelAndOneAttributeAsSecondaryLabel() {
-        val teiInfo = TeiInfo(
+        val teiInfo = TeiAttributesInfo(
             attributes = listOf("attr1", "attr2", "attr3", "attr4"),
             profileImage = "path",
             teTypeName = "name"
@@ -42,7 +43,7 @@ class TeiInfoTest {
 
     @Test
     fun shouldReturnTrackedEntityTypeName() {
-        val teiInfo = TeiInfo(
+        val teiInfo = TeiAttributesInfo(
             attributes = listOf(),
             profileImage = "path",
             teTypeName = "name"
@@ -54,7 +55,7 @@ class TeiInfoTest {
 
     @Test
     fun shouldReturnFormattedTrackedEntityTypeName() {
-        val teiInfo = TeiInfo(
+        val teiInfo = TeiAttributesInfo(
             attributes = listOf(),
             profileImage = "path",
             teTypeName = "name"
@@ -66,7 +67,7 @@ class TeiInfoTest {
 
     @Test
     fun shouldReturnFormattedLabelIfNoArgumentsAvailable() {
-        val teiInfo = TeiInfo(
+        val teiInfo = TeiAttributesInfo(
             attributes = listOf(),
             profileImage = "path",
             teTypeName = "name"
