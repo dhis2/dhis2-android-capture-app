@@ -199,6 +199,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
     override fun setSections(sections: List<DataSetSection>, sectionToOpenUid: String?) {
         val sectionToOpen = sectionToOpenUid ?: sections.firstOrNull()?.uid
         sectionToOpen?.let { sectionUid ->
+            binding.tabLayout.removeAllTabs()
             for (section in sections) {
                 val tab = binding.tabLayout.newTab()
                 tab.text = section.title()
