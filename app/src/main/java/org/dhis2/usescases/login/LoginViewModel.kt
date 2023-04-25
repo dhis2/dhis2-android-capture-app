@@ -351,14 +351,14 @@ class LoginViewModel(
     }
 
     fun areSameCredentials(): Boolean {
-        return preferenceProvider.areCredentialsSet() &&
+        return (
+            preferenceProvider.areCredentialsSet() &&
             preferenceProvider.areSameCredentials(
                 serverUrl.value!!,
                 userName.value!!,
                 password.value!!
-            ).also { areSameCredentials ->
-                if (!areSameCredentials) saveUserCredentials()
-            }
+            )
+        ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
     }
 
     private fun saveUserCredentials() {
