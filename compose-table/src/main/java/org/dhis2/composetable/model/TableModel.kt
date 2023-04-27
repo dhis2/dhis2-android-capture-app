@@ -137,5 +137,4 @@ fun TableModel.areAllValuesEmpty(): Boolean {
     return true
 }
 
-val LocalSelectedCell = compositionLocalOf<TableCell?> { null }
-val LocalUpdatingCell = compositionLocalOf<TableCell?> { null }
+val LocalCurrentCellValue = compositionLocalOf<() -> String?> { {""} }
