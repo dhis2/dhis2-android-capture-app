@@ -1,16 +1,13 @@
 package org.dhis2.commons.bindings
 
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.rules.models.RuleEffect
 
-fun RuleEffect.formatData(valueType: ValueType? = null): String? {
-    return data()?.let { value ->
-        when {
-            valueType?.isInteger == true -> formatInteger(value)
-            valueType?.isDecimal == true -> formatDecimal(value)
-            valueType?.isBoolean == true -> formatBoolean(value)
-            else -> value
-        }
+fun String.formatData(valueType: ValueType? = null): String {
+    return when {
+        valueType?.isInteger == true -> formatInteger(this)
+        valueType?.isDecimal == true -> formatDecimal(this)
+        valueType?.isBoolean == true -> formatBoolean(this)
+        else -> this
     }
 }
 

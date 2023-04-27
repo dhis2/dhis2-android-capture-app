@@ -294,7 +294,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 }
 
             if (value == null || value != ruleEffect.data()) {
-                valuesToChange[assign.field()] = ruleEffect.data()
+                valuesToChange[assign.field()] = ruleEffect.data()?.formatData(field.valueType)
             }
             val valueToShow =
                 if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
@@ -323,11 +323,11 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
             fieldViewModels[assign.field()] =
                 fieldViewModels[assign.field()]!!
-                    .setValue(ruleEffect.formatData(field.valueType))
-                    .setDisplayName(valueToShow)
+                    .setValue(ruleEffect.data()?.formatData(field.valueType))
+                    .setDisplayName(valueToShow?.formatData(field.valueType))
                     .setEditable(false)
         } else if (!hiddenFields.contains(assign.field())) {
-            valuesToChange[assign.field()] = ruleEffect.formatData()
+            valuesToChange[assign.field()] = ruleEffect.data()?.formatData()
         }
     }
 
