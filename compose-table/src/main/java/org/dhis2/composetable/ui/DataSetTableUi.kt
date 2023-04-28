@@ -89,6 +89,7 @@ import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.ItemColumnHeaderUiState
 import org.dhis2.composetable.model.ItemHeaderUiState
 import org.dhis2.composetable.model.LocalCurrentCellValue
+import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -694,8 +695,12 @@ fun TableCell(
     onOptionSelected: (TableCell, String, String) -> Unit,
     onTextChange: (() -> String?)? = null
 ) {
+    val localUpdatingCell = LocalUpdatingCell.current
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    var cellValue = cell.value
+    var cellValue = when (localUpdatingCell?.id) {
+        cell.id -> localUpdatingCell?.value
+        else -> cell.value
+    }
     onTextChange?.let {
         cellValue = it()
     }
