@@ -20,6 +20,7 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ENROLLMENT_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
+import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
@@ -297,7 +298,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     /*region TEI*/
-    override fun displayTeiInfo(teiInfo: TeiInfo) {
+    override fun displayTeiInfo(teiInfo: TeiAttributesInfo) {
         if (mode != EnrollmentMode.NEW) {
             binding.title.visibility = View.GONE
             binding.teiDataHeader.root.visibility = View.VISIBLE

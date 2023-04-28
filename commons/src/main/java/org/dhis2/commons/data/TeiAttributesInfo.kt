@@ -1,6 +1,6 @@
-package org.dhis2.usescases.enrollment
+package org.dhis2.commons.data
 
-data class TeiInfo(
+data class TeiAttributesInfo(
     val attributes: List<String>,
     val profileImage: String,
     val teTypeName: String
