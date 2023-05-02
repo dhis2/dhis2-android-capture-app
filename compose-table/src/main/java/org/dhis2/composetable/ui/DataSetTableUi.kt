@@ -88,7 +88,7 @@ import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.ItemColumnHeaderUiState
 import org.dhis2.composetable.model.ItemHeaderUiState
-import org.dhis2.composetable.model.LocalSelectedCell
+import org.dhis2.composetable.model.LocalCurrentCellValue
 import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
@@ -662,7 +662,8 @@ fun ItemValues(
                         )
                     },
                     onClick = onClick,
-                    onOptionSelected = onOptionSelected
+                    onOptionSelected = onOptionSelected,
+                    onTextChange = if (isSelected) LocalCurrentCellValue.current else null
                 )
                 if (isSelected) {
                     val marginCoordinates = Rect(
@@ -691,16 +692,17 @@ fun TableCell(
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit,
-    onOptionSelected: (TableCell, String, String) -> Unit
+    onOptionSelected: (TableCell, String, String) -> Unit,
+    onTextChange: (() -> String?)? = null
 ) {
-    val localSelectedCell = LocalSelectedCell.current
     val localUpdatingCell = LocalUpdatingCell.current
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    val cellValue = remember { mutableStateOf<String?>(null) }
-    cellValue.value = when {
-        localSelectedCell?.id == cell.id -> localSelectedCell?.value
-        localUpdatingCell?.id == cell.id -> localUpdatingCell?.value
+    var cellValue = when (localUpdatingCell?.id) {
+        cell.id -> localUpdatingCell?.value
         else -> cell.value
+    }
+    onTextChange?.let {
+        cellValue = it()
     }
 
     CellLegendBox(
@@ -725,7 +727,7 @@ fun TableCell(
                     horizontal = TableTheme.dimensions.cellHorizontalPadding,
                     vertical = TableTheme.dimensions.cellVerticalPadding
                 ),
-            text = cellValue.value ?: "",
+            text = cellValue ?: "",
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
             style = TextStyle.Default.copy(
@@ -746,9 +748,7 @@ fun TableCell(
                 onSelected = { code, label ->
                     setExpanded(false)
                     onOptionSelected(cell, code, label)
-                    if (localSelectedCell?.id == cell.id) {
-                        cellValue.value = label
-                    }
+                    cellValue = label
                 }
             )
         }
@@ -763,11 +763,11 @@ fun TableCell(
                     .size(6.dp)
                     .align(
                         alignment = mandatoryIconAlignment(
-                            cellValue.value?.isNotEmpty() == true
+                            cellValue?.isNotEmpty() == true
                         )
                     ),
                 tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cellValue.value?.isNotEmpty() == true
+                    cellValue?.isNotEmpty() == true
                 )
             )
         }

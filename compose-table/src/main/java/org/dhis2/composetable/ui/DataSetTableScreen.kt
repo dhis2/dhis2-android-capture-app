@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
-import org.dhis2.composetable.model.LocalSelectedCell
+import org.dhis2.composetable.model.LocalCurrentCellValue
 import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -225,8 +225,8 @@ fun DataSetTableScreen(
             }
         }
         CompositionLocalProvider(
-            LocalSelectedCell provides currentCell,
             LocalTableSelection provides tableSelection,
+            LocalCurrentCellValue provides { currentCell?.value },
             LocalUpdatingCell provides updatingCell
         ) {
             DataTable(
