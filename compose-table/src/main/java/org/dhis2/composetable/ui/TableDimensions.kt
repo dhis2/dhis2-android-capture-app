@@ -31,7 +31,8 @@ data class TableDimensions(
     val minRowHeaderWidth: Int = 130,
     val minColumnWidth: Int = 130,
     val maxRowHeaderWidth: Int = Int.MAX_VALUE,
-    val maxColumnWidth: Int = Int.MAX_VALUE
+    val maxColumnWidth: Int = Int.MAX_VALUE,
+    val tableEndExtraScroll: Dp = 6.dp
 ) {
 
     private fun extraWidthInTable(tableId: String): Int = extraWidths[tableId] ?: 0
