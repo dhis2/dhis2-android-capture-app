@@ -55,7 +55,8 @@ data class TableModel(
     }
 
     fun cellHasError(cell: TableSelection.CellSelection): TableCell? =
-        tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
+        tableRows[cell.rowIndex].values[cell.columnIndex]
+//        tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
 
     fun hasCellWithId(cellId: String?): Boolean {
         return tableRows.any { row ->
