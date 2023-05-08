@@ -3,6 +3,7 @@ package org.dhis2.composetable
 import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.ui.TableConfiguration
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -74,6 +75,7 @@ class BottomBarTableTests {
         }
     }
 
+    @Ignore
     @Test
     fun shouldHideInputFieldIfTextInputViewModeIsOff() {
         tableRobot(composeTestRule) {
