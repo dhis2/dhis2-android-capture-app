@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
@@ -20,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -257,6 +259,20 @@ class FormView : Fragment() {
     private var displayConfErrors = true
     private var onSavePicture: ((String) -> Unit)? = null
 
+    private val storagePermissions = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    private val storagePermissions33 = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_AUDIO,
+        Manifest.permission.READ_MEDIA_VIDEO
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -305,7 +321,7 @@ class FormView : Fragment() {
             uiEventHandler(uiEvent)
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
                 val hasToShowFab = checkLastItem()
                 scrollCallback?.invoke(hasToShowFab)
@@ -796,9 +812,13 @@ class FormView : Fragment() {
                 )
             )
         }
-        requestCameraPermissions.launch(
-            arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        )
+        requestCameraPermissions.launch(permissions())
+    }
+
+    private fun permissions() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        storagePermissions33
+    } else {
+        storagePermissions
     }
 
     private fun showAddImageOptions() {
@@ -825,6 +845,7 @@ class FormView : Fragment() {
                             )
                             takePicture.launch(photoUri)
                         }
+
                         requireContext().getString(R.string.from_gallery) -> {
                             pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
                         }
