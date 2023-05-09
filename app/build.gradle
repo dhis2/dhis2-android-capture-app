@@ -172,7 +172,7 @@ android {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.7.1-psi-fork-1"
+            versionName "2.7.1-psi-fork-2"
         }
     }
 
