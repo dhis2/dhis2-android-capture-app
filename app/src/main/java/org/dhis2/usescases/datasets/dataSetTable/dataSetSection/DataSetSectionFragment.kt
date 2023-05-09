@@ -150,6 +150,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         tableValidator = presenterFragment
                     ) {
                         val screenState by presenterFragment.currentState().collectAsState()
+                        val tableEndExtraScroll = with(LocalDensity.current) {
+                            TableTheme.dimensions.tableEndExtraScroll.toPx().toInt()
+                        }
 
                         DataSetTableScreen(
                             tableScreenState = screenState,
@@ -164,7 +167,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             },
                             onSaveValue = presenterFragment::onSaveValueChange,
                             onTableWidthChanged = { width ->
-                                dimensions = dimensions.copy(totalWidth = width)
+                                dimensions = dimensions.copy(
+                                    totalWidth = width - tableEndExtraScroll
+                                )
                             },
                             onRowHeaderResize = { tableId, newValue ->
                                 with(localDensity) {

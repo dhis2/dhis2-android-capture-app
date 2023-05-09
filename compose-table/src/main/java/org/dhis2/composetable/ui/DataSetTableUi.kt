@@ -198,6 +198,7 @@ fun TableHeader(
                 )
             )
         }
+        Spacer(Modifier.size(TableTheme.dimensions.tableEndExtraScroll))
     }
 }
 
@@ -447,7 +448,11 @@ fun TableItemRow(
             )
         }
         if (!rowModel.isLastRow) {
-            Divider(modifier = Modifier.fillMaxWidth())
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = TableTheme.dimensions.tableEndExtraScroll)
+            )
         }
     }
 }
@@ -683,6 +688,7 @@ fun ItemValues(
                 }
             }
         )
+        Spacer(Modifier.size(TableTheme.dimensions.tableEndExtraScroll))
     }
 }
 
