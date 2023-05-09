@@ -94,7 +94,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
         binding.BSLayout.bottomSheetLayout.visibility = View.GONE
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
                 presenter.dataSetScreenState.collect { screenState ->
                     setSections(screenState.sections, screenState.initialSectionToOpenUid)
                     screenState.renderDetails?.let { renderDetails(it) }
