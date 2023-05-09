@@ -521,6 +521,7 @@ class FormView : Fragment() {
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {
         if (actionIconsActivate && !uiEvent.value.isNullOrEmpty()) {
+            view?.closeKeyboard()
             val intent = Intent(uiEvent.action).apply {
                 when (uiEvent.action) {
                     Intent.ACTION_DIAL -> {
