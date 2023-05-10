@@ -88,7 +88,7 @@ import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.ItemColumnHeaderUiState
 import org.dhis2.composetable.model.ItemHeaderUiState
-import org.dhis2.composetable.model.LocalSelectedCell
+import org.dhis2.composetable.model.LocalCurrentCellValue
 import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
@@ -156,7 +156,15 @@ fun TableHeader(
                                     onHeaderResize = onHeaderResize,
                                     onResizing = onResizing,
                                     isLastRow = tableHeaderModel.rows.lastIndex == rowIndex
-                                )
+                                ) { dimensions, currentOffsetX ->
+                                    dimensions.canUpdateColumnHeaderWidth(
+                                        tableId = tableId ?: "",
+                                        currentOffsetX = currentOffsetX,
+                                        columnIndex = columnIndex,
+                                        tableHeaderModel.tableMaxColumns(),
+                                        tableHeaderModel.hasTotals
+                                    )
+                                }
                             )
                         }
                     )
@@ -185,10 +193,12 @@ fun TableHeader(
                     onCellSelected = {},
                     onHeaderResize = { _, _ -> },
                     onResizing = {},
-                    isLastRow = false
+                    isLastRow = false,
+                    checkMaxCondition = { _, _ -> false }
                 )
             )
         }
+        Spacer(Modifier.size(TableTheme.dimensions.tableEndExtraScroll))
     }
 }
 
@@ -243,13 +253,7 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .zIndex(2f),
-                checkMaxMinCondition = { dimensions, currentOffsetX ->
-                    dimensions.canUpdateColumnHeaderWidth(
-                        tableId = itemHeaderUiState.tableId ?: "",
-                        currentOffsetX = currentOffsetX,
-                        columnIndex = itemHeaderUiState.columnIndex
-                    )
-                },
+                checkMaxMinCondition = itemHeaderUiState.checkMaxCondition,
                 onHeaderResize = { newValue ->
                     itemHeaderUiState.onHeaderResize(
                         itemHeaderUiState.columnIndex,
@@ -444,7 +448,11 @@ fun TableItemRow(
             )
         }
         if (!rowModel.isLastRow) {
-            Divider(modifier = Modifier.fillMaxWidth())
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = TableTheme.dimensions.tableEndExtraScroll)
+            )
         }
     }
 }
@@ -628,10 +636,13 @@ fun ItemValues(
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(
                             with(LocalDensity.current) {
-                                TableTheme.dimensions.columnWidthWithTableExtra(
-                                    tableId,
-                                    columnIndex
-                                ).plus(headerExtraSize).toDp()
+                                TableTheme.dimensions
+                                    .columnWidthWithTableExtra(
+                                        tableId,
+                                        columnIndex
+                                    )
+                                    .plus(headerExtraSize)
+                                    .toDp()
                             }
                         )
                         .fillMaxHeight()
@@ -659,7 +670,8 @@ fun ItemValues(
                         )
                     },
                     onClick = onClick,
-                    onOptionSelected = onOptionSelected
+                    onOptionSelected = onOptionSelected,
+                    onTextChange = if (isSelected) LocalCurrentCellValue.current else null
                 )
                 if (isSelected) {
                     val marginCoordinates = Rect(
@@ -676,6 +688,7 @@ fun ItemValues(
                 }
             }
         )
+        Spacer(Modifier.size(TableTheme.dimensions.tableEndExtraScroll))
     }
 }
 
@@ -688,16 +701,17 @@ fun TableCell(
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit,
-    onOptionSelected: (TableCell, String, String) -> Unit
+    onOptionSelected: (TableCell, String, String) -> Unit,
+    onTextChange: (() -> String?)? = null
 ) {
-    val localSelectedCell = LocalSelectedCell.current
     val localUpdatingCell = LocalUpdatingCell.current
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    val cellValue = remember { mutableStateOf<String?>(null) }
-    cellValue.value = when {
-        localSelectedCell?.id == cell.id -> localSelectedCell?.value
-        localUpdatingCell?.id == cell.id -> localUpdatingCell?.value
+    var cellValue = when (localUpdatingCell?.id) {
+        cell.id -> localUpdatingCell?.value
         else -> cell.value
+    }
+    onTextChange?.let {
+        cellValue = it()
     }
 
     CellLegendBox(
@@ -722,7 +736,7 @@ fun TableCell(
                     horizontal = TableTheme.dimensions.cellHorizontalPadding,
                     vertical = TableTheme.dimensions.cellVerticalPadding
                 ),
-            text = cellValue.value ?: "",
+            text = cellValue ?: "",
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
             style = TextStyle.Default.copy(
@@ -743,9 +757,7 @@ fun TableCell(
                 onSelected = { code, label ->
                     setExpanded(false)
                     onOptionSelected(cell, code, label)
-                    if (localSelectedCell?.id == cell.id) {
-                        cellValue.value = label
-                    }
+                    cellValue = label
                 }
             )
         }
@@ -757,15 +769,14 @@ fun TableCell(
                 modifier = Modifier
                     .testTag(MANDATORY_ICON_TEST_TAG)
                     .padding(4.dp)
-                    .width(6.dp)
-                    .height(6.dp)
+                    .size(6.dp)
                     .align(
                         alignment = mandatoryIconAlignment(
-                            cell.value?.isNotEmpty() == true
+                            cellValue?.isNotEmpty() == true
                         )
                     ),
                 tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cell.value?.isNotEmpty() == true
+                    cellValue?.isNotEmpty() == true
                 )
             )
         }
@@ -832,7 +843,8 @@ fun DropDownOptions(
 @Composable
 fun DataTable(
     tableList: List<TableModel>,
-    tableInteractions: TableInteractions = object : TableInteractions {}
+    tableInteractions: TableInteractions = object : TableInteractions {},
+    bottomContent: @Composable (() -> Unit)? = null
 ) {
     if (!TableTheme.configuration.editable && !tableList.all { it.areAllValuesEmpty() }) {
         TableItem(
@@ -892,7 +904,8 @@ fun DataTable(
             },
             onResetResize = { tableId ->
                 tableInteractions.onTableWidthReset(tableId)
-            }
+            },
+            bottomContent = bottomContent
         )
     }
 }
@@ -906,7 +919,8 @@ private fun TableList(
     onColumnResize: (String, Int, Float) -> Unit,
     onHeaderResize: (String, Float) -> Unit,
     onTableResize: (String, Float) -> Unit,
-    onResetResize: (String) -> Unit
+    onResetResize: (String) -> Unit,
+    bottomContent: @Composable (() -> Unit)? = null
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
@@ -934,7 +948,10 @@ private fun TableList(
             state = verticalScrollState
         ) {
             tableList.forEachIndexed { index, currentTableModel ->
-                stickyHeader {
+                fixedStickyHeader(
+                    fixHeader = keyboardState == Keyboard.Closed,
+                    key = currentTableModel.id
+                ) {
                     TableHeaderRow(
                         modifier = Modifier
                             .background(Color.White),
@@ -998,6 +1015,7 @@ private fun TableList(
                         }
                     )
                 }
+
                 itemsIndexed(
                     items = currentTableModel.tableRows,
                     key = { _, item -> item.rowHeader.id!! }
@@ -1105,14 +1123,17 @@ private fun TableList(
                         )
                     }
                 }
-                stickyHeader {
-                    Spacer(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .background(color = Color.White)
-                    )
+                if (keyboardState == Keyboard.Closed) {
+                    stickyHeader {
+                        Spacer(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .background(color = Color.White)
+                        )
+                    }
                 }
             }
+            bottomContent?.let { item { it.invoke() } }
         }
 
         VerticalResizingView(provideResizingCell = { resizingCell })
@@ -1172,7 +1193,7 @@ fun VerticalResizingRule(
     var dimensions by remember { mutableStateOf<TableDimensions?>(null) }
     dimensions = TableTheme.dimensions
 
-    val minOffset = with(LocalDensity.current) { 11.dp.toPx() }
+    val minOffset = with(LocalDensity.current) { 5.dp.toPx() }
     var offsetX by remember { mutableStateOf(minOffset) }
     var positionInRoot by remember { mutableStateOf(Offset.Zero) }
 

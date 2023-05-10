@@ -207,7 +207,7 @@ class LoginViewModel(
                             }
                         }
                 }
-                .doOnNext { _loginProgressVisible.postValue(false) }
+                .doOnTerminate { _loginProgressVisible.postValue(false) }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
@@ -351,14 +351,14 @@ class LoginViewModel(
     }
 
     fun areSameCredentials(): Boolean {
-        return preferenceProvider.areCredentialsSet() &&
-            preferenceProvider.areSameCredentials(
-                serverUrl.value!!,
-                userName.value!!,
-                password.value!!
-            ).also { areSameCredentials ->
-                if (!areSameCredentials) saveUserCredentials()
-            }
+        return (
+            preferenceProvider.areCredentialsSet() &&
+                preferenceProvider.areSameCredentials(
+                    serverUrl.value!!,
+                    userName.value!!,
+                    password.value!!
+                )
+            ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
     }
 
     private fun saveUserCredentials() {

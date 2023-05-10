@@ -84,4 +84,12 @@ class VersionRepository(val d2: D2) {
             Uri.fromFile(file)
         }
     }
+
+    fun getUrl(): String? {
+        return d2.settingModule().latestAppVersion().blockingGet()?.downloadURL()
+    }
+
+    fun removeVersionInfo() {
+        _newAppVersion.tryEmit("")
+    }
 }

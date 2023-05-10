@@ -41,9 +41,11 @@ import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,7 +72,7 @@ fun TextInput(
                 color = Color.White,
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
-            .padding(16.dp)
+            .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp)
     ) {
         InputTitle(textInputModel)
         TextInputContent(
@@ -117,6 +119,7 @@ fun keyboardAsState(): State<Keyboard> {
 private fun InputTitle(textInputModel: TextInputModel) {
     Row(
         modifier = Modifier
+            .padding(end = 12.dp)
             .fillMaxWidth()
             .semantics {
                 mainLabel = textInputModel.mainLabel
@@ -173,9 +176,20 @@ private fun TextInputContent(
                                 onSave()
                             }
                         },
-                    value = textInputModel.currentValue ?: "",
+                    value = TextFieldValue(
+                        text = textInputModel.currentValue ?: "",
+                        selection = textInputModel.selection ?: TextRange(
+                            textInputModel.currentValue?.length ?: 0
+                        )
+                    ),
                     onValueChange = {
-                        onTextChanged(textInputModel.copy(currentValue = it, error = null))
+                        onTextChanged(
+                            textInputModel.copy(
+                                currentValue = it.text,
+                                selection = it.selection,
+                                error = null
+                            )
+                        )
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,

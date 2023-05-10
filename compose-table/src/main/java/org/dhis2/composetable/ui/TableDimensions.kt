@@ -31,7 +31,8 @@ data class TableDimensions(
     val minRowHeaderWidth: Int = 130,
     val minColumnWidth: Int = 130,
     val maxRowHeaderWidth: Int = Int.MAX_VALUE,
-    val maxColumnWidth: Int = Int.MAX_VALUE
+    val maxColumnWidth: Int = Int.MAX_VALUE,
+    val tableEndExtraScroll: Dp = 6.dp
 ) {
 
     private fun extraWidthInTable(tableId: String): Int = extraWidths[tableId] ?: 0
@@ -121,7 +122,7 @@ data class TableDimensions(
         tableId: String,
         widthOffset: Float
     ): TableDimensions {
-        val newWidth = rowHeaderWidth(tableId) + widthOffset - 11
+        val newWidth = (rowHeaderWidths[tableId] ?: defaultRowHeaderWidth) + widthOffset - 11
         val newMap = rowHeaderWidths.toMutableMap()
         newMap[tableId] = newWidth.toInt()
         return copy(rowHeaderWidths = newMap)
@@ -171,15 +172,19 @@ data class TableDimensions(
     fun canUpdateColumnHeaderWidth(
         tableId: String,
         currentOffsetX: Float,
-        columnIndex: Int
+        columnIndex: Int,
+        totalColumns: Int,
+        hasTotal: Boolean
     ): Boolean {
         val desiredDimension = updateColumnWidth(
             tableId = tableId,
             widthOffset = currentOffsetX,
             column = columnIndex
         )
-        return desiredDimension.columnWidth[tableId]
-            ?.get(columnIndex) in minColumnWidth..maxColumnWidth
+        return desiredDimension.columnWidthWithTableExtra(
+            tableId,
+            columnIndex
+        ) + extraSize(totalColumns, hasTotal) in minColumnWidth..maxColumnWidth
     }
 
     fun canUpdateAllWidths(
@@ -188,8 +193,12 @@ data class TableDimensions(
     ): Boolean {
         val desiredDimension = updateAllWidthBy(tableId = tableId, widthOffset = widthOffset)
         return desiredDimension.rowHeaderWidth(tableId) in minRowHeaderWidth..maxRowHeaderWidth &&
-            desiredDimension.columnWidth[tableId]?.all { (_, width) ->
-            width in minColumnWidth..maxColumnWidth
+            desiredDimension.columnWidthWithTableExtra(tableId) in minColumnWidth..maxColumnWidth &&
+            desiredDimension.columnWidth[tableId]?.all { (column, _) ->
+            desiredDimension.columnWidthWithTableExtra(
+                tableId,
+                column
+            ) in minColumnWidth..maxColumnWidth
         } ?: true
     }
 }

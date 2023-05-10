@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.dhis2.ui.theme.colorPrimary
 
 @Preview
 @Composable
@@ -82,7 +82,7 @@ fun SyncingIcon() {
 
 @Composable
 fun syncAnimation(radius: Float, delayMillis: Int): TransitionData {
-    val startColor = MaterialTheme.colorScheme.primary
+    val startColor = colorPrimary
     val endColor = startColor.copy(alpha = 0.3f)
 
     val infiniteTransition = rememberInfiniteTransition()

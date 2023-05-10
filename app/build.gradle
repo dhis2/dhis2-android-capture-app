@@ -145,8 +145,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField "int", "MATOMO_ID", "1"
-            buildConfigField "String", "BUILD_DATE", getBuildDate()
-            buildConfigField "String", "GIT_SHA", getCommitHash()
+            buildConfigField "String", "BUILD_DATE", "\""+getBuildDate()+"\""
+            buildConfigField "String", "GIT_SHA", "\""+getCommitHash()+"\""
 
             //Sentry variables
             manifestPlaceholders = [

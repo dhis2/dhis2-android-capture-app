@@ -135,8 +135,8 @@ fun HorizontalScrollView.scrollToPosition(viewTag: String) {
     smoothScrollTo(xScroll, view.top)
 }
 
-fun <T> MutableList<T>.addIf(ifCondition: Boolean, itemToAdd: T) {
+fun <T> MutableList<T>.addIf(ifCondition: Boolean, itemToAdd: T, index: Int? = null) {
     if (ifCondition) {
-        add(itemToAdd)
+        index?.let { add(it, itemToAdd) } ?: add(itemToAdd)
     }
 }

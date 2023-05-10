@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,9 +33,7 @@ fun SyncStatusItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface
-            )
+            .background(color = Color.White)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onClick() },
         horizontalArrangement = spacedBy(8.dp)
@@ -69,7 +68,7 @@ fun SyncStatusItemPreview() {
         onClick = {}
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_alert),
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_warning_alert),
             contentDescription = ""
         )
     }

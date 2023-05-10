@@ -32,6 +32,7 @@ import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUi
@@ -320,16 +321,28 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         private lateinit var syncContext: SyncContext
         private var dismissListener: OnDismissListener? = null
 
-        fun withContext(context: FragmentActivity): Builder {
+        fun withContext(
+            context: FragmentActivity,
+            onSyncNavigationListener: OnSyncNavigationListener? = null
+        ): Builder {
             this.context = context
-            this.navigator = SyncStatusDialogNavigator(context)
+            this.navigator = SyncStatusDialogNavigator(
+                context,
+                onSyncNavigationListener = onSyncNavigationListener
+            )
             this.fm = context.supportFragmentManager
             return this
         }
 
-        fun withContext(fragment: Fragment): Builder {
+        fun withContext(
+            fragment: Fragment,
+            onSyncNavigationListener: OnSyncNavigationListener? = null
+        ): Builder {
             this.context = fragment.context
-            this.navigator = SyncStatusDialogNavigator(fragment.requireActivity())
+            this.navigator = SyncStatusDialogNavigator(
+                fragment.requireActivity(),
+                onSyncNavigationListener = onSyncNavigationListener
+            )
             this.fm = fragment.childFragmentManager
             return this
         }

@@ -12,9 +12,11 @@ import io.reactivex.disposables.CompositeDisposable
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -97,6 +99,15 @@ class ManageStockViewModel @Inject constructor(
 
     private val _scanText = MutableStateFlow("")
     val scanText = _scanText.asStateFlow()
+
+    private val debounceState = MutableStateFlow { }
+
+    private val _bottomSheetState = MutableStateFlow(false)
+    val bottomSheetState: StateFlow<Boolean> = _bottomSheetState
+
+    val shouldCloseActivity = MutableLiveData<Void?>()
+
+    val shouldNavigateBack = MutableLiveData<Void?>()
 
     init {
         configureRelays()
@@ -289,10 +300,7 @@ class ManageStockViewModel @Inject constructor(
             mainLabel = itemName,
             secondaryLabels = mutableListOf(resources.getString(R.string.quantity)),
             currentValue = cell.value,
-            keyboardInputType = KeyboardInputType.NumericInput(
-                allowDecimal = false,
-                allowSigned = false
-            ),
+            keyboardInputType = KeyboardInputType.NumberPassword(),
             error = stockEntry?.errorMessage
         )
     }
@@ -313,7 +321,7 @@ class ManageStockViewModel @Inject constructor(
                     is ValidationResult.Error -> {
                         addItem(
                             item = stockItem,
-                            qty = cell.value?.ifEmpty { "0" },
+                            qty = cell.value,
                             stockOnHand = stockItem.stockOnHand,
                             errorMessage = result.message
                         )
@@ -487,16 +495,37 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
+    @OptIn(FlowPreview::class)
     fun onHandleBackNavigation() {
-        val backStep = when (dataEntryUiState.value.step) {
-            DataEntryStep.REVIEWING -> {
-                DataEntryStep.LISTING
-            }
-            else -> null
-        }
-
-        backStep?.let {
-            updateStep(it)
+        viewModelScope.launch {
+            debounceState
+                .debounce(300)
+                .collect {
+                    when (dataEntryUiState.value.step) {
+                        DataEntryStep.START -> {
+                            shouldCloseActivity.postValue(null)
+                        }
+                        DataEntryStep.LISTING -> {
+                            if (dataEntryUiState.value.hasUnsavedData) {
+                                _bottomSheetState.value = true
+                            } else {
+                                shouldCloseActivity.postValue(null)
+                            }
+                        }
+                        DataEntryStep.EDITING_LISTING -> {
+                            shouldNavigateBack.postValue(null)
+                        }
+                        DataEntryStep.REVIEWING -> {
+                            updateStep(DataEntryStep.LISTING)
+                        }
+                        DataEntryStep.EDITING_REVIEWING -> {
+                            shouldNavigateBack.postValue(null)
+                        }
+                        DataEntryStep.COMPLETED -> {
+                            // Nothing to do here
+                        }
+                    }
+                }
         }
     }
 
@@ -519,5 +548,9 @@ class ManageStockViewModel @Inject constructor(
         } else {
             ValidationResult.Success(tableCell.value)
         }
+    }
+
+    fun onBottomSheetClosed() {
+        _bottomSheetState.value = false
     }
 }

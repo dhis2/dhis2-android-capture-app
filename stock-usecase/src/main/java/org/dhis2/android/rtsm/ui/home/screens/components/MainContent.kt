@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -84,7 +85,8 @@ fun MainContent(
     val tablePadding = if (backdropState.isRevealed) 200.dp else 0.dp
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .onGloballyPositioned { coordinates ->
                 columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
             }
@@ -120,7 +122,14 @@ fun MainContent(
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp))
                     .weight(1 - (weightValue + weightValueArrow))
                     .alignBy(FirstBaseline)
-                    .align(alignment = Alignment.CenterVertically),
+                    .align(alignment = Alignment.CenterVertically)
+                    .onFocusChanged {
+                        if (it.hasFocus) {
+                            scope.launch {
+                                backdropState.conceal()
+                            }
+                        }
+                    },
                 shape = RoundedCornerShape(30.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,

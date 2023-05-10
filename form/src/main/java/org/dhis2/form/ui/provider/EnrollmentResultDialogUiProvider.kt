@@ -41,7 +41,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                     val model = BottomSheetDialogUiModel(
                         title = getString(R.string.saved),
                         message = getString(R.string.review_message),
-                        iconResource = R.drawable.ic_alert,
+                        iconResource = R.drawable.ic_warning_alert,
                         mainButton = DialogButtonStyle.MainButton(R.string.review),
                         secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now)
                     )
@@ -76,7 +76,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                     val model = BottomSheetDialogUiModel(
                         title = getString(R.string.not_saved),
                         message = getString(R.string.discard_go_back),
-                        iconResource = R.drawable.ic_alert,
+                        iconResource = R.drawable.ic_warning_alert,
                         mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
                         secondaryButton = DialogButtonStyle.DiscardButton()
                     )

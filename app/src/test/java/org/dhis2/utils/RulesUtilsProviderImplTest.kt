@@ -90,7 +90,10 @@ class RulesUtilsProviderImplTest {
             randomFieldViewModel("uid4", ValueType.TEXT, "section2"),
             randomFieldViewModel("uid5", ValueType.TEXT, "section2"),
             randomFieldViewModel("uid6", ValueType.TEXT, "section3"),
-            randomFieldViewModel("uid7", ValueType.TEXT, "section3")
+            randomFieldViewModel("uid7", ValueType.TEXT, "section3"),
+            randomFieldViewModel("uid8", ValueType.INTEGER_POSITIVE, "section4"),
+            randomFieldViewModel("uid9", ValueType.NUMBER, "section4"),
+            randomFieldViewModel("uid10", ValueType.BOOLEAN, "section4")
         )
     }
 
@@ -670,6 +673,43 @@ class RulesUtilsProviderImplTest {
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
         verify(valueStore, times(0)).saveWithTypeCheck(testingUid, "data")
         assertTrue(result.fieldsToUpdate.any { it.fieldUid == testingUid })
+    }
+
+    @Test
+    fun `Should format value to assign`() {
+        val integerUid = "uid8"
+        val numberUid = "uid9"
+        val booleanUid = "uid10"
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid",
+                RuleActionAssign.create("content", "5.0", integerUid),
+                "5.0"
+            )
+        )
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid",
+                RuleActionAssign.create("content", "2.52", numberUid),
+                "2.52"
+            )
+        )
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid",
+                RuleActionAssign.create("content", "1", booleanUid),
+                "1"
+            )
+        )
+        ruleUtils.applyRuleEffects(
+            true,
+            testFieldViewModels,
+            testRuleEffects,
+            valueStore
+        )
+        assertTrue(testFieldViewModels[integerUid]?.value == "5")
+        assertTrue(testFieldViewModels[numberUid]?.value == "2.52")
+        assertTrue(testFieldViewModels[booleanUid]?.value == "true")
     }
 
     private fun mockD2OptionGroupCalls(optionGroupUid: String, vararg optionUidsToReturn: String) {

@@ -30,6 +30,7 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
+import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -65,6 +66,10 @@ class ProgramEventDetailActivity :
     @Inject
     lateinit var networkUtils: NetworkUtils
 
+    @JvmField
+    @Inject
+    var themeManager: ThemeManager? = null
+
     @Inject
     lateinit var viewModelFactory: ProgramEventDetailViewModelFactory
 
@@ -80,6 +85,7 @@ class ProgramEventDetailActivity :
     public override fun onCreate(savedInstanceState: Bundle?) {
         initExtras()
         initInjection()
+        themeManager?.setProgramTheme(programUid)
         super.onCreate(savedInstanceState)
         initEventFilters()
         initViewModel()

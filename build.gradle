@@ -34,7 +34,6 @@ sonarqube {
         property "sonar.projectName", "android capture app"
         if (pullRequestId == null) {
             property "sonar.branch.name", branch
-            property "sonar.branch.target", targetBranch
         } else {
             property "sonar.pullrequest.base", targetBranch
             property "sonar.pullrequest.branch", branch

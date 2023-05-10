@@ -1,5 +1,6 @@
 package org.dhis2.android.rtsm.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
@@ -33,8 +34,10 @@ import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncDialog
+import org.dhis2.commons.sync.SyncStatusItem
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -47,6 +50,11 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        manageStockViewModel.shouldCloseActivity.observe(this) { finish() }
+        manageStockViewModel.shouldNavigateBack.observe(this) {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         filterManager = FilterManager.getInstance()
         intent.getParcelableExtra<AppConfig>(INTENT_EXTRA_APP_CONFIG)
@@ -135,8 +143,15 @@ class HomeActivity : AppCompatActivity() {
                     override fun onDismiss(hasChanged: Boolean) {
                         manageStockViewModel.refreshData()
                     }
+                },
+                onSyncNavigationListener = object : OnSyncNavigationListener {
+                    override fun intercept(
+                        syncStatusItem: SyncStatusItem,
+                        intent: Intent
+                    ): Intent? {
+                        return null
+                    }
                 }
-
             ).show()
         }
     }

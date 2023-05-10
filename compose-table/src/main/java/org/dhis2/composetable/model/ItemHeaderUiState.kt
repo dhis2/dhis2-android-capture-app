@@ -3,6 +3,7 @@ package org.dhis2.composetable.model
 import androidx.compose.ui.unit.Dp
 import org.dhis2.composetable.ui.CellStyle
 import org.dhis2.composetable.ui.HEADER_CELL
+import org.dhis2.composetable.ui.TableDimensions
 
 data class ItemHeaderUiState(
     val tableId: String,
@@ -26,7 +27,8 @@ data class ItemColumnHeaderUiState(
     val onCellSelected: (Int) -> Unit,
     val onHeaderResize: (Int, Float) -> Unit,
     val onResizing: (ResizingCell?) -> Unit,
-    val isLastRow: Boolean
+    val isLastRow: Boolean,
+    val checkMaxCondition: (TableDimensions, Float) -> Boolean
 ) {
     val testTag = "$HEADER_CELL$tableId$rowIndex$columnIndex"
 }

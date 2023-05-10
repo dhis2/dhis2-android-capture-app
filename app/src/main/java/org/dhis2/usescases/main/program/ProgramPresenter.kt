@@ -11,7 +11,6 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncStatusController
-import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
@@ -20,7 +19,6 @@ class ProgramPresenter internal constructor(
     private val view: ProgramView,
     private val programRepository: ProgramRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val themeManager: ThemeManager,
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val syncStatusController: SyncStatusController,
@@ -98,11 +96,6 @@ class ProgramPresenter internal constructor(
     }
 
     fun onItemClick(programModel: ProgramViewModel) {
-        if (programModel.programType.isNotEmpty()) {
-            themeManager.setProgramTheme(programModel.uid)
-        } else {
-            themeManager.setDataSetTheme(programModel.uid)
-        }
         when (getHomeItemType(programModel)) {
             HomeItemType.PROGRAM_STOCK ->
                 view.navigateToStockManagement(stockManagementMapper.map(programModel))

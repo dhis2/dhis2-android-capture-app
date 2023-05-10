@@ -151,9 +151,11 @@ class MainActivity :
             when (it.itemId) {
                 R.id.navigation_tasks -> {
                 }
+
                 R.id.navigation_programs -> {
                     mainNavigator.openPrograms()
                 }
+
                 R.id.navigation_analytics -> {
                     presenter.trackHomeAnalytics()
                     mainNavigator.openVisualizations()
@@ -188,6 +190,7 @@ class MainActivity :
                         MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
+
             else -> {
                 changeFragment(R.id.menu_home)
                 initCurrentScreen()
@@ -237,7 +240,7 @@ class MainActivity :
 
     private fun observeVersionUpdate() {
         presenter.versionToUpdate.observe(this) { versionName ->
-            versionName?.let { showNewVersionAlert(it) }
+            versionName?.takeIf { it.isNotEmpty() }?.let { showNewVersionAlert(it) }
         }
         presenter.downloadingVersion.observe(this) { downloading ->
             if (downloading) {
@@ -247,6 +250,7 @@ class MainActivity :
             }
         }
     }
+
     override fun showGranularSync() {
         SyncStatusDialog.Builder()
             .withContext(this)
@@ -426,31 +430,39 @@ class MainActivity :
                 presenter.onClickSyncManager()
                 mainNavigator.openSettings()
             }
+
             R.id.qr_scan -> {
                 presenter.trackQRScanner()
                 mainNavigator.openQR()
             }
+
             R.id.menu_jira -> {
                 presenter.trackJiraReport()
                 mainNavigator.openJira()
             }
+
             R.id.menu_about -> {
                 mainNavigator.openAbout()
             }
+
             R.id.block_button -> {
                 presenter.trackPinDialog()
                 onLockClick()
             }
+
             R.id.logout_button -> {
                 analyticsHelper.setEvent(CLOSE_SESSION, CLICK, CLOSE_SESSION)
                 presenter.logOut()
             }
+
             R.id.menu_home -> {
                 mainNavigator.openHome(binding.navigationBar)
             }
+
             R.id.menu_troubleshooting -> {
                 mainNavigator.openTroubleShooting()
             }
+
             R.id.delete_account -> {
                 confirmAccountDelete()
             }
@@ -529,7 +541,11 @@ class MainActivity :
             confirmButton = ButtonUiModel(
                 getString(R.string.download_now),
                 onClick = {
-                    presenter.downloadVersion(context) { installAPK(it) }
+                    presenter.downloadVersion(
+                        context = context,
+                        onDownloadCompleted = { installAPK(it) },
+                        onLaunchUrl = { launchUrl(it) }
+                    )
                 }
             )
         ).show(supportFragmentManager)
@@ -542,8 +558,10 @@ class MainActivity :
                     Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                         .setData(Uri.parse(String.format("package:%s", packageName)))
                 )
+
             !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) ->
                 requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+
             else -> Intent(Intent.ACTION_VIEW).apply {
                 val mime = MimeTypeMap.getSingleton()
                 val ext = apkUri.path?.substringAfterLast(("."))
@@ -554,6 +572,7 @@ class MainActivity :
             }
         }
     }
+
     private fun hasNoPermissionToInstall(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
             !packageManager.canRequestPackageInstalls()
@@ -567,14 +586,22 @@ class MainActivity :
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                presenter.downloadVersion(context) { installAPK(it) }
+                presenter.downloadVersion(
+                    context,
+                    onDownloadCompleted = { installAPK(it) },
+                    onLaunchUrl = { launchUrl(it) }
+                )
             }
         }
 
     private val requestReadStoragePermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
-                presenter.downloadVersion(context) { installAPK(it) }
+                presenter.downloadVersion(
+                    context,
+                    onDownloadCompleted = { installAPK(it) },
+                    onLaunchUrl = { launchUrl(it) }
+                )
             } else {
                 Toast.makeText(
                     context,
@@ -583,4 +610,9 @@ class MainActivity :
                 ).show()
             }
         }
+
+    private fun launchUrl(uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
+    }
 }
