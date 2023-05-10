@@ -8,6 +8,7 @@ import org.dhis2.composetable.ui.TableSelection
 @Serializable
 data class TableModel(
     val id: String? = null,
+    val title: String = "",
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
     val overwrittenValues: Map<Int, TableCell> = emptyMap()
@@ -32,10 +33,9 @@ data class TableModel(
 
     fun getNextCell(
         cellSelection: TableSelection.CellSelection,
-        discardErrors: Boolean
+        successValidation: Boolean
     ): Pair<TableCell, TableSelection.CellSelection>? = when {
-        !discardErrors &&
-            tableRows[cellSelection.rowIndex].values[cellSelection.columnIndex]?.error != null ->
+        !successValidation ->
             cellSelection
         cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
             cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
@@ -50,7 +50,7 @@ data class TableModel(
         val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
         when (tableCell?.editable) {
             true -> Pair(tableCell, nextCell)
-            else -> getNextCell(nextCell, discardErrors)
+            else -> getNextCell(nextCell, successValidation)
         }
     }
 
@@ -94,6 +94,7 @@ data class TableCell(
     val editable: Boolean = true,
     val mandatory: Boolean? = false,
     val error: String? = null,
+    val warning: String? = null,
     val legendColor: Int? = null
 ) {
     fun isSelected(selectionState: SelectionState): Boolean {
@@ -101,6 +102,9 @@ data class TableCell(
             selectionState.row == row &&
             selectionState.column == column
     }
+
+    fun hasErrorOrWarning() = errorOrWarningMessage() != null
+    fun errorOrWarningMessage() = error ?: warning
 }
 
 @Serializable
@@ -133,4 +137,5 @@ fun TableModel.areAllValuesEmpty(): Boolean {
     return true
 }
 
-val OnTextChange = compositionLocalOf<() -> TableCell?> { { null } }
+val LocalCurrentCellValue = compositionLocalOf<() -> String?> { { "" } }
+val LocalUpdatingCell = compositionLocalOf<TableCell?> { null }

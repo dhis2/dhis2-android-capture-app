@@ -35,16 +35,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
+import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
@@ -120,11 +121,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
-
+        binding.setLifecycleOwner(this);
         binding.setPresenter(presenter);
-
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
-
+        binding.setVersionName(BuildConfig.VERSION_NAME);
         return binding.getRoot();
     }
 
@@ -149,6 +149,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             checkSyncDataButtonStatus();
         });
         presenter.init();
+        observeVersionUpdates();
 
         if (!getResources().getBoolean(R.bool.sms_enabled)) {
             binding.settingsSms.getRoot().setVisibility(View.GONE);
@@ -198,7 +199,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void deleteLocalData() {
-        new AlertDialog.Builder(context, R.style.CustomDialog)
+        new MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
                 .setTitle(getString(R.string.delete_local_data))
                 .setMessage(getString(R.string.delete_local_data_message))
                 .setView(R.layout.warning_layout)
@@ -313,6 +314,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     break;
+                case VERSION_UPDATE:
+                    ViewAnimationsKt.expand(binding.versionButton,true, () -> {
+                        binding.versionButton.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
                 default:
                     break;
             }
@@ -372,6 +379,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.smsContent.setVisibility(View.GONE);
                         binding.smsTopShadow.setVisibility(View.GONE);
                         binding.smsBottomShadow.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case VERSION_UPDATE:
+                    ViewAnimationsKt.collapse(binding.versionButton, () -> {
+                        binding.versionButton.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -973,15 +986,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private void checkSyncDataButtonStatus() {
         boolean isOnline = networkUtils.isOnline();
         boolean canBeClicked = isOnline && !dataWorkRunning;
-        binding.buttonSyncData.setEnabled(canBeClicked);
-        binding.buttonSyncData.setClickable(canBeClicked);
+        presenter.updateSyncDataButton(canBeClicked);
     }
 
     private void checkSyncMetaButtonStatus() {
         boolean isOnline = networkUtils.isOnline();
         boolean canBeClicked = isOnline && !metadataInit;
-        binding.buttonSyncMeta.setEnabled(canBeClicked);
-        binding.buttonSyncMeta.setClickable(canBeClicked);
+        presenter.updateSyncMetaDataButton(canBeClicked);
     }
 
     @Override
@@ -1004,5 +1015,22 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     private void enabledResponseWaitSwitch() {
         binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(networkUtils.isOnline());
+    }
+
+    private void observeVersionUpdates() {
+        presenter.getUpdatesLoading().observe(getViewLifecycleOwner(), loading -> {
+            if (loading) {
+                ViewAnimationsKt.expand(binding.loadingCheckVersion, true, () -> Unit.INSTANCE);
+            }
+        });
+        presenter.getVersionToUpdate().observe(getViewLifecycleOwner(), newVersion -> {
+            binding.loadingCheckVersion.setVisibility(View.INVISIBLE);
+            if (newVersion == null) {
+                Snackbar.make(
+                        binding.getRoot(),
+                        R.string.no_updates,
+                        BaseTransientBottomBar.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -6,7 +6,7 @@ class EventFilterToWorkingListItemMapper(
     private val defaultWorkingListLabel: String
 ) {
     fun map(eventFilter: EventFilter): WorkingListItem {
-        return WorkingListItem(
+        return EventWorkingList(
             eventFilter.uid(),
             eventFilter.displayName() ?: defaultWorkingListLabel
         )

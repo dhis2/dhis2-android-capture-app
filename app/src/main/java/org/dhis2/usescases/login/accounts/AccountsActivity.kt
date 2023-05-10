@@ -1,6 +1,5 @@
 package org.dhis2.usescases.login.accounts
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -8,8 +7,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.livedata.observeAsState
 import javax.inject.Inject
 import org.dhis2.Bindings.app
-import org.dhis2.commons.Constants
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.login.accounts.ui.AccountsScreen
 
 class AccountsActivity : ActivityGlobalAbstract() {
@@ -36,15 +35,12 @@ class AccountsActivity : ActivityGlobalAbstract() {
     }
 
     private fun navigateToLogin(accountModel: AccountModel? = null) {
-        val intent = Intent()
         val wasAccountClicked = accountModel?.let { true } ?: false
-        accountModel?.let {
-            intent.apply {
-                putExtra(Constants.SERVER, it.serverUrl)
-                putExtra(Constants.USER, it.name)
-            }
-        }
-        intent.putExtra(Constants.ACCOUNT_USED, wasAccountClicked)
+        val intent = LoginActivity.accountIntentResult(
+            serverUrl = accountModel?.serverUrl,
+            userName = accountModel?.name,
+            wasAccountClicked = wasAccountClicked
+        )
         setResult(RESULT_OK, intent)
         finish()
     }

@@ -17,7 +17,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
-import java.util.ArrayList
 import kotlin.math.pow
 import org.dhis2.commons.R
 
@@ -134,4 +133,10 @@ fun HorizontalScrollView.scrollToPosition(viewTag: String) {
         else -> 0
     }
     smoothScrollTo(xScroll, view.top)
+}
+
+fun <T> MutableList<T>.addIf(ifCondition: Boolean, itemToAdd: T, index: Int? = null) {
+    if (ifCondition) {
+        index?.let { add(it, itemToAdd) } ?: add(itemToAdd)
+    }
 }

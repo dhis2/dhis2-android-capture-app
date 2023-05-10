@@ -1,3 +1,11 @@
-This is a hotfix version that fixes:
--  [ANDROAPP-5194](https://jira.dhis2.org/browse/ANDROAPP-5194) RuntimeException: Unable to start activity ComponentInfo{com.dhis2/org.dhis2.usescases.eventsWithoutRegistration.ev...
-You can find all the details on Jira and Github.
+This new version includes the following features:
+- Table resizing.
+- New sync error navigation.
+- Handwritten signatures for image Data Elements.
+- Actionable phone number and email icons.
+- Android app version control from DHIS2.
+- Removed the maximum number of offline accounts.
+- Supported file value type.
+- New tracker working lists support (filter by DE).
+- Real time stock use case integration.
+You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app).

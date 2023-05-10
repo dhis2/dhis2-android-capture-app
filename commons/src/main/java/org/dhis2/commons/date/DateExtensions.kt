@@ -63,3 +63,6 @@ fun Date?.toUiText(context: Context, currentDate: Date = defaultCurrentDate): St
         }
     }
 }
+
+fun Date?.toUi(): String? =
+    this?.let { SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this) }

@@ -48,9 +48,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 import kotlin.Unit;
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
 
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
@@ -131,7 +131,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     private void initPinDialog() {
         pinDialog = new PinDialog(PinDialog.Mode.ASK,
                 (this instanceof LoginActivity),
-                aBoolean -> {
+                () -> {
                     startActivity(MainActivity.class, null, true, true, null);
                     return null;
                 },

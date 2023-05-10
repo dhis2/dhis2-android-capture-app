@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.SearchOptionSetOption
 import org.hisp.dhis.android.core.option.Option
 import org.junit.After

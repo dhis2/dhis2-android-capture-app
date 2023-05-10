@@ -211,7 +211,7 @@ class DataSetTableRepositoryTest {
 
     @Test
     fun `Should return the category Combo name`() {
-        val uid = "catComboUid"
+        val uid = catOptCombo
         val name = "CatComboName"
         whenever(d2.categoryModule().categoryOptionCombos().uid(uid)) doReturn mock()
         whenever(
@@ -222,7 +222,7 @@ class DataSetTableRepositoryTest {
                 .uid(uid).blockingGet().displayName()
         ) doReturn name
 
-        val testObserver = repository.getCatComboName(uid).test()
+        val testObserver = repository.getCatComboName().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValue { it == name }

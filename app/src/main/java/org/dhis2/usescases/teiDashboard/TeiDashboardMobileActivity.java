@@ -44,7 +44,7 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -58,6 +58,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -219,6 +220,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.syncButton.setOnClickListener(v -> {
             openSyncDialog();
         });
+
+        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+            openSyncDialog();
+        }
     }
 
     @Override
@@ -258,9 +263,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void openSyncDialog() {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.TEI)
-                .setUid(enrollmentUid)
+       new SyncStatusDialog.Builder()
+                .withContext(this, null)
+               .withSyncContext(
+                       new SyncContext.Enrollment(enrollmentUid)
+               )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged && !restartingActivity) {
                         restartingActivity = true;
@@ -268,9 +275,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
-                })
-                .build();
-        syncDialog.show(getSupportFragmentManager(), TEI_SYNC);
+                }).show(TEI_SYNC);
     }
 
     private void setViewpagerAdapter() {

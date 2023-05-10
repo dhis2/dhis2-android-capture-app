@@ -15,13 +15,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -46,6 +46,7 @@ class DataValuePresenterTest {
     private val dataValueRepository: DataValueRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
+    private val tableDimensionStore: TableDimensionStore = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider = mock {
         on { io() } doReturn testingDispatcher
@@ -67,6 +68,7 @@ class DataValuePresenterTest {
                 view,
                 dataValueRepository,
                 valueStore,
+                tableDimensionStore,
                 schedulers,
                 mapper,
                 dispatcherProvider
@@ -334,7 +336,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
@@ -389,7 +391,7 @@ class DataValuePresenterTest {
 
         val tableStateValue = presenter.mutableTableData()
         tableStateValue.value = TableScreenState(
-            listOf(mockedTableModel, mockedIndicatorTableModel), false
+            listOf(mockedTableModel, mockedIndicatorTableModel)
         )
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
@@ -441,7 +443,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(

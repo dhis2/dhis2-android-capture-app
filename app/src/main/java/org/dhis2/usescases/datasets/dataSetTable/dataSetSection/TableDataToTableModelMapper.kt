@@ -48,7 +48,8 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                         value = mapFieldValueToUser.map(field, dataElement),
                         editable = tableData.accessDataWrite && field.editable()!!,
                         mandatory = field.mandatory(),
-                        error = field.error()
+                        error = field.error(),
+                        warning = field.warning()
                     )
                 }.toMap(),
                 isLastRow = rowIndex == (tableData.rows()!!.size - 1),
@@ -63,6 +64,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
 
         return TableModel(
             id = tableData.catCombo()?.uid(),
+            title = tableData.catCombo()?.displayName() ?: "",
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )
@@ -88,6 +90,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         }
 
         return TableModel(
+            title = "Indicators",
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )

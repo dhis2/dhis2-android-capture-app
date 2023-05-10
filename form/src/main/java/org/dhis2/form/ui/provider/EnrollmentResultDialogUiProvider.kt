@@ -1,9 +1,5 @@
 package org.dhis2.form.ui.provider
 
-import org.dhis2.commons.data.FieldWithIssue
-import org.dhis2.commons.data.IssueType
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -11,61 +7,81 @@ import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.NotSavedResult
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 
 class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
 
-    fun provideDataEntryUiModel(result: DataIntegrityCheckResult): BottomSheetDialogUiModel? {
+    fun provideDataEntryUiModel(
+        result: DataIntegrityCheckResult
+    ): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>? {
         with(resourceManager) {
             return when (result) {
-                is FieldsWithErrorResult -> BottomSheetDialogUiModel(
-                    title = getString(R.string.not_saved),
-                    subtitle = getErrorSubtitle(result.allowDiscard),
-                    iconResource = R.drawable.ic_error_outline,
-                    fieldsWithIssues = getFieldsWithIssues(
+                is FieldsWithErrorResult -> {
+                    val model = BottomSheetDialogUiModel(
+                        title = getString(R.string.not_saved),
+                        message = getErrorSubtitle(result.allowDiscard),
+                        iconResource = R.drawable.ic_error_outline,
+                        mainButton = DialogButtonStyle.MainButton(R.string.review),
+                        secondaryButton = when {
+                            result.allowDiscard -> DialogButtonStyle.DiscardButton()
+                            else -> null
+                        }
+                    )
+                    val fieldsWithIssues = getFieldsWithIssues(
                         result.fieldUidErrorList,
                         result.mandatoryFields.keys.toList(),
                         result.warningFields
-                    ),
-                    mainButton = DialogButtonStyle.MainButton(R.string.review),
-                    secondaryButton = when {
-                        result.allowDiscard -> DialogButtonStyle.DiscardButton()
-                        else -> null
-                    }
-                )
-                is FieldsWithWarningResult -> BottomSheetDialogUiModel(
-                    title = getString(R.string.saved),
-                    subtitle = getString(R.string.review_message),
-                    iconResource = R.drawable.ic_alert,
-                    fieldsWithIssues = result.fieldUidWarningList,
-                    mainButton = DialogButtonStyle.MainButton(R.string.review),
-                    secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now)
-                )
-                is MissingMandatoryResult -> BottomSheetDialogUiModel(
-                    title = getString(R.string.not_saved),
-                    subtitle = getMandatorySubtitle(result.allowDiscard),
-                    iconResource = R.drawable.ic_error_outline,
-                    fieldsWithIssues = getFieldsWithIssues(
+                    )
+                    Pair(model, fieldsWithIssues)
+                }
+                is FieldsWithWarningResult -> {
+                    val model = BottomSheetDialogUiModel(
+                        title = getString(R.string.saved),
+                        message = getString(R.string.review_message),
+                        iconResource = R.drawable.ic_warning_alert,
+                        mainButton = DialogButtonStyle.MainButton(R.string.review),
+                        secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now)
+                    )
+                    val fieldsWithIssues = result.fieldUidWarningList
+
+                    Pair(model, fieldsWithIssues)
+                }
+                is MissingMandatoryResult -> {
+                    val model = BottomSheetDialogUiModel(
+                        title = getString(R.string.not_saved),
+                        message = getMandatorySubtitle(result.allowDiscard),
+                        iconResource = R.drawable.ic_error_outline,
+
+                        mainButton = DialogButtonStyle.MainButton(
+                            when {
+                                result.allowDiscard -> R.string.keep_editing
+                                else -> R.string.review
+                            }
+                        ),
+                        secondaryButton = when {
+                            result.allowDiscard -> DialogButtonStyle.DiscardButton()
+                            else -> null
+                        }
+                    )
+                    val fieldsWithIssues = getFieldsWithIssues(
                         mandatoryFields = result.mandatoryFields.keys.toList(),
                         warningFields = result.warningFields
-                    ),
-                    mainButton = DialogButtonStyle.MainButton(
-                        when {
-                            result.allowDiscard -> R.string.keep_editing
-                            else -> R.string.review
-                        }
-                    ),
-                    secondaryButton = when {
-                        result.allowDiscard -> DialogButtonStyle.DiscardButton()
-                        else -> null
-                    }
-                )
-                NotSavedResult -> BottomSheetDialogUiModel(
-                    title = getString(R.string.not_saved),
-                    subtitle = getString(R.string.discard_go_back),
-                    iconResource = R.drawable.ic_alert,
-                    mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-                    secondaryButton = DialogButtonStyle.DiscardButton()
-                )
+                    )
+                    Pair(model, fieldsWithIssues)
+                }
+                is NotSavedResult -> {
+                    val model = BottomSheetDialogUiModel(
+                        title = getString(R.string.not_saved),
+                        message = getString(R.string.discard_go_back),
+                        iconResource = R.drawable.ic_warning_alert,
+                        mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
+                        secondaryButton = DialogButtonStyle.DiscardButton()
+                    )
+                    Pair(model, emptyList())
+                }
                 else -> null
             }
         }

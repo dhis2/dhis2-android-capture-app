@@ -21,8 +21,8 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.form.ui.FormViewHolder
-import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
-import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
+import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not

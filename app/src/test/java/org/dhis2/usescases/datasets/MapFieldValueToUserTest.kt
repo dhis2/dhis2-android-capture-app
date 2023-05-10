@@ -119,12 +119,13 @@ class MapFieldValueToUserTest {
     }
 
     @Test
-    fun `Should not map file resources`() {
+    fun `Should map file resources`() {
+        val file = "file"
         val fieldViewModel = EditTextViewModel.create(
             "",
             "",
             true,
-            "True",
+            file,
             "",
             1,
             ValueType.FILE_RESOURCE,
@@ -139,12 +140,11 @@ class MapFieldValueToUserTest {
             "1",
             ""
         )
-        whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =
             DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.FILE_RESOURCE).build()
 
         val result = mapFieldValueToUser.map(fieldViewModel, dataElement)
-        assert(result == UNSUPPORTED_VALUES)
+        assert(result == file)
     }
 
     @Test

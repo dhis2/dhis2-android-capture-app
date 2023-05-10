@@ -1,9 +1,8 @@
+plugins{
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
+}
 apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
-
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
 
 android {
     compileSdkVersion versions.sdk
@@ -25,10 +24,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
-    implementation "androidx.dynamicanimation:dynamicanimation:${libraries.dynamicanimation}"
-    implementation "androidx.viewpager2:viewpager2:${libraries.viewpager2}"
-
-    testImplementation "junit:junit:${libraries.junit}"
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.dynamicanimation
+    implementation libs.androidx.viewpager2
+    testImplementation libs.test.junit
 }
 

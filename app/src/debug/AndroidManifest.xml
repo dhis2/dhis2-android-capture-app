@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="org.dhis2">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -12,6 +11,8 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
@@ -77,6 +78,7 @@
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
         <activity
             android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <receiver android:name=".widgets.DhisCustomLauncher"
@@ -97,13 +99,8 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
-        <activity android:name=".usescases.development.TableTestActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
 
         <service android:name=".usescases.sms.SmsSendingService" />
-
-        <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
 
         <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
@@ -112,6 +109,17 @@
         <activity android:name=".usescases.events.ScheduledEventActivity" />
 
         <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"
+                tools:replace="android:resource"/>
+        </provider>
     </application>
 
 </manifest>

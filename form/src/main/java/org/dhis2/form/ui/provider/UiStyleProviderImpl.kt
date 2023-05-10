@@ -8,10 +8,12 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class UiStyleProviderImpl(
     private val colorFactory: FormUiColorFactory,
-    private val longTextColorFactory: FormUiColorFactory
+    private val longTextColorFactory: FormUiColorFactory,
+    private val actionIconClickable: Boolean
 ) : UiStyleProvider {
     override fun provideStyle(valueType: ValueType): FormUiModelStyle {
-        val style: FormUiModelStyle = BasicFormUiModelStyle(colorFactory, valueType)
+        val style: FormUiModelStyle =
+            BasicFormUiModelStyle(colorFactory, valueType, actionIconClickable)
 
         return if (valueType === ValueType.LONG_TEXT) {
             LongTextDecorator(style, longTextColorFactory)

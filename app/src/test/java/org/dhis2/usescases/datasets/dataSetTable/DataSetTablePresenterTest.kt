@@ -1,18 +1,26 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.anyArray
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.Date
+import java.util.Locale
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.data.tuples.Pair
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.validationrules.ValidationRuleResult
@@ -20,44 +28,66 @@ import org.dhis2.utils.validationrules.Violation
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSet
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.validation.engine.ValidationResult
-import org.junit.Assert
+import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class DataSetTablePresenterTest {
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var presenter: DataSetTablePresenter
 
     private val view: DataSetTableContract.View = mock()
     private val repository: DataSetTableRepositoryImpl = mock()
-    private val scheduler = TrampolineSchedulerProvider()
+    private val periodUtils: DhisPeriodUtils = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val updateProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
 
+    private val testingDispatcher = StandardTestDispatcher()
+
     @Before
     fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
         presenter = DataSetTablePresenter(
             view,
             repository,
-            scheduler,
+            periodUtils,
+            object : DispatcherProvider {
+                override fun io(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun computation(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun ui(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+            },
             analyticsHelper,
-            updateProcessor
+            updateProcessor,
+            false
         )
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
     fun `Should initialize the DataSet table presenter`() {
-        val orgUnit = "orgUnitUid"
-        val periodTypeName = "daily"
-        val catCombo = "catComboUid"
-        val periodFinalDate = "12/05/2018"
-        val periodId = "periodId"
-
         val sections = listOf(DataSetSection("section_1_uid", "section_1"))
-        val dataSet = DataSet.builder().uid("datasetUid").build()
+        val dataSet = DataSet.builder().uid("datasetUid").displayName("name").build()
         val catComboName = "catComboName"
         val period = Period.builder().periodType(PeriodType.Daily)
             .startDate(Date())
@@ -65,19 +95,38 @@ class DataSetTablePresenterTest {
             .periodId("periodId")
             .build()
 
+        val orgUnit: OrganisationUnit = mock {
+            on { displayName() } doReturn "orgUnitName"
+        }
+
+        val renderDetails = DataSetRenderDetails(
+            dataSet.displayName()!!,
+            "orgUnitName",
+            "periodLabel",
+            catComboName,
+            false
+        )
+
         whenever(repository.getSections()) doReturn Flowable.just(sections)
         whenever(repository.getDataSet()) doReturn Single.just(dataSet)
-        whenever(repository.getCatComboName(catCombo)) doReturn Flowable.just(catComboName)
+        whenever(repository.getCatComboName()) doReturn Flowable.just(catComboName)
         whenever(repository.getPeriod()) doReturn Single.just(period)
+        whenever(
+            periodUtils.getPeriodUIString(
+                period.periodType(),
+                period.startDate()!!,
+                Locale.getDefault()
+            )
+        ) doReturn "periodLabel"
+        whenever(repository.getOrgUnit()) doReturn Single.just(orgUnit)
         whenever(repository.isComplete()) doReturn Single.just(false)
         whenever(repository.dataSetStatus()) doReturn Flowable.just(true)
         whenever(repository.dataSetState()) doReturn Flowable.just(State.SYNCED)
-        whenever(view.observeSaveButtonClicks()) doReturn Observable.empty()
 
-        presenter.init(orgUnit, periodTypeName, catCombo, periodFinalDate, periodId)
+        testingDispatcher.scheduler.advanceUntilIdle()
 
-        verify(view).setSections(sections)
-        verify(view).renderDetails(dataSet, catComboName, period, false)
+        val result = presenter.dataSetScreenState.value
+        assertTrue(result.renderDetails == renderDetails)
     }
 
     @Test
@@ -94,11 +143,10 @@ class DataSetTablePresenterTest {
         whenever(view.isErrorBottomSheetShowing) doReturn false
         whenever(repository.hasValidationRules()) doReturn true
         whenever(repository.areValidationRulesMandatory()) doReturn true
-        val testObserver = presenter.runValidationProcessor().test()
+
         presenter.handleSaveClick()
-        testObserver
-            .assertNoErrors()
-            .assertValue(true)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        verify(repository).executeValidationRules()
     }
 
     @Test
@@ -106,13 +154,10 @@ class DataSetTablePresenterTest {
         whenever(view.isErrorBottomSheetShowing) doReturn true
         whenever(repository.hasValidationRules()) doReturn true
         whenever(repository.areValidationRulesMandatory()) doReturn true
-        val testObserver = presenter.runValidationProcessor().test()
         presenter.handleSaveClick()
-        testObserver
-            .assertNoErrors()
-            .assertValue(true)
-
+        testingDispatcher.scheduler.advanceUntilIdle()
         verify(view).closeBottomSheet()
+        verify(repository).executeValidationRules()
     }
 
     @Test
@@ -167,15 +212,6 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should dispose of all disposables`() {
-        presenter.onDettach()
-
-        val disposableSize = presenter.disposable.size()
-
-        Assert.assertTrue(disposableSize == 0)
-    }
-
-    @Test
     fun `Should display message`() {
         val message = "message"
 
@@ -195,7 +231,7 @@ class DataSetTablePresenterTest {
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
-
+        testingDispatcher.scheduler.advanceUntilIdle()
         verify(view).savedAndCompleteMessage()
     }
 
@@ -221,7 +257,7 @@ class DataSetTablePresenterTest {
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
-
+        testingDispatcher.scheduler.advanceUntilIdle()
         verify(view).showMandatoryMessage(true)
     }
 
@@ -240,7 +276,7 @@ class DataSetTablePresenterTest {
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
-
+        testingDispatcher.scheduler.advanceUntilIdle()
         verify(view).showMandatoryMessage(false)
     }
 
@@ -255,7 +291,7 @@ class DataSetTablePresenterTest {
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(true)
         presenter.completeDataSet()
-
+        testingDispatcher.scheduler.advanceUntilIdle()
         verify(view).saveAndFinish()
     }
 

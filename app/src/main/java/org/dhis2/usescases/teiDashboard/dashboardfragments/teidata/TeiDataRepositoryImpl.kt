@@ -146,6 +146,11 @@ class TeiDataRepositoryImpl(
             }
     }
 
+    override fun getOrgUnitName(orgUnitUid: String): String {
+        return d2.organisationUnitModule()
+            .organisationUnits().uid(orgUnitUid).blockingGet().displayName() ?: ""
+    }
+
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,

@@ -5,6 +5,7 @@ import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.data.EnrollmentRuleEngineRepository
@@ -19,7 +20,6 @@ import org.dhis2.form.data.SearchOptionSetOption
 import org.dhis2.form.data.SearchRepository
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.FormRepositoryRecords
@@ -46,14 +46,16 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 object Injector {
     fun provideFormViewModelFactory(
         context: Context,
-        repositoryRecords: FormRepositoryRecords
+        repositoryRecords: FormRepositoryRecords,
+        openErrorLocation: Boolean
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
                 repositoryRecords
             ),
-            provideDispatchers()
+            provideDispatchers(),
+            openErrorLocation
         )
     }
 
@@ -197,7 +199,8 @@ object Injector {
         isBackgroundTransparent: Boolean
     ): UiStyleProvider = UiStyleProviderImpl(
         colorFactory = FormUiModelColorFactoryImpl(context, isBackgroundTransparent),
-        longTextColorFactory = LongTextUiColorFactoryImpl(context, isBackgroundTransparent)
+        longTextColorFactory = LongTextUiColorFactoryImpl(context, isBackgroundTransparent),
+        actionIconClickable = isBackgroundTransparent
     )
 
     private fun provideFormValueStore(

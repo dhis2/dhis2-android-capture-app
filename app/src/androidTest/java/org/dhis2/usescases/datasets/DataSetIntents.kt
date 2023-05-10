@@ -11,9 +11,6 @@ import org.dhis2.commons.Constants.DATA_SET_NAME
 fun startDataSetActivity(
     dataSetUid: String,
     orgUnitUid: String,
-    orgUnitName: String,
-    periodTypeName: String,
-    periodInitialDate: String,
     periodId: String,
     catOptCombo: String,
     rule: ActivityTestRule<DataSetTableActivity>
@@ -23,9 +20,6 @@ fun startDataSetActivity(
             DataSetTableActivity.getBundle(
                 dataSetUid,
                 orgUnitUid,
-                orgUnitName,
-                periodTypeName,
-                periodInitialDate,
                 periodId,
                 catOptCombo
             )

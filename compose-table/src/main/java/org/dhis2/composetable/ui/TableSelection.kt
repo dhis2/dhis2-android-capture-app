@@ -1,5 +1,7 @@
 package org.dhis2.composetable.ui
 
+import androidx.compose.runtime.staticCompositionLocalOf
+
 sealed class TableSelection(open val tableId: String) {
     data class Unselected(
         val previousSelectedTableId: String? = null
@@ -108,3 +110,5 @@ sealed class TableSelection(open val tableId: String) {
         return columnIndex != -1 && rowIndex != -1
     }
 }
+
+val LocalTableSelection = staticCompositionLocalOf<TableSelection> { TableSelection.Unselected() }

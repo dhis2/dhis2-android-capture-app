@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 
@@ -153,7 +154,9 @@ class EventRepository(
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
         val objectStyle = getObjectStyle(de)
-        val error: String = checkConflicts(de.uid(), dataValue)
+
+        var (error, warning) = getConflictErrorsAndWarnings(de.uid(), dataValue)
+
         val isOrgUnit =
             valueType === ValueType.ORGANISATION_UNIT
         val isDate = valueType != null && valueType.isDate
@@ -163,7 +166,7 @@ class EventRepository(
         val renderingType = getSectionRenderingType(programStageSection)
         val featureType = getFeatureType(valueType)
 
-        val fieldViewModel = fieldFactory.create(
+        var fieldViewModel = fieldFactory.create(
             uid,
             formName ?: displayName,
             valueType!!,
@@ -181,11 +184,39 @@ class EventRepository(
             optionSetConfig,
             featureType
         )
-        return if (error.isNotEmpty()) {
-            fieldViewModel.setError(error)
-        } else {
-            fieldViewModel
+
+        if (!error.isNullOrEmpty()) {
+            fieldViewModel = fieldViewModel.setError(error)
         }
+
+        if (!warning.isNullOrEmpty()) {
+            fieldViewModel = fieldViewModel.setWarning(warning)
+        }
+
+        return fieldViewModel
+    }
+
+    private fun getConflictErrorsAndWarnings(
+        dataElementUid: String,
+        dataValue: String?
+    ): Pair<String?, String?> {
+        var error: String? = null
+        var warning: String? = null
+
+        val conflicts = d2.importModule().trackerImportConflicts()
+            .byEventUid().eq(eventUid)
+            .blockingGet()
+
+        val conflict = conflicts
+            .find { it.dataElement() == dataElementUid }
+
+        when (conflict?.status()) {
+            ImportStatus.WARNING -> warning = getError(conflict, dataValue)
+            ImportStatus.ERROR -> error = getError(conflict, dataValue)
+            else -> {}
+        }
+
+        return Pair(error, warning)
     }
 
     private fun getObjectStyle(de: DataElement) =
@@ -206,14 +237,13 @@ class EventRepository(
 
     private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
-    private fun checkConflicts(dataElementUid: String, value: String?): String {
+    private fun checkConflicts(dataElementUid: String): String {
         return d2.importModule().trackerImportConflicts()
             .byEventUid().eq(eventUid)
             .blockingGet()
             .firstOrNull { conflict ->
                 conflict.event() == eventUid &&
-                    conflict.dataElement() == dataElementUid &&
-                    conflict.value() == value
+                    conflict.dataElement() == dataElementUid
             }?.displayDescription() ?: ""
     }
 }

@@ -3,7 +3,7 @@ package org.dhis2.commons.filters.workingLists
 import android.view.View
 import org.dhis2.commons.filters.FilterManager
 
-data class WorkingListItem(
+sealed class WorkingListItem(
     val uid: String,
     val label: String
 ) {
@@ -39,3 +39,7 @@ data class WorkingListItem(
         return FilterManager.getInstance().currentWorkingList()?.uid == uid
     }
 }
+
+class TrackedEntityInstanceWorkingList(uid: String, label: String) : WorkingListItem(uid, label)
+class ProgramStageWorkingList(uid: String, label: String) : WorkingListItem(uid, label)
+class EventWorkingList(uid: String, label: String) : WorkingListItem(uid, label)

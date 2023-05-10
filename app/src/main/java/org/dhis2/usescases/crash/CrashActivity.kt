@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.google.android.material.composethemeadapter.MdcTheme
-import hu.supercluster.paperwork.Paperwork
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -80,7 +79,7 @@ class CrashActivity : AppCompatActivity() {
 
     private fun loadCrashReport() = CrashReport(
         buildVersion = BuildConfig.VERSION_NAME,
-        buildDate = Paperwork(this)["buildTime"],
+        buildDate = BuildConfig.BUILD_DATE,
         currentDate = SimpleDateFormat(
             "yyyy-MM-dd HH:mm",
             Locale.getDefault()

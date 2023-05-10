@@ -37,6 +37,7 @@ import org.dhis2.form.ui.provider.UiStyleProviderImpl
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -115,7 +116,8 @@ class EnrollmentModule(
             false,
             UiStyleProviderImpl(
                 FormUiModelColorFactoryImpl(activityContext, true),
-                LongTextUiColorFactoryImpl(activityContext, true)
+                LongTextUiColorFactoryImpl(activityContext, true),
+                true
             ),
             LayoutProviderImpl(),
             HintProviderImpl(context),
@@ -141,7 +143,8 @@ class EnrollmentModule(
         enrollmentFormRepository: EnrollmentFormRepository,
         analyticsHelper: AnalyticsHelper,
         matomoAnalyticsController: MatomoAnalyticsController,
-        eventCollectionRepository: EventCollectionRepository
+        eventCollectionRepository: EventCollectionRepository,
+        teiAttributesProvider: TeiAttributesProvider
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -154,7 +157,8 @@ class EnrollmentModule(
             enrollmentFormRepository,
             analyticsHelper,
             matomoAnalyticsController,
-            eventCollectionRepository
+            eventCollectionRepository,
+            teiAttributesProvider
         )
     }
 
@@ -226,5 +230,11 @@ class EnrollmentModule(
         resourceManager: ResourceManager
     ): EnrollmentResultDialogUiProvider {
         return EnrollmentResultDialogUiProvider(resourceManager)
+    }
+
+    @Provides
+    @PerActivity
+    fun providesTeiAttributesProvider(d2: D2): TeiAttributesProvider {
+        return TeiAttributesProvider(d2)
     }
 }

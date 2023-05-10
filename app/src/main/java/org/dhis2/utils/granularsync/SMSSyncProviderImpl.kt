@@ -4,7 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.Date
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
@@ -12,11 +12,7 @@ import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
 
 class SMSSyncProviderImpl(
     override val d2: D2,
-    override val conflictType: ConflictType,
-    override val recordUid: String,
-    override val dvOrgUnit: String?,
-    override val dvAttrCombo: String?,
-    override val dvPeriodId: String?,
+    override val syncContext: SyncContext,
     override val resourceManager: ResourceManager
 ) : SMSSyncProvider {
 
@@ -82,23 +78,25 @@ class SMSSyncProviderImpl(
     }
 
     override fun convertSimpleEvent(): Single<ConvertTaskResult> {
-        return smsSender.convertSimpleEvent(recordUid)
+        return smsSender.convertSimpleEvent(syncContext.recordUid())
             .map { count -> ConvertTaskResult.Count(count) }
     }
 
     override fun convertTrackerEvent(): Single<ConvertTaskResult> {
-        return smsSender.convertTrackerEvent(recordUid)
+        return smsSender.convertTrackerEvent(syncContext.recordUid())
             .map { count -> ConvertTaskResult.Count(count) }
     }
 
     override fun convertEnrollment(): Single<ConvertTaskResult> {
-        return smsSender.convertEnrollment(recordUid)
+        return smsSender.convertEnrollment(syncContext.recordUid())
             .map { count -> ConvertTaskResult.Count(count) }
     }
 
     override fun convertDataSet(): Single<ConvertTaskResult> {
-        return smsSender.convertDataSet(recordUid, dvOrgUnit, dvPeriodId, dvAttrCombo)
-            .map { count -> ConvertTaskResult.Count(count) }
+        return with(syncContext as SyncContext.DataSetInstance) {
+            smsSender.convertDataSet(dataSetUid, orgUnitUid, periodId, attributeOptionComboUid)
+                .map { count -> ConvertTaskResult.Count(count) }
+        }
     }
 
     private fun reportState(

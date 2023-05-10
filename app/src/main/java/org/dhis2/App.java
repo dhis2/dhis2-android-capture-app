@@ -61,6 +61,7 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
+import dagger.hilt.android.HiltAndroidApp;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 import io.reactivex.Scheduler;
@@ -70,6 +71,7 @@ import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
+@HiltAndroidApp
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
 
     @NonNull
@@ -184,8 +186,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @NonNull
     @Override
-    public LoginComponent createLoginComponent(LoginContracts.View view) {
-        return (loginComponent = appComponent.plus(new LoginModule(view)));
+    public LoginComponent createLoginComponent(LoginModule loginModule) {
+        return (loginComponent = appComponent.plus(loginModule));
     }
 
     @Nullable

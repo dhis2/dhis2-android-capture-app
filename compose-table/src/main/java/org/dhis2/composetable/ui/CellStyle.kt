@@ -68,11 +68,13 @@ fun styleForCell(
     isSelected: Boolean,
     isParentSelected: Boolean,
     hasError: Boolean,
+    hasWarning: Boolean,
     isEditable: Boolean,
     legendColor: Int?
 ) = CellStyle.CellBorderStyle(
     borderColor = when {
         isSelected && hasError -> TableTheme.colors.errorColor
+        isSelected && hasWarning -> TableTheme.colors.warningColor
         isSelected -> TableTheme.colors.primary
         else -> Color.Transparent
     },

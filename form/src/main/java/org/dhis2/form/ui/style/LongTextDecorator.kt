@@ -15,6 +15,10 @@ class LongTextDecorator(
         return style.getDescriptionIcon()
     }
 
+    override fun isActionIconClickable(): Boolean {
+        return style.isActionIconClickable()
+    }
+
     override fun textColor(error: String?, warning: String?): Int? {
         val colorType = when {
             warning != null -> FormUiColorType.WARNING

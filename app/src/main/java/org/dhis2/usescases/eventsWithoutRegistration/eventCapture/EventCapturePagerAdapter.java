@@ -32,6 +32,8 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     private final List<EventPageType> pages;
     private EventCaptureFormFragment formFragment;
 
+    private final boolean shouldOpenErrorSection;
+
     private enum EventPageType {
         DETAILS, DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
     }
@@ -40,12 +42,14 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String programUid,
                                     String eventUid,
                                     boolean displayAnalyticScreen,
-                                    boolean displayRelationshipScreen
+                                    boolean displayRelationshipScreen,
+                                    boolean openErrorSection
 
     ) {
         super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
+        this.shouldOpenErrorSection = openErrorSection;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
         pages.add(EventPageType.DATA_ENTRY);
@@ -94,7 +98,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                 });
                 return eventDetailsFragment;
             case DATA_ENTRY:
-                formFragment = EventCaptureFormFragment.newInstance(eventUid);
+                formFragment = EventCaptureFormFragment.newInstance(eventUid, shouldOpenErrorSection);
                 return formFragment;
             case ANALYTICS:
                 Fragment indicatorFragment = new IndicatorsFragment();
