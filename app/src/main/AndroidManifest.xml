@@ -105,6 +105,10 @@
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
+        <activity
+            android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <receiver android:name=".widgets.DhisCustomLauncher"
             android:exported="false">
