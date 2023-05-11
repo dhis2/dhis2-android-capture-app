@@ -1,7 +1,6 @@
 package org.dhis2.composetable
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.Espresso
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
@@ -76,7 +75,7 @@ class CellTableTest {
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
+                FakeModelType.SIMPLE_TABLE
             )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 0, 0)
@@ -85,11 +84,10 @@ class CellTableTest {
             composeTestRule.waitForIdle()
             clickOnAccept()
             composeTestRule.waitForIdle()
-            assertCellSelected(firstId, 0, 2)
+            assertCellSelected(firstId, 0, 1)
             assertInputComponentInfo(
-                expectedMainLabel = "Text 1",
-                expectedSecondaryLabels = fakeModel.find { it.id == firstId }?.tableHeaderModel?.rows
-                    ?.joinToString(separator = ",") { it.cells[2 % it.cells.size].value } ?: ""
+                expectedMainLabel = fakeModel.first().tableRows[0].rowHeader.title,
+                expectedSecondaryLabels = fakeModel.first().tableHeaderModel.rows.first().cells[1].value
             )
         }
     }
@@ -114,7 +112,8 @@ class CellTableTest {
                 expectedMainLabel = "Text 2",
                 expectedSecondaryLabels =
                 fakeModel.find { it.id == firstId }?.tableHeaderModel?.rows
-                    ?.joinToString(separator = ",") { it.cells[0 % it.cells.size].value } ?: "")
+                    ?.joinToString(separator = ",") { it.cells[0 % it.cells.size].value } ?: ""
+            )
         }
     }
 

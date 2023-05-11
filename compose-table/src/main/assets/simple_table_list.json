@@ -29,7 +29,7 @@
             "id": "sIqaW66yIfI_F6ULrynnld7",
             "row": 0,
             "column": 0,
-            "value": "hi"
+            "value": null
           },
           "1": {
             "id": "sIqaW66yIfI_lGGEDgZg0kq",
@@ -52,7 +52,8 @@
             "id": "SQyQZDqII5A_F6ULrynnld7",
             "row": 1,
             "column": 0,
-            "value": null
+            "value": "error",
+            "error": "error"
           },
           "1": {
             "id": "SQyQZDqII5A_lGGEDgZg0kq",
