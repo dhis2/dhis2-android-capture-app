@@ -40,7 +40,7 @@ class TextInputUiTest {
 
         tableRobot(composeTestRule) {
             val fakeModels = initTableAppScreen(
-                FakeModelType.MULTIHEADER_TABLE,
+                FakeModelType.SIMPLE_TABLE,
                 onSave = { cellToSave = it }
             )
             val tableId = fakeModels[0].id!!

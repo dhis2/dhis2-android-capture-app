@@ -1,0 +1,92 @@
+[
+  {
+    "id": "PjKGwf9WxBE",
+    "tableHeaderModel": {
+      "rows": [
+        {
+          "cells": [
+            {
+              "value": "Level 1"
+            },
+            {
+              "value": "Level 2"
+            }
+          ]
+        }
+      ]
+    },
+    "tableRows": [
+      {
+        "rowHeader": {
+          "id": "sIqaW66yIfI",
+          "title": "Text 1",
+          "showDecoration": true,
+          "row": 0,
+          "description": "No hay información para este campo"
+        },
+        "values": {
+          "0": {
+            "id": "sIqaW66yIfI_F6ULrynnld7",
+            "row": 0,
+            "column": 0,
+            "value": "hi"
+          },
+          "1": {
+            "id": "sIqaW66yIfI_lGGEDgZg0kq",
+            "row": 0,
+            "column": 1,
+            "value": null
+          }
+        },
+        "dropDownOptions": []
+      },
+      {
+        "rowHeader": {
+          "id": "SQyQZDqII5A",
+          "title": "Text 2",
+          "row": 1,
+          "description": "No hay información para este campo"
+        },
+        "values": {
+          "0": {
+            "id": "SQyQZDqII5A_F6ULrynnld7",
+            "row": 1,
+            "column": 0,
+            "value": null
+          },
+          "1": {
+            "id": "SQyQZDqII5A_lGGEDgZg0kq",
+            "row": 1,
+            "column": 1,
+            "value": null
+          }
+        },
+        "dropDownOptions": []
+      },
+      {
+        "rowHeader": {
+          "id": "CgJ9UN6mh5c",
+          "title": "Text 3",
+          "row": 2,
+          "description": "No hay información para este campo"
+        },
+        "values": {
+          "0": {
+            "id": "CgJ9UN6mh5c_F6ULrynnld7",
+            "row": 2,
+            "column": 0,
+            "value": null
+          },
+          "1": {
+            "id": "CgJ9UN6mh5c_lGGEDgZg0kq",
+            "row": 2,
+            "column": 1,
+            "value": null
+          }
+        },
+        "isLastRow": true,
+        "dropDownOptions": []
+      }
+    ]
+  }
+]
