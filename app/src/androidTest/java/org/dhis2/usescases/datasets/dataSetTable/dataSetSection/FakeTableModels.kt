@@ -19,7 +19,7 @@ class FakeTableModels(private val context: Context) {
      * LongText
      */
     fun getTestDataSetSectionA(): List<TableModel> =
-        Json.decodeFromString(parseJsonToString("ds_test_dataset_section_a.json"))
+        Json.decodeFromString(parseJsonToString("simple_table_list.json"))
 
     /**
      * Tables with different value types:

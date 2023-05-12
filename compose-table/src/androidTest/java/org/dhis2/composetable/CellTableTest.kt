@@ -79,8 +79,11 @@ class CellTableTest {
             )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 0, 0)
+            composeTestRule.waitForIdle()
             typeOnInputComponent("check")
+            composeTestRule.waitForIdle()
             clickOnAccept()
+            composeTestRule.waitForIdle()
             assertCellSelected(firstId, 0, 1)
             assertInputComponentInfo(
                 expectedMainLabel = fakeModel.first().tableRows[0].rowHeader.title,
