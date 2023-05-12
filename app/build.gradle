@@ -1,4 +1,4 @@
-plugins{
+plugins {
     id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply plugin: 'com.android.application'
@@ -123,8 +123,8 @@ android {
             signingConfig = signingConfigs.debug
 
             buildConfigField "int", "MATOMO_ID", "2"
-            buildConfigField "String", "BUILD_DATE", "\""+getBuildDate()+"\""
-            buildConfigField "String", "GIT_SHA", "\""+getCommitHash()+"\""
+            buildConfigField "String", "BUILD_DATE", "\"" + getBuildDate() + "\""
+            buildConfigField "String", "GIT_SHA", "\"" + getCommitHash() + "\""
 
             applicationVariants.all { variant ->
                 if (variant.getFlavorName() == "dhisUITesting") {
@@ -134,10 +134,11 @@ android {
 
             //Sentry variables
             manifestPlaceholders = [
-                    sentry_dsn        : bitriseSentryDSN,
-                    sentry_environment: "debug",
-                    sentry_debug      : "true",
-                    sentry_sample_rate: "1.0"
+                    sentry_dsn                  : bitriseSentryDSN,
+                    sentry_environment          : "debug",
+                    sentry_debug                : "true",
+                    sentry_traces_sample_rate   : "1.0",
+                    sentry_profiling_sample_rate: "1.0"
             ]
         }
         release {
@@ -145,15 +146,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField "int", "MATOMO_ID", "1"
-            buildConfigField "String", "BUILD_DATE", "\""+getBuildDate()+"\""
-            buildConfigField "String", "GIT_SHA", "\""+getCommitHash()+"\""
+            buildConfigField "String", "BUILD_DATE", "\"" + getBuildDate() + "\""
+            buildConfigField "String", "GIT_SHA", "\"" + getCommitHash() + "\""
 
             //Sentry variables
             manifestPlaceholders = [
-                    sentry_dsn        : bitriseSentryDSN,
-                    sentry_environment: "production",
-                    sentry_debug      : "false",
-                    sentry_sample_rate: "0.1"
+                    sentry_dsn                  : bitriseSentryDSN,
+                    sentry_environment          : "production",
+                    sentry_debug                : "false",
+                    sentry_traces_sample_rate   : "0.1",
+                    sentry_profiling_sample_rate: "0.1"
             ]
         }
     }
