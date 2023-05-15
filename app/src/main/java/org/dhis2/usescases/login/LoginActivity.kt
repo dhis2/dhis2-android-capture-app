@@ -324,6 +324,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             ),
             onMainButtonClicked = {
                 presenter.grantTrackingPermissions(true)
+                context.app().initCrashController()
                 onLoginDataUpdated(false)
             },
             onSecondaryButtonClicked = {

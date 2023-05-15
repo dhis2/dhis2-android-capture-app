@@ -54,39 +54,8 @@
             android:required="false" />
 
         <meta-data
-            android:name="io.sentry.dsn"
-            android:value="${sentry_dsn}" />
-        <meta-data
-            android:name="io.sentry.environment"
-            android:value="${sentry_environment}" />
-        <meta-data
-            android:name="io.sentry.debug"
-            android:value="${sentry_debug}" />
-
-        <!-- enable automatic breadcrumbs for user interactions (clicks, swipes, scrolls) -->
-        <meta-data
-            android:name="io.sentry.traces.user-interaction.enable"
-            android:value="true" />
-
-        <!-- enable screenshot for crashes -->
-        <meta-data
-            android:name="io.sentry.attach-screenshot"
-            android:value="true" />
-
-        <!-- enable view hierarchy for crashes -->
-        <meta-data
-            android:name="io.sentry.attach-view-hierarchy"
-            android:value="true" />
-
-        <!-- enable the performance API by setting a sample-rate, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.sample-rate"
-            android:value="${sentry_traces_sample_rate}" />
-
-        <!-- enable profiling when starting transactions, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.profiling.sample-rate"
-            android:value="${sentry_profiling_sample_rate}" />
+            android:name="io.sentry.auto-init"
+            android:value="false" />
 
         <activity
             android:name=".usescases.splash.SplashActivity"
