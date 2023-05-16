@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -59,7 +60,8 @@ import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableId
 import org.dhis2.composetable.ui.TableIdColumnHeader
 import org.dhis2.composetable.ui.TableTheme
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.FakeTableModels
+import org.dhis2.usescases.table.model.FakeModelType
+import org.dhis2.usescases.table.model.FakeTableModels
 import org.junit.Assert
 import java.io.IOException
 
@@ -79,12 +81,13 @@ class TableRobot(
     lateinit var onSaveTableCell: TableCell
 
     fun initTableAppScreen(
+        fakeModelType: FakeModelType,
         tableConfiguration: TableConfiguration = TableConfiguration(headerActionsEnabled = false),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         var fakeModel: List<TableModel> = emptyList()
         composeTestRule.setContent {
-            fakeModel = FakeTableModels(LocalContext.current).getTestDataSetSectionA()
+            fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
             val screenState = TableScreenState(fakeModel)
 
             var model by remember { mutableStateOf(screenState) }

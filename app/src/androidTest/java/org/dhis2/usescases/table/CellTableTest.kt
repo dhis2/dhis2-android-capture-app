@@ -5,6 +5,7 @@ import androidx.test.espresso.Espresso
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.test.TestActivity
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.table.model.FakeModelType
 import org.junit.Rule
 import org.junit.Test
 
@@ -16,7 +17,9 @@ class CellTableTest : BaseTest() {
     @Test
     fun shouldBlockClickAndSetCorrectColorIfNonEditable() {
         tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen()
+            val fakeModel = initTableAppScreen(
+                FakeModelType.MANDATORY_TABLE
+            )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 0, 1)
             assertInputComponentIsHidden()
@@ -27,7 +30,9 @@ class CellTableTest : BaseTest() {
     @Test
     fun shouldUpdateValueWhenTypingInComponent() {
         tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen()
+            val fakeModel = initTableAppScreen(
+                FakeModelType.MANDATORY_TABLE
+            )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 1, 0)
             typeOnInputComponent("check")
@@ -38,7 +43,9 @@ class CellTableTest : BaseTest() {
     @Test
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen()
+            val fakeModel = initTableAppScreen(
+                FakeModelType.SIMPLE_TABLE
+            )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 0, 0)
             composeTestRule.waitForIdle()
@@ -57,7 +64,9 @@ class CellTableTest : BaseTest() {
     @Test
     fun shouldMoveToNextRowWhenClickingNext() {
         tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen()
+            val fakeModel = initTableAppScreen(
+                FakeModelType.MANDATORY_TABLE
+            )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 0, 47)
             composeTestRule.waitForIdle()
@@ -80,7 +89,9 @@ class CellTableTest : BaseTest() {
     @Test
     fun shouldClearSelectionWhenClickingNextOnLastCell() {
         tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen()
+            val fakeModel = initTableAppScreen(
+                FakeModelType.MANDATORY_TABLE
+            )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 2, 47)
             typeOnInputComponent("check")
@@ -93,7 +104,9 @@ class CellTableTest : BaseTest() {
     @Test
     fun shouldSetCorrectColorIfHasError() {
         tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen()
+            val fakeModel = initTableAppScreen(
+                FakeModelType.MANDATORY_TABLE
+            )
             val firstId = fakeModel.first().id!!
             assertUnselectedCellErrorStyle(firstId, 2, 0)
             clickOnCell(firstId, 2, 0)
@@ -108,6 +121,7 @@ class CellTableTest : BaseTest() {
 
         tableRobot(composeTestRule) {
             val fakeModels = initTableAppScreen(
+                FakeModelType.SIMPLE_TABLE,
                 onSave = { cellToSave = it }
             )
             val tableId = fakeModels[0].id!!
