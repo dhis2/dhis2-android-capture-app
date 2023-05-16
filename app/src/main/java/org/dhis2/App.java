@@ -395,9 +395,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     private boolean areTrackingPermissionGranted() {
-        if (!D2Manager.isD2Instantiated() ||
-                serverComponent == null ||
-                !serverComponent.userManager().isUserLoggedIn().blockingFirst()) {
+        boolean isUserLoggedIn = serverComponent != null &&
+                serverComponent.userManager().isUserLoggedIn().blockingFirst();
+        if (!D2Manager.isD2Instantiated() || !isUserLoggedIn) {
             return false;
         }
         KeyValuePair granted = D2Manager.getD2().dataStoreModule().localDataStore()
