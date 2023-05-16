@@ -54,6 +54,7 @@ import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2Manager;
+import org.hisp.dhis.android.core.datastore.KeyValuePair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -399,8 +400,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 !serverComponent.userManager().isUserLoggedIn().blockingFirst()) {
             return false;
         }
-        String granted = D2Manager.getD2().dataStoreModule().localDataStore()
-                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet().value();
-        return Boolean.parseBoolean(granted);
+        KeyValuePair granted = D2Manager.getD2().dataStoreModule().localDataStore()
+                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet();
+        return granted != null && Boolean.parseBoolean(granted.value());
     }
 }
