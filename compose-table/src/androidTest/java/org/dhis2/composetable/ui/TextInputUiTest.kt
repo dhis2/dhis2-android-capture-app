@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.dp
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.data.input_error_message
@@ -27,7 +28,9 @@ import org.dhis2.composetable.tableRobot
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class TextInputUiTest {
 
     @get:Rule
