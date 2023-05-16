@@ -1,13 +1,13 @@
 package org.dhis2.usescases.table
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.test.TestActivity
+import org.dhis2.usescases.BaseTest
 import org.junit.Rule
 import org.junit.Test
 
-class CellTableTest {
+class CellTableTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<TestActivity>()
