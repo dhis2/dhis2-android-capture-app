@@ -36,6 +36,8 @@
     <application
         android:name=".App"
         android:allowBackup="false"
+        android:fullBackupContent="@xml/old_backup_config"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -44,7 +46,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:replace="allowBackup">
+        tools:replace="allowBackup"
+        tools:targetApi="s">
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
@@ -127,7 +130,6 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
-        <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
 
