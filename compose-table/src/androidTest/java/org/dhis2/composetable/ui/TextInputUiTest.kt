@@ -25,7 +25,6 @@ import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

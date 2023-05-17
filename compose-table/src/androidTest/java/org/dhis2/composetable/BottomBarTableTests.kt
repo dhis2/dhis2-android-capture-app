@@ -74,8 +74,7 @@ class BottomBarTableTests {
             assertOnSavedTableCellValue("test")
         }
     }
-
-    @Ignore
+    
     @Test
     fun shouldHideInputFieldIfTextInputViewModeIsOff() {
         tableRobot(composeTestRule) {

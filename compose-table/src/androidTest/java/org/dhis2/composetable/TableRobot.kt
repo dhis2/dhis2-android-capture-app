@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -212,7 +213,7 @@ class TableRobot(
 
     fun assertClickOnBackClearsFocus() {
         pressBack()
-        composeTestRule.waitForIdle()
+        //composeTestRule.waitForIdle()
         assertInputIcon(R.drawable.ic_edit_input)
     }
 
@@ -319,11 +320,17 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_TEST_TAG).assertIsDisplayed()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun assertInputIcon(@DrawableRes id: Int) {
-        composeTestRule.waitUntil(5_000) {
+        composeTestRule.waitUntilNodeCount(
+            SemanticsMatcher.expectValue(DrawableId, id),
+            1,
+            5_000
+        )
+        /*composeTestRule.waitUntil(5_000) {
             composeTestRule.onAllNodes(SemanticsMatcher.expectValue(DrawableId, id), true)
                 .fetchSemanticsNodes().size == 1
-        }
+        }*/
     }
 
     fun assertIconIsVisible(@DrawableRes id: Int) {
