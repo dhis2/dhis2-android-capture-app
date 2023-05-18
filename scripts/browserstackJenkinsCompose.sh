@@ -8,7 +8,7 @@ source config_jenkins_compose.init
 #app_url=$(echo "$upload_app_response" | jq .app_url)
 
 echo "Uploading compose test APK to Browserstack..."
-upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-app -F file=@$compose_test_apk_path)"
+upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-app -F file=@$test_apk_path)"
 test_url=$(echo "$upload_test_response" | jq .test_url)
 
 # Prepare json and run tests
