@@ -69,9 +69,7 @@ pipeline {
                         sh './browserstackJenkins.sh'
                     }
                 }
-            }
-            steps {
-               dir("${env.WORKSPACE}/scripts"){
+                dir("${env.WORKSPACE}/scripts"){
                     script {
                         echo 'Browserstack deployment and running compose tests'
                         sh 'chmod +x browserstackJenkinsCompose.sh'
