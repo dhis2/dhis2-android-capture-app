@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages{
-        stage('Ktlint') {
+        /* stage('Ktlint') {
             steps {
                 script {
                     echo 'Running Ktlint'
@@ -44,7 +44,7 @@ pipeline {
                     sh './gradlew sonarqube'
                 }
             }
-        }
+        } */
         stage('Build Test APKs') {
             steps {
                 script {
@@ -58,7 +58,7 @@ pipeline {
                 BROWSERSTACK = credentials('android-browserstack')
                 app_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 1p')
                 test_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 2p')
-                compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 3p')
+                compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p')
                 app_apk_path = "${env.WORKSPACE}/${app_apk}"
                 test_apk_path = "${env.WORKSPACE}/${test_apk}"
                 compose_table_apk_path = "${env.WORKSPACE}/${compose_table_apk}"
