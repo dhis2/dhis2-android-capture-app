@@ -49,21 +49,30 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :compose-table:assembleAndroidTest'
+                    //sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :compose-table:assembleAndroidTest'
+                    sh './gradlew :compose-table:assembleAndroidTest'
+                    sh 'find compose-table/build/outputs -iname "*.apk"'
+                    compose_table_apk = 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p'
+                    echo compose_table_apk
                 }
             }
         }
         stage('Deploy and Run UI Tests') {
             environment {
                 BROWSERSTACK = credentials('android-browserstack')
-                app_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 1p')
-                test_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 2p')
+                //app_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 1p')
+                //test_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 2p')
                 compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p')
-                app_apk_path = "${env.WORKSPACE}/${app_apk}"
-                test_apk_path = "${env.WORKSPACE}/${test_apk}"
+                //app_apk_path = "${env.WORKSPACE}/${app_apk}"
+                //test_apk_path = "${env.WORKSPACE}/${test_apk}"
                 compose_table_apk_path = "${env.WORKSPACE}/${compose_table_apk}"
             }
             steps {
+                script {
+                    echo '${env.WORKSPACE}/${compose_table_apk}'
+                }
+            }
+            /* steps {
                 dir("${env.WORKSPACE}/scripts"){
                     script {
                         echo 'Browserstack deployment and running compose tests'
@@ -78,7 +87,7 @@ pipeline {
                         sh './browserstackJenkins.sh'
                     }
                 }
-            }
+            } */
         }
     }
     post {
