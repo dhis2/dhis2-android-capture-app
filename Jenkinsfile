@@ -78,8 +78,8 @@ pipeline {
                         sh 'chmod +x browserstackJenkins.sh'
                         sh './browserstackJenkins.sh'
                     }
-                }
-            } */
+                } */
+            }
         }
     }
     post {
