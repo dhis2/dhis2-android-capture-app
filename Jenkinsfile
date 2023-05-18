@@ -70,6 +70,15 @@ pipeline {
                     }
                 }
             }
+            steps {
+               dir("${env.WORKSPACE}/scripts"){
+                    script {
+                        echo 'Browserstack deployment and running compose tests'
+                        sh 'chmod +x browserstackJenkinsCompose.sh'
+                        sh './browserstackJenkinsCompose.sh'
+                    }
+                }
+            }
         }
     }
     post {
