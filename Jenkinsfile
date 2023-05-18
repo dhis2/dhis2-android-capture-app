@@ -58,24 +58,24 @@ pipeline {
                 BROWSERSTACK = credentials('android-browserstack')
                 app_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 1p')
                 test_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 2p')
-                compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "@.apk" | sed -n 3p')
+                compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 3p')
                 app_apk_path = "${env.WORKSPACE}/${app_apk}"
                 test_apk_path = "${env.WORKSPACE}/${test_apk}"
                 compose_table_apk_path = "${env.WORKSPACE}/${compose_table_apk}"
             }
             steps {
-               dir("${env.WORKSPACE}/scripts"){
-                    script {
-                        echo 'Browserstack deployment and running tests'
-                        sh 'chmod +x browserstackJenkins.sh'
-                        sh './browserstackJenkins.sh'
-                    }
-                }
                 dir("${env.WORKSPACE}/scripts"){
                     script {
                         echo 'Browserstack deployment and running compose tests'
                         sh 'chmod +x browserstackJenkinsCompose.sh'
                         sh './browserstackJenkinsCompose.sh'
+                    }
+                }
+                dir("${env.WORKSPACE}/scripts"){
+                    script {
+                        echo 'Browserstack deployment and running tests'
+                        sh 'chmod +x browserstackJenkins.sh'
+                        sh './browserstackJenkins.sh'
                     }
                 }
             }
