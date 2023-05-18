@@ -213,7 +213,7 @@ class TableRobot(
 
     fun assertClickOnBackClearsFocus() {
         pressBack()
-        //composeTestRule.waitForIdle()
+        composeTestRule.waitForIdle()
         assertInputIcon(R.drawable.ic_edit_input)
     }
 
