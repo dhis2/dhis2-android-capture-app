@@ -3,12 +3,12 @@ set -ex
 source config_jenkins_compose.init
 
 # Upload app and testing apk
-echo "Uploading app APK to Browserstack..."
-upload_app_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/upload -F file=@$app_apk_path)"
-app_url=$(echo "$upload_app_response" | jq .app_url)
+#echo "Uploading app APK to Browserstack..."
+#upload_app_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/upload -F file=@$app_apk_path)"
+#app_url=$(echo "$upload_app_response" | jq .app_url)
 
-echo "Uploading test APK to Browserstack..."
-upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/test-suite -F file=@$test_apk_path)"
+echo "Uploading compose test APK to Browserstack..."
+upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-app -F file=@$compose_test_apk_path)"
 test_url=$(echo "$upload_test_response" | jq .test_url)
 
 # Prepare json and run tests
@@ -21,7 +21,7 @@ json=$(jq -n \
                 --argjson app_url $app_url \
                 --argjson test_url $test_url \
                 --argjson devices ["$browserstack_device_list"] \
-                --argjson class ["$browserstack_class"] \
+                #--argjson class ["$browserstack_class"] \
                 --arg logs "$browserstack_device_logs" \
                 --arg video "$browserstack_video" \
                 --arg loc "$browserstack_local" \
@@ -32,9 +32,11 @@ json=$(jq -n \
                 --arg deviceLogs "$browserstack_deviceLogs" \
                 --arg allowDeviceMockServer  "$browserstack_allowDeviceMockServer" \
                 --argjson shards "$shards" \
-                '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
+                #'{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
+                '{devices: $devices, app: $app_url, testSuite: $test_url, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
 
-test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
+
+test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
 # Get build
 build_id=$(echo "$test_execution_response" | jq -r .build_id)
