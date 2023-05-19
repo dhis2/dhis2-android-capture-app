@@ -18,10 +18,8 @@ shards=$(jq -n \
                 '{numberOfShards: $number_of_shards}')
 
 json=$(jq -n \
-                --arg app_url $app_url \
-                --arg module_url $module_url \
-                --arg devices ["$browserstack_device_list"] \
-                #--argjson class ["$browserstack_class"] \
+                --argjson module_url $module_url \
+                --argjson devices ["$browserstack_device_list"] \
                 --arg logs "$browserstack_device_logs" \
                 --arg video "$browserstack_video" \
                 --arg loc "$browserstack_local" \
@@ -32,8 +30,8 @@ json=$(jq -n \
                 --arg deviceLogs "$browserstack_deviceLogs" \
                 --arg allowDeviceMockServer  "$browserstack_allowDeviceMockServer" \
                 --argjson shards "$shards" \
-                #'{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
                 '{devices: $devices, testSuite: $module_url, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
+                #'{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
 
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
