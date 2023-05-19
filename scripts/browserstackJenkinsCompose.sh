@@ -11,16 +11,9 @@ echo "Starting execution of tests..."
 json=$(jq -n \
                 --argjson module_url $module_url \
                 --argjson devices ["$browserstack_device_list"] \
-                --arg logs "$browserstack_device_logs" \
                 --arg video "$browserstack_video" \
-                --arg loc "$browserstack_local" \
-                --arg locId "$browserstack_local_identifier" \
-                --arg gpsLocation "$browserstack_gps_location" \
-                --arg language "$browserstack_language" \
-                --arg locale "$browserstack_locale" \
                 --arg deviceLogs "$browserstack_deviceLogs" \
-                --arg allowDeviceMockServer  "$browserstack_allowDeviceMockServer" \
-                '{devices: $devices, testSuite: $module_url, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer}')
+                '{devices: $devices, testSuite: $module_url, video: $video, deviceLogs: $deviceLogs')
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
