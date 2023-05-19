@@ -8,10 +8,6 @@ module_url=$(echo "$upload_test_response" | jq .module_url)
 
 # Prepare json and run tests
 echo "Starting execution of tests..."
-shards=$(jq -n \
-                --arg number_of_shards "$browserstack_number_of_parallel_executions" \
-                '{numberOfShards: $number_of_shards}')
-
 json=$(jq -n \
                 --argjson module_url $module_url \
                 --argjson devices ["$browserstack_device_list"] \
@@ -24,8 +20,7 @@ json=$(jq -n \
                 --arg locale "$browserstack_locale" \
                 --arg deviceLogs "$browserstack_deviceLogs" \
                 --arg allowDeviceMockServer  "$browserstack_allowDeviceMockServer" \
-                --argjson shards "$shards" \
-                '{devices: $devices, testSuite: $module_url, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
+                '{devices: $devices, testSuite: $module_url, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer}')
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
