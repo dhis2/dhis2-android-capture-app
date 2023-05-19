@@ -13,7 +13,7 @@ json=$(jq -n \
                 --argjson devices ["$browserstack_device_list"] \
                 --arg video "$browserstack_video" \
                 --arg deviceLogs "$browserstack_deviceLogs" \
-                '{devices: $devices, testSuite: $module_url, video: $video, deviceLogs: $deviceLogs')
+                '{devices: $devices, testSuite: $module_url, video: $video, deviceLogs: $deviceLogs'})
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
