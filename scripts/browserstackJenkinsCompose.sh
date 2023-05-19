@@ -1,18 +1,13 @@
 #!/bin/bash
 set -ex
-source config_jenkins_compose.init
-
-# Upload app and testing apk
-#echo "Uploading app APK to Browserstack..."
-#upload_app_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/upload -F file=@$app_apk_path)"
-#app_url=$(echo "$upload_app_response" | jq .app_url)
+source config_jenkins.init
 
 echo "Uploading compose test APK to Browserstack..."
-upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-app -F file=@$test_apk_path)"
+upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-app -F file=@$compose_table_apk_path)"
 module_url=$(echo "$upload_test_response" | jq .module_url)
 
 # Prepare json and run tests
-echo "Starting execution of espresso tests..."
+echo "Starting execution of tests..."
 shards=$(jq -n \
                 --arg number_of_shards "$browserstack_number_of_parallel_executions" \
                 '{numberOfShards: $number_of_shards}')
@@ -31,8 +26,6 @@ json=$(jq -n \
                 --arg allowDeviceMockServer  "$browserstack_allowDeviceMockServer" \
                 --argjson shards "$shards" \
                 '{devices: $devices, testSuite: $module_url, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
-                #'{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards}')
-
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
