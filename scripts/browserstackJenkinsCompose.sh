@@ -18,7 +18,7 @@ shards=$(jq -n \
                 '{numberOfShards: $number_of_shards}')
 
 json=$(jq -n \
-                #--argjson app_url $app_url \
+                --argjson app_url $app_url \
                 --argjson module_url $module_url \
                 --argjson devices ["$browserstack_device_list"] \
                 #--argjson class ["$browserstack_class"] \
