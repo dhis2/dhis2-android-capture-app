@@ -327,14 +327,11 @@ class DataValueRepository(
             val dataSetElements =
                 d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
                     .dataSetElements()
-            for (de in listDataElements!!) {
-                val override = transformDataElement(de, dataSetElements)
-                if (override.categoryComboUid() == categoryCombo.uid()) {
-                    dataElementsOverride.add(
-                        override
-                    )
-                }
-            }
+            listDataElements
+                ?.map { transformDataElement(it, dataSetElements) }
+                ?.firstOrNull { it.categoryComboUid() == categoryCombo.uid() }
+                ?.let { dataElementsOverride.add(it) }
+
             Flowable.just(
                 dataElementsOverride
             )

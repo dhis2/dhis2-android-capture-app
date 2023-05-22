@@ -9,7 +9,6 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -109,32 +108,21 @@ class EventRepository(
         ).blockingGet()
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de.uid())
-        var programStageSection: ProgramStageSection? = null
-        for (section in sectionMap.values) {
-            if (getUidsList<DataElement>(section.dataElements()!!).contains(de.uid())) {
-                programStageSection = section
-                break
-            }
+        val programStageSection: ProgramStageSection? = sectionMap.values.firstOrNull { section ->
+            section.dataElements()?.map { it.uid() }?.contains(de.uid()) ?: false
         }
         val uid = de.uid()
         val displayName = de.displayName()!!
         val valueType = de.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false
         val optionSet = de.optionSetUid()
-        var dataValue =
-            if (valueRepository.blockingExists()) {
-                valueRepository.blockingGet()
-                    .value()
-            } else {
-                null
-            }
-        val friendlyValue =
-            if (dataValue != null) {
-                valueRepository.blockingGetValueCheck(d2, uid)
-                    .userFriendlyValue(d2)
-            } else {
-                null
-            }
+        var dataValue = when {
+            valueRepository.blockingExists() -> valueRepository.blockingGet().value()
+            else -> null
+        }
+        val friendlyValue = dataValue?.let {
+            valueRepository.blockingGetValueCheck(d2, uid).userFriendlyValue(d2)
+        }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de.displayFormName()
         val description = de.displayDescription()
