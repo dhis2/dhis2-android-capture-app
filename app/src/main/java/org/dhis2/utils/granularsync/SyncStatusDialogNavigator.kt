@@ -91,9 +91,7 @@ class SyncStatusDialogNavigator(
         ).launchSyncDialog()
     }
 
-    private fun navigateToStockUsecase(
-        stockProgramSyncItem: SyncStatusType.StockProgram
-    ): Intent? {
+    private fun navigateToStockUsecase(stockProgramSyncItem: SyncStatusType.StockProgram): Intent? {
         return if (context !is HomeActivity) {
             Intent(
                 context,
@@ -197,5 +195,4 @@ class SyncStatusDialogNavigator(
     }
 }
 
-fun Intent.shouldLaunchSyncDialog(): Boolean =
-    getBooleanExtra(LAUNCH_SYNC_DIALOG, false)
+fun Intent.shouldLaunchSyncDialog(): Boolean = getBooleanExtra(LAUNCH_SYNC_DIALOG, false)

@@ -20,7 +20,6 @@ fun Dhis2TextButton(
     modifier: Modifier = Modifier,
     model: ButtonUiModel,
     leadingIcon: @Composable (() -> Unit)? = null
-
 ) {
     TextButton(
         modifier = modifier,

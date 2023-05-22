@@ -46,10 +46,8 @@ data class TableDimensions(
         totalColumns: Int,
         hasExtra: Boolean = false
     ): Int = defaultCellWidth + extraSize(totalColumns, hasExtra) + extraWidthInTable(tableId)
-    fun columnWidthWithTableExtra(
-        tableId: String,
-        column: Int? = null
-    ): Int = (columnWidth[tableId]?.get(column) ?: defaultCellWidth) + extraWidthInTable(tableId)
+    fun columnWidthWithTableExtra(tableId: String, column: Int? = null): Int =
+        (columnWidth[tableId]?.get(column) ?: defaultCellWidth) + extraWidthInTable(tableId)
 
     fun headerCellWidth(
         tableId: String,
@@ -74,18 +72,12 @@ data class TableDimensions(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun headerCellWidth(
-        headerRowColumns: Int,
-        totalColumns: Int
-    ): Int {
+    fun headerCellWidth(headerRowColumns: Int, totalColumns: Int): Int {
         val fullWidth = defaultCellWidth * totalColumns
         return fullWidth / headerRowColumns
     }
 
-    fun extraSize(
-        totalColumns: Int,
-        hasTotal: Boolean
-    ): Int {
+    fun extraSize(totalColumns: Int, hasTotal: Boolean): Int {
         val screenWidth = totalWidth
         val tableWidth = tableWidth(totalColumns, hasTotal)
 
@@ -99,40 +91,27 @@ data class TableDimensions(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun tableWidth(
-        totalColumns: Int,
-        hasTotal: Boolean
-    ): Int {
+    fun tableWidth(totalColumns: Int, hasTotal: Boolean): Int {
         val totalCellWidth = defaultCellWidth.takeIf { hasTotal } ?: 0
 
         return defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
     }
 
-    fun updateAllWidthBy(
-        tableId: String,
-        widthOffset: Float
-    ): TableDimensions {
+    fun updateAllWidthBy(tableId: String, widthOffset: Float): TableDimensions {
         val newWidth = (extraWidths[tableId] ?: 0) + widthOffset - 11
         val newMap = extraWidths.toMutableMap()
         newMap[tableId] = newWidth.toInt()
         return copy(extraWidths = newMap)
     }
 
-    fun updateHeaderWidth(
-        tableId: String,
-        widthOffset: Float
-    ): TableDimensions {
+    fun updateHeaderWidth(tableId: String, widthOffset: Float): TableDimensions {
         val newWidth = (rowHeaderWidths[tableId] ?: defaultRowHeaderWidth) + widthOffset - 11
         val newMap = rowHeaderWidths.toMutableMap()
         newMap[tableId] = newWidth.toInt()
         return copy(rowHeaderWidths = newMap)
     }
 
-    fun updateColumnWidth(
-        tableId: String,
-        column: Int,
-        widthOffset: Float
-    ): TableDimensions {
+    fun updateColumnWidth(tableId: String, column: Int, widthOffset: Float): TableDimensions {
         val newWidth = (columnWidth[tableId]?.get(column) ?: defaultCellWidth) + widthOffset - 11
         val newMap = columnWidth.toMutableMap()
         val tableColumnMap = columnWidth[tableId]?.toMutableMap() ?: mutableMapOf()
@@ -161,10 +140,7 @@ data class TableDimensions(
         )
     }
 
-    fun canUpdateRowHeaderWidth(
-        tableId: String,
-        widthOffset: Float
-    ): Boolean {
+    fun canUpdateRowHeaderWidth(tableId: String, widthOffset: Float): Boolean {
         val desiredDimension = updateHeaderWidth(tableId = tableId, widthOffset = widthOffset)
         return desiredDimension.rowHeaderWidth(tableId) in minRowHeaderWidth..maxRowHeaderWidth
     }
@@ -187,19 +163,16 @@ data class TableDimensions(
         ) + extraSize(totalColumns, hasTotal) in minColumnWidth..maxColumnWidth
     }
 
-    fun canUpdateAllWidths(
-        tableId: String,
-        widthOffset: Float
-    ): Boolean {
+    fun canUpdateAllWidths(tableId: String, widthOffset: Float): Boolean {
         val desiredDimension = updateAllWidthBy(tableId = tableId, widthOffset = widthOffset)
         return desiredDimension.rowHeaderWidth(tableId) in minRowHeaderWidth..maxRowHeaderWidth &&
             desiredDimension.columnWidthWithTableExtra(tableId) in minColumnWidth..maxColumnWidth &&
             desiredDimension.columnWidth[tableId]?.all { (column, _) ->
-            desiredDimension.columnWidthWithTableExtra(
-                tableId,
-                column
-            ) in minColumnWidth..maxColumnWidth
-        } ?: true
+                desiredDimension.columnWidthWithTableExtra(
+                    tableId,
+                    column
+                ) in minColumnWidth..maxColumnWidth
+            } ?: true
     }
 }
 

@@ -106,38 +106,40 @@ class GranularSyncRepository(
     private fun getLastSynced(returnEmpty: Boolean = true): Single<SyncDate> {
         return if (returnEmpty) {
             Single.just(SyncDate(null))
-        } else when (syncContext.conflictType()) {
-            ConflictType.PROGRAM ->
-                d2.observeProgram(syncContext.recordUid()).map { SyncDate(it.lastUpdated()) }
-            ConflictType.TEI -> {
-                val enrollment = d2.enrollment(syncContext.recordUid())
-                d2.observeTei(enrollment.trackedEntityInstance()!!)
-                    .map { SyncDate(it.lastUpdated()) }
-            }
-            ConflictType.EVENT ->
-                d2.observeEvent(syncContext.recordUid()).map { SyncDate(it.lastUpdated()) }
-            ConflictType.DATA_SET ->
-                d2.dataSetModule().dataSets()
-                    .uid(syncContext.recordUid()).get()
-                    .map { dataSet -> SyncDate(dataSet.lastUpdated()) }
-            ConflictType.DATA_VALUES ->
-                with(syncContext as SyncContext.DataSetInstance) {
-                    d2.observeDataSetInstancesBy(
-                        dataSetUid = dataSetUid,
-                        orgUnitUid = orgUnitUid,
-                        periodId = periodId,
-                        attrOptionComboUid = attributeOptionComboUid
-                    ).map { dataSetInstance ->
-                        dataSetInstance.sortedBy { it.lastUpdated() }
-                        SyncDate(
-                            dataSetInstance.apply {
-                                sortedBy { it.lastUpdated() }
-                            }.first().lastUpdated()
-                        )
-                    }
+        } else {
+            when (syncContext.conflictType()) {
+                ConflictType.PROGRAM ->
+                    d2.observeProgram(syncContext.recordUid()).map { SyncDate(it.lastUpdated()) }
+                ConflictType.TEI -> {
+                    val enrollment = d2.enrollment(syncContext.recordUid())
+                    d2.observeTei(enrollment.trackedEntityInstance()!!)
+                        .map { SyncDate(it.lastUpdated()) }
                 }
-            ConflictType.ALL ->
-                Single.just(SyncDate(preferenceProvider.lastSync()))
+                ConflictType.EVENT ->
+                    d2.observeEvent(syncContext.recordUid()).map { SyncDate(it.lastUpdated()) }
+                ConflictType.DATA_SET ->
+                    d2.dataSetModule().dataSets()
+                        .uid(syncContext.recordUid()).get()
+                        .map { dataSet -> SyncDate(dataSet.lastUpdated()) }
+                ConflictType.DATA_VALUES ->
+                    with(syncContext as SyncContext.DataSetInstance) {
+                        d2.observeDataSetInstancesBy(
+                            dataSetUid = dataSetUid,
+                            orgUnitUid = orgUnitUid,
+                            periodId = periodId,
+                            attrOptionComboUid = attributeOptionComboUid
+                        ).map { dataSetInstance ->
+                            dataSetInstance.sortedBy { it.lastUpdated() }
+                            SyncDate(
+                                dataSetInstance.apply {
+                                    sortedBy { it.lastUpdated() }
+                                }.first().lastUpdated()
+                            )
+                        }
+                    }
+                ConflictType.ALL ->
+                    Single.just(SyncDate(preferenceProvider.lastSync()))
+            }
         }
     }
 
@@ -417,9 +419,7 @@ class GranularSyncRepository(
         else -> resourceManager.getString(R.string.tap_to_explore_action)
     }
 
-    private fun getDataSetItemsForGlobalContext(
-        dataSetUid: String
-    ): List<SyncStatusItem> {
+    private fun getDataSetItemsForGlobalContext(dataSetUid: String): List<SyncStatusItem> {
         val datasetSummary = d2.dataSetSummaryBy(dataSetUid)
         var errorCount = 0
         var warningCount = 0
@@ -463,9 +463,7 @@ class GranularSyncRepository(
         }
     }
 
-    private fun getTeiItemWithStates(
-        enrollmentUid: String
-    ): List<SyncStatusItem> {
+    private fun getTeiItemWithStates(enrollmentUid: String): List<SyncStatusItem> {
         val enrollment = d2.enrollment(enrollmentUid)
         return listOf(
             mapTeiToSyncStatusItem(
@@ -475,10 +473,7 @@ class GranularSyncRepository(
         )
     }
 
-    private fun mapTeiToSyncStatusItem(
-        programUid: String,
-        teiUid: String
-    ): SyncStatusItem {
+    private fun mapTeiToSyncStatusItem(programUid: String, teiUid: String): SyncStatusItem {
         val tei = d2.tei(teiUid)
         val description = when (tei.aggregatedSyncState()) {
             State.WARNING,
@@ -521,10 +516,7 @@ class GranularSyncRepository(
         )
     }
 
-    private fun mapEventToSyncStatusItem(
-        programUid: String,
-        eventUid: String
-    ): SyncStatusItem {
+    private fun mapEventToSyncStatusItem(programUid: String, eventUid: String): SyncStatusItem {
         val event = d2.event(eventUid)
         val eventConflicts = d2.eventImportConflictsBy(eventUid)
         val description = when (event.aggregatedSyncState()) {
@@ -794,9 +786,7 @@ class GranularSyncRepository(
         return dataSetInstanceLabelData.joinToString(" | ")
     }
 
-    private fun getDataSetInstanceItemsWithStates(
-        dataSetUid: String
-    ): List<SyncStatusItem> {
+    private fun getDataSetInstanceItemsWithStates(dataSetUid: String): List<SyncStatusItem> {
         val conflicts = with(syncContext as SyncContext.DataSetInstance) {
             d2.dataValueConflicts(
                 dataSetUid = dataSetUid,

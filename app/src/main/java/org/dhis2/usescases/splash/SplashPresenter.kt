@@ -85,10 +85,7 @@ class SplashPresenter internal constructor(
             ?.blockingGet()?.value() == true.toString()
     }
 
-    private fun trackUserInfo(
-        serverUrl: String,
-        userName: String
-    ) {
+    private fun trackUserInfo(serverUrl: String, userName: String) {
         crashReportController.trackServer(serverUrl)
         crashReportController.trackUser(userName, serverUrl)
     }

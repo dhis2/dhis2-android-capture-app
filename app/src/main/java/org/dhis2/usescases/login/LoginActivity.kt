@@ -128,7 +128,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         setTheme(R.style.LoginTheme)
         val loginComponent = app().loginComponent() ?: app().createLoginComponent(
             LoginModule(
-                view = this, viewModelStoreOwner = this,
+                view = this,
+                viewModelStoreOwner = this,
                 userManager = app().serverComponent?.userManager()
             )
         )
@@ -499,8 +500,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     /*
-    * TODO: [Pending confirmation] Remove comment to set skipSync. This way the user will go to the home screen.
-    * */
+     * TODO: [Pending confirmation] Remove comment to set skipSync. This way the user will go to the home screen.
+     * */
     private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
         serverUrl?.let { binding.serverUrlEdit.setText(it) }
         binding.userNameEdit.setText(userName ?: "")
@@ -545,14 +546,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.appBuildInfo.text = buildInfo()
     }
 
-    override fun getDefaultServerProtocol(): String =
-        getString(R.string.login_https)
+    override fun getDefaultServerProtocol(): String = getString(R.string.login_https)
 
-    override fun getPromptParams(): Goldfinger.PromptParams =
-        Goldfinger.PromptParams.Builder(this)
-            .title(R.string.fingerprint_title)
-            .negativeButtonText(R.string.cancel)
-            .build()
+    override fun getPromptParams(): Goldfinger.PromptParams = Goldfinger.PromptParams.Builder(this)
+        .title(R.string.fingerprint_title)
+        .negativeButtonText(R.string.cancel)
+        .build()
 
     private fun showLoginOptions(authServiceModel: AuthServiceModel?) {
         authServiceModel?.let {

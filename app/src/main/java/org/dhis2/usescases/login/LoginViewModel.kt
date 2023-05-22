@@ -375,10 +375,10 @@ class LoginViewModel(
             fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
-                        SECURE_SERVER_URL,
-                        SECURE_USER_NAME,
-                        SECURE_PASS
-                    )
+                            SECURE_SERVER_URL,
+                            SECURE_USER_NAME,
+                            SECURE_PASS
+                        )
                     ) {
                         Result.success(result)
                     } else {

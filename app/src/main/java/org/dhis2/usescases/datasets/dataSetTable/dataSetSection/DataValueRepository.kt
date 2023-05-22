@@ -588,7 +588,10 @@ class DataValueRepository(
         )
 
         val conflicts = d2.dataValueConflicts(
-            dataSetUid, periodId, orgUnitUid, attributeOptionComboUid
+            dataSetUid,
+            periodId,
+            orgUnitUid,
+            attributeOptionComboUid
         )
 
         for (dataElement in dataTableModel.rows ?: emptyList()) {
@@ -675,8 +678,8 @@ class DataValueRepository(
 
                 val errorList = when {
                     valueStateSyncState == State.ERROR &&
-                        conflictInField != null
-                        && error != null ->
+                        conflictInField != null &&
+                        error != null ->
                         conflictInField + listOf(error)
                     valueStateSyncState == State.ERROR && conflictInField != null ->
                         conflictInField
@@ -686,8 +689,8 @@ class DataValueRepository(
                 }
 
                 val warningList = when {
-                    valueStateSyncState == State.WARNING
-                        && conflictInField != null ->
+                    valueStateSyncState == State.WARNING &&
+                        conflictInField != null ->
                         conflictInField
                     else ->
                         null

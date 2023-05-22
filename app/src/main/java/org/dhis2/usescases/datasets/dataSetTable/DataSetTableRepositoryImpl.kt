@@ -136,10 +136,10 @@ class DataSetTableRepositoryImpl(
             .byOrganisationUnitUid().eq(orgUnitUid)
             .byAttributeOptionCombo().eq(catOptCombo)
             .blockingGet()?.mapNotNull { dataValueConflict ->
-            dataValueConflict.dataElement()?.let { dataElementUid ->
-                sections.filter { it.value?.contains(dataElementUid) == true }.keys
-            }
-        }?.flatten()
+                dataValueConflict.dataElement()?.let { dataElementUid ->
+                    sections.filter { it.value?.contains(dataElementUid) == true }.keys
+                }
+            }?.flatten()
 
         return sectionWithError?.firstOrNull()?.let {
             sections.keys.indexOf(it)

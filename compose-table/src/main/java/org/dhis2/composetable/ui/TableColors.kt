@@ -19,11 +19,7 @@ data class TableColors(
     val tableBackground: Color = Color(0xFFFFFFFF),
     val iconColor: Color = Color.LightGray
 ) {
-    fun cellTextColor(
-        hasError: Boolean,
-        hasWarning: Boolean,
-        isEditable: Boolean
-    ) = when {
+    fun cellTextColor(hasError: Boolean, hasWarning: Boolean, isEditable: Boolean) = when {
         hasError -> errorColor
         hasWarning -> warningColor
         !isEditable -> disabledCellText

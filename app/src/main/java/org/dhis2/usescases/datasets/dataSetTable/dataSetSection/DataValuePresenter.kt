@@ -219,37 +219,36 @@ class DataValuePresenter(
         }
     }
 
-    private suspend fun saveValue(cell: TableCell) =
-        withContext(dispatcherProvider.io()) {
-            val ids = cell.id?.split("_")
-            val dataElementUid = ids!![0]
-            val catOptCombUid = ids[1]
-            val catComboUid = screenState.value.tables
-                .find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
+    private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
+        val ids = cell.id?.split("_")
+        val dataElementUid = ids!![0]
+        val catOptCombUid = ids[1]
+        val catComboUid = screenState.value.tables
+            .find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
 
-            val result = valueStore.save(
-                dataSetInfo.second,
-                dataSetInfo.first,
-                dataSetInfo.third,
-                dataElementUid,
-                catOptCombUid,
-                cell.value
-            )
-            val storeResult = result.blockingFirst()
-            val saveResult = storeResult.valueStoreResult
-            if (
-                saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
-                saveResult == VALUE_HAS_NOT_CHANGED
-            ) {
-                if (saveResult == ERROR_UPDATING_VALUE) {
-                    errors[cell.id!!] =
-                        storeResult.valueStoreResultMessage ?: "-"
-                } else {
-                    errors.remove(cell.id!!)
-                }
-                updateData(catComboUid!!)
+        val result = valueStore.save(
+            dataSetInfo.second,
+            dataSetInfo.first,
+            dataSetInfo.third,
+            dataElementUid,
+            catOptCombUid,
+            cell.value
+        )
+        val storeResult = result.blockingFirst()
+        val saveResult = storeResult.valueStoreResult
+        if (
+            saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
+            saveResult == VALUE_HAS_NOT_CHANGED
+        ) {
+            if (saveResult == ERROR_UPDATING_VALUE) {
+                errors[cell.id!!] =
+                    storeResult.valueStoreResultMessage ?: "-"
+            } else {
+                errors.remove(cell.id!!)
             }
+            updateData(catComboUid!!)
         }
+    }
 
     fun saveWidth(tableId: String, widthDpValue: Float) {
         tableDimensionStore.saveWidthForSection(tableId, widthDpValue)

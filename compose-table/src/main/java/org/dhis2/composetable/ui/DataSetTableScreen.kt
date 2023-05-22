@@ -255,11 +255,7 @@ fun DataSetTableScreen(
                         } ?: collapseBottomSheet()
                     }
 
-                    override fun onOptionSelected(
-                        cell: TableCell,
-                        code: String,
-                        label: String
-                    ) {
+                    override fun onOptionSelected(cell: TableCell, code: String, label: String) {
                         currentCell = cell.copy(
                             value = label,
                             error = null

@@ -9,9 +9,7 @@ class OURepositoryConfiguration(
     private val d2: D2,
     private val orgUnitSelectorScope: OrgUnitSelectorScope
 ) {
-    fun orgUnitRepository(
-        name: String?
-    ): List<OrganisationUnit> {
+    fun orgUnitRepository(name: String?): List<OrganisationUnit> {
         var orgUnitRepository = d2.organisationUnitModule().organisationUnits()
             .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
 
@@ -45,10 +43,7 @@ class OURepositoryConfiguration(
         return orgUnitRepository.blockingGet()
     }
 
-    fun hasChildren(
-        parentUid: String,
-        byScope: Boolean
-    ): Boolean {
+    fun hasChildren(parentUid: String, byScope: Boolean): Boolean {
         var repository = d2.organisationUnitModule().organisationUnits()
             .byParentUid().eq(parentUid)
 
@@ -68,10 +63,7 @@ class OURepositoryConfiguration(
         return !repository.blockingIsEmpty()
     }
 
-    fun countChildren(
-        parentOrgUnitUid: String,
-        selectedOrgUnits: List<String>
-    ): Int {
+    fun countChildren(parentOrgUnitUid: String, selectedOrgUnits: List<String>): Int {
         return d2.organisationUnitModule().organisationUnits()
             .byPath().like("%$parentOrgUnitUid%")
             .byUid().`in`(selectedOrgUnits)

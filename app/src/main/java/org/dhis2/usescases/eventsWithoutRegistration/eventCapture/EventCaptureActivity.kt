@@ -281,9 +281,9 @@ class EventCaptureActivity :
             FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter!!.completeEvent(true)
             FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
             FormBottomDialog.ActionType.SKIP -> presenter!!.skipEvent()
-            FormBottomDialog.ActionType.RESCHEDULE -> { /*Do nothing*/
+            FormBottomDialog.ActionType.RESCHEDULE -> { // Do nothing
             }
-            FormBottomDialog.ActionType.CHECK_FIELDS -> { /*Do nothing*/
+            FormBottomDialog.ActionType.CHECK_FIELDS -> { // Do nothing
             }
             FormBottomDialog.ActionType.FINISH -> finishDataEntry()
         }
@@ -307,12 +307,14 @@ class EventCaptureActivity :
 
     override fun finishDataEntry() {
         val intent = Intent()
-        if (isEventCompleted) intent.putExtra(
-            Constants.EVENT_UID,
-            getIntent().getStringExtra(
-                Constants.EVENT_UID
+        if (isEventCompleted) {
+            intent.putExtra(
+                Constants.EVENT_UID,
+                getIntent().getStringExtra(
+                    Constants.EVENT_UID
+                )
             )
-        )
+        }
         setResult(RESULT_OK, intent)
         finish()
     }
@@ -350,7 +352,7 @@ class EventCaptureActivity :
                         showTutorial(false)
                     }
                     R.id.menu_delete -> confirmDeleteEvent()
-                    else -> { /*Do nothing*/
+                    else -> { // Do nothing
                     }
                 }
                 false
