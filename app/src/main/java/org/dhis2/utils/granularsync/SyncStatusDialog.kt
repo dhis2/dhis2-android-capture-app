@@ -197,7 +197,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 askForMessagesAmount(
                     amount = it.smsCount(),
                     onAccept = { it.pollSms() },
-                    onDecline = { /*Do nothing*/ }
+                    onDecline = {
+                        /*Do nothing*/
+                    }
                 )
             } else {
                 it.pollSms()
