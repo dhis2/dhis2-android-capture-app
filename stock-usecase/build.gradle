@@ -20,9 +20,6 @@ android {
     defaultConfig {
         minSdk versions.minSdk
         targetSdk versions.sdk
-        versionCode versions.vCode
-        versionName versions.vName
-        applicationId versions.applicationId
         multiDexEnabled true
 
         setProperty("archivesBaseName", "psm-v" + versions.versionName)
