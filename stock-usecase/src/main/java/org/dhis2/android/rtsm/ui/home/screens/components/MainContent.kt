@@ -220,7 +220,7 @@ fun MainContent(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .absolutePadding(bottom = tablePadding)
+                .padding(bottom = tablePadding)
                 .height(columnHeightDp)
         ) {
             if (manageStockViewModel.dataEntryUiState.collectAsState().value.step
