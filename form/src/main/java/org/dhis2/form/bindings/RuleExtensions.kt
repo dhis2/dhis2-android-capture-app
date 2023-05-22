@@ -98,9 +98,11 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
             it.dataElement() != null -> {
                 dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
             }
+
             it.trackedEntityAttribute() != null -> {
                 attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
             }
+
             else -> isCalculatedValue(it)
         }
     }.map {
@@ -146,6 +148,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     data()
                 )
             }
+
         ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
             if (location() == RuleActionDisplayText.LOCATION_FEEDBACK_WIDGET) {
                 RuleActionDisplayKeyValuePair.createForFeedback(
@@ -158,6 +161,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     data()
                 )
             }
+
         ProgramRuleActionType.HIDESECTION ->
             programStageSection()?.let {
                 RuleActionHideSection.create(it.uid())
@@ -165,6 +169,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "HIDE SECTION RULE IS MISSING PROGRAM STAGE SECTION",
                 name() ?: uid()
             )
+
         ProgramRuleActionType.HIDEPROGRAMSTAGE ->
             programStage()?.let {
                 RuleActionHideProgramStage.create(it.uid())
@@ -172,6 +177,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
                 name() ?: uid()
             )
+
         ProgramRuleActionType.ASSIGN -> {
             if (field.isEmpty() && content().isNullOrEmpty()) {
                 RuleActionUnsupported.create(
@@ -182,18 +188,21 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleActionAssign.create(content(), data() ?: "", field)
             }
         }
+
         ProgramRuleActionType.SHOWWARNING -> RuleActionShowWarning.create(content(), data(), field)
         ProgramRuleActionType.WARNINGONCOMPLETE -> RuleActionWarningOnCompletion.create(
             content(),
             data(),
             field
         )
+
         ProgramRuleActionType.SHOWERROR -> RuleActionShowError.create(content(), data(), field)
         ProgramRuleActionType.ERRORONCOMPLETE -> RuleActionErrorOnCompletion.create(
             content(),
             data(),
             field
         )
+
         ProgramRuleActionType.CREATEEVENT ->
             programStage()?.let {
                 RuleActionCreateEvent.create(
@@ -205,6 +214,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "CREATE EVENT RULE IS MISSING PROGRAM STAGE SECTION",
                 name() ?: uid()
             )
+
         ProgramRuleActionType.SETMANDATORYFIELD -> RuleActionSetMandatoryField.create(field)
         ProgramRuleActionType.HIDEOPTION ->
             option()?.let {
@@ -217,6 +227,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "HIDE OPTION RULE IS MISSING OPTION",
                 name() ?: uid()
             )
+
         ProgramRuleActionType.SHOWOPTIONGROUP ->
             optionGroup()?.let {
                 RuleActionShowOptionGroup.create(
@@ -228,6 +239,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "SHOW OPTION GROUP RULE IS MISSING OPTION GROUP",
                 name() ?: uid()
             )
+
         ProgramRuleActionType.HIDEOPTIONGROUP ->
             optionGroup()?.let {
                 RuleActionHideOptionGroup.create(
@@ -239,6 +251,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",
                 name() ?: uid()
             )
+
         ProgramRuleActionType.SENDMESSAGE, ProgramRuleActionType.SCHEDULEMESSAGE, null ->
             RuleActionUnsupported.create(
                 "UNSUPPORTED RULE ACTION TYPE",
@@ -260,11 +273,13 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElementRepository.uid(it.uid()).blockingGet()
                     .valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
+
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
             trackedEntityAttribute()?.let {
                 attributeRepository.uid(it.uid()).blockingGet()
                     .valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
+
         ProgramRuleVariableSourceType.CALCULATED_VALUE, null -> RuleValueType.TEXT
     }
 
@@ -275,12 +290,14 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: trackedEntityAttribute()?.uid() ?: "",
                 valueType
             )
+
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
             RuleVariableAttribute.create(
                 name() ?: "",
                 trackedEntityAttribute()?.uid() ?: "",
                 valueType
             )
+
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE ->
             RuleVariableNewestStageEvent.create(
                 name() ?: "",
@@ -288,24 +305,28 @@ fun ProgramRuleVariable.toRuleVariable(
                 programStage()?.uid() ?: "",
                 valueType
             )
+
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM ->
             RuleVariableNewestEvent.create(
                 name() ?: "",
                 dataElement()?.uid() ?: "",
                 valueType
             )
+
         ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT ->
             RuleVariableCurrentEvent.create(
                 name() ?: "",
                 dataElement()?.uid() ?: "",
                 valueType
             )
+
         ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
             RuleVariablePreviousEvent.create(
                 name() ?: "",
                 dataElement()?.uid() ?: "",
                 valueType
             )
+
         else -> throw IllegalArgumentException("Unsupported variable ")
     }
 }
@@ -349,11 +370,15 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
                     }
             }
         } else if (de.valueType()!!.isNumeric) {
-            value = try {
-                value?.toFloat().toString()
-            } catch (e: Exception) {
-                Timber.e(e)
+            value = if (value.isNullOrEmpty()) {
                 ""
+            } else {
+                try {
+                    value.toFloat().toString()
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    ""
+                }
             }
         }
         RuleDataValue.create(

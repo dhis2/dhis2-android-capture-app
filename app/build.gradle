@@ -1,4 +1,4 @@
-plugins{
+plugins {
     id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply plugin: 'com.android.application'
@@ -46,8 +46,8 @@ android {
 
     sourceSets {
         androidTest {
-            java.srcDirs = ['src/androidTest/src']
-            resources.srcDirs = ['src/androidTest/src']
+            java.srcDirs = ['src/androidTest/java']
+            resources.srcDirs = ['src/androidTest/java']
         }
     }
 
@@ -75,12 +75,14 @@ android {
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         def mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") != null ? System.getenv("MAPBOX_ACCESS_TOKEN") : "pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
+        def bitriseSentryDSN = System.getenv("SENTRY_DSN") != null ? System.getenv("SENTRY_DSN") : ""
 
         buildConfigField "String", "SDK_VERSION", "\"" + versions.dhis2AndroidSDK + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\""
         buildConfigField "String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\""
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
         buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
+        buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
 
         manifestPlaceholders = [
                 appAuthRedirectScheme: ''
@@ -108,8 +110,6 @@ android {
 
     buildTypes {
 
-        def bitriseSentryDSN = System.getenv("SENTRY_DSN") != null ? System.getenv("SENTRY_DSN") : ""
-
         debug {
             // custom application suffix which allows to
             // install debug and release builds at the same time
@@ -123,38 +123,16 @@ android {
             signingConfig = signingConfigs.debug
 
             buildConfigField "int", "MATOMO_ID", "2"
-            buildConfigField "String", "BUILD_DATE", "\""+getBuildDate()+"\""
-            buildConfigField "String", "GIT_SHA", "\""+getCommitHash()+"\""
-
-            applicationVariants.all { variant ->
-                if (variant.getFlavorName() == "dhisUITesting") {
-                    bitriseSentryDSN = ""
-                }
-            }
-
-            //Sentry variables
-            manifestPlaceholders = [
-                    sentry_dsn        : bitriseSentryDSN,
-                    sentry_environment: "debug",
-                    sentry_debug      : "true",
-                    sentry_sample_rate: "1.0"
-            ]
+            buildConfigField "String", "BUILD_DATE", "\"" + getBuildDate() + "\""
+            buildConfigField "String", "GIT_SHA", "\"" + getCommitHash() + "\""
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField "int", "MATOMO_ID", "1"
-            buildConfigField "String", "BUILD_DATE", "\""+getBuildDate()+"\""
-            buildConfigField "String", "GIT_SHA", "\""+getCommitHash()+"\""
-
-            //Sentry variables
-            manifestPlaceholders = [
-                    sentry_dsn        : bitriseSentryDSN,
-                    sentry_environment: "production",
-                    sentry_debug      : "false",
-                    sentry_sample_rate: "0.1"
-            ]
+            buildConfigField "String", "BUILD_DATE", "\"" + getBuildDate() + "\""
+            buildConfigField "String", "GIT_SHA", "\"" + getCommitHash() + "\""
         }
     }
 
