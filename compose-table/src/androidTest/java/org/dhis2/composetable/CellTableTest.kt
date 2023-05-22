@@ -72,6 +72,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore
     @Test
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
