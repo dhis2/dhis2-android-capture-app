@@ -133,7 +133,8 @@ class RuleValidationHelperImpl @Inject constructor(
             .map {
                 it.toRuleVariableList(
                     d2.trackedEntityModule().trackedEntityAttributes(),
-                    d2.dataElementModule().dataElements()
+                    d2.dataElementModule().dataElements(),
+                    d2.optionModule().options()
                 )
             }
     }
