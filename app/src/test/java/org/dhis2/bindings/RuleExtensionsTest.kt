@@ -3,6 +3,7 @@ package org.dhis2.bindings
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.form.bindings.toRuleActionList
 import org.dhis2.form.bindings.toRuleAttributeValue
@@ -32,7 +33,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
-import java.util.Date
 
 class RuleExtensionsTest {
 
@@ -51,11 +51,12 @@ class RuleExtensionsTest {
     )
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
 
-    private val trackedEntityAttributeCollectionRepository: TrackedEntityAttributeCollectionRepository =
-        Mockito.mock(
-            TrackedEntityAttributeCollectionRepository::class.java,
-            RETURNS_DEEP_STUBS
-        )
+    private val trackedEntityAttributeCollectionRepository:
+        TrackedEntityAttributeCollectionRepository =
+            Mockito.mock(
+                TrackedEntityAttributeCollectionRepository::class.java,
+                RETURNS_DEEP_STUBS
+            )
 
     @Test
     fun `Should transform trackedEntityDataValues to ruleDataValues with optionName value`() {
@@ -151,11 +152,11 @@ class RuleExtensionsTest {
     @Test
     fun `Should transform trackedEntityDataValues to ruleDataValues with optionCode value`() {
         whenever(dataElementRepository.uid("dataElementUid").blockingGet()) doReturn
-                DataElement.builder()
-                    .uid("dataElementUid")
-                    .optionSet(ObjectWithUid.create("optionSetUid"))
-                    .valueType(ValueType.TEXT)
-                    .build()
+            DataElement.builder()
+                .uid("dataElementUid")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
+                .valueType(ValueType.TEXT)
+                .build()
 
         whenever(ruleVariableRepository.byProgramUid().eq("programUid")) doReturn mock()
         whenever(
