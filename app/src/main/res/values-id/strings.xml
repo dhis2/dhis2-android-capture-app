@@ -12,8 +12,6 @@
     <string name="error_wrong_credentials">Kredensial salah</string>
     <string name="error_unexpected_error">Kesalahan tak terduga</string>
     <string name="error_internal_server_error">Kesalahan internal server</string>
-    <string name="yes">ya</string>
-    <string name="no">tidak</string>
     <string name="no_value">tidak ada nilai</string>
     <string name="no_reserved_values">Tidak ada nilai lainnya. Hubungi admin sistem Anda.</string>
     <string name="no_reserved_values_connection">Tidak ada nilai lainnya. Sambungkan ke Internet untuk mengisi.</string>
@@ -207,7 +205,6 @@
     <string name="settings_sms_module_title">Modul SMS:</string>
     <string name="settings_sms_receiver_number">SMS Gateway</string>
     <string name="settings_sms_result_sender_number">Pengirim hasil SMS</string>
-    <string name="settings_sms_result_timeout">Batas waktu hasil SMS</string>
     <string name="settings_sms_result_timeout_hint">Kedua</string>
     <string name="settings_sms_result_sender_hint">Nomor</string>
     <string name="settings_sms_receiver_number_hint">Nomor</string>
@@ -489,8 +486,6 @@
     <string name="org_unit_selection_warning">Setidaknya satu unit organisasi harus dipilih</string>
     <string name="send_user_name_title">Kirim data</string>
     <string name="send_user_name_mesage">Bantu DHIS2 menyempurnakan app ini dengan membagi log kesalahan yang berkaitan dengan id user Anda</string>
-    <string name="analytics_crash_name_message">Aplikasi ini akan mengirimkan log kesalahan yang terkait dengan id pengguna Anda untuk meningkatkan kinerjanya dan statistik yang tidak dapat dilacak untuk meningkatkan pengalaman pengguna.</string>
-    <string name="send_user_privacy_policy">Untuk informasi lebih lanjut, periksa kebijakan privasi kami</string>
     <string name="check_mandatory_field">Periksa bidang</string>
     <string name="error_no_network_during_sync">Anda kehilangan koneksi internet saat sedang mensinkronkan konfigurasi. Silahkan coba lagi nanti</string>
     <string name="action_agree">Setuju</string>

@@ -192,7 +192,6 @@
     <string name="settings_sms_module_title">SMS modul:</string>
     <string name="settings_sms_receiver_number">SMS yoʼlak</string>
     <string name="settings_sms_result_sender_number">SMS natijalarini yuboruvchi</string>
-    <string name="settings_sms_result_timeout">SMS natijalarni yuborishda vaqtincha toʼxtash</string>
     <string name="settings_sms_result_timeout_hint">soniyalar</string>
     <string name="settings_sms_result_sender_hint">raqam</string>
     <string name="settings_sms_receiver_number_hint">raqam</string>

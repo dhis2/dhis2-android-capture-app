@@ -15,8 +15,6 @@
     <string name="error_wrong_credentials">Неправильні облікові дані </string>
     <string name="error_unexpected_error">Неочікувана помилка</string>
     <string name="error_internal_server_error">Помилка серверу</string>
-    <string name="yes">так</string>
-    <string name="no">ні</string>
     <string name="no_value">немає значення</string>
     <string name="no_reserved_values">Більше немає зарезервованих значень. Зверніться до свого системного адміністратора</string>
     <string name="no_reserved_values_connection">Більше немає зарезервованих значень. Щоб поповнити їх, підключіться до мережі</string>
@@ -213,7 +211,6 @@
     <string name="settings_sms_module_title">SMS модуль:</string>
     <string name="settings_sms_receiver_number">SMS шлюз</string>
     <string name="settings_sms_result_sender_number">Результат SMS відправнику </string>
-    <string name="settings_sms_result_timeout">Результат SMS тайм-аут </string>
     <string name="settings_sms_result_timeout_hint">секунд</string>
     <string name="settings_sms_result_sender_hint">номер</string>
     <string name="settings_sms_receiver_number_hint">номер</string>
@@ -503,8 +500,6 @@
     <string name="org_unit_selection_warning">Необхідно вибрати принаймні один організаційний підрозділ</string>
     <string name="send_user_name_title">Надіслати дані</string>
     <string name="send_user_name_mesage">Допоможіть DHIS2 покращити цей додаток, поділившись журналами помилок, пов’язаними з Вашим ідентифікатором користувача.</string>
-    <string name="analytics_crash_name_message">З метою покращення своєї продуктивності, цей додаток надсилатиме інформацію з журналу помилок, які пов’язані з Вашим ідентифікатором користувача. Це також потрібно для покращення взаємодії з користувачем, аби розробники мали статистику, яка автоматично не відстежується.</string>
-    <string name="send_user_privacy_policy">Для отримання додаткової інформації ознайомтеся з нашою Політикою конфіденційності</string>
     <string name="check_mandatory_field">Перевірте поля</string>
     <string name="error_no_network_during_sync">Під час синхронізації конфігурації з’єднання з Інтернетом було втрачено. Будь-ласка спробуйте пізніше</string>
     <string name="action_agree">Погодитись</string>
