@@ -1,5 +1,5 @@
 def gradle = '8.0.1'
-def kotlin = '1.8.10'
+def kotlin = '1.8.21'
 def hilt = '2.43.2'
 def hiltCompiler = '1.0.0'
 def jacoco = '0.8.8'
@@ -97,7 +97,7 @@ ext.versions = [
         vName: "2.8.1",
         sourceCompat               : JavaVersion.VERSION_17,
         targetCompat               : JavaVersion.VERSION_17,
-        kotlinCompilerExtensionVersion: "1.4.2",
+        kotlinCompilerExtensionVersion: "1.4.7",
         dhis2AndroidSDK : "$dhis2sdk"
 ]
 

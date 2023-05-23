@@ -28,32 +28,12 @@ android {
         }
     }
 
+    flavorDimensions "default"
+
     compileOptions {
         sourceCompatibility versions.sourceCompat
         targetCompatibility versions.targetCompat
     }
-    packagingOptions {
-        jniLibs {
-            excludes += ['META-INF/licenses/**']
-        }
-        resources {
-            excludes += [
-                    'LICENSE.txt',
-                    'META-INF/DEPENDENCIES',
-                    'META-INF/ASL2.0',
-                    'META-INF/NOTICE',
-                    'META-INF/LICENSE',
-                    'META-INF/rxjava.properties',
-                    '**/attach_hotspot_windows.dll',
-                    'META-INF/licenses/**',
-                    'META-INF/AL2.0',
-                    'META-INF/LGPL2.1'
-            ]
-        }
-    }
-
-
-    flavorDimensions "default"
 
     buildFeatures {
         compose true
