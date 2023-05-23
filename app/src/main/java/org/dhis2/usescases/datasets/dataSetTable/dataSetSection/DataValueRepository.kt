@@ -329,8 +329,8 @@ class DataValueRepository(
                     .dataSetElements()
             listDataElements
                 ?.map { transformDataElement(it, dataSetElements) }
-                ?.firstOrNull { it.categoryComboUid() == categoryCombo.uid() }
-                ?.let { dataElementsOverride.add(it) }
+                ?.filter { it.categoryComboUid() == categoryCombo.uid() }
+                ?.forEach { dataElementsOverride.add(it) }
 
             Flowable.just(
                 dataElementsOverride
