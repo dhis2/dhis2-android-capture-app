@@ -12,8 +12,6 @@
     <string name="error_wrong_credentials">Нотўғри маълумот</string>
     <string name="error_unexpected_error">Кутилмаган хатолик</string>
     <string name="error_internal_server_error">Сервердаги ички хатолик</string>
-    <string name="yes">ҳа</string>
-    <string name="no">йўқ</string>
     <string name="no_value">қиймат йўқ</string>
     <string name="no_reserved_values">Сақланган бошқа қийматлар йўқ. Тизим администраторига мурожаат қилинг.</string>
     <string name="no_reserved_values_connection">Сақланган бошқа қийматлар йўқ. Уларни тўлдириш учун тармоққа уланинг.</string>
@@ -207,7 +205,6 @@
     <string name="settings_sms_module_title">СМС модуль:</string>
     <string name="settings_sms_receiver_number">СМС йўлак</string>
     <string name="settings_sms_result_sender_number">СМС натижаларини юборувчи</string>
-    <string name="settings_sms_result_timeout">СМС натижаларни юборишда вақтинча тўхташ</string>
     <string name="settings_sms_result_timeout_hint">сониялар</string>
     <string name="settings_sms_result_sender_hint">рақам</string>
     <string name="settings_sms_receiver_number_hint">рақам</string>
@@ -490,8 +487,6 @@
     <string name="org_unit_selection_warning">Камида битта ташкилий бўлим танланиши керак</string>
     <string name="send_user_name_title">аълумотларни юборинг</string>
     <string name="send_user_name_mesage">DHIS2 да фойдаланувчи идентификаторлари билан боғлиқ хатоликлар журналларини улашиш орқали ушбу дастурни яхшилашга ёрдам бериш.</string>
-    <string name="analytics_crash_name_message">Ушбу илова сизнинг фойдаланувчи идентификаторингиз билан боғлик  хатоликлар журналини юбориб туради, иш жараёни ва фойдаланувчи билан муносабатни яхшилаш мақсадида, ҳамда кузатилмайдиган статистикани ҳам юбориб туради.</string>
-    <string name="send_user_privacy_policy">Қўшимча маълумотга эга бўлиш учун бизнинг махфийлик сиёсатимиз билан танишиб чиқинг.</string>
     <string name="check_mandatory_field">Майдонларни белгилаш</string>
     <string name="error_no_network_during_sync">Конфигурацияни синхронлаштириш пайтида сизнинг интернет алоқангизда узилиш юз берди. Илтимос, кейинроқ қайта уриниб кўринг</string>
     <string name="action_agree">Розиман</string>
