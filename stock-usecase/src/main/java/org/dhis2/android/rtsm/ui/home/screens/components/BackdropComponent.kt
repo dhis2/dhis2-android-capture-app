@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
@@ -44,6 +45,7 @@ fun Backdrop(
     activity: Activity,
     viewModel: HomeViewModel,
     manageStockViewModel: ManageStockViewModel,
+    modifier: Modifier = Modifier,
     themeColor: Color,
     supportFragmentManager: FragmentManager,
     barcodeLauncher: ActivityResultLauncher<ScanOptions>,
@@ -79,6 +81,7 @@ fun Backdrop(
     manageStockViewModel.backToListing()
     DisplaySnackBar(manageStockViewModel, scaffoldState)
     BackdropScaffold(
+        modifier = modifier,
         appBar = {
             Toolbar(
                 settingsUiState.transactionType.name,
@@ -193,6 +196,7 @@ private fun launchBottomSheet(
         onSecondaryButtonClicked = { onDiscard.invoke() }
     ).apply {
         this.show(supportFragmentManager.beginTransaction(), "DIALOG")
+        this.isCancelable = false
     }
 }
 

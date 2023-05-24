@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,16 +75,16 @@ fun HomeScreen(
                 CompletionDialog(dataEntryUiState = dataEntryUiState)
             }
         }
-    ) {
-        it.calculateBottomPadding()
+    ) { paddingValues ->
         Backdrop(
-            activity,
-            viewModel,
-            manageStockViewModel,
-            themeColor,
-            supportFragmentManager,
-            barcodeLauncher,
-            scaffoldState
+            activity = activity,
+            viewModel = viewModel,
+            manageStockViewModel = manageStockViewModel,
+            modifier = Modifier.padding(paddingValues),
+            themeColor = themeColor,
+            supportFragmentManager = supportFragmentManager,
+            barcodeLauncher = barcodeLauncher,
+            scaffoldState = scaffoldState
         ) { coroutineScope, scaffold ->
             syncAction(coroutineScope, scaffold)
         }
