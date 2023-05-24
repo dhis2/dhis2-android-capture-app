@@ -166,8 +166,8 @@ fun ProgramRuleVariable.toRuleVariable(
                 name() ?: "",
                 dataElement()?.uid() ?: trackedEntityAttribute()?.uid() ?: "",
                 valueType,
-                this.useCodeForOptionSet() ?: false,
-                emptyList()
+                useCodeForOptionSet,
+                options
             )
 
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
@@ -175,8 +175,8 @@ fun ProgramRuleVariable.toRuleVariable(
                 name() ?: "",
                 trackedEntityAttribute()?.uid() ?: "",
                 valueType,
-                this.useCodeForOptionSet() ?: false,
-                emptyList()
+                useCodeForOptionSet,
+                options
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE ->
@@ -185,8 +185,8 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: "",
                 programStage()?.uid() ?: "",
                 valueType,
-                this.useCodeForOptionSet() ?: false,
-                emptyList()
+                useCodeForOptionSet,
+                options
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM ->
@@ -194,8 +194,8 @@ fun ProgramRuleVariable.toRuleVariable(
                 name() ?: "",
                 dataElement()?.uid() ?: "",
                 valueType,
-                this.useCodeForOptionSet() ?: false,
-                emptyList()
+                useCodeForOptionSet,
+                options
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT ->
@@ -203,8 +203,8 @@ fun ProgramRuleVariable.toRuleVariable(
                 name() ?: "",
                 dataElement()?.uid() ?: "",
                 valueType,
-                this.useCodeForOptionSet() ?: false,
-                emptyList()
+                useCodeForOptionSet,
+                options
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
@@ -212,8 +212,8 @@ fun ProgramRuleVariable.toRuleVariable(
                 name() ?: "",
                 dataElement()?.uid() ?: "",
                 valueType,
-                this.useCodeForOptionSet() ?: false,
-                emptyList()
+                useCodeForOptionSet,
+                options
             )
 
         else -> throw IllegalArgumentException("Unsupported variable ")
