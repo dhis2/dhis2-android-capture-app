@@ -56,8 +56,11 @@ fun setFromResBgColor(view: View?, color: Int) {
         if (r == null) r = color else if (g == null) g = color else b = color
     }
     val L = 0.2126 * r!! + 0.7152 * g!! + 0.0722 * b!!
-    tintedColor = if (L > 0.179) "#000000" // bright colors - black font
-    else "#FFFFFF" // dark colors - white font
+    tintedColor = if (L > 0.179) {
+        "#000000" // bright colors - black font
+    } else {
+        "#FFFFFF" // dark colors - white font
+    }
     if (view is TextView) {
         view.setTextColor(Color.parseColor(tintedColor))
     }

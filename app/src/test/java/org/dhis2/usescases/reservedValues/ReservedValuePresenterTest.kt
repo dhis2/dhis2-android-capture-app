@@ -83,11 +83,10 @@ class ReservedValuePresenterTest {
         verify(view).onBackClick()
     }
 
-    private fun dummyD2Progress(): Observable<D2Progress> =
-        Observable.just(
-            BaseD2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
-                .isComplete(false).build()
-        )
+    private fun dummyD2Progress(): Observable<D2Progress> = Observable.just(
+        BaseD2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
+            .isComplete(false).build()
+    )
 
     private fun D2Error(): Observable<D2Progress> {
         return Observable.error(

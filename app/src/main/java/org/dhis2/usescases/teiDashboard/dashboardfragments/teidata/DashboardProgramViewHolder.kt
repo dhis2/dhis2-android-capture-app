@@ -29,7 +29,8 @@ class DashboardProgramViewHolder(
         binding.executePendingBindings()
         itemView.setOnClickListener {
             presenter.setProgram(
-                dashboardProgramModel.programsWithActiveEnrollment[position], enrollment!!.uid()
+                dashboardProgramModel.programsWithActiveEnrollment[position],
+                enrollment!!.uid()
             )
         }
     }

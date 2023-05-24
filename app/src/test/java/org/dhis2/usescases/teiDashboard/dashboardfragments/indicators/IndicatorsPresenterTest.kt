@@ -55,15 +55,14 @@ class IndicatorsPresenterTest {
         verify(view).displayMessage(message)
     }
 
-    private fun analyticsModels(): List<AnalyticsModel> =
-        listOf(
-            IndicatorModel(
-                ProgramIndicator.builder().uid("indicator_uid")
-                    .displayInForm(true).build(),
-                "indicator_value",
-                "#ffffff",
-                LOCATION_INDICATOR_WIDGET,
-                "Info"
-            )
+    private fun analyticsModels(): List<AnalyticsModel> = listOf(
+        IndicatorModel(
+            ProgramIndicator.builder().uid("indicator_uid")
+                .displayInForm(true).build(),
+            "indicator_value",
+            "#ffffff",
+            LOCATION_INDICATOR_WIDGET,
+            "Info"
         )
+    )
 }

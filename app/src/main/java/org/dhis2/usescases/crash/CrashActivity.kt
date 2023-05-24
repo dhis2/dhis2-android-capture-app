@@ -120,10 +120,7 @@ data class CrashReport(
 )
 
 @Composable
-fun CrashScreen(
-    crashReport: CrashReport,
-    onCopy: (textToCopy: String) -> Unit
-) {
+fun CrashScreen(crashReport: CrashReport, onCopy: (textToCopy: String) -> Unit) {
     Column(modifier = Modifier.fillMaxHeight()) {
         CrashHeader()
         CrashDeviceInfo(crashReport)
@@ -193,10 +190,7 @@ fun CrashDeviceInfo(crashReport: CrashReport) {
 }
 
 @Composable
-fun CrashStackTraceInfo(
-    stackTrace: String,
-    onCopy: (textToCopy: String) -> Unit
-) {
+fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier

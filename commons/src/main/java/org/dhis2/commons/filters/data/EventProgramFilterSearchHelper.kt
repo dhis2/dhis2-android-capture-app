@@ -13,9 +13,7 @@ class EventProgramFilterSearchHelper @Inject constructor(
     val filterManager: FilterManager
 ) : FilterHelperActions<EventQueryCollectionRepository> {
 
-    fun getFilteredEventRepository(
-        program: Program
-    ): EventQueryCollectionRepository {
+    fun getFilteredEventRepository(program: Program): EventQueryCollectionRepository {
         return applyFiltersTo(
             filterRepository.eventsByProgram(program.uid())
         )

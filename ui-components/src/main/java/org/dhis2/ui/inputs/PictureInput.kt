@@ -51,12 +51,7 @@ fun PictureInput(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Picture(
-    image: ImageBitmap,
-    enabled: Boolean,
-    onClick: () -> Unit,
-    onClear: () -> Unit
-) {
+fun Picture(image: ImageBitmap, enabled: Boolean, onClick: () -> Unit, onClear: () -> Unit) {
     Box {
         Surface(
             onClick = onClick,

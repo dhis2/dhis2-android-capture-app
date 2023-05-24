@@ -333,9 +333,7 @@ fun ProgramRuleConfigurationItemList(
 }
 
 @Composable
-fun LoadingContent(
-    loadingDescription: String
-) {
+fun LoadingContent(loadingDescription: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

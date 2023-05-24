@@ -95,9 +95,8 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideEnrollmentFormLabelsProvider(
-        resourceManager: ResourceManager
-    ) = EnrollmentFormLabelsProvider(resourceManager)
+    fun provideEnrollmentFormLabelsProvider(resourceManager: ResourceManager) =
+        EnrollmentFormLabelsProvider(resourceManager)
 
     @Provides
     @PerActivity

@@ -210,11 +210,7 @@ class EventCaptureFieldProvider(
         }
     }
 
-    private fun checkConflicts(
-        eventUid: String,
-        dataElementUid: String,
-        value: String?
-    ): String {
+    private fun checkConflicts(eventUid: String, dataElementUid: String, value: String?): String {
         val conflicts = d2.importModule().trackerImportConflicts()
             .byEventUid().eq(eventUid)
             .blockingGet()
@@ -226,42 +222,41 @@ class EventCaptureFieldProvider(
         }?.displayDescription() ?: ""
     }
 
-    private fun getColorByLegend(
-        value: String?,
-        dataElement: DataElement
-    ): LegendValue? {
+    private fun getColorByLegend(value: String?, dataElement: DataElement): LegendValue? {
         return if (value == null) {
             null
-        } else try {
-            if (dataElement.valueType()!!.isNumeric &&
-                dataElement.legendSets() != null &&
-                dataElement.legendSets()!!.isNotEmpty()
-            ) {
-                val legendSet = dataElement.legendSets()!![0]
-                var legend =
-                    d2.legendSetModule().legends()
-                        .byStartValue().smallerThan(java.lang.Double.valueOf(value))
-                        .byEndValue().biggerThan(java.lang.Double.valueOf(value))
-                        .byLegendSet().eq(legendSet.uid())
-                        .one()
-                        .blockingGet()
-                if (legend == null) {
-                    legend = d2.legendSetModule().legends()
-                        .byEndValue().eq(java.lang.Double.valueOf(value))
-                        .byLegendSet().eq(legendSet.uid())
-                        .one()
-                        .blockingGet()
+        } else {
+            try {
+                if (dataElement.valueType()!!.isNumeric &&
+                    dataElement.legendSets() != null &&
+                    dataElement.legendSets()!!.isNotEmpty()
+                ) {
+                    val legendSet = dataElement.legendSets()!![0]
+                    var legend =
+                        d2.legendSetModule().legends()
+                            .byStartValue().smallerThan(java.lang.Double.valueOf(value))
+                            .byEndValue().biggerThan(java.lang.Double.valueOf(value))
+                            .byLegendSet().eq(legendSet.uid())
+                            .one()
+                            .blockingGet()
+                    if (legend == null) {
+                        legend = d2.legendSetModule().legends()
+                            .byEndValue().eq(java.lang.Double.valueOf(value))
+                            .byLegendSet().eq(legendSet.uid())
+                            .one()
+                            .blockingGet()
+                    }
+                    if (legend != null) {
+                        return LegendValue(
+                            resourceManager.getColorFrom(legend.color()),
+                            legend.displayName()
+                        )
+                    }
                 }
-                if (legend != null) {
-                    return LegendValue(
-                        resourceManager.getColorFrom(legend.color()),
-                        legend.displayName()
-                    )
-                }
+                null
+            } catch (e: Exception) {
+                null
             }
-            null
-        } catch (e: Exception) {
-            null
         }
     }
 

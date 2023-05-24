@@ -44,8 +44,9 @@ class FilterModule {
 
     @Provides
     @Singleton
-    fun provideProgramStageToWorkingListItemMapper(resourceManager: FilterResources):
-        ProgramStageToWorkingListItemMapper {
-            return ProgramStageToWorkingListItemMapper(resourceManager.defaultWorkingListLabel())
-        }
+    fun provideProgramStageToWorkingListItemMapper(
+        resourceManager: FilterResources
+    ): ProgramStageToWorkingListItemMapper {
+        return ProgramStageToWorkingListItemMapper(resourceManager.defaultWorkingListLabel())
+    }
 }

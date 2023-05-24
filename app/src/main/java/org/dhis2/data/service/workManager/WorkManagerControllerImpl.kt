@@ -124,8 +124,7 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
     override fun getWorkInfosForUniqueWorkLiveData(workerName: String) =
         workManager.getWorkInfosForUniqueWorkLiveData(workerName)
 
-    override fun getWorkInfosByTagLiveData(tag: String) =
-        workManager.getWorkInfosByTagLiveData(tag)
+    override fun getWorkInfosByTagLiveData(tag: String) = workManager.getWorkInfosByTagLiveData(tag)
 
     override fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>> {
         return MediatorLiveData<List<WorkInfo>>().apply {

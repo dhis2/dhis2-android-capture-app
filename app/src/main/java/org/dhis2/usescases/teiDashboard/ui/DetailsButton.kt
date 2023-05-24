@@ -23,10 +23,7 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 
 @Composable
-fun DetailsButton(
-    trackedEntityName: String,
-    onButtonClicked: () -> Unit
-) {
+fun DetailsButton(trackedEntityName: String, onButtonClicked: () -> Unit) {
     OutlinedButton(
         border = BorderStroke(1.dp, MaterialTheme.colors.primary),
         shape = RoundedCornerShape(4.dp),
@@ -50,10 +47,7 @@ fun DetailsButton(
     }
 }
 
-fun ComposeView?.setButtonContent(
-    trackedEntityName: String,
-    onButtonClicked: () -> Unit
-) {
+fun ComposeView?.setButtonContent(trackedEntityName: String, onButtonClicked: () -> Unit) {
     this?.setContent {
         MdcTheme {
             DetailsButton(

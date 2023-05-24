@@ -188,7 +188,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 when (status) {
                     SMSSenderHelper.Status.ALL_SMS_SENT -> allSmsSent()
                     SMSSenderHelper.Status.SMS_NOT_MANUALLY_SENT -> smsNotManuallySent()
-                    SMSSenderHelper.Status.RETURNED_TO_APP -> { /*Do nothing*/
+                    SMSSenderHelper.Status.RETURNED_TO_APP -> { // Do nothing
                     }
                 }
             }
@@ -197,7 +197,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 askForMessagesAmount(
                     amount = it.smsCount(),
                     onAccept = { it.pollSms() },
-                    onDecline = { /*Do nothing*/ }
+                    onDecline = {
+                        /*Do nothing*/
+                    }
                 )
             } else {
                 it.pollSms()
@@ -280,11 +282,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         }
     }
 
-    private fun askForMessagesAmount(
-        amount: Int,
-        onAccept: () -> Unit,
-        onDecline: () -> Unit
-    ) {
+    private fun askForMessagesAmount(amount: Int, onAccept: () -> Unit, onDecline: () -> Unit) {
         val args = Bundle()
         args.putInt(MessageAmountDialog.ARG_AMOUNT, amount)
         val dialog = MessageAmountDialog { accepted ->

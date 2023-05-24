@@ -89,9 +89,13 @@ class HomeViewModelUnitTest {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
 
         appConfig = AppConfig(
-            "F5ijs28K4s8", "wBr4wccNBj1", "sLMTQUHAZnk",
-            "RghnAkDBDI4", "yfsEseIcEXr",
-            "lpGYJoVUudr", "ej1YwWaYGmm",
+            "F5ijs28K4s8",
+            "wBr4wccNBj1",
+            "sLMTQUHAZnk",
+            "RghnAkDBDI4",
+            "yfsEseIcEXr",
+            "lpGYJoVUudr",
+            "ej1YwWaYGmm",
             "I7cmT3iXT0y"
         )
 

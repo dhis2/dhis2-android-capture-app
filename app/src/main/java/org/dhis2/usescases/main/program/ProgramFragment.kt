@@ -264,7 +264,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                             presenter.updateProgramQueries()
                         }
                     }
-                }).show(FRAGMENT_TAG)
+                }
+            ).show(FRAGMENT_TAG)
     }
 
     fun sharedView() = binding.drawerLayout

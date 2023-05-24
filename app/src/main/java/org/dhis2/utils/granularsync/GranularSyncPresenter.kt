@@ -138,7 +138,7 @@ class GranularSyncPresenter(
                         )
                         .build()
                 }
-            ALL -> { /*Do nothing*/
+            ALL -> { // Do nothing
             }
         }
         var workName: String
@@ -321,9 +321,7 @@ class GranularSyncPresenter(
         restartSmsSender()
     }
 
-    fun onSmsSyncClick(
-        callback: (LiveData<List<SmsSendingService.SendingStatus>>) -> Unit
-    ) {
+    fun onSmsSyncClick(callback: (LiveData<List<SmsSendingService.SendingStatus>>) -> Unit) {
         if (smsSyncProvider.isPlayServicesEnabled()) {
             initSMSSyncPlayServices()
         } else if (view.checkSmsPermission()) {
@@ -331,10 +329,7 @@ class GranularSyncPresenter(
         }
     }
 
-    fun onSmsManuallySent(
-        context: Context,
-        confirmationCallback: (LiveData<Boolean?>) -> Unit
-    ) {
+    fun onSmsManuallySent(context: Context, confirmationCallback: (LiveData<Boolean?>) -> Unit) {
         if (smsSyncProvider.expectsResponseSMS()) {
             smsSyncProvider.waitForSMSResponse(
                 context,

@@ -82,12 +82,10 @@ class GraphToRadarData {
         RadarEntry(point?.fieldValue ?: 0f, serieLabel)
     }
 
-    private fun setEmptyEntries(
-        serieLabel: String,
-        categories: List<String>
-    ) = categories.mapIndexed { _, _ ->
-        RadarEntry(0f, serieLabel)
-    }
+    private fun setEmptyEntries(serieLabel: String, categories: List<String>) =
+        categories.mapIndexed { _, _ ->
+            RadarEntry(0f, serieLabel)
+        }
 
     private fun getDataSet(
         radarEntry: List<RadarEntry>,

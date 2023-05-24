@@ -82,9 +82,7 @@ class ProgramModule(private val view: ProgramView) {
 
     @Provides
     @PerFragment
-    internal fun provideProgramThemeRepository(
-        d2: D2
-    ): ProgramThemeRepository {
+    internal fun provideProgramThemeRepository(d2: D2): ProgramThemeRepository {
         return ProgramThemeRepository(d2)
     }
 }

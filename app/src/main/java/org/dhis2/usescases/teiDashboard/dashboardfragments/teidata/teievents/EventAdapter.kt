@@ -43,7 +43,8 @@ class EventAdapter(
         override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
             return oldItem == newItem
         }
-    }) {
+    }
+) {
 
     private lateinit var enrollment: Enrollment
 
@@ -98,7 +99,8 @@ class EventAdapter(
         when (holder) {
             is EventViewHolder -> {
                 holder.bind(
-                    getItem(position), enrollment
+                    getItem(position),
+                    enrollment
                 ) {
                     getItem(holder.getAdapterPosition()).toggleValueList()
                     notifyItemChanged(holder.getAdapterPosition())

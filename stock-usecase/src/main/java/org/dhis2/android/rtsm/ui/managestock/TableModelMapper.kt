@@ -18,11 +18,7 @@ import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerZe
 class TableModelMapper @Inject constructor(
     private val resources: ResourceManager
 ) {
-    fun map(
-        entries: List<StockEntry>,
-        stockLabel: String,
-        qtdLabel: String
-    ): List<TableModel> {
+    fun map(entries: List<StockEntry>, stockLabel: String, qtdLabel: String): List<TableModel> {
         val tableRowModels = mutableListOf<TableRowModel>()
 
         entries.forEachIndexed { index, entry ->

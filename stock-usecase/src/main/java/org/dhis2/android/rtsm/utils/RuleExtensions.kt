@@ -84,10 +84,9 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
     }
 }
 
-private fun isCalculatedValue(it: ProgramRuleVariable) =
-    it.dataElement() == null &&
-        it.trackedEntityAttribute() == null &&
-        it.programRuleVariableSourceType() == ProgramRuleVariableSourceType.CALCULATED_VALUE
+private fun isCalculatedValue(it: ProgramRuleVariable) = it.dataElement() == null &&
+    it.trackedEntityAttribute() == null &&
+    it.programRuleVariableSourceType() == ProgramRuleVariableSourceType.CALCULATED_VALUE
 
 fun ProgramRule.toRuleEngineObject(): Rule {
     return Rule.create(

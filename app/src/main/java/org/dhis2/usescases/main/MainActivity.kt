@@ -110,15 +110,13 @@ class MainActivity :
             }
         }
 
-        fun bundle(
-            initScreen: MainNavigator.MainScreen? = null,
-            launchDataSync: Boolean = false
-        ) = Bundle().apply {
-            initScreen?.let {
-                putString(FRAGMENT, initScreen.name)
+        fun bundle(initScreen: MainNavigator.MainScreen? = null, launchDataSync: Boolean = false) =
+            Bundle().apply {
+                initScreen?.let {
+                    putString(FRAGMENT, initScreen.name)
+                }
+                putBoolean(INIT_DATA_SYNC, launchDataSync)
             }
-            putBoolean(INIT_DATA_SYNC, launchDataSync)
-        }
     }
 
     //region LIFECYCLE

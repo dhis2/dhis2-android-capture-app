@@ -130,9 +130,7 @@ fun Feature?.addRelationToInfo(
     return this
 }
 
-fun Feature?.addTeiEventInfo(
-    eventUiComponentModel: EventUiComponentModel
-): Feature? {
+fun Feature?.addTeiEventInfo(eventUiComponentModel: EventUiComponentModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,

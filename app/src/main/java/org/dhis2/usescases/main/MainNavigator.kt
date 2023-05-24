@@ -41,11 +41,9 @@ class MainNavigator(
 
     fun isHome(): Boolean = isPrograms() || isVisualizations()
 
-    fun isPrograms(): Boolean =
-        currentScreen == MainScreen.PROGRAMS
+    fun isPrograms(): Boolean = currentScreen == MainScreen.PROGRAMS
 
-    fun isVisualizations(): Boolean =
-        currentScreen == MainScreen.VISUALIZATIONS
+    fun isVisualizations(): Boolean = currentScreen == MainScreen.VISUALIZATIONS
 
     fun getCurrentIfProgram(): ProgramFragment? {
         return currentFragment?.takeIf { it is ProgramFragment } as ProgramFragment
@@ -75,7 +73,9 @@ class MainNavigator(
             programFragment.sharedElementReturnTransition = ChangeBounds()
         }
         beginTransaction(
-            ProgramFragment(), MainScreen.PROGRAMS, sharedView
+            ProgramFragment(),
+            MainScreen.PROGRAMS,
+            sharedView
         )
     }
 
@@ -103,31 +103,37 @@ class MainNavigator(
             visualizationFragment.sharedElementReturnTransition = ChangeBounds()
         }
         beginTransaction(
-            visualizationFragment, MainScreen.VISUALIZATIONS, sharedView
+            visualizationFragment,
+            MainScreen.VISUALIZATIONS,
+            sharedView
         )
     }
 
     fun openSettings() {
         beginTransaction(
-            SyncManagerFragment(), MainScreen.SETTINGS
+            SyncManagerFragment(),
+            MainScreen.SETTINGS
         )
     }
 
     fun openQR() {
         beginTransaction(
-            QrReaderFragment(), MainScreen.QR
+            QrReaderFragment(),
+            MainScreen.QR
         )
     }
 
     fun openJira() {
         beginTransaction(
-            JiraFragment(), MainScreen.JIRA
+            JiraFragment(),
+            MainScreen.JIRA
         )
     }
 
     fun openAbout() {
         beginTransaction(
-            AboutFragment(), MainScreen.ABOUT
+            AboutFragment(),
+            MainScreen.ABOUT
         )
     }
 

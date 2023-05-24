@@ -328,11 +328,7 @@ class FormView : Fragment() {
             }
         } else {
             binding.recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val hasToShowFab = checkLastItem()
                     scrollCallback?.invoke(hasToShowFab)
                 }
@@ -1094,21 +1090,18 @@ class FormView : Fragment() {
         /**
          * It's triggered when form gets focus
          */
-        fun onFocused(callback: () -> Unit) =
-            apply { this.onFocused = callback }
+        fun onFocused(callback: () -> Unit) = apply { this.onFocused = callback }
 
         /**
          * Set a FragmentManager for instantiating the form view
          * */
-        fun factory(manager: FragmentManager) =
-            apply { fragmentManager = manager }
+        fun factory(manager: FragmentManager) = apply { fragmentManager = manager }
 
         /**
          *
          */
-        fun resultDialogUiProvider(
-            resultDialogUiProvider: EnrollmentResultDialogUiProvider
-        ) = apply { this.resultDialogUiProvider = resultDialogUiProvider }
+        fun resultDialogUiProvider(resultDialogUiProvider: EnrollmentResultDialogUiProvider) =
+            apply { this.resultDialogUiProvider = resultDialogUiProvider }
 
         /**
          * Listener for the current activity to know if a activityForResult is called
@@ -1116,8 +1109,7 @@ class FormView : Fragment() {
         fun activityForResultListener(callback: () -> Unit) =
             apply { this.onActivityForResult = callback }
 
-        fun onFinishDataEntry(callback: () -> Unit) =
-            apply { this.onFinishDataEntry = callback }
+        fun onFinishDataEntry(callback: () -> Unit) = apply { this.onFinishDataEntry = callback }
 
         fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
             apply { this.onPercentageUpdate = callback }
@@ -1128,8 +1120,7 @@ class FormView : Fragment() {
         fun onFieldItemsRendered(callback: (fieldsEmpty: Boolean) -> Unit) =
             apply { this.onFieldItemsRendered = callback }
 
-        fun setRecords(records: FormRepositoryRecords) =
-            apply { this.records = records }
+        fun setRecords(records: FormRepositoryRecords) = apply { this.records = records }
 
         fun setActionIconsActivation(activate: Boolean) =
             apply { this.actionIconsActive = activate }

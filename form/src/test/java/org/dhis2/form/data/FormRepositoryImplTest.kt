@@ -158,7 +158,8 @@ class FormRepositoryImplTest {
                 "",
                 RuleActionAssign.create(
                     null,
-                    "assignedValue", "uid001"
+                    "assignedValue",
+                    "uid001"
                 )
             )
         )

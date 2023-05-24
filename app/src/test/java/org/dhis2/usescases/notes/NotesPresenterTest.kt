@@ -116,9 +116,8 @@ class NotesPresenterTest {
         verify(view).setWritePermission(false)
     }
 
-    private fun dummyNote(): Note =
-        Note.builder()
-            .uid(UUID.randomUUID().toString())
-            .value("Note")
-            .build()
+    private fun dummyNote(): Note = Note.builder()
+        .uid(UUID.randomUUID().toString())
+        .value("Note")
+        .build()
 }

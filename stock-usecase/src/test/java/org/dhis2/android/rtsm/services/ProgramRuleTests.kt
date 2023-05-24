@@ -97,8 +97,12 @@ class ProgramRuleTests {
             )
         val rule1 = Rule
             .create(
-                null, 1, "true",
-                listOf(assignAction), "PSM- Assign Stock on Hand", "rule1Uid"
+                null,
+                1,
+                "true",
+                listOf(assignAction),
+                "PSM- Assign Stock on Hand",
+                "rule1Uid"
             )
         rules.add(rule1)
 
@@ -134,23 +138,38 @@ class ProgramRuleTests {
                 listOf(
                     // PRevious Stock Balance
                     RuleDataValue.create(
-                        Date(), "", "oc8tn8CewiP", "3"
+                        Date(),
+                        "",
+                        "oc8tn8CewiP",
+                        "3"
                     ),
                     // PSM Stock received
                     RuleDataValue.create(
-                        Date(), "", "j3ydinp6Qp8", "4"
+                        Date(),
+                        "",
+                        "j3ydinp6Qp8",
+                        "4"
                     ),
                     // PSM- Stock consumed distributed
                     RuleDataValue.create(
-                        Date(), "", "lpGYJoVUudr", "2"
+                        Date(),
+                        "",
+                        "lpGYJoVUudr",
+                        "2"
                     ),
                     // PSM- Stock discarded
                     RuleDataValue.create(
-                        Date(), "", "I7cmT3iXT0y", "1"
+                        Date(),
+                        "",
+                        "I7cmT3iXT0y",
+                        "1"
                     ),
                     // PSM- Stock corrected
                     RuleDataValue.create(
-                        Date(), "", "ej1YwWaYGmm", "3"
+                        Date(),
+                        "",
+                        "ej1YwWaYGmm",
+                        "3"
                     )
                 )
             )

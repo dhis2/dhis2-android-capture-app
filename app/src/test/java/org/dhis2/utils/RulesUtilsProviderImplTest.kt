@@ -564,7 +564,8 @@ class RulesUtilsProviderImplTest {
 
         mockD2OptionGroupCalls(
             "optionGroupUid",
-            "optionToHide1", "optionToHide2"
+            "optionToHide1",
+            "optionToHide2"
         )
 
         val result = ruleUtils.applyRuleEffects(
@@ -587,7 +588,8 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionShowOptionGroup should execute callback action`() {
         mockD2OptionGroupCalls(
             "optionGroupUid",
-            "optionToShow1", "optionToShow2"
+            "optionToShow1",
+            "optionToShow2"
         )
         testRuleEffects.add(
             RuleEffect.create(

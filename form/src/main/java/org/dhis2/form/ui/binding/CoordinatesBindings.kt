@@ -238,9 +238,8 @@ private fun onFilledCoordinate(
     }
 }
 
-fun validateFilledCoordinates(lat: String, long: String) =
-    lat.isNotEmpty() && long.isNotEmpty() ||
-        lat.isEmpty() && long.isEmpty()
+fun validateFilledCoordinates(lat: String, long: String) = lat.isNotEmpty() && long.isNotEmpty() ||
+    lat.isEmpty() && long.isEmpty()
 
 fun areLngLatCorrect(lon: Double, lat: Double) = isLatitudeValid(lat) && isLongitudeValid(lon)
 

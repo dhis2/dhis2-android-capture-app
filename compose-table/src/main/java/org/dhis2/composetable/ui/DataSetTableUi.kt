@@ -355,12 +355,7 @@ fun TableHeaderRow(
 }
 
 @Composable
-fun TableActions(
-    modifier: Modifier,
-    title: String,
-    actionIcons: @Composable
-    () -> Unit
-) {
+fun TableActions(modifier: Modifier, title: String, actionIcons: @Composable () -> Unit) {
     Row(
         modifier = modifier,
         horizontalArrangement = spacedBy(8.dp),
@@ -802,10 +797,7 @@ private fun mandatoryIconAlignment(hasValue: Boolean) = when (hasValue) {
 }
 
 @Composable
-fun AddBackgroundNonEditableCellLayer(
-    hasToApplyLightPrimary: Boolean,
-    cellIsEditable: Boolean
-) {
+fun AddBackgroundNonEditableCellLayer(hasToApplyLightPrimary: Boolean, cellIsEditable: Boolean) {
     if (!cellIsEditable && hasToApplyLightPrimary) {
         Box(
             modifier = Modifier
@@ -993,10 +985,10 @@ private fun TableList(
                                     columnIndex = headerColumnIndex,
                                     columnHeaderRow = headerRowIndex,
                                     childrenOfSelectedHeader =
-                                        currentTableModel.countChildrenOfSelectedHeader(
-                                            headerRowIndex,
-                                            headerColumnIndex
-                                        )
+                                    currentTableModel.countChildrenOfSelectedHeader(
+                                        headerRowIndex,
+                                        headerColumnIndex
+                                    )
                                 )
                             )
                         },
@@ -1141,10 +1133,7 @@ private fun TableList(
 }
 
 @Composable
-fun VerticalResizingView(
-    modifier: Modifier = Modifier,
-    provideResizingCell: () -> ResizingCell?
-) {
+fun VerticalResizingView(modifier: Modifier = Modifier, provideResizingCell: () -> ResizingCell?) {
     val colorPrimary = TableTheme.colors.primary
     provideResizingCell()?.let { resizingCell ->
         val offsetX = resizingCell.initialPosition.x + resizingCell.draggingOffsetX
@@ -1239,10 +1228,7 @@ fun VerticalResizingRule(
 }
 
 @Composable
-fun ExtendDivider(
-    tableId: String,
-    selected: Boolean
-) {
+fun ExtendDivider(tableId: String, selected: Boolean) {
     val background = TableTheme.colors.primary
     Row(modifier = Modifier.fillMaxWidth()) {
         Box(
@@ -1353,10 +1339,10 @@ fun TableItem(
                             columnIndex = headerColumnIndex,
                             columnHeaderRow = headerRowIndex,
                             childrenOfSelectedHeader =
-                                tableModel.countChildrenOfSelectedHeader(
-                                    headerRowIndex,
-                                    headerColumnIndex
-                                )
+                            tableModel.countChildrenOfSelectedHeader(
+                                headerRowIndex,
+                                headerColumnIndex
+                            )
                         )
                     )
                 },

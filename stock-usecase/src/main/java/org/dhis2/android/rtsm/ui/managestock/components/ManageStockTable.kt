@@ -35,10 +35,7 @@ import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
 
 @Composable
-fun ManageStockTable(
-    viewModel: ManageStockViewModel,
-    concealBackdropState: () -> Unit
-) {
+fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -> Unit) {
     val screenState by viewModel.screenState.observeAsState(
         initial = TableScreenState(
             tables = emptyList(),

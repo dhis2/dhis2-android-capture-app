@@ -386,9 +386,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         messageOnComplete = message
     }
 
-    private fun hideProgramStage(
-        hideProgramStage: RuleActionHideProgramStage
-    ) {
+    private fun hideProgramStage(hideProgramStage: RuleActionHideProgramStage) {
         stagesToHide.add(hideProgramStage.programStage())
     }
 
@@ -399,9 +397,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         programStages.remove(hideProgramStage.programStage())
     }
 
-    private fun hideOption(
-        hideOption: RuleActionHideOption
-    ) {
+    private fun hideOption(hideOption: RuleActionHideOption) {
         if (!optionsToHide.containsKey(hideOption.field())) {
             optionsToHide[hideOption.field()] = mutableListOf()
         }
@@ -409,18 +405,16 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelected(
-                hideOption.field(),
-                hideOption.option()
-            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                    hideOption.field(),
+                    hideOption.option()
+                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(FieldWithNewValue(hideOption.field(), null))
             }
         }
     }
 
-    private fun hideOptionGroup(
-        hideOptionGroup: RuleActionHideOptionGroup
-    ) {
+    private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup) {
         if (!optionGroupsToHide.containsKey(hideOptionGroup.field())) {
             optionGroupsToHide[hideOptionGroup.field()] = mutableListOf()
         }
@@ -428,19 +422,17 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelectedInGroup(
-                hideOptionGroup.field(),
-                hideOptionGroup.optionGroup(),
-                true
-            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                    hideOptionGroup.field(),
+                    hideOptionGroup.optionGroup(),
+                    true
+                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(FieldWithNewValue(hideOptionGroup.field(), null))
             }
         }
     }
 
-    private fun showOptionGroup(
-        showOptionGroup: RuleActionShowOptionGroup
-    ) {
+    private fun showOptionGroup(showOptionGroup: RuleActionShowOptionGroup) {
         val fieldUid: String = showOptionGroup.field()
         val optionGroupUid: String = showOptionGroup.optionGroup()
 
@@ -454,10 +446,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             }
         }
         if (valueStore?.deleteOptionValueIfSelectedInGroup(
-            fieldUid,
-            optionGroupUid,
-            false
-        )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                fieldUid,
+                optionGroupUid,
+                false
+            )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         ) {
             fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
         }

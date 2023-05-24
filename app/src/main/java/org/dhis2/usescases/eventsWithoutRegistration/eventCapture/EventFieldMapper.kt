@@ -161,10 +161,7 @@ class EventFieldMapper(
         return sectionList.size == 1 && sectionModel.sectionUid()?.isEmpty() == true
     }
 
-    private fun handleMultiSection(
-        sectionModel: FormSectionViewModel,
-        section: String
-    ) {
+    private fun handleMultiSection(sectionModel: FormSectionViewModel, section: String) {
         val fieldViewModels = mutableListOf<FieldUiModel>()
         if (fieldMap[sectionModel.sectionUid()] != null) {
             fieldViewModels.addAll(
@@ -245,12 +242,11 @@ class EventFieldMapper(
         }
     }
 
-    private fun calculateCompletionPercentage(
-        completedFields: Int,
-        totals: Int
-    ): Float {
+    private fun calculateCompletionPercentage(completedFields: Int, totals: Int): Float {
         return if (totals == 0) {
             100f
-        } else completedFields.toFloat() / totals.toFloat()
+        } else {
+            completedFields.toFloat() / totals.toFloat()
+        }
     }
 }

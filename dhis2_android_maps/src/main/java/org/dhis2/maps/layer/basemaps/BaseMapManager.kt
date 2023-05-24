@@ -64,9 +64,7 @@ class BaseMapManager(
         }
     }
 
-    fun styleJson(
-        baseMapStyle: BaseMapStyle
-    ): Style.Builder {
+    fun styleJson(baseMapStyle: BaseMapStyle): Style.Builder {
         return Style.Builder()
             .fromJson(Gson().toJson(baseMapStyle.copy(glyphs = DEFAULT_GLYPH_URL)))
     }
