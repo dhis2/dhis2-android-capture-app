@@ -63,7 +63,6 @@ class TextInputUiTest {
         }
     }
 
-    @Ignore("It is not deterministic, to fix on https://dhis2.atlassian.net/browse/ANDROAPP-4987")
     @Test
     fun shouldClearFocusWhenKeyboardIsHidden() {
         tableRobot(composeTestRule) {
