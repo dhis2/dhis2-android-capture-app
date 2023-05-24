@@ -368,8 +368,8 @@ fun getOptions(
         return emptyList()
     }
 
-    if (dataElementUid != null) {
-        return dataElementRepository.uid(dataElementUid).blockingGet()?.optionSet()?.uid()
+    return if (dataElementUid != null) {
+        dataElementRepository.uid(dataElementUid).blockingGet()?.optionSet()?.uid()
             ?.let { optionSetUid ->
                 optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
             }?.map { option -> Option(option.name(), option.code()) } ?: emptyList()
@@ -378,9 +378,9 @@ fun getOptions(
             ?.let { optionSetUid ->
                 optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
             }?.map { option -> Option(option.name(), option.code()) } ?: emptyList()
+    } else {
+        emptyList()
     }
-
-    return emptyList()
 }
 
 fun ValueType.toRuleValueType(): RuleValueType {
