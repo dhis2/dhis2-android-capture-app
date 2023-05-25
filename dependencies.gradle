@@ -1,4 +1,4 @@
-def gradle = '8.0.1'
+def gradle = '8.0.2'
 def kotlin = '1.8.21'
 def hilt = '2.43.2'
 def hiltCompiler = '1.0.0'
@@ -69,7 +69,6 @@ def glide = "4.9.0"
 def guava = "31.1-android"
 def mockito = "4.1.0"
 def junit = "4.13.2"
-def mockito_kotlin = "2.2.0"
 def mockito_inline = "5.2.0"
 def javafaker = "1.0.2"
 def junit_ext = "1.1.5"
