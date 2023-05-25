@@ -1,11 +1,11 @@
 package org.dhis2.usescases.main.program
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import org.dhis2.usescases.main.program.HomeItemType.PROGRAM_STOCK
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
 class IdentifyProgramTypeTest {
 

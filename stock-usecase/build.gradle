@@ -115,7 +115,7 @@ dependencies {
     releaseImplementation libs.analytics.flipperNoop
 
     testImplementation libs.test.junit
-    testImplementation libs.test.mockitoKotlinLegacy
+    testImplementation libs.test.mockitoKotlin
     testImplementation libs.test.mockitoInline
     testImplementation libs.test.archCoreTesting
     testImplementation libs.test.javafaker

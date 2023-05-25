@@ -1,16 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doNothing
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import java.util.Date
-import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -18,8 +10,16 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.Configu
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 
 class EventCapturePresenterTest {
     private lateinit var presenter: EventCapturePresenterImpl

@@ -2,9 +2,6 @@ package org.dhis2.uicomponents.map.layer
 
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.maps.layer.LayerType
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.types.HeatmapMapLayer
@@ -13,6 +10,9 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class MapLayerManagerTest {
 

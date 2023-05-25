@@ -1,8 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -14,6 +11,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class EventDetailsRepositoryTest {
 

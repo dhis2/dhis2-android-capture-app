@@ -1,8 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetInitial
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.Date
 import java.util.UUID
@@ -25,6 +22,9 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DataSetInitialRepositoryImplTest {
 

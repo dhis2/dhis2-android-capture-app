@@ -4,12 +4,6 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.Date
@@ -28,7 +22,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GranularSyncPresenterTest {
@@ -36,8 +35,8 @@ class GranularSyncPresenterTest {
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val d2: D2 = mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val view = mock(GranularSyncContracts.View::class.java)
+    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val view = Mockito.mock(GranularSyncContracts.View::class.java)
     private val repository: GranularSyncRepository = mock()
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
     private val testingDispatcher = UnconfinedTestDispatcher()
@@ -45,10 +44,10 @@ class GranularSyncPresenterTest {
         on { io() } doReturn testingDispatcher
         on { ui() } doReturn testingDispatcher
     }
-    private val workManager = mock(WorkManagerController::class.java)
+    private val workManager = Mockito.mock(WorkManagerController::class.java)
     private val smsSyncProvider: SMSSyncProvider = mock()
     private val context: Context = mock()
-    private val mockedSyncContext: SyncContext = mock()
+    private val syncContext: SyncContext = SyncContext.Global()
 
     @Test
     fun `should return tracker program error state`() {
@@ -133,7 +132,7 @@ class GranularSyncPresenterTest {
             repository,
             trampolineSchedulerProvider,
             testDispatcher,
-            mockedSyncContext,
+            syncContext,
             workManager,
             smsSyncProvider
         )
@@ -159,7 +158,7 @@ class GranularSyncPresenterTest {
             repository,
             trampolineSchedulerProvider,
             testDispatcher,
-            mockedSyncContext,
+            syncContext,
             workManager,
             smsSyncProvider
         )
@@ -176,7 +175,7 @@ class GranularSyncPresenterTest {
             repository,
             trampolineSchedulerProvider,
             testDispatcher,
-            mockedSyncContext,
+            syncContext,
             workManager,
             smsSyncProvider
         )
@@ -209,7 +208,7 @@ class GranularSyncPresenterTest {
             repository,
             trampolineSchedulerProvider,
             testDispatcher,
-            mockedSyncContext,
+            syncContext,
             workManager,
             smsSyncProvider
         )
@@ -231,7 +230,7 @@ class GranularSyncPresenterTest {
             repository,
             trampolineSchedulerProvider,
             testDispatcher,
-            mockedSyncContext,
+            syncContext,
             workManager,
             smsSyncProvider
         )
@@ -251,7 +250,7 @@ class GranularSyncPresenterTest {
             repository,
             trampolineSchedulerProvider,
             testDispatcher,
-            mockedSyncContext,
+            syncContext,
             workManager,
             smsSyncProvider
         )
@@ -272,7 +271,7 @@ class GranularSyncPresenterTest {
             repository,
             trampolineSchedulerProvider,
             testDispatcher,
-            mockedSyncContext,
+            syncContext,
             workManager,
             smsSyncProvider
         )
