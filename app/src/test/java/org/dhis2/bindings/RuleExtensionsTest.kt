@@ -25,14 +25,14 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeCollection
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.rules.models.RuleActionUnsupported
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.mockito.Mockito.RETURNS_DEEP_STUBS
 
 class RuleExtensionsTest {
 
