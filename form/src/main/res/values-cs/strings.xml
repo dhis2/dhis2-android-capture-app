@@ -98,5 +98,4 @@
     <string name="no_reserved_values">Neexistují žádné další rezervované hodnoty. Obraťte se na správce systému</string>
     <string name="enrollmment_date">Datum zápisu</string>
     <string name="incident_date">Datum incidentu</string>
-
-</resources>
+    </resources>
