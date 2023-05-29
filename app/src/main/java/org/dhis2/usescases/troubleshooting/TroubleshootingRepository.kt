@@ -118,7 +118,8 @@ class TroubleshootingRepository(
             .byProgramUid().eq(programUid)
             .blockingGet().toRuleVariableList(
                 d2.trackedEntityModule().trackedEntityAttributes(),
-                d2.dataElementModule().dataElements()
+                d2.dataElementModule().dataElements(),
+                d2.optionModule().options()
             ).map {
                 val ruleValueType = when (it) {
                     is RuleVariableCalculatedValue -> it.calculatedValueType()

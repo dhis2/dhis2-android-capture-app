@@ -33,37 +33,49 @@ class ProgramRuleTests {
                 .create(
                     "PSM- Initial stock on hand - Previous event",
                     "ypCQAFr1a5l",
-                    RuleValueType.NUMERIC
+                    RuleValueType.NUMERIC,
+                    false,
+                    emptyList()
                 ),
             RuleVariableCurrentEvent
                 .create(
                     "PSM- Previous stock balance",
                     "oc8tn8CewiP",
-                    RuleValueType.NUMERIC
+                    RuleValueType.NUMERIC,
+                    false,
+                    emptyList()
                 ),
             RuleVariableCurrentEvent
                 .create(
                     "PSM- Stock consumed distributed",
                     "lpGYJoVUudr",
-                    RuleValueType.NUMERIC
+                    RuleValueType.NUMERIC,
+                    false,
+                    emptyList()
                 ),
             RuleVariableCurrentEvent
                 .create(
                     "PSM- Stock corrected",
                     "ej1YwWaYGmm",
-                    RuleValueType.NUMERIC
+                    RuleValueType.NUMERIC,
+                    false,
+                    emptyList()
                 ),
             RuleVariableCurrentEvent
                 .create(
                     "PSM- Stock discarded",
                     "I7cmT3iXT0y",
-                    RuleValueType.NUMERIC
+                    RuleValueType.NUMERIC,
+                    false,
+                    emptyList()
                 ),
             RuleVariableCurrentEvent
                 .create(
                     "PSM- Stock received",
                     "j3ydinp6Qp8",
-                    RuleValueType.NUMERIC
+                    RuleValueType.NUMERIC,
+                    false,
+                    emptyList()
                 )
         )
         return RuleEngineContext
