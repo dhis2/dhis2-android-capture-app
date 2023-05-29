@@ -42,7 +42,8 @@ class TEIDataModule(
         preferenceProvider: PreferenceProvider?,
         filterManager: FilterManager?,
         filterRepository: FilterRepository?,
-        valueStore: FormValueStore?
+        valueStore: FormValueStore?,
+        resources: ResourceManager
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -58,7 +59,8 @@ class TEIDataModule(
             analyticsHelper,
             filterManager,
             filterRepository,
-            valueStore
+            valueStore,
+            resources
         )
     }
 

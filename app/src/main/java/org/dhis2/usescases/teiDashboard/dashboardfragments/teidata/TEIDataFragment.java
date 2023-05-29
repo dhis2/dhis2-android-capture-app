@@ -654,4 +654,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 }
         );
     }
+
+    @Override
+    public void showProgramRuleErrorMessage(String message) {
+        activity.runOnUiThread(() -> showToast(message));
+    }
 }
