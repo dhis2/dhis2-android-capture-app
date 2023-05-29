@@ -45,6 +45,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -82,7 +83,7 @@ public class TEIDataPresenter {
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
-    private List<String> stagesToHide;
+    private List<String> stagesToHide = Collections.emptyList();
 
     public TEIDataPresenter(TEIDataContracts.View view, D2 d2,
                             DashboardRepository dashboardRepository,
