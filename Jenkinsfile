@@ -23,8 +23,14 @@ pipeline {
             }
             steps {
                 script {
-                    echo 'Running unit tests'
+                    echo 'Running unit tests on App Module'
                     sh './gradlew testDhisDebugUnitTestCoverage'
+                }
+            }
+            steps {
+                script {
+                    echo 'Running unit tests on all other modules'
+                    sh './gradlew testDebugUnitTest'
                 }
             }
         }
