@@ -53,9 +53,8 @@ class VisualizationToGraph(
         selectedRelativePeriod: RelativePeriod?,
         selectedOrgUnits: List<String>?
     ): Graph {
-        val period = visualization.relativePeriods()?.filter { it.value }?.keys?.first()
         val categories = getCategories(visualization.type(), gridAnalyticsResponse)
-        val formattedCategory = formatCategories(period, categories, gridAnalyticsResponse.metadata)
+        val formattedCategory = formatCategories(categories, gridAnalyticsResponse.metadata)
 
         return Graph(
             title = customTitle ?: visualization.displayName() ?: "",
@@ -115,21 +114,18 @@ class VisualizationToGraph(
     }
 
     private fun formatCategories(
-        period: RelativePeriod?,
         categories: List<String>,
         metadata: Map<String, MetadataItem>
     ): List<String> {
-        return period?.let {
-            categories.map { category ->
-                when (val metadataItem = metadata[category]) {
-                    is MetadataItem.PeriodItem -> periodStepProvider.periodUIString(
-                        Locale.getDefault(),
-                        metadataItem.item
-                    )
-                    else -> category
-                }
+        return categories.map { category ->
+            when (val metadataItem = metadata[category]) {
+                is MetadataItem.PeriodItem -> periodStepProvider.periodUIString(
+                    Locale.getDefault(),
+                    metadataItem.item
+                )
+                else -> category
             }
-        } ?: categories
+        }
     }
 
     private fun getSeries(
