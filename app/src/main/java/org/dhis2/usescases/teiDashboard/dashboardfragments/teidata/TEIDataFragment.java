@@ -656,7 +656,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showProgramRuleErrorMessage(String message) {
-        activity.runOnUiThread(() -> showToast(message));
+    public void showProgramRuleErrorMessage(@NonNull String message) {
+        activity.runOnUiThread(() -> showDescription(message));
     }
 }

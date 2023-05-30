@@ -280,7 +280,7 @@ public class TEIDataPresenter {
             view.showProgramRuleErrorMessage(
                     resources.getString(R.string.error_applying_rule_effects)
             );
-            return events;
+            return Collections.emptyList();
         }
 
         RuleUtilsProviderResult rulesResult = new RulesUtilsProviderImpl(d2).applyRuleEffects(
