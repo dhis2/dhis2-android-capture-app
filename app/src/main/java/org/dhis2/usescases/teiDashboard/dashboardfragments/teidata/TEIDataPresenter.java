@@ -1,5 +1,9 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
+
 import android.content.Intent;
 import android.view.View;
 
@@ -11,30 +15,31 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.data.StageSection;
-import org.dhis2.commons.prefs.Preference;
-import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.filters.data.FilterRepository;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.form.data.FormValueStore;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.form.data.FormValueStore;
+import org.dhis2.form.data.RuleUtilsProviderResult;
+import org.dhis2.form.data.RulesUtilsProviderImpl;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
-import org.dhis2.form.data.RuleUtilsProviderResult;
-import org.dhis2.form.data.RulesUtilsProviderImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
@@ -45,6 +50,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -56,10 +62,6 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
 import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
 public class TEIDataPresenter {
 
@@ -79,10 +81,12 @@ public class TEIDataPresenter {
     private final FilterRepository filterRepository;
     private final FormValueStore valueStore;
 
+    private final ResourceManager resources;
+
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
-    private List<String> stagesToHide;
+    private List<String> stagesToHide = Collections.emptyList();
 
     public TEIDataPresenter(TEIDataContracts.View view, D2 d2,
                             DashboardRepository dashboardRepository,
@@ -94,7 +98,8 @@ public class TEIDataPresenter {
                             AnalyticsHelper analyticsHelper,
                             FilterManager filterManager,
                             FilterRepository filterRepository,
-                            FormValueStore valueStore) {
+                            FormValueStore valueStore,
+                            ResourceManager resources) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -107,6 +112,7 @@ public class TEIDataPresenter {
         this.preferences = preferenceProvider;
         this.analyticsHelper = analyticsHelper;
         this.filterManager = filterManager;
+        this.resources = resources;
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
         this.filterRepository = filterRepository;
@@ -271,7 +277,10 @@ public class TEIDataPresenter {
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
-            return events;
+            view.showProgramRuleErrorMessage(
+                    resources.getString(R.string.error_applying_rule_effects)
+            );
+            return Collections.emptyList();
         }
 
         RuleUtilsProviderResult rulesResult = new RulesUtilsProviderImpl(d2).applyRuleEffects(
@@ -296,7 +305,7 @@ public class TEIDataPresenter {
     }
 
     @VisibleForTesting()
-    public void getEventsWithoutCatCombo(){
+    public void getEventsWithoutCatCombo() {
         compositeDisposable.add(
                 teiDataRepository.eventsWithoutCatCombo()
                         .subscribeOn(schedulerProvider.io())

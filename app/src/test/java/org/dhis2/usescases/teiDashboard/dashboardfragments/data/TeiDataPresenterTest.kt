@@ -11,6 +11,7 @@ import io.reactivex.Single
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
@@ -44,6 +45,7 @@ class TeiDataPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private lateinit var teiDataPresenter: TEIDataPresenter
     private val valueStore: FormValueStore = mock()
+    private val resources: ResourceManager = mock()
 
     @Before
     fun setUp() {
@@ -61,7 +63,8 @@ class TeiDataPresenterTest {
             analytics,
             filterManager,
             filterRepository,
-            valueStore
+            valueStore,
+            resources
         )
     }
 
