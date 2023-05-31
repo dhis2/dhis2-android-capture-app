@@ -210,7 +210,9 @@ class SyncPresenterImpl(
                 }
 
         ).andThen(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+            d2.mapsModule().mapLayersDownloader()
+                .withNetworkTimeoutInSeconds(45)
+                .downloadMetadata()
         ).blockingAwait()
     }
 
