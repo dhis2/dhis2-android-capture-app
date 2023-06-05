@@ -8,9 +8,7 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity
 const val TEI_A_UID = "TEI_A_UID"
 
 class EnrollmentContract : ActivityResultContract<EnrollmentInput, EnrollmentResult>() {
-    private lateinit var enrollmentUid: String
     override fun createIntent(context: Context, input: EnrollmentInput): Intent {
-        enrollmentUid = input.enrollmentUid
         return EnrollmentActivity.getIntent(
             context,
             input.enrollmentUid,
@@ -23,7 +21,7 @@ class EnrollmentContract : ActivityResultContract<EnrollmentInput, EnrollmentRes
     override fun parseResult(resultCode: Int, intent: Intent?): EnrollmentResult {
         return intent?.getStringExtra(TEI_A_UID)?.let {
             EnrollmentResult.RelationshipResult(it)
-        } ?: EnrollmentResult.Success(enrollmentUid)
+        } ?: EnrollmentResult.Success
     }
 }
 
@@ -35,7 +33,7 @@ data class EnrollmentInput(
 )
 
 sealed class EnrollmentResult {
-    data class Success(val enrollmentUid: String) : EnrollmentResult()
+    object Success : EnrollmentResult()
     data class RelationshipResult(val teiUid: String) : EnrollmentResult() {
         fun data() = Intent().apply {
             putExtra(TEI_A_UID, teiUid)
