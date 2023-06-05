@@ -53,11 +53,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                     )
                 }.toMap(),
                 isLastRow = rowIndex == (tableData.rows()!!.size - 1),
-                maxLines = if (dataElement.valueType()?.isNumeric == true) {
-                    1
-                } else {
-                    3
-                },
+                maxLines = 3,
                 dropDownOptions = tableData.fieldViewModels[rowIndex][0].options()
             )
         } ?: emptyList()
