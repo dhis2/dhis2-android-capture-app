@@ -294,8 +294,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 }
 
             if (value == null || value != ruleEffect.data()) {
-                 ruleEffect.data()?.formatData(field.valueType)?.let {
-                     valuesToChange[assign.field()] = it
+                ruleEffect.data()?.formatData(field.valueType)?.let {
+                    valuesToChange[assign.field()] = it
                 }
             }
             val valueToShow =
