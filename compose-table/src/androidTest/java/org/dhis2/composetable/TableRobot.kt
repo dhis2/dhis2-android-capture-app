@@ -121,7 +121,7 @@ class TableRobot(
     fun initTableAppScreen(
         fakeModelType: FakeModelType,
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
-        tableConfiguration: TableConfiguration = TableConfiguration(headerActionsEnabled = false),
+        tableConfiguration: TableConfiguration = TableConfiguration(headerActionsEnabled = true),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         var fakeModel: List<TableModel> = emptyList()

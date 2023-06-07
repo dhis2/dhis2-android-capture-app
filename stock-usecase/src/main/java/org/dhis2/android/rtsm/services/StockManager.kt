@@ -20,6 +20,9 @@ interface StockManager {
 
     fun search(query: SearchParametersModel, ou: String?, config: AppConfig): SearchResult
 
-    fun saveTransaction(items: List<StockEntry>, transaction: Transaction, appConfig: AppConfig):
-        Single<Unit>
+    fun saveTransaction(
+        items: List<StockEntry>,
+        transaction: Transaction,
+        appConfig: AppConfig
+    ): Single<Unit>
 }

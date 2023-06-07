@@ -211,7 +211,14 @@ class TeiDashboardPresenterTest {
     fun `Should not deleteEnrollment if it doesn't has permission`() {
         val currentEnrollment = Enrollment.builder().uid("enrollmentUid").build()
         val dashboardProgramModel = DashboardProgramModel(
-            null, currentEnrollment, null, null, null, null, null, null
+            null,
+            currentEnrollment,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         )
         presenter.dashboardProgramModel = dashboardProgramModel
         whenever(
@@ -226,7 +233,14 @@ class TeiDashboardPresenterTest {
     fun `Should deleteEnrollment if it has permission`() {
         val currentEnrollment = Enrollment.builder().uid("enrollmentUid").build()
         val dashboardProgramModel = DashboardProgramModel(
-            null, currentEnrollment, null, null, null, null, null, null
+            null,
+            currentEnrollment,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         )
         presenter.dashboardProgramModel = dashboardProgramModel
         whenever(

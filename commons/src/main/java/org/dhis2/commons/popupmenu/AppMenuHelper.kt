@@ -99,15 +99,11 @@ class AppMenuHelper private constructor(
             this.anchor = view
         }
 
-        fun onMenuInflated(
-            onMenuInflated: (PopupMenu) -> Unit
-        ) = apply {
+        fun onMenuInflated(onMenuInflated: (PopupMenu) -> Unit) = apply {
             this.onMenuInflated = onMenuInflated
         }
 
-        fun onMenuItemClicked(
-            onMenuItemClicked: (Int) -> Boolean
-        ) = apply {
+        fun onMenuItemClicked(onMenuItemClicked: (Int) -> Boolean) = apply {
             this.onMenuItemClicked = onMenuItemClicked
         }
 

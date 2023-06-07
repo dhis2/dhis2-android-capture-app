@@ -23,8 +23,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
-fun D2.programs(): List<Program> =
-    programModule().programs().blockingGet()
+fun D2.programs(): List<Program> = programModule().programs().blockingGet()
 
 fun D2.program(programUid: String): Program =
     programModule().programs().uid(programUid).blockingGet()
@@ -43,9 +42,7 @@ fun D2.stockUseCase(programUid: String): StockUseCase = useCaseModule()
     .uid(programUid)
     .blockingGet()
 
-fun D2.dataSetSummaryBy(
-    dataSetUid: String
-): DataSetInstanceSummary {
+fun D2.dataSetSummaryBy(dataSetUid: String): DataSetInstanceSummary {
     return dataSetModule().dataSetInstanceSummaries()
         .blockingGet()
         .find { it.dataSetUid() == dataSetUid }!!
@@ -54,9 +51,8 @@ fun D2.dataSetSummaryBy(
 fun D2.dataSetInstanceSummaries(): List<DataSetInstanceSummary> =
     dataSetModule().dataSetInstanceSummaries().blockingGet()
 
-fun D2.dataElement(uid: String): DataElement =
-    dataElementModule().dataElements()
-        .uid(uid).blockingGet()
+fun D2.dataElement(uid: String): DataElement = dataElementModule().dataElements()
+    .uid(uid).blockingGet()
 
 fun D2.categoryOptionCombo(uid: String): CategoryOptionCombo =
     categoryModule().categoryOptionCombos()
@@ -71,9 +67,8 @@ fun D2.trackedEntityType(uid: String): TrackedEntityType =
     trackedEntityModule().trackedEntityTypes()
         .uid(uid).blockingGet()
 
-fun D2.tei(teiUid: String): TrackedEntityInstance =
-    trackedEntityModule().trackedEntityInstances()
-        .uid(teiUid).blockingGet()
+fun D2.tei(teiUid: String): TrackedEntityInstance = trackedEntityModule().trackedEntityInstances()
+    .uid(teiUid).blockingGet()
 
 fun D2.observeTei(teiUid: String): Single<TrackedEntityInstance> =
     trackedEntityModule().trackedEntityInstances()
@@ -87,7 +82,7 @@ fun D2.teisBy(
     repository = programs.let { repository.byProgramUids(programs) } ?: repository
     repository =
         aggregatedSynStates.let { repository.byAggregatedSyncState().`in`(aggregatedSynStates) }
-        ?: repository
+            ?: repository
     return repository.blockingGet()
 }
 
@@ -115,10 +110,9 @@ fun D2.countTeiImportConflicts(teiUid: String): Int = importModule().trackerImpo
     .byTrackedEntityInstanceUid().eq(teiUid)
     .blockingCount()
 
-fun D2.enrollment(uid: String): Enrollment =
-    enrollmentModule().enrollments()
-        .uid(uid)
-        .blockingGet()
+fun D2.enrollment(uid: String): Enrollment = enrollmentModule().enrollments()
+    .uid(uid)
+    .blockingGet()
 
 fun D2.enrollmentInProgram(teiUid: String, programUid: String): Enrollment? =
     enrollmentModule().enrollments()
@@ -185,7 +179,7 @@ fun D2.eventsBy(
     repository = enrollmentUid?.let { repository.byEnrollmentUid().eq(enrollmentUid) } ?: repository
     repository =
         aggregatedSynStates?.let { repository.byAggregatedSyncState().`in`(aggregatedSynStates) }
-        ?: repository
+            ?: repository
     return repository.blockingGet()
 }
 
@@ -193,9 +187,7 @@ fun D2.countEventImportConflicts(eventUid: String): Int = importModule().tracker
     .byEventUid().eq(eventUid)
     .blockingCount()
 
-fun D2.eventImportConflictsBy(
-    eventUid: String? = null
-): List<TrackerImportConflict> {
+fun D2.eventImportConflictsBy(eventUid: String? = null): List<TrackerImportConflict> {
     var repository = importModule().trackerImportConflicts()
     repository = eventUid?.let { repository.byEventUid().eq(it) } ?: repository
     return repository.blockingGet()
@@ -237,9 +229,7 @@ fun D2.observeDataSetInstancesBy(
     return repository.get()
 }
 
-fun D2.dataValueConflictsBy(
-    dataSetUid: String
-): List<DataValueConflict> {
+fun D2.dataValueConflictsBy(dataSetUid: String): List<DataValueConflict> {
     return dataValueModule().dataValueConflicts()
         .byDataSet(dataSetUid)
         .blockingGet()

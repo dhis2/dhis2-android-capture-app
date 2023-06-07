@@ -16,6 +16,7 @@ class SettingsProgramActivity : ActivityGlobalAbstract(), ProgramSettingsView {
     @Inject
     lateinit var adapter: SettingsProgramAdapter
     private lateinit var binding: ActivitySettingsProgramBinding
+
     @Inject
     lateinit var presenter: SettingsProgramPresenter
 

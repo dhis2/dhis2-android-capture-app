@@ -50,11 +50,7 @@ import org.dhis2.ui.utils.dashedBorder
 
 @ExperimentalComposeUiApi
 @Composable
-fun SignatureDialogUi(
-    title: String,
-    onSave: (Bitmap) -> Unit,
-    onCancel: () -> Unit
-) {
+fun SignatureDialogUi(title: String, onSave: (Bitmap) -> Unit, onCancel: () -> Unit) {
     var capturingViewBounds: Rect? = null
     val view = LocalView.current
 

@@ -69,7 +69,9 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_indicators, container, false
+            R.layout.fragment_indicators,
+            container,
+            false
         )
         binding.indicatorsRecycler.adapter = adapter
         return binding.root
@@ -126,7 +128,8 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             )
             .onSelection { selectedOrgUnits ->
                 presenter.filterByOrgUnit(
-                    chartModel, selectedOrgUnits,
+                    chartModel,
+                    selectedOrgUnits,
                     OrgUnitFilterType.SELECTION
                 )
             }

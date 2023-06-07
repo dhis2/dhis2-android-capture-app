@@ -46,7 +46,8 @@ class DhisPeriodUtilsTest {
             .build()
 
         Assert.assertEquals(
-            "11/1/2019", periodUtils.getPeriodUIString(null, testDate, Locale.ENGLISH)
+            "11/1/2019",
+            periodUtils.getPeriodUIString(null, testDate, Locale.ENGLISH)
         )
     }
 

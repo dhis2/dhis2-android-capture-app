@@ -121,10 +121,9 @@ class RuleValidationHelperImpl @Inject constructor(
         programStage.name() ?: "", period
     )
 
-    private fun programStage(programUid: String) =
-        d2.programModule().programStages()
-            .byProgramUid().eq(programUid)
-            .one().blockingGet()
+    private fun programStage(programUid: String) = d2.programModule().programStages()
+        .byProgramUid().eq(programUid)
+        .one().blockingGet()
 
     private fun ruleVariables(programUid: String): Single<List<RuleVariable>> {
         return d2.programModule().programRuleVariables()
@@ -133,7 +132,8 @@ class RuleValidationHelperImpl @Inject constructor(
             .map {
                 it.toRuleVariableList(
                     d2.trackedEntityModule().trackedEntityAttributes(),
-                    d2.dataElementModule().dataElements()
+                    d2.dataElementModule().dataElements(),
+                    d2.optionModule().options()
                 )
             }
     }
@@ -152,10 +152,7 @@ class RuleValidationHelperImpl @Inject constructor(
 
     private fun supplementaryData(): Single<Map<String, List<String>>> = Single.just(hashMapOf())
 
-    private fun ruleEngine(
-        teiUid: String,
-        programUid: String
-    ): Flowable<RuleEngine> {
+    private fun ruleEngine(teiUid: String, programUid: String): Flowable<RuleEngine> {
         val enrollment = currentEnrollment(teiUid, programUid)
 
         val enrollmentEvents = if (enrollment == null) {
@@ -285,15 +282,15 @@ class RuleValidationHelperImpl @Inject constructor(
                         .uid(distributedTo.uid)
                         .blockingGet()
                         .code()?.let { code ->
-                        values.add(
-                            RuleDataValue.create(
-                                eventDate,
-                                programStage,
-                                appConfig.distributedTo,
-                                code
+                            values.add(
+                                RuleDataValue.create(
+                                    eventDate,
+                                    programStage,
+                                    appConfig.distributedTo,
+                                    code
+                                )
                             )
-                        )
-                    }
+                        }
                 }
             }
         }

@@ -223,7 +223,8 @@ class TeiDataRepositoryImpl(
                                     showBottomShadow = showBottomShadow,
                                     displayDate = periodUtils.getPeriodUIString(
                                         programStage.periodType() ?: PeriodType.Daily,
-                                        event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
+                                        event.eventDate() ?: event.dueDate()!!,
+                                        Locale.getDefault()
                                     )
                                 )
                             )
@@ -270,7 +271,8 @@ class TeiDataRepositoryImpl(
                             groupedByStage = false,
                             displayDate = periodUtils.getPeriodUIString(
                                 programStage.periodType() ?: PeriodType.Daily,
-                                event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
+                                event.eventDate() ?: event.dueDate()!!,
+                                Locale.getDefault()
                             )
                         )
                     )

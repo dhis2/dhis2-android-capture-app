@@ -29,10 +29,7 @@ import org.dhis2.usescases.main.program.ProgramViewModel
 import org.hisp.dhis.android.core.common.State
 
 @Composable
-fun EnrollToProgram(
-    programViewModel: ProgramViewModel,
-    onEnrollClickListener: () -> Unit
-) {
+fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: () -> Unit) {
     Row(
         modifier = Modifier
             .height(86.dp)

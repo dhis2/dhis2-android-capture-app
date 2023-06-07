@@ -97,7 +97,8 @@ fun syncAnimation(radius: Float, delayMillis: Int): TransitionData {
     )
 
     val positionY by infiniteTransition.animateFloat(
-        initialValue = radius, targetValue = -2 * radius,
+        initialValue = radius,
+        targetValue = -2 * radius,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 250, delayMillis = 250),
             repeatMode = RepeatMode.Reverse,

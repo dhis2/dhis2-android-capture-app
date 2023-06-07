@@ -233,20 +233,18 @@ class DataSetDetailRepositoryTest {
         }
     }
 
-    private fun dummyDataSet(canWrite: Boolean = true) =
-        DataSet.builder()
-            .uid(dataSetUid)
-            .displayName("DataSet")
-            .categoryCombo(ObjectWithUid.fromIdentifiable(dummyCategoryCombo()))
-            .access(Access.create(true, true, DataAccess.create(true, canWrite)))
-            .build()
+    private fun dummyDataSet(canWrite: Boolean = true) = DataSet.builder()
+        .uid(dataSetUid)
+        .displayName("DataSet")
+        .categoryCombo(ObjectWithUid.fromIdentifiable(dummyCategoryCombo()))
+        .access(Access.create(true, true, DataAccess.create(true, canWrite)))
+        .build()
 
-    private fun dummyCategoryCombo(isDefault: Boolean = false) =
-        CategoryCombo.builder()
-            .uid("categoryCombo")
-            .categoryOptionCombos(dummyCategoryOptionsCombos())
-            .isDefault(isDefault)
-            .build()
+    private fun dummyCategoryCombo(isDefault: Boolean = false) = CategoryCombo.builder()
+        .uid("categoryCombo")
+        .categoryOptionCombos(dummyCategoryOptionsCombos())
+        .isDefault(isDefault)
+        .build()
 
     private fun dummyCategoryOptionsCombos(
         canWrite: Boolean = true
@@ -277,22 +275,20 @@ class DataSetDetailRepositoryTest {
         return categoryOptions
     }
 
-    private fun dummyDataSetInstance() =
-        DataSetInstance.builder()
-            .dataSetUid(dataSetUid)
-            .dataSetDisplayName("dataSetName")
-            .organisationUnitUid("orgUnit")
-            .attributeOptionComboUid("attrOptionCombo")
-            .period("period")
-            .organisationUnitDisplayName("orgUnitName")
-            .attributeOptionComboDisplayName("attrOptionComboName")
-            .valueCount(1)
-            .completed(true)
-            .periodType(PeriodType.Daily)
-            .build()
+    private fun dummyDataSetInstance() = DataSetInstance.builder()
+        .dataSetUid(dataSetUid)
+        .dataSetDisplayName("dataSetName")
+        .organisationUnitUid("orgUnit")
+        .attributeOptionComboUid("attrOptionCombo")
+        .period("period")
+        .organisationUnitDisplayName("orgUnitName")
+        .attributeOptionComboDisplayName("attrOptionComboName")
+        .valueCount(1)
+        .completed(true)
+        .periodType(PeriodType.Daily)
+        .build()
 
     private fun dummyPeriod() = Period.builder().periodId("periodId").build()
 
-    private fun dummyOrgUnits() =
-        mutableListOf(OrganisationUnit.builder().uid("orgUnit").build())
+    private fun dummyOrgUnits() = mutableListOf(OrganisationUnit.builder().uid("orgUnit").build())
 }

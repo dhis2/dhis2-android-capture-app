@@ -243,16 +243,15 @@ class OUTreeViewModelTest {
         level: Int,
         name: String = "name$level",
         parent: OrganisationUnit? = null
-    ) =
-        OrganisationUnit.builder()
-            .uid(UUID.randomUUID().toString())
-            .displayName(name)
-            .level(level)
-            .apply {
-                parent?.let {
-                    parent(ObjectWithUid.create(it.uid()))
-                        .path("/${it.uid()}/")
-                }
+    ) = OrganisationUnit.builder()
+        .uid(UUID.randomUUID().toString())
+        .displayName(name)
+        .level(level)
+        .apply {
+            parent?.let {
+                parent(ObjectWithUid.create(it.uid()))
+                    .path("/${it.uid()}/")
             }
-            .build()
+        }
+        .build()
 }

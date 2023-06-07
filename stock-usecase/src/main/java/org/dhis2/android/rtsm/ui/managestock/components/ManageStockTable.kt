@@ -35,10 +35,7 @@ import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
 
 @Composable
-fun ManageStockTable(
-    viewModel: ManageStockViewModel,
-    concealBackdropState: () -> Unit
-) {
+fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -> Unit) {
     val screenState by viewModel.screenState.observeAsState(
         initial = TableScreenState(
             tables = emptyList(),
@@ -62,7 +59,7 @@ fun ManageStockTable(
                         rowHeaderWidths = emptyMap(),
                         columnWidth = emptyMap(),
                         defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt(),
-                        tableBottomPadding = 48.dp
+                        tableBottomPadding = 100.dp
                     )
                 )
             }

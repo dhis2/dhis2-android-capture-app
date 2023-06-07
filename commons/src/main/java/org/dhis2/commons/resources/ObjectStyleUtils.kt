@@ -21,7 +21,9 @@ object ObjectStyleUtils {
             val drawable = AppCompatResources.getDrawable(context, iconResource)
             drawable?.mutate()
             drawable ?: defaultDrawable
-        } else defaultDrawable
+        } else {
+            defaultDrawable
+        }
     }
 
     fun getColorResource(

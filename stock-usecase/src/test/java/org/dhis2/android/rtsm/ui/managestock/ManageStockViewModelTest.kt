@@ -84,7 +84,9 @@ class ManageStockViewModelTest {
         qty: String?
     ): StockItem {
         val stockItem = StockItem(
-            uid, faker.name().name(), faker.number().numberBetween(1, 800).toString()
+            uid,
+            faker.name().name(),
+            faker.number().numberBetween(1, 800).toString()
         )
 
         viewModel.addItem(stockItem, qty, stockItem.stockOnHand, null)
@@ -181,7 +183,9 @@ class ManageStockViewModelTest {
         val item = createStockEntry("someUid", viewModel, qty.toString())
 
         viewModel.setQuantity(
-            item, 200, qty.toString(),
+            item,
+            200,
+            qty.toString(),
             object : OnQuantityValidated {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     Timber.tag("ruleEffects2").d("$ruleEffects")
@@ -202,7 +206,9 @@ class ManageStockViewModelTest {
         val qty = 49
 
         viewModel.setQuantity(
-            item, 0, qty.toString(),
+            item,
+            0,
+            qty.toString(),
             object : OnQuantityValidated {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     println("$ruleEffects")

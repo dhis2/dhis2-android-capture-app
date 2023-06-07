@@ -152,7 +152,8 @@ class ManageStockViewModel @Inject constructor(
     private fun loadStockItems() {
         search.value = transaction.value?.facility?.uid?.let {
             SearchParametersModel(
-                null, null,
+                null,
+                null,
                 it
             )
         }
@@ -177,7 +178,8 @@ class ManageStockViewModel @Inject constructor(
                         search.value =
                             transaction.value?.facility?.uid?.let {
                                 SearchParametersModel(
-                                    result, null,
+                                    result,
+                                    null,
                                     it
                                 )
                             }
@@ -329,7 +331,9 @@ class ManageStockViewModel @Inject constructor(
                     }
                     is ValidationResult.Success -> {
                         setQuantity(
-                            stockItem, 0, cell.value?.ifEmpty { "0" }.toString(),
+                            stockItem,
+                            0,
+                            cell.value?.ifEmpty { "0" }.toString(),
                             object : OnQuantityValidated {
                                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                                     // When user taps on done or next. We should apply program rules here

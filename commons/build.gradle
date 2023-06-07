@@ -116,7 +116,7 @@ dependencies {
     api libs.test.espressoIdlingResources
     api libs.test.espressoIdlingConcurrent
 
-    implementation libs.analytics.sentry
+    api libs.analytics.sentry
     implementation libs.github.treeView
 
 }

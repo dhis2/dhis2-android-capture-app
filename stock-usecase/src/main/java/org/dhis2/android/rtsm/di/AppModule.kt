@@ -34,10 +34,11 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesSpeechRecognitionManager(@ApplicationContext appContext: Context):
-        SpeechRecognitionManager {
-            return SpeechRecognitionManagerImpl(appContext)
-        }
+    fun providesSpeechRecognitionManager(
+        @ApplicationContext appContext: Context
+    ): SpeechRecognitionManager {
+        return SpeechRecognitionManagerImpl(appContext)
+    }
 
     @Provides
     @Singleton

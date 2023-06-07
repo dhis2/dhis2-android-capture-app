@@ -12,9 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.ui.theme.textSecondary
 
 @Composable
-fun Dhis2ProgressIndicator(
-    message: String? = null
-) {
+fun Dhis2ProgressIndicator(message: String? = null) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         CircularProgressIndicator(
             modifier = Modifier.padding(16.dp),

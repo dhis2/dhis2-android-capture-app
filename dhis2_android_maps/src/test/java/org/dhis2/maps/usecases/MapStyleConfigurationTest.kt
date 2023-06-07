@@ -70,9 +70,7 @@ class MapStyleConfigurationTest {
         .external(false)
         .build()
 
-    private fun mockImaginaryProvider(
-        attribution: String
-    ) = MapLayerImageryProvider.builder()
+    private fun mockImaginaryProvider(attribution: String) = MapLayerImageryProvider.builder()
         .attribution(attribution)
         .mapLayer("mapLayerId")
         .build()

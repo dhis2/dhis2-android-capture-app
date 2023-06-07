@@ -33,10 +33,7 @@ class GraphToNutritionData(private val nutritionColorProvider: NutritionColorsPr
         return Pair(LineData(dataset), numberOfValues(dataset))
     }
 
-    private fun dataSet(
-        entries: List<Entry>,
-        label: String
-    ) = LineDataSet(entries, label)
+    private fun dataSet(entries: List<Entry>, label: String) = LineDataSet(entries, label)
 
     private fun numberOfValues(dataset: List<LineDataSet>): Int {
         return dataset.map { it.entryCount }.sum()

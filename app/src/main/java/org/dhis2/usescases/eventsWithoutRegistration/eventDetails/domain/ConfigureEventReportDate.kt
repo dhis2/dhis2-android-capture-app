@@ -77,8 +77,7 @@ class ConfigureEventReportDate(
         }
     }
 
-    private fun getProgramStage(): ProgramStage =
-        repository.getProgramStage()
+    private fun getProgramStage(): ProgramStage = repository.getProgramStage()
 
     private fun getDateBasedOnPeriodType(): Date {
         getProgramStage().hideDueDate()?.let { hideDueDate ->
@@ -90,7 +89,8 @@ class ConfigureEventReportDate(
                     calendar.add(DAY_OF_YEAR, getScheduleInterval())
                     org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
                         null,
-                        calendar.time, 0
+                        calendar.time,
+                        0
                     )
                 }
             }
@@ -152,12 +152,12 @@ class ConfigureEventReportDate(
                 )
 
                 if (lastPeriodDate.after(
-                    org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
-                        program.expiryPeriodType(),
-                        minDate,
-                        0
+                        org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                                program.expiryPeriodType(),
+                                minDate,
+                                0
+                            )
                     )
-                )
                 ) {
                     minDate = org.dhis2.utils.DateUtils.getInstance()
                         .getNextPeriod(periodType, lastPeriodDate, 0)

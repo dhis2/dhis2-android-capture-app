@@ -94,11 +94,10 @@ class NoteDetailRepositoryTest {
         }
     }
 
-    private fun dummyNote() =
-        Note.builder()
-            .uid("noteId")
-            .value("Note value")
-            .build()
+    private fun dummyNote() = Note.builder()
+        .uid("noteId")
+        .value("Note value")
+        .build()
 
     private fun mockEnrollment(teiUid: String) {
         whenever(

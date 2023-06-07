@@ -125,10 +125,7 @@ fun HelperText(helperText: String, textStyle: TextStyle) {
     )
 }
 
-fun Modifier.drawInputSelector(
-    selected: Boolean,
-    color: Color
-) = when (selected) {
+fun Modifier.drawInputSelector(selected: Boolean, color: Color) = when (selected) {
     true -> this.then(
         drawBehind {
             drawPath(

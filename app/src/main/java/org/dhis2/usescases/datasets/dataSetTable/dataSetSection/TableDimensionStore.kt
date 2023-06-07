@@ -139,14 +139,12 @@ class TableDimensionStore(
         return columnWidthForTableModels(tableLists)
     }
 
-    private fun columnWidthDataStoreKeysForDataSet() =
-        "col_width_${dataSetUid}_${sectionUid}_%"
+    private fun columnWidthDataStoreKeysForDataSet() = "col_width_${dataSetUid}_${sectionUid}_%"
 
     private fun columnWidthDataStoreKeysForTable(tableId: String) =
         "col_width_${dataSetUid}_${sectionUid}_${tableId}_%"
 
-    private fun rowHeaderWidthDataStoreKeyForDataSet() =
-        "row_width_${dataSetUid}_${sectionUid}_%"
+    private fun rowHeaderWidthDataStoreKeyForDataSet() = "row_width_${dataSetUid}_${sectionUid}_%"
 
     private fun columnWidthDataStoreKey(tableId: String, column: Int) =
         "col_width_${dataSetUid}_${sectionUid}_${tableId}_$column"
@@ -155,6 +153,5 @@ class TableDimensionStore(
         "row_width_${dataSetUid}_${sectionUid}_$tableId"
     private fun tableExtraWidthDataStoreKey(tableId: String) =
         "table_width_${dataSetUid}_${sectionUid}_$tableId"
-    private fun tableExtraWidthForDataSet() =
-        "table_width_${dataSetUid}_${sectionUid}_%"
+    private fun tableExtraWidthForDataSet() = "table_width_${dataSetUid}_${sectionUid}_%"
 }

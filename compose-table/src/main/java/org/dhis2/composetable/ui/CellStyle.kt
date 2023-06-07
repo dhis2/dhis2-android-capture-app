@@ -45,10 +45,7 @@ fun styleForColumnHeader(
 }
 
 @Composable
-fun styleForRowHeader(
-    isSelected: Boolean,
-    isOtherRowSelected: Boolean
-): CellStyle = when {
+fun styleForRowHeader(isSelected: Boolean, isOtherRowSelected: Boolean): CellStyle = when {
     isSelected -> CellStyle.HeaderStyle(
         TableTheme.colors.primary,
         contentColorFor(TableTheme.colors.primary)

@@ -25,7 +25,7 @@ fun LineDataSet.withGlobalStyle(): LineDataSet {
 fun BarData.withGlobalStyle(): BarData {
     return this.apply {
         setValueTextSize(default_value_text_size)
-        if (dataSetCount> 1) {
+        if (dataSetCount > 1) {
             barWidth = default_bar_group_space / dataSetCount.toFloat()
         }
     }

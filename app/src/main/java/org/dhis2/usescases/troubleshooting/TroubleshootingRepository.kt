@@ -89,7 +89,8 @@ class TroubleshootingRepository(
                 metadataIconData = MetadataIconData(
                     programColor = resourceManager.getColorOrDefaultFrom(program.style().color()),
                     iconResource = resourceManager.getObjectStyleDrawableResource(
-                        program.style().icon(), R.drawable.ic_default_outline
+                        program.style().icon(),
+                        R.drawable.ic_default_outline
                     ),
                     sizeInDp = 24
                 ),
@@ -117,7 +118,8 @@ class TroubleshootingRepository(
             .byProgramUid().eq(programUid)
             .blockingGet().toRuleVariableList(
                 d2.trackedEntityModule().trackedEntityAttributes(),
-                d2.dataElementModule().dataElements()
+                d2.dataElementModule().dataElements(),
+                d2.optionModule().options()
             ).map {
                 val ruleValueType = when (it) {
                     is RuleVariableCalculatedValue -> it.calculatedValueType()
@@ -207,7 +209,9 @@ class TroubleshootingRepository(
     private fun convertInteger(result: Any): Any {
         return if (result is Double && result % 1 == 0.0) {
             result.toInt()
-        } else result
+        } else {
+            result
+        }
     }
 
     private fun RuleAction.ruleActionType() = this.javaClass.simpleName.removePrefix("AutoValue_")

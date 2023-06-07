@@ -55,10 +55,12 @@ class SplashPresenter internal constructor(
                             view.goToNextScreen(
                                 userLogged,
                                 preferenceProvider.getBoolean(
-                                    Preference.SESSION_LOCKED, false
+                                    Preference.SESSION_LOCKED,
+                                    false
                                 ),
                                 preferenceProvider.getBoolean(
-                                    Preference.INITIAL_METADATA_SYNC_DONE, false
+                                    Preference.INITIAL_METADATA_SYNC_DONE,
+                                    false
                                 ),
                                 preferenceProvider.getBoolean(
                                     Preference.INITIAL_DATA_SYNC_DONE,
@@ -83,10 +85,7 @@ class SplashPresenter internal constructor(
             ?.blockingGet()?.value() == true.toString()
     }
 
-    private fun trackUserInfo(
-        serverUrl: String,
-        userName: String
-    ) {
+    private fun trackUserInfo(serverUrl: String, userName: String) {
         crashReportController.trackServer(serverUrl)
         crashReportController.trackUser(userName, serverUrl)
     }

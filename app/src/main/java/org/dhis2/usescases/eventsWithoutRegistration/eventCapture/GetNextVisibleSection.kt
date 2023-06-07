@@ -4,10 +4,7 @@ import org.dhis2.data.forms.FormSectionViewModel
 
 class GetNextVisibleSection {
 
-    fun get(
-        activeSection: String,
-        allSections: List<FormSectionViewModel>
-    ): String {
+    fun get(activeSection: String, allSections: List<FormSectionViewModel>): String {
         return activeSection
 
         val sectionsToShow = allSections.map { it.sectionUid() }
@@ -26,7 +23,9 @@ class GetNextVisibleSection {
         val activeSessionIndex = sectionsToShow.indexOf(activeSection)
         return if (activeSessionIndex + 1 < sectionsToShow.size) {
             sectionsToShow[activeSessionIndex + 1]!!
-        } else activeSection
+        } else {
+            activeSection
+        }
     }
 
     companion object {

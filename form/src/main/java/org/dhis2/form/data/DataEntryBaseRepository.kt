@@ -92,10 +92,7 @@ abstract class DataEntryBaseRepository(
         )
     }
 
-    internal fun getError(
-        conflict: TrackerImportConflict?,
-        dataValue: String?
-    ) = conflict?.let {
+    internal fun getError(conflict: TrackerImportConflict?, dataValue: String?) = conflict?.let {
         if (it.value() == dataValue) {
             it.displayDescription()
         } else {

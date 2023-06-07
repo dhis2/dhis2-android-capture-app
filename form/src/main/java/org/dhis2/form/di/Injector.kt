@@ -174,17 +174,16 @@ object Injector {
         context: Context,
         allowMandatoryFields: Boolean,
         isBackgroundTransparent: Boolean
-    ): FieldViewModelFactory =
-        FieldViewModelFactoryImpl(
-            noMandatoryFields = !allowMandatoryFields,
-            uiStyleProvider = provideUiStyleProvider(context, isBackgroundTransparent),
-            layoutProvider = provideLayoutProvider(),
-            hintProvider = provideHintProvider(context),
-            displayNameProvider = provideDisplayNameProvider(),
-            uiEventTypesProvider = provideUiEventTypesProvider(),
-            keyboardActionProvider = provideKeyBoardActionProvider(),
-            legendValueProvider = provideLegendValueProvider(context)
-        )
+    ): FieldViewModelFactory = FieldViewModelFactoryImpl(
+        noMandatoryFields = !allowMandatoryFields,
+        uiStyleProvider = provideUiStyleProvider(context, isBackgroundTransparent),
+        layoutProvider = provideLayoutProvider(),
+        hintProvider = provideHintProvider(context),
+        displayNameProvider = provideDisplayNameProvider(),
+        uiEventTypesProvider = provideUiEventTypesProvider(),
+        keyboardActionProvider = provideKeyBoardActionProvider(),
+        legendValueProvider = provideLegendValueProvider(context)
+    )
 
     private fun provideKeyBoardActionProvider() = KeyboardActionProviderImpl()
 

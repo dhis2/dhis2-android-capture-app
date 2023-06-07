@@ -138,8 +138,8 @@ class EnrollmentRepository(
                         .byProgram().eq(program.blockingGet().uid())
                         .byTrackedEntityAttribute().eq(attribute.uid())
                         .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                        fields.add(transform(programTrackedEntityAttribute, section.uid()))
-                    }
+                            fields.add(transform(programTrackedEntityAttribute, section.uid()))
+                        }
                 }
             }
             return@fromCallable fields
@@ -441,9 +441,7 @@ class EnrollmentRepository(
         )
     }
 
-    private fun getTeiCoordinatesField(
-        featureType: FeatureType?
-    ): FieldUiModel {
+    private fun getTeiCoordinatesField(featureType: FeatureType?): FieldUiModel {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(
                 enrollmentRepository.blockingGet()!!.trackedEntityInstance()
@@ -471,9 +469,7 @@ class EnrollmentRepository(
         )
     }
 
-    private fun getEnrollmentCoordinatesField(
-        featureType: FeatureType?
-    ): FieldUiModel {
+    private fun getEnrollmentCoordinatesField(featureType: FeatureType?): FieldUiModel {
         return fieldFactory.create(
             ENROLLMENT_COORDINATES_UID,
             enrollmentFormLabelsProvider.provideEnrollmentCoordinatesLabel(),

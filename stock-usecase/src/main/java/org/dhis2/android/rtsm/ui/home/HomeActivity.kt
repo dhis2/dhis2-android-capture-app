@@ -131,7 +131,8 @@ class HomeActivity : AppCompatActivity() {
         val isNetworkAvailable: Boolean = NetworkUtils.isOnline(this@HomeActivity)
         if (!isNetworkAvailable) {
             showSnackBar(
-                scope, scaffoldState,
+                scope,
+                scaffoldState,
                 getString(R.string.unable_to_sync_data_no_network_available)
             )
         } else {
@@ -156,11 +157,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun showSnackBar(
-        scope: CoroutineScope,
-        scaffoldState: ScaffoldState,
-        message: String
-    ) {
+    private fun showSnackBar(scope: CoroutineScope, scaffoldState: ScaffoldState, message: String) {
         scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(message)
         }
@@ -182,9 +179,7 @@ class HomeActivity : AppCompatActivity() {
         this.barcodeLauncher = barcodeLauncher
     }
 
-    private fun onScanCompleted(
-        result: ScanIntentResult
-    ) {
+    private fun onScanCompleted(result: ScanIntentResult) {
         val data = result.contents
         manageStockViewModel.onSearchQueryChanged(data)
     }

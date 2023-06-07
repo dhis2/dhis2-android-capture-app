@@ -70,9 +70,6 @@ private val DarkColors = darkColorScheme(
 )
 
 @Composable
-fun Dhis2Theme(
-    content: @Composable
-    () -> Unit
-) {
+fun Dhis2Theme(content: @Composable () -> Unit) {
     Mdc3Theme(content = content)
 }

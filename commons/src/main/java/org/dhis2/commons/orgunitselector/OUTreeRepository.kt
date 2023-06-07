@@ -53,11 +53,9 @@ class OUTreeRepository(
         }
     }
 
-    fun orgUnit(uid: String): OrganisationUnit? =
-        orgUnitRepositoryConfiguration.orgUnit(uid)
+    fun orgUnit(uid: String): OrganisationUnit? = orgUnitRepositoryConfiguration.orgUnit(uid)
 
-    fun canBeSelected(orgUnitUid: String): Boolean =
-        availableOrgUnits.any { it == orgUnitUid }
+    fun canBeSelected(orgUnitUid: String): Boolean = availableOrgUnits.any { it == orgUnitUid }
 
     fun orgUnitHasChildren(uid: String): Boolean {
         return parentOrgUnits.contains(uid) or orgUnitRepositoryConfiguration.hasChildren(
@@ -66,10 +64,7 @@ class OUTreeRepository(
         )
     }
 
-    fun countSelectedChildren(
-        parentOrgUnitUid: String,
-        selectedOrgUnits: List<String>
-    ): Int {
+    fun countSelectedChildren(parentOrgUnitUid: String, selectedOrgUnits: List<String>): Int {
         return orgUnitRepositoryConfiguration.countChildren(
             parentOrgUnitUid,
             selectedOrgUnits

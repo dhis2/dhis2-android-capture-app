@@ -61,11 +61,10 @@ class OUTreeFragment private constructor() : DialogFragment() {
             this.orgUnitScope = orgUnitScope
         }
 
-        fun onSelection(
-            selectionListener: (selectedOrgUnits: List<OrganisationUnit>) -> Unit
-        ) = apply {
-            this.selectionListener = selectionListener
-        }
+        fun onSelection(selectionListener: (selectedOrgUnits: List<OrganisationUnit>) -> Unit) =
+            apply {
+                this.selectionListener = selectionListener
+            }
 
         fun build(): OUTreeFragment {
             return OUTreeFragment().apply {
@@ -140,7 +139,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
                                 get() = presenter::searchByName
                             override val onOrgUnitChecked:
                                 (orgUnitUid: String, isChecked: Boolean) -> Unit
-                                    get() = presenter::onOrgUnitCheckChanged
+                                get() = presenter::onOrgUnitCheckChanged
                             override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
                                 get() = presenter::onOpenChildren
                             override val onDoneClick: () -> Unit
@@ -163,8 +162,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         }
     }
 
-    private fun showAsDialog() =
-        arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false) ?: false
+    private fun showAsDialog() = arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false) ?: false
 
     private fun exitOuSelection() {
         selectionCallback(presenter.getOrgUnits())

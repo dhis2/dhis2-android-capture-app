@@ -51,5 +51,7 @@ class TEIDataContracts {
         fun setEnrollment(enrollment: Enrollment)
         fun showSyncDialog(eventUid: String, enrollmentUid: String)
         fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>)
+
+        fun showProgramRuleErrorMessage(message: String)
     }
 }

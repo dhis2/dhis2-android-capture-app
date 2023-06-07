@@ -267,11 +267,10 @@ class FilterRepository @Inject constructor(
         return repository.byPeriodStartDate().inDatePeriods(datePeriods)
     }
 
-    fun orgUnitsByName(name: String): List<OrganisationUnit> =
-        d2.organisationUnitModule()
-            .organisationUnits()
-            .byDisplayName().like("%$name%")
-            .blockingGet()
+    fun orgUnitsByName(name: String): List<OrganisationUnit> = d2.organisationUnitModule()
+        .organisationUnits()
+        .byDisplayName().like("%$name%")
+        .blockingGet()
 
     fun programFilters(programUid: String): List<FilterItem> {
         return d2.programModule().programs().uid(programUid).get()
@@ -425,7 +424,8 @@ class FilterRepository @Inject constructor(
         val homeFilter = linkedMapOf(
             HomeFilter.DATE to PeriodFilter(
                 org.dhis2.commons.filters.ProgramType.ALL,
-                observableSortingInject, observableOpenFilter,
+                observableSortingInject,
+                observableOpenFilter,
                 resources.filterDateLabel()
             ),
             HomeFilter.ORG_UNIT to OrgUnitFilter(
@@ -437,7 +437,8 @@ class FilterRepository @Inject constructor(
             ),
             HomeFilter.SYNC_STATUS to SyncStateFilter(
                 org.dhis2.commons.filters.ProgramType.ALL,
-                observableSortingInject, observableOpenFilter,
+                observableSortingInject,
+                observableOpenFilter,
                 resources.filterSyncLabel()
             )
         )
@@ -536,12 +537,14 @@ class FilterRepository @Inject constructor(
 
         defaultTrackerFilters[ProgramFilter.EVENT_DATE] = PeriodFilter(
             org.dhis2.commons.filters.ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             resources.filterEventDateLabel()
         )
         defaultTrackerFilters[ProgramFilter.ENROLLMENT_DATE] = EnrollmentDateFilter(
             org.dhis2.commons.filters.ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             program.enrollmentDateLabel() ?: resources
                 .filterEnrollmentDateLabel()
         )
@@ -554,17 +557,20 @@ class FilterRepository @Inject constructor(
         )
         defaultTrackerFilters[ProgramFilter.SYNC_STATUS] = SyncStateFilter(
             org.dhis2.commons.filters.ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             resources.filterSyncLabel()
         )
         defaultTrackerFilters[ProgramFilter.ENROLLMENT_STATUS] = EnrollmentStatusFilter(
             org.dhis2.commons.filters.ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             resources.filterEnrollmentStatusLabel()
         )
         defaultTrackerFilters[ProgramFilter.EVENT_STATUS] = EventStatusFilter(
             org.dhis2.commons.filters.ProgramType.TRACKER,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             resources.filterEventStatusLabel()
         )
 
@@ -615,7 +621,8 @@ class FilterRepository @Inject constructor(
             workingListFilter = WorkingListFilter(
                 workingLists,
                 org.dhis2.commons.filters.ProgramType.TRACKER,
-                observableSortingInject, observableOpenFilter,
+                observableSortingInject,
+                observableOpenFilter,
                 ""
             )
         }
@@ -672,7 +679,8 @@ class FilterRepository @Inject constructor(
             workingListFilter = WorkingListFilter(
                 workingLists,
                 org.dhis2.commons.filters.ProgramType.EVENT,
-                observableSortingInject, observableOpenFilter,
+                observableSortingInject,
+                observableOpenFilter,
                 ""
             )
         }
@@ -701,13 +709,15 @@ class FilterRepository @Inject constructor(
 
         defaultEventFilter[ProgramFilter.SYNC_STATUS] = SyncStateFilter(
             org.dhis2.commons.filters.ProgramType.EVENT,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             resources.filterSyncLabel()
         )
 
         defaultEventFilter[ProgramFilter.EVENT_STATUS] = EventStatusFilter(
             org.dhis2.commons.filters.ProgramType.EVENT,
-            observableSortingInject, observableOpenFilter,
+            observableSortingInject,
+            observableOpenFilter,
             resources.filterEventStatusLabel()
         )
 

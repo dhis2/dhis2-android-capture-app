@@ -72,7 +72,8 @@ class RulesRepository(private val d2: D2) {
             .map {
                 it.toRuleVariableList(
                     d2.trackedEntityModule().trackedEntityAttributes(),
-                    d2.dataElementModule().dataElements()
+                    d2.dataElementModule().dataElements(),
+                    d2.optionModule().options()
                 )
             }
     }
@@ -83,7 +84,8 @@ class RulesRepository(private val d2: D2) {
             .map {
                 it.toRuleVariable(
                     d2.trackedEntityModule().trackedEntityAttributes(),
-                    d2.dataElementModule().dataElements()
+                    d2.dataElementModule().dataElements(),
+                    d2.optionModule().options()
                 )
             }
             .toList()
@@ -101,9 +103,7 @@ class RulesRepository(private val d2: D2) {
             }
     }
 
-    private fun queryRules(
-        programUid: String
-    ): Single<List<ProgramRule>> {
+    private fun queryRules(programUid: String): Single<List<ProgramRule>> {
         return d2.programModule().programRules()
             .byProgramUid().eq(programUid)
             .withProgramRuleActions()

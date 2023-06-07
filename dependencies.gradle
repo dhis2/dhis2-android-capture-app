@@ -4,8 +4,8 @@ def hilt = '2.43.2'
 def hiltCompiler = '1.0.0'
 def jacoco = '0.8.8'
 
-def dhis2sdk = "1.8.0"
-def ruleEngine = "2.1.5"
+def dhis2sdk = "1.8.1"
+def ruleEngine = "2.1.8"
 def appcompat = "1.5.1"
 def annotation = "1.4.0"
 def cardview = "1.0.0"
@@ -42,7 +42,7 @@ def autovalueparcel = "0.2.7"
 def mapboxmarkerview = "0.3.0"
 def mapboxannotation = "0.8.0"
 def matomo = "4.1.2"
-def sentry = "6.4.1"
+def sentry = "6.18.1"
 def timber = "5.0.1"
 def flipper = "0.161.0"
 def flippernoop = "0.161.0"
@@ -93,8 +93,8 @@ ext.versions = [
         ndk                           : "21.4.7075529",
         sdk                           : 33,
         minSdk                        : 21,
-        vCode: 123,
-        vName: "2.8",
+        vCode: 125,
+        vName: "2.8.1",
         sourceCompat               : JavaVersion.VERSION_11,
         targetCompat               : JavaVersion.VERSION_11,
         kotlinCompilerExtensionVersion: "1.4.2",

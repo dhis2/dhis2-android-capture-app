@@ -240,7 +240,9 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
     }
 
     override fun back() {
-        if (currentFocus == null || isBackPressed) super.back() else {
+        if (currentFocus == null || isBackPressed) {
+            super.back()
+        } else {
             isBackPressed = true
             binding.root.requestFocus()
             back()

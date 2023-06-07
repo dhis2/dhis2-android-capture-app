@@ -197,14 +197,11 @@ class PeriodStepProviderImplTest {
         assertTrue(diff == 2)
     }
 
-    private fun generatePeriod(
-        periodType: PeriodType,
-        startDate: Date,
-        endDate: Date
-    ) = Period.builder()
-        .periodId("")
-        .periodType(periodType)
-        .startDate(startDate)
-        .endDate(endDate)
-        .build()
+    private fun generatePeriod(periodType: PeriodType, startDate: Date, endDate: Date) =
+        Period.builder()
+            .periodId("")
+            .periodType(periodType)
+            .startDate(startDate)
+            .endDate(endDate)
+            .build()
 }

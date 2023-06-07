@@ -145,7 +145,9 @@ fun Toolbar(
                     onClick = {
                         if (backdropState.isConcealed) {
                             scope.launch { backdropState.reveal() }
-                        } else scope.launch { backdropState.conceal() }
+                        } else {
+                            scope.launch { backdropState.conceal() }
+                        }
                         keyboardController?.hide()
                     }
                 ) {

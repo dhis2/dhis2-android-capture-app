@@ -227,9 +227,8 @@ class MapLayerManager(
         return combinations
     }
 
-    fun sourcesAndLayersForSearch() =
-        mapLayers.filter { (_, mapLayer) -> mapLayer.visible }
-            .map { (sourceId, mapLayer) ->
-                sourceId to mapLayer.layerIdsToSearch()
-            }.toMap()
+    fun sourcesAndLayersForSearch() = mapLayers.filter { (_, mapLayer) -> mapLayer.visible }
+        .map { (sourceId, mapLayer) ->
+            sourceId to mapLayer.layerIdsToSearch()
+        }.toMap()
 }

@@ -49,9 +49,12 @@ class MapTeisToFeatureCollectionTest {
     fun setup() {
         mapTeisToFeatureCollection =
             MapTeisToFeatureCollection(
-                bounds, mapPointToFeature,
-                mapPolygonToFeature, mapPolygonPointToFeature,
-                mapRelationshipToRelationshipMapModel, mapRelationshipsToFeatureCollection
+                bounds,
+                mapPointToFeature,
+                mapPolygonToFeature,
+                mapPolygonPointToFeature,
+                mapRelationshipToRelationshipMapModel,
+                mapRelationshipsToFeatureCollection
             )
     }
 
@@ -105,7 +108,8 @@ class MapTeisToFeatureCollectionTest {
         val relationshipFeatureCollection =
             featureCollectionResults?.features()?.get(0)?.geometry() as LineString
         assertThat(
-            relationshipFeatureCollection.coordinates()[0].longitude(), `is`(POINT_LONGITUDE)
+            relationshipFeatureCollection.coordinates()[0].longitude(),
+            `is`(POINT_LONGITUDE)
         )
         assertThat(relationshipFeatureCollection.coordinates()[0].latitude(), `is`(POINT_LATITUDE))
         assertThat(

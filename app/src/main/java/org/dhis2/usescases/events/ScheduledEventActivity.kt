@@ -121,12 +121,12 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                     DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true)
 
                 if (lastPeriodDate.after(
-                    DateUtils.getInstance().getNextPeriod(
-                        program.expiryPeriodType(),
-                        minDate,
-                        0
+                        DateUtils.getInstance().getNextPeriod(
+                                program.expiryPeriodType(),
+                                minDate,
+                                0
+                            )
                     )
-                )
                 ) {
                     minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
                 }
@@ -150,12 +150,12 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                     DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true)
 
                 if (lastPeriodDate.after(
-                    DateUtils.getInstance().getNextPeriod(
-                        program.expiryPeriodType(),
-                        minDate,
-                        0
+                        DateUtils.getInstance().getNextPeriod(
+                                program.expiryPeriodType(),
+                                minDate,
+                                0
+                            )
                     )
-                )
                 ) {
                     minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
                 }

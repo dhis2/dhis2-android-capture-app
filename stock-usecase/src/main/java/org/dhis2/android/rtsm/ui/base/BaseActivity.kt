@@ -64,7 +64,8 @@ abstract class BaseActivity : AppCompatActivity() {
             speechController = SpeechControllerImpl(speechAwareViewModel)
 
             registerSpeechRecognitionStatusObserver(
-                speechAwareViewModel.getSpeechStatus(), speechController
+                speechAwareViewModel.getSpeechStatus(),
+                speechController
             )
         }
 
@@ -105,9 +106,8 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     open fun onVoiceInputStateChanged() {}
 
-    private fun isVoiceInputEnabled(viewModel: ViewModel) =
-        (viewModel as BaseViewModel)
-            .isVoiceInputEnabled(resources.getString(R.string.use_mic_pref_key))
+    private fun isVoiceInputEnabled(viewModel: ViewModel) = (viewModel as BaseViewModel)
+        .isVoiceInputEnabled(resources.getString(R.string.use_mic_pref_key))
 
     override fun onDestroy() {
         disposable.clear()
@@ -118,7 +118,8 @@ abstract class BaseActivity : AppCompatActivity() {
         val message = intent.getStringExtra(INTENT_EXTRA_MESSAGE)
         message?.let {
             showInfoMessage(
-                getViewBinding().root, it
+                getViewBinding().root,
+                it
             )
 
             // Clear the intent payload to prevent persistent notifications

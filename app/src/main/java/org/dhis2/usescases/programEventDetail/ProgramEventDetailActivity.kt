@@ -225,11 +225,13 @@ class ProgramEventDetailActivity :
     }
 
     override fun renderError(message: String) {
-        if (activity != null) MaterialAlertDialogBuilder(activity, R.style.MaterialDialog)
-            .setPositiveButton(getString(R.string.button_ok), null)
-            .setTitle(getString(R.string.error))
-            .setMessage(message)
-            .show()
+        if (activity != null) {
+            MaterialAlertDialogBuilder(activity, R.style.MaterialDialog)
+                .setPositiveButton(getString(R.string.button_ok), null)
+                .setTitle(getString(R.string.error))
+                .setMessage(message)
+                .show()
+        }
     }
 
     override fun showHideFilter() {
@@ -360,7 +362,9 @@ class ProgramEventDetailActivity :
         startActivity(
             EventCaptureActivity::class.java,
             EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK),
-            false, false, null
+            false,
+            false,
+            null
         )
     }
 
@@ -402,7 +406,8 @@ class ProgramEventDetailActivity :
 
     private fun showAnalytics() {
         supportFragmentManager.beginTransaction().replace(
-            R.id.fragmentContainer, GroupAnalyticsFragment.forProgram(programUid)
+            R.id.fragmentContainer,
+            GroupAnalyticsFragment.forProgram(programUid)
         ).commitNow()
         binding.addEventButton.visibility = View.GONE
         binding.filter.visibility = View.GONE

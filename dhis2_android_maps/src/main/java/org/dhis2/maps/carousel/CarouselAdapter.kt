@@ -376,9 +376,7 @@ class CarouselAdapter private constructor(
             this.onEventClickListener = onEventClickListener
         }
 
-        fun addOnProfileImageClickListener(
-            onProfileImageClick: (String) -> Unit
-        ) = apply {
+        fun addOnProfileImageClickListener(onProfileImageClick: (String) -> Unit) = apply {
             this.onProfileImageClick = onProfileImageClick
         }
 
@@ -390,9 +388,7 @@ class CarouselAdapter private constructor(
             this.items = items
         }
 
-        fun addOnNavigateClickListener(
-            onNavigateClick: (String) -> Unit
-        ) = apply {
+        fun addOnNavigateClickListener(onNavigateClick: (String) -> Unit) = apply {
             this.onNavigateClickListener = onNavigateClick
         }
 
