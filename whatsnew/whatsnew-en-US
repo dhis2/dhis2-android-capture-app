@@ -1,11 +1,8 @@
-This new version includes the following features:
-- Table resizing.
-- New sync error navigation.
-- Handwritten signatures for image Data Elements.
-- Actionable phone number and email icons.
-- Android app version control from DHIS2.
-- Removed the maximum number of offline accounts.
-- Supported file value type.
-- New tracker working lists support (filter by DE).
-- Real time stock use case integration.
-You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app).
+This is a patch version that fixes:
+- ANDROAPP-5367 Analytics: verify support for Calculations
+- ANDROAPP-5365 Update rule engine to 2.1.8
+- ANDROAPP-5364 Handle map API calls when device doesn't have internet access but can access the dhis server
+- ANDROAPP-5361 Tracker infinite loading for program stage
+- ANDROAPP-5356 LMIS back miss behavior
+- Stability issues: ANDROAPP-5360, ANDROAPP-5358, ANDROAPP-5358
+You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app)
