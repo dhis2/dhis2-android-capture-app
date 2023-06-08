@@ -1,5 +1,5 @@
-def gradle = '7.4.1'
-def kotlin = '1.8.10'
+def gradle = '8.0.2'
+def kotlin = '1.8.21'
 def hilt = '2.43.2'
 def hiltCompiler = '1.0.0'
 def jacoco = '0.8.8'
@@ -67,10 +67,9 @@ def okhttp = "3.12.0"
 def jodatime = "2.9.9"
 def glide = "4.9.0"
 def guava = "31.1-android"
-def mockito = "4.0.0"
+def mockito = "4.1.0"
 def junit = "4.13.2"
-def mockito_kotlin = "2.2.0"
-def mockito_inline = "3.11.2"
+def mockito_inline = "5.2.0"
 def javafaker = "1.0.2"
 def junit_ext = "1.1.5"
 def espresso_core = "3.5.1"
@@ -95,9 +94,9 @@ ext.versions = [
         minSdk                        : 21,
         vCode: 125,
         vName: "2.8.1",
-        sourceCompat               : JavaVersion.VERSION_11,
-        targetCompat               : JavaVersion.VERSION_11,
-        kotlinCompilerExtensionVersion: "1.4.2",
+        sourceCompat               : JavaVersion.VERSION_17,
+        targetCompat               : JavaVersion.VERSION_17,
+        kotlinCompilerExtensionVersion: "1.4.7",
         dhis2AndroidSDK : "$dhis2sdk"
 ]
 
@@ -244,8 +243,7 @@ ext.libs = [
                 'testCore'                : "androidx.test:core:$androidx_test",
                 'mockitoCore'             : "org.mockito:mockito-core:$mockito",
                 'mockitoInline'           : "org.mockito:mockito-inline:$mockito_inline",
-                'mockitoKotlinLegacy'     : "org.mockito.kotlin:mockito-kotlin:$mockito", //TODO: This may be legacy
-                'mockitoKotlin'           : "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin",
+                'mockitoKotlin'           : "org.mockito.kotlin:mockito-kotlin:$mockito",
                 'mockitoAndroid'          : "org.mockito:mockito-android:$mockito_android",
                 'truth'                   : "com.google.truth:truth:$google_truth",
                 'orchestrator'            : "androidx.test:orchestrator:$androidx_test_orchestrator",

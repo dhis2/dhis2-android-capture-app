@@ -38,7 +38,8 @@ class LoginTest : BaseTest() {
         setupMockServer()
         D2Manager.removeCredentials()
     }
-    
+
+    @Ignore("To be fixed in the mock server issue")
     @Test
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
@@ -161,6 +162,7 @@ class LoginTest : BaseTest() {
         )
     }
 
+    @Ignore("To be fixed in the mock server issue")
     @Test
     fun shouldDisplayShareDataDialogAndOpenPrivacyPolicy() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)

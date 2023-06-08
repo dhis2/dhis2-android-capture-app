@@ -1,10 +1,6 @@
 package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.filters.AssignedFilter
 import org.dhis2.commons.filters.EnrollmentStatusFilter
@@ -30,6 +26,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class FilterRepositoryTest {
 
@@ -486,51 +486,6 @@ class FilterRepositoryTest {
     }
 
     private fun createWebAppTrackedEntityFilters(): Map<ProgramFilter, FilterSetting> {
-        return mapOf(
-            ProgramFilter.EVENT_DATE to createFilterValue(
-                PROGRAM_FILTER,
-                "EVENT_DATE",
-                false
-            ),
-            ProgramFilter.SYNC_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "EVE",
-                false
-            ),
-            ProgramFilter.ORG_UNIT to createFilterValue(
-                PROGRAM_FILTER,
-                "ORG_UNIT",
-                false
-            ),
-            ProgramFilter.ENROLLMENT_DATE to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.ENROLLMENT_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.ASSIGNED_TO_ME to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.EVENT_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.FOLLOW_UP to createFilterValue(
-                PROGRAM_FILTER,
-                "FOLLOW_UP",
-                false
-            )
-        )
-    }
-
-    private fun createDefaultTrackedEntityFilters(): Map<ProgramFilter, FilterSetting> {
         return mapOf(
             ProgramFilter.EVENT_DATE to createFilterValue(
                 PROGRAM_FILTER,

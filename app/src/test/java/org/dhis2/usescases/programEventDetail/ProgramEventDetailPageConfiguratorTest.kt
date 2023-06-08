@@ -1,12 +1,12 @@
 package org.dhis2.usescases.programEventDetail
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class ProgramEventDetailPageConfiguratorTest {
 

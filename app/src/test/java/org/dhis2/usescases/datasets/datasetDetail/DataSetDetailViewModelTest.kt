@@ -1,18 +1,18 @@
 package org.dhis2.usescases.datasets.datasetDetail
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
-import mock
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class DataSetDetailViewModelTest {
@@ -20,7 +20,7 @@ class DataSetDetailViewModelTest {
     @get:Rule
     val executorRule = InstantTaskExecutorRule()
 
-    private val dispatcher: DispatcherProvider = com.nhaarman.mockitokotlin2.mock {
+    private val dispatcher: DispatcherProvider = mock {
         on { io() } doReturn Dispatchers.IO
     }
     private val dataSetPageConfigurator: DataSetPageConfigurator = mock()

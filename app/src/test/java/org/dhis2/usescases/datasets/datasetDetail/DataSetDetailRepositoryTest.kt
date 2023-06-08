@@ -1,9 +1,5 @@
 package org.dhis2.usescases.datasets.datasetDetail
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
@@ -16,15 +12,15 @@ import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataset.DataSet
-import org.hisp.dhis.android.core.dataset.DataSetInstance
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.period.Period
-import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DataSetDetailRepositoryTest {
 
@@ -274,21 +270,4 @@ class DataSetDetailRepositoryTest {
             )
         return categoryOptions
     }
-
-    private fun dummyDataSetInstance() = DataSetInstance.builder()
-        .dataSetUid(dataSetUid)
-        .dataSetDisplayName("dataSetName")
-        .organisationUnitUid("orgUnit")
-        .attributeOptionComboUid("attrOptionCombo")
-        .period("period")
-        .organisationUnitDisplayName("orgUnitName")
-        .attributeOptionComboDisplayName("attrOptionComboName")
-        .valueCount(1)
-        .completed(true)
-        .periodType(PeriodType.Daily)
-        .build()
-
-    private fun dummyPeriod() = Period.builder().periodId("periodId").build()
-
-    private fun dummyOrgUnits() = mutableListOf(OrganisationUnit.builder().uid("orgUnit").build())
 }

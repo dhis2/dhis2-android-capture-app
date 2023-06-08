@@ -20,9 +20,6 @@ android {
     defaultConfig {
         minSdk versions.minSdk
         targetSdk versions.sdk
-        versionCode versions.vCode
-        versionName versions.vName
-        applicationId versions.applicationId
         multiDexEnabled true
 
         setProperty("archivesBaseName", "psm-v" + versions.versionName)
@@ -43,19 +40,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
-            buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
-            buildConfigField("String", "APPLICATION_ID", "\"${defaultConfig.applicationId}\"")
         }
-
-        debug {
-            buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
-            buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
-            buildConfigField("String", "APPLICATION_ID", "\"${defaultConfig.applicationId}\"")
-        }
-
-
     }
 
     flavorDimensions "default"
@@ -72,15 +57,19 @@ android {
         viewBinding true
         dataBinding true
     }
-
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/proguard/androidx-annotations.pro'
-        exclude 'META-INF/gradle/incremental.annotation.processors'
+        resources {
+            excludes += [
+                    'META-INF/DEPENDENCIES',
+                    'META-INF/ASL2.0',
+                    'META-INF/NOTICE',
+                    'META-INF/LICENSE',
+                    'META-INF/proguard/androidx-annotations.pro',
+                    'META-INF/gradle/incremental.annotation.processors'
+            ]
+        }
     }
+
 
     composeOptions {
         kotlinCompilerExtensionVersion = versions.kotlinCompilerExtensionVersion
@@ -126,7 +115,7 @@ dependencies {
     releaseImplementation libs.analytics.flipperNoop
 
     testImplementation libs.test.junit
-    testImplementation libs.test.mockitoKotlinLegacy
+    testImplementation libs.test.mockitoKotlin
     testImplementation libs.test.mockitoInline
     testImplementation libs.test.archCoreTesting
     testImplementation libs.test.javafaker

@@ -1,11 +1,5 @@
 package org.dhis2.usescases.notes.noteDetail
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -14,6 +8,12 @@ import org.hisp.dhis.android.core.note.Note
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 
 class NoteDetailPresenterTest {
 
