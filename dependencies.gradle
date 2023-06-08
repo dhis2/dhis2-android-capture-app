@@ -93,7 +93,7 @@ ext.versions = [
         sdk                           : 33,
         minSdk                        : 21,
         vCode: 125,
-        vName: "androide_18",
+        vName: "androide-18",
         sourceCompat               : JavaVersion.VERSION_17,
         targetCompat               : JavaVersion.VERSION_17,
         kotlinCompilerExtensionVersion: "1.4.7",
