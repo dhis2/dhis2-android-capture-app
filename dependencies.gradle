@@ -94,7 +94,7 @@ ext.versions = [
         sdk                           : 33,
         minSdk                        : 21,
         vCode: 125,
-        vName: "2.8.1",
+        vName: "2.8.1.1",
         sourceCompat               : JavaVersion.VERSION_11,
         targetCompat               : JavaVersion.VERSION_11,
         kotlinCompilerExtensionVersion: "1.4.2",
