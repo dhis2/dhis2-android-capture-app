@@ -93,7 +93,7 @@ ext.versions = [
         ndk                           : "21.4.7075529",
         sdk                           : 33,
         minSdk                        : 21,
-        vCode: 125,
+        vCode: 126,
         vName: "2.8.1.1",
         sourceCompat               : JavaVersion.VERSION_11,
         targetCompat               : JavaVersion.VERSION_11,
