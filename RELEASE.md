@@ -1,4 +1,4 @@
-Android Capture App for DHIS 2 (v2.8.1) - Patch version
+Android Capture App for DHIS 2 (v2.8.1.1) - Hotfix
 <table>
 <tr> 
 <td> 
@@ -12,17 +12,10 @@ This is a patch version of the DHIS2 Android App It builds upon the last version
 <td colspan="2" bgcolor="white">
 
 ## Bugs fixed
-* [ANDROAPP-5367](https://dhis2.atlassian.net/browse/ANDROAPP-5367) Analytics: verify support for Calculations
-* [ANDROAPP-5365](https://dhis2.atlassian.net/browse/ANDROAPP-5365) Update rule engine to 2.1.8
-* [ANDROAPP-5364](https://dhis2.atlassian.net/browse/ANDROAPP-5364) Handle map API calls when device doesn't have internet access but can access the dhis server
-* [ANDROAPP-5361](https://dhis2.atlassian.net/browse/ANDROAPP-5361) Tracker infinite loading for program stage
-* [ANDROAPP-5360](https://dhis2.atlassian.net/browse/ANDROAPP-5360) ForegroundServiceStartNotAllowedException
-* [ANDROAPP-5359](https://dhis2.atlassian.net/browse/ANDROAPP-5359) RuntimeException: Unable to resume activity
-* [ANDROAPP-5358](https://dhis2.atlassian.net/browse/ANDROAPP-5358) NumberFormatException: For input string: "No"
-* [ANDROAPP-5356](https://dhis2.atlassian.net/browse/ANDROAPP-5356) LMIS back miss behavior
-* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.8.1.
+* [ANDROAPP-5371](https://dhis2.atlassian.net/browse/ANDROAPP-5371) Update SDK to 1.8.1.1
+* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.8.1.1
 
-**Bug fixing:** You can find the list of bugs fixed [here](https://dhis2.atlassian.net/issues/?filter=10417).
+**Bug fixing:** You can find the list of bugs fixed [here](https://dhis2.atlassian.net/projects/ANDROAPP/versions/10808).
 
 </td>
 </tr>

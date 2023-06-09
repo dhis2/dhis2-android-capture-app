@@ -1,8 +1,3 @@
-This is a patch version that fixes:
-- ANDROAPP-5367 Analytics: verify support for Calculations
-- ANDROAPP-5365 Update rule engine to 2.1.8
-- ANDROAPP-5364 Handle map API calls when device doesn't have internet access but can access the dhis server
-- ANDROAPP-5361 Tracker infinite loading for program stage
-- ANDROAPP-5356 LMIS back miss behavior
-- Stability issues: ANDROAPP-5360, ANDROAPP-5358, ANDROAPP-5358
+This is a hotfix version that fixes:
+- ANDROAPP-5371 Update SDK to 1.8.1.1: Missing Visualization after update to 1.8.1
 You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app)
