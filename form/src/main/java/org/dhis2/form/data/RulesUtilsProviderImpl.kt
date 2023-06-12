@@ -273,7 +273,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             val field = fieldViewModels[assign.field()]!!
 
             val value =
-                if (field.optionSet != null && field.value != null) {
+                if (field.optionSet != null && field.displayName != null) {
                     val valueOption =
                         d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
                             .byDisplayName().eq(field.displayName)
