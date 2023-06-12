@@ -131,8 +131,12 @@ class UiEventFactoryImpl(
                 ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)
                 ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
                 OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
-                EMAIL -> RecyclerViewUiEvents.OpenChooserIntent(Intent.ACTION_SENDTO, value)
-                PHONE_NUMBER -> RecyclerViewUiEvents.OpenChooserIntent(Intent.ACTION_DIAL, value)
+                EMAIL -> RecyclerViewUiEvents.OpenChooserIntent(Intent.ACTION_SENDTO, value, uid)
+                PHONE_NUMBER -> RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_DIAL,
+                    value,
+                    uid
+                )
                 else -> null
             }
         } catch (e: Exception) {
