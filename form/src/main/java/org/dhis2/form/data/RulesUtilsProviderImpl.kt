@@ -24,7 +24,10 @@ import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
-class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
+class RulesUtilsProviderImpl(
+    val d2: D2,
+    private val optionsRepository: OptionsRepository
+) : RulesUtilsProvider {
 
     var applyForEvent = false
     var canComplete = true
@@ -274,10 +277,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
             val value =
                 if (field.optionSet != null && field.displayName != null) {
-                    val valueOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
-                            .byDisplayName().eq(field.displayName)
-                            .one().blockingGet()
+                    val valueOption = optionsRepository.getOptionByDisplayName(
+                        optionSet = field.optionSet!!,
+                        displayName = field.displayName!!
+                    )
                     if (valueOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(
@@ -300,10 +303,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             }
             val valueToShow =
                 if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
-                    val effectOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
-                            .byCode().eq(ruleEffect.data())
-                            .one().blockingGet()
+                    val effectOption = optionsRepository.getOptionByCode(
+                        optionSet = field.optionSet!!,
+                        code = ruleEffect.data()!!
+                    )
                     if (effectOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(

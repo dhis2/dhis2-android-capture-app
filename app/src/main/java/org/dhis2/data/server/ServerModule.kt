@@ -16,6 +16,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
+import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.metadata.usecases.DataSetConfiguration
@@ -55,8 +56,8 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun rulesUtilsProvider(d2: D2?): RulesUtilsProvider {
-        return RulesUtilsProviderImpl(d2!!)
+    fun rulesUtilsProvider(d2: D2?, optionsRepository: OptionsRepository): RulesUtilsProvider {
+        return RulesUtilsProviderImpl(d2!!, optionsRepository)
     }
 
     @Provides
@@ -145,5 +146,11 @@ class ServerModule {
                 .context(context)
                 .build()
         }
+    }
+
+    @Provides
+    @PerServer
+    fun provideOptionsRepository(d2: D2): OptionsRepository {
+        return OptionsRepository(d2)
     }
 }
