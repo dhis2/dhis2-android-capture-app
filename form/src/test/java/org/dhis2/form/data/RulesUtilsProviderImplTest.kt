@@ -1,10 +1,6 @@
-package org.dhis2.utils
+package org.dhis2.form.data
 
 import io.reactivex.Flowable
-import org.dhis2.form.data.FormValueStore
-import org.dhis2.form.data.OptionsRepository
-import org.dhis2.form.data.RulesUtilsProvider
-import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.StoreResult
