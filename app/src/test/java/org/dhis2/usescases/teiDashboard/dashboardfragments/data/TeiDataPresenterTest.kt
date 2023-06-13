@@ -9,6 +9,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
@@ -46,6 +47,7 @@ class TeiDataPresenterTest {
     private lateinit var teiDataPresenter: TEIDataPresenter
     private val valueStore: FormValueStore = mock()
     private val resources: ResourceManager = mock()
+    private val optionsRepository: OptionsRepository = mock()
 
     @Before
     fun setUp() {
@@ -64,7 +66,8 @@ class TeiDataPresenterTest {
             filterManager,
             filterRepository,
             valueStore,
-            resources
+            resources,
+            optionsRepository
         )
     }
 
