@@ -7,7 +7,6 @@ import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.test.TestActivity
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -53,7 +52,6 @@ class CellTableTest {
         }
     }
 
-    @Ignore("It is failing something related added coroutine")
     @Test
     fun shouldSaveValue() {
         var savedValue: TableCell? = null
@@ -133,7 +131,6 @@ class CellTableTest {
         }
     }
 
-    @Ignore("It is failing something related added coroutine")
     @Test
     fun shouldHideInputComponentIfSelectedCellDoesNotRequireIt() {
         val testingTableId = "PjKGwf9WxBE"
