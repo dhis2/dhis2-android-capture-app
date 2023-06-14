@@ -28,7 +28,7 @@ class SyncStatusDialogNavigator(
     private val context: Context,
     private val onSyncNavigationListener: OnSyncNavigationListener?
 ) {
-    fun navigateTo(syncStatusItem: SyncStatusItem) {
+    fun navigateTo(syncStatusItem: SyncStatusItem, onNavigation: () -> Unit) {
         val intent = when (syncStatusItem.type) {
             is SyncStatusType.DataSet ->
                 navigateToDataSetInstances(syncStatusItem.type as SyncStatusType.DataSet)
@@ -48,6 +48,10 @@ class SyncStatusDialogNavigator(
                 navigateToStockUsecase(syncStatusItem.type as SyncStatusType.StockProgram)
             is SyncStatusType.Enrollment ->
                 navigateToEnrollmentFormScreen(syncStatusItem.type as SyncStatusType.Enrollment)
+        }
+
+        if (intent?.hasExtra(OPEN_ERROR_LOCATION) == false) {
+            onNavigation()
         }
 
         if (onSyncNavigationListener != null) {
