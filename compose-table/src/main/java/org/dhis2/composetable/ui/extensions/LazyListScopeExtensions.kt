@@ -1,4 +1,4 @@
-package org.dhis2.composetable.ui
+package org.dhis2.composetable.ui.extensions
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyItemScope

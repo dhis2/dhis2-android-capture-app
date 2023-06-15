@@ -8,7 +8,7 @@
         <import type="android.view.View" />
 
         <variable
-            name="reservedValue"
+            name="reservedValueModel"
             type="org.dhis2.usescases.reservedValue.ReservedValueModel" />
     </data>
 
@@ -24,7 +24,7 @@
             android:id="@+id/displayName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{reservedValue.attributeName}"
+            android:text="@{reservedValueModel.attributeName}"
             android:textColor="@color/textPrimary"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@id/refill"
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/textPrimary"
             android:textSize="12sp"
-            android:visibility="@{reservedValue.hasOrgUnit() ? View.VISIBLE : View.GONE}"
+            android:visibility="@{reservedValueModel.hasOrgUnit() ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/refill"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/displayName"
@@ -48,7 +48,7 @@
             android:id="@+id/reservedValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{reservedValue.valuesLeft()}"
+            android:text="@{reservedValueModel.valuesLeft()}"
             android:textColor="@color/textSecondary"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/refill"
@@ -61,7 +61,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->reservedValue.refill()}"
+            android:onClick="@{()->reservedValueModel.refill()}"
             android:text="@string/refill_reserved_values"
             android:textColor="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"

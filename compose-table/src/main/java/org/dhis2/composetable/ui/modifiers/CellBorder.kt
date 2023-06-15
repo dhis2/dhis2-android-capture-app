@@ -1,4 +1,4 @@
-package org.dhis2.composetable.ui
+package org.dhis2.composetable.ui.modifiers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

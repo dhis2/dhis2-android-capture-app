@@ -40,11 +40,11 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
+import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
