@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
 import io.reactivex.Single
-import mock
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -17,6 +16,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class DataSetTableRepositoryTest {
