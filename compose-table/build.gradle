@@ -69,4 +69,6 @@ dependencies {
     androidTestImplementation libs.test.uiautomator
     androidTestImplementation libs.test.testJUnitKtx
     androidTestImplementation libs.test.espresso
+
+    implementation("com.github.theapache64:rebugger:1.0.0-alpha05")
 }

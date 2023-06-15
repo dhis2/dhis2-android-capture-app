@@ -100,6 +100,9 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
+import com.theapache64.rebugger.Rebugger
+import org.dhis2.composetable.actions.LocalInteraction
+import org.dhis2.composetable.actions.LocalTableResizeActions
 import org.dhis2.composetable.model.areAllValuesEmpty
 
 @Composable
@@ -835,68 +838,43 @@ fun DropDownOptions(
 @Composable
 fun DataTable(
     tableList: List<TableModel>,
-    tableInteractions: TableInteractions = object : TableInteractions {},
     bottomContent: @Composable (() -> Unit)? = null
 ) {
     if (!TableTheme.configuration.editable && !tableList.all { it.areAllValuesEmpty() }) {
+        val tableInteractions = LocalInteraction.current
+        val tableResizeActions = LocalTableResizeActions.current
         TableItem(
             tableModel = tableList.first(),
             tableInteractions = tableInteractions,
             onSizeChanged = {
-                tableInteractions.onTableSizeChanged(it.width)
+                tableResizeActions.onTableWidthChanged(it.width)
             },
             onColumnResize = { column, width ->
-                tableInteractions.onColumnHeaderSizeChanged(
+                tableResizeActions.onColumnHeaderResize(
                     tableList.first().id ?: "",
                     column,
                     width
                 )
             },
             onHeaderResize = { width ->
-                tableInteractions.onRowHeaderSizeChanged(
+                tableResizeActions.onRowHeaderResize(
                     tableList.first().id ?: "",
                     width
                 )
             },
             onTableResize = { newValue ->
-                tableInteractions.onTableWidthChanged(
+                tableResizeActions.onTableDimensionResize(
                     tableList.first().id ?: "",
                     newValue
                 )
             },
             onResetResize = {
-                tableInteractions.onTableWidthReset(tableList.first().id ?: "")
+                tableResizeActions.onTableDimensionReset(tableList.first().id ?: "")
             }
         )
     } else if (TableTheme.configuration.editable) {
         TableList(
             tableList = tableList,
-            tableInteractions = tableInteractions,
-            onSizeChanged = {
-                tableInteractions.onTableSizeChanged(it.width)
-            },
-            onColumnResize = { tableId, column, newValue ->
-                tableInteractions.onColumnHeaderSizeChanged(
-                    tableId,
-                    column,
-                    newValue
-                )
-            },
-            onHeaderResize = { tableId, newValue ->
-                tableInteractions.onRowHeaderSizeChanged(
-                    tableId,
-                    newValue
-                )
-            },
-            onTableResize = { tableId, newValue ->
-                tableInteractions.onTableWidthChanged(
-                    tableId,
-                    newValue
-                )
-            },
-            onResetResize = { tableId ->
-                tableInteractions.onTableWidthReset(tableId)
-            },
             bottomContent = bottomContent
         )
     }
@@ -906,12 +884,6 @@ fun DataTable(
 @Composable
 private fun TableList(
     tableList: List<TableModel>,
-    tableInteractions: TableInteractions,
-    onSizeChanged: (IntSize) -> Unit,
-    onColumnResize: (String, Int, Float) -> Unit,
-    onHeaderResize: (String, Float) -> Unit,
-    onTableResize: (String, Float) -> Unit,
-    onResetResize: (String) -> Unit,
     bottomContent: @Composable (() -> Unit)? = null
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
@@ -919,12 +891,26 @@ private fun TableList(
     val keyboardState by keyboardAsState()
     var resizingCell: ResizingCell? by remember { mutableStateOf(null) }
     val tableSelection = LocalTableSelection.current
+    val tableInteractions = LocalInteraction.current
+    val tableResizeActions = LocalTableResizeActions.current
+
     LaunchedEffect(keyboardState) {
         if (tableSelection is TableSelection.CellSelection && keyboardState == Keyboard.Opened) {
             verticalScrollState.animateScrollToVisibleItems()
         }
     }
-
+    Rebugger(
+        trackMap = mapOf(
+            "tableList" to tableList,
+            "bottomContent" to bottomContent,
+            "horizontalScrollStates" to horizontalScrollStates,
+            "verticalScrollState" to verticalScrollState,
+            "keyboardState" to keyboardState,
+            "resizingCell" to resizingCell,
+            "tableSelection" to tableSelection,
+            "tableInteractions" to tableInteractions,
+        ),
+    )
     Box {
         LazyColumn(
             modifier = Modifier
@@ -935,7 +921,9 @@ private fun TableList(
                     vertical = TableTheme.dimensions.tableVerticalPadding
                 )
                 .clip(RoundedCornerShape(8.dp))
-                .onSizeChanged { onSizeChanged(it) },
+                .onSizeChanged {
+                    tableResizeActions.onTableWidthChanged(it.width)
+                },
             contentPadding = PaddingValues(bottom = TableTheme.dimensions.tableBottomPadding),
             state = verticalScrollState
         ) {
@@ -952,7 +940,10 @@ private fun TableList(
                                 currentTableModel.id ?: ""
                             ),
                             onTableResize = {
-                                onTableResize(currentTableModel.id ?: "", it)
+                                tableResizeActions.onTableDimensionResize(
+                                    currentTableModel.id ?: "",
+                                    it
+                                )
                             },
                             onResizing = { resizingCell = it }
                         ),
@@ -993,7 +984,7 @@ private fun TableList(
                             )
                         },
                         onHeaderResize = { column, width ->
-                            onColumnResize(
+                            tableResizeActions.onColumnHeaderResize(
                                 currentTableModel.id ?: "",
                                 column,
                                 width
@@ -1001,9 +992,7 @@ private fun TableList(
                         },
                         onResizing = { resizingCell = it },
                         onResetResize = {
-                            onResetResize(
-                                currentTableModel.id ?: ""
-                            )
+                            tableResizeActions.onTableDimensionReset(currentTableModel.id ?: "")
                         }
                     )
                 }
@@ -1064,7 +1053,9 @@ private fun TableList(
                                 )
                             )
                         },
-                        onDecorationClick = tableInteractions::onDecorationClick,
+                        onDecorationClick = {
+                            tableInteractions.onDecorationClick(it)
+                        },
                         onClick = { tableCell ->
                             var prevIndex = 0
                             repeat(index) { tableIndex ->
@@ -1083,7 +1074,9 @@ private fun TableList(
                             tableInteractions.onClick(tableCell)
                         },
                         onHeaderResize = { width ->
-                            onHeaderResize(currentTableModel.id ?: "", width)
+                            tableResizeActions.onRowHeaderResize(
+                                currentTableModel.id ?: "", width
+                            )
                         },
                         onResizing = {
                             resizingCell = it
@@ -1538,13 +1531,7 @@ fun TableListPreview() {
     )
     val tableList = listOf(tableModel)
     TableList(
-        tableList = tableList,
-        tableInteractions = object : TableInteractions {},
-        onSizeChanged = {},
-        onColumnResize = { _, _, _ -> },
-        onHeaderResize = { _, _ -> },
-        onTableResize = { _, _ -> },
-        onResetResize = {}
+        tableList = tableList
     )
 }
 

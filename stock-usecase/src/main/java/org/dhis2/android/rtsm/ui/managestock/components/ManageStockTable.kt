@@ -27,6 +27,7 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
 import org.dhis2.composetable.ui.TableColors
@@ -63,6 +64,34 @@ fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -
                     )
                 )
             }
+
+            val tableResizeActions = object : TableResizeActions {
+                override fun onTableWidthChanged(width: Int) {
+                    dimensions = dimensions.copy(totalWidth = width)
+                }
+
+                override fun onRowHeaderResize(tableId: String, newValue: Float) {
+                    dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+                }
+
+                override fun onColumnHeaderResize(
+                    tableId: String,
+                    column: Int,
+                    newValue: Float
+                ) {
+                    dimensions =
+                        dimensions.updateColumnWidth(tableId, column, newValue)
+                }
+
+                override fun onTableDimensionResize(tableId: String, newValue: Float) {
+                    dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                }
+
+                override fun onTableDimensionReset(tableId: String) {
+                    dimensions = dimensions.resetWidth(tableId)
+                }
+            }
+
             TableTheme(
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,
@@ -73,7 +102,8 @@ fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -
                     headerActionsEnabled = false,
                     textInputViewMode = false
                 ),
-                tableValidator = viewModel
+                tableValidator = viewModel,
+                tableResizeActions = tableResizeActions
             ) {
                 DataSetTableScreen(
                     tableScreenState = screenState,
@@ -87,22 +117,6 @@ fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -
                         viewModel.onEditingCell(isEditing, concealBackdropState)
                     },
                     onSaveValue = viewModel::onSaveValueChange,
-                    onTableWidthChanged = { width ->
-                        dimensions = dimensions.copy(totalWidth = width)
-                    },
-                    onRowHeaderResize = { tableId, newValue ->
-                        dimensions = dimensions.updateHeaderWidth(tableId, newValue)
-                    },
-                    onColumnHeaderResize = { tableId, column, newValue ->
-                        dimensions =
-                            dimensions.updateColumnWidth(tableId, column, newValue)
-                    },
-                    onTableDimensionResize = { tableId, newValue ->
-                        dimensions = dimensions.updateAllWidthBy(tableId, newValue)
-                    },
-                    onTableDimensionReset = { tableId ->
-                        dimensions = dimensions.resetWidth(tableId)
-                    },
                     bottomContent = {
                         if (viewModel.dataEntryUiState.collectAsState().value.step
                             == DataEntryStep.REVIEWING
