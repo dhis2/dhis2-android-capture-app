@@ -532,11 +532,7 @@ class FormView : Fragment() {
     }
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {
-        val currentField = viewModel.queryData.value
-        val currentValue = when (currentField?.id) {
-            uiEvent.uid -> currentField.value
-            else -> uiEvent.value
-        }
+        val currentValue = viewModel.getUpdatedValue(uiEvent)
         if (actionIconsActivate && !currentValue.isNullOrEmpty()) {
             view?.closeKeyboard()
             val intent = Intent(uiEvent.action).apply {

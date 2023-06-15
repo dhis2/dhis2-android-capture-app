@@ -25,6 +25,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.binding.getFeatureType
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
@@ -537,6 +538,14 @@ class FormViewModel(
 
     fun clearFocus() {
         repository.clearFocusItem()
+    }
+
+    fun getUpdatedValue(uiEvent: RecyclerViewUiEvents.OpenChooserIntent): String? {
+        val currentField = queryData.value
+        return when (currentField?.id) {
+            uiEvent.uid -> currentField.value
+            else -> uiEvent.value
+        }
     }
 
     companion object {
