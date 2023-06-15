@@ -29,6 +29,7 @@ import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.form.data.FormValueStore;
+import org.dhis2.form.data.OptionsRepository;
 import org.dhis2.form.data.RuleUtilsProviderResult;
 import org.dhis2.form.data.RulesUtilsProviderImpl;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -83,6 +84,8 @@ public class TEIDataPresenter {
 
     private final ResourceManager resources;
 
+    private final OptionsRepository optionsRepository;
+
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
@@ -99,7 +102,8 @@ public class TEIDataPresenter {
                             FilterManager filterManager,
                             FilterRepository filterRepository,
                             FormValueStore valueStore,
-                            ResourceManager resources) {
+                            ResourceManager resources,
+                            OptionsRepository optionsRepository) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -117,6 +121,7 @@ public class TEIDataPresenter {
         this.groupingProcessor = BehaviorProcessor.create();
         this.filterRepository = filterRepository;
         this.valueStore = valueStore;
+        this.optionsRepository = optionsRepository;
     }
 
     public void init() {
@@ -159,9 +164,9 @@ public class TEIDataPresenter {
         if (programUid != null) {
 
             Flowable<StageSection> sectionFlowable = view.observeStageSelection(
-                    d2.programModule().programs().uid(programUid).blockingGet(),
-                    d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
-            )
+                            d2.programModule().programs().uid(programUid).blockingGet(),
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+                    )
                     .startWith(new StageSection("", false))
                     .map(selectedStage -> {
                         currentStage = selectedStage.getStageUid().equals(currentStage) && !selectedStage.getShowOptions() ? "" : selectedStage.getStageUid();
@@ -171,11 +176,11 @@ public class TEIDataPresenter {
 
             compositeDisposable.add(
                     Flowable.combineLatest(
-                            filterManager.asFlowable().startWith(filterManager),
-                            sectionFlowable,
-                            groupingFlowable,
-                            Trio::create)
-                            .doOnNext(data-> TeiDataIdlingResourceSingleton.INSTANCE.increment())
+                                    filterManager.asFlowable().startWith(filterManager),
+                                    sectionFlowable,
+                                    groupingFlowable,
+                                    Trio::create)
+                            .doOnNext(data -> TeiDataIdlingResourceSingleton.INSTANCE.increment())
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
@@ -209,9 +214,9 @@ public class TEIDataPresenter {
 
             compositeDisposable.add(
                     Single.zip(
-                            teiDataRepository.getEnrollment(),
-                            teiDataRepository.getEnrollmentProgram(),
-                            Pair::create)
+                                    teiDataRepository.getEnrollment(),
+                                    teiDataRepository.getEnrollmentProgram(),
+                                    Pair::create)
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
@@ -228,9 +233,9 @@ public class TEIDataPresenter {
 
         compositeDisposable.add(
                 Single.zip(
-                        teiDataRepository.getTrackedEntityInstance(),
-                        teiDataRepository.enrollingOrgUnit(),
-                        Pair::create)
+                                teiDataRepository.getTrackedEntityInstance(),
+                                teiDataRepository.enrollingOrgUnit(),
+                                Pair::create)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -283,7 +288,7 @@ public class TEIDataPresenter {
             return Collections.emptyList();
         }
 
-        RuleUtilsProviderResult rulesResult = new RulesUtilsProviderImpl(d2).applyRuleEffects(
+        RuleUtilsProviderResult rulesResult = new RulesUtilsProviderImpl(d2, optionsRepository).applyRuleEffects(
                 false,
                 new HashMap<>(),
                 calcResult.items(),

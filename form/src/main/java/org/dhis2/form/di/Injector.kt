@@ -14,6 +14,7 @@ import org.dhis2.form.data.EventRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
@@ -262,7 +263,12 @@ object Injector {
     private fun provideEventRuleEngineRepository(eventUid: String) =
         EventRuleEngineRepository(provideD2(), eventUid)
 
-    private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(provideD2())
+    private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(
+        provideD2(),
+        provideOptionsRepository()
+    )
+
+    private fun provideOptionsRepository() = OptionsRepository(provideD2())
 
     private fun provideLegendValueProvider(context: Context) = LegendValueProviderImpl(
         provideD2(),

@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -43,7 +44,8 @@ class TEIDataModule(
         filterManager: FilterManager?,
         filterRepository: FilterRepository?,
         valueStore: FormValueStore?,
-        resources: ResourceManager
+        resources: ResourceManager,
+        optionsRepository: OptionsRepository
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -60,7 +62,8 @@ class TEIDataModule(
             filterManager,
             filterRepository,
             valueStore,
-            resources
+            resources,
+            optionsRepository
         )
     }
 

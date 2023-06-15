@@ -1,9 +1,6 @@
-package org.dhis2.utils
+package org.dhis2.form.data
 
 import io.reactivex.Flowable
-import org.dhis2.form.data.FormValueStore
-import org.dhis2.form.data.RulesUtilsProvider
-import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.StoreResult
@@ -19,9 +16,8 @@ import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.OptionGroup
+import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
 import org.hisp.dhis.rules.models.RuleActionDisplayText
@@ -38,6 +34,9 @@ import org.hisp.dhis.rules.models.RuleActionShowWarning
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -59,16 +58,25 @@ class RulesUtilsProviderImplTest {
     private val uiStyleProvider: UiStyleProvider = mock()
     private val layoutProvider: LayoutProvider = mock()
     private val hintProvider: HintProvider = mock()
-    private val displayNameProvider: DisplayNameProvider = mock()
+    private val displayNameProvider: DisplayNameProvider = mock {
+        on {
+            provideDisplayName(
+                valueType = ValueType.TEXT,
+                value = "Old Value",
+                optionSet = "optionSetUid"
+            )
+        } doReturn "OldDisplayName"
+    }
     private val uiEventTypesProvider: UiEventTypesProvider = mock()
     private val keyboardActionProvider: KeyboardActionProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
+    private val optionsRepository: OptionsRepository = mock()
 
     private val testRuleEffects = ArrayList<RuleEffect>()
 
     @Before
     fun setUp() {
-        ruleUtils = RulesUtilsProviderImpl(d2)
+        ruleUtils = RulesUtilsProviderImpl(d2, optionsRepository)
         fieldFactory = FieldViewModelFactoryImpl(
             false,
             uiStyleProvider,
@@ -93,7 +101,21 @@ class RulesUtilsProviderImplTest {
             randomFieldViewModel("uid7", ValueType.TEXT, "section3"),
             randomFieldViewModel("uid8", ValueType.INTEGER_POSITIVE, "section4"),
             randomFieldViewModel("uid9", ValueType.NUMBER, "section4"),
-            randomFieldViewModel("uid10", ValueType.BOOLEAN, "section4")
+            randomFieldViewModel("uid10", ValueType.BOOLEAN, "section4"),
+            randomFieldViewModel(
+                "uid11",
+                ValueType.TEXT,
+                "section4",
+                value = null,
+                optionSet = "optionSetUid"
+            ),
+            randomFieldViewModel(
+                "uid12",
+                ValueType.TEXT,
+                "section4",
+                value = "Old Value",
+                optionSet = "optionSetUid"
+            )
         )
     }
 
@@ -101,14 +123,15 @@ class RulesUtilsProviderImplTest {
         uid: String,
         valueType: ValueType,
         section: String,
-        value: String? = "test"
+        value: String? = "test",
+        optionSet: String? = null
     ): FieldUiModel {
         return fieldFactory.create(
             uid,
             "label",
             valueType,
             false,
-            null,
+            optionSet,
             value,
             section,
             null,
@@ -142,8 +165,8 @@ class RulesUtilsProviderImplTest {
             valueStore
         )
 
-        Assert.assertNotNull(testFieldViewModels["uid1"]!!.warning)
-        Assert.assertEquals(testFieldViewModels["uid1"]!!.warning, "content data")
+        assertNotNull(testFieldViewModels["uid1"]!!.warning)
+        assertEquals(testFieldViewModels["uid1"]!!.warning, "content data")
     }
 
     @Test
@@ -158,8 +181,6 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        val testModel = testFieldViewModels[testingUid]
-
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
@@ -167,8 +188,8 @@ class RulesUtilsProviderImplTest {
             valueStore
         )
 
-        Assert.assertNotNull(testFieldViewModels[testingUid]!!.error)
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
+        assertNotNull(testFieldViewModels[testingUid]!!.error)
+        assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
         assertTrue(result.errorMap().size == 1)
         assertTrue(result.errorMap().containsKey(testingUid))
     }
@@ -289,7 +310,7 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        val result = ruleUtils.applyRuleEffects(
+        ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
@@ -366,6 +387,94 @@ class RulesUtilsProviderImplTest {
     }
 
     @Test
+    fun `RuleActionAssign should assign a value to an empty field with option set`() {
+        val newValue = "New Value"
+        // Given a rule effect with an action of type ASSIGN
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid",
+                RuleActionAssign.create("content", newValue, "uid11"),
+                newValue
+            )
+        )
+        // And a target field with an empty value
+        assertNull(testFieldViewModels["uid11"]!!.value)
+
+        // And a target field with option set
+        whenever(
+            optionsRepository.getOptionByCode("optionSetUid", newValue)
+        ) doReturn Option.builder()
+            .uid("OptionUid")
+            .code(newValue)
+            .name("optionName")
+            .displayName("OptionDisplayName")
+            .build()
+
+        // When applying RuleEffects
+        val result = ruleUtils.applyRuleEffects(
+            true,
+            testFieldViewModels,
+            testRuleEffects,
+            valueStore
+        )
+
+        // Then the field value has been updated
+        val updatedField = testFieldViewModels["uid11"]!!
+        assertEquals(updatedField.value, newValue)
+        assertEquals(updatedField.displayName, "OptionDisplayName")
+        assertTrue(result.fieldsToUpdate.isEmpty())
+    }
+
+    @Test
+    fun `RuleActionAssign should assign a value to field with value and with option set`() {
+        val oldValue = "Old Value"
+        val newValue = "New Value"
+        val optionSetUid = "optionSetUid"
+        // Given a rule effect with an action of type ASSIGN
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid",
+                RuleActionAssign.create("content", newValue, "uid12"),
+                newValue
+            )
+        )
+        // And a target field with an existing value
+        assertEquals(testFieldViewModels["uid12"]!!.value, oldValue)
+        whenever(
+            optionsRepository.getOptionByDisplayName(optionSetUid, "OldDisplayName")
+        ) doReturn Option.builder()
+            .uid("OptionUid")
+            .displayName("OldDisplayName")
+            .name("optionName")
+            .code(oldValue)
+            .build()
+
+        // And a target field with option set
+        whenever(
+            optionsRepository.getOptionByCode(optionSetUid, newValue)
+        ) doReturn Option.builder()
+            .uid("OptionUid")
+            .code(newValue)
+            .name("optionName")
+            .displayName("OptionDisplayName")
+            .build()
+
+        // When applying RuleEffects
+        val result = ruleUtils.applyRuleEffects(
+            true,
+            testFieldViewModels,
+            testRuleEffects,
+            valueStore
+        )
+
+        // Then the field value has been updated
+        val updatedField = testFieldViewModels["uid12"]!!
+        assertEquals(updatedField.value, newValue)
+        assertEquals(updatedField.displayName, "OptionDisplayName")
+        assertTrue(result.fieldsToUpdate.isEmpty())
+    }
+
+    @Test
     fun `RuleActionSetMandatory should mark field as mandatory`() {
         val testingUid = "uid2"
 
@@ -406,7 +515,7 @@ class RulesUtilsProviderImplTest {
             valueStore
         )
 
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.warning, "content data")
+        assertEquals(testFieldViewModels[testingUid]!!.warning, "content data")
         assertTrue(result.messageOnComplete == "content data")
         assertTrue(result.canComplete)
     }
@@ -430,7 +539,7 @@ class RulesUtilsProviderImplTest {
             valueStore
         )
 
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
+        assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
         assertTrue(result.messageOnComplete == "content data")
         assertTrue(!result.canComplete)
     }
@@ -446,7 +555,7 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        val result = ruleUtils.applyRuleEffects(
+        ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
@@ -562,12 +671,6 @@ class RulesUtilsProviderImplTest {
             ValueStoreResult.VALUE_HAS_NOT_CHANGED
         )
 
-        mockD2OptionGroupCalls(
-            "optionGroupUid",
-            "optionToHide1",
-            "optionToHide2"
-        )
-
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
@@ -586,11 +689,6 @@ class RulesUtilsProviderImplTest {
 
     @Test
     fun `RuleActionShowOptionGroup should execute callback action`() {
-        mockD2OptionGroupCalls(
-            "optionGroupUid",
-            "optionToShow1",
-            "optionToShow2"
-        )
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
@@ -712,38 +810,5 @@ class RulesUtilsProviderImplTest {
         assertTrue(testFieldViewModels[integerUid]?.value == "5")
         assertTrue(testFieldViewModels[numberUid]?.value == "2.52")
         assertTrue(testFieldViewModels[booleanUid]?.value == "true")
-    }
-
-    private fun mockD2OptionGroupCalls(optionGroupUid: String, vararg optionUidsToReturn: String) {
-        whenever(
-            d2.optionModule().optionGroups()
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups()
-                .withOptions()
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups()
-                .withOptions()
-                .byUid()
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups()
-                .withOptions()
-                .byUid().`in`(listOf(optionGroupUid))
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups()
-                .withOptions()
-                .byUid().`in`(listOf(optionGroupUid))
-                .blockingGet()
-        ) doReturn listOf(
-            OptionGroup.builder()
-                .uid(optionGroupUid)
-                .options(
-                    optionUidsToReturn.map { ObjectWithUid.create(it) }.toList()
-                )
-                .build()
-        )
     }
 }
