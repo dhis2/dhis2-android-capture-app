@@ -4,7 +4,6 @@ plugins {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
 apply plugin: "dagger.hilt.android.plugin"
@@ -124,10 +123,6 @@ android {
             // custom application suffix which allows to
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
-
-            // jacoco test coverage reports both for
-            // androidTest and test source sets
-            testCoverageEnabled = false
 
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug

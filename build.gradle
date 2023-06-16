@@ -85,7 +85,7 @@ tasks.named("dependencyUpdates").configure {
 }
 
 allprojects {
-    configurations.all {
+    /*configurations.all {
         resolutionStrategy {
             eachDependency { details ->
                 if ('org.jacoco' == details.requested.group) {
@@ -93,8 +93,8 @@ allprojects {
                 }
             }
         }
-    }
-    apply plugin: 'jacoco'
+    }*/
+
     repositories {
         google()
         jcenter() {

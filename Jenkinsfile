@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages{
-        stage('Change JAVA 17') {
+        stage('Change to JAVA 17') {
             steps {
                 script {
                     echo 'Changing JAVA version to 17'
@@ -18,7 +18,7 @@ pipeline {
                 }
             }
         }
-        stage('Ktlint') {
+        stage('Lint Check') {
             steps {
                 script {
                     echo 'Running Ktlint'
@@ -33,26 +33,9 @@ pipeline {
             steps {
                 script {
                     echo 'Running unit tests on App Module'
-                    sh './gradlew testDhisDebugUnitTestCoverage'
+                    sh './gradlew :app:testDhisDebugUnitTest --stacktrace --no-daemon'
                     echo 'Running unit tests on all other modules'
-                    sh './gradlew testDebugUnitTest'
-                }
-            }
-        }
-        stage('Sonarqube') {
-            environment {
-                BITRISE_GIT_BRANCH = "$env.GIT_BRANCH"
-                BITRISEIO_GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? env.GIT_BRANCH : env.CHANGE_TARGET}"
-                BITRISE_PULL_REQUEST = "${env.CHANGE_ID == null ? '' : env.CHANGE_ID}"
-                SONAR_TOKEN = credentials('android-sonarcloud-token')
-            }
-            steps {
-                script {
-                    echo 'Running sonarqube'
-                    sh 'echo $BITRISE_GIT_BRANCH'
-                    sh 'echo $BITRISEIO_GIT_BRANCH_DEST'
-                    sh 'echo $BITRISE_PULL_REQUEST'
-                    sh './gradlew sonarqube'
+                    sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
                 }
             }
         }
@@ -98,6 +81,32 @@ pipeline {
                 }
             }
         }
+        stage('JaCoCo report') {
+            steps {
+                script {
+                    echo 'JaCoCo report'
+                    sh './gradlew jacocoReport --stacktrace --no-daemon'
+                }
+            }
+        }
+        stage('Sonarqube') {
+            environment {
+                BITRISE_GIT_BRANCH = "$env.GIT_BRANCH"
+                BITRISEIO_GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? env.GIT_BRANCH : env.CHANGE_TARGET}"
+                BITRISE_PULL_REQUEST = "${env.CHANGE_ID == null ? '' : env.CHANGE_ID}"
+                SONAR_TOKEN = credentials('android-sonarcloud-token')
+            }
+            steps {
+                script {
+                    echo 'Running sonarqube'
+                    sh 'echo $BITRISE_GIT_BRANCH'
+                    sh 'echo $BITRISEIO_GIT_BRANCH_DEST'
+                    sh 'echo $BITRISE_PULL_REQUEST'
+                    sh './gradlew sonarqube --stacktrace --no-daemon'
+                }
+            }
+        }
+
     }
     post {
         success {

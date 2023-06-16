@@ -1,6 +1,93 @@
-project.afterEvaluate { project ->
-    setupAndroidReporting()
+apply plugin: 'jacoco'
+
+task jacocoReport(type: JacocoReport) {
+    group "Coverage"
+    description "Generate XML/HTML code coverage reports for coverage.ec"
+
+    sourceDirectories.setFrom("${project.projectDir}/src/main/java")
+
+    def excludes = [
+            // data binding
+            'android/databinding/**/*.class',
+            '**/android/databinding/*Binding.class',
+            '**/android/databinding/*',
+            '**/androidx/databinding/*',
+            '**/BR.*',
+            // android
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*Test*.*',
+            'android/**/*.*',
+            // butterKnife
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            // dagger
+            '**/*_MembersInjector.class',
+            '**/Dagger*Component.class',
+            '**/Dagger*Component$Builder.class',
+            '**/*Module_*Factory.class',
+            '**/di/module/*',
+            '**/*_Factory*.*',
+            '**/*Dagger*.*',
+            '**/*Hilt*.*',
+            // kotlin
+            '**/*MapperImpl*.*',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/*Component*.*',
+            '**/*BR*.*',
+            '**/Manifest*.*',
+            '**/*$Lambda$*.*',
+            '**/*Companion*.*',
+            '**/*Dagger*.*',
+            '**/*Hilt*.*',
+            '**/*MembersInjector*.*',
+            '**/*_MembersInjector.class',
+            '**/*_Factory*.*',
+            '**/*_Provide*Factory*.*',
+            '**/*Extensions*.*',
+            // sealed and data classes
+            '**/*$Result.*',
+            '**/*$Result$*.*',
+            // DHIS2 Android SDK fields
+            '**/*AutoValue_*.*'
+    ]
+
+    def javaClasses = fileTree(dir: "${buildDir}/intermediates/javac/dhisDebug", excludes: excludes)
+    def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/dhisDebug", excludes: excludes)
+
+    classDirectories.setFrom(files([
+            javaClasses,
+            kotlinClasses
+    ]))
+
+    def unitTestsData = fileTree(dir: "${buildDir}/jacoco", includes: ['*.exec'])
+//    def androidTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ['**/*.ec'])
+
+    executionData.setFrom(files([
+            unitTestsData
+//            androidTestsData
+    ]))
+
+    reports {
+        csv.required = false // change if needed
+        xml {
+            enabled true
+            destination file("${buildDir}/coverage-report/jacocoTestReport.xml")
+        }
+        html {
+            enabled true
+            destination file("${buildDir}/coverage-report")
+        }
+    }
 }
+
+/*project.afterEvaluate { project ->
+    setupAndroidReporting()
+}*/
 
 def setupAndroidReporting() {
     tasks.withType(Test) {
@@ -128,7 +215,9 @@ def setupAndroidReporting() {
 android {
     buildTypes {
         debug {
-            testCoverageEnabled false
+            // jacoco test coverage reports both for
+            // androidTest and test source sets
+            testCoverageEnabled = false
         }
     }
 }
