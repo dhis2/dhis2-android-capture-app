@@ -446,8 +446,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
             binding.filterCounter.setVisibility(View.GONE);
             binding.searchFilterGeneral.setVisibility(View.GONE);
-
         }
+        showLoadingProgress(false);
     }
 
     @Override
