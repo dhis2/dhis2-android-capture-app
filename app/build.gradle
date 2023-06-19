@@ -8,12 +8,6 @@ apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
 apply plugin: "dagger.hilt.android.plugin"
 
-sonarqube {
-    properties {
-        property 'sonar.coverage.jacoco.xmlReportPaths', "${project.buildDir}/coverage-report/jacocoTestReport.xml"
-    }
-}
-
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     mavenCentral()
