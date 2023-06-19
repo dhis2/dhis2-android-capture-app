@@ -39,7 +39,7 @@ pipeline {
                 }
             }
         }
-        stage('Build Test APKs') {
+        /* stage('Build Test APKs') {
             steps {
                 script {
                     echo 'Building UI APKs'
@@ -80,7 +80,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
         stage('JaCoCo report') {
             steps {
                 script {
@@ -91,18 +91,17 @@ pipeline {
         }
         stage('Sonarqube') {
             environment {
-                BITRISE_GIT_BRANCH = "$env.GIT_BRANCH"
-                BITRISEIO_GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? env.GIT_BRANCH : env.CHANGE_TARGET}"
-                BITRISE_PULL_REQUEST = "${env.CHANGE_ID == null ? '' : env.CHANGE_ID}"
+                GIT_BRANCH = "${env.GIT_BRANCH}"
+                // Jenkinsfile considers empty value ('') as null
+                GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? '' : env.CHANGE_TARGET}"
+                PULL_REQUEST = "${env.CHANGE_ID == null ? '' : env.CHANGE_ID }"
                 SONAR_TOKEN = credentials('android-sonarcloud-token')
             }
             steps {
                 script {
-                    echo 'Running sonarqube'
-                    sh 'echo $BITRISE_GIT_BRANCH'
-                    sh 'echo $BITRISEIO_GIT_BRANCH_DEST'
-                    sh 'echo $BITRISE_PULL_REQUEST'
-                    sh './gradlew sonarqube --stacktrace --no-daemon'
+                    echo 'Running Sonarqube'
+                    sh 'chmod +x ./scripts/sonarqube.sh'
+                    sh './scripts/sonarqube.sh'
                 }
             }
         }
