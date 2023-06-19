@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import org.dhis2.BuildConfig
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class EventPageConfigurator(
@@ -22,6 +23,6 @@ class EventPageConfigurator(
     }
 
     override fun displayNotes(): Boolean {
-        return true
+        return BuildConfig.FLAVOR !== "spIP"
     }
 }

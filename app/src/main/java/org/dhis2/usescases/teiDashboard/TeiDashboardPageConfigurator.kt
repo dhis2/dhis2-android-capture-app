@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard
 
+import org.dhis2.BuildConfig
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class TeiDashboardPageConfigurator(
@@ -20,6 +21,6 @@ class TeiDashboardPageConfigurator(
     }
 
     override fun displayNotes(): Boolean {
-        return true
+        return BuildConfig.FLAVOR !== "spIP"
     }
 }

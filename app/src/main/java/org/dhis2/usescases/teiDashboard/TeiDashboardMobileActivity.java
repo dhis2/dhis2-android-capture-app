@@ -279,7 +279,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 teiUid,
                 enrollmentUid,
                 pageConfigurator.displayAnalytics(),
-                pageConfigurator.displayRelationships()
+                pageConfigurator.displayRelationships(),
+                pageConfigurator.displayNotes()
         );
 
         if (OrientationUtilsKt.isPortrait(this)) {

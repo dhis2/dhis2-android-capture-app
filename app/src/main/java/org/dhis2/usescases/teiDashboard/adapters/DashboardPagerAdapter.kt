@@ -19,7 +19,8 @@ class DashboardPagerAdapter(
     private val teiUid: String,
     private val enrollmentUid: String?,
     private val displayAnalyticScreen: Boolean = true,
-    private val displayRelationshipScreen: Boolean
+    private val displayRelationshipScreen: Boolean,
+    private val displayNotes: Boolean
 ) : FragmentStateAdapter(fragmentActivity) {
 
     enum class DashboardPageType {
@@ -35,13 +36,13 @@ class DashboardPagerAdapter(
         landscapePages = mutableListOf<DashboardPageType>().apply {
             if (displayAnalyticScreen) add(DashboardPageType.ANALYTICS)
             if (displayRelationshipScreen) add(DashboardPageType.RELATIONSHIPS)
-            if (currentProgram != null) add(DashboardPageType.NOTES)
+            if (currentProgram != null && displayNotes) add(DashboardPageType.NOTES)
         }
         portraitPages = mutableListOf<DashboardPageType>().apply {
             add(DashboardPageType.TEI_DETAIL)
             if (displayAnalyticScreen) add(DashboardPageType.ANALYTICS)
             if (displayRelationshipScreen) add(DashboardPageType.RELATIONSHIPS)
-            if (currentProgram != null) add(DashboardPageType.NOTES)
+            if (currentProgram != null && displayNotes) add(DashboardPageType.NOTES)
         }
     }
 
