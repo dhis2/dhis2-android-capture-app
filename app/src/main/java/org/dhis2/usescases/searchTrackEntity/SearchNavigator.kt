@@ -3,6 +3,7 @@ package org.dhis2.usescases.searchTrackEntity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -13,26 +14,28 @@ class SearchNavigator(
     private val searchNavigationConfiguration: SearchNavigationConfiguration
 ) {
 
-    private val dashboardLauncher = activity.registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (searchNavigationConfiguration.refreshDataOnBackFromDashboard()) {
-            activity.refreshData()
-        }
-    }
-
-    private val enrollmentLauncher = activity.registerForActivityResult(EnrollmentContract()) {
-        when (it) {
-            is EnrollmentResult.RelationshipResult -> {
-                activity.setResult(Activity.RESULT_OK, it.data())
-                activity.finish()
+    private val dashboardLauncher: ActivityResultLauncher<Intent>
+        get() = activity.registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (searchNavigationConfiguration.refreshDataOnBackFromDashboard()) {
+                activity.refreshData()
             }
-            is EnrollmentResult.Success ->
-                if (searchNavigationConfiguration.refreshDataOnBackFromEnrollment()) {
-                    activity.refreshData()
-                }
         }
-    }
+
+    private val enrollmentLauncher: ActivityResultLauncher<EnrollmentInput>
+        get() = activity.registerForActivityResult(EnrollmentContract()) {
+            when (it) {
+                is EnrollmentResult.RelationshipResult -> {
+                    activity.setResult(Activity.RESULT_OK, it.data())
+                    activity.finish()
+                }
+                is EnrollmentResult.Success ->
+                    if (searchNavigationConfiguration.refreshDataOnBackFromEnrollment()) {
+                        activity.refreshData()
+                    }
+            }
+        }
 
     fun changeProgram(
         programUid: String?,
