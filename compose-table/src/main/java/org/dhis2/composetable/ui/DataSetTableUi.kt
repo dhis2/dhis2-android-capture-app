@@ -46,7 +46,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -639,21 +638,17 @@ fun TableCell(
     options: List<String>
 ) {
     val localInteraction = LocalInteraction.current
-    val localUpdatingCell = LocalUpdatingCell.current
-    val localTableSelection = LocalTableSelection.current
-    val localCurrent = LocalCurrentCellValue.current
-
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
 
-    var cellValue = produceState(initialValue = cell.value) {
-        value = when {
-            localUpdatingCell?.id == cell.id ->
-                localUpdatingCell?.value
-            localTableSelection.isCellSelected(tableId, cell.column ?: -1, cell.row ?: -1) ->
-                localCurrent()
-            else -> cell.value
-        }
-    }.value
+    var cellValue by remember {
+        mutableStateOf<String?>(null)
+    }
+    cellValue = when {
+        LocalUpdatingCell.current?.id == cell.id -> LocalUpdatingCell.current?.value
+        LocalTableSelection.current.isCellSelected(tableId, cell.column ?: -1, cell.row ?: -1) ->
+            LocalCurrentCellValue.current()
+        else -> cell.value
+    }
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
