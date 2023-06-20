@@ -539,7 +539,7 @@ public class FilterManager implements Serializable {
 
     public void clearAllFilters() {
         eventStatusFilters.clear();
-        observableEventStatus.set(eventStatusFilters);
+        observableEventStatus.set(null);
         enrollmentStatusFilters.clear();
         observableEnrollmentStatus.set(null);
         catOptComboFilters.clear();
