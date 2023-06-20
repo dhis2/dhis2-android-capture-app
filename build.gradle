@@ -87,6 +87,15 @@ tasks.named("dependencyUpdates").configure {
 }
 
 allprojects {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if ('org.jacoco' == details.requested.group) {
+                    details.useVersion "0.8.10"
+                }
+            }
+        }
+    }
 
     repositories {
         google()

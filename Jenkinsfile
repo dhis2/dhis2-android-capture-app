@@ -32,14 +32,14 @@ pipeline {
             }
             steps {
                 script {
-                    echo 'Running unit tests on App Module'
+                    echo 'Running unit tests on app module'
                     sh './gradlew :app:testDhisDebugUnitTest --stacktrace --no-daemon'
                     echo 'Running unit tests on all other modules'
                     sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
                 }
             }
         }
-        /* stage('Build Test APKs') {
+        stage('Build Test APKs') {
             steps {
                 script {
                     echo 'Building UI APKs'
@@ -80,11 +80,11 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
         stage('JaCoCo report') {
             steps {
                 script {
-                    echo 'JaCoCo report'
+                    echo 'Running JaCoCo report on app module'
                     sh './gradlew jacocoReportApp --stacktrace --no-daemon'
                 }
             }
