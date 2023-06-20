@@ -906,7 +906,7 @@ private fun TableList(
     val keyboardState by keyboardAsState()
     var resizingCell: ResizingCell? by remember { mutableStateOf(null) }
     val tableSelection = LocalTableSelection.current
-    val colors = colors
+
     val tableInteractions = LocalInteraction.current
     val tableResizeActions = LocalTableResizeActions.current
 
@@ -1005,7 +1005,7 @@ private fun TableList(
                 itemsIndexed(
                     items = currentTableModel.tableRows,
                     key = { _, item -> item.rowHeader.id!! }
-                ) { globalIndex, tableRowModel ->
+                ) { _, tableRowModel ->
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
@@ -1240,7 +1240,6 @@ fun TableItem(
         ) {
             val horizontalScrollState = rememberScrollState()
             val tableSelection = LocalTableSelection.current
-            val colors = colors
 
             TableHeaderRow(
                 cornerUiState = TableCornerUiState(
