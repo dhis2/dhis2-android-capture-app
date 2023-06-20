@@ -61,7 +61,7 @@ fun styleForRowHeader(isSelected: Boolean, isOtherRowSelected: Boolean): CellSty
 }
 
 fun styleForCell(
-    tableColorProvider:()->TableColors,
+    tableColorProvider: () -> TableColors,
     isSelected: Boolean,
     isParentSelected: Boolean,
     hasError: Boolean,

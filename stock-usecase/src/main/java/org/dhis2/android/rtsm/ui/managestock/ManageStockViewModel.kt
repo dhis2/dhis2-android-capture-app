@@ -3,8 +3,8 @@ package org.dhis2.android.rtsm.ui.managestock
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -159,19 +159,12 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    private fun getStockItems() = search.switchMap {
-            q ->
+    private fun getStockItems() = Transformations.switchMap(search) { q ->
         val result =
             stockManagerRepository.search(q, transaction.value?.facility?.uid, config.value!!)
 
         result.items
     }
-    /*private fun getStockItems() = Transformations.switchMap(search) { q ->
-        val result =
-            stockManagerRepository.search(q, transaction.value?.facility?.uid, config.value!!)
-
-        result.items
-    }*/
 
     private fun configureRelays() {
         disposable.add(
@@ -231,6 +224,7 @@ class ManageStockViewModel @Inject constructor(
                 _stockItems.value?.filter {
                     itemsCache[it.id] != null
                 }
+
             else -> _stockItems.value
         }
 
@@ -336,6 +330,7 @@ class ManageStockViewModel @Inject constructor(
                         )
                         populateTable()
                     }
+
                     is ValidationResult.Success -> {
                         setQuantity(
                             stockItem,
@@ -471,6 +466,7 @@ class ManageStockViewModel @Inject constructor(
                     visible = buttonVisibility
                 )
             }
+
             DataEntryStep.REVIEWING -> {
                 val buttonVisibility = hasData.value && canReview()
                 ButtonUiState(
@@ -481,6 +477,7 @@ class ManageStockViewModel @Inject constructor(
                     visible = buttonVisibility
                 )
             }
+
             else -> {
                 dataEntryUiState.value.button.copy(visible = false)
             }
@@ -497,9 +494,11 @@ class ManageStockViewModel @Inject constructor(
                 onSearchQueryChanged("")
                 updateStep(DataEntryStep.REVIEWING)
             }
+
             DataEntryStep.REVIEWING -> {
                 commitTransaction()
             }
+
             else -> {
                 // Nothing will happen given that the button is hidden
             }
@@ -516,6 +515,7 @@ class ManageStockViewModel @Inject constructor(
                         DataEntryStep.START -> {
                             shouldCloseActivity.postValue(null)
                         }
+
                         DataEntryStep.LISTING -> {
                             if (dataEntryUiState.value.hasUnsavedData) {
                                 _bottomSheetState.value = true
@@ -523,15 +523,19 @@ class ManageStockViewModel @Inject constructor(
                                 shouldCloseActivity.postValue(null)
                             }
                         }
+
                         DataEntryStep.EDITING_LISTING -> {
                             shouldNavigateBack.postValue(null)
                         }
+
                         DataEntryStep.REVIEWING -> {
                             updateStep(DataEntryStep.LISTING)
                         }
+
                         DataEntryStep.EDITING_REVIEWING -> {
                             shouldNavigateBack.postValue(null)
                         }
+
                         DataEntryStep.COMPLETED -> {
                             // Nothing to do here
                         }

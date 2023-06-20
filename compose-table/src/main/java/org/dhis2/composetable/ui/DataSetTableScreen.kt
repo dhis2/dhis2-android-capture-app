@@ -14,7 +14,6 @@ import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -31,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.theapache64.rebugger.Rebugger
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.LocalInteraction
@@ -41,7 +39,6 @@ import org.dhis2.composetable.model.LocalCurrentCellValue
 import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
-import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.ValidationResult
 
@@ -64,7 +61,7 @@ fun DataSetTableScreen(
 
     var currentCell by remember { mutableStateOf<TableCell?>(null) }
     var updatingCell by remember { mutableStateOf<TableCell?>(null) }
-    var currentInputType: TextInputModel? by remember { mutableStateOf(null) }
+    var currentInputType by remember { mutableStateOf(TextInputModel()) }
     var displayDescription by remember { mutableStateOf<TableDialogModel?>(null) }
     val coroutineScope = rememberCoroutineScope()
     var tableSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
@@ -103,7 +100,7 @@ fun DataSetTableScreen(
     }
 
     fun updateError(tableCell: TableCell) {
-        currentInputType = currentInputType?.copy(error = tableCell.error)
+        currentInputType = currentInputType.copy(error = tableCell.error)
         currentCell = currentCell?.copy(error = tableCell.error)
     }
 
@@ -125,7 +122,7 @@ fun DataSetTableScreen(
 
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-                !bottomSheetState.bottomSheetState.isAnimationRunning
+            !bottomSheetState.bottomSheetState.isAnimationRunning
     ) {
         collapseBottomSheet(finish = true)
     }
@@ -171,15 +168,11 @@ fun DataSetTableScreen(
                         currentInputType =
                             inputModel.copy(currentValue = currentCell?.value)
                         startEdition()
-//                        focusRequester.requestFocus()
+                        focusRequester.requestFocus()
                     } ?: collapseBottomSheet()
                 }
 
-                override fun onOptionSelected(
-                    cell: TableCell,
-                    code: String,
-                    label: String
-                ) {
+                override fun onOptionSelected(cell: TableCell, code: String, label: String) {
                     currentCell = cell.copy(
                         value = label,
                         error = null
@@ -194,67 +187,65 @@ fun DataSetTableScreen(
     BottomSheetScaffold(
         scaffoldState = bottomSheetState,
         sheetContent = {
-            if (currentInputType != null) {
-                val validator = TableTheme.validator
-                val textInputInteractions by remember {
-                    derivedStateOf {
-                        object : TextInputInteractions {
-                            override fun onTextChanged(textInputModel: TextInputModel) {
-                                currentInputType = textInputModel
-                                currentCell = currentCell?.copy(
-                                    value = textInputModel.currentValue,
-                                    error = null
-                                )
-                            }
+            val validator = TableTheme.validator
+            val textInputInteractions by remember(tableScreenState) {
+                derivedStateOf {
+                    object : TextInputInteractions {
+                        override fun onTextChanged(textInputModel: TextInputModel) {
+                            currentInputType = textInputModel
+                            currentCell = currentCell?.copy(
+                                value = textInputModel.currentValue,
+                                error = null
+                            )
+                        }
 
-                            override fun onSave() {
-                                if (!tableConfiguration.textInputViewMode) {
-                                    collapseBottomSheet(true)
-                                }
-                                currentCell?.let { onSaveValue(it) }
-                                saveClicked = true
+                        override fun onSave() {
+                            if (!tableConfiguration.textInputViewMode) {
+                                collapseBottomSheet(true)
                             }
+                            currentCell?.let { onSaveValue(it) }
+                            saveClicked = true
+                        }
 
-                            override fun onNextSelected() {
-                                currentCell?.let { tableCell ->
-                                    val result = validator.validate(tableCell)
-                                    onSaveValue(tableCell)
-                                    (tableSelection as? TableSelection.CellSelection)
-                                        ?.let { cellSelected ->
-                                            val currentTable = tableScreenState.tables.first {
-                                                it.id == cellSelected.tableId
-                                            }
-                                            currentTable.getNextCell(
-                                                cellSelection = cellSelected,
-                                                successValidation = result is ValidationResult.Success
-                                            )?.let { (tableCell, nextCell) ->
-                                                if (nextCell != cellSelected) {
-                                                    updatingCell = currentCell
-                                                    tableSelection = nextCell
-                                                    onCellClick(
-                                                        tableSelection.tableId,
-                                                        tableCell
-                                                    ) { updateCellValue(it) }?.let { inputModel ->
-                                                        currentCell = tableCell
-                                                        currentInputType = inputModel
-                                                        focusRequester.requestFocus()
-                                                    } ?: collapseBottomSheet()
-                                                } else {
-                                                    updateError(tableCell)
-                                                }
-                                            } ?: collapseBottomSheet(finish = true)
+                        override fun onNextSelected() {
+                            currentCell?.let { tableCell ->
+                                val result = validator.validate(tableCell)
+                                onSaveValue(tableCell)
+                                (tableSelection as? TableSelection.CellSelection)
+                                    ?.let { cellSelected ->
+                                        val currentTable = tableScreenState.tables.first {
+                                            it.id == cellSelected.tableId
                                         }
-                                }
+                                        currentTable.getNextCell(
+                                            cellSelection = cellSelected,
+                                            successValidation = result is ValidationResult.Success
+                                        )?.let { (tableCell, nextCell) ->
+                                            if (nextCell != cellSelected) {
+                                                updatingCell = currentCell
+                                                tableSelection = nextCell
+                                                onCellClick(
+                                                    tableSelection.tableId,
+                                                    tableCell
+                                                ) { updateCellValue(it) }?.let { inputModel ->
+                                                    currentCell = tableCell
+                                                    currentInputType = inputModel
+                                                    focusRequester.requestFocus()
+                                                } ?: collapseBottomSheet()
+                                            } else {
+                                                updateError(tableCell)
+                                            }
+                                        } ?: collapseBottomSheet(finish = true)
+                                    }
                             }
                         }
                     }
                 }
-                TextInput(
-                    textInputModel = currentInputType!!,
-                    textInputInteractions = textInputInteractions,
-                    focusRequester = focusRequester
-                )
             }
+            TextInput(
+                textInputModel = currentInputType,
+                textInputInteractions = textInputInteractions,
+                focusRequester = focusRequester
+            )
         },
         sheetPeekHeight = 0.dp,
         sheetShape = RoundedCornerShape(

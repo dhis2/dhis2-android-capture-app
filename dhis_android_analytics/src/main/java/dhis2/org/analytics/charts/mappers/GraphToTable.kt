@@ -106,8 +106,8 @@ class GraphToTable {
                     )
                 )
             }
-            
-            val tableResizeActions = object :TableResizeActions{
+
+            val tableResizeActions = object : TableResizeActions {
                 override fun onTableWidthChanged(width: Int) {
                     dimensions = dimensions.copy(totalWidth = width)
                 }
@@ -116,11 +116,7 @@ class GraphToTable {
                     dimensions = dimensions.updateHeaderWidth(tableId, newValue)
                 }
 
-                override fun onColumnHeaderResize(
-                    tableId: String,
-                    column: Int,
-                    newValue: Float
-                ) {
+                override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
                     dimensions =
                         dimensions.updateColumnWidth(tableId, column, newValue)
                 }

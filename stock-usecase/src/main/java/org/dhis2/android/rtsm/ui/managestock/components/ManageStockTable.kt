@@ -74,11 +74,7 @@ fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -
                     dimensions = dimensions.updateHeaderWidth(tableId, newValue)
                 }
 
-                override fun onColumnHeaderResize(
-                    tableId: String,
-                    column: Int,
-                    newValue: Float
-                ) {
+                override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
                     dimensions =
                         dimensions.updateColumnWidth(tableId, column, newValue)
                 }

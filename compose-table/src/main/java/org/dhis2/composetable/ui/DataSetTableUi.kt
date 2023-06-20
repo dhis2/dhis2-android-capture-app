@@ -46,6 +46,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -104,7 +105,6 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
-import com.theapache64.rebugger.Rebugger
 import org.dhis2.composetable.model.areAllValuesEmpty
 import org.dhis2.composetable.ui.TableTheme.colors
 import org.dhis2.composetable.ui.TableTheme.dimensions
@@ -117,7 +117,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit,
     onHeaderResize: (Int, Float) -> Unit,
     onResizing: (ResizingCell?) -> Unit
@@ -281,7 +281,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> },
     onHeaderResize: (Int, Float) -> Unit,
@@ -394,7 +394,7 @@ fun TableItemRow(
     horizontalScrollState: ScrollState,
     rowModel: TableRowModel,
     rowHeaderCellStyle: @Composable
-        (rowHeaderIndex: Int?) -> CellStyle,
+    (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onHeaderResize: (Float) -> Unit,
@@ -433,7 +433,7 @@ fun TableItemRow(
                 cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
-                headerExtraSize = TableTheme.dimensions.extraSize(
+                headerExtraSize = dimensions.extraSize(
                     tableModel.tableHeaderModel.tableMaxColumns(),
                     tableModel.tableHeaderModel.hasTotals
                 ),
@@ -568,10 +568,10 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
         }
 
         val isSelected = LocalTableSelection.current !is TableSelection.AllCellSelection &&
-                LocalTableSelection.current.isRowSelected(
-                    selectedTableId = uiState.tableId,
-                    rowHeaderIndex = uiState.rowHeader.row ?: -1
-                )
+            LocalTableSelection.current.isRowSelected(
+                selectedTableId = uiState.tableId,
+                rowHeaderIndex = uiState.rowHeader.row ?: -1
+            )
         if (isSelected) {
             VerticalResizingRule(
                 modifier = Modifier
@@ -597,7 +597,7 @@ fun ItemValues(
     cellValues: Map<Int, TableCell>,
     overridenValues: Map<Int, TableCell>,
     headerExtraSize: Int,
-    options: List<String>,
+    options: List<String>
 ) {
     Row(
         modifier = Modifier
@@ -635,29 +635,35 @@ fun TableCell(
     tableId: String,
     cell: TableCell,
     maxLines: Int,
-    headerExtraSize:Int,
+    headerExtraSize: Int,
     options: List<String>
 ) {
-    var cellValue by remember {
-        mutableStateOf<String?>(null)
-    }
     val localInteraction = LocalInteraction.current
+    val localUpdatingCell = LocalUpdatingCell.current
+    val localTableSelection = LocalTableSelection.current
+    val localCurrent = LocalCurrentCellValue.current
+
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    cellValue = when{
-        LocalUpdatingCell.current?.id == cell.id -> LocalUpdatingCell.current?.value
-        LocalTableSelection.current.isCellSelected(tableId, cell.column?:-1, cell.row?:-1) -> LocalCurrentCellValue.current()
-        else -> cell.value
-    }
+
+    var cellValue = produceState(initialValue = cell.value) {
+        value = when {
+            localUpdatingCell?.id == cell.id ->
+                localUpdatingCell?.value
+            localTableSelection.isCellSelected(tableId, cell.column ?: -1, cell.row ?: -1) ->
+                localCurrent()
+            else -> cell.value
+        }
+    }.value
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
     val backgroundColor = colors.disabledCellBackground
     val coroutineScope = rememberCoroutineScope()
-    val isSelected = tableSelection.isCellSelected(tableId, cell.column?:-1, cell.row?:-1)
+    val isSelected = tableSelection.isCellSelected(tableId, cell.column ?: -1, cell.row ?: -1)
     val isParentSelected = tableSelection.isCellParentSelected(
         selectedTableId = tableId,
-        columnIndex = cell.column?:-1,
-        rowIndex = cell.row?:-1
+        columnIndex = cell.column ?: -1,
+        rowIndex = cell.row ?: -1
     )
     val colors = colors
 
@@ -718,8 +724,8 @@ fun TableCell(
                         localInteraction.onSelectionChange(
                             TableSelection.CellSelection(
                                 tableId = tableId,
-                                columnIndex = cell.column?:-1,
-                                rowIndex = cell.row?:-1,
+                                columnIndex = cell.column ?: -1,
+                                rowIndex = cell.row ?: -1,
                                 globalIndex = 0
                             )
                         )
@@ -761,8 +767,8 @@ fun TableCell(
                     localInteraction.onSelectionChange(
                         TableSelection.CellSelection(
                             tableId = tableId,
-                            columnIndex = cell.column?:-1,
-                            rowIndex = cell.row?:-1,
+                            columnIndex = cell.column ?: -1,
+                            rowIndex = cell.row ?: -1,
                             globalIndex = 0
                         )
                     )
@@ -805,7 +811,7 @@ fun TableCell(
         }
     }
 
-    LaunchedEffect(key1 = isSelected){
+    LaunchedEffect(key1 = isSelected) {
         if (isSelected) {
             val marginCoordinates = Rect(
                 0f,
@@ -853,10 +859,7 @@ fun DropDownOptions(
 }
 
 @Composable
-fun DataTable(
-    tableList: List<TableModel>,
-    bottomContent: @Composable (() -> Unit)? = null
-) {
+fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Unit)? = null) {
     if (!TableTheme.configuration.editable && !tableList.all { it.areAllValuesEmpty() }) {
         val tableInteractions = LocalInteraction.current
         val tableResizeActions = LocalTableResizeActions.current
@@ -1035,48 +1038,15 @@ private fun TableList(
                         onDecorationClick = {
                             tableInteractions.onDecorationClick(it)
                         },
-                        /*onClick = { tableCell ->
-                            var prevIndex = 0
-                            repeat(index) { tableIndex ->
-                                prevIndex += tableList[tableIndex].tableRows.size + 2
-                            }
-                            val mGlobalIndex = (tableCell.row ?: 0) + prevIndex + 1
-
-                            tableInteractions.onSelectionChange(
-                                TableSelection.CellSelection(
-                                    tableId = currentTableModel.id ?: "",
-                                    columnIndex = tableCell.column ?: -1,
-                                    rowIndex = tableCell.row ?: -1,
-                                    globalIndex = mGlobalIndex
-                                )
-                            )
-                            tableInteractions.onClick(tableCell)
-                        },*/
                         onHeaderResize = { width ->
                             tableResizeActions.onRowHeaderResize(
-                                currentTableModel.id ?: "", width
+                                currentTableModel.id ?: "",
+                                width
                             )
                         },
                         onResizing = {
                             resizingCell = it
-                        }/*,
-                        onOptionSelected = { tableCell, code, label ->
-                            var prevIndex = 0
-                            repeat(index) { tableIndex ->
-                                prevIndex += tableList[tableIndex].tableRows.size + 2
-                            }
-                            val mGlobalIndex = (tableCell.row ?: 0) + prevIndex + 1
-
-                            tableInteractions.onSelectionChange(
-                                TableSelection.CellSelection(
-                                    tableId = currentTableModel.id ?: "",
-                                    columnIndex = tableCell.column ?: -1,
-                                    rowIndex = tableCell.row ?: -1,
-                                    globalIndex = mGlobalIndex
-                                )
-                            )
-                            tableInteractions.onOptionSelected(tableCell, code, label)
-                        }*/
+                        }
                     )
                     if (tableRowModel.isLastRow) {
                         ExtendDivider(
@@ -1097,7 +1067,7 @@ private fun TableList(
                     }
                 }
             }
-//            bottomContent?.let { item { it.invoke() } }
+            bottomContent?.let { item { it.invoke() } }
         }
 
         VerticalResizingView(provideResizingCell = { resizingCell })
@@ -1349,30 +1319,8 @@ fun TableItem(
                         )
                     },
                     onDecorationClick = { tableInteractions.onDecorationClick(it) },
-                    /*onClick = { tableCell ->
-                        tableInteractions.onSelectionChange(
-                            TableSelection.CellSelection(
-                                tableId = tableModel.id ?: "",
-                                columnIndex = tableCell.column ?: -1,
-                                rowIndex = tableCell.row ?: -1,
-                                globalIndex = 0
-                            )
-                        )
-                        tableInteractions.onClick(tableCell)
-                    },*/
                     onHeaderResize = onHeaderResize,
-                    onResizing = { resizingCell = it }/*,
-                    onOptionSelected = { cell, code, label ->
-                        tableInteractions.onSelectionChange(
-                            TableSelection.CellSelection(
-                                tableId = tableModel.id ?: "",
-                                columnIndex = cell.column ?: -1,
-                                rowIndex = cell.row ?: -1,
-                                globalIndex = 0
-                            )
-                        )
-                        tableInteractions.onOptionSelected(cell, code, label)
-                    }*/
+                    onResizing = { resizingCell = it }
                 )
                 if (tableRowModel.isLastRow) {
                     ExtendDivider(

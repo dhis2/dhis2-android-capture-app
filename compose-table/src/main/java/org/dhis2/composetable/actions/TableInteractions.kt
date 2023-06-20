@@ -12,4 +12,4 @@ interface TableInteractions {
     fun onOptionSelected(cell: TableCell, code: String, label: String) = run { }
 }
 
-val LocalInteraction = compositionLocalOf<TableInteractions> { object: TableInteractions{} }
+val LocalInteraction = compositionLocalOf<TableInteractions> { object : TableInteractions {} }

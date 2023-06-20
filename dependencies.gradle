@@ -12,7 +12,7 @@ def cardview = "1.0.0"
 def legacysupport = "1.0.0" //can be removed?
 def multidex = "2.0.1"
 def constraintlayout = "2.1.4"
-def lifecycle = "2.6.1"
+def lifecycle = "2.5.1"
 def lifecycleExtensions = "2.2.0"
 def work = "2.7.1"
 def exif = "1.3.3"
@@ -91,7 +91,7 @@ def uiautomator = "2.2.0"
 ext.versions = [
         ndk                           : "21.4.7075529",
         sdk                           : 33,
-        minSdk                        : 24,
+        minSdk                        : 21,
         vCode: 126,
         vName: "androide-18",
         sourceCompat               : JavaVersion.VERSION_17,

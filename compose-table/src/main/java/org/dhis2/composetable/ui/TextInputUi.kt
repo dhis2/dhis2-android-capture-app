@@ -346,7 +346,7 @@ fun DefaultTextInputStatusPreview() {
 
     TextInput(
         textInputModel = previewTextInput,
-        textInputInteractions = object:TextInputInteractions{},
+        textInputInteractions = object : TextInputInteractions {},
         focusRequester = FocusRequester()
     )
 }
