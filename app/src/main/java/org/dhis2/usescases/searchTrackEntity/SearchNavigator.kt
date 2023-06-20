@@ -8,10 +8,10 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
+import java.util.UUID
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import java.util.UUID
 
 class SearchNavigator(
     val activity: SearchTEActivity,
@@ -102,5 +102,5 @@ class SearchNavigator(
 fun <I, O> ComponentActivity.registerActivityResultLauncher(
     key: String = UUID.randomUUID().toString(),
     contract: ActivityResultContract<I, O>,
-    callback: ActivityResultCallback<O>,
+    callback: ActivityResultCallback<O>
 ): ActivityResultLauncher<I> = activityResultRegistry.register(key, contract, callback)
