@@ -78,11 +78,11 @@ tasks.register('jacocoReportApp', JacocoReport) {
     ]))
 
     def unitTestsData = fileTree(dir: "${buildDir}/jacoco", includes: ['*.exec'])
-//    def androidTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ['**/*.ec'])
+    def androidTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ['**/*.ec'])
 
     executionData.setFrom(files([
-            unitTestsData
-//            androidTestsData
+            unitTestsData,
+            androidTestsData
     ]))
 
     reports {
