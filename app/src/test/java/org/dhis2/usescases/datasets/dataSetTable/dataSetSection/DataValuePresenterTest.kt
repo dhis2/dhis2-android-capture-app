@@ -111,7 +111,7 @@ class DataValuePresenterTest {
             dataValueRepository.getOptionSetViewModel(any(), any())
         ) doReturn mockedSpinnerModel
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
 
         verify(view).showOptionSetDialog(
             mockedDataElement,
@@ -135,7 +135,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -153,7 +153,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -171,7 +171,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showCalendar(mockedDataElement, mockedTableCell, false, updateCellValueMocked)
     }
 
@@ -189,7 +189,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showCalendar(mockedDataElement, mockedTableCell, true, updateCellValueMocked)
     }
 
@@ -207,7 +207,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showTimePicker(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -225,7 +225,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showCoordinatesDialog(
             mockedDataElement,
             mockedTableCell,
@@ -248,7 +248,7 @@ class DataValuePresenterTest {
         val mockedOrgUnits = listOf<OrganisationUnit>()
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
         whenever(dataValueRepository.orgUnits()) doReturn mockedOrgUnits
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showOtgUnitDialog(
             mockedDataElement,
             mockedTableCell,
@@ -271,7 +271,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showAgeDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -310,7 +310,11 @@ class DataValuePresenterTest {
             whenever(
                 dataValueRepository.getCatOptComboOptions(any())
             ) doReturn listOf("option_${valueType.name}")
-            val textInput = presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+            val textInput = presenter.onCellClick(
+                "tableId",
+                mockedTableCell,
+                updateCellValueMocked
+            )
             assertTrue(textInput != null)
         }
     }
