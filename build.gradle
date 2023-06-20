@@ -25,13 +25,15 @@ plugins {
 
 sonarqube {
     properties {
-        def branch = System.getenv("BITRISE_GIT_BRANCH")
-        def targetBranch = System.getenv("BITRISEIO_GIT_BRANCH_DEST")
-        def pullRequestId = System.getenv("BITRISE_PULL_REQUEST")
+        def branch = System.getenv("GIT_BRANCH")
+        def targetBranch = System.getenv("GIT_BRANCH_DEST")
+        def pullRequestId = System.getenv("PULL_REQUEST")
+
         property "sonar.projectKey", "dhis2_dhis2-android-capture-app"
         property "sonar.organization", "dhis2"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.projectName", "android capture app"
+
         if (pullRequestId == null) {
             property "sonar.branch.name", branch
         } else {
@@ -89,12 +91,12 @@ allprojects {
         resolutionStrategy {
             eachDependency { details ->
                 if ('org.jacoco' == details.requested.group) {
-                    details.useVersion "0.8.8"
+                    details.useVersion "0.8.10"
                 }
             }
         }
     }
-    apply plugin: 'jacoco'
+
     repositories {
         google()
         jcenter() {
