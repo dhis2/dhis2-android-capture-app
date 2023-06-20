@@ -22,6 +22,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.form.data.FileController;
 import org.dhis2.form.data.FormValueStore;
 import org.dhis2.form.data.RulesRepository;
+import org.dhis2.form.data.UniqueAttributeController;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
@@ -97,7 +98,9 @@ public class EventCaptureModule {
             @NonNull D2 d2,
             CrashReportController crashReportController,
             NetworkUtils networkUtils,
-            ResourceManager resourceManager
+            ResourceManager resourceManager,
+            FileController fileController,
+            UniqueAttributeController uniqueAttributeController
     ) {
         return new FormValueStore(
                 d2,
@@ -107,7 +110,8 @@ public class EventCaptureModule {
                 crashReportController,
                 networkUtils,
                 resourceManager,
-                new FileController()
+                fileController,
+                uniqueAttributeController
         );
     }
 
