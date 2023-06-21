@@ -345,7 +345,7 @@ class FormViewModel(
                 uid = intent.uid,
                 value = intent.value,
                 actionType = ActionType.ON_TEXT_CHANGE,
-                valueType = ValueType.TEXT
+                valueType = intent.valueType
             )
             is FormIntent.OnSection -> createRowAction(
                 uid = intent.sectionUid,
@@ -540,11 +540,21 @@ class FormViewModel(
         repository.clearFocusItem()
     }
 
-    fun getUpdatedValue(uiEvent: RecyclerViewUiEvents.OpenChooserIntent): String? {
+    fun getUpdatedData(uiEvent: RecyclerViewUiEvents.OpenChooserIntent): RowAction {
         val currentField = queryData.value
         return when (currentField?.id) {
-            uiEvent.uid -> currentField.value
-            else -> uiEvent.value
+            uiEvent.uid -> currentField.copy(
+                error = checkFieldError(
+                    currentField.valueType,
+                    currentField.value,
+                    null
+                )
+            )
+            else -> RowAction(
+                id = uiEvent.uid,
+                value = uiEvent.value,
+                type = ActionType.ON_SAVE
+            )
         }
     }
 

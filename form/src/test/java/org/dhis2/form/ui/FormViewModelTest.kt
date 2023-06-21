@@ -138,7 +138,7 @@ class FormViewModelTest {
         )
         viewModel.queryData.value = currentData
 
-        assertTrue(viewModel.getUpdatedValue(uiEvent) == currentData.value)
+        assertTrue(viewModel.getUpdatedData(uiEvent).value == currentData.value)
     }
 
     @Test
@@ -151,6 +151,6 @@ class FormViewModelTest {
         )
         viewModel.queryData.value = currentData
 
-        assertTrue(viewModel.getUpdatedValue(uiEvent) == uiEvent.value)
+        assertTrue(viewModel.getUpdatedData(uiEvent).value == uiEvent.value)
     }
 }

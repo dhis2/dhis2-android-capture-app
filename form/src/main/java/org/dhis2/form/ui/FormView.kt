@@ -532,16 +532,24 @@ class FormView : Fragment() {
     }
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {
-        val currentValue = viewModel.getUpdatedValue(uiEvent)
-        if (actionIconsActivate && !currentValue.isNullOrEmpty()) {
+        val currentValue = viewModel.getUpdatedData(uiEvent)
+        if (currentValue.error != null) {
+            intentHandler(
+                FormIntent.OnSave(
+                    uiEvent.uid,
+                    currentValue.value,
+                    currentValue.valueType
+                )
+            )
+        } else if (actionIconsActivate && !currentValue.value.isNullOrEmpty()) {
             view?.closeKeyboard()
             val intent = Intent(uiEvent.action).apply {
                 when (uiEvent.action) {
                     Intent.ACTION_DIAL -> {
-                        data = Uri.parse("tel:$currentValue")
+                        data = Uri.parse("tel:${currentValue.value}")
                     }
                     Intent.ACTION_SENDTO -> {
-                        data = Uri.parse("mailto:$currentValue")
+                        data = Uri.parse("mailto:${currentValue.value}")
                     }
                 }
             }
@@ -605,9 +613,9 @@ class FormView : Fragment() {
             binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-            lastVisiblePosition == adapter.itemCount - 1 ||
-                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-            )
+                lastVisiblePosition == adapter.itemCount - 1 ||
+                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+                )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {

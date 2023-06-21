@@ -57,7 +57,7 @@ data class FieldUiModelImpl(
             value?.isEmpty() == true -> null
             else -> value?.toString()
         }
-        callback?.intent(FormIntent.OnTextChange(uid, text))
+        callback?.intent(FormIntent.OnTextChange(uid, text, valueType))
     }
 
     override fun onDescriptionClick() {
