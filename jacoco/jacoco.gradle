@@ -69,12 +69,16 @@ tasks.register('jacocoReportApp', JacocoReport) {
             '**/lambda$*$*.*'
     ]
 
-    def javaClasses = fileTree(dir: "${buildDir}/intermediates/javac/dhisDebug", excludes: excludes)
-    def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/dhisDebug", excludes: excludes)
+    def javaClassesApp = fileTree(dir: "${buildDir}/intermediates/javac/dhisDebug", excludes: excludes)
+    def kotlinClassesApp = fileTree(dir: "${buildDir}/tmp/kotlin-classes/dhisDebug", excludes: excludes)
+    def javaClasses = fileTree(dir: "${buildDir}/intermediates/javac/debug", excludes: excludes)
+    def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: excludes)
 
     classDirectories.setFrom(files([
+            javaClassesApp,
+            kotlinClassesApp,
             javaClasses,
-            kotlinClasses
+            kotlinClasses,
     ]))
 
     def unitTestsData = fileTree(dir: "${buildDir}/jacoco", includes: ['*.exec'])
