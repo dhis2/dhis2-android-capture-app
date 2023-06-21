@@ -48,7 +48,7 @@ class TableModelTest {
                 values = mapOf(
                     Pair(0, TableCell("10", 1, 0, "4")),
                     Pair(1, TableCell("11", 1, 1, "5", editable = false)),
-                    Pair(2, TableCell("12", 1, 2, "6")),
+                    Pair(2, TableCell("12", 1, 2, "6"))
                 )
             ),
             TableRowModel(
@@ -104,22 +104,6 @@ class TableModelTest {
     }
 
     @Test
-    fun shouldReturnCellWithError() {
-        val currentSelection = TableSelection.CellSelection("table", 3, 2, 0)
-        tableModel.cellHasError(currentSelection)?.let {
-            assert(it.id == "13")
-            assert(it.error == "error")
-        }
-    }
-
-    @Test
-    fun shouldNotReturnCellWhenCellIsNoLongerPartOfTableRows() {
-        val currentSelection = TableSelection.CellSelection("table", 4, 2, 0)
-        assert(tableModel.cellHasError(currentSelection) == null)
-
-    }
-
-    @Test
     fun moveToCellOnTheNextRow() {
         val currentSelection = TableSelection.CellSelection("table", 3, 0, 0)
         tableModel.getNextCell(currentSelection, true)?.let { (tableCell, nextSelection) ->
@@ -160,6 +144,21 @@ class TableModelTest {
             assert(nextSelection.rowIndex == 1)
             assert(nextSelection.columnIndex == 0)
         }
+    }
+
+    @Test
+    fun shouldReturnCellWithError() {
+        val currentSelection = TableSelection.CellSelection("table", 3, 2, 0)
+        tableModel.cellHasError(currentSelection)?.let {
+            assert(it.id == "13")
+            assert(it.error == "error")
+        }
+    }
+
+    @Test
+    fun shouldNotReturnCellWhenCellIsNoLongerPartOfTableRows() {
+        val currentSelection = TableSelection.CellSelection("table", 4, 2, 0)
+        assert(tableModel.cellHasError(currentSelection) == null)
     }
 
     @Test
