@@ -85,7 +85,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running JaCoCo report on app module'
-                    sh './gradlew jacocoReportApp --stacktrace --no-daemon'
+                    sh './gradlew jacocoReport --stacktrace --no-daemon'
                 }
             }
         }
