@@ -130,6 +130,7 @@ class FormViewModel(
                 }
 
                 ValueStoreResult.FILE_SAVED -> {
+                    /*Do nothing*/
                 }
             }
         }
