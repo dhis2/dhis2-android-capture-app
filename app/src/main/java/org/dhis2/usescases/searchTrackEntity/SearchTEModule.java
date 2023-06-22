@@ -237,13 +237,11 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchTeiViewModelFactory providesViewModelFactory(
-            SearchTEContractsModule.Presenter presenter,
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2) {
         return new SearchTeiViewModelFactory(
-                presenter,
                 searchRepository,
                 new SearchPageConfigurator(searchRepository),
                 initialProgram,
