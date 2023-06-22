@@ -215,7 +215,7 @@ class ChartCoordinatesProviderImpl(
         categories: List<String>
     ): List<GraphPoint> {
         return gridResponseValueList.filter { it.value != null }
-            .mapIndexed { index, gridResponseValue ->
+            .mapIndexed { _, gridResponseValue ->
 
                 val periodId = gridResponseValue.rows.joinToString(separator = " - ") {
                     metadata[it]?.displayName.toString()
@@ -225,10 +225,7 @@ class ChartCoordinatesProviderImpl(
                     0f
                 } else {
                     periodId.let {
-                        when (metadata[periodId]) {
-                            is MetadataItem.RelativePeriodItem -> categories.indexOf(periodId)
-                            else -> categories.indexOf(periodId)
-                        }
+                        categories.indexOf(periodId)
                     }
                 }
 

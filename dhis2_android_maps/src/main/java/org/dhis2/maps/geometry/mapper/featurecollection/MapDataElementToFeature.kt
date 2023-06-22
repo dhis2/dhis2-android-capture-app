@@ -2,9 +2,9 @@ package org.dhis2.maps.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import javax.inject.Inject
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.utils.CoordinateDataElementInfo
-import javax.inject.Inject
 
 class MapDataElementToFeature @Inject constructor(
     private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature
