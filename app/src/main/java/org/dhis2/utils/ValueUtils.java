@@ -13,6 +13,10 @@ import java.util.Objects;
 
 public class ValueUtils {
 
+    private ValueUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static TrackedEntityAttributeValue transform(D2 d2, TrackedEntityAttributeValue attributeValue, ValueType valueType, String optionSetUid) {
         TrackedEntityAttributeValue teAttrValue = attributeValue;
         if (valueType.equals(ValueType.ORGANISATION_UNIT)) {
@@ -32,8 +36,7 @@ public class ValueUtils {
             String optionCode = attributeValue.value();
             if (optionCode != null) {
                 Option option = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).one().blockingGet();
-                if (option != null) {
-                    if (Objects.equals(option.code(), optionCode) || Objects.equals(option.name(), optionCode)) {
+                if (option != null && (Objects.equals(option.code(), optionCode) || Objects.equals(option.name(), optionCode))) {
                         teAttrValue = TrackedEntityAttributeValue.builder()
                                 .trackedEntityInstance(teAttrValue.trackedEntityInstance())
                                 .lastUpdated(teAttrValue.lastUpdated())
@@ -41,7 +44,7 @@ public class ValueUtils {
                                 .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
                                 .value(option.displayName())
                                 .build();
-                    }
+
                 }
             }
         }

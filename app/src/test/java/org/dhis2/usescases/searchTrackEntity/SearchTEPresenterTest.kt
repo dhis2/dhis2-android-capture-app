@@ -46,9 +46,9 @@ class SearchTEPresenterTest {
         whenever(
             d2.programModule().programs().uid(initialProgram).blockingGet()
         ) doReturn
-                Program.builder().uid(initialProgram)
-                    .displayFrontPageList(true)
-                    .minAttributesRequiredToSearch(0).build()
+            Program.builder().uid(initialProgram)
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(0).build()
 
         whenever(
             repository.getTrackedEntityType(teType)
