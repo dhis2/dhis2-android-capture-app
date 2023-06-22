@@ -19,6 +19,7 @@ import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +32,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.actions.LocalInteraction
 import org.dhis2.composetable.actions.TableInteractions
+import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.model.LocalCurrentCellValue
 import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.TableCell
@@ -50,13 +53,6 @@ fun DataSetTableScreen(
     ) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onSaveValue: (TableCell) -> Unit,
-    onTableWidthChanged: (width: Int) -> Unit = {},
-    onRowHeaderResize: (tableId: String, newValue: Float) -> Unit = { _, _ -> },
-    onColumnHeaderResize: (tableId: String, column: Int, newValue: Float) -> Unit =
-        { _, _, _ -> },
-    onTableDimensionResize: (tableId: String, newValue: Float) -> Unit =
-        { _, _ -> },
-    onTableDimensionReset: (tableId: String) -> Unit = {},
     bottomContent: @Composable (() -> Unit)? = null
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
@@ -150,57 +146,104 @@ fun DataSetTableScreen(
         }
     }
 
+    val iter by remember {
+        mutableStateOf(
+            object : TableInteractions {
+                override fun onSelectionChange(newTableSelection: TableSelection) {
+                    tableSelection = newTableSelection
+                }
+
+                override fun onDecorationClick(dialogModel: TableDialogModel) {
+                    displayDescription = dialogModel
+                }
+
+                override fun onClick(tableCell: TableCell) {
+                    currentCell?.takeIf { it != tableCell }?.let { onSaveValue(it) }
+                    updatingCell = currentCell
+                    onCellClick(
+                        tableSelection.tableId,
+                        tableCell
+                    ) { updateCellValue(it) }?.let { inputModel ->
+                        currentCell = tableCell
+                        currentInputType =
+                            inputModel.copy(currentValue = currentCell?.value)
+                        startEdition()
+                        focusRequester.requestFocus()
+                    } ?: collapseBottomSheet()
+                }
+
+                override fun onOptionSelected(cell: TableCell, code: String, label: String) {
+                    currentCell = cell.copy(
+                        value = label,
+                        error = null
+                    ).also {
+                        onSaveValue(cell.copy(value = code))
+                    }
+                }
+            }
+        )
+    }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetState,
         sheetContent = {
             val validator = TableTheme.validator
+            val textInputInteractions by remember(tableScreenState) {
+                derivedStateOf {
+                    object : TextInputInteractions {
+                        override fun onTextChanged(textInputModel: TextInputModel) {
+                            currentInputType = textInputModel
+                            currentCell = currentCell?.copy(
+                                value = textInputModel.currentValue,
+                                error = null
+                            )
+                        }
+
+                        override fun onSave() {
+                            if (!tableConfiguration.textInputViewMode) {
+                                collapseBottomSheet(true)
+                            }
+                            currentCell?.let { onSaveValue(it) }
+                            saveClicked = true
+                        }
+
+                        override fun onNextSelected() {
+                            currentCell?.let { tableCell ->
+                                val result = validator.validate(tableCell)
+                                onSaveValue(tableCell)
+                                (tableSelection as? TableSelection.CellSelection)
+                                    ?.let { cellSelected ->
+                                        val currentTable = tableScreenState.tables.first {
+                                            it.id == cellSelected.tableId
+                                        }
+                                        currentTable.getNextCell(
+                                            cellSelection = cellSelected,
+                                            successValidation = result is ValidationResult.Success
+                                        )?.let { (tableCell, nextCell) ->
+                                            if (nextCell != cellSelected) {
+                                                updatingCell = currentCell
+                                                tableSelection = nextCell
+                                                onCellClick(
+                                                    tableSelection.tableId,
+                                                    tableCell
+                                                ) { updateCellValue(it) }?.let { inputModel ->
+                                                    currentCell = tableCell
+                                                    currentInputType = inputModel
+                                                    focusRequester.requestFocus()
+                                                } ?: collapseBottomSheet()
+                                            } else {
+                                                updateError(tableCell)
+                                            }
+                                        } ?: collapseBottomSheet(finish = true)
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
             TextInput(
                 textInputModel = currentInputType,
-                onTextChanged = { textInputModel ->
-                    currentInputType = textInputModel
-                    currentCell = currentCell?.copy(
-                        value = textInputModel.currentValue,
-                        error = null
-                    )
-                },
-                onSave = {
-                    if (!tableConfiguration.textInputViewMode) {
-                        collapseBottomSheet(true)
-                    }
-                    currentCell?.let { onSaveValue(it) }
-                    saveClicked = true
-                },
-                onNextSelected = {
-                    currentCell?.let { tableCell ->
-                        val result = validator.validate(tableCell)
-                        onSaveValue(tableCell)
-                        (tableSelection as? TableSelection.CellSelection)
-                            ?.let { cellSelected ->
-                                val currentTable = tableScreenState.tables.first {
-                                    it.id == cellSelected.tableId
-                                }
-                                currentTable.getNextCell(
-                                    cellSelection = cellSelected,
-                                    successValidation = result is ValidationResult.Success
-                                )?.let { (tableCell, nextCell) ->
-                                    if (nextCell != cellSelected) {
-                                        updatingCell = currentCell
-                                        tableSelection = nextCell
-                                        onCellClick(
-                                            tableSelection.tableId,
-                                            tableCell
-                                        ) { updateCellValue(it) }?.let { inputModel ->
-                                            currentCell = tableCell
-                                            currentInputType = inputModel
-                                            focusRequester.requestFocus()
-                                        } ?: collapseBottomSheet()
-                                    } else {
-                                        updateError(tableCell)
-                                    }
-                                } ?: collapseBottomSheet(finish = true)
-                            }
-                    }
-                },
+                textInputInteractions = textInputInteractions,
                 focusRequester = focusRequester
             )
         },
@@ -227,67 +270,11 @@ fun DataSetTableScreen(
         CompositionLocalProvider(
             LocalTableSelection provides tableSelection,
             LocalCurrentCellValue provides { currentCell?.value },
-            LocalUpdatingCell provides updatingCell
+            LocalUpdatingCell provides updatingCell,
+            LocalInteraction provides iter
         ) {
             DataTable(
                 tableList = tableScreenState.tables,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
-                    }
-
-                    override fun onDecorationClick(dialogModel: TableDialogModel) {
-                        displayDescription = dialogModel
-                    }
-
-                    override fun onClick(tableCell: TableCell) {
-                        currentCell?.takeIf { it != tableCell }?.let { onSaveValue(it) }
-                        updatingCell = currentCell
-                        onCellClick(
-                            tableSelection.tableId,
-                            tableCell
-                        ) { updateCellValue(it) }?.let { inputModel ->
-                            currentCell = tableCell
-                            currentInputType =
-                                inputModel.copy(currentValue = currentCell?.value)
-                            startEdition()
-                            focusRequester.requestFocus()
-                        } ?: collapseBottomSheet()
-                    }
-
-                    override fun onOptionSelected(cell: TableCell, code: String, label: String) {
-                        currentCell = cell.copy(
-                            value = label,
-                            error = null
-                        ).also {
-                            onSaveValue(cell.copy(value = code))
-                        }
-                    }
-
-                    override fun onTableSizeChanged(width: Int) {
-                        onTableWidthChanged(width)
-                    }
-
-                    override fun onRowHeaderSizeChanged(tableId: String, newValue: Float) {
-                        onRowHeaderResize(tableId, newValue)
-                    }
-
-                    override fun onColumnHeaderSizeChanged(
-                        tableId: String,
-                        column: Int,
-                        newValue: Float
-                    ) {
-                        onColumnHeaderResize(tableId, column, newValue)
-                    }
-
-                    override fun onTableWidthReset(tableId: String) {
-                        onTableDimensionReset(tableId)
-                    }
-
-                    override fun onTableWidthChanged(tableId: String, newValue: Float) {
-                        onTableDimensionResize(tableId, newValue)
-                    }
-                },
                 bottomContent = bottomContent
             )
         }

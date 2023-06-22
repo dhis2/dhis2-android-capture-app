@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
+import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.keyboardCapitalization
 import org.dhis2.composetable.model.toKeyboardType
@@ -59,9 +60,7 @@ import org.dhis2.composetable.model.toKeyboardType
 @Composable
 fun TextInput(
     textInputModel: TextInputModel,
-    onTextChanged: (TextInputModel) -> Unit,
-    onSave: () -> Unit,
-    onNextSelected: () -> Unit,
+    textInputInteractions: TextInputInteractions,
     focusRequester: FocusRequester
 ) {
     Column(
@@ -77,9 +76,9 @@ fun TextInput(
         InputTitle(textInputModel)
         TextInputContent(
             textInputModel,
-            onTextChanged = onTextChanged,
-            onSave = onSave,
-            onNextSelected = onNextSelected,
+            onTextChanged = textInputInteractions::onTextChanged,
+            onSave = textInputInteractions::onSave,
+            onNextSelected = textInputInteractions::onNextSelected,
             focusRequester = focusRequester
         )
     }
@@ -347,9 +346,7 @@ fun DefaultTextInputStatusPreview() {
 
     TextInput(
         textInputModel = previewTextInput,
-        onTextChanged = {},
-        onSave = {},
-        onNextSelected = {},
+        textInputInteractions = object : TextInputInteractions {},
         focusRequester = FocusRequester()
     )
 }

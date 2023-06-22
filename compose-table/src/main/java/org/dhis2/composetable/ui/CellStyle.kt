@@ -60,8 +60,8 @@ fun styleForRowHeader(isSelected: Boolean, isOtherRowSelected: Boolean): CellSty
     )
 }
 
-@Composable
 fun styleForCell(
+    tableColorProvider: () -> TableColors,
     isSelected: Boolean,
     isParentSelected: Boolean,
     hasError: Boolean,
@@ -70,18 +70,17 @@ fun styleForCell(
     legendColor: Int?
 ) = CellStyle.CellBorderStyle(
     borderColor = when {
-        isSelected && hasError -> TableTheme.colors.errorColor
-        isSelected && hasWarning -> TableTheme.colors.warningColor
-        isSelected -> TableTheme.colors.primary
+        isSelected && hasError -> tableColorProvider().errorColor
+        isSelected && hasWarning -> tableColorProvider().warningColor
+        isSelected -> tableColorProvider().primary
         else -> Color.Transparent
     },
     backgroundColor = when {
         legendColor != null -> Color.Transparent
-        !isEditable -> TableTheme.colors.disabledCellBackground
-        else -> when {
-            isSelected -> TableTheme.colors.tableBackground
-            isParentSelected -> TableTheme.colors.primaryLight
-            else -> TableTheme.colors.tableBackground
-        }
+        !isEditable && isParentSelected -> tableColorProvider().disabledSelectedBackground
+        isParentSelected -> tableColorProvider().primaryLight
+        !isEditable -> tableColorProvider().disabledCellBackground
+        isSelected -> tableColorProvider().tableBackground
+        else -> tableColorProvider().tableBackground
     }
 )

@@ -224,6 +224,7 @@ class ManageStockViewModel @Inject constructor(
                 _stockItems.value?.filter {
                     itemsCache[it.id] != null
                 }
+
             else -> _stockItems.value
         }
 
@@ -329,6 +330,7 @@ class ManageStockViewModel @Inject constructor(
                         )
                         populateTable()
                     }
+
                     is ValidationResult.Success -> {
                         setQuantity(
                             stockItem,
@@ -464,6 +466,7 @@ class ManageStockViewModel @Inject constructor(
                     visible = buttonVisibility
                 )
             }
+
             DataEntryStep.REVIEWING -> {
                 val buttonVisibility = hasData.value && canReview()
                 ButtonUiState(
@@ -474,6 +477,7 @@ class ManageStockViewModel @Inject constructor(
                     visible = buttonVisibility
                 )
             }
+
             else -> {
                 dataEntryUiState.value.button.copy(visible = false)
             }
@@ -490,9 +494,11 @@ class ManageStockViewModel @Inject constructor(
                 onSearchQueryChanged("")
                 updateStep(DataEntryStep.REVIEWING)
             }
+
             DataEntryStep.REVIEWING -> {
                 commitTransaction()
             }
+
             else -> {
                 // Nothing will happen given that the button is hidden
             }
@@ -509,6 +515,7 @@ class ManageStockViewModel @Inject constructor(
                         DataEntryStep.START -> {
                             shouldCloseActivity.postValue(null)
                         }
+
                         DataEntryStep.LISTING -> {
                             if (dataEntryUiState.value.hasUnsavedData) {
                                 _bottomSheetState.value = true
@@ -516,15 +523,19 @@ class ManageStockViewModel @Inject constructor(
                                 shouldCloseActivity.postValue(null)
                             }
                         }
+
                         DataEntryStep.EDITING_LISTING -> {
                             shouldNavigateBack.postValue(null)
                         }
+
                         DataEntryStep.REVIEWING -> {
                             updateStep(DataEntryStep.LISTING)
                         }
+
                         DataEntryStep.EDITING_REVIEWING -> {
                             shouldNavigateBack.postValue(null)
                         }
+
                         DataEntryStep.COMPLETED -> {
                             // Nothing to do here
                         }
