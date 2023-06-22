@@ -54,8 +54,12 @@ data class TableModel(
         }
     }
 
-    fun cellHasError(cell: TableSelection.CellSelection): TableCell? =
-        tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
+    fun cellHasError(cell: TableSelection.CellSelection): TableCell? {
+        return when {
+            cell.globalIndex > tableRows.size -> null
+            else -> tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
+        }
+    }
 
     fun hasCellWithId(cellId: String?): Boolean {
         return tableRows.any { row ->
