@@ -115,7 +115,7 @@ class TableModelTest {
 
     @Test
     fun returnNullWhenSelectionIsLastCell() {
-        val currentSelection = TableSelection.CellSelection("table", 4, 2, 1)
+        val currentSelection = TableSelection.CellSelection("table", 3, 2, 1)
         assert(tableModel.getNextCell(currentSelection, true) == null)
     }
 
