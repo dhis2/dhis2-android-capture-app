@@ -5,6 +5,8 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
+import java.util.Objects;
+
 /**
  * QUADRAM. Created by ppajuelo on 25/09/2018.
  */
@@ -13,7 +15,7 @@ public class ValueUtils {
 
     public static TrackedEntityAttributeValue transform(D2 d2, TrackedEntityAttributeValue attributeValue, ValueType valueType, String optionSetUid) {
         TrackedEntityAttributeValue teAttrValue = attributeValue;
-        if (valueType.equals(ValueType.ORGANISATION_UNIT.name())) {
+        if (valueType.equals(ValueType.ORGANISATION_UNIT)) {
             if (!d2.organisationUnitModule().organisationUnits().byUid().eq(attributeValue.value()).blockingIsEmpty()) {
                 String orgUnitName = d2.organisationUnitModule().organisationUnits()
                         .byUid().eq(attributeValue.value())
@@ -28,10 +30,10 @@ public class ValueUtils {
             }
         } else if (optionSetUid != null) {
             String optionCode = attributeValue.value();
-            if(optionCode != null) {
+            if (optionCode != null) {
                 Option option = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).one().blockingGet();
                 if (option != null) {
-                    if (option.code().equals(optionCode) || option.name().equals(optionCode)) {
+                    if (Objects.equals(option.code(), optionCode) || Objects.equals(option.name(), optionCode)) {
                         teAttrValue = TrackedEntityAttributeValue.builder()
                                 .trackedEntityInstance(teAttrValue.trackedEntityInstance())
                                 .lastUpdated(teAttrValue.lastUpdated())
