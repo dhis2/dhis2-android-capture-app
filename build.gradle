@@ -103,8 +103,6 @@ allprojects {
             content {
                 includeModule('com.journeyapps', 'zxing-android-embedded')
                 //Only works for API 24+ using Maven Repository, 19+ can be used but we have to downgrade zxing to 3.3.0
-                includeGroup('co.infinum')
-                //There is a problem with the library in mavenCentral, an issue has been created in the github repo
             }
         }
         mavenCentral()
