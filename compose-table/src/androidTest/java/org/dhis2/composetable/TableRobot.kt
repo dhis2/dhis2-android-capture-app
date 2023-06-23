@@ -28,7 +28,6 @@ import androidx.test.espresso.Espresso.pressBack
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import java.io.IOException
-import org.dhis2.composetable.actions.LocalInteraction
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.data.TableAppScreenOptions
@@ -105,7 +104,7 @@ class TableRobot(
                 tableConfiguration = TableConfiguration(headerActionsEnabled = false),
                 tableResizeActions = object : TableResizeActions {}
             ) {
-                val iteractions = object :TableInteractions{
+                val iteractions = object : TableInteractions {
                     override fun onSelectionChange(newTableSelection: TableSelection) {
                         tableSelection = newTableSelection
                     }

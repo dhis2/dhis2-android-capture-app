@@ -18,7 +18,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.dhis2.composetable.actions.LocalInteraction
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.data.input_error_message
@@ -26,10 +25,8 @@ import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
-import org.dhis2.composetable.model.ValidationResult
 import org.dhis2.composetable.tableRobot
 import org.dhis2.composetable.ui.compositions.LocalInteraction
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -138,7 +135,7 @@ class TextInputUiTest {
             )
         ) {
 
-            val iteractions = object :TableInteractions{
+            val iteractions = object : TableInteractions {
                 override fun onSelectionChange(newTableSelection: TableSelection) {
                     tableSelection = newTableSelection
                 }
