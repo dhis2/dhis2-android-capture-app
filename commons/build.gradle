@@ -92,7 +92,6 @@ dependencies {
     kapt libs.dagger.daggerCompiler
     api libs.google.materialThemeAdapter
     api libs.barcodeScanner.zxing
-    api libs.security.secureStorage
     api libs.rx.rxJava
     api libs.rx.rxAndroid
     api libs.analytics.timber

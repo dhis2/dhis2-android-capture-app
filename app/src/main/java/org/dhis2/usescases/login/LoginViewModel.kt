@@ -6,7 +6,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
@@ -372,7 +371,7 @@ class LoginViewModel(
     fun onFingerprintClick() {
         disposable.add(
 
-            fingerPrintController.authenticate(view.getPromptParams())
+            fingerPrintController.authenticate()
                 .map { result ->
                     if (preferenceProvider.contains(
                             SECURE_SERVER_URL,
@@ -388,21 +387,30 @@ class LoginViewModel(
                 .observeOn(schedulers.ui())
                 .subscribe(
                     {
-                        if (it.isFailure) {
-                            view.showEmptyCredentialsMessage()
-                        } else if (it.isSuccess && it.getOrNull()?.type == Type.SUCCESS) {
-                            view.showCredentialsData(
-                                Goldfinger.Type.SUCCESS,
-                                preferenceProvider.getString(SECURE_SERVER_URL)!!,
-                                preferenceProvider.getString(SECURE_USER_NAME)!!,
-                                preferenceProvider.getString(SECURE_PASS)!!
-                            )
-                        } else if (it.getOrNull()?.type == Type.ERROR) {
-                            view.showCredentialsData(
-                                Goldfinger.Type.ERROR,
-                                it.getOrNull()?.message!!
-                            )
-                        }
+                        it.fold(
+                            onSuccess = { data ->
+                                when (data.type) {
+                                    Type.SUCCESS ->
+                                        view.showCredentialsData(
+                                            data,
+                                            preferenceProvider.getString(SECURE_SERVER_URL)!!,
+                                            preferenceProvider.getString(SECURE_USER_NAME)!!,
+                                            preferenceProvider.getString(SECURE_PASS)!!
+                                        )
+                                    Type.INFO -> {
+                                        /*Do nothing*/
+                                    }
+                                    Type.ERROR ->
+                                        view.showCredentialsData(
+                                            data,
+                                            it.getOrNull()?.message!!
+                                        )
+                                }
+                            },
+                            onFailure = {
+                                view.showEmptyCredentialsMessage()
+                            }
+                        )
                     },
                     {
                         view.displayMessage(AUTH_ERROR)

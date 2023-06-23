@@ -206,7 +206,6 @@ dependencies {
     implementation project(':stock-usecase')
 
     implementation libs.security.conscrypt
-    implementation libs.security.fingerprint
     implementation libs.security.rootDetector
     implementation libs.security.openId
     coreLibraryDesugaring libs.android.desugar

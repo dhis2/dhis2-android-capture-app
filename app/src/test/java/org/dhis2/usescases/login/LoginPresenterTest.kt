@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Completable
 import io.reactivex.Observable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -196,7 +195,7 @@ class LoginPresenterTest {
         )
 
         whenever(view.initLogin()) doReturn userManager
-        whenever(userManager.logIn(any(), any(), any()))doReturn Observable.just(mockedUser)
+        whenever(userManager.logIn(any(), any(), any())) doReturn Observable.just(mockedUser)
         loginPresenter.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
         loginPresenter.onUserChanged(userName = "username", 0, 0, 0)
         loginPresenter.onPassChanged(password = "pass", 0, 0, 0)
@@ -254,7 +253,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should log in with fingerprint successfully`() {
-        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
+        whenever(goldfinger.authenticate()) doReturn Observable.just(
             FingerPrintResult(
                 Type.SUCCESS,
                 "none"
@@ -285,7 +284,7 @@ class LoginPresenterTest {
         ).onFingerprintClick()
 
         verify(view).showCredentialsData(
-            Goldfinger.Type.SUCCESS,
+            FingerPrintResult(Type.SUCCESS, "none"),
             preferenceProvider.getString(SECURE_SERVER_URL)!!,
             preferenceProvider.getString(SECURE_USER_NAME)!!,
             preferenceProvider.getString(SECURE_PASS)!!
@@ -294,12 +293,11 @@ class LoginPresenterTest {
 
     @Test
     fun `Should show credentials data when logging in with fingerprint`() {
-        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
-            FingerPrintResult(
-                Type.ERROR,
-                "none"
-            )
+        val result = FingerPrintResult(
+            Type.ERROR,
+            "none"
         )
+        whenever(goldfinger.authenticate()) doReturn Observable.just(result)
         whenever(
             preferenceProvider.contains(
                 SECURE_SERVER_URL,
@@ -319,17 +317,16 @@ class LoginPresenterTest {
             userManager
         ).onFingerprintClick()
 
-        view.showCredentialsData(Goldfinger.Type.ERROR, "none")
+        view.showCredentialsData(result, "none")
     }
 
     @Test
     fun `Should show empty credentials message when trying to log in with fingerprint`() {
-        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
-            FingerPrintResult(
-                Type.ERROR,
-                "none"
-            )
+        val result = FingerPrintResult(
+            Type.ERROR,
+            "none"
         )
+        whenever(goldfinger.authenticate()) doReturn Observable.just(result)
         whenever(
             preferenceProvider.contains(
                 SECURE_SERVER_URL,
@@ -355,7 +352,7 @@ class LoginPresenterTest {
     @Test
     fun `Should display message when authenticate throws an error`() {
         whenever(
-            goldfinger.authenticate(view.getPromptParams())
+            goldfinger.authenticate()
         ) doReturn Observable.error(Exception(LoginViewModel.AUTH_ERROR))
 
         LoginViewModel(

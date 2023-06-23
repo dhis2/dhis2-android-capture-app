@@ -56,8 +56,6 @@ def crashactivity = "2.3.0"
 def zxing = "3.5.0"
 def zxingbarcode = "1.9.8"
 def zxingandroid = "4.3.0"
-def latestSecureStorageVersion = "1.2.2"
-def goldfinger = "2.0.1"
 def root = "0.0.7"
 def openid = "0.8.1"
 def conscrypt = "2.5.2"
@@ -230,11 +228,9 @@ ext.libs = [
         ],
 
         security      : [
-                'fingerprint'  : "co.infinum:goldfinger-rx:$goldfinger",
                 'rootDetector' : "com.scottyab:rootbeer-lib:$root",
                 'openId'       : "net.openid:appauth:$openid",
-                'conscrypt'    : "org.conscrypt:conscrypt-android:$conscrypt",
-                'secureStorage': "de.adorsys.android:securestoragelibrary:$latestSecureStorageVersion"
+                'conscrypt'    : "org.conscrypt:conscrypt-android:$conscrypt"
         ],
 
         test          : [
