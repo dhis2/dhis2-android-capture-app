@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.SectionRenderingType
 
 interface LayoutProvider {
-    fun getLayoutByModel(modelClass: KClass<*>): Int
     fun getLayoutByType(
         valueType: ValueType?,
         renderingType: ValueTypeRenderingType?,
