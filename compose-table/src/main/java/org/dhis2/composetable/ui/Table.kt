@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,14 +73,10 @@ fun Table(
                     tableHeaderRow?.invoke(index, tableModel)
                     tableModel.tableRows.forEach { tableRowModel ->
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
-                        if (tableRowModel.isLastRow) {
-                            ExtendDivider(
-                                tableId = tableModel.id ?: "",
-                                selected = tableSelection.isCornerSelected(
-                                    tableModel.id ?: ""
-                                )
-                            )
-                        }
+                        LastRowDivider(
+                            tableId = tableModel.id ?: "",
+                            isLastRow = tableRowModel.isLastRow
+                        )
                     }
                 }
             }
@@ -90,11 +88,7 @@ fun Table(
             LaunchedEffect(keyboardState) {
                 val isCellSelection = tableSelection is TableSelection.CellSelection
                 val isKeyboardOpen = keyboardState == Keyboard.Opened
-                if (isCellSelection && isKeyboardOpen) {
-                    verticalScrollState.apply {
-                        animateScrollBy(layoutInfo.viewportSize.height / 2f)
-                    }
-                }
+                verticalScrollState.animateToIf(isCellSelection && isKeyboardOpen)
             }
 
             LazyColumn(
@@ -123,28 +117,44 @@ fun Table(
                         key = { _, item -> item.rowHeader.id!! }
                     ) { _, tableRowModel ->
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
-                        if (tableRowModel.isLastRow) {
-                            ExtendDivider(
-                                tableId = tableModel.id ?: "",
-                                selected = tableSelection.isCornerSelected(
-                                    tableModel.id ?: ""
-                                )
-                            )
-                        }
+                        LastRowDivider(tableModel.id ?: "", tableRowModel.isLastRow)
                     }
-                    if (keyboardState == Keyboard.Closed) {
-                        stickyHeader {
-                            Spacer(
-                                modifier = Modifier
-                                    .height(16.dp)
-                                    .background(color = Color.White)
-                            )
-                        }
-                    }
+                    stickyFooter(keyboardState == Keyboard.Closed)
                 }
                 bottomContent?.let { item { it.invoke() } }
             }
         }
         verticalResizingView?.invoke(tableHeight)
+    }
+}
+
+@Composable
+private fun LastRowDivider(tableId: String, isLastRow: Boolean) {
+    if (isLastRow) {
+        ExtendDivider(
+            tableId = tableId,
+            selected = tableSelection.isCornerSelected(tableId)
+        )
+    }
+}
+
+private suspend fun LazyListState.animateToIf(condition: Boolean) {
+    if (condition) {
+        apply {
+            animateScrollBy(layoutInfo.viewportSize.height / 2f)
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.stickyFooter(showFooter: Boolean = true) {
+    if (showFooter) {
+        stickyHeader {
+            Spacer(
+                modifier = Modifier
+                    .height(16.dp)
+                    .background(color = Color.White)
+            )
+        }
     }
 }
