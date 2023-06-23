@@ -520,13 +520,11 @@ class LoginViewModel(
     }
 
     private fun checkTestingEnvironment(serverUrl: String) {
-        if (testingCredentials?.containsKey(serverUrl) == true &&
-            testingCredentials?.get(serverUrl) != null
-        ) {
+        testingCredentials?.get(serverUrl)?.let { credentials ->
             isTestingEnvironment.value = Trio.create(
                 serverUrl,
-                testingCredentials!![serverUrl]!!.user_name,
-                testingCredentials!![serverUrl]!!.user_pass
+                credentials.user_name,
+                credentials.user_pass
             )
         }
     }

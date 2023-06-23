@@ -4,7 +4,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import java.util.Date
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.hisp.dhis.android.core.event.EventStatus
@@ -29,7 +28,6 @@ class EventCapturePresenterTest {
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog = mock()
-    private val getNextVisibleSection: GetNextVisibleSection = GetNextVisibleSection()
 
     @Before
     fun setUp() {
@@ -187,18 +185,6 @@ class EventCapturePresenterTest {
     }
 
     @Test
-    fun `Should return current section if sectionsToHide is empty`() {
-        val activeSection = getNextVisibleSection.get("activeSection", sections())
-        assertTrue(activeSection == "activeSection")
-    }
-
-    @Test
-    fun `Should return current when section is last one and hide section is not empty`() {
-        val activeSection = getNextVisibleSection.get("sectionUid_3", sections())
-        assertTrue(activeSection == "sectionUid_3")
-    }
-
-    @Test
     fun `Should hide progress`() {
         presenter.hideProgress()
         verify(view).hideProgress()
@@ -224,29 +210,6 @@ class EventCapturePresenterTest {
 
         val result = presenter.completionPercentageVisibility
         assertTrue(!result)
-    }
-
-    private fun sections(): MutableList<FormSectionViewModel> {
-        return arrayListOf(
-            FormSectionViewModel.createForSection(
-                "eventUid",
-                "sectionUid_1",
-                "sectionName_1",
-                null
-            ),
-            FormSectionViewModel.createForSection(
-                "eventUid",
-                "sectionUid_2",
-                "sectionName_2",
-                null
-            ),
-            FormSectionViewModel.createForSection(
-                "eventUid",
-                "sectionUid_3",
-                "sectionName_3",
-                null
-            )
-        )
     }
 
     private fun initializeMocks() {

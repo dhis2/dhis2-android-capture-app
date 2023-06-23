@@ -5,7 +5,6 @@ import io.reactivex.schedulers.TestScheduler
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.data.FilterRepository
-import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
@@ -37,7 +36,6 @@ class SearchTEPresenterTest {
     private val initialProgram = "programUid"
     private val teType = "teTypeUid"
     private val preferenceProvider: PreferenceProvider = mock()
-    private val workingListMapper: TeiFilterToWorkingListItemMapper = mock()
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
@@ -54,7 +52,7 @@ class SearchTEPresenterTest {
 
         whenever(
             repository.getTrackedEntityType(teType)
-        )doReturn Observable.just(
+        ) doReturn Observable.just(
             TrackedEntityType.builder()
                 .uid(teType)
                 .displayName("teTypeName")
@@ -70,7 +68,6 @@ class SearchTEPresenterTest {
             initialProgram,
             teType,
             preferenceProvider,
-            workingListMapper,
             filterRepository,
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,

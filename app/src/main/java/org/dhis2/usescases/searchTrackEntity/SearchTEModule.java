@@ -11,7 +11,6 @@ import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
-import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
@@ -102,13 +101,12 @@ public class SearchTEModule {
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
                                                        PreferenceProvider preferenceProvider,
-                                                       TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SyncStatusController syncStatusController) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
-                teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
+                filterRepository, new DisableHomeFiltersFromSettingsApp(),
                 matomoAnalyticsController, syncStatusController);
     }
 

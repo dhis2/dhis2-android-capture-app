@@ -1,7 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
-import java.util.ArrayList
-import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
@@ -131,7 +129,7 @@ class EventFieldMapper(
         if (!fieldMap.containsKey(fieldSection)) {
             fieldMap[fieldSection] = ArrayList()
         }
-        fieldMap[fieldSection]!!.add(field)
+        fieldMap[fieldSection]?.add(field)
     }
 
     private fun handleSection(
@@ -230,7 +228,7 @@ class EventFieldMapper(
     }
 
     fun completedFieldsPercentage(): Float {
-        val completedFields = eventSectionModels.sumBy { it.numberOfCompletedFields() }
+        val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields() }
         return calculateCompletionPercentage(completedFields, totalFields)
     }
 
@@ -238,6 +236,7 @@ class EventFieldMapper(
         return when (type) {
             ValueType.TRACKER_ASSOCIATE,
             ValueType.USERNAME -> true
+
             else -> false
         }
     }

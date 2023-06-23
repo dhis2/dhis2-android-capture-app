@@ -76,64 +76,79 @@ class RulesUtilsProviderImpl(
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionShowError -> showError(
                     it.ruleAction() as RuleActionShowError,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionHideField -> hideField(
                     it.ruleAction() as RuleActionHideField,
                     fieldViewModels
                 )
+
                 is RuleActionDisplayText -> displayText(
                     it.ruleAction() as RuleActionDisplayText,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionDisplayKeyValuePair -> displayKeyValuePair(
                     it.ruleAction() as RuleActionDisplayKeyValuePair,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionHideSection -> hideSection(
                     fieldViewModels,
                     it.ruleAction() as RuleActionHideSection
                 )
+
                 is RuleActionAssign -> assign(
                     it.ruleAction() as RuleActionAssign,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionCreateEvent -> createEvent(
                     it.ruleAction() as RuleActionCreateEvent,
                     fieldViewModels
                 )
+
                 is RuleActionSetMandatoryField -> setMandatory(
                     it.ruleAction() as RuleActionSetMandatoryField,
                     fieldViewModels
                 )
+
                 is RuleActionWarningOnCompletion -> warningOnCompletion(
                     it.ruleAction() as RuleActionWarningOnCompletion,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionErrorOnCompletion -> errorOnCompletion(
                     it.ruleAction() as RuleActionErrorOnCompletion,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionHideProgramStage -> hideProgramStage(
                     it.ruleAction() as RuleActionHideProgramStage
                 )
+
                 is RuleActionHideOption -> hideOption(
                     it.ruleAction() as RuleActionHideOption
                 )
+
                 is RuleActionHideOptionGroup -> hideOptionGroup(
                     it.ruleAction() as RuleActionHideOptionGroup
                 )
+
                 is RuleActionShowOptionGroup -> showOptionGroup(
                     it.ruleAction() as RuleActionShowOptionGroup
                 )
+
                 else -> it.ruleId()?.let { ruleUid -> unsupportedRuleActions.add(ruleUid) }
             }
         }
@@ -272,9 +287,7 @@ class RulesUtilsProviderImpl(
         ruleEffect: RuleEffect,
         fieldViewModels: MutableMap<String, FieldUiModel>
     ) {
-        if (fieldViewModels[assign.field()] != null) {
-            val field = fieldViewModels[assign.field()]!!
-
+        fieldViewModels[assign.field()]?.let { field ->
             val value =
                 if (field.optionSet != null && field.displayName != null) {
                     val valueOption = optionsRepository.getOptionByDisplayName(
@@ -333,8 +346,10 @@ class RulesUtilsProviderImpl(
                         .setDisplayName(valueToShow?.formatData(field.valueType))
                         .setEditable(false)
             }
-        } else if (!hiddenFields.contains(assign.field())) {
-            valuesToChange[assign.field()] = ruleEffect.data()?.formatData()
+        } ?: {
+            if (!hiddenFields.contains(assign.field())) {
+                valuesToChange[assign.field()] = ruleEffect.data()?.formatData()
+            }
         }
     }
 
@@ -449,7 +464,7 @@ class RulesUtilsProviderImpl(
             if (optionGroupsToShow[fieldUid] == null) {
                 optionGroupsToShow[fieldUid] = mutableListOf(optionGroupUid)
             } else {
-                optionGroupsToShow[fieldUid]!!.add(optionGroupUid)
+                optionGroupsToShow[fieldUid]?.add(optionGroupUid)
             }
         }
         if (valueStore?.deleteOptionValueIfSelectedInGroup(
