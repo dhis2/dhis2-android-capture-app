@@ -4,10 +4,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import org.dhis2.composetable.actions.DefaultValidator
-import org.dhis2.composetable.actions.LocalTableResizeActions
-import org.dhis2.composetable.actions.LocalValidator
 import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.actions.Validator
+import org.dhis2.composetable.ui.compositions.LocalTableResizeActions
+import org.dhis2.composetable.ui.compositions.LocalValidator
 
 @Composable
 fun TableTheme(

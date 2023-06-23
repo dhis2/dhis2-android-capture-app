@@ -30,9 +30,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
-import org.dhis2.composetable.actions.LocalInteraction
 import org.dhis2.composetable.actions.TableInteractions
-import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
