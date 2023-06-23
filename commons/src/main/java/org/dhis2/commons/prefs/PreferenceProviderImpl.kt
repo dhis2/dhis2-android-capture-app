@@ -105,11 +105,9 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
     }
 
     override fun saveJiraUser(jiraUser: String) {
-
     }
 
     override fun closeJiraSession() {
-
     }
 
     override fun clear() {
