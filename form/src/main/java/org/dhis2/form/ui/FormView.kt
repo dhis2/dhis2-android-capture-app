@@ -613,9 +613,9 @@ class FormView : Fragment() {
             binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-                lastVisiblePosition == adapter.itemCount - 1 ||
-                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-                )
+            lastVisiblePosition == adapter.itemCount - 1 ||
+                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+            )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
