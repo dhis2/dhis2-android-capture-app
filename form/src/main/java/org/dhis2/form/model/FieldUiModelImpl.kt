@@ -117,7 +117,7 @@ data class FieldUiModelImpl(
     override val textColor: Int?
         get() = style?.textColor(error, warning)
 
-    override val backGroundColor: Pair<Array<Int>, Int>?
+    override val backGroundColor: Pair<Array<Int>, Int?>?
         get() = style?.backgroundColor(valueType, error, warning)
 
     override val hasImage: Boolean

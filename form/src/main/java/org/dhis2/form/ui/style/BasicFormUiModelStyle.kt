@@ -49,12 +49,12 @@ data class BasicFormUiModelStyle(
         valueType: ValueType,
         error: String?,
         warning: String?
-    ): Pair<Array<Int>, Int> {
+    ): Pair<Array<Int>, Int?> {
         val colorType = when {
             warning != null -> FormUiColorType.WARNING
             error != null -> FormUiColorType.ERROR
             else -> FormUiColorType.TEXT_PRIMARY
         }
-        return Pair(emptyArray(), colors[colorType]!!)
+        return Pair(emptyArray(), colors[colorType])
     }
 }

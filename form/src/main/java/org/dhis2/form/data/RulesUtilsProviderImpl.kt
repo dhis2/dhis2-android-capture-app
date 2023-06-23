@@ -278,7 +278,7 @@ class RulesUtilsProviderImpl(
     ) {
         fieldViewModels.filter {
             it.value.programStageSection == hideSection.programStageSection() &&
-                    !it.value.mandatory
+                !it.value.mandatory
         }.keys.forEach { fieldViewModels.remove(it) }
     }
 
@@ -340,13 +340,11 @@ class RulesUtilsProviderImpl(
                 }
 
             ruleEffect.data()?.formatData(field.valueType)?.let {
-                fieldViewModels[assign.field()]?.let { fieldViewModel ->
-                    fieldViewModel.setValue(it)
+                fieldViewModels[assign.field()] =
+                    fieldViewModels[assign.field()]!!
+                        .setValue(it)
                         .setDisplayName(valueToShow?.formatData(field.valueType))
                         .setEditable(false)
-                    fieldViewModels[assign.field()] = fieldViewModel
-                }
-
             }
         } ?: {
             if (!hiddenFields.contains(assign.field())) {
