@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
             name="jiraViewModel"
             type="org.dhis2.usescases.jira.JiraViewModel" />
@@ -83,6 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="Remember me"
+                android:visibility="invisible"
                 app:buttonTint="?colorPrimaryLight"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/userName" />
