@@ -2,7 +2,6 @@ package org.dhis2.composetable.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,15 +30,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
-import org.dhis2.composetable.actions.LocalInteraction
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.actions.TextInputInteractions
-import org.dhis2.composetable.model.LocalCurrentCellValue
-import org.dhis2.composetable.model.LocalUpdatingCell
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.ValidationResult
+import org.dhis2.composetable.ui.compositions.LocalCurrentCellValue
+import org.dhis2.composetable.ui.compositions.LocalInteraction
+import org.dhis2.composetable.ui.compositions.LocalUpdatingCell
+import org.dhis2.composetable.ui.extensions.collapseIfExpanded
+import org.dhis2.composetable.ui.extensions.expandIfCollapsed
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -289,21 +289,5 @@ fun DataSetTableScreen(
                 }
             )
         }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-private suspend fun BottomSheetState.collapseIfExpanded(onCollapse: () -> Unit) {
-    if (isExpanded) {
-        onCollapse()
-        animateTo(BottomSheetValue.Collapsed, tween(400))
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-private suspend fun BottomSheetState.expandIfCollapsed(onExpand: () -> Unit) {
-    if (isCollapsed) {
-        onExpand()
-        animateTo(BottomSheetValue.Expanded, tween(400))
     }
 }

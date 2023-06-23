@@ -29,11 +29,11 @@ import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
+import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 
 @Composable
 fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -> Unit) {

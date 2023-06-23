@@ -26,11 +26,11 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
+import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 
 class GraphToTable {

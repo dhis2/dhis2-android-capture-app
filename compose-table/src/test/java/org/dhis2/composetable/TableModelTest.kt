@@ -7,7 +7,7 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
-import org.dhis2.composetable.model.areAllValuesEmpty
+import org.dhis2.composetable.model.extensions.areAllValuesEmpty
 import org.dhis2.composetable.ui.TableSelection
 import org.junit.Test
 

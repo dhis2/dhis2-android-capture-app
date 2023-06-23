@@ -54,8 +54,8 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.model.TextInputModel
-import org.dhis2.composetable.model.keyboardCapitalization
-import org.dhis2.composetable.model.toKeyboardType
+import org.dhis2.composetable.model.extensions.keyboardCapitalization
+import org.dhis2.composetable.model.extensions.toKeyboardType
 
 @Composable
 fun TextInput(
