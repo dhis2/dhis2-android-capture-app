@@ -532,15 +532,24 @@ class FormView : Fragment() {
     }
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {
-        if (actionIconsActivate && !uiEvent.value.isNullOrEmpty()) {
+        val currentValue = viewModel.getUpdatedData(uiEvent)
+        if (currentValue.error != null) {
+            intentHandler(
+                FormIntent.OnSave(
+                    uiEvent.uid,
+                    currentValue.value,
+                    currentValue.valueType
+                )
+            )
+        } else if (actionIconsActivate && !currentValue.value.isNullOrEmpty()) {
             view?.closeKeyboard()
             val intent = Intent(uiEvent.action).apply {
                 when (uiEvent.action) {
                     Intent.ACTION_DIAL -> {
-                        data = Uri.parse("tel:${uiEvent.value}")
+                        data = Uri.parse("tel:${currentValue.value}")
                     }
                     Intent.ACTION_SENDTO -> {
-                        data = Uri.parse("mailto:${uiEvent.value}")
+                        data = Uri.parse("mailto:${currentValue.value}")
                     }
                 }
             }

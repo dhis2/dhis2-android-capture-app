@@ -25,6 +25,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.binding.getFeatureType
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
@@ -344,7 +345,7 @@ class FormViewModel(
                 uid = intent.uid,
                 value = intent.value,
                 actionType = ActionType.ON_TEXT_CHANGE,
-                valueType = ValueType.TEXT
+                valueType = intent.valueType
             )
             is FormIntent.OnSection -> createRowAction(
                 uid = intent.sectionUid,
@@ -537,6 +538,24 @@ class FormViewModel(
 
     fun clearFocus() {
         repository.clearFocusItem()
+    }
+
+    fun getUpdatedData(uiEvent: RecyclerViewUiEvents.OpenChooserIntent): RowAction {
+        val currentField = queryData.value
+        return when (currentField?.id) {
+            uiEvent.uid -> currentField.copy(
+                error = checkFieldError(
+                    currentField.valueType,
+                    currentField.value,
+                    null
+                )
+            )
+            else -> RowAction(
+                id = uiEvent.uid,
+                value = uiEvent.value,
+                type = ActionType.ON_SAVE
+            )
+        }
     }
 
     companion object {
