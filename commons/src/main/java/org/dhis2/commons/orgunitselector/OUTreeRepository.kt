@@ -49,7 +49,7 @@ class OUTreeRepository(
     fun childrenOrgUnits(parentUid: String? = null): List<OrganisationUnit> {
         val childrenOrgUnits = orgUnitRepositoryConfiguration.childrenOrgUnits(parentUid)
         return childrenOrgUnits.filter {
-            cachedOrgUnits.contains(it.uid())
+            availableOrgUnits.contains(it.uid())
         }
     }
 
