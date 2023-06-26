@@ -27,11 +27,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
-import org.dhis2.composetable.actions.LocalTableResizeActions
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
-import org.dhis2.composetable.model.areAllValuesEmpty
+import org.dhis2.composetable.model.extensions.areAllValuesEmpty
 import org.dhis2.composetable.ui.TableTheme.tableSelection
+import org.dhis2.composetable.ui.compositions.LocalTableResizeActions
+import org.dhis2.composetable.ui.extensions.fixedStickyHeader
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
