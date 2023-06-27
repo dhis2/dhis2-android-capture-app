@@ -138,7 +138,7 @@ androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamicanimation" }
 
-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxserialization" }
+kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxserialization" }
 metadata-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-metadata-jvm", version.ref = "kotlinmetadata" }
 
 google-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
@@ -227,7 +227,7 @@ test-support-annotations = { group = "com.android.support", name = "support-anno
 test-okhttp3-idling-resource = { group = "com.jakewharton.espresso", name = "okhttp3-idling-resource", version = "1.0.0" }
 test-rx2-idler = { group = "com.squareup.rx.idler", name = "rx2-idler", version = "0.11.0" }
 test-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
-test-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose_ui_test" }
+test-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose_ui_test" }
 test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose_ui_test" }
 test-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
 test-turbine = { group = "app.cash.turbine", name = "turbine", version = "0.12.1" }
@@ -263,3 +263,9 @@ form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "te
 form-androidTest = ["test-espresso-idlingresource"]
 map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
 map-androidTest = ["test-mockito-android", "test-mockitoCore"]
+table-implementation = ["kotlin-serialization-json", "androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose",
+"androidx-compose", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-livedata",
+"google-material", "google-material-themeadapter"]
+table-debugImplementation = ["androidx-compose-uitooling", "test-ui-test-manifest"]
+table-test = ["test-junit"]
+table-androidTest = ["test-compose-ui-test", "test-uiautomator","test-junitKtx", "test-espresso"]
