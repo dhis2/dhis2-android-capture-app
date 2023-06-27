@@ -233,10 +233,10 @@ test-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamc
 test-turbine = { group = "app.cash.turbine", name = "turbine", version = "0.12.1" }
 test-javafaker = { group = "com.github.javafaker", name = "javafaker", version.ref = "javafaker" }
 
-maplibre = { group = "org.maplibre.gl", name = "android-sdk", version = "9.5.2" }
-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", version = "5.9.0" }
-markerViewPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-markerview-v8", version.ref = "mapboxmarkerview" }
-annotationPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-annotation-v9", version.ref = "mapboxannotation" }
+maps-maplibre = { group = "org.maplibre.gl", name = "android-sdk", version = "9.5.2" }
+maps-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", version = "5.9.0" }
+maps-markerViewPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-markerview-v8", version.ref = "mapboxmarkerview" }
+maps-annotationPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-annotation-v9", version.ref = "mapboxannotation" }
 
 dispatchBOM = { group = "com.rickbusarow.dispatch", name = "dispatch-bom", version = "1.0.0-beta10" }
 dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch-core" }
@@ -261,3 +261,5 @@ analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"
 form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-testCore",
 "test-rules", "test-archCoreTesting", "test-kotlinCoroutines"]
 form-androidTest = ["test-espresso-idlingresource"]
+map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
+map-androidTest = ["test-mockito-android", "test-mockitoCore"]
