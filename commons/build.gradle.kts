@@ -20,18 +20,18 @@ android {
         targetSdkVersion(libs.versions.sdk.get().toInt())
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner ="androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         getByName("debug") {
-
         }
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
@@ -114,5 +114,4 @@ dependencies {
     api(libs.test.espresso.idlingconcurrent)
     api(libs.analytics.sentry)
     implementation(libs.github.treeView)
-
 }
