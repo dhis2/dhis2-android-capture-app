@@ -151,10 +151,10 @@ google-material-themeadapter = { group = "com.google.android.material", name = "
 google-material3-themeadapter = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "themeAdapter" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
-gson-converter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gsonconverter" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+network-gsonconverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gsonconverter" }
+network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
-joda-time = { group = "joda-time", name = "joda-time", version.ref = "jodatime" }
+dates-jodatime = { group = "joda-time", name = "joda-time", version.ref = "jodatime" }
 
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "hilt" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "hilt" }
@@ -219,7 +219,7 @@ test-espresso-accessibility = { group = "androidx.test.espresso", name = "espres
 test-espresso-web = { group = "androidx.test.espresso", name = "espresso-web", version.ref = "espresso_core" }
 test-uiautomator-v18 = { group = "com.android.support.test.uiautomator", name = "uiautomator-v18", version = "2.1.3" }
 test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx_test" }
-test-test-coreKtx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx_test_core" }
+test-coreKtx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx_test_core" }
 test-junitKtx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junit_ext" }
 test-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit_ext" }
 test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
@@ -238,11 +238,11 @@ maps-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", versio
 maps-markerViewPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-markerview-v8", version.ref = "mapboxmarkerview" }
 maps-annotationPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-annotation-v9", version.ref = "mapboxannotation" }
 
-dispatchBOM = { group = "com.rickbusarow.dispatch", name = "dispatch-bom", version = "1.0.0-beta10" }
-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch-core" }
-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
+dispatcher-dispatchBOM = { group = "com.rickbusarow.dispatch", name = "dispatch-bom", version = "1.0.0-beta10" }
+dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch-core" }
+dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
 
-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version = "$autovalueparcel" }
+deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" }
 
 [plugins]
 

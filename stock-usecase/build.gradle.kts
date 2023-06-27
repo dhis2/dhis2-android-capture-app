@@ -12,6 +12,10 @@ repositories {
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
 }
 
+base {
+    archivesName.set("psm-v" + libs.versions.vName.get())
+}
+
 android {
     compileSdk = libs.versions.sdk.get().toInt()
     namespace = "org.dhis2.android.rtsm"
@@ -20,8 +24,6 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.sdk.get().toInt()
         multiDexEnabled = true
-
-        setProperty("archivesBaseName", "psm-v" + libs.versions.vName)
 
         javaCompileOptions {
             annotationProcessorOptions {
