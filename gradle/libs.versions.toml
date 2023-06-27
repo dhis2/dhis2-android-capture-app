@@ -139,13 +139,13 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamicanimation" }
 
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxserialization" }
-metadata-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-metadata-jvm", version.ref = "kotlinmetadata" }
+metadata-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-metadata-jvm", version.ref = "kotlinmetadata" } #TODO: Why do we need this?
 
 google-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 google-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.2.0" }
 google-auth-apiphone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version = "18.0.1" }
-google-autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autovalue" }
+google-autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autovalue" } #TODO: this should be removed
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-material-themeadapter = { group = "com.google.android.material", name = "compose-theme-adapter", version.ref = "composeTheme" }
 google-material3-themeadapter = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "themeAdapter" }
@@ -175,7 +175,7 @@ github-fancyshowcase = { group = "com.github.faruktoptas", name = "FancyShowCase
 github-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 github-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 github-charts = { group = "com.github.PhilJay", name = "MPAndroidChart", version = "v3.1.0" }
-github-treeView = { group = "com.github.bmelnychuk", name = "atv", version = "1.2.9" }
+github-treeView = { group = "com.github.bmelnychuk", name = "atv", version = "1.2.9" } #TODO: We should remove this
 
 barcodeScanner-zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 barcodeScanner-scanner = { group = "me.dm7.barcodescanner", name = "zxing", version.ref = "zxingbarcode" }
@@ -238,11 +238,11 @@ maps-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", versio
 maps-markerViewPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-markerview-v8", version.ref = "mapboxmarkerview" }
 maps-annotationPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-annotation-v9", version.ref = "mapboxannotation" }
 
-dispatcher-dispatchBOM = { group = "com.rickbusarow.dispatch", name = "dispatch-bom", version = "1.0.0-beta10" }
+dispatcher-dispatchBOM = { group = "com.rickbusarow.dispatch", name = "dispatch-bom", version = "1.0.0-beta10" } #TODO: I don't know how or why we are using this
 dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch-core" }
 dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
 
-deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" }
+deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" } #TODO: Remove alongside AutoValue
 
 [plugins]
 
