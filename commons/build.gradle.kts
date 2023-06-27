@@ -12,12 +12,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion(libs.versions.sdk.get().toInt())
+    compileSdk = libs.versions.sdk.get().toInt()
     namespace = "org.dhis2.commons"
 
     defaultConfig {
-        minSdkVersion(libs.versions.minSdk.get().toInt())
-        targetSdkVersion(libs.versions.sdk.get().toInt())
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.sdk.get().toInt()
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
