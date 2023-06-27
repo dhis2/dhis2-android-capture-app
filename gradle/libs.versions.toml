@@ -201,7 +201,7 @@ appauth = { group = "net.openid", name = "appauth", version.ref = "openid" }
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
 
 test-junit = { group = "junit", name = "junit", version.ref = "junit" }
-test-core-testing = { group = "androidx.arch.core", name = "core-testing", version = "2.1.0" }
+test-archCoreTesting = { group = "androidx.arch.core", name = "core-testing", version = "2.1.0" }
 test-testCore = { group = "androidx.test", name = "core", version.ref = "androidx_test" }
 test-mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 test-mockitoInline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
@@ -226,7 +226,7 @@ test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", 
 test-support-annotations = { group = "com.android.support", name = "support-annotations", version = "28.0.0" }
 test-okhttp3-idling-resource = { group = "com.jakewharton.espresso", name = "okhttp3-idling-resource", version = "1.0.0" }
 test-rx2-idler = { group = "com.squareup.rx.idler", name = "rx2-idler", version = "0.11.0" }
-test-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
+test-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
 test-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose_ui_test" }
 test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose_ui_test" }
 test-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
@@ -258,3 +258,6 @@ analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
 analytics-api = ["github-charts"]
 analytics-kapt =  ["dagger-compiler"]
 analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
+form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-testCore",
+"test-rules", "test-archCoreTesting", "test-kotlinCoroutines"]
+form-androidTest = ["test-espresso-idlingresource"]
