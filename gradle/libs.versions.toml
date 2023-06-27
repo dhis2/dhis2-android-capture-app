@@ -204,7 +204,7 @@ test-junit = { group = "junit", name = "junit", version.ref = "junit" }
 test-core-testing = { group = "androidx.arch.core", name = "core-testing", version = "2.1.0" }
 test-testCore = { group = "androidx.test", name = "core", version.ref = "androidx_test" }
 test-mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-test-mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
+test-mockitoInline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
 test-mockitoKotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
 test-mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito_android" }
 test-truth = { group = "com.google.truth", name = "truth", version.ref = "google_truth" }
@@ -254,3 +254,7 @@ uicomponents-api = ["androidx-compose-constraintlayout", "androidx-compose-previ
 uicomponents-debugapi = ["androidx-compose-uitooling"]
 uicomponents-test = ["test-junit"]
 uicomponents-androidtest = ["test-junit-ext", "test-espresso"]
+analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
+analytics-api = ["github-charts"]
+analytics-kapt =  ["dagger-compiler"]
+analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
