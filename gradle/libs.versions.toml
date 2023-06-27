@@ -129,10 +129,10 @@ androidx-cardview = { group = "androidx.cardview", name = "cardview", version.re
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacysupport" }
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-androidx-work-runtime = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
+androidx-work = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
 androidx-work-runtimeKtx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
-androidx-work-rxjava2 = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
-androidx-work-gcm = { group = "androidx.work", name = "work-gcm", version.ref = "work" }
+androidx-workrx = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
+androidx-workgcm = { group = "androidx.work", name = "work-gcm", version.ref = "work" }
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exif" }
 androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_ktx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
@@ -196,9 +196,9 @@ analytics-customactivityoncrash = { group = "cat.ereza", name = "customactivityo
 analytics-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 analytics-sentry = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
 
-rootbeer-lib = { group = "com.scottyab", name = "rootbeer-lib", version.ref = "root" }
-appauth = { group = "net.openid", name = "appauth", version.ref = "openid" }
-conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
+security-rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version.ref = "root" }
+security-openId = { group = "net.openid", name = "appauth", version.ref = "openid" }
+security-conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
 
 test-junit = { group = "junit", name = "junit", version.ref = "junit" }
 test-archCoreTesting = { group = "androidx.arch.core", name = "core-testing", version = "2.1.0" }
@@ -256,16 +256,27 @@ uicomponents-test = ["test-junit"]
 uicomponents-androidtest = ["test-junit-ext", "test-espresso"]
 analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
 analytics-api = ["github-charts"]
-analytics-kapt =  ["dagger-compiler"]
+analytics-kapt = ["dagger-compiler"]
 analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
 form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-testCore",
-"test-rules", "test-archCoreTesting", "test-kotlinCoroutines"]
+    "test-rules", "test-archCoreTesting", "test-kotlinCoroutines"]
 form-androidTest = ["test-espresso-idlingresource"]
 map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
 map-androidTest = ["test-mockito-android", "test-mockitoCore"]
 table-implementation = ["kotlin-serialization-json", "androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose",
-"androidx-compose", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-livedata",
-"google-material", "google-material-themeadapter"]
+    "androidx-compose", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-livedata",
+    "google-material", "google-material-themeadapter"]
 table-debugImplementation = ["androidx-compose-uitooling", "test-ui-test-manifest"]
 table-test = ["test-junit"]
-table-androidTest = ["test-compose-ui-test", "test-uiautomator","test-junitKtx", "test-espresso"]
+table-androidTest = ["test-compose-ui-test", "test-uiautomator", "test-junitKtx", "test-espresso"]
+stock-implementation = ["kotlin-serialization-json", "androidx-activity-compose", "androidx-annotation",
+    "androidx-legacy-support-v4", "androidx-constraintlayout", "rx-relay", "security-openId", "androidx-preferenceKtx",
+    "androidx-work", "androidx-work-runtimeKtx", "androidx-workrx", "androidx-workgcm", "androidx-activityKtx", "androidx-fragmentKtx",
+    "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash", "dagger-hilt-android"]
+stock-core = ["desugar"]
+stock-kapt = ["dagger-hilt-compiler-new"]
+stock-debugImplementation = ["analytics-flipper", "analytics-soloader"]
+stock-releaseImplementation = ["analytics-flipper-noop"]
+stock-test = ["test-junit", "test-mockitoKotlin", "test-mockitoInline", "test-archCoreTesting", "test-javafaker",
+    "test-kotlinCoroutines"]
+stock-androidTest = ["test-junit-ext", "test-espresso", "test-archCoreTesting"]
