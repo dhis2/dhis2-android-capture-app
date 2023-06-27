@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
-    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
@@ -51,20 +50,20 @@ android {
 
 dependencies {
 
-    implementation libs.androidx.coreKtx
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.activityCompose
-    api libs.androidx.composeConstraintLayout
-    implementation libs.androidx.material3
-    api libs.androidx.composePreview
-    api libs.androidx.composeUi
-    api libs.androidx.composeLiveData
-    debugApi libs.androidx.composeUiTooling
-    implementation libs.google.material
-    api libs.google.materialThemeAdapter
-    api libs.google.material3ThemeAdapter
+    implementation lib.androidx.coreKtx
+    implementation lib.androidx.appcompat
+    implementation lib.androidx.activityCompose
+    api lib.androidx.composeConstraintLayout
+    implementation lib.androidx.material3
+    api lib.androidx.composePreview
+    api lib.androidx.composeUi
+    api lib.androidx.composeLiveData
+    debugApi lib.androidx.composeUiTooling
+    implementation lib.google.material
+    api lib.google.materialThemeAdapter
+    api lib.google.material3ThemeAdapter
 
-    testImplementation libs.test.junit
-    androidTestImplementation libs.test.testJUnitExt
-    androidTestImplementation libs.test.espresso
+    testImplementation lib.test.junit
+    androidTestImplementation lib.test.testJUnitExt
+    androidTestImplementation lib.test.espresso
 }

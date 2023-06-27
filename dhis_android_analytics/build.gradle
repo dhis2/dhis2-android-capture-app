@@ -1,6 +1,3 @@
-plugins{
-    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
-}
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -60,15 +57,15 @@ dependencies {
     implementation project(':commons')
     implementation project(':compose-table')
 
-    implementation libs.androidx.cardView
-    implementation libs.androidx.constraintLayout
+    implementation lib.androidx.cardView
+    implementation lib.androidx.constraintLayout
 
     //Graphs
-    api libs.github.charts
+    api lib.github.charts
 
-    kapt libs.dagger.daggerCompiler
+    kapt lib.dagger.daggerCompiler
 
-    testImplementation libs.test.mockitoCore
-    testImplementation libs.test.mockitoInline
-    testImplementation libs.test.mockitoKotlin
+    testImplementation lib.test.mockitoCore
+    testImplementation lib.test.mockitoInline
+    testImplementation lib.test.mockitoKotlin
 }

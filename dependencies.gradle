@@ -98,7 +98,7 @@ ext.versions = [
         dhis2AndroidSDK : "$dhis2sdk"
 ]
 
-ext.libs = [
+ext.lib = [
         gradle        : [
                 'gradlePlugin'       : "com.android.tools.build:gradle:$gradle",
                 'kotlinPlugin'       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin",
@@ -180,7 +180,7 @@ ext.libs = [
                 'daggerCompiler'     : "com.google.dagger:dagger-compiler:$hilt",
                 'hilt'               : "com.google.dagger:hilt-android:$hilt",
                 'hiltAndroidCompiler': "com.google.dagger:hilt-android-compiler:$hilt",
-                'hiltCompiler'       : "androidx.hilt:hilt-compiler:$hiltCompiler", //TODO: change to com.google.dagger:hilt-compiler?,
+                'hiltCompiler'       : "androidx.hilt:hilt-compiler:$hiltCompiler",
                 'hiltCompilerNew'    : "com.google.dagger:hilt-compiler:$hilt"
         ],
 
@@ -264,7 +264,7 @@ ext.libs = [
                 'composeUiTestJUnit'      : "androidx.compose.ui:ui-test-junit4:$compose_ui_test",
                 'composeUiTestManifest'   : "androidx.compose.ui:ui-test-manifest:$compose_ui_test",
                 'hamcrest'                : "org.hamcrest:hamcrest:$hamcrest",
-                'turbine'                 : "app.cash.turbine:turbine:0.12.1", //Todo: I think we are not using this,
+                'turbine'                 : "app.cash.turbine:turbine:0.12.1",
                 'javafaker'               : "com.github.javafaker:javafaker:$javafaker"
         ],
 

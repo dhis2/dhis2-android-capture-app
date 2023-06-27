@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
@@ -50,23 +49,23 @@ android {
 
 dependencies {
 
-    implementation libs.kotlin.serialization
-    implementation libs.androidx.coreKtx
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.activityCompose
-    implementation libs.androidx.compose
-    implementation libs.androidx.composeConstraintLayout
-    implementation libs.androidx.composePreview
-    implementation libs.androidx.composeUi
-    implementation libs.androidx.composeLiveData
-    debugImplementation libs.androidx.composeUiTooling
-    implementation libs.google.material
-    implementation libs.google.materialThemeAdapter
+    implementation lib.kotlin.serialization
+    implementation lib.androidx.coreKtx
+    implementation lib.androidx.appcompat
+    implementation lib.androidx.activityCompose
+    implementation lib.androidx.compose
+    implementation lib.androidx.composeConstraintLayout
+    implementation lib.androidx.composePreview
+    implementation lib.androidx.composeUi
+    implementation lib.androidx.composeLiveData
+    debugImplementation lib.androidx.composeUiTooling
+    implementation lib.google.material
+    implementation lib.google.materialThemeAdapter
 
-    testImplementation libs.test.junit
-    androidTestImplementation libs.test.composeUiTestJUnit
-    debugImplementation libs.test.composeUiTestManifest
-    androidTestImplementation libs.test.uiautomator
-    androidTestImplementation libs.test.testJUnitKtx
-    androidTestImplementation libs.test.espresso
+    testImplementation lib.test.junit
+    androidTestImplementation lib.test.composeUiTestJUnit
+    debugImplementation lib.test.composeUiTestManifest
+    androidTestImplementation lib.test.uiautomator
+    androidTestImplementation lib.test.testJUnitKtx
+    androidTestImplementation lib.test.espresso
 }

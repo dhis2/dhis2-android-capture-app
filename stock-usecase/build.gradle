@@ -4,7 +4,6 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'dagger.hilt.android.plugin'
-    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply plugin: "kotlinx-serialization"
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
@@ -86,43 +85,43 @@ dependencies {
     implementation project(":commons")
     implementation project(":compose-table")
 
-    implementation libs.kotlin.serialization
+    implementation lib.kotlin.serialization
 
-    implementation libs.androidx.activityCompose
-    implementation libs.androidx.annotation
-    implementation libs.androidx.legacySupport
-    coreLibraryDesugaring libs.android.desugar
-    implementation libs.androidx.constraintLayout
-    implementation libs.rx.rxRelay
-    implementation libs.security.openId
-    implementation libs.androidx.preferencesKtx
-    implementation libs.androidx.work
-    implementation libs.androidx.workRuntimeKtx
-    implementation libs.androidx.workRx
-    implementation libs.androidx.workGCM
+    implementation lib.androidx.activityCompose
+    implementation lib.androidx.annotation
+    implementation lib.androidx.legacySupport
+    coreLibraryDesugaring lib.android.desugar
+    implementation lib.androidx.constraintLayout
+    implementation lib.rx.rxRelay
+    implementation lib.security.openId
+    implementation lib.androidx.preferencesKtx
+    implementation lib.androidx.work
+    implementation lib.androidx.workRuntimeKtx
+    implementation lib.androidx.workRx
+    implementation lib.androidx.workGCM
 
-    implementation libs.androidx.activityKtx
-    implementation libs.androidx.fragmentKtx
-    implementation libs.androidx.viewModelCompose
-    implementation libs.dagger.hilt
-    kapt libs.dagger.hiltCompilerNew
-    implementation libs.analytics.crashActivity
-    debugImplementation libs.analytics.flipper
-    debugImplementation libs.analytics.soloader
-    debugImplementation(libs.analytics.flipperNetwork) {
+    implementation lib.androidx.activityKtx
+    implementation lib.androidx.fragmentKtx
+    implementation lib.androidx.viewModelCompose
+    implementation lib.dagger.hilt
+    kapt lib.dagger.hiltCompilerNew
+    implementation lib.analytics.crashActivity
+    debugImplementation lib.analytics.flipper
+    debugImplementation lib.analytics.soloader
+    debugImplementation(lib.analytics.flipperNetwork) {
         exclude group: 'com.squareup.okhttp3'
     }
-    releaseImplementation libs.analytics.flipperNoop
+    releaseImplementation lib.analytics.flipperNoop
 
-    testImplementation libs.test.junit
-    testImplementation libs.test.mockitoKotlin
-    testImplementation libs.test.mockitoInline
-    testImplementation libs.test.archCoreTesting
-    testImplementation libs.test.javafaker
-    testImplementation libs.test.kotlinCoroutines
-    androidTestImplementation libs.test.testJUnitExt
-    androidTestImplementation libs.test.espresso
-    androidTestImplementation libs.test.archCoreTesting
+    testImplementation lib.test.junit
+    testImplementation lib.test.mockitoKotlin
+    testImplementation lib.test.mockitoInline
+    testImplementation lib.test.archCoreTesting
+    testImplementation lib.test.javafaker
+    testImplementation lib.test.kotlinCoroutines
+    androidTestImplementation lib.test.testJUnitExt
+    androidTestImplementation lib.test.espresso
+    androidTestImplementation lib.test.archCoreTesting
 }
 
 kapt {

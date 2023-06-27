@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
@@ -48,22 +47,22 @@ android {
 
 dependencies {
     implementation project(":commons")
-    api(libs.maps.maplibre) {
+    api(lib.maps.maplibre) {
         exclude group: 'com.google.android.gms'
     }
-    api(libs.maps.geojson) {
+    api(lib.maps.geojson) {
         exclude group: 'com.google.android.gms'
     }
-    implementation(libs.maps.markerViewPlugin) {
+    implementation(lib.maps.markerViewPlugin) {
         exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-android-sdk'
     }
-    implementation(libs.maps.annotationPlugin) {
+    implementation(lib.maps.annotationPlugin) {
         exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-android-sdk'
     }
 
-    androidTestImplementation libs.test.mockitoAndroid
-    androidTestImplementation libs.test.mockitoCore
-    testImplementation libs.test.mockitoCore
-    testImplementation libs.test.mockitoInline
-    testImplementation libs.test.mockitoKotlin
+    androidTestImplementation lib.test.mockitoAndroid
+    androidTestImplementation lib.test.mockitoCore
+    testImplementation lib.test.mockitoCore
+    testImplementation lib.test.mockitoInline
+    testImplementation lib.test.mockitoKotlin
 }

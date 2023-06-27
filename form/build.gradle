@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
@@ -61,13 +60,13 @@ dependencies {
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
 
-    testImplementation libs.test.mockitoCore
-    testImplementation libs.test.mockitoInline
-    testImplementation libs.test.mockitoKotlin
-    testImplementation libs.test.turbine
-    testImplementation libs.test.testCore
-    testImplementation libs.test.testRules
-    testImplementation libs.test.archCoreTesting
-    testImplementation libs.test.kotlinCoroutines
-    androidTestImplementation libs.test.espressoIdlingResources
+    testImplementation lib.test.mockitoCore
+    testImplementation lib.test.mockitoInline
+    testImplementation lib.test.mockitoKotlin
+    testImplementation lib.test.turbine
+    testImplementation lib.test.testCore
+    testImplementation lib.test.testRules
+    testImplementation lib.test.archCoreTesting
+    testImplementation lib.test.kotlinCoroutines
+    androidTestImplementation lib.test.espressoIdlingResources
 }

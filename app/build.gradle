@@ -1,6 +1,3 @@
-plugins {
-    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
-}
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -205,74 +202,74 @@ dependencies {
     implementation project(":compose-table")
     implementation project(':stock-usecase')
 
-    implementation libs.security.conscrypt
-    implementation libs.security.rootDetector
-    implementation libs.security.openId
-    coreLibraryDesugaring libs.android.desugar
-    implementation libs.kotlin.serialization
-    implementation libs.androidx.activityCompose
-    implementation libs.androidx.annotation
-    implementation libs.androidx.cardView
-    implementation libs.androidx.legacySupport
-    implementation libs.androidx.multidex
-    implementation libs.androidx.constraintLayout
-    implementation libs.androidx.work
-    implementation libs.androidx.workRx
-    implementation libs.androidx.exifinterface
-    dhisPlayServicesImplementation libs.google.auth
-    dhisPlayServicesImplementation libs.google.authApiPhone
-    implementation libs.google.flexbox
-    implementation libs.google.guava
-    implementation libs.github.pinlock
-    implementation libs.github.fancyshowcase
-    implementation libs.animation.lottie
-    kapt libs.dagger.daggerCompiler
-    implementation libs.dagger.hilt
-    kapt libs.dagger.hiltAndroidCompiler
-    kapt libs.dagger.hiltCompiler
-    implementation libs.rx.rxKotlin
-    implementation libs.network.gsonConverter
-    implementation libs.network.okhttp
-    implementation libs.dates.jodatime
-    kapt libs.deprecated.autoValueParcel
-    implementation libs.analytics.matomo
-    debugImplementation libs.analytics.flipper
-    debugImplementation libs.analytics.soloader
-    debugImplementation libs.analytics.flipperNetwork
-    debugImplementation libs.analytics.flipperLeak
-    debugImplementation libs.analytics.leakcanary
-    releaseImplementation libs.analytics.leakcanaryNoop
-    releaseImplementation libs.analytics.flipperNoop
-    implementation libs.analytics.rxlint
-    implementation libs.analytics.crashActivity
-    testImplementation libs.test.archCoreTesting
-    testImplementation libs.test.testCore
-    testImplementation libs.test.mockitoCore
-    testImplementation libs.test.mockitoInline
-    testImplementation libs.test.mockitoKotlin
-    testImplementation libs.test.truth
-    androidTestUtil libs.test.orchestrator
-    androidTestImplementation libs.test.testRunner
-    androidTestImplementation libs.test.espressoIntents
-    androidTestImplementation libs.test.espressoContrib
-    androidTestImplementation libs.test.espressoAccessibility
-    androidTestImplementation libs.test.espressoWeb
-    androidTestImplementation libs.test.uiAutomator
-    androidTestImplementation libs.test.testCore
-    androidTestImplementation libs.test.testRules
-    androidTestImplementation libs.test.testCoreKtx
-    androidTestImplementation libs.test.testJUnitKtx
-    androidTestImplementation libs.test.mockitoAndroid
-    androidTestImplementation libs.test.mockitoCore
-    androidTestImplementation libs.test.supportAnnotations
-    androidTestImplementation libs.test.espressoIdlingResource
-    androidTestImplementation libs.test.rxIdler
-    testImplementation libs.test.kotlinCoroutines
-    androidTestImplementation libs.test.composeUiTestJUnit
-    debugImplementation libs.test.composeUiTestManifest
-    androidTestImplementation libs.test.hamcrest
-    implementation(platform(libs.dispatcher.dispatchBOM))
-    implementation(libs.dispatcher.dispatchCore)
-    androidTestImplementation(libs.dispatcher.dispatchEspresso)
-    testImplementation libs.test.turbine
+    implementation lib.security.conscrypt
+    implementation lib.security.rootDetector
+    implementation lib.security.openId
+    coreLibraryDesugaring lib.android.desugar
+    implementation lib.kotlin.serialization
+    implementation lib.androidx.activityCompose
+    implementation lib.androidx.annotation
+    implementation lib.androidx.cardView
+    implementation lib.androidx.legacySupport
+    implementation lib.androidx.multidex
+    implementation lib.androidx.constraintLayout
+    implementation lib.androidx.work
+    implementation lib.androidx.workRx
+    implementation lib.androidx.exifinterface
+    dhisPlayServicesImplementation lib.google.auth
+    dhisPlayServicesImplementation lib.google.authApiPhone
+    implementation lib.google.flexbox
+    implementation lib.google.guava
+    implementation lib.github.pinlock
+    implementation lib.github.fancyshowcase
+    implementation lib.animation.lottie
+    kapt lib.dagger.daggerCompiler
+    implementation lib.dagger.hilt
+    kapt lib.dagger.hiltAndroidCompiler
+    kapt lib.dagger.hiltCompiler
+    implementation lib.rx.rxKotlin
+    implementation lib.network.gsonConverter
+    implementation lib.network.okhttp
+    implementation lib.dates.jodatime
+    kapt lib.deprecated.autoValueParcel
+    implementation lib.analytics.matomo
+    debugImplementation lib.analytics.flipper
+    debugImplementation lib.analytics.soloader
+    debugImplementation lib.analytics.flipperNetwork
+    debugImplementation lib.analytics.flipperLeak
+    debugImplementation lib.analytics.leakcanary
+    releaseImplementation lib.analytics.leakcanaryNoop
+    releaseImplementation lib.analytics.flipperNoop
+    implementation lib.analytics.rxlint
+    implementation lib.analytics.crashActivity
+    testImplementation lib.test.archCoreTesting
+    testImplementation lib.test.testCore
+    testImplementation lib.test.mockitoCore
+    testImplementation lib.test.mockitoInline
+    testImplementation lib.test.mockitoKotlin
+    testImplementation lib.test.truth
+    androidTestUtil lib.test.orchestrator
+    androidTestImplementation lib.test.testRunner
+    androidTestImplementation lib.test.espressoIntents
+    androidTestImplementation lib.test.espressoContrib
+    androidTestImplementation lib.test.espressoAccessibility
+    androidTestImplementation lib.test.espressoWeb
+    androidTestImplementation lib.test.uiAutomator
+    androidTestImplementation lib.test.testCore
+    androidTestImplementation lib.test.testRules
+    androidTestImplementation lib.test.testCoreKtx
+    androidTestImplementation lib.test.testJUnitKtx
+    androidTestImplementation lib.test.mockitoAndroid
+    androidTestImplementation lib.test.mockitoCore
+    androidTestImplementation lib.test.supportAnnotations
+    androidTestImplementation lib.test.espressoIdlingResource
+    androidTestImplementation lib.test.rxIdler
+    testImplementation lib.test.kotlinCoroutines
+    androidTestImplementation lib.test.composeUiTestJUnit
+    debugImplementation lib.test.composeUiTestManifest
+    androidTestImplementation lib.test.hamcrest
+    implementation(platform(lib.dispatcher.dispatchBOM))
+    implementation(lib.dispatcher.dispatchCore)
+    androidTestImplementation(lib.dispatcher.dispatchEspresso)
+    testImplementation lib.test.turbine
 }

@@ -8,11 +8,11 @@ buildscript {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
-        classpath libs.gradle.gradlePlugin
-        classpath libs.gradle.kotlinPlugin
-        classpath libs.gradle.hiltPlugin
-        classpath libs.gradle.jacoco
-        classpath libs.gradle.kotlinSerialization
+        classpath lib.gradle.gradlePlugin
+        classpath lib.gradle.kotlinPlugin
+        classpath lib.gradle.hiltPlugin
+        classpath lib.gradle.jacoco
+        classpath lib.gradle.kotlinSerialization
     }
 }
 
