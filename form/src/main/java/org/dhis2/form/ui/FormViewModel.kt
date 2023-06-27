@@ -93,16 +93,19 @@ class FormViewModel(
                     }
                     processCalculatedItems()
                 }
+
                 ValueStoreResult.ERROR_UPDATING_VALUE -> {
                     loading.postValue(false)
                     showToast.value = R.string.update_field_error
                     processCalculatedItems(true)
                 }
+
                 ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                     Timber.tag(TAG)
                         .d("${result.first.id} is not a data element or attribute")
                     processCalculatedItems()
                 }
+
                 ValueStoreResult.VALUE_NOT_UNIQUE -> {
                     showInfo.value = InfoUiModel(
                         R.string.error,
@@ -110,18 +113,25 @@ class FormViewModel(
                     )
                     processCalculatedItems()
                 }
+
                 ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
                     processCalculatedItems(true)
                 }
+
                 ValueStoreResult.TEXT_CHANGING -> {
                     result.first.let {
                         Timber.d("${result.first.id} is changing its value")
                         _queryData.value = it
                     }
                 }
+
                 ValueStoreResult.FINISH -> {
                     processCalculatedItems()
                     runDataIntegrityCheck()
+                }
+
+                ValueStoreResult.FILE_SAVED -> {
+                    /*Do nothing*/
                 }
             }
         }
@@ -175,6 +185,7 @@ class FormViewModel(
                     )
                 }
             }
+
             ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
                 val storeResult = saveLastFocusedItem(action)
                 repository.setFocusedItem(action)
@@ -188,6 +199,7 @@ class FormViewModel(
                     ValueStoreResult.TEXT_CHANGING
                 )
             }
+
             ActionType.ON_SECTION_CHANGE -> {
                 repository.updateSectionOpened(action)
                 StoreResult(
@@ -195,6 +207,7 @@ class FormViewModel(
                     ValueStoreResult.VALUE_HAS_NOT_CHANGED
                 )
             }
+
             ActionType.ON_CLEAR -> {
                 repository.removeAllValues()
                 StoreResult(
@@ -202,6 +215,7 @@ class FormViewModel(
                     ValueStoreResult.VALUE_CHANGED
                 )
             }
+
             ActionType.ON_FINISH -> {
                 repository.setFocusedItem(action)
                 StoreResult(
@@ -209,6 +223,7 @@ class FormViewModel(
                     ValueStoreResult.FINISH
                 )
             }
+
             ActionType.ON_REQUEST_COORDINATES -> {
                 repository.setFieldRequestingCoordinates(action.id, true)
                 StoreResult(
@@ -216,12 +231,37 @@ class FormViewModel(
                     ValueStoreResult.VALUE_HAS_NOT_CHANGED
                 )
             }
+
             ActionType.ON_CANCELL_REQUEST_COORDINATES -> {
                 repository.setFieldRequestingCoordinates(action.id, false)
                 StoreResult(
                     action.id,
                     ValueStoreResult.VALUE_HAS_NOT_CHANGED
                 )
+            }
+
+            ActionType.ON_STORE_FILE -> {
+                val saveResult = repository.storeFile(action.id, action.value)
+                when (saveResult?.valueStoreResult) {
+                    ValueStoreResult.FILE_SAVED -> {
+                        processUserAction(
+                            rowActionFromIntent(
+                                FormIntent.OnSave(
+                                    uid = action.id,
+                                    value = saveResult.uid,
+                                    valueType = action.valueType
+                                )
+                            )
+                        )
+                    }
+
+                    null -> StoreResult(
+                        action.id,
+                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                    )
+
+                    else -> saveResult
+                }
             }
         }
     }
@@ -272,6 +312,7 @@ class FormViewModel(
             field.value,
             getFeatureType(field.renderingType).name
         )
+
         else -> FormIntent.OnSave(field.uid, field.value, field.valueType, field.fieldMask)
     }
 
@@ -282,6 +323,7 @@ class FormViewModel(
                 value = null,
                 actionType = ActionType.ON_CLEAR
             )
+
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> {
                 val error = checkFieldError(
@@ -297,11 +339,13 @@ class FormViewModel(
                     valueType = ValueType.COORDINATE
                 )
             }
+
             is FormIntent.SelectLocationFromMap -> setCoordinateFieldValue(
                 fieldUid = intent.uid,
                 featureType = intent.featureType,
                 coordinates = intent.coordinates
             )
+
             is FormIntent.SaveCurrentLocation -> {
                 val error = checkFieldError(
                     ValueType.COORDINATE,
@@ -316,11 +360,13 @@ class FormViewModel(
                     valueType = ValueType.COORDINATE
                 )
             }
+
             is FormIntent.OnNext -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
                 actionType = ActionType.ON_NEXT
             )
+
             is FormIntent.OnSave -> {
                 val error = checkFieldError(
                     intent.valueType,
@@ -335,6 +381,7 @@ class FormViewModel(
                     valueType = intent.valueType
                 )
             }
+
             is FormIntent.OnFocus -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
@@ -347,27 +394,39 @@ class FormViewModel(
                 actionType = ActionType.ON_TEXT_CHANGE,
                 valueType = intent.valueType
             )
+
             is FormIntent.OnSection -> createRowAction(
                 uid = intent.sectionUid,
                 value = null,
                 actionType = ActionType.ON_SECTION_CHANGE
             )
+
             is FormIntent.OnFinish -> createRowAction(
                 uid = "",
                 value = null,
                 actionType = ActionType.ON_FINISH
             )
+
             is FormIntent.OnRequestCoordinates ->
                 createRowAction(
                     uid = intent.uid,
                     value = null,
                     actionType = ActionType.ON_REQUEST_COORDINATES
                 )
+
             is FormIntent.OnCancelRequestCoordinates ->
                 createRowAction(
                     uid = intent.uid,
                     value = null,
                     actionType = ActionType.ON_CANCELL_REQUEST_COORDINATES
+                )
+
+            is FormIntent.OnStoreFile ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.filePath,
+                    actionType = ActionType.ON_STORE_FILE,
+                    valueType = intent.valueType
                 )
         }
     }
@@ -384,8 +443,7 @@ class FormViewModel(
         return fieldValue.let { value ->
             var error =
                 when (
-                    val result = valueType?.takeIf { it != ValueType.IMAGE && !it.isFile }
-                        ?.validator?.validate(value)
+                    val result = valueType?.validator?.validate(value)
                 ) {
                     is Result.Failure -> result.failure
                     else -> null

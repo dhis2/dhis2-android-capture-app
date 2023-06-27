@@ -23,4 +23,5 @@ interface FormRepository {
     fun removeAllValues()
     fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean)
     fun clearFocusItem()
+    fun storeFile(id: String, filePath: String?): StoreResult?
 }
