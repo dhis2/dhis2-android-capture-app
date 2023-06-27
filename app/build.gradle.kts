@@ -220,7 +220,7 @@ dependencies {
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
     implementation(libs.security.openId)
-    implementation(libs.kotlin.serialization)
+    implementation(libs.kotlin.serialization.json)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.cardview)
