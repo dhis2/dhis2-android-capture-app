@@ -8,8 +8,8 @@ pipeline {
         timeout(time: 50)
     }
 
-    /* stages{
-        stage('Change to JAVA 17') {
+    stages {
+        /*stage('Change to JAVA 17') {
             steps {
                 script {
                     echo 'Changing JAVA version to 17'
