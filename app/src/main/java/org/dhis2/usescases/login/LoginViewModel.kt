@@ -541,7 +541,7 @@ class LoginViewModel(
         this.userName.value = userName
     }
 
-    fun testCoverage(){
+    fun testCoverage() {
         view.setUser("Coverage test")
     }
 }
