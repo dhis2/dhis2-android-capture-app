@@ -540,4 +540,8 @@ class LoginViewModel(
         this.serverUrl.value = serverUrl
         this.userName.value = userName
     }
+
+    fun testCoverage(){
+        view.setUser("Coverage test")
+    }
 }
