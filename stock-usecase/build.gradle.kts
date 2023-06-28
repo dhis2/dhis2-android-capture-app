@@ -6,7 +6,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("kotlinx-serialization")
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle")
+apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 repositories {
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }

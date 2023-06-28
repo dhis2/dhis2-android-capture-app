@@ -74,7 +74,7 @@ val isNonStable: (String) -> Boolean = { version ->
     !stableKeyword && !(version matches regex)
 }
 
-tasks.named("dependencyUpdates") {
+/*tasks.named("dependencyUpdates") {
     configure<ResolutionStrategy> {
         componentSelection {
             all { selection: com.github.benmanes.gradle.versions.updates.resolutionstrategy.ComponentSelectionWithCurrent ->
@@ -84,7 +84,7 @@ tasks.named("dependencyUpdates") {
             }
         }
     }
-}
+}*/
 
 allprojects {
     configurations.all {

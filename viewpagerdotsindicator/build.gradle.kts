@@ -1,7 +1,7 @@
 plugins {
     id("com.android.library")
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle")
+apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     compileSdk = libs.versions.sdk.get().toInt()

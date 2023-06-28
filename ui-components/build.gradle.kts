@@ -4,7 +4,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlinx-serialization")
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle")
+apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     compileSdk = libs.versions.sdk.get().toInt()
