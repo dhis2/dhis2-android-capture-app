@@ -18,7 +18,7 @@ pipeline {
                 }
             }
         }
-        /*stage('Lint Check') {
+        stage('Lint Check') {
             steps {
                 script {
                     echo 'Running Ktlint'
@@ -38,7 +38,7 @@ pipeline {
                     sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
                 }
             }
-        } */
+        }
         stage('Build Test APKs') {
             steps {
                 script {
@@ -49,7 +49,7 @@ pipeline {
         }
         stage('Run tests') {
             parallel {
-                /* stage('Deploy compose-table module Tests') {
+                stage('Deploy compose-table module Tests') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
                         compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p')
@@ -64,7 +64,7 @@ pipeline {
                             }
                         }
                     }
-                } */
+                }
                 stage('Deploy and Run UI Tests') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
@@ -85,7 +85,7 @@ pipeline {
                 }
             }
         }
-        /* stage('JaCoCo report') {
+        stage('JaCoCo report') {
             steps {
                 script {
                     echo 'Running JaCoCo report on app module'
@@ -108,10 +108,10 @@ pipeline {
                     sh './scripts/sonarqube.sh'
                 }
             }
-        } */
+        }
 
     }
-    /* post {
+    post {
         success {
             sendNotification(env.GIT_BRANCH, '*Build Succeeded*\n', 'good')
         }
@@ -119,7 +119,7 @@ pipeline {
         failure {
             sendNotification(env.GIT_BRANCH, '*Build Failed*\n', 'bad')
         }
-    } */
+    }
 }
 
 def sendNotification(String branch, String messagePrefix, String color){
