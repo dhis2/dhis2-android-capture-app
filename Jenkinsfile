@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-        /*stage('Change to JAVA 17') {
+        stage('Change to JAVA 17') {
             steps {
                 script {
                     echo 'Changing JAVA version to 17'
@@ -18,7 +18,7 @@ pipeline {
                 }
             }
         }
-        stage('Lint Check') {
+        /*stage('Lint Check') {
             steps {
                 script {
                     echo 'Running Ktlint'
