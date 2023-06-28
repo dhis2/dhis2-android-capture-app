@@ -16,6 +16,8 @@
             android:id="@+id/dial_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="?attr/floatingActionButtonSmallStyle"
+            android:clickable="false"
             app:backgroundTint="?colorPrimaryLight"
             app:fabSize="mini"
             app:elevation="3dp"

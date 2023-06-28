@@ -17,6 +17,5 @@ class FeatureConfigRepositoryImpl @Inject constructor(val preferences: Preferenc
         preferences.setValue(featureState.feature.name, !featureState.enable)
     }
 
-    override fun isFeatureEnable(feature: Feature) =
-        preferences.getBoolean(feature.name, false)
+    override fun isFeatureEnable(feature: Feature) = preferences.getBoolean(feature.name, false)
 }

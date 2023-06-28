@@ -10,9 +10,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 class FeatureConfigModule {
 
     @Provides
-    fun provideRepository(
-        preferenceProvider: PreferenceProvider
-    ): FeatureConfigRepository {
+    fun provideRepository(preferenceProvider: PreferenceProvider): FeatureConfigRepository {
         return FeatureConfigRepositoryImpl(preferenceProvider)
     }
 }

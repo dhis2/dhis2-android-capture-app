@@ -76,6 +76,8 @@
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
 
+    <string name="enrollment_org_unit">Enrollment Org Unit</string>
+
     <!-- Periods -->
     <string name="filter_period_today">Today</string>
     <string name="filter_period_yesterday">Yesterday</string>
@@ -208,6 +210,8 @@
     <string name="error_invalid_characters">There are invalid characters in the query. Please ask the administrator to verify the server configuration (relaxedQueryChars,...).</string>
     <string name="unsupported_field_description">This field is not available for mobile capture</string>
     <string name="add_image">Add Image</string>
+    <string name="add_signature">Add signature</string>
+    <string name="add_file">Add file</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
     <string name="keep_editing">Keep editing</string>

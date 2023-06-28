@@ -19,14 +19,12 @@ class JiraIssueAdapter(private val onJiraIssueClick: (String) -> Unit) :
             }
         }
     ) {
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): JiraIssueHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JiraIssueHolder {
         return JiraIssueHolder(
             JiraIssueItemBinding.inflate(
                 LayoutInflater.from(parent.context),
-                parent, false
+                parent,
+                false
             ),
             onJiraIssueClick
         )

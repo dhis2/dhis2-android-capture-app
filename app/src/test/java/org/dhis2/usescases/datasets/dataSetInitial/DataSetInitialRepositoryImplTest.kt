@@ -187,60 +187,51 @@ class DataSetInitialRepositoryImplTest {
 
         testObserver.dispose()
     }
-    private fun dummyDataSet(): DataSet =
-        DataSet.builder()
-            .uid(UUID.randomUUID().toString())
-            .displayName("dataSet")
-            .periodType(PeriodType.Monthly)
-            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .build()
+    private fun dummyDataSet(): DataSet = DataSet.builder()
+        .uid(UUID.randomUUID().toString())
+        .displayName("dataSet")
+        .periodType(PeriodType.Monthly)
+        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .build()
 
-    private fun dummyDataInputPeriod(): DataInputPeriod =
-        DataInputPeriod.builder()
-            .period(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .openingDate(Date())
-            .closingDate(Date())
-            .build()
+    private fun dummyDataInputPeriod(): DataInputPeriod = DataInputPeriod.builder()
+        .period(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .openingDate(Date())
+        .closingDate(Date())
+        .build()
 
-    private fun dummyPeriod(): Period =
-        Period.builder()
-            .periodId(UUID.randomUUID().toString())
-            .build()
+    private fun dummyPeriod(): Period = Period.builder()
+        .periodId(UUID.randomUUID().toString())
+        .build()
 
-    private fun dummyCategoryOptionCombo(): CategoryOptionCombo =
-        CategoryOptionCombo.builder()
-            .uid(UUID.randomUUID().toString())
-            .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
-            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .build()
+    private fun dummyCategoryOptionCombo(): CategoryOptionCombo = CategoryOptionCombo.builder()
+        .uid(UUID.randomUUID().toString())
+        .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
+        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .build()
 
-    private fun dummyCategoryCombo(): CategoryCombo =
-        CategoryCombo.builder()
-            .displayName("categoryCombo")
-            .uid(UUID.randomUUID().toString())
-            .categories(listOf(dummyCategory(), dummyCategory()))
-            .build()
+    private fun dummyCategoryCombo(): CategoryCombo = CategoryCombo.builder()
+        .displayName("categoryCombo")
+        .uid(UUID.randomUUID().toString())
+        .categories(listOf(dummyCategory(), dummyCategory()))
+        .build()
 
-    private fun dummyOrganisationUnit(): OrganisationUnit =
-        OrganisationUnit.builder()
-            .uid(UUID.randomUUID().toString())
-            .build()
+    private fun dummyOrganisationUnit(): OrganisationUnit = OrganisationUnit.builder()
+        .uid(UUID.randomUUID().toString())
+        .build()
 
-    private fun dummyCategory(): Category =
-        Category.builder()
-            .uid(UUID.randomUUID().toString())
-            .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
-            .build()
+    private fun dummyCategory(): Category = Category.builder()
+        .uid(UUID.randomUUID().toString())
+        .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
+        .build()
 
-    private fun dummyCategoryOption(): CategoryOption =
-        CategoryOption.builder()
-            .uid(UUID.randomUUID().toString())
-            .access(Access.create(true, true, DataAccess.create(true, true)))
-            .build()
+    private fun dummyCategoryOption(): CategoryOption = CategoryOption.builder()
+        .uid(UUID.randomUUID().toString())
+        .access(Access.create(true, true, DataAccess.create(true, true)))
+        .build()
 
-    private fun dummyCategoryOptionNoAccess(): CategoryOption =
-        CategoryOption.builder()
-            .uid(UUID.randomUUID().toString())
-            .access(Access.create(true, true, DataAccess.create(false, false)))
-            .build()
+    private fun dummyCategoryOptionNoAccess(): CategoryOption = CategoryOption.builder()
+        .uid(UUID.randomUUID().toString())
+        .access(Access.create(true, true, DataAccess.create(false, false)))
+        .build()
 }

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import android.R
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,11 +21,16 @@ class SearchNavigator(
         }
     }
 
-    private val enrollmentLauncher = activity.registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (searchNavigationConfiguration.refreshDataOnBackFromEnrollment()) {
-            activity.refreshData()
+    private val enrollmentLauncher = activity.registerForActivityResult(EnrollmentContract()) {
+        when (it) {
+            is EnrollmentResult.RelationshipResult -> {
+                activity.setResult(Activity.RESULT_OK, it.data())
+                activity.finish()
+            }
+            is EnrollmentResult.Success ->
+                if (searchNavigationConfiguration.refreshDataOnBackFromEnrollment()) {
+                    activity.refreshData()
+                }
         }
     }
 
@@ -42,7 +47,7 @@ class SearchNavigator(
         activity.apply {
             startActivity(intent)
             finish()
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
     }
 
@@ -62,8 +67,7 @@ class SearchNavigator(
     fun goToEnrollment(enrollmentUid: String, programUid: String, fromRelationshipTeiUid: String?) {
         searchNavigationConfiguration.openingEnrollmentForm(enrollmentUid)
         enrollmentLauncher.launch(
-            EnrollmentActivity.getIntent(
-                activity,
+            EnrollmentInput(
                 enrollmentUid,
                 programUid,
                 EnrollmentActivity.EnrollmentMode.NEW,

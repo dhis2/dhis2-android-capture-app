@@ -125,7 +125,9 @@ class FieldViewModelFactoryImpl(
             optionSetConfiguration = optionSetConfiguration,
             featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) {
                 FeatureType.POINT
-            } else null
+            } else {
+                null
+            }
         )
     }
 

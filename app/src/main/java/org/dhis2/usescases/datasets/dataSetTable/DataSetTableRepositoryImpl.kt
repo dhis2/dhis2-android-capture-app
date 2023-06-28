@@ -50,6 +50,12 @@ class DataSetTableRepositoryImpl(
         return d2.periodModule().periodHelper().getPeriodForPeriodId(periodId)
     }
 
+    fun getOrgUnit(): Single<OrganisationUnit> {
+        return d2.organisationUnitModule().organisationUnits()
+            .uid(orgUnitUid)
+            .get()
+    }
+
     fun dataSetInstance(): Flowable<DataSetInstance> {
         return dataSetInstanceProcessor.startWith(Unit())
             .switchMap {
@@ -116,6 +122,30 @@ class DataSetTableRepositoryImpl(
             }.toFlowable()
     }
 
+    fun getSectionIndexWithErrors(defaultSectionIndex: Int = 0): Int {
+        val sections = d2.dataSetModule().sections()
+            .byDataSetUid().eq(dataSetUid)
+            .withDataElements()
+            .blockingGet().associate {
+                it.uid() to it.dataElements()?.map { dataElement -> dataElement.uid() }
+            }
+
+        val sectionWithError = d2.dataValueModule().dataValueConflicts()
+            .byDataSet(dataSetUid)
+            .byPeriod().eq(periodId)
+            .byOrganisationUnitUid().eq(orgUnitUid)
+            .byAttributeOptionCombo().eq(catOptCombo)
+            .blockingGet()?.mapNotNull { dataValueConflict ->
+                dataValueConflict.dataElement()?.let { dataElementUid ->
+                    sections.filter { it.value?.contains(dataElementUid) == true }.keys
+                }
+            }?.flatten()
+
+        return sectionWithError?.firstOrNull()?.let {
+            sections.keys.indexOf(it)
+        } ?: defaultSectionIndex
+    }
+
     fun dataSetStatus(): Flowable<Boolean> {
         val dscr = d2.dataSetModule().dataSetCompleteRegistrations()
             .byDataSetUid().eq(dataSetUid)
@@ -143,23 +173,31 @@ class DataSetTableRepositoryImpl(
             if (state == State.SYNCED && dscr != null) {
                 state = dscr.state()
             }
-            if (state != null) Flowable.just<State>(
-                state
-            ) else Flowable.empty()
+            if (state != null) {
+                Flowable.just<State>(
+                    state
+                )
+            } else {
+                Flowable.empty()
+            }
         }
     }
 
-    fun getCatComboName(catcomboUid: String): Flowable<String> {
+    fun getCatComboName(): Flowable<String> {
         return Flowable.fromCallable {
-            d2.categoryModule().categoryOptionCombos().uid(catcomboUid).blockingGet()
+            d2.categoryModule().categoryOptionCombos().uid(catOptCombo).blockingGet()
                 .displayName()
         }
     }
 
     fun getCatOptComboFromOptionList(catOpts: List<String>): String {
-        return if (catOpts.isEmpty()) d2.categoryModule().categoryOptionCombos().byDisplayName()
-            .like("default").one().blockingGet().uid() else d2.categoryModule()
-            .categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid()
+        return if (catOpts.isEmpty()) {
+            d2.categoryModule().categoryOptionCombos().byDisplayName()
+                .like("default").one().blockingGet().uid()
+        } else {
+            d2.categoryModule()
+                .categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid()
+        }
     }
 
     fun getDataSetCatComboName(): Single<String> {

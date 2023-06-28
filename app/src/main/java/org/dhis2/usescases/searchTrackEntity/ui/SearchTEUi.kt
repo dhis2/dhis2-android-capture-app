@@ -68,10 +68,7 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 
 @Composable
-fun SearchResultUi(
-    searchResult: SearchResult,
-    onSearchOutsideClick: () -> Unit
-) {
+fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
     when (searchResult.type) {
         SearchResult.SearchResultType.LOADING ->
             LoadingContent(
@@ -98,10 +95,7 @@ fun SearchResultUi(
 }
 
 @Composable
-fun SearchButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
         modifier = modifier,
         onClick = onClick,
@@ -119,7 +113,8 @@ fun SearchButton(
                 contentDescription = "",
                 tint = Color(
                     ColorUtils.getPrimaryColor(
-                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                        LocalContext.current,
+                        ColorUtils.ColorType.PRIMARY
                     )
                 )
             )
@@ -133,9 +128,7 @@ fun SearchButton(
 }
 
 @Composable
-fun WrappedSearchButton(
-    onClick: () -> Unit
-) {
+fun WrappedSearchButton(onClick: () -> Unit) {
     SearchButton(
         modifier = Modifier
             .wrapContentWidth(align = Alignment.CenterHorizontally)
@@ -184,7 +177,8 @@ fun FullSearchButton(
                             contentDescription = "",
                             tint = Color(
                                 ColorUtils.getPrimaryColor(
-                                    LocalContext.current, ColorUtils.ColorType.PRIMARY
+                                    LocalContext.current,
+                                    ColorUtils.ColorType.PRIMARY
                                 )
                             )
                         )
@@ -196,9 +190,7 @@ fun FullSearchButton(
 }
 
 @Composable
-fun LoadingContent(
-    loadingDescription: String
-) {
+fun LoadingContent(loadingDescription: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,11 +212,7 @@ fun LoadingContent(
 }
 
 @Composable
-fun SearchOutsideProgram(
-    resultText: String,
-    buttonText: String,
-    onSearchOutsideClick: () -> Unit
-) {
+fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutsideClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -247,7 +235,8 @@ fun SearchOutsideProgram(
                 1.dp,
                 Color(
                     ColorUtils.getPrimaryColor(
-                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                        LocalContext.current,
+                        ColorUtils.ColorType.PRIMARY
                     )
                 )
             ),
@@ -260,7 +249,8 @@ fun SearchOutsideProgram(
                 contentDescription = "",
                 tint = Color(
                     ColorUtils.getPrimaryColor(
-                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                        LocalContext.current,
+                        ColorUtils.ColorType.PRIMARY
                     )
                 )
             )
@@ -269,7 +259,8 @@ fun SearchOutsideProgram(
                 text = buttonText,
                 color = Color(
                     ColorUtils.getPrimaryColor(
-                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                        LocalContext.current,
+                        ColorUtils.ColorType.PRIMARY
                     )
                 )
             )
@@ -335,7 +326,8 @@ fun AttributeField(fieldName: String) {
                 contentDescription = "",
                 tint = Color(
                     ColorUtils.getPrimaryColor(
-                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                        LocalContext.current,
+                        ColorUtils.ColorType.PRIMARY
                     )
                 )
             )
@@ -467,11 +459,7 @@ fun InitSearch(teTypeName: String) {
 
 @ExperimentalAnimationApi
 @Composable
-fun CreateNewButton(
-    modifier: Modifier,
-    extended: Boolean = true,
-    onClick: () -> Unit
-) {
+fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () -> Unit) {
     Button(
         modifier = modifier
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
@@ -495,7 +483,8 @@ fun CreateNewButton(
             contentDescription = "",
             tint = Color(
                 ColorUtils.getPrimaryColor(
-                    LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    LocalContext.current,
+                    ColorUtils.ColorType.PRIMARY
                 )
             )
         )
@@ -506,7 +495,8 @@ fun CreateNewButton(
                     text = stringResource(R.string.search_create_new),
                     color = Color(
                         ColorUtils.getPrimaryColor(
-                            LocalContext.current, ColorUtils.ColorType.PRIMARY
+                            LocalContext.current,
+                            ColorUtils.ColorType.PRIMARY
                         )
                     )
                 )

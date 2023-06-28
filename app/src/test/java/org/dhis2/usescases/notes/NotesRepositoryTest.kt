@@ -96,11 +96,10 @@ class NotesRepositoryTest {
         assert(repository.hasProgramWritePermission())
     }
 
-    private fun dummyNote(): Note =
-        Note.builder()
-            .uid(UUID.randomUUID().toString())
-            .value("Note")
-            .build()
+    private fun dummyNote(): Note = Note.builder()
+        .uid(UUID.randomUUID().toString())
+        .value("Note")
+        .build()
 
     private fun mockEnrollment(teiUid: String, enrollmentUid: String) {
         whenever(

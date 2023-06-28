@@ -1,5 +1,7 @@
 package org.dhis2;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_STORE_ANALYTICS_PERMISSION_KEY;
+
 import android.content.Context;
 import android.os.Looper;
 
@@ -42,7 +44,6 @@ import org.dhis2.data.user.UserModule;
 import org.dhis2.maps.MapController;
 import org.dhis2.usescases.crash.CrashActivity;
 import org.dhis2.usescases.login.LoginComponent;
-import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
@@ -53,6 +54,7 @@ import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2Manager;
+import org.hisp.dhis.android.core.datastore.KeyValuePair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -61,6 +63,7 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
+import dagger.hilt.android.HiltAndroidApp;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 import io.reactivex.Scheduler;
@@ -68,8 +71,11 @@ import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.sentry.SentryLevel;
+import io.sentry.android.core.SentryAndroid;
 import timber.log.Timber;
 
+@HiltAndroidApp
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
 
     @NonNull
@@ -103,6 +109,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public void onCreate() {
         super.onCreate();
 
+
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         appInspector = new AppInspector(this).init();
@@ -114,8 +121,34 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         setUpSecurityProvider();
         setUpServerComponent();
+        initCrashController();
         setUpRxPlugin();
         initCustomCrashActivity();
+    }
+
+    public void initCrashController() {
+        if (areTrackingPermissionGranted()) {
+            SentryAndroid.init(this, options -> {
+                options.setDsn(BuildConfig.SENTRY_DSN);
+
+                // Add a callback that will be used before the event is sent to Sentry.
+                // With this callback, you can modify the event or, when returning null, also discard the event.
+                options.setBeforeSend((event, hint) -> {
+                    if (SentryLevel.DEBUG.equals(event.getLevel()))
+                        return null;
+                    else
+                        return event;
+                });
+                options.setEnvironment(BuildConfig.DEBUG ? "debug" : "production");
+                options.setDebug(BuildConfig.DEBUG);
+                // Enable view hierarchy for crashes
+                options.setAttachViewHierarchy(true);
+                // Enable the performance API by setting a sample-rate
+                options.setTracesSampleRate(BuildConfig.DEBUG ? 1.0 : 0.1);
+                // Enable profiling when starting transactions
+                options.setProfilesSampleRate(BuildConfig.DEBUG ? 1.0 : 0.1);
+            });
+        }
     }
 
     private void setUpSecurityProvider() {
@@ -184,8 +217,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @NonNull
     @Override
-    public LoginComponent createLoginComponent(LoginContracts.View view) {
-        return (loginComponent = appComponent.plus(new LoginModule(view)));
+    public LoginComponent createLoginComponent(LoginModule loginModule) {
+        return (loginComponent = appComponent.plus(loginModule));
     }
 
     @Nullable
@@ -359,5 +392,16 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public SyncComponentProvider getSyncComponentProvider() {
         return new SyncStatusDialogProvider();
+    }
+
+    private boolean areTrackingPermissionGranted() {
+        boolean isUserLoggedIn = serverComponent != null &&
+                serverComponent.userManager().isUserLoggedIn().blockingFirst();
+        if (!D2Manager.isD2Instantiated() || !isUserLoggedIn) {
+            return false;
+        }
+        KeyValuePair granted = D2Manager.getD2().dataStoreModule().localDataStore()
+                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet();
+        return granted != null && Boolean.parseBoolean(granted.value());
     }
 }

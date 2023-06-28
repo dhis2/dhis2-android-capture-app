@@ -2,12 +2,10 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
-apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
-
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -15,7 +13,7 @@ repositories {
 
 android {
     compileSdkVersion versions.sdk
-    buildToolsVersion versions.tools
+    namespace "org.dhis2.commons"
 
     defaultConfig {
         minSdkVersion versions.minSdk
@@ -29,7 +27,7 @@ android {
     }
 
     buildTypes {
-        debug{
+        debug {
 
         }
         release {
@@ -41,8 +39,8 @@ android {
     flavorDimensions "default"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility versions.sourceCompat
+        targetCompatibility versions.targetCompat
     }
 
     buildFeatures {
@@ -51,11 +49,11 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = versions.targetCompat
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0"
+        kotlinCompilerExtensionVersion = versions.kotlinCompilerExtensionVersion
     }
 }
 
@@ -69,75 +67,57 @@ dependencies {
         exclude group: "com.facebook.flipper"
     }*/
 
-    api ("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+    api(libs.dhis2.ruleEngine) {
         exclude group: "junit", module: "junit"
     }
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    kapt libs.kotlin.metadataJVM
 
-    //region GOOGLE AUTO VALUE
-    // Google's auto-value. Annotations are used only during compilation time, as well as
-    // annotation processor which hoops up into compilation process
-    api "com.google.auto.value:auto-value:${libraries.autovalue}"
-    kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
+    api libs.google.autoValue
+    kapt libs.google.autoValue
+    api libs.androidx.coreKtx
+    api libs.androidx.appcompat
+    api libs.androidx.fragmentKtx
+    api libs.androidx.liveDataKtx
+    api libs.androidx.viewModelKtx
+    api libs.androidx.lifecycleExtensions
+    api libs.androidx.recyclerView
+    debugApi libs.androidx.composeUiTooling
+    api libs.androidx.compose
+    api libs.androidx.composeConstraintLayout
+    api libs.androidx.composePreview
+    api libs.androidx.composeUi
+    api libs.androidx.composeLiveData
 
-
-    api "androidx.core:core-ktx:${libraries.corektx}"
-    api "androidx.appcompat:appcompat:${libraries.appcompat}"
-    api "com.google.android.material:material:${libraries.material}"
-    api "com.google.code.gson:gson:${libraries.gson}"
-    api "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
-    api "com.google.dagger:dagger:${libraries.dagger}"
-    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
-    api "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
-    api "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycle}"
-    api "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
-    api "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycleExtensions}"
-    api "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
-
-    api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
-    api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
-
-    //compose
-    debugApi "androidx.compose.ui:ui-tooling:${libraries.compose}"
-
-    //Timber
-    api "com.jakewharton.timber:timber:${libraries.timber}"
-
-    //Compose
-    api "androidx.compose.material:material:${libraries.compose}"
-    api "androidx.constraintlayout:constraintlayout-compose:${libraries.composeConstraintLayout}"
-    api "com.google.android.material:compose-theme-adapter:${libraries.composeTheme}"
-    api "androidx.compose.ui:ui-tooling-preview:${libraries.compose}"
-    api "androidx.compose.ui:ui:${libraries.compose}"
-    api "androidx.compose.runtime:runtime-livedata:${libraries.compose}"
-    debugApi "androidx.compose.ui:ui-tooling:${libraries.compose}"
-
-    api "com.github.bumptech.glide:glide:${libraries.glide}"
-    kapt "com.github.bumptech.glide:compiler:${libraries.glide}"
-
-    //region QR/Barcode scanner
-    api "com.google.zxing:core:${libraries.zxing}"
-
-    api ("me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"){
+    api libs.google.material
+    api libs.google.gson
+    api libs.dagger.dagger
+    kapt libs.dagger.daggerCompiler
+    api libs.google.materialThemeAdapter
+    api libs.barcodeScanner.zxing
+    api libs.security.secureStorage
+    api libs.rx.rxJava
+    api libs.rx.rxAndroid
+    api libs.analytics.timber
+    api libs.github.glide
+    kapt libs.github.glideCompiler
+    api(libs.barcodeScanner.scanner) {
         exclude group: "com.google.zxing", module: "core"
     }
-
-    api ("com.journeyapps:zxing-android-embedded:${libraries.zxingandroid}"){
+    api(libs.barcodeScanner.zxingAndroid) {
         exclude group: "com.google.zxing", module: "core"
     }
+    api libs.rx.rxBindings
+    api libs.rx.rxBindingsCompat
 
-    //rxbinding
-    api "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
-    api "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+    testApi libs.test.junit
+    androidTestApi libs.test.testJUnitExt
+    androidTestApi libs.test.espresso
+    androidTestApi libs.test.espressoIdlingResources
+    api libs.test.espressoIdlingResources
+    api libs.test.espressoIdlingConcurrent
 
-    testApi "junit:junit:${libraries.junit}"
+    api libs.analytics.sentry
+    implementation libs.github.treeView
 
-    androidTestApi "androidx.test.ext:junit:$libraries.junit_ext"
-    androidTestApi "androidx.test.espresso:espresso-core:$libraries.espresso_core"
-    androidTestApi "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
-    api "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
-    api "androidx.test.espresso.idling:idling-concurrent:$libraries.espresso_core"
-
-    implementation "io.sentry:sentry-android:${libraries.sentry}"
 }

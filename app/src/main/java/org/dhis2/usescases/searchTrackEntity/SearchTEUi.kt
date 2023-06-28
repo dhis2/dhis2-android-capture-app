@@ -81,10 +81,7 @@ fun SearchResult(
 }
 
 @Composable
-fun SearchButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
         modifier = modifier,
         onClick = onClick,
@@ -112,9 +109,7 @@ fun SearchButton(
 }
 
 @Composable
-fun WrappedSearchButton(
-    onClick: () -> Unit
-) {
+fun WrappedSearchButton(onClick: () -> Unit) {
     SearchButton(
         modifier = Modifier
             .wrapContentWidth(align = Alignment.CenterHorizontally)
@@ -125,11 +120,7 @@ fun WrappedSearchButton(
 
 @ExperimentalAnimationApi
 @Composable
-fun FullSearchButton(
-    modifier: Modifier,
-    visible: Boolean = true,
-    onClick: () -> Unit
-) {
+fun FullSearchButton(modifier: Modifier, visible: Boolean = true, onClick: () -> Unit) {
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
@@ -145,9 +136,7 @@ fun FullSearchButton(
 }
 
 @Composable
-fun LoadingContent(
-    loadingDescription: String
-) {
+fun LoadingContent(loadingDescription: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,11 +158,7 @@ fun LoadingContent(
 }
 
 @Composable
-fun SearchOutsideProgram(
-    resultText: String,
-    buttonText: String,
-    onSearchOutsideClick: () -> Unit
-) {
+fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutsideClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -320,11 +305,7 @@ fun SearchOrCreate() {
 
 @ExperimentalAnimationApi
 @Composable
-fun CreateNewButton(
-    modifier: Modifier,
-    extended: Boolean = true,
-    onClick: () -> Unit
-) {
+fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () -> Unit) {
     Button(
         modifier = modifier
             .wrapContentWidth()

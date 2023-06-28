@@ -12,8 +12,6 @@
     <string name="error_wrong_credentials">凭证错误</string>
     <string name="error_unexpected_error">未知错误</string>
     <string name="error_internal_server_error">服务器内部错误</string>
-    <string name="yes">是</string>
-    <string name="no">否</string>
     <string name="no_value">无值</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="no_reserved_values_connection">没有更多保留值，连接网络重新填充他们</string>
@@ -210,7 +208,6 @@
     <string name="settings_sms_module_title">短信模块：</string>
     <string name="settings_sms_receiver_number">短信网关</string>
     <string name="settings_sms_result_sender_number">短信结果发送者</string>
-    <string name="settings_sms_result_timeout">短信结果超时</string>
     <string name="settings_sms_result_timeout_hint">秒</string>
     <string name="settings_sms_result_sender_hint">数量</string>
     <string name="settings_sms_receiver_number_hint">数量</string>
@@ -497,8 +494,6 @@
     <string name="org_unit_selection_warning">至少得选择一个机构</string>
     <string name="send_user_name_title">发送数据</string>
     <string name="send_user_name_mesage">通过共享与您的用户ID相关的错误日志来帮助DHIS2改进此应用程序。</string>
-    <string name="analytics_crash_name_message">此应用程序将发送与您的用户ID相关联的错误日志，以改善其性能，并提供不可追踪的统计信息以改善用户体验。</string>
-    <string name="send_user_privacy_policy">欲了解更多信息，请查看我们的隐私政策</string>
     <string name="check_mandatory_field">检查字段</string>
     <string name="error_no_network_during_sync">你丢掉了互联网连接，当执行配置同步的时候。稍后再试。</string>
     <string name="action_agree">同意</string>

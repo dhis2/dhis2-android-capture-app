@@ -69,14 +69,14 @@ class ChartsRepositoryImpl(
 
         visualizationSettings
             ?.dataSet()?.get(dataSetUid)?.filter {
-            if (groupUid != null) {
-                it.id() == groupUid
-            } else {
-                true
+                if (groupUid != null) {
+                    it.id() == groupUid
+                } else {
+                    true
+                }
+            }?.forEach { visualizationGroup ->
+                addVisualizationsInGroup(visualizationGroup, graphList)
             }
-        }?.forEach { visualizationGroup ->
-            addVisualizationsInGroup(visualizationGroup, graphList)
-        }
 
         return graphList
     }
@@ -90,12 +90,12 @@ class ChartsRepositoryImpl(
 
         visualizationSettings
             ?.program()?.get(programUid)?.filter {
-            if (groupUid != null) {
-                it.id() == groupUid
-            } else {
-                true
+                if (groupUid != null) {
+                    it.id() == groupUid
+                } else {
+                    true
+                }
             }
-        }
             ?.forEach { visualizationGroup ->
                 addVisualizationsInGroup(
                     visualizationGroup,
@@ -114,12 +114,12 @@ class ChartsRepositoryImpl(
 
         visualizationSettings
             ?.home()?.filter {
-            if (groupUid != null) {
-                it.id() == groupUid
-            } else {
-                true
+                if (groupUid != null) {
+                    it.id() == groupUid
+                } else {
+                    true
+                }
             }
-        }
             ?.forEach { visualizationGroup ->
                 addVisualizationsInGroup(
                     visualizationGroup,
@@ -211,33 +211,33 @@ class ChartsRepositoryImpl(
         return d2.settingModule().analyticsSetting().teis()
             .byProgram().eq(enrollment.program())
             .blockingGet()?.let { analyticsSettings ->
-            analyticsTeiSettingsToGraph.map(
-                enrollment.trackedEntityInstance()!!,
-                analyticsSettings,
-                { analyticsSettingsUid ->
-                    visualizationPeriod(analyticsSettingsUid)
-                },
-                { analyticsSettingsUid ->
-                    visualizationOrgUnits(analyticsSettingsUid)
-                },
-                { dataElementUid ->
-                    d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
-                        .displayFormName() ?: dataElementUid
-                },
-                { indicatorUid ->
-                    d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
-                        .displayName() ?: indicatorUid
-                },
-                { nutritionGenderData ->
-                    val genderValue =
-                        d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                            nutritionGenderData.attributeUid,
-                            enrollment.trackedEntityInstance()
-                        ).blockingGet()
-                    nutritionGenderData.isFemale(genderValue?.value())
-                }
-            )
-        } ?: emptyList()
+                analyticsTeiSettingsToGraph.map(
+                    enrollment.trackedEntityInstance()!!,
+                    analyticsSettings,
+                    { analyticsSettingsUid ->
+                        visualizationPeriod(analyticsSettingsUid)
+                    },
+                    { analyticsSettingsUid ->
+                        visualizationOrgUnits(analyticsSettingsUid)
+                    },
+                    { dataElementUid ->
+                        d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
+                            .displayFormName() ?: dataElementUid
+                    },
+                    { indicatorUid ->
+                        d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
+                            .displayName() ?: indicatorUid
+                    },
+                    { nutritionGenderData ->
+                        val genderValue =
+                            d2.trackedEntityModule().trackedEntityAttributeValues().value(
+                                nutritionGenderData.attributeUid,
+                                enrollment.trackedEntityInstance()
+                            ).blockingGet()
+                        nutritionGenderData.isFemale(genderValue?.value())
+                    }
+                )
+            } ?: emptyList()
     }
 
     private fun getDefaultAnalytics(enrollment: Enrollment): List<Graph> {
@@ -294,16 +294,14 @@ class ChartsRepositoryImpl(
             .filter { it.canBeShown() }
     }
 
-    private fun getRepeatableProgramStages(program: String?) =
-        d2.programModule().programStages()
-            .byProgramUid().eq(program)
-            .byRepeatable().eq(true)
-            .blockingGet()
+    private fun getRepeatableProgramStages(program: String?) = d2.programModule().programStages()
+        .byProgramUid().eq(program)
+        .byRepeatable().eq(true)
+        .blockingGet()
 
-    private fun getEnrollment(enrollmentUid: String) =
-        d2.enrollmentModule().enrollments()
-            .uid(enrollmentUid)
-            .blockingGet()
+    private fun getEnrollment(enrollmentUid: String) = d2.enrollmentModule().enrollments()
+        .uid(enrollmentUid)
+        .blockingGet()
 
     private fun getNumericDataElements(stageUid: String): List<DataElement> {
         return d2.programModule().programStageDataElements()

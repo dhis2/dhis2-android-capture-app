@@ -26,6 +26,7 @@ import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
@@ -157,7 +158,8 @@ class FormRepositoryImplTest {
                 "",
                 RuleActionAssign.create(
                     null,
-                    "assignedValue", "uid001"
+                    "assignedValue",
+                    "uid001"
                 )
             )
         )
@@ -223,6 +225,35 @@ class FormRepositoryImplTest {
         ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
         repository.fetchFormItems()
         assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+    }
+
+    @Test
+    fun `Concurrent crash test`() {
+        val ruleEffects = emptyList<RuleEffect>()
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(provideMandatoryItemList())
+        whenever(ruleEngineRepository.calculate()) doReturn ruleEffects
+        whenever(dataEntryRepository.isEvent) doReturn true
+        whenever(
+            rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any())
+        ) doReturn RuleUtilsProviderResult(
+            canComplete = true,
+            messageOnComplete = null,
+            fieldsWithErrors = emptyList(),
+            fieldsWithWarnings = emptyList(),
+            unsupportedRules = emptyList(),
+            fieldsToUpdate = listOf(FieldWithNewValue("uid002", "newValue")),
+            configurationErrors = emptyList(),
+            stagesToHide = emptyList(),
+            optionsToHide = emptyMap(),
+            optionGroupsToHide = emptyMap(),
+            optionGroupsToShow = emptyMap()
+        )
+        try {
+            repository.fetchFormItems()
+            assertTrue(true)
+        } catch (e: Exception) {
+            fail()
+        }
     }
 
     private fun mockList(listToReturn: List<FieldUiModel>) {

@@ -23,12 +23,14 @@ import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
+import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -39,11 +41,10 @@ import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
-class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectionFinished {
+class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     private lateinit var binding: FragmentProgramBinding
 
@@ -139,16 +140,16 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     }
 
     override fun openOrgUnitTreeSelector() {
-        OUTreeFragment.newInstance(
-            true,
-            FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
-        ).apply {
-            selectionCallback = this@ProgramFragment
-        }.show(childFragmentManager, "OUTreeFragment")
-    }
-
-    override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
-        presenter.setOrgUnitFilters(selectedOrgUnits)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
+                FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
+            )
+            .onSelection { selectedOrgUnits ->
+                presenter.setOrgUnitFilters(selectedOrgUnits)
+            }
+            .build()
+            .show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun setTutorial() {
@@ -239,16 +240,23 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
         }
     }
 
+    override fun navigateToStockManagement(config: AppConfig) {
+        Intent(activity, HomeActivity::class.java).apply {
+            putExtra(INTENT_EXTRA_APP_CONFIG, config)
+            getActivityContent.launch(this)
+        }
+    }
+
     override fun showSyncDialog(program: ProgramViewModel) {
-        val dialog = SyncStatusDialog.Builder()
-            .setConflictType(
-                if (program.programType.isNotEmpty()) {
-                    ConflictType.PROGRAM
-                } else {
-                    ConflictType.DATA_SET
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(
+                when (program.programType) {
+                    "WITH_REGISTRATION" -> SyncContext.GlobalTrackerProgram(program.uid)
+                    "WITHOUT_REGISTRATION" -> SyncContext.GlobalEventProgram(program.uid)
+                    else -> SyncContext.GlobalDataSet(program.uid)
                 }
             )
-            .setUid(program.uid)
             .onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
@@ -256,10 +264,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
                             presenter.updateProgramQueries()
                         }
                     }
-                })
-            .build()
-
-        dialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
+                }
+            ).show(FRAGMENT_TAG)
     }
 
     fun sharedView() = binding.drawerLayout

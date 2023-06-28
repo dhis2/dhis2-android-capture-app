@@ -5,11 +5,7 @@ import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
 
 class GraphCoordinatesToEntry {
-    fun map(
-        graph: Graph,
-        coordinates: List<GraphPoint>,
-        serieLabel: String
-    ): List<Entry> {
+    fun map(graph: Graph, coordinates: List<GraphPoint>, serieLabel: String): List<Entry> {
         return coordinates.mapIndexed { index, graphPoint ->
 
             val entryIndex = graphPoint.position

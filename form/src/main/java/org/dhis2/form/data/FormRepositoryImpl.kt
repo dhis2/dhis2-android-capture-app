@@ -1,7 +1,5 @@
 package org.dhis2.form.data
 
-import org.dhis2.commons.data.FieldWithIssue
-import org.dhis2.commons.data.IssueType
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -10,6 +8,8 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
 import org.hisp.dhis.rules.models.RuleEffect
@@ -38,13 +38,20 @@ class FormRepositoryImpl(
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
 
-    override fun fetchFormItems(): List<FieldUiModel> {
-        openedSectionUid =
-            dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+    override fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
+        openedSectionUid = getInitialOpenedSection(shouldOpenErrorLocation)
         backupList = itemList
         return composeList()
     }
+
+    private fun getInitialOpenedSection(shouldOpenErrorLocation: Boolean) =
+        if (shouldOpenErrorLocation) {
+            itemList.firstOrNull { it.error != null || it.warning != null }?.programStageSection
+                ?: dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+        } else {
+            dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+        }
 
     override fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
         calculationLoop = 0
@@ -97,7 +104,6 @@ class FormRepositoryImpl(
 
     private fun calculateCompletionPercentage(list: List<FieldUiModel>) {
         val unsupportedValueTypes = listOf(
-            ValueType.FILE_RESOURCE,
             ValueType.TRACKER_ASSOCIATE,
             ValueType.USERNAME
         )
@@ -223,8 +229,8 @@ class FormRepositoryImpl(
                     updateValueOnList(field.uid, fieldWithNewValue.newValue, field.valueType)
                 }
             }
-        return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true ||
-            calculationLoop == loopThreshold
+        return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true &&
+            calculationLoop < loopThreshold
         ) {
             calculationLoop += 1
             ArrayList(fieldMap.values).applyRuleEffects(skipProgramRules)
@@ -291,12 +297,16 @@ class FormRepositoryImpl(
             } != null
         }?.size ?: 0
 
+        val errorFields = fields.count {
+            it.programStageSection == sectionFieldUiModel.uid && it.error != null
+        }
+
         return dataEntryRepository?.updateSection(
             sectionFieldUiModel,
             isOpen,
             total,
             values,
-            errorCount + mandatoryCount,
+            errorCount + mandatoryCount + errorFields,
             warningCount
         ) ?: sectionFieldUiModel
     }

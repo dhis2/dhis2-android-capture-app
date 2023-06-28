@@ -2,13 +2,9 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
 }
-
-apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
-
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -16,13 +12,13 @@ repositories {
 
 android {
     compileSdkVersion versions.sdk
-    buildToolsVersion versions.tools
+    namespace "org.dhis2.form"
 
     defaultConfig {
         minSdkVersion versions.minSdk
         targetSdkVersion versions.sdk
-        versionCode 1
-        versionName "1.0"
+        versionCode versions.vCode
+        versionName versions.vName
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -30,7 +26,7 @@ android {
     }
 
     buildTypes {
-        debug{
+        debug {
 
         }
         release {
@@ -42,8 +38,8 @@ android {
     flavorDimensions "default"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility versions.sourceCompat
+        targetCompatibility versions.targetCompat
     }
 
     buildFeatures {
@@ -53,11 +49,11 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = versions.targetCompat
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0"
+        kotlinCompilerExtensionVersion = versions.kotlinCompilerExtensionVersion
     }
 }
 
@@ -67,18 +63,13 @@ dependencies {
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
-    testImplementation "org.mockito:mockito-core:${libraries.mockito}"
-    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${libraries.mockito_kotlin}"
-    testImplementation 'app.cash.turbine:turbine:0.3.0'
-    testImplementation "androidx.test:core:$libraries.androidx_test"
-    testImplementation "androidx.test:rules:$libraries.androidx_test"
-    testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$libraries.kotlinxcoroutines"
-
-    //endregion
-
-    androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
+    testImplementation libs.test.mockitoCore
+    testImplementation libs.test.mockitoInline
+    testImplementation libs.test.mockitoKotlin
+    testImplementation libs.test.turbine
+    testImplementation libs.test.testCore
+    testImplementation libs.test.testRules
+    testImplementation libs.test.archCoreTesting
+    testImplementation libs.test.kotlinCoroutines
+    androidTestImplementation libs.test.espressoIdlingResources
 }

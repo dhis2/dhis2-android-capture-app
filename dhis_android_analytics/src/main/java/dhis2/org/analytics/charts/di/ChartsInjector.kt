@@ -45,15 +45,14 @@ class ChartsModule {
         dataElementToGraph: DataElementToGraph,
         indicatorToGraph: ProgramIndicatorToGraph,
         analyticsResources: AnalyticResources
-    ): ChartsRepository =
-        ChartsRepositoryImpl(
-            d2,
-            visualizationToGraph,
-            analyticsTeiSettingsToGraph,
-            dataElementToGraph,
-            indicatorToGraph,
-            analyticsResources
-        )
+    ): ChartsRepository = ChartsRepositoryImpl(
+        d2,
+        visualizationToGraph,
+        analyticsTeiSettingsToGraph,
+        dataElementToGraph,
+        indicatorToGraph,
+        analyticsResources
+    )
 
     @Provides
     internal fun provideVisualizationToGraph(
@@ -125,9 +124,7 @@ class ChartsModule {
     }
 
     @Provides
-    internal fun provideResourceManager(
-        context: Context
-    ): ResourceManager {
+    internal fun provideResourceManager(context: Context): ResourceManager {
         return ResourceManager(context)
     }
 

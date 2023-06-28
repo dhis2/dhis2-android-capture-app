@@ -17,10 +17,7 @@ class SyncRepositoryImpl(private val d2: D2) : SyncRepository {
             .blockingGet()
     }
 
-    override fun getTeiByInStates(
-        uid: String,
-        states: List<State>
-    ): List<TrackedEntityInstance> {
+    override fun getTeiByInStates(uid: String, states: List<State>): List<TrackedEntityInstance> {
         return d2.trackedEntityModule().trackedEntityInstances()
             .byUid().eq(uid)
             .byAggregatedSyncState().`in`(states)

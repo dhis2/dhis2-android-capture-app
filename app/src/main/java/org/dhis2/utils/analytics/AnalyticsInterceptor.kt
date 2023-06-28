@@ -45,14 +45,6 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
         }
 
         if (response.code() >= 400 && isLogged) {
-            analyticHelper.setEvent(
-                API_CALL,
-                HashMap<String, String>().apply {
-                    put(API_CALL_RESPONSE_CODE, response.code().toString())
-                    put(API_CALL_ENDPOINT, request.url().toString())
-                }
-            )
-
             analyticHelper.trackMatomoEvent(
                 API_CALL,
                 "${request.method()}_${request.url()}",

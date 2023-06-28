@@ -19,7 +19,7 @@ with open(RELEASE_INFO_PATH, 'r') as file:
 print("Getting issues from filter version...")
 print(JIRA_FILTER)
 filtered_issues = requests.get(
-    "https://jira.dhis2.org/rest/api/latest/search?jql=filter=" + JIRA_FILTER,
+    "https://dhis2.atlassian.net/issues/?filter=" + JIRA_FILTER,
     headers={'Authorization': JIRA_AUTH}).json()
 
 print("Writing files in RELEASE.md...")
@@ -46,16 +46,16 @@ f.write("Android Capture App for DHIS 2 (v" + release_versions["vName"] + ") - P
 f.write(content_header)
 f.write("\n## Bugs fixed\n")
 for issue in filtered_issues['issues']:
-    f.write("* [" + issue['key'] + "](https://jira.dhis2.org/browse/" + issue['key'] + ") " +
+    f.write("* [" + issue['key'] + "](https://dhis2.atlassian.net/browse/" + issue['key'] + ") " +
             issue['fields']['summary'] + "\n")
 f.write('''* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version ''' + release_versions["sdkVersion"] + '''.
     
-You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=''' + JIRA_FILTER + ''') in this version. 
+You can find in Jira details on the [bugs fixed](https://dhis2.atlassian.net/issues/?filter=''' + JIRA_FILTER + ''') in this version.
 
 Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed 
 information of the features included in the App and how to configure DHIS2 to use it. 
 
-Please create a [Jira](https://jira.dhis2.org/secure/Dashboard.jspa) Issue if you find a bug or 
+Please create a [Jira](https://dhis2.atlassian.net) Issue if you find a bug or
 you want to propose a new functionality. [Project: Android App for DHIS2 | Component: 
 AndroidApp].''')
 f.write(content_footer)

@@ -47,9 +47,8 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.commons.resources.ObjectStyleUtils;
-import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -86,7 +85,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
+public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -103,7 +102,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private FragmentTeiDataBinding binding;
 
     @Inject
-    TEIDataContracts.Presenter presenter;
+    TEIDataPresenter presenter;
 
     @Inject
     FilterManager filterManager;
@@ -388,12 +387,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
                             @Override
                             public void onNegative() {
-                                if (programStageFromEvent.remindCompleted())
+                                if (Boolean.TRUE.equals(programStageFromEvent.remindCompleted()))
                                     presenter.areEventsCompleted();
                             }
                         });
                 dialog.show();
-            } else if (programStageModel.remindCompleted())
+            } else if (Boolean.TRUE.equals(programStageModel.remindCompleted()))
                 showDialogCloseProgram();
         };
     }
@@ -619,24 +618,30 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
-        ouTreeFragment.setSelectionCallback(this);
-        ouTreeFragment.show(getChildFragmentManager(), "OUTreeFragment");
+        new OUTreeFragment.Builder()
+                .showAsDialog()
+                .withPreselectedOrgUnits(
+                        FilterManager.getInstance().getOrgUnitUidsFilters()
+                )
+                .onSelection(selectedOrgUnits -> {
+                    presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+                    return Unit.INSTANCE;
+                })
+                .build().show(getChildFragmentManager(), "OUTreeFragment");
     }
 
     @Override
-    public void showSyncDialog(String uid) {
-        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.TEI)
-                .setUid(uid)
+    public void showSyncDialog(String eventUid, String enrollmentUid) {
+        new SyncStatusDialog.Builder()
+                .withContext(this, null)
+                .withSyncContext(
+                        new SyncContext.EnrollmentEvent(eventUid, enrollmentUid)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged)
                         FilterManager.getInstance().publishData();
 
-                })
-                .build();
-
-        dialog.show(getChildFragmentManager(), uid);
+                }).show(enrollmentUid);
     }
 
     @Override
@@ -651,7 +656,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
-        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+    public void showProgramRuleErrorMessage(@NonNull String message) {
+        activity.runOnUiThread(() -> showDescription(message));
     }
 }

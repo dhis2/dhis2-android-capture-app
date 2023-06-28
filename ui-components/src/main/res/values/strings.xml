@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Complete</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="not_now">Not now</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="review">Review</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="clear">Clear</string>
+    <string name="draw_here">Draw here</string>
+    <string name="button_extended">Extended Button</string>
+    <string name="action_done">Done</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="hint_search">Search</string>
+    <string name="action_clear_all">Clear all</string>
+</resources>

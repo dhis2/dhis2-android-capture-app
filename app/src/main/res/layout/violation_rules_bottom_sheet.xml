@@ -12,7 +12,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract.Presenter" />
+            type="org.dhis2.usescases.datasets.dataSetTable.DataSetTablePresenter" />
 
     </data>
 

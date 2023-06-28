@@ -2,14 +2,16 @@ package org.dhis2.form.ui
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.app.TimePickerDialog
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
@@ -17,10 +19,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -30,26 +31,29 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
+import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import com.journeyapps.barcodescanner.ScanOptions
 import java.io.File
 import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
+import org.dhis2.commons.bindings.getFileFrom
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
-import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog
-import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
+import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
@@ -64,6 +68,7 @@ import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.form.model.exception.RepositoryRecordsException
 import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
@@ -75,6 +80,9 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.ui.ErrorFieldList
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.signature.SignatureDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -94,6 +102,8 @@ class FormView : Fragment() {
     private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
     private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+    private var actionIconsActivate: Boolean = true
+    private var openErrorLocation: Boolean = false
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -163,7 +173,7 @@ class FormView : Fragment() {
             if (success) {
                 val imageFile = File(
                     FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
-                    "tempFile.png"
+                    TEMP_FILE
                 ).rotateImage(requireContext())
                 onSavePicture?.invoke(imageFile.path)
             }
@@ -173,6 +183,15 @@ class FormView : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
                 getFileFromGallery(requireContext(), it.data?.data)?.also { file ->
+                    onSavePicture?.invoke(file.path)
+                }
+            }
+        }
+
+    private val pickFile =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                getFileFrom(requireContext(), uri)?.also { file ->
                     onSavePicture?.invoke(file.path)
                 }
             }
@@ -225,7 +244,9 @@ class FormView : Fragment() {
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(
             context = requireContext(),
-            repositoryRecords = arguments?.get(RECORDS) as FormRepositoryRecords
+            repositoryRecords = arguments?.serializable(RECORDS)
+                ?: throw RepositoryRecordsException(),
+            openErrorLocation = openErrorLocation
         )
     }
 
@@ -237,6 +258,20 @@ class FormView : Fragment() {
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
     private var onSavePicture: ((String) -> Unit)? = null
+
+    private val storagePermissions = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    private val storagePermissions33 = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_AUDIO,
+        Manifest.permission.READ_MEDIA_VIDEO
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -286,18 +321,14 @@ class FormView : Fragment() {
             uiEventHandler(uiEvent)
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
                 val hasToShowFab = checkLastItem()
                 scrollCallback?.invoke(hasToShowFab)
             }
         } else {
             binding.recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val hasToShowFab = checkLastItem()
                     scrollCallback?.invoke(hasToShowFab)
                 }
@@ -416,17 +447,24 @@ class FormView : Fragment() {
     }
 
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
-        resultDialogUiProvider?.provideDataEntryUiModel(result)?.let {
-            BottomSheetDialog(
-                bottomSheetDialogUiModel = it,
-                onSecondaryButtonClicked = {
-                    if (result.allowDiscard) {
-                        viewModel.discardChanges()
+        resultDialogUiProvider?.provideDataEntryUiModel(result)
+            ?.let { (uiModel, fieldsWithIssues) ->
+                BottomSheetDialog(
+                    bottomSheetDialogUiModel = uiModel,
+                    onSecondaryButtonClicked = {
+                        if (result.allowDiscard) {
+                            viewModel.discardChanges()
+                        }
+                        onFinishDataEntry?.invoke()
+                    },
+                    content = { bottomSheetDialog ->
+                        ErrorFieldList(
+                            fieldsWithIssues = fieldsWithIssues,
+                            onItemClick = { bottomSheetDialog.dismiss() }
+                        )
                     }
-                    onFinishDataEntry?.invoke()
-                }
-            ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
-        }
+                ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+            }
     }
 
     private fun showLoopWarning() {
@@ -486,6 +524,35 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
             is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
+            is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
+            is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
+            is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
+            is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
+        }
+    }
+
+    private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {
+        if (actionIconsActivate && !uiEvent.value.isNullOrEmpty()) {
+            view?.closeKeyboard()
+            val intent = Intent(uiEvent.action).apply {
+                when (uiEvent.action) {
+                    Intent.ACTION_DIAL -> {
+                        data = Uri.parse("tel:${uiEvent.value}")
+                    }
+                    Intent.ACTION_SENDTO -> {
+                        data = Uri.parse("mailto:${uiEvent.value}")
+                    }
+                }
+            }
+
+            val title = resources.getString(R.string.open_with)
+            val chooser = Intent.createChooser(intent, title)
+
+            try {
+                startActivity(chooser)
+            } catch (e: ActivityNotFoundException) {
+                Timber.e("No activity found that can handle this action")
+            }
         }
     }
 
@@ -597,24 +664,25 @@ class FormView : Fragment() {
         val calendar = Calendar.getInstance()
         intent.date?.let { calendar.time = it }
         val is24HourFormat = DateFormat.is24HourFormat(requireContext())
-        val dialog = TimePickerDialog(
-            requireContext(),
-            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
-                intentHandler(
-                    dialogDelegate.handleTimeInput(
-                        intent.uid,
-                        if (intent.isDateTime == true) intent.date else null,
-                        hourOfDay,
-                        minutes
+        MaterialTimePicker.Builder()
+            .setTheme(R.style.TimePicker)
+            .setTimeFormat(CLOCK_24H.takeIf { is24HourFormat } ?: CLOCK_12H)
+            .setHour(calendar[Calendar.HOUR_OF_DAY])
+            .setMinute(calendar[Calendar.MINUTE])
+            .setTitleText(intent.label)
+            .build().apply {
+                addOnPositiveButtonClickListener {
+                    intentHandler(
+                        dialogDelegate.handleTimeInput(
+                            intent.uid,
+                            if (intent.isDateTime == true) intent.date else null,
+                            hour,
+                            minute
+                        )
                     )
-                )
-            },
-            calendar[Calendar.HOUR_OF_DAY],
-            calendar[Calendar.MINUTE],
-            is24HourFormat
-        )
-        dialog.setTitle(intent.label)
-        dialog.show()
+                }
+            }
+            .show(childFragmentManager, "timePicker")
     }
 
     private fun showYearMonthDayAgeCalendar(
@@ -629,7 +697,7 @@ class FormView : Fragment() {
         monthPicker.setText(intent.month.toString())
         dayPicker.setText(intent.day.toString())
 
-        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+        MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
             .setView(alertDialogView)
             .setPositiveButton(R.string.action_accept) { _, _ ->
                 val dateIntent = dialogDelegate.handleYearMonthDayInput(
@@ -740,9 +808,13 @@ class FormView : Fragment() {
                 )
             )
         }
-        requestCameraPermissions.launch(
-            arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        )
+        requestCameraPermissions.launch(permissions())
+    }
+
+    private fun permissions() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        storagePermissions33
+    } else {
+        storagePermissions
     }
 
     private fun showAddImageOptions() {
@@ -751,7 +823,7 @@ class FormView : Fragment() {
             requireContext().getString(R.string.from_gallery),
             requireContext().getString(R.string.cancel)
         )
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
             .setTitle(requireContext().getString(R.string.select_option))
             .setItems(options) { dialog: DialogInterface, item: Int ->
                 run {
@@ -764,11 +836,12 @@ class FormView : Fragment() {
                                     FileResourceDirectoryHelper.getFileResourceDirectory(
                                         requireContext()
                                     ),
-                                    "tempFile.png"
+                                    TEMP_FILE
                                 )
                             )
                             takePicture.launch(photoUri)
                         }
+
                         requireContext().getString(R.string.from_gallery) -> {
                             pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
                         }
@@ -782,6 +855,35 @@ class FormView : Fragment() {
     private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
         ImageDetailBottomDialog(event.label, File(event.value))
             .show(parentFragmentManager, ImageDetailBottomDialog.TAG)
+    }
+
+    private fun openFileSelector(event: RecyclerViewUiEvents.OpenFileSelector) {
+        onSavePicture = { file ->
+            intentHandler(
+                FormIntent.OnSave(
+                    event.field.uid,
+                    file,
+                    event.field.valueType
+                )
+            )
+        }
+        pickFile.launch("*/*")
+    }
+
+    private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
+        event.field.value?.let { filePath ->
+            val file = File(filePath)
+            val fileUri = FileProvider.getUriForFile(
+                requireContext(),
+                FormFileProvider.fileProviderAuthority,
+                file
+            )
+            startActivity(
+                Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(fileUri, "*/*")
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            )
+        }
     }
 
     private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {
@@ -810,33 +912,23 @@ class FormView : Fragment() {
     }
 
     private fun showOrgUnitDialog(uiEvent: RecyclerViewUiEvents.OpenOrgUnitDialog) {
-        OrgUnitCascadeDialog(
-            uiEvent.label,
-            uiEvent.value,
-            object : CascadeOrgUnitCallbacks {
-                override fun textChangedConsumer(
-                    selectedOrgUnitUid: String,
-                    selectedOrgUnitName: String
-                ) {
-                    intentHandler(
-                        FormIntent.OnSave(
-                            uiEvent.uid,
-                            selectedOrgUnitUid,
-                            ValueType.ORGANISATION_UNIT
-                        )
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
+                uiEvent.value?.let { listOf(it) } ?: emptyList()
+            )
+            .singleSelection()
+            .onSelection { selectedOrgUnits ->
+                intentHandler(
+                    FormIntent.OnSave(
+                        uiEvent.uid,
+                        selectedOrgUnits.firstOrNull()?.uid(),
+                        ValueType.ORGANISATION_UNIT
                     )
-                }
-
-                override fun onDialogCancelled() {
-                    // We don't need to do anything when user cancels the dialog
-                }
-
-                override fun onClear() {
-                    intentHandler(FormIntent.ClearValue(uiEvent.uid))
-                }
-            },
-            OrgUnitCascadeDialog.OUSelectionType.SEARCH
-        ).show(childFragmentManager, uiEvent.label)
+                )
+            }
+            .build()
+            .show(childFragmentManager, uiEvent.label)
     }
 
     private fun displayConfigurationErrors(
@@ -874,6 +966,26 @@ class FormView : Fragment() {
         }.show(this@FormView.childFragmentManager)
     }
 
+    private fun showSignatureDialog(uiEvent: RecyclerViewUiEvents.AddSignature) {
+        SignatureDialog(uiEvent.label) {
+            val file = File(
+                FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
+                TEMP_FILE
+            )
+            file.outputStream().use { out ->
+                it.compress(Bitmap.CompressFormat.PNG, 85, out)
+                out.flush()
+            }
+            intentHandler(
+                FormIntent.OnSave(
+                    uiEvent.uid,
+                    file.path,
+                    ValueType.IMAGE
+                )
+            )
+        }.show(this@FormView.childFragmentManager)
+    }
+
     fun onEditionFinish() {
         binding.recyclerView.requestFocus()
     }
@@ -903,12 +1015,16 @@ class FormView : Fragment() {
         locationProvider: LocationProvider?,
         needToForceUpdate: Boolean,
         completionListener: ((percentage: Float) -> Unit)?,
-        resultDialogUiProvider: EnrollmentResultDialogUiProvider?
+        resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
+        actionIconsActivate: Boolean,
+        openErrorLocation: Boolean
     ) {
         this.locationProvider = locationProvider
         this.needToForceUpdate = needToForceUpdate
         this.completionListener = completionListener
         this.resultDialogUiProvider = resultDialogUiProvider
+        this.actionIconsActivate = actionIconsActivate
+        this.openErrorLocation = openErrorLocation
     }
 
     internal fun setCallbackConfiguration(
@@ -943,6 +1059,8 @@ class FormView : Fragment() {
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
         private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+        private var actionIconsActive: Boolean = true
+        private var openErrorLocation: Boolean = false
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -972,21 +1090,18 @@ class FormView : Fragment() {
         /**
          * It's triggered when form gets focus
          */
-        fun onFocused(callback: () -> Unit) =
-            apply { this.onFocused = callback }
+        fun onFocused(callback: () -> Unit) = apply { this.onFocused = callback }
 
         /**
          * Set a FragmentManager for instantiating the form view
          * */
-        fun factory(manager: FragmentManager) =
-            apply { fragmentManager = manager }
+        fun factory(manager: FragmentManager) = apply { fragmentManager = manager }
 
         /**
          *
          */
-        fun resultDialogUiProvider(
-            resultDialogUiProvider: EnrollmentResultDialogUiProvider
-        ) = apply { this.resultDialogUiProvider = resultDialogUiProvider }
+        fun resultDialogUiProvider(resultDialogUiProvider: EnrollmentResultDialogUiProvider) =
+            apply { this.resultDialogUiProvider = resultDialogUiProvider }
 
         /**
          * Listener for the current activity to know if a activityForResult is called
@@ -994,8 +1109,7 @@ class FormView : Fragment() {
         fun activityForResultListener(callback: () -> Unit) =
             apply { this.onActivityForResult = callback }
 
-        fun onFinishDataEntry(callback: () -> Unit) =
-            apply { this.onFinishDataEntry = callback }
+        fun onFinishDataEntry(callback: () -> Unit) = apply { this.onFinishDataEntry = callback }
 
         fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
             apply { this.onPercentageUpdate = callback }
@@ -1006,8 +1120,13 @@ class FormView : Fragment() {
         fun onFieldItemsRendered(callback: (fieldsEmpty: Boolean) -> Unit) =
             apply { this.onFieldItemsRendered = callback }
 
-        fun setRecords(records: FormRepositoryRecords) =
-            apply { this.records = records }
+        fun setRecords(records: FormRepositoryRecords) = apply { this.records = records }
+
+        fun setActionIconsActivation(activate: Boolean) =
+            apply { this.actionIconsActive = activate }
+
+        fun openErrorLocation(openErrorLocation: Boolean) =
+            apply { this.openErrorLocation = openErrorLocation }
 
         fun build(): FormView {
             if (fragmentManager == null) {
@@ -1028,7 +1147,9 @@ class FormView : Fragment() {
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
-                    resultDialogUiProvider
+                    resultDialogUiProvider,
+                    actionIconsActive,
+                    openErrorLocation
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(
@@ -1046,5 +1167,6 @@ class FormView : Fragment() {
 
     companion object {
         const val RECORDS = "RECORDS"
+        const val TEMP_FILE = "tempFile.png"
     }
 }

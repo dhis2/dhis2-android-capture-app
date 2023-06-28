@@ -153,34 +153,31 @@ class ProgramEventMapperTest {
         ) doReturn dummyCategoryOptionCombo()
     }
 
-    private fun dummyEvent() =
-        Event.builder()
-            .uid("eventUid")
-            .organisationUnit("orgUnitUid")
-            .eventDate(Date())
-            .program("programUid")
-            .programStage("programStage")
-            .attributeOptionCombo("attrComboUid")
-            .status(EventStatus.ACTIVE)
-            .build()
+    private fun dummyEvent() = Event.builder()
+        .uid("eventUid")
+        .organisationUnit("orgUnitUid")
+        .eventDate(Date())
+        .program("programUid")
+        .programStage("programStage")
+        .attributeOptionCombo("attrComboUid")
+        .status(EventStatus.ACTIVE)
+        .build()
 
-    private fun dummyProgramWithExpiryInfo() =
-        Program.builder()
-            .uid("programUid")
-            .completeEventsExpiryDays(0)
-            .expiryDays(0)
-            .build()
+    private fun dummyProgramWithExpiryInfo() = Program.builder()
+        .uid("programUid")
+        .completeEventsExpiryDays(0)
+        .expiryDays(0)
+        .build()
 
     private fun dummyCategoryOptionCombo() =
         CategoryOptionCombo.builder().uid("attrComboUid").displayName("default").build()
 
-    private fun eventWithoutValidDate() =
-        Event.builder()
-            .uid("eventUid")
-            .organisationUnit("orgUnitUid")
-            .program("programUid")
-            .programStage("programStage")
-            .attributeOptionCombo("attrComboUid")
-            .status(EventStatus.ACTIVE)
-            .build()
+    private fun eventWithoutValidDate() = Event.builder()
+        .uid("eventUid")
+        .organisationUnit("orgUnitUid")
+        .program("programUid")
+        .programStage("programStage")
+        .attributeOptionCombo("attrComboUid")
+        .status(EventStatus.ACTIVE)
+        .build()
 }

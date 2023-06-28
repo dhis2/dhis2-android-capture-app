@@ -91,7 +91,7 @@ public  interface AppComponent {
 
     MatomoAnalyticsController matomoController();
 
-    org.dhis2.form.model.DispatcherProvider dispatcherProvider();
+    org.dhis2.commons.viewmodel.DispatcherProvider dispatcherProvider();
 
     LocationProvider locationProvider();
 

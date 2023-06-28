@@ -119,10 +119,14 @@ class ConfigureOrgUnit(
     private fun getOrgUnitIfOnlyOne() =
         getOrgUnitsByProgramId().takeIf { it.size == 1 }?.firstOrNull()
 
-    private fun getCurrentOrgUnit() =
-        if (preferencesProvider.contains(CURRENT_ORG_UNIT)) preferencesProvider.getString(
-            CURRENT_ORG_UNIT, null
-        ) else null
+    private fun getCurrentOrgUnit() = if (preferencesProvider.contains(CURRENT_ORG_UNIT)) {
+        preferencesProvider.getString(
+            CURRENT_ORG_UNIT,
+            null
+        )
+    } else {
+        null
+    }
 
     private fun setCurrentOrgUnit(organisationUnitUid: String) {
         preferencesProvider.setValue(CURRENT_ORG_UNIT, organisationUnitUid)

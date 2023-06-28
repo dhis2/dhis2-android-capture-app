@@ -20,9 +20,7 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ENROLLMENT_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
@@ -31,12 +29,16 @@ import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.EventMode
+import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -77,9 +79,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             intent.putExtra(PROGRAM_UID_EXTRA, programUid)
             intent.putExtra(MODE_EXTRA, enrollmentMode.name)
             intent.putExtra(FOR_RELATIONSHIP, forRelationship)
-            if (forRelationship == true) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-            }
             return intent
         }
     }
@@ -91,6 +90,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
         val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
             ?: EnrollmentMode.NEW
+        val openErrorLocation = intent.getBooleanExtra(OPEN_ERROR_LOCATION, false)
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
@@ -123,6 +123,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     )
                 )
             )
+            .openErrorLocation(openErrorLocation)
             .build()
 
         super.onCreate(savedInstanceState)
@@ -259,8 +260,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         BottomSheetDialog(
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                 title = getString(R.string.not_saved),
-                subtitle = getString(R.string.discard_go_back),
-                iconResource = R.drawable.ic_alert,
+                message = getString(R.string.discard_go_back),
+                iconResource = R.drawable.ic_error_outline,
                 mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
                 secondaryButton = DialogButtonStyle.DiscardButton()
             ),
@@ -297,33 +298,28 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     /*region TEI*/
-    override fun displayTeiInfo(attrList: List<String>, profileImage: String) {
+    override fun displayTeiInfo(teiInfo: TeiAttributesInfo) {
         if (mode != EnrollmentMode.NEW) {
             binding.title.visibility = View.GONE
             binding.teiDataHeader.root.visibility = View.VISIBLE
 
-            val attrListNotEmpty = attrList.filter { it.isNotEmpty() }
             binding.teiDataHeader.mainAttributes.apply {
-                when (attrListNotEmpty.size) {
-                    0 -> visibility = View.GONE
-                    1 -> text = attrListNotEmpty[0]
-                    else -> text = String.format("%s %s", attrListNotEmpty[0], attrListNotEmpty[1])
-                }
+                text = teiInfo.teiMainLabel(getString(R.string.tracked_entity_type_details))
                 setTextColor(Color.WHITE)
             }
-            binding.teiDataHeader.secundaryAttribute.apply {
-                when (attrListNotEmpty.size) {
-                    0, 1, 2 -> visibility = View.GONE
-                    else -> text = attrListNotEmpty[2]
+            when (val secondaryLabel = teiInfo.teiSecondaryLabel()) {
+                null -> binding.teiDataHeader.secundaryAttribute.visibility = View.GONE
+                else -> {
+                    binding.teiDataHeader.secundaryAttribute.text = secondaryLabel
+                    binding.teiDataHeader.secundaryAttribute.setTextColor(Color.WHITE)
                 }
-                setTextColor(Color.WHITE)
             }
 
-            if (profileImage.isEmpty()) {
+            if (teiInfo.profileImage.isEmpty()) {
                 binding.teiDataHeader.teiImage.visibility = View.GONE
                 binding.teiDataHeader.imageSeparator.visibility = View.GONE
             } else {
-                Glide.with(this).load(File(profileImage))
+                Glide.with(this).load(File(teiInfo.profileImage))
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .transform(CircleCrop())
                     .into(binding.teiDataHeader.teiImage)

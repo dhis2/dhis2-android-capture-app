@@ -27,7 +27,8 @@ class AnalyticsAdapter :
             ): Boolean {
                 return oldItem == newItem
             }
-        }),
+        }
+    ),
     ChartViewHolder.ChartItemCallback {
 
     enum class AnalyticType {

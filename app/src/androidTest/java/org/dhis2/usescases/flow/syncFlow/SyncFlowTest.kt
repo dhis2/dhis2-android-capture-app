@@ -74,10 +74,10 @@ class SyncFlowTest : BaseTest() {
             pressBack()
             waitToDebounce(500)
             clickOnSyncTei(teiName, teiLastName)
-            clickOnSyncButton()
+            clickOnSyncButton(composeTestRule)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            checkSyncWasSuccessfully()
+            checkSyncWasSuccessfully(composeTestRule)
         }
         cleanLocalDatabase()
     }
@@ -115,10 +115,10 @@ class SyncFlowTest : BaseTest() {
 
         syncFlowRobot {
             clickOnSyncTei(teiName, teiLastName)
-            clickOnSyncButton()
+            clickOnSyncButton(composeTestRule)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
-            checkSyncFailed()
+            checkSyncFailed(composeTestRule)
         }
         cleanLocalDatabase()
     }
@@ -138,10 +138,10 @@ class SyncFlowTest : BaseTest() {
 
         syncFlowRobot {
             clickOnEventToSync(0)
-            clickOnSyncButton()
+            clickOnSyncButton(composeTestRule)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            checkSyncWasSuccessfully()
+            checkSyncWasSuccessfully(composeTestRule)
         }
         cleanLocalDatabase()
     }
@@ -161,10 +161,10 @@ class SyncFlowTest : BaseTest() {
 
         syncFlowRobot {
             clickOnEventToSync(1)
-            clickOnSyncButton()
+            clickOnSyncButton(composeTestRule)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
-            checkSyncFailed()
+            checkSyncFailed(composeTestRule)
         }
         cleanLocalDatabase()
     }
@@ -194,10 +194,10 @@ class SyncFlowTest : BaseTest() {
 
         syncFlowRobot {
             clickOnDataSetToSync(0)
-            clickOnSyncButton()
+            clickOnSyncButton(composeTestRule)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            checkSyncWasSuccessfully() //sync failed
+            checkSyncWasSuccessfully(composeTestRule) //sync failed
         }
         cleanLocalDatabase()
     }
@@ -227,10 +227,10 @@ class SyncFlowTest : BaseTest() {
 
         syncFlowRobot {
             clickOnDataSetToSync(1)
-            clickOnSyncButton()
+            clickOnSyncButton(composeTestRule)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
-            checkSyncFailed()
+            checkSyncFailed(composeTestRule)
         }
         cleanLocalDatabase()
     }

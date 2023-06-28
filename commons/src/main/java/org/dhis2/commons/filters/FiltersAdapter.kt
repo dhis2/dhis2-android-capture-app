@@ -17,10 +17,7 @@ class FiltersAdapter :
         }
     }) {
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): FilterHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilterHolder {
         return FilterHolder(
             DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),

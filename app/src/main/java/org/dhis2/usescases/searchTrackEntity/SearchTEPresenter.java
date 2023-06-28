@@ -1,16 +1,16 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import static android.app.Activity.RESULT_OK;
-import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
-import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 import static org.dhis2.commons.matomo.Actions.MAP_VISUALIZATION;
 import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.commons.matomo.Actions.SYNC_TEI;
 import static org.dhis2.commons.matomo.Categories.SEARCH;
 import static org.dhis2.commons.matomo.Categories.TRACKER_LIST;
 import static org.dhis2.commons.matomo.Labels.CLICK;
+import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -29,6 +29,9 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
@@ -38,8 +41,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.matomo.MatomoAnalyticsController;
-import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -60,6 +61,7 @@ import java.util.stream.Collectors;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
+import kotlin.Unit;
 import timber.log.Timber;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
@@ -287,24 +289,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void enroll(String programUid, String uid, HashMap<String, String> queryData) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
-        orgUnitDialog.setPossitiveListener(v -> {
-                    if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
-                        showCalendar(orgUnitDialog.getSelectedOrgUnitModel(), programUid, uid, queryData);
-                    orgUnitDialog.dismiss();
-                })
-                .setNegativeListener(v -> orgUnitDialog.dismiss());
-
         compositeDisposable.add(getOrgUnits()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         allOrgUnits -> {
                             if (allOrgUnits.size() > 1) {
-                                orgUnitDialog.setOrgUnits(allOrgUnits);
-                                orgUnitDialog.setProgram(programUid);
-                                if (!orgUnitDialog.isAdded())
-                                    orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                                new OUTreeFragment.Builder()
+                                        .showAsDialog()
+                                        .singleSelection()
+                                        .onSelection(selectedOrgUnits -> {
+                                            if (!selectedOrgUnits.isEmpty())
+                                                showCalendar(selectedOrgUnits.get(0), programUid, uid, queryData);
+                                            return Unit.INSTANCE;
+                                        })
+                                        .orgUnitScope(new OrgUnitSelectorScope.ProgramCaptureScope(programUid))
+                                        .build()
+                                        .show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
                             } else if (allOrgUnits.size() == 1)
                                 showCalendar(allOrgUnits.get(0), programUid, uid, queryData);
                         },

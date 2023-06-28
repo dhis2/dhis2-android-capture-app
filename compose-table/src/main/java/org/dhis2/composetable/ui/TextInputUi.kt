@@ -3,7 +3,7 @@ package org.dhis2.composetable.ui
 import android.graphics.Rect
 import android.view.ViewTreeObserver
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +17,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,15 +36,16 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,41 +59,29 @@ import org.dhis2.composetable.model.toKeyboardType
 @Composable
 fun TextInput(
     textInputModel: TextInputModel,
-    tableColors: TableColors? = null,
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit,
     focusRequester: FocusRequester
 ) {
-    val focusManager = LocalFocusManager.current
-    TableTheme(tableColors) {
-        val isKeyboardOpen by keyboardAsState()
-
-        LaunchedEffect(isKeyboardOpen) {
-            if (isKeyboardOpen == Keyboard.Closed) {
-                focusManager.clearFocus(true)
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .testTag(INPUT_TEST_TAG)
-                .fillMaxWidth()
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
-                .padding(16.dp)
-        ) {
-            InputTitle(textInputModel)
-            TextInputContent(
-                textInputModel,
-                onTextChanged = onTextChanged,
-                onSave = onSave,
-                onNextSelected = onNextSelected,
-                focusRequester = focusRequester
+    Column(
+        modifier = Modifier
+            .testTag(INPUT_TEST_TAG)
+            .fillMaxWidth()
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
-        }
+            .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp)
+    ) {
+        InputTitle(textInputModel)
+        TextInputContent(
+            textInputModel,
+            onTextChanged = onTextChanged,
+            onSave = onSave,
+            onNextSelected = onNextSelected,
+            focusRequester = focusRequester
+        )
     }
 }
 
@@ -130,6 +119,7 @@ fun keyboardAsState(): State<Keyboard> {
 private fun InputTitle(textInputModel: TextInputModel) {
     Row(
         modifier = Modifier
+            .padding(end = 12.dp)
             .fillMaxWidth()
             .semantics {
                 mainLabel = textInputModel.mainLabel
@@ -159,11 +149,11 @@ private fun TextInputContent(
 
     var hasFocus by remember { mutableStateOf(false) }
 
-    val dividerColor = when {
-        textInputModel.error != null -> LocalTableColors.current.errorColor
-        hasFocus -> LocalTableColors.current.primary
-        else -> LocalTableColors.current.disabledCellText
-    }
+    val dividerColor = dividerColor(
+        hasError = textInputModel.error != null,
+        hasWarning = textInputModel.warning != null,
+        hasFocus = hasFocus
+    )
 
     Column {
         Row(
@@ -186,9 +176,20 @@ private fun TextInputContent(
                                 onSave()
                             }
                         },
-                    value = textInputModel.currentValue ?: "",
+                    value = TextFieldValue(
+                        text = textInputModel.currentValue ?: "",
+                        selection = textInputModel.selection ?: TextRange(
+                            textInputModel.currentValue?.length ?: 0
+                        )
+                    ),
                     onValueChange = {
-                        onTextChanged(textInputModel.copy(currentValue = it, error = null))
+                        onTextChanged(
+                            textInputModel.copy(
+                                currentValue = it.text,
+                                selection = it.selection,
+                                error = null
+                            )
+                        )
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,
@@ -214,24 +215,30 @@ private fun TextInputContent(
             Spacer(modifier = Modifier.size(8.dp))
             TextInputContentActionIcon(
                 modifier = Modifier
-                    .testTag(INPUT_ICON_TEST_TAG)
-                    .clickable(role = Role.Button) {
-                        if (hasFocus && textInputModel.error == null) {
-                            focusManager.clearFocus(force = true)
-                            onSave()
-                        } else {
-                            focusRequester.requestFocus()
-                        }
-                    },
-                hasFocus = hasFocus
+                    .testTag(INPUT_ICON_TEST_TAG),
+                hasFocus = hasFocus,
+                textInputModel,
+                onActionIconClick = {
+                    if (textInputModel.actionIconCanBeClicked(hasFocus)) {
+                        focusManager.clearFocus(force = true)
+                        onSave()
+                    } else {
+                        focusRequester.requestFocus()
+                    }
+                },
+                onTextChanged
             )
         }
-        if (textInputModel.error != null) {
+        if (textInputModel.hasErrorOrWarning()) {
             Text(
                 modifier = Modifier.testTag(INPUT_ERROR_MESSAGE_TEST_TAG),
-                text = textInputModel.error,
+                text = textInputModel.errorOrWarningMessage()!!,
                 style = TextStyle(
-                    color = LocalTableColors.current.errorColor,
+                    color = LocalTableColors.current.cellTextColor(
+                        textInputModel.error != null,
+                        textInputModel.warning != null,
+                        true
+                    ),
                     fontSize = 10.sp
                 )
             )
@@ -240,9 +247,20 @@ private fun TextInputContent(
 }
 
 @Composable
+private fun dividerColor(hasError: Boolean, hasWarning: Boolean, hasFocus: Boolean) = when {
+    hasError -> LocalTableColors.current.errorColor
+    hasWarning -> LocalTableColors.current.warningColor
+    hasFocus -> LocalTableColors.current.primary
+    else -> LocalTableColors.current.disabledCellText
+}
+
+@Composable
 private fun TextInputContentActionIcon(
     modifier: Modifier = Modifier,
-    hasFocus: Boolean
+    hasFocus: Boolean,
+    textInputModel: TextInputModel,
+    onActionIconClick: () -> Unit,
+    onTextChanged: (TextInputModel) -> Unit
 ) {
     val icon = if (hasFocus) {
         R.drawable.ic_finish_edit_input
@@ -250,15 +268,38 @@ private fun TextInputContentActionIcon(
         R.drawable.ic_edit_input
     }
 
-    Icon(
-        modifier = modifier
-            .semantics {
-                drawableId = icon
-            },
-        painter = painterResource(id = icon),
-        tint = LocalTableColors.current.primary,
-        contentDescription = ""
-    )
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            modifier = modifier
+                .semantics {
+                    drawableId = icon
+                },
+            onClick = onActionIconClick
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                tint = LocalTableColors.current.primary,
+                contentDescription = ""
+            )
+        }
+
+        if (textInputModel.showClearButton() && hasFocus) {
+            IconButton(
+                onClick = {
+                    onTextChanged(textInputModel.copy(currentValue = ""))
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_clear),
+                    tint = Color(0x61000000),
+                    contentDescription = ""
+                )
+            }
+        }
+    }
 }
 
 @Composable

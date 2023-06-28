@@ -7,7 +7,6 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataTableModel
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.MapFieldValueToUser
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableData
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableDataToTableModelMapper
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableMeasure
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.junit.Assert.assertFalse
@@ -71,7 +70,6 @@ class TableDataToTableModelMapperTest {
             true,
             showRowTotals = false,
             showColumnTotals = false,
-            overriddenMeasure = TableMeasure(0, 0),
             hasDataElementDecoration = false
         )
 
@@ -105,7 +103,6 @@ class TableDataToTableModelMapperTest {
             false,
             showRowTotals = false,
             showColumnTotals = false,
-            overriddenMeasure = TableMeasure(0, 0),
             hasDataElementDecoration = false
         )
 

@@ -9,13 +9,13 @@ import okhttp3.Interceptor
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.commons.Constants
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.metadata.usecases.DataSetConfiguration
@@ -36,7 +36,7 @@ class ServerModule {
     fun sdk(context: Context): D2 {
         if (!D2Manager.isD2Instantiated()) {
             blockingInstantiateD2(getD2Configuration(context))
-                ?.userModule()?.accountManager()?.setMaxAccounts(Constants.MAX_ACCOUNTS)
+                ?.userModule()?.accountManager()?.setMaxAccounts(null)
         }
         return D2Manager.getD2()
     }
@@ -114,6 +114,12 @@ class ServerModule {
     @PerServer
     fun providesSyncStatusController(): SyncStatusController {
         return SyncStatusController()
+    }
+
+    @Provides
+    @PerServer
+    fun providesVersionStatusController(d2: D2): VersionRepository {
+        return VersionRepository(d2)
     }
 
     companion object {

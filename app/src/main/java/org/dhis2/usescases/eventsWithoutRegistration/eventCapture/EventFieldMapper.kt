@@ -161,10 +161,7 @@ class EventFieldMapper(
         return sectionList.size == 1 && sectionModel.sectionUid()?.isEmpty() == true
     }
 
-    private fun handleMultiSection(
-        sectionModel: FormSectionViewModel,
-        section: String
-    ) {
+    private fun handleMultiSection(sectionModel: FormSectionViewModel, section: String) {
         val fieldViewModels = mutableListOf<FieldUiModel>()
         if (fieldMap[sectionModel.sectionUid()] != null) {
             fieldViewModels.addAll(
@@ -240,18 +237,16 @@ class EventFieldMapper(
     private fun isUnsupported(type: ValueType?): Boolean {
         return when (type) {
             ValueType.TRACKER_ASSOCIATE,
-            ValueType.USERNAME,
-            ValueType.FILE_RESOURCE -> true
+            ValueType.USERNAME -> true
             else -> false
         }
     }
 
-    private fun calculateCompletionPercentage(
-        completedFields: Int,
-        totals: Int
-    ): Float {
+    private fun calculateCompletionPercentage(completedFields: Int, totals: Int): Float {
         return if (totals == 0) {
             100f
-        } else completedFields.toFloat() / totals.toFloat()
+        } else {
+            completedFields.toFloat() / totals.toFloat()
+        }
     }
 }

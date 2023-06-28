@@ -15,8 +15,6 @@
     <string name="error_wrong_credentials">Chybné registrační údaje</string>
     <string name="error_unexpected_error">Neočekávaná chyba</string>
     <string name="error_internal_server_error">Interní chyba serveru</string>
-    <string name="yes">ano</string>
-    <string name="no">ne</string>
     <string name="no_value">žádná hodnota</string>
     <string name="no_reserved_values">Neexistují žádné další rezervované hodnoty. Obraťte se na správce systému</string>
     <string name="no_reserved_values_connection">Neexistují žádné další rezervované hodnoty. Připojte se k síti a doplňte je</string>
@@ -213,7 +211,6 @@
     <string name="settings_sms_module_title">SMS modul:</string>
     <string name="settings_sms_receiver_number">SMS brána</string>
     <string name="settings_sms_result_sender_number">Odesílatel výsledků SMS</string>
-    <string name="settings_sms_result_timeout">Časový limit výsledku SMS</string>
     <string name="settings_sms_result_timeout_hint">vteřin</string>
     <string name="settings_sms_result_sender_hint">číslo</string>
     <string name="settings_sms_receiver_number_hint">číslo</string>
@@ -503,8 +500,6 @@
     <string name="org_unit_selection_warning">Musí být vybrána alespoň jedna organizační jednotka</string>
     <string name="send_user_name_title">Odeslat data</string>
     <string name="send_user_name_mesage">Pomozte DHIS2 vylepšit tuto aplikaci sdílením protokolů chyb spojených s vaším ID uživatele.</string>
-    <string name="analytics_crash_name_message">Tato aplikace bude odesílat protokoly chyb spojené s vaším ID uživatele, aby se zlepšil jeho výkon a nevystopovatelné statistiky, aby se zlepšila uživatelská zkušenost.</string>
-    <string name="send_user_privacy_policy">Další informace najdete v našich zásadách ochrany osobních údajů</string>
     <string name="check_mandatory_field">Zkontrolujte pole</string>
     <string name="error_no_network_during_sync">Při synchronizaci konfigurace jste ztratili připojení k internetu. Prosím zkuste to znovu později</string>
     <string name="action_agree">Souhlasit</string>

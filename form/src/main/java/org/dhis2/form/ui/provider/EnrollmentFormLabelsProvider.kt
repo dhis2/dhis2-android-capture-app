@@ -11,21 +11,16 @@ class EnrollmentFormLabelsProvider(val resourceManager: ResourceManager) {
     fun provideSingleSectionLabel() =
         resourceManager.getString(R.string.enrollment_single_section_label)
 
-    fun provideEnrollmentOrgUnitLabel() =
-        resourceManager.getString(R.string.enrolling_ou)
+    fun provideEnrollmentOrgUnitLabel() = resourceManager.getString(R.string.enrolling_ou)
 
-    fun provideTeiCoordinatesLabel() =
-        resourceManager.getString(R.string.tei_coordinates)
+    fun provideTeiCoordinatesLabel() = resourceManager.getString(R.string.tei_coordinates)
 
     fun provideEnrollmentCoordinatesLabel() =
         resourceManager.getString(R.string.enrollment_coordinates)
 
-    fun provideReservedValueWarning() =
-        resourceManager.getString(R.string.no_reserved_values)
+    fun provideReservedValueWarning() = resourceManager.getString(R.string.no_reserved_values)
 
-    fun provideEnrollmentDateDefaultLabel() =
-        resourceManager.getString(R.string.enrollmment_date)
+    fun provideEnrollmentDateDefaultLabel() = resourceManager.getString(R.string.enrollmment_date)
 
-    fun provideIncidentDateDefaultLabel() =
-        resourceManager.getString(R.string.incident_date)
+    fun provideIncidentDateDefaultLabel() = resourceManager.getString(R.string.incident_date)
 }

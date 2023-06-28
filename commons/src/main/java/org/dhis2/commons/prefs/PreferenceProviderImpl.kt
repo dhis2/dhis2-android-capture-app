@@ -64,42 +64,48 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
 
     override fun getString(key: String, default: String?): String? {
         return SecurePreferences.getStringValue(
-            context, key,
+            context,
+            key,
             sharedPreferences.getString(key, default)
         )
     }
 
     override fun getBoolean(key: String, default: Boolean): Boolean {
         return SecurePreferences.getBooleanValue(
-            context, key,
+            context,
+            key,
             sharedPreferences.getBoolean(key, default)
         )
     }
 
     override fun getInt(key: String, default: Int): Int {
         return SecurePreferences.getIntValue(
-            context, key,
+            context,
+            key,
             sharedPreferences.getInt(key, default)
         )
     }
 
     override fun getLong(key: String, default: Long): Long? {
         return SecurePreferences.getLongValue(
-            context, key,
+            context,
+            key,
             sharedPreferences.getLong(key, default)
         )
     }
 
     override fun getFloat(key: String, default: Float): Float? {
         return SecurePreferences.getFloatValue(
-            context, key,
+            context,
+            key,
             sharedPreferences.getFloat(key, default)
         )
     }
 
     override fun getSet(key: String, default: Set<String>): Set<String>? {
         return SecurePreferences.getStringSetValue(
-            context, key,
+            context,
+            key,
             default
         )
     }
@@ -125,7 +131,8 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
 
     override fun areCredentialsSet(): Boolean {
         return SecurePreferences.getBooleanValue(
-            context, SECURE_CREDENTIALS,
+            context,
+            SECURE_CREDENTIALS,
             sharedPreferences.getBoolean(SECURE_CREDENTIALS, false)
         )
     }

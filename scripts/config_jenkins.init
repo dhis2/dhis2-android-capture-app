@@ -10,3 +10,4 @@ browserstack_deviceLogs=true
 browserstack_number_of_parallel_executions=2
 bitrise_max_parallel_builds=3
 browserstack_class="\"org.dhis2.usescases.UseCaseTestsSuite\""
+browserstack_allowDeviceMockServer=true

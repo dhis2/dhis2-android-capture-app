@@ -97,9 +97,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/checkLayouts"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content">
 
                     <RadioGroup
                         android:id="@+id/radiogroup"

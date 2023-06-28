@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_location">حدد الموقع</string>
-    <string name="dialog_layer_satellite_base_map">منظر من القمر الصناعي</string>
     <string name="action_apply">تطبيق</string>
     <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
     <string name="dialog_layer_event">إظهار الأحداث</string>
