@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
@@ -27,6 +28,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -525,5 +527,40 @@ class LoginPresenterTest {
         loginPresenter.handleResponse(response)
 
         verify(view).saveUsersData(true, false)
+    }
+
+    @Test
+    fun `Should set server and username if user is logged`() {
+        val viewmodel = LoginViewModel(
+            view,
+            preferenceProvider,
+            schedulers,
+            goldfinger,
+            analyticsHelper,
+            crashReportController,
+            network,
+            userManager
+        )
+
+        mockSystemInfo()
+        whenever(userManager.userName())doReturn Single.just("Username")
+        whenever(goldfinger.hasFingerPrint())doReturn true
+        whenever(preferenceProvider.contains(SECURE_SERVER_URL)) doReturn true
+
+        viewmodel.checkServerInfoAndShowBiometricButton()
+
+        verify(view).setUrl("contextPath")
+        verify(view).setUser("Username")
+    }
+
+    private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {
+        whenever(userManager.isUserLoggedIn) doReturn Observable.just(isUserLoggedIn)
+        if (isUserLoggedIn) {
+            whenever(
+                userManager.d2.systemInfoModule().systemInfo().blockingGet()
+            ) doReturn SystemInfo.builder()
+                .contextPath("contextPath")
+                .build()
+        }
     }
 }
