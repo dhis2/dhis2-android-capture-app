@@ -733,12 +733,17 @@ class GranularSyncRepository(
                 dataSetInstance.state() == State.ERROR ||
                 dataSetInstance.state() == State.WARNING
             ) {
-                val conflictNumber = d2.countDataValueConflicts(
-                    dataSetUid = dataSetUid,
-                    periodId = dataSetInstance.period(),
-                    orgUnitUid = dataSetInstance.organisationUnitUid(),
-                    attrOptionComboUid = dataSetInstance.attributeOptionComboUid()
-                )
+
+                var errorCount = 0
+                var warningCount = 0
+                d2.dataValueConflictsBy(dataSetUid).forEach { dataValueConflict ->
+                    if (dataValueConflict.status() == ImportStatus.ERROR) {
+                        errorCount += 1
+                    } else if (dataValueConflict.status() == ImportStatus.WARNING) {
+                        warningCount += 1
+                    }
+                }
+
                 SyncStatusItem(
                     type = SyncStatusType.DataSetInstance(
                         dataSetUid,
@@ -747,7 +752,7 @@ class GranularSyncRepository(
                         dataSetInstance.attributeOptionComboUid()
                     ),
                     displayName = getDataSetInstanceLabel(dataSetInstance),
-                    description = errorWarningDescriptionLabel(conflictNumber, 0),
+                    description = errorWarningDescriptionLabel(errorCount, warningCount),
                     state = dataSetInstance.state()!!
                 )
             } else {
