@@ -4,7 +4,6 @@ import io.reactivex.Single
 import java.util.Locale
 import org.dhis2.R
 import org.dhis2.commons.bindings.categoryOptionCombo
-import org.dhis2.commons.bindings.countDataValueConflicts
 import org.dhis2.commons.bindings.countEventImportConflicts
 import org.dhis2.commons.bindings.countTeiImportConflicts
 import org.dhis2.commons.bindings.dataElement
@@ -733,7 +732,6 @@ class GranularSyncRepository(
                 dataSetInstance.state() == State.ERROR ||
                 dataSetInstance.state() == State.WARNING
             ) {
-
                 var errorCount = 0
                 var warningCount = 0
                 d2.dataValueConflictsBy(dataSetUid).forEach { dataValueConflict ->
@@ -743,7 +741,6 @@ class GranularSyncRepository(
                         warningCount += 1
                     }
                 }
-
                 SyncStatusItem(
                     type = SyncStatusType.DataSetInstance(
                         dataSetUid,
