@@ -8,7 +8,7 @@ pipeline {
         timeout(time: 50)
     }
 
-    stages{
+    stages {
         stage('Change to JAVA 17') {
             steps {
                 script {
