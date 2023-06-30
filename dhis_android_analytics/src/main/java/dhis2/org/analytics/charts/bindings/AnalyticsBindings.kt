@@ -8,6 +8,7 @@ import com.google.android.material.badge.BadgeDrawable.BOTTOM_END
 import com.google.android.material.badge.BadgeUtils
 import dhis2.org.analytics.charts.ui.ChartModel
 import org.dhis2.commons.resources.ColorUtils
+import org.hisp.dhis.android.core.period.PeriodType
 
 @BindingAdapter("filter_visualization")
 fun ImageView.setFilterVisualization(chartModel: ChartModel) {
@@ -22,5 +23,31 @@ fun ImageView.setFilterVisualization(chartModel: ChartModel) {
             backgroundColor = ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
         }
         BadgeUtils.attachBadgeDrawable(badge, this)
+    }
+}
+
+fun PeriodType.datePattern(): String = when (this) {
+    PeriodType.Daily,
+    PeriodType.Weekly,
+    PeriodType.WeeklySaturday,
+    PeriodType.WeeklySunday,
+    PeriodType.WeeklyThursday,
+    PeriodType.WeeklyWednesday,
+    PeriodType.BiWeekly,
+    PeriodType.Monthly,
+    PeriodType.BiMonthly,
+    PeriodType.Quarterly,
+    PeriodType.SixMonthly,
+    PeriodType.SixMonthlyApril,
+    PeriodType.SixMonthlyNov -> {
+        "MMM YYYY"
+    }
+
+    PeriodType.Yearly,
+    PeriodType.FinancialApril,
+    PeriodType.FinancialJuly,
+    PeriodType.FinancialOct,
+    PeriodType.FinancialNov -> {
+        "YYYY"
     }
 }
