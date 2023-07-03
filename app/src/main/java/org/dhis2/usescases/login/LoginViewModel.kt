@@ -178,11 +178,16 @@ class LoginViewModel(
     }
 
     fun onLoginButtonClick() {
-        view.hideKeyboard()
-        analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-        increment()
-        logIn()
-        decrement()
+        try {
+            view.hideKeyboard()
+            analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
+            increment()
+            logIn()
+            decrement()
+        } catch (throwable: Throwable) {
+            Timber.e(throwable)
+            handleError(throwable)
+        }
     }
 
     private fun logIn() {
