@@ -278,7 +278,7 @@ class RulesUtilsProviderImpl(
     ) {
         fieldViewModels.filter {
             it.value.programStageSection == hideSection.programStageSection() &&
-                    !it.value.mandatory
+                !it.value.mandatory
         }.keys.forEach { fieldViewModels.remove(it) }
     }
 
