@@ -155,7 +155,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             with(localDensity) {
                                 dimensions = dimensions.updateHeaderWidth(tableId, newValue)
                                 val widthDpValue =
-                                    dimensions.rowHeaderWidths[tableId]!!.toDp().value
+                                    dimensions.getRowHeaderWidth(tableId).toDp().value
                                 presenterFragment.saveWidth(tableId, widthDpValue)
                             }
                         }
@@ -169,7 +169,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                 dimensions =
                                     dimensions.updateColumnWidth(tableId, column, newValue)
                                 val widthDpValue =
-                                    dimensions.columnWidth[tableId]!![column]!!.toDp().value
+                                    dimensions.getColumnWidth(tableId, column).toDp().value
                                 presenterFragment.saveColumnWidth(tableId, column, widthDpValue)
                             }
                         }
@@ -178,7 +178,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             with(localDensity) {
                                 dimensions = dimensions.updateAllWidthBy(tableId, newValue)
                                 val widthDpValue =
-                                    dimensions.extraWidths[tableId]!!.toDp().value
+                                    dimensions.getExtraWidths(tableId).toDp().value
                                 presenterFragment.saveTableWidth(tableId, widthDpValue)
                             }
                         }
@@ -255,14 +255,14 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             }
 
             override fun onPositiveClick(datePicker: DatePicker) {
-                calendar.set(Calendar.YEAR, datePicker.year)
-                calendar.set(Calendar.MONTH, datePicker.month)
-                calendar.set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
+                calendar[Calendar.YEAR] = datePicker.year
+                calendar[Calendar.MONTH] = datePicker.month
+                calendar[Calendar.DAY_OF_MONTH] = datePicker.dayOfMonth
                 if (showTimePicker) {
                     showDateTime(dataElement, cell, calendar, updateCellValue)
                 } else {
-                    calendar.set(Calendar.HOUR_OF_DAY, 0)
-                    calendar.set(Calendar.MINUTE, 0)
+                    calendar[Calendar.HOUR_OF_DAY] = 0
+                    calendar[Calendar.MINUTE] = 0
                     val selectedDate: Date = calendar.time
                     val result = DateUtils.oldUiDateFormat().format(selectedDate)
                     val updatedCellValue = cell.copy(value = result)
@@ -289,8 +289,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             .setTitleText(dataElement.displayFormName())
             .build().apply {
                 addOnPositiveButtonClickListener {
-                    calendar.set(Calendar.HOUR_OF_DAY, hour)
-                    calendar.set(Calendar.MINUTE, minute)
+                    calendar[Calendar.HOUR_OF_DAY] = hour
+                    calendar[Calendar.MINUTE] = minute
                     val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
                     val updatedCellValue = cell.copy(value = result)
                     updateCellValue(updatedCellValue)
