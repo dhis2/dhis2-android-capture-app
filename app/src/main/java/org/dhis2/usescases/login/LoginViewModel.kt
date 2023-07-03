@@ -222,26 +222,31 @@ class LoginViewModel(
     }
 
     fun openIdLogin(config: OpenIDConnectConfig) {
-        disposable.add(
-            Observable.just(
-                (view.abstracContext.applicationContext as App).createServerComponent()
-                    .userManager()
-            )
-                .flatMap { userManager ->
-                    this.userManager = userManager
-                    userManager.logIn(config)
-                }
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .subscribe(
-                    {
-                        view.openOpenIDActivity(it)
-                    },
-                    {
-                        Timber.e(it)
-                    }
+        try {
+            disposable.add(
+                Observable.just(
+                    (view.abstracContext.applicationContext as App).createServerComponent()
+                        .userManager()
                 )
-        )
+                    .flatMap { userManager ->
+                        this.userManager = userManager
+                        userManager.logIn(config)
+                    }
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
+                    .subscribe(
+                        {
+                            view.openOpenIDActivity(it)
+                        },
+                        {
+                            Timber.e(it)
+                        }
+                    )
+            )
+        } catch (throwable: Throwable) {
+            Timber.e(throwable)
+            handleError(throwable)
+        }
     }
 
     fun handleAuthResponseData(serverUrl: String, data: Intent, requestCode: Int) {
