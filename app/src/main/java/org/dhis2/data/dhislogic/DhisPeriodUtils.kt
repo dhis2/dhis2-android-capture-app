@@ -5,13 +5,13 @@ import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
 import org.apache.commons.text.WordUtils
+import org.dhis2.utils.DateUtils.DATE_FORMAT_EXPRESSION
+import org.dhis2.utils.DateUtils.SIMPLE_DATE_FORMAT
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
 
-const val DATE_FORMAT_EXPRESSION = "yyyy-MM-dd"
 const val MONTHLY_FORMAT_EXPRESSION = "MMM yyyy"
 const val YEARLY_FORMAT_EXPRESSION = "yyyy"
-const val SIMPLE_DATE_FORMAT = "d/M/yyyy"
 
 class DhisPeriodUtils(
     d2: D2,
