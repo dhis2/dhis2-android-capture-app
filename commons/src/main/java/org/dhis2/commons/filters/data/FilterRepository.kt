@@ -1,7 +1,6 @@
 package org.dhis2.commons.filters.data
 
 import androidx.databinding.ObservableField
-import java.util.Calendar
 import javax.inject.Inject
 import org.dhis2.commons.filters.AssignedFilter
 import org.dhis2.commons.filters.CatOptionComboFilter
@@ -96,15 +95,7 @@ class FilterRepository @Inject constructor(
         repository: TrackedEntityInstanceQueryCollectionRepository,
         eventStatuses: List<EventStatus>
     ): TrackedEntityInstanceQueryCollectionRepository {
-        val fromDate = Calendar.getInstance().apply {
-            add(Calendar.YEAR, -1)
-        }.time
-        val toDate = Calendar.getInstance().apply {
-            add(Calendar.YEAR, 1)
-        }.time
         return repository.byEventStatus().`in`(eventStatuses)
-            .byEventStartDate().eq(fromDate)
-            .byEventEndDate().eq(toDate)
     }
 
     fun applyEventStatusFilter(
@@ -144,7 +135,6 @@ class FilterRepository @Inject constructor(
         datePeriod: DatePeriod
     ): TrackedEntityInstanceQueryCollectionRepository {
         return repository.byEventDate().inDatePeriod(datePeriod)
-            .byEventStatus().`in`(EventStatus.values().toMutableList())
     }
 
     fun applyEnrollmentDateFilter(
