@@ -339,12 +339,15 @@ class RulesUtilsProviderImpl(
                     ruleEffect.data()
                 }
 
-            ruleEffect.data()?.formatData(field.valueType)?.let {
-                fieldViewModels[assign.field()] =
-                    fieldViewModels[assign.field()]!!
-                        .setValue(it)
-                        .setDisplayName(valueToShow?.formatData(field.valueType))
-                        .setEditable(false)
+            ruleEffect.data()?.formatData(field.valueType)?.let { formattedValue ->
+                val updatedField = fieldViewModels[assign.field()]
+                    ?.setValue(formattedValue)
+                    ?.setDisplayName(valueToShow?.formatData(field.valueType))
+                    ?.setEditable(false)
+
+                updatedField?.let {
+                    fieldViewModels[assign.field()] = it
+                }
             }
         } ?: {
             if (!hiddenFields.contains(assign.field())) {
