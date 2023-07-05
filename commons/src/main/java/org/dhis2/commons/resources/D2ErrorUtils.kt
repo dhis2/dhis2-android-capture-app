@@ -142,6 +142,7 @@ class D2ErrorUtils(private val context: Context) {
                 context.getString(R.string.error_invalid_characters)
             D2ErrorCode.PROGRAM_ACCESS_CLOSED ->
                 TODO("Implement for ANDROAPP-657")
+            D2ErrorCode.SERVER_CONNECTION_ERROR -> ""
         }
     }
 }
