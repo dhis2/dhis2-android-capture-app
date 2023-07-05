@@ -29,9 +29,8 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
     private CheckBox checkBox;
     private TreeNode node;
     private OrganisationUnit value;
-    private OrganisationUnit selectedValue;
-    private OrganisationUnit selectedOrgUnit;
-    private String orgUnitName;
+    private final OrganisationUnit selectedOrgUnit;
+    private final String orgUnitName;
     private int numberOfSelections;
 
     public OrgUnitHolder_2(Context context, Boolean isMultiSelection, OrganisationUnit selectedOrgUnit, String orgUnitName) {
@@ -51,7 +50,7 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
         imageView = view.findViewById(R.id.org_unit_icon);
         textView.setText(value.displayName());
         checkBox = view.findViewById(R.id.checkbox);
-        checkBox.setChecked(isMultiSelection & node.isSelectable());
+        checkBox.setChecked(isMultiSelection && node.isSelectable());
 
         if (!orgUnitName.equals("")) {
             setSelectedNode();
@@ -66,11 +65,9 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
         });
 
         checkBox.setOnClickListener(v -> {
-            if (!isMultiSelection) {
+            if (Boolean.FALSE.equals(isMultiSelection)) {
                 for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
                     ((OrgUnitHolder_2) treeNode.getViewHolder()).update();
-
-                selectedValue = (OrganisationUnit) node.getValue();
             }
             update();
         });
@@ -79,7 +76,7 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
             setSelectedSizeText();
             checkBox.setVisibility(View.GONE);
             textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_814));
-        } else if (isMultiSelection) {
+        } else if (Boolean.TRUE.equals(isMultiSelection)) {
             update();
         }
 
@@ -109,21 +106,13 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
             checkBox.setChecked(true);
     }
 
-    public void uncheck() {
-        if (checkBox != null)
-            checkBox.setChecked(false);
-    }
-
     private void setSelectedNode() {
 
-        if (selectedOrgUnit != null) {
-            if (Objects.equals(selectedOrgUnit.uid(), value.uid())) {
-                getTreeView().deselectAll();
-                update();
-                setSelectedSizeText();
-            }
+        if (selectedOrgUnit != null && (Objects.equals(selectedOrgUnit.uid(), value.uid()))) {
+            getTreeView().deselectAll();
+            update();
+            setSelectedSizeText();
         }
-
     }
 
     private void setSelectedSizeText() {
