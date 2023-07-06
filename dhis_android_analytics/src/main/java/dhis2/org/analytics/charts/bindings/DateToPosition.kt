@@ -13,7 +13,7 @@ class DateToPosition {
         eventPeriodType: PeriodType,
         minMonth: YearMonth?,
         updateMinMonth: (YearMonth) -> Unit
-    ): Float  {
+    ): Float {
         val localDate = eventDate.toInstant()
             .atZone(ZoneId.systemDefault())
             .toLocalDate()
