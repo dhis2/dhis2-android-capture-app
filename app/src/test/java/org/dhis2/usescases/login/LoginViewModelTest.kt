@@ -1,10 +1,12 @@
 package org.dhis2.usescases.login
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.viewmodel.viewModelFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
@@ -33,6 +35,7 @@ import org.hisp.dhis.android.core.user.User
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
@@ -64,12 +67,11 @@ class LoginViewModelTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val crashReportController: CrashReportController = mock()
     private val network: NetworkUtils = mock()
-
-    @Test
-    fun `Should go to MainActivity if user is already logged in`() {
-        whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
-        whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
-        LoginViewModel(
+    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var loginViewModelWithNullUserManager: LoginViewModel
+    @Before
+    fun setUp() {
+        loginViewModel = LoginViewModel(
             view,
             preferenceProvider,
             schedulers,
@@ -79,7 +81,24 @@ class LoginViewModelTest {
             network,
             userManager
         )
-
+    }
+    private fun getLoginViewModelWithNullUserManager() {
+        loginViewModelWithNullUserManager = LoginViewModel(
+            view,
+            preferenceProvider,
+            schedulers,
+            goldfinger,
+            analyticsHelper,
+            crashReportController,
+            network,
+            null
+        )
+    }
+    @Test
+    fun `Should go to MainActivity if user is already logged in`() {
+        whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
+        whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
+        setUp()
         verify(view).startActivity(MainActivity::class.java, null, true, true, null)
         verifyNoMoreInteractions(view)
     }
@@ -88,18 +107,7 @@ class LoginViewModelTest {
     fun `Should show unlock button when login is reached`() {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn true
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        )
-
+        setUp()
         verify(view).showUnlockButton()
         verifyNoMoreInteractions(view)
     }
@@ -116,18 +124,7 @@ class LoginViewModelTest {
             preferenceProvider.getString(SECURE_SERVER_URL, protocol)
         ) doReturn serverUrl
         whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn userName
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        )
-
+        setUp()
         verify(view).setUrl(serverUrl)
         verify(view).setUser(userName)
         verify(view).getDefaultServerProtocol()
@@ -144,18 +141,7 @@ class LoginViewModelTest {
             preferenceProvider.getString(SECURE_SERVER_URL, protocol)
         ) doReturn null
         whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn null
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        )
-
+        setUp()
         verify(view).setUrl(protocol)
         verify(view, times(2)).getDefaultServerProtocol()
         verifyNoMoreInteractions(view)
@@ -165,18 +151,7 @@ class LoginViewModelTest {
     fun `Should set Url to default server protocol if userManager is null`() {
         val defaultProtocol = "https://"
         whenever(view.getDefaultServerProtocol()) doReturn defaultProtocol
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            null
-        )
-
+        getLoginViewModelWithNullUserManager()
         verify(view).getDefaultServerProtocol()
         verify(view).setUrl(any())
         verifyNoMoreInteractions(view)
@@ -185,26 +160,13 @@ class LoginViewModelTest {
     @Test
     fun `Should log in successfully and show fabric dialog when continue is clicked and user has not been asked before`() {
         val mockedUser: User = mock()
-
-        val loginPresenter = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            null
-        )
-
         whenever(view.initLogin()) doReturn userManager
         whenever(userManager.logIn(any(), any(), any())) doReturn Observable.just(mockedUser)
-        loginPresenter.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
-        loginPresenter.onUserChanged(userName = "username", 0, 0, 0)
-        loginPresenter.onPassChanged(password = "pass", 0, 0, 0)
-
-        loginPresenter.onLoginButtonClick()
-
+        getLoginViewModelWithNullUserManager()
+        loginViewModelWithNullUserManager.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
+        loginViewModelWithNullUserManager.onUserChanged(userName = "username", 0, 0, 0)
+        loginViewModelWithNullUserManager.onPassChanged(password = "pass", 0, 0, 0)
+        loginViewModelWithNullUserManager.onLoginButtonClick()
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
         verify(view).saveUsersData(true, false)
@@ -218,38 +180,17 @@ class LoginViewModelTest {
                 false
             )
         ) doReturn true
-
-        val loginPresenter = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            null
-        )
         whenever(view.initLogin()) doReturn userManager
-        loginPresenter.onLoginButtonClick()
-
+        getLoginViewModelWithNullUserManager()
+        loginViewModelWithNullUserManager.onLoginButtonClick()
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
-        assertTrue(loginPresenter.loginProgressVisible.value == false)
+        assertTrue(loginViewModelWithNullUserManager.loginProgressVisible.value == false)
     }
 
     @Test
     fun `Should navigate to QR Activity`() {
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).onQRClick()
-
+        loginViewModel.onQRClick()
         verify(analyticsHelper).setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
         verify(view).navigateToQRActivity()
     }
@@ -274,18 +215,7 @@ class LoginViewModelTest {
         ) doReturn "http://dhis2.org"
         whenever(preferenceProvider.getString(SECURE_USER_NAME)) doReturn "James"
         whenever(preferenceProvider.getString(SECURE_PASS)) doReturn "1234"
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).onFingerprintClick()
-
+        loginViewModel.onFingerprintClick()
         verify(view).showCredentialsData(
             FingerPrintResult(Type.SUCCESS, "none"),
             preferenceProvider.getString(SECURE_SERVER_URL)!!,
@@ -308,18 +238,7 @@ class LoginViewModelTest {
                 SECURE_PASS
             )
         ) doReturn true
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).onFingerprintClick()
-
+        loginViewModel.onFingerprintClick()
         view.showCredentialsData(result, "none")
     }
 
@@ -337,18 +256,7 @@ class LoginViewModelTest {
                 SECURE_PASS
             )
         ) doReturn false
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).onFingerprintClick()
-
+        loginViewModel.onFingerprintClick()
         verify(view).showEmptyCredentialsMessage()
     }
 
@@ -357,68 +265,27 @@ class LoginViewModelTest {
         whenever(
             goldfinger.authenticate()
         ) doReturn Observable.error(Exception(LoginViewModel.AUTH_ERROR))
-
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).onFingerprintClick()
-
+        loginViewModel.onFingerprintClick()
         verify(view).displayMessage(LoginViewModel.AUTH_ERROR)
     }
 
     @Test
     fun `Should open account recovery when user does not remember it`() {
         whenever(network.isOnline()) doReturn true
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).onAccountRecovery()
-
+        loginViewModel.onAccountRecovery()
         verify(view).openAccountRecovery()
     }
 
     @Test
     fun `Should show message when no connection and user tries to recover account`() {
         whenever(network.isOnline()) doReturn false
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).onAccountRecovery()
-
+        loginViewModel.onAccountRecovery()
         verify(view).showNoConnectionDialog()
     }
 
     @Test
     fun `Should stop reading fingerprint`() {
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).stopReadingFingerprint()
-
+        loginViewModel.stopReadingFingerprint()
         verify(goldfinger).cancel()
     }
 
@@ -426,37 +293,21 @@ class LoginViewModelTest {
     fun `Should load testing servers and users`() {
         val urlSet = hashSetOf("url1", "url2", "url3")
         val userSet = hashSetOf("user1", "user2")
-
         val testingCredentials = listOf(
             TestingCredential("testing_server_1", "testing_user1", "psw", ""),
             TestingCredential("testing_server_2", "testing_user2", "psw", ""),
             TestingCredential("testing_server_3", "testing_user3", "psw", "")
         )
-
         whenever(preferenceProvider.getSet(PREFS_URLS, emptySet())) doReturn urlSet
         whenever(preferenceProvider.getSet(PREFS_USERS, emptySet())) doReturn userSet
-
-        val (urls, users) = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).getAutocompleteData(testingCredentials)
-
+        val (urls, users) = loginViewModel.getAutocompleteData(testingCredentials)
         urlSet.forEach {
             assertTrue(urls.contains(it))
         }
-
         userSet.forEach {
             assertTrue(users.contains(it))
         }
-
         assertTrue(users.contains(USER_TEST_ANDROID))
-
         testingCredentials.forEach {
             assertTrue(urls.contains(it.server_url))
         }
@@ -465,27 +316,7 @@ class LoginViewModelTest {
     @Test
     fun `Should handle log out when button is clicked`() {
         whenever(userManager.d2.userModule().logOut()) doReturn Completable.complete()
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        )
-        LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        ).logOut()
-
+        loginViewModel.logOut()
         verify(view).handleLogout()
     }
 
@@ -496,7 +327,6 @@ class LoginViewModelTest {
                 .uid("userUid")
                 .build()
         )
-
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.systemInfoModule()) doReturn mock()
         whenever(userManager.d2.systemInfoModule().systemInfo()) doReturn mock()
@@ -504,7 +334,6 @@ class LoginViewModelTest {
         whenever(
             userManager.d2.systemInfoModule().systemInfo().blockingGet().version()
         ) doReturn "1234"
-
         whenever(userManager.d2.dataStoreModule()) doReturn mock()
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
@@ -514,42 +343,17 @@ class LoginViewModelTest {
             userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
                 .blockingExists()
         ) doReturn false
-
-        val loginPresenter = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        )
-        loginPresenter.handleResponse(response)
-
+        loginViewModel.handleResponse(response)
         verify(view).saveUsersData(true, false)
     }
 
     @Test
     fun `Should set server and username if user is logged`() {
-        val viewmodel = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager
-        )
-
         mockSystemInfo()
         whenever(userManager.userName())doReturn Single.just("Username")
         whenever(goldfinger.hasFingerPrint())doReturn true
         whenever(preferenceProvider.contains(SECURE_SERVER_URL)) doReturn true
-
-        viewmodel.checkServerInfoAndShowBiometricButton()
-
+        loginViewModel.checkServerInfoAndShowBiometricButton()
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
     }
@@ -562,60 +366,25 @@ class LoginViewModelTest {
                 false
             )
         ) doReturn true
-        val loginViewModel = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            null
-        )
-        given(loginViewModel.onLoginButtonClick()).willThrow(throwable)
+        given(loginViewModelWithNullUserManager.onLoginButtonClick()).willThrow(throwable)
         verify(view).renderError(throwable)
     }
-
     @Test(expected = Throwable::class)
     fun `Should show error dialog if openIDLogin does not work`() {
         val throwable = Throwable()
         val openidconfig: OpenIDConnectConfig = mock()
-        val loginViewModel = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            null
-        )
         userManager.logIn(openidconfig)
-        loginViewModel.openIdLogin(openidconfig)
+        loginViewModelWithNullUserManager.openIdLogin(openidconfig)
         verify(view).renderError(throwable);
     }
-
     @Test
     fun `Should invoke openIdLogin method successfully`() {
         val openidconfig: OpenIDConnectConfig = mock()
         val it: IntentWithRequestCode = mock()
-
-        val loginViewModel = LoginViewModel(
-            view,
-            preferenceProvider,
-            schedulers,
-            goldfinger,
-            analyticsHelper,
-            crashReportController,
-            network,
-            null
-        )
         whenever(view.initLogin()) doReturn userManager
         whenever(userManager.logIn(openidconfig)) doReturn  Observable.just(it)
-        loginViewModel.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
-        loginViewModel.onUserChanged(userName = "username", 0, 0, 0)
-        loginViewModel.onPassChanged(password = "pass", 0, 0, 0)
-        loginViewModel.openIdLogin(openidconfig)
+        getLoginViewModelWithNullUserManager()
+        loginViewModelWithNullUserManager.openIdLogin(openidconfig)
         verify(view).openOpenIDActivity(it);
 
     }
