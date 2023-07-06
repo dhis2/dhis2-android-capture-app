@@ -224,9 +224,7 @@ class LoginViewModel(
     fun openIdLogin(config: OpenIDConnectConfig) {
         try {
             disposable.add(
-                Observable.just(
-                    (view.abstracContext.applicationContext as App).createServerComponent()
-                        .userManager()
+                Observable.just(view.initLogin()
                 )
                     .flatMap { userManager ->
                         this.userManager = userManager

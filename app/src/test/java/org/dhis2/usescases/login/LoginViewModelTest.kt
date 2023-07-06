@@ -30,21 +30,21 @@ import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
+import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import retrofit2.Response
-
-
-
 class LoginViewModelTest {
 
     @get:Rule
@@ -69,7 +69,6 @@ class LoginViewModelTest {
     fun `Should go to MainActivity if user is already logged in`() {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
-
         LoginViewModel(
             view,
             preferenceProvider,
@@ -184,7 +183,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should show fabric dialog when continue is clicked and user has not been asked before`() {
+    fun `Should log in successfully and show fabric dialog when continue is clicked and user has not been asked before`() {
         val mockedUser: User = mock()
 
         val loginPresenter = LoginViewModel(
@@ -554,7 +553,72 @@ class LoginViewModelTest {
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
     }
+    @Test(expected = Throwable::class)
+    fun `Should show error dialog when login process goes wrong`() {
+        val throwable = Throwable()
+        whenever(
+            preferenceProvider.getBoolean(
+                USER_ASKED_CRASHLYTICS,
+                false
+            )
+        ) doReturn true
+        val loginViewModel = LoginViewModel(
+            view,
+            preferenceProvider,
+            schedulers,
+            goldfinger,
+            analyticsHelper,
+            crashReportController,
+            network,
+            null
+        )
+        given(loginViewModel.onLoginButtonClick()).willThrow(throwable)
+        verify(view).renderError(throwable)
+    }
 
+    @Test(expected = Throwable::class)
+    fun `Should show error dialog if openIDLogin does not work`() {
+        val throwable = Throwable()
+        val openidconfig: OpenIDConnectConfig = mock()
+        val loginViewModel = LoginViewModel(
+            view,
+            preferenceProvider,
+            schedulers,
+            goldfinger,
+            analyticsHelper,
+            crashReportController,
+            network,
+            null
+        )
+        userManager.logIn(openidconfig)
+        loginViewModel.openIdLogin(openidconfig)
+        verify(view).renderError(throwable);
+    }
+
+    @Test
+    fun `Should invoke openIdLogin method successfully`() {
+        val openidconfig: OpenIDConnectConfig = mock()
+        val it: IntentWithRequestCode = mock()
+
+        val loginViewModel = LoginViewModel(
+            view,
+            preferenceProvider,
+            schedulers,
+            goldfinger,
+            analyticsHelper,
+            crashReportController,
+            network,
+            null
+        )
+        whenever(view.initLogin()) doReturn userManager
+        whenever(userManager.logIn(openidconfig)) doReturn  Observable.just(it)
+        loginViewModel.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
+        loginViewModel.onUserChanged(userName = "username", 0, 0, 0)
+        loginViewModel.onPassChanged(password = "pass", 0, 0, 0)
+        loginViewModel.openIdLogin(openidconfig)
+        verify(view).openOpenIDActivity(it);
+
+    }
     private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(isUserLoggedIn)
         if (isUserLoggedIn) {
