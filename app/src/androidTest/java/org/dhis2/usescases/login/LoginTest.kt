@@ -99,7 +99,7 @@ class LoginTest : BaseTest() {
         startLoginActivity()
         loginRobot {
             clearServerField()
-            typeServer(MOCK_SERVER_URL_FOR_ACCOUNT_RECOVERY_TEST)
+            typeServer(MOCK_SERVER_URL)
             clickAccountRecovery()
             checkWebviewWithRecoveryAccountIsOpened()
         }
@@ -213,7 +213,6 @@ class LoginTest : BaseTest() {
         const val PATH_APPS = "/api/apps?.*"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
         const val PIN_PASSWORD = 1234
-        const val MOCK_SERVER_URL_FOR_ACCOUNT_RECOVERY_TEST = "http://play.dhis2.org/android-current"
         const val USERNAME = "test"
         const val PASSWORD = "Android123"
     }

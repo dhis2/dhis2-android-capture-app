@@ -16,10 +16,12 @@ import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
+import org.dhis2.usescases.BaseTest
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
 import org.dhis2.ui.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
 import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
+import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
@@ -101,7 +103,7 @@ class LoginRobot : BaseRobot() {
             CoreMatchers.allOf(
                 hasExtra(
                     WebViewActivity.WEB_VIEW_URL,
-                    "${LoginTest.MOCK_SERVER_URL_FOR_ACCOUNT_RECOVERY_TEST}/dhis-web-commons/security/recovery.action"
+                    "${MOCK_SERVER_URL}/dhis-web-commons/security/recovery.action"
                 ),
                 hasComponent(WebViewActivity::class.java.name)
             )
