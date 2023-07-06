@@ -227,6 +227,14 @@ public class TEIDataPresenter {
 
             getEventsWithoutCatCombo();
 
+            compositeDisposable.add(FilterManager.getInstance().getCatComboRequest()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                            view::showCatOptComboDialog,
+                            Timber::e
+                    ));
+
         } else {
             view.setEnrollmentData(null, null);
         }
@@ -509,5 +517,11 @@ public class TEIDataPresenter {
 
     public String getOrgUnitName(@NotNull String orgUnitUid) {
         return teiDataRepository.getOrgUnitName(orgUnitUid);
+    }
+
+    public void filterCatOptCombo(String selectedCatOptionCombo) {
+        FilterManager.getInstance().addCatOptCombo(
+                dashboardRepository.catOptionCombo(selectedCatOptionCombo)
+        );
     }
 }

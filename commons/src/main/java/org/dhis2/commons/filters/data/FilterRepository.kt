@@ -278,20 +278,15 @@ class FilterRepository @Inject constructor(
                 if (it.programType() == ProgramType.WITH_REGISTRATION) {
                     getTrackerFilters(it, true)
                 } else {
-                    getEventFilters(it)
+                    getEventFilters(it, org.dhis2.commons.filters.ProgramType.EVENT)
                 }
             }.blockingGet()
     }
 
     fun dashboardFilters(programUid: String): List<FilterItem> {
-        return d2.programModule().programs().uid(programUid).get()
-            .map {
-                if (it.programType() == ProgramType.WITH_REGISTRATION) {
-                    getTrackerFilters(it, false)
-                } else {
-                    getEventFilters(it)
-                }
-            }.blockingGet()
+        return d2.programModule().programs().uid(programUid).get().map {
+            getEventFilters(it, org.dhis2.commons.filters.ProgramType.TRACKER)
+        }.blockingGet()
     }
 
     fun globalTrackedEntityFilters(): List<FilterItem> {
@@ -629,8 +624,11 @@ class FilterRepository @Inject constructor(
         return workingListFilter
     }
 
-    private fun getEventFilters(program: Program): List<FilterItem> {
-        val defaultFilters = createDefaultGetEventFilters(program)
+    private fun getEventFilters(
+        program: Program,
+        programType: org.dhis2.commons.filters.ProgramType
+    ): List<FilterItem> {
+        val defaultFilters = createDefaultGetEventFilters(program, programType)
 
         if (webAppIsNotConfigured()) {
             val workingListFilter = getEventWorkingList(program)
@@ -688,12 +686,13 @@ class FilterRepository @Inject constructor(
     }
 
     private fun createDefaultGetEventFilters(
-        program: Program
+        program: Program,
+        programType: org.dhis2.commons.filters.ProgramType
     ): LinkedHashMap<ProgramFilter, FilterItem> {
         val defaultEventFilter = linkedMapOf<ProgramFilter, FilterItem>()
 
         defaultEventFilter[ProgramFilter.EVENT_DATE] = PeriodFilter(
-            org.dhis2.commons.filters.ProgramType.EVENT,
+            programType,
             observableSortingInject,
             observableOpenFilter,
             resources.filterDateLabel()
@@ -701,21 +700,21 @@ class FilterRepository @Inject constructor(
 
         defaultEventFilter[ProgramFilter.ORG_UNIT] = OrgUnitFilter(
             FilterManager.getInstance().observeOrgUnitFilters(),
-            org.dhis2.commons.filters.ProgramType.EVENT,
+            programType,
             observableSortingInject,
             observableOpenFilter,
             resources.filterOrgUnitLabel()
         )
 
         defaultEventFilter[ProgramFilter.SYNC_STATUS] = SyncStateFilter(
-            org.dhis2.commons.filters.ProgramType.EVENT,
+            programType,
             observableSortingInject,
             observableOpenFilter,
             resources.filterSyncLabel()
         )
 
         defaultEventFilter[ProgramFilter.EVENT_STATUS] = EventStatusFilter(
-            org.dhis2.commons.filters.ProgramType.EVENT,
+            programType,
             observableSortingInject,
             observableOpenFilter,
             resources.filterEventStatusLabel()
@@ -730,7 +729,7 @@ class FilterRepository @Inject constructor(
 
         if (!stagesByProgramAndUserAssignment.blockingIsEmpty()) {
             defaultEventFilter[ProgramFilter.ASSIGNED_TO_ME] = AssignedFilter(
-                programType = org.dhis2.commons.filters.ProgramType.EVENT,
+                programType = programType,
                 sortingItem = observableSortingInject,
                 openFilter = observableOpenFilter,
                 filterLabel = resources.filterAssignedToMeLabel()
@@ -743,7 +742,7 @@ class FilterRepository @Inject constructor(
                 categoryCombo,
                 d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
                     .eq(categoryCombo.uid()).blockingGet(),
-                org.dhis2.commons.filters.ProgramType.EVENT,
+                programType,
                 observableSortingInject,
                 observableOpenFilter,
                 categoryCombo.displayName() ?: ""
