@@ -1,12 +1,10 @@
 package org.dhis2.usescases.login
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.viewmodel.viewModelFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
@@ -69,6 +67,8 @@ class LoginViewModelTest {
     private val network: NetworkUtils = mock()
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var loginViewModelWithNullUserManager: LoginViewModel
+    private val openidconfig: OpenIDConnectConfig = mock()
+
     @Before
     fun setUp() {
         loginViewModel = LoginViewModel(
@@ -94,6 +94,7 @@ class LoginViewModelTest {
             null
         )
     }
+
     @Test
     fun `Should go to MainActivity if user is already logged in`() {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
@@ -158,7 +159,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should log in successfully and show fabric dialog when continue is clicked and user has not been asked before`() {
+    fun `Should log in successfully and show fabric dialog when  user has not been asked before`() {
         val mockedUser: User = mock()
         whenever(view.initLogin()) doReturn userManager
         whenever(userManager.logIn(any(), any(), any())) doReturn Observable.just(mockedUser)
@@ -357,6 +358,7 @@ class LoginViewModelTest {
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
     }
+
     @Test(expected = Throwable::class)
     fun `Should show error dialog when login process goes wrong`() {
         val throwable = Throwable()
@@ -369,24 +371,24 @@ class LoginViewModelTest {
         given(loginViewModelWithNullUserManager.onLoginButtonClick()).willThrow(throwable)
         verify(view).renderError(throwable)
     }
+
     @Test(expected = Throwable::class)
     fun `Should show error dialog if openIDLogin does not work`() {
         val throwable = Throwable()
-        val openidconfig: OpenIDConnectConfig = mock()
         userManager.logIn(openidconfig)
         loginViewModelWithNullUserManager.openIdLogin(openidconfig)
-        verify(view).renderError(throwable);
+        verify(view).renderError(throwable)
     }
+
     @Test
     fun `Should invoke openIdLogin method successfully`() {
         val openidconfig: OpenIDConnectConfig = mock()
         val it: IntentWithRequestCode = mock()
-        whenever(view.initLogin()) doReturn userManager
-        whenever(userManager.logIn(openidconfig)) doReturn  Observable.just(it)
+        whenever(view.initLogin())doReturn userManager
+        whenever(userManager.logIn(openidconfig)) doReturn Observable.just(it)
         getLoginViewModelWithNullUserManager()
         loginViewModelWithNullUserManager.openIdLogin(openidconfig)
-        verify(view).openOpenIDActivity(it);
-
+        verify(view).openOpenIDActivity(it)
     }
     private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(isUserLoggedIn)

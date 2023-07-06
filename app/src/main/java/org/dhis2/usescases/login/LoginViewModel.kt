@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.App
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
@@ -224,8 +223,7 @@ class LoginViewModel(
     fun openIdLogin(config: OpenIDConnectConfig) {
         try {
             disposable.add(
-                Observable.just(view.initLogin()
-                )
+                Observable.just(view.initLogin())
                     .flatMap { userManager ->
                         this.userManager = userManager
                         userManager.logIn(config)
