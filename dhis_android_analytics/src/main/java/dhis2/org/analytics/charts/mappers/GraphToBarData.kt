@@ -6,6 +6,9 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.SerieColors
 import dhis2.org.analytics.charts.data.SerieData
+import java.time.temporal.ChronoField
+import java.time.temporal.ChronoUnit
+import org.hisp.dhis.android.core.period.PeriodType
 
 class GraphToBarData {
     private val coordinateToBarEntryMapper by lazy { GraphCoordinatesToBarEntry() }
@@ -38,6 +41,37 @@ class GraphToBarData {
                     color = serieColor
                 }
             }
-        ).withGlobalStyle()
+        ).withGlobalStyle(barWidthByPeriod(graph))
+    }
+
+    private fun barWidthByPeriod(graph: Graph): Float? {
+        return when(graph.eventPeriodType){
+            PeriodType.Daily ->
+                1f/30f
+            PeriodType.Weekly,
+            PeriodType.WeeklySaturday,
+            PeriodType.WeeklySunday ,
+            PeriodType.WeeklyThursday ,
+            PeriodType.WeeklyWednesday ->
+                0.2f
+            PeriodType.BiWeekly ,
+            PeriodType.Monthly ,
+            PeriodType.BiMonthly ->
+                0.75f
+            PeriodType.Quarterly ,
+            PeriodType.SixMonthly,
+            PeriodType.SixMonthlyApril,
+            PeriodType.SixMonthlyNov -> {
+                0.85f
+            }
+            PeriodType.Yearly,
+            PeriodType.FinancialApril ,
+            PeriodType.FinancialJuly ,
+            PeriodType.FinancialOct ,
+            PeriodType.FinancialNov -> {
+                0.85f
+            }
+        }
     }
 }
+
