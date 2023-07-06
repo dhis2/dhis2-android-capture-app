@@ -43,7 +43,9 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import retrofit2.Response
 
-class LoginPresenterTest {
+
+
+class LoginViewModelTest {
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
