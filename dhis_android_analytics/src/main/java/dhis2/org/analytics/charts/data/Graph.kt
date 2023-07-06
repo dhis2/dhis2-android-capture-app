@@ -97,7 +97,7 @@ data class Graph(
         } else {
             Date(
                 baseSeries().first().coordinates.first().eventDate.time +
-                        numberOfSteps * periodStep
+                    numberOfSteps * periodStep
             )
         }
     }

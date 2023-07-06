@@ -38,16 +38,12 @@ class GraphCoordinatesToBarEntry {
         }
     }
 
-    private fun groupedBarIndex(
-        index: Float,
-        serieIndex: Int,
-        seriesCount: Int
-    ): Float {
+    private fun groupedBarIndex(index: Float, serieIndex: Int, seriesCount: Int): Float {
         return index +
-                (
-                        default_bar_group_space * serieIndex.toFloat() / seriesCount.toFloat() -
-                                default_gap / 2f +
-                                default_bar_group_separation
-                        )
+            (
+                default_bar_group_space * serieIndex.toFloat() / seriesCount.toFloat() -
+                    default_gap / 2f +
+                    default_bar_group_separation
+                )
     }
 }

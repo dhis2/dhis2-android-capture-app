@@ -6,7 +6,6 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.RadarDataSet
-import org.hisp.dhis.android.core.period.PeriodType
 
 const val default_value_text_size = 10f
 const val selected_value_text_size = 14f
@@ -23,15 +22,14 @@ fun LineDataSet.withGlobalStyle(): LineDataSet {
     }
 }
 
-fun BarData.withGlobalStyle(width:Float?): BarData {
+fun BarData.withGlobalStyle(width: Float?): BarData {
     return this.apply {
         setValueTextSize(default_value_text_size)
-        when{
+        when {
             dataSetCount > 1 ->
                 barWidth = default_bar_group_space / dataSetCount.toFloat()
             width != null ->
                 barWidth = width
-
         }
     }
 }

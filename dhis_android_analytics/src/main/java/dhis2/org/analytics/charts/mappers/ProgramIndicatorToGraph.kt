@@ -19,7 +19,7 @@ class ProgramIndicatorToGraph(
         stagePeriod: PeriodType,
         selectedRelativePeriod: List<RelativePeriod>?,
         selectedOrgUnits: List<String>?,
-        isDefault:Boolean = false
+        isDefault: Boolean = false
     ): Graph {
         val coordinates = chartCoordinatesProvider.indicatorCoordinates(
             stageUid,

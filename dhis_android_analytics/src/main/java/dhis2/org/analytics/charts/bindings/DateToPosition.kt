@@ -12,25 +12,25 @@ class DateToPosition {
         eventDate: Date,
         eventPeriodType: PeriodType,
         minMonth: YearMonth?,
-        updateMinMonth: (YearMonth) -> Unit,
-    ):Float{
+        updateMinMonth: (YearMonth) -> Unit
+    ): Float  {
         val localDate = eventDate.toInstant()
             .atZone(ZoneId.systemDefault())
             .toLocalDate()
 
         val yearMonth = YearMonth.from(localDate)
 
-        val position = when(eventPeriodType){
+        val position = when (eventPeriodType) {
             PeriodType.Daily,
             PeriodType.Weekly,
             PeriodType.WeeklySaturday,
-            PeriodType.WeeklySunday ,
-            PeriodType.WeeklyThursday ,
-            PeriodType.WeeklyWednesday ,
-            PeriodType.BiWeekly ,
-            PeriodType.Monthly ,
-            PeriodType.BiMonthly ,
-            PeriodType.Quarterly ,
+            PeriodType.WeeklySunday,
+            PeriodType.WeeklyThursday,
+            PeriodType.WeeklyWednesday,
+            PeriodType.BiWeekly,
+            PeriodType.Monthly,
+            PeriodType.BiMonthly,
+            PeriodType.Quarterly,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov -> {
@@ -43,11 +43,11 @@ class DateToPosition {
                 monthDiff.toFloat() + (dayInMonth.toFloat() - 1f) / daysInMonth.toFloat()
             }
             PeriodType.Yearly,
-            PeriodType.FinancialApril ,
-            PeriodType.FinancialJuly ,
-            PeriodType.FinancialOct ,
+            PeriodType.FinancialApril,
+            PeriodType.FinancialJuly,
+            PeriodType.FinancialOct,
             PeriodType.FinancialNov -> {
-                val yearDiff = minMonth?.let { ChronoUnit.YEARS.between(it, yearMonth) }?:0
+                val yearDiff = minMonth?.let { ChronoUnit.YEARS.between(it, yearMonth) } ?: 0
                 yearDiff.toFloat()
             }
         }

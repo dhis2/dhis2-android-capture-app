@@ -12,7 +12,7 @@ interface ChartCoordinatesProvider {
         dataElementUid: String,
         selectedRelativePeriod: List<RelativePeriod>?,
         selectedOrgUnits: List<String>?,
-        isDefault:Boolean = false
+        isDefault: Boolean = false
     ): List<GraphPoint>
 
     fun indicatorCoordinates(
@@ -21,7 +21,7 @@ interface ChartCoordinatesProvider {
         indicatorUid: String,
         selectedRelativePeriod: List<RelativePeriod>?,
         selectedOrgUnits: List<String>?,
-        isDefault:Boolean = false
+        isDefault: Boolean = false
     ): List<GraphPoint>
 
     fun nutritionCoordinates(

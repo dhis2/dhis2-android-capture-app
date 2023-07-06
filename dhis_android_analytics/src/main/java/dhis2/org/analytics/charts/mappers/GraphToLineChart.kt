@@ -47,7 +47,8 @@ class GraphToLineChart {
                     DateLabelFormatter(
                         datePattern = graph.eventPeriodType.datePattern(),
                         dateFromValue = { graph.dateFromSteps(it) },
-                        localDateFromValue = { graph.localDateFromSteps(it) })
+                        localDateFromValue = { graph.localDateFromSteps(it) }
+                    )
                 }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN

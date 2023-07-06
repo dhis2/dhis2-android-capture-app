@@ -1,6 +1,5 @@
 package dhis2.org.analytics.charts
 
-import com.google.gson.Gson
 import dhis2.org.analytics.charts.bindings.hasGroup
 import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
@@ -248,14 +247,14 @@ class ChartsRepositoryImpl(
                 val selectedRelativePeriod =
                     analyticsFilterProvider.visualizationPeriod(
                         enrollment.trackedEntityInstance()!! +
-                                programStage.uid() +
-                                dataElement.uid()
+                            programStage.uid() +
+                            dataElement.uid()
                     )
                 val selectedOrgUnits =
                     analyticsFilterProvider.visualizationOrgUnits(
                         enrollment.trackedEntityInstance()!! +
-                                programStage.uid() +
-                                dataElement.uid()
+                            programStage.uid() +
+                            dataElement.uid()
                     )
                 dataElementToGraph.map(
                     dataElement,
@@ -271,14 +270,14 @@ class ChartsRepositoryImpl(
                     val selectedRelativePeriod =
                         analyticsFilterProvider.visualizationPeriod(
                             enrollment.trackedEntityInstance()!! +
-                                    programStage.uid() +
-                                    programIndicator.uid()
+                                programStage.uid() +
+                                programIndicator.uid()
                         )
                     val selectedOrgUnits =
                         analyticsFilterProvider.visualizationOrgUnits(
                             enrollment.trackedEntityInstance()!! +
-                                    programStage.uid() +
-                                    programIndicator.uid()
+                                programStage.uid() +
+                                programIndicator.uid()
                         )
                     programIndicatorToGraph.map(
                         programIndicator,
