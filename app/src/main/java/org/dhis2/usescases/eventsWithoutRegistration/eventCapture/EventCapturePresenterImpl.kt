@@ -1,292 +1,267 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
-import org.dhis2.R;
-import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue;
-import org.dhis2.commons.data.tuples.Quartet;
-import org.dhis2.commons.prefs.Preference;
-import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
-import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.event.EventStatus;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import io.reactivex.Flowable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.processors.PublishProcessor
+import java.util.Date
+import org.dhis2.R
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
+import org.hisp.dhis.android.core.common.Unit
+import org.hisp.dhis.android.core.common.ValidationStrategy
+import org.hisp.dhis.android.core.event.EventStatus
+import timber.log.Timber
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+class EventCapturePresenterImpl(
+    private val view: EventCaptureContract.View,
+    private val eventUid: String,
+    private val eventCaptureRepository: EventCaptureRepository,
+    private val schedulerProvider: SchedulerProvider,
+    private val preferences: PreferenceProvider,
+    private val configureEventCompletionDialog: ConfigureEventCompletionDialog
+) : ViewModel(), EventCaptureContract.Presenter {
 
-import javax.inject.Singleton;
+    var compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private var hasExpired = false
+    private val notesCounterProcessor: PublishProcessor<Unit> = PublishProcessor.create()
 
-import io.reactivex.Flowable;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.PublishProcessor;
-import timber.log.Timber;
+    val actions = MutableLiveData<EventCaptureAction>()
 
-@Singleton
-public class EventCapturePresenterImpl implements EventCaptureContract.Presenter {
+    override fun observeActions(): LiveData<EventCaptureAction> = actions
 
-    private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
-    private final String eventUid;
-    private final SchedulerProvider schedulerProvider;
-    public CompositeDisposable compositeDisposable;
-    private final EventCaptureContract.View view;
-    private boolean hasExpired;
-    private final PublishProcessor<Unit> notesCounterProcessor;
-    private final PreferenceProvider preferences;
-    private final ConfigureEventCompletionDialog configureEventCompletionDialog;
-
-    public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
-                                     EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                     SchedulerProvider schedulerProvider,
-                                     PreferenceProvider preferences,
-                                     ConfigureEventCompletionDialog configureEventCompletionDialog
-    ) {
-        this.view = view;
-        this.eventUid = eventUid;
-        this.eventCaptureRepository = eventCaptureRepository;
-        this.schedulerProvider = schedulerProvider;
-        this.compositeDisposable = new CompositeDisposable();
-        this.preferences = preferences;
-        this.configureEventCompletionDialog = configureEventCompletionDialog;
-
-        notesCounterProcessor = PublishProcessor.create();
+    override fun emitAction(onBack: EventCaptureAction) {
+        actions.value = onBack
     }
 
-    @Override
-    public void init() {
-
+    override fun init() {
         compositeDisposable.add(
-                eventCaptureRepository.eventIntegrityCheck()
-                        .filter(check -> !check)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                checkDidNotPass -> view.showEventIntegrityAlert(),
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
-                Flowable.zip(
-                        eventCaptureRepository.programStageName(),
-                        eventCaptureRepository.eventDate(),
-                        eventCaptureRepository.orgUnit(),
-                        eventCaptureRepository.catOption(),
-                        Quartet::create
+            eventCaptureRepository.eventIntegrityCheck()
+                .filter { check -> !check }
+                .defaultSubscribe(
+                    schedulerProvider,
+                    { view.showEventIntegrityAlert() },
+                    Timber::e
                 )
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                data -> {
-                                    preferences.setValue(Preference.CURRENT_ORG_UNIT, data.val2().uid());
-                                    view.renderInitialInfo(data.val0(), data.val1(), data.val2().displayName(), data.val3());
-                                },
-                                Timber::e
-                        )
-
-        );
-
-        checkExpiration();
+        )
+        compositeDisposable.add(
+            Flowable.zip(
+                eventCaptureRepository.programStageName(),
+                eventCaptureRepository.eventDate(),
+                eventCaptureRepository.orgUnit(),
+                eventCaptureRepository.catOption(),
+                ::EventCaptureInitialInfo
+            ).defaultSubscribe(
+                schedulerProvider,
+                { initialInfo ->
+                    preferences.setValue(
+                        Preference.CURRENT_ORG_UNIT,
+                        initialInfo.organisationUnit.uid()
+                    )
+                    view.renderInitialInfo(
+                        initialInfo.programStageName,
+                        initialInfo.eventDate,
+                        initialInfo.organisationUnit.displayName(),
+                        initialInfo.categoryOption
+                    )
+                },
+                Timber::e
+            )
+        )
+        checkExpiration()
     }
 
-    private void checkExpiration() {
-        if (getEventStatus() == EventStatus.COMPLETED)
+    private fun checkExpiration() {
+        if (eventStatus == EventStatus.COMPLETED) {
             compositeDisposable.add(
-                    eventCaptureRepository.isCompletedEventExpired(eventUid)
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    hasExpiredResult -> this.hasExpired = hasExpiredResult && !eventCaptureRepository.isEventEditable(eventUid),
-                                    Timber::e
-                            )
-            );
-        else
-            this.hasExpired = !eventCaptureRepository.isEventEditable(eventUid);
-    }
-
-    @Override
-    public void onBackClick() {
-        view.goBack();
-    }
-
-    @Override
-    public void attemptFinish(boolean canComplete, String onCompleteMessage,
-                              List<FieldWithIssue> errorFields,
-                              Map<String, String> emptyMandatoryFields,
-                              List<FieldWithIssue> warningFields) {
-
-        if (!errorFields.isEmpty()) {
-            view.showErrorSnackBar();
-        }
-
-        EventStatus eventStatus = getEventStatus();
-        if (eventStatus != EventStatus.ACTIVE) {
-            setUpActionByStatus(eventStatus);
+                Flowable.fromCallable {
+                    val isCompletedEventExpired =
+                        eventCaptureRepository.isCompletedEventExpired(eventUid).blockingFirst()
+                    val isEventEditable = eventCaptureRepository.isEventEditable(eventUid)
+                    isCompletedEventExpired && !isEventEditable
+                }
+                    .defaultSubscribe(
+                        schedulerProvider,
+                        this::setHasExpired,
+                        Timber::e
+                    )
+            )
         } else {
+            setHasExpired(!eventCaptureRepository.isEventEditable(eventUid))
+        }
+    }
 
-            EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
-                    errorFields,
-                    emptyMandatoryFields,
-                    warningFields,
-                    canComplete,
-                    onCompleteMessage
-            );
+    private fun setHasExpired(expired: Boolean) {
+        hasExpired = expired
+    }
 
+    override fun onBackClick() {
+        view.goBack()
+    }
+
+    override fun attemptFinish(
+        canComplete: Boolean,
+        onCompleteMessage: String?,
+        errorFields: List<FieldWithIssue>,
+        emptyMandatoryFields: Map<String, String>,
+        warningFields: List<FieldWithIssue>
+    ) {
+        val eventStatus = eventStatus
+        if (eventStatus != EventStatus.ACTIVE) {
+            setUpActionByStatus(eventStatus)
+        } else {
+            val validationStrategy = eventCaptureRepository.validationStrategy()
+            val canSkipErrorFix = errorFields.isEmpty() or
+                (validationStrategy != ValidationStrategy.ON_UPDATE_AND_INSERT)
+            val eventCompletionDialog = configureEventCompletionDialog.invoke(
+                errorFields,
+                emptyMandatoryFields,
+                warningFields,
+                canComplete,
+                onCompleteMessage,
+                canSkipErrorFix
+            )
             view.showCompleteActions(
-                    canComplete && eventCaptureRepository.isEnrollmentOpen(),
-                    emptyMandatoryFields,
-                    eventCompletionDialog
-            );
+                canComplete && eventCaptureRepository.isEnrollmentOpen,
+                emptyMandatoryFields,
+                eventCompletionDialog
+            )
         }
-
-        view.showNavigationBar();
+        view.showNavigationBar()
     }
 
-    private void setUpActionByStatus(EventStatus eventStatus) {
-        switch (eventStatus) {
-            case COMPLETED:
-                if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled())
-                    view.SaveAndFinish();
-                else
-                    view.finishDataEntry();
-                break;
-            case OVERDUE:
-                view.attemptToSkip();
-                break;
-            case SKIPPED:
-                view.attemptToReschedule();
-                break;
-            default:
-                break;
+    private fun setUpActionByStatus(eventStatus: EventStatus) {
+        when (eventStatus) {
+            EventStatus.COMPLETED ->
+                if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled) {
+                    view.SaveAndFinish()
+                } else {
+                    view.finishDataEntry()
+                }
+
+            EventStatus.OVERDUE -> view.attemptToSkip()
+            EventStatus.SKIPPED -> view.attemptToReschedule()
+            else -> {}
         }
     }
 
-    @Override
-    public boolean isEnrollmentOpen() {
-        return eventCaptureRepository.isEnrollmentOpen();
+    override fun isEnrollmentOpen(): Boolean {
+        return eventCaptureRepository.isEnrollmentOpen
     }
 
-    @Override
-    public void completeEvent(boolean addNew) {
+    override fun completeEvent(addNew: Boolean) {
         compositeDisposable.add(
-                eventCaptureRepository.completeEvent()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                success -> {
-                                    if (addNew)
-                                        view.restartDataEntry();
-                                    else {
-                                        preferences.setValue(Preference.PREF_COMPLETED_EVENT, eventUid);
-                                        view.finishDataEntry();
-                                    }
-                                },
-                                Timber::e
-                        ));
-    }
-
-    @Override
-    public void deleteEvent() {
-        compositeDisposable.add(eventCaptureRepository.deleteEvent()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        result -> {
-                            if (result)
-                                view.showSnackBar(R.string.event_was_deleted);
-                        },
-                        Timber::e,
-                        view::finishDataEntry
+            eventCaptureRepository.completeEvent()
+                .defaultSubscribe(
+                    schedulerProvider,
+                    {
+                        if (addNew) {
+                            view.restartDataEntry()
+                        } else {
+                            preferences.setValue(Preference.PREF_COMPLETED_EVENT, eventUid)
+                            view.finishDataEntry()
+                        }
+                    },
+                    Timber::e
                 )
-        );
+        )
     }
 
-    @Override
-    public void skipEvent() {
-        compositeDisposable.add(eventCaptureRepository.updateEventStatus(EventStatus.SKIPPED)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        result -> view.showSnackBar(R.string.event_was_skipped),
-                        Timber::e,
-                        view::finishDataEntry
-                )
-        );
-    }
-
-    @Override
-    public void rescheduleEvent(Date time) {
+    override fun deleteEvent() {
         compositeDisposable.add(
-                eventCaptureRepository.rescheduleEvent(time)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                result -> view.finishDataEntry(),
-                                Timber::e
-                        )
-        );
+            eventCaptureRepository.deleteEvent()
+                .defaultSubscribe(
+                    schedulerProvider,
+                    { result ->
+                        if (result) {
+                            view.showSnackBar(R.string.event_was_deleted)
+                        }
+                    },
+                    Timber::e,
+                    view::finishDataEntry
+                )
+        )
     }
 
-    @Override
-    public boolean canWrite() {
-        return eventCaptureRepository.getAccessDataWrite();
+    override fun skipEvent() {
+        compositeDisposable.add(
+            eventCaptureRepository.updateEventStatus(EventStatus.SKIPPED)
+                .defaultSubscribe(
+                    schedulerProvider,
+                    { view.showSnackBar(R.string.event_was_skipped) },
+                    Timber::e,
+                    view::finishDataEntry
+                )
+        )
     }
 
-    @Override
-    public boolean hasExpired() {
-        return hasExpired;
+    override fun rescheduleEvent(time: Date) {
+        compositeDisposable.add(
+            eventCaptureRepository.rescheduleEvent(time)
+                .defaultSubscribe(
+                    schedulerProvider,
+                    { view.finishDataEntry() },
+                    Timber::e
+                )
+        )
     }
 
-    @Override
-    public void onDettach() {
-        this.compositeDisposable.clear();
+    override fun canWrite(): Boolean {
+        return eventCaptureRepository.accessDataWrite
     }
 
-    @Override
-    public void displayMessage(String message) {
-        view.displayMessage(message);
+    override fun hasExpired(): Boolean {
+        return hasExpired
     }
 
-    @Override
-    public void initNoteCounter() {
+    override fun onDettach() {
+        compositeDisposable.clear()
+    }
+
+    override fun displayMessage(message: String) {
+        view.displayMessage(message)
+    }
+
+    override fun initNoteCounter() {
         if (!notesCounterProcessor.hasSubscribers()) {
             compositeDisposable.add(
-                    notesCounterProcessor.startWith(new Unit())
-                            .flatMapSingle(unit ->
-                                    eventCaptureRepository.getNoteCount())
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    view::updateNoteBadge,
-                                    Timber::e
-                            )
-            );
+                notesCounterProcessor.startWith(Unit())
+                    .flatMapSingle { eventCaptureRepository.noteCount }
+                    .defaultSubscribe(
+                        schedulerProvider,
+                        view::updateNoteBadge,
+                        Timber::e
+                    )
+            )
         } else {
-            notesCounterProcessor.onNext(new Unit());
+            notesCounterProcessor.onNext(Unit())
         }
     }
 
-    @Override
-    public void refreshTabCounters() {
-        initNoteCounter();
+    override fun refreshTabCounters() {
+        initNoteCounter()
     }
 
-    @Override
-    public void hideProgress() {
-        view.hideProgress();
+    override fun hideProgress() {
+        view.hideProgress()
     }
 
-    @Override
-    public void showProgress() {
-        view.showProgress();
+    override fun showProgress() {
+        view.showProgress()
     }
 
-    @Override
-    public boolean getCompletionPercentageVisibility() {
-        return eventCaptureRepository.showCompletionPercentage();
+    override fun getCompletionPercentageVisibility(): Boolean {
+        return eventCaptureRepository.showCompletionPercentage()
     }
 
-    private EventStatus getEventStatus() {
-        return eventCaptureRepository.eventStatus().blockingFirst();
-    }
+    private val eventStatus: EventStatus
+        get() = eventCaptureRepository.eventStatus().blockingFirst()
 }
