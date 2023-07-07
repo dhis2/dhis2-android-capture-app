@@ -93,20 +93,27 @@ class ConflictGenerator(private val d2: D2) {
         d2.dataValueModule().dataValueConflicts()
             .byConflict().like("Generated%")
             .blockingGet().forEach { dataValueConflict ->
-                val dataValue = d2.dataValueModule().dataValues().value(
-                    dataValueConflict.period(),
-                    dataValueConflict.orgUnit(),
-                    dataValueConflict.dataElement(),
-                    dataValueConflict.categoryOptionCombo(),
-                    dataValueConflict.attributeOptionCombo()
-                ).blockingGet()
-                val cv = dataValue.toBuilder().syncState(State.SYNCED).build().toContentValues()
-                d2.databaseAdapter().update(
-                    DataValueTableInfo.TABLE_INFO.name(),
-                    cv,
-                    "_id = ${dataValue.id()}",
-                    emptyArray()
-                )
+                if (dataValueConflict.period() != null &&
+                    dataValueConflict.orgUnit() != null &&
+                    dataValueConflict.dataElement() != null &&
+                    dataValueConflict.categoryOptionCombo() != null &&
+                    dataValueConflict.attributeOptionCombo() != null
+                ) {
+                    val dataValue = d2.dataValueModule().dataValues().value(
+                        dataValueConflict.period()!!,
+                        dataValueConflict.orgUnit()!!,
+                        dataValueConflict.dataElement()!!,
+                        dataValueConflict.categoryOptionCombo()!!,
+                        dataValueConflict.attributeOptionCombo()!!
+                    ).blockingGet()
+                    val cv = dataValue.toBuilder().syncState(State.SYNCED).build().toContentValues()
+                    d2.databaseAdapter().update(
+                        DataValueTableInfo.TABLE_INFO.name(),
+                        cv,
+                        "_id = ${dataValue.id()}",
+                        emptyArray()
+                    )
+                }
             }.also {
                 d2.databaseAdapter().delete(
                     DataValueConflictTableInfo.TABLE_INFO.name(),
