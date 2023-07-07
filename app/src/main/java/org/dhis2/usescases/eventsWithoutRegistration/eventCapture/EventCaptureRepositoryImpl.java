@@ -1,9 +1,11 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import org.dhis2.commons.bindings.SdkExtensionsKt;
 import org.dhis2.data.dhislogic.AuthoritiesKt;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ValidationStrategy;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -218,6 +220,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return !d2.relationshipModule().relationshipTypes()
                 .byAvailableForEvent(eventUid)
                 .blockingIsEmpty();
+    }
+
+    @Override
+    public ValidationStrategy validationStrategy() {
+        return SdkExtensionsKt.programStage(d2, programStage().blockingFirst()).validationStrategy();
     }
 }
 

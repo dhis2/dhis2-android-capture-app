@@ -212,7 +212,8 @@ class EventCaptureActivity :
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else {
-            finishDataEntry()
+            presenter?.emitAction(EventCaptureAction.ON_BACK)
+//            finishDataEntry()
         }
     }
 
@@ -235,7 +236,7 @@ class EventCaptureActivity :
                     setAction(eventCompletionDialog.mainButtonAction)
                 },
                 onSecondaryButtonClicked = {
-                    setAction(eventCompletionDialog.secondaryButtonAction)
+                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
                 },
                 content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
                     { bottomSheetDialog ->
@@ -288,11 +289,9 @@ class EventCaptureActivity :
             FormBottomDialog.ActionType.CHECK_FIELDS -> { // Do nothing
             }
             FormBottomDialog.ActionType.FINISH -> finishDataEntry()
+            FormBottomDialog.ActionType.NONE -> { // Do nothing
+            }
         }
-    }
-
-    override fun showErrorSnackBar() {
-        showSnackBar(R.string.fix_error)
     }
 
     override fun showSnackBar(messageId: Int) {
@@ -303,7 +302,6 @@ class EventCaptureActivity :
 
     override fun restartDataEntry() {
         val bundle = Bundle()
-        bundle.putString(Constants.PROGRAM_UID, intent.getStringExtra(Constants.PROGRAM_UID))
         startActivity(EventInitialActivity::class.java, bundle, true, false, null)
     }
 

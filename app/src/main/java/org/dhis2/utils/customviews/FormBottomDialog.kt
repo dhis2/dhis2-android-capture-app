@@ -53,7 +53,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     }
 
     enum class ActionType {
-        FINISH_ADD_NEW, SKIP, RESCHEDULE, FINISH, COMPLETE_ADD_NEW, COMPLETE, CHECK_FIELDS
+        FINISH_ADD_NEW, SKIP, RESCHEDULE, FINISH, COMPLETE_ADD_NEW, COMPLETE, CHECK_FIELDS, NONE
     }
 
     fun setListener(listener: OnFormBottomDialogItemSelection?): FormBottomDialog {
