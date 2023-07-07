@@ -65,7 +65,6 @@ class LoginViewModelTest {
     private val crashReportController: CrashReportController = mock()
     private val network: NetworkUtils = mock()
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var loginViewModelWithNullUserManager: LoginViewModel
     private val openidconfig: OpenIDConnectConfig = mock()
 
     private fun instantiateLoginViewModel() {
@@ -81,7 +80,7 @@ class LoginViewModelTest {
         )
     }
     private fun instantiateLoginViewModelWithNullUserManager() {
-        loginViewModelWithNullUserManager = LoginViewModel(
+        loginViewModel = LoginViewModel(
             view,
             preferenceProvider,
             schedulers,
@@ -162,10 +161,10 @@ class LoginViewModelTest {
         whenever(view.initLogin()) doReturn userManager
         whenever(userManager.logIn(any(), any(), any())) doReturn Observable.just(mockedUser)
         instantiateLoginViewModelWithNullUserManager()
-        loginViewModelWithNullUserManager.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
-        loginViewModelWithNullUserManager.onUserChanged(userName = "username", 0, 0, 0)
-        loginViewModelWithNullUserManager.onPassChanged(password = "pass", 0, 0, 0)
-        loginViewModelWithNullUserManager.onLoginButtonClick()
+        loginViewModel.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
+        loginViewModel.onUserChanged(userName = "username", 0, 0, 0)
+        loginViewModel.onPassChanged(password = "pass", 0, 0, 0)
+        loginViewModel.onLoginButtonClick()
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
         verify(view).saveUsersData(true, false)
@@ -181,10 +180,10 @@ class LoginViewModelTest {
         ) doReturn true
         whenever(view.initLogin()) doReturn userManager
         instantiateLoginViewModelWithNullUserManager()
-        loginViewModelWithNullUserManager.onLoginButtonClick()
+        loginViewModel.onLoginButtonClick()
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
-        assertTrue(loginViewModelWithNullUserManager.loginProgressVisible.value == false)
+        assertTrue(loginViewModel.loginProgressVisible.value == false)
     }
 
     @Test
@@ -379,7 +378,7 @@ class LoginViewModelTest {
                 false
             )
         ) doReturn true
-        given(loginViewModelWithNullUserManager.onLoginButtonClick()).willThrow(throwable)
+        given(loginViewModel.onLoginButtonClick()).willThrow(throwable)
         verify(view).renderError(throwable)
     }
 
@@ -388,7 +387,7 @@ class LoginViewModelTest {
         instantiateLoginViewModelWithNullUserManager()
         val throwable = Throwable()
         userManager.logIn(openidconfig)
-        loginViewModelWithNullUserManager.openIdLogin(openidconfig)
+        loginViewModel.openIdLogin(openidconfig)
         verify(view).renderError(throwable)
     }
 
@@ -400,7 +399,7 @@ class LoginViewModelTest {
         whenever(view.initLogin())doReturn userManager
         whenever(userManager.logIn(openidconfig)) doReturn Observable.just(it)
         instantiateLoginViewModelWithNullUserManager()
-        loginViewModelWithNullUserManager.openIdLogin(openidconfig)
+        loginViewModel.openIdLogin(openidconfig)
         verify(view).openOpenIDActivity(it)
     }
     private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {
