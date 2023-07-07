@@ -589,9 +589,7 @@ class FilterRepository @Inject constructor(
         return defaultTrackerFilters
     }
 
-    private fun getTrackerWorkingList(
-        program: Program
-    ): WorkingListFilter? {
+    private fun getTrackerWorkingList(program: Program): WorkingListFilter? {
         val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
             .byProgram().eq(program.uid())
             .withTrackedEntityInstanceEventFilters()
