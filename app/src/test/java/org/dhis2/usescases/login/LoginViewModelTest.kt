@@ -33,7 +33,6 @@ import org.hisp.dhis.android.core.user.User
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
@@ -69,8 +68,7 @@ class LoginViewModelTest {
     private lateinit var loginViewModelWithNullUserManager: LoginViewModel
     private val openidconfig: OpenIDConnectConfig = mock()
 
-    @Before
-    fun setUp() {
+    private fun instantiateLoginViewModel() {
         loginViewModel = LoginViewModel(
             view,
             preferenceProvider,
@@ -82,7 +80,7 @@ class LoginViewModelTest {
             userManager
         )
     }
-    private fun getLoginViewModelWithNullUserManager() {
+    private fun instantiateLoginViewModelWithNullUserManager() {
         loginViewModelWithNullUserManager = LoginViewModel(
             view,
             preferenceProvider,
@@ -99,7 +97,7 @@ class LoginViewModelTest {
     fun `Should go to MainActivity if user is already logged in`() {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
-        setUp()
+        instantiateLoginViewModel()
         verify(view).startActivity(MainActivity::class.java, null, true, true, null)
         verifyNoMoreInteractions(view)
     }
@@ -108,7 +106,7 @@ class LoginViewModelTest {
     fun `Should show unlock button when login is reached`() {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn true
-        setUp()
+        instantiateLoginViewModel()
         verify(view).showUnlockButton()
         verifyNoMoreInteractions(view)
     }
@@ -125,7 +123,7 @@ class LoginViewModelTest {
             preferenceProvider.getString(SECURE_SERVER_URL, protocol)
         ) doReturn serverUrl
         whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn userName
-        setUp()
+        instantiateLoginViewModel()
         verify(view).setUrl(serverUrl)
         verify(view).setUser(userName)
         verify(view).getDefaultServerProtocol()
@@ -142,7 +140,7 @@ class LoginViewModelTest {
             preferenceProvider.getString(SECURE_SERVER_URL, protocol)
         ) doReturn null
         whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn null
-        setUp()
+        instantiateLoginViewModel()
         verify(view).setUrl(protocol)
         verify(view, times(2)).getDefaultServerProtocol()
         verifyNoMoreInteractions(view)
@@ -152,7 +150,7 @@ class LoginViewModelTest {
     fun `Should set Url to default server protocol if userManager is null`() {
         val defaultProtocol = "https://"
         whenever(view.getDefaultServerProtocol()) doReturn defaultProtocol
-        getLoginViewModelWithNullUserManager()
+        instantiateLoginViewModelWithNullUserManager()
         verify(view).getDefaultServerProtocol()
         verify(view).setUrl(any())
         verifyNoMoreInteractions(view)
@@ -163,7 +161,7 @@ class LoginViewModelTest {
         val mockedUser: User = mock()
         whenever(view.initLogin()) doReturn userManager
         whenever(userManager.logIn(any(), any(), any())) doReturn Observable.just(mockedUser)
-        getLoginViewModelWithNullUserManager()
+        instantiateLoginViewModelWithNullUserManager()
         loginViewModelWithNullUserManager.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
         loginViewModelWithNullUserManager.onUserChanged(userName = "username", 0, 0, 0)
         loginViewModelWithNullUserManager.onPassChanged(password = "pass", 0, 0, 0)
@@ -182,7 +180,7 @@ class LoginViewModelTest {
             )
         ) doReturn true
         whenever(view.initLogin()) doReturn userManager
-        getLoginViewModelWithNullUserManager()
+        instantiateLoginViewModelWithNullUserManager()
         loginViewModelWithNullUserManager.onLoginButtonClick()
         verify(view).hideKeyboard()
         verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
@@ -191,6 +189,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should navigate to QR Activity`() {
+        instantiateLoginViewModel()
         loginViewModel.onQRClick()
         verify(analyticsHelper).setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
         verify(view).navigateToQRActivity()
@@ -198,6 +197,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should log in with fingerprint successfully`() {
+        instantiateLoginViewModel()
         whenever(goldfinger.authenticate()) doReturn Observable.just(
             FingerPrintResult(
                 Type.SUCCESS,
@@ -227,6 +227,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should show credentials data when logging in with fingerprint`() {
+        instantiateLoginViewModel()
         val result = FingerPrintResult(
             Type.ERROR,
             "none"
@@ -245,6 +246,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should show empty credentials message when trying to log in with fingerprint`() {
+        instantiateLoginViewModel()
         val result = FingerPrintResult(
             Type.ERROR,
             "none"
@@ -263,6 +265,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should display message when authenticate throws an error`() {
+        instantiateLoginViewModel()
         whenever(
             goldfinger.authenticate()
         ) doReturn Observable.error(Exception(LoginViewModel.AUTH_ERROR))
@@ -272,6 +275,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should open account recovery when user does not remember it`() {
+        instantiateLoginViewModel()
         whenever(network.isOnline()) doReturn true
         loginViewModel.onAccountRecovery()
         verify(view).openAccountRecovery()
@@ -279,6 +283,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should show message when no connection and user tries to recover account`() {
+        instantiateLoginViewModel()
         whenever(network.isOnline()) doReturn false
         loginViewModel.onAccountRecovery()
         verify(view).showNoConnectionDialog()
@@ -286,12 +291,14 @@ class LoginViewModelTest {
 
     @Test
     fun `Should stop reading fingerprint`() {
+        instantiateLoginViewModel()
         loginViewModel.stopReadingFingerprint()
         verify(goldfinger).cancel()
     }
 
     @Test
     fun `Should load testing servers and users`() {
+        instantiateLoginViewModel()
         val urlSet = hashSetOf("url1", "url2", "url3")
         val userSet = hashSetOf("user1", "user2")
         val testingCredentials = listOf(
@@ -316,6 +323,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should handle log out when button is clicked`() {
+        instantiateLoginViewModel()
         whenever(userManager.d2.userModule().logOut()) doReturn Completable.complete()
         loginViewModel.logOut()
         verify(view).handleLogout()
@@ -323,6 +331,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should handle successfull response`() {
+        instantiateLoginViewModel()
         val response = Response.success(
             User.builder()
                 .uid("userUid")
@@ -350,6 +359,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Should set server and username if user is logged`() {
+        instantiateLoginViewModel()
         mockSystemInfo()
         whenever(userManager.userName())doReturn Single.just("Username")
         whenever(goldfinger.hasFingerPrint())doReturn true
@@ -361,6 +371,7 @@ class LoginViewModelTest {
 
     @Test(expected = Throwable::class)
     fun `Should show error dialog when login process goes wrong`() {
+        instantiateLoginViewModelWithNullUserManager()
         val throwable = Throwable()
         whenever(
             preferenceProvider.getBoolean(
@@ -374,6 +385,7 @@ class LoginViewModelTest {
 
     @Test(expected = Throwable::class)
     fun `Should show error dialog if openIDLogin does not work`() {
+        instantiateLoginViewModelWithNullUserManager()
         val throwable = Throwable()
         userManager.logIn(openidconfig)
         loginViewModelWithNullUserManager.openIdLogin(openidconfig)
@@ -382,11 +394,12 @@ class LoginViewModelTest {
 
     @Test
     fun `Should invoke openIdLogin method successfully`() {
+        instantiateLoginViewModelWithNullUserManager()
         val openidconfig: OpenIDConnectConfig = mock()
         val it: IntentWithRequestCode = mock()
         whenever(view.initLogin())doReturn userManager
         whenever(userManager.logIn(openidconfig)) doReturn Observable.just(it)
-        getLoginViewModelWithNullUserManager()
+        instantiateLoginViewModelWithNullUserManager()
         loginViewModelWithNullUserManager.openIdLogin(openidconfig)
         verify(view).openOpenIDActivity(it)
     }
