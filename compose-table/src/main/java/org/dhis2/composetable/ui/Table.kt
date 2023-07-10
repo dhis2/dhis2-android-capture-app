@@ -4,10 +4,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -36,7 +39,7 @@ import org.dhis2.composetable.ui.TableTheme.tableSelection
 import org.dhis2.composetable.ui.compositions.LocalTableResizeActions
 import org.dhis2.composetable.ui.extensions.fixedStickyHeader
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun Table(
     tableList: List<TableModel>,
@@ -85,15 +88,14 @@ fun Table(
             }
         } else {
             val verticalScrollState = rememberLazyListState()
-            val keyboardState by keyboardAsState()
+            val keyboardState = WindowInsets.isImeVisible
             val tableSelection = LocalTableSelection.current
 
             LaunchedEffect(keyboardState) {
                 val isCellSelection = tableSelection is TableSelection.CellSelection
-                val isKeyboardOpen = keyboardState == Keyboard.Opened
                 verticalScrollState.animateToIf(
                     tableSelection.getSelectedCellRowIndex(tableSelection.tableId),
-                    isCellSelection && isKeyboardOpen
+                    isCellSelection && keyboardState
                 )
             }
 
@@ -113,7 +115,7 @@ fun Table(
             ) {
                 tableList.forEachIndexed { index, tableModel ->
                     fixedStickyHeader(
-                        fixHeader = keyboardState == Keyboard.Closed,
+                        fixHeader = !keyboardState,
                         key = tableModel.id
                     ) {
                         tableHeaderRow?.invoke(index, tableModel)
@@ -125,7 +127,7 @@ fun Table(
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
                         LastRowDivider(tableModel.id ?: "", tableRowModel.isLastRow)
                     }
-                    stickyFooter(keyboardState == Keyboard.Closed)
+                    stickyFooter(!keyboardState)
                 }
                 bottomContent?.let { item { it.invoke() } }
             }

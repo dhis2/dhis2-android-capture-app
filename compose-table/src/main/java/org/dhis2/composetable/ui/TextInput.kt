@@ -1,7 +1,5 @@
 package org.dhis2.composetable.ui
 
-import android.graphics.Rect
-import android.view.ViewTreeObserver
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,8 +18,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +29,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -73,7 +68,7 @@ fun TextInput(
             )
             .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp)
     ) {
-        InputTitle(textInputModel)
+        InputTitle(textInputModel.mainLabel, textInputModel.secondaryLabels)
         TextInputContent(
             textInputModel,
             onTextChanged = textInputInteractions::onTextChanged,
@@ -84,52 +79,19 @@ fun TextInput(
     }
 }
 
-enum class Keyboard {
-    Opened, Closed
-}
-
 @Composable
-fun keyboardAsState(): State<Keyboard> {
-    val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
-    val view = LocalView.current
-    DisposableEffect(view) {
-        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val rect = Rect()
-            view.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = view.rootView.height
-            val keypadHeight = screenHeight - rect.bottom
-            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
-                Keyboard.Opened
-            } else {
-                Keyboard.Closed
-            }
-        }
-        view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
-
-        onDispose {
-            view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
-        }
-    }
-
-    return keyboardState
-}
-
-@Composable
-private fun InputTitle(textInputModel: TextInputModel) {
+private fun InputTitle(mainLabel: String, secondaryLabels: List<String>) {
     Row(
         modifier = Modifier
             .padding(end = 12.dp)
             .fillMaxWidth()
             .semantics {
-                mainLabel = textInputModel.mainLabel
-                secondaryLabel = textInputModel.secondaryLabels.joinToString(separator = ",")
+                mainLabel
+                secondaryLabels.joinToString(separator = ",")
             }
     ) {
         Text(
-            text = displayName(
-                textInputModel.mainLabel,
-                textInputModel.secondaryLabels
-            ),
+            text = displayName(mainLabel, secondaryLabels),
             fontSize = 10.sp,
             maxLines = 1
         )
@@ -139,7 +101,7 @@ private fun InputTitle(textInputModel: TextInputModel) {
 @Composable
 private fun TextInputContent(
     textInputModel: TextInputModel,
-    onTextChanged: (TextInputModel) -> Unit,
+    onTextChanged: (String) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit,
     focusRequester: FocusRequester
@@ -153,6 +115,38 @@ private fun TextInputContent(
         hasWarning = textInputModel.warning != null,
         hasFocus = hasFocus
     )
+
+    var fieldValue by remember(textInputModel.currentValue) {
+        mutableStateOf(
+            TextFieldValue(
+                text = textInputModel.currentValue ?: "",
+                selection = textInputModel.selection ?: TextRange(
+                    textInputModel.currentValue?.length ?: 0
+                )
+            )
+        )
+    }
+
+    val keyboardOptions by remember(textInputModel.keyboardInputType) {
+        mutableStateOf(
+            KeyboardOptions(
+                capitalization = textInputModel.keyboardInputType.keyboardCapitalization(),
+                imeAction = ImeAction.Next,
+                keyboardType = textInputModel.keyboardInputType.toKeyboardType()
+            )
+        )
+    }
+
+    val onActionIconClick = remember {
+        {
+            if (textInputModel.actionIconCanBeClicked(hasFocus)) {
+                focusManager.clearFocus(force = true)
+                onSave()
+            } else {
+                focusRequester.requestFocus()
+            }
+        }
+    }
 
     Column {
         Row(
@@ -175,30 +169,16 @@ private fun TextInputContent(
                                 onSave()
                             }
                         },
-                    value = TextFieldValue(
-                        text = textInputModel.currentValue ?: "",
-                        selection = textInputModel.selection ?: TextRange(
-                            textInputModel.currentValue?.length ?: 0
-                        )
-                    ),
+                    value = fieldValue,
                     onValueChange = {
-                        onTextChanged(
-                            textInputModel.copy(
-                                currentValue = it.text,
-                                selection = it.selection,
-                                error = null
-                            )
-                        )
+                        fieldValue = it
+                        onTextChanged(it.text)
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,
                         textAlign = TextAlign.Start
                     ),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = textInputModel.keyboardInputType.keyboardCapitalization(),
-                        imeAction = ImeAction.Next,
-                        keyboardType = textInputModel.keyboardInputType.toKeyboardType()
-                    ),
+                    keyboardOptions = keyboardOptions,
                     keyboardActions = KeyboardActions(
                         onNext = {
                             onNextSelected()
@@ -216,16 +196,7 @@ private fun TextInputContent(
                 modifier = Modifier
                     .testTag(INPUT_ICON_TEST_TAG),
                 hasFocus = hasFocus,
-                textInputModel,
-                onActionIconClick = {
-                    if (textInputModel.actionIconCanBeClicked(hasFocus)) {
-                        focusManager.clearFocus(force = true)
-                        onSave()
-                    } else {
-                        focusRequester.requestFocus()
-                    }
-                },
-                onTextChanged
+                onActionIconClick = onActionIconClick,
             )
         }
         if (textInputModel.hasErrorOrWarning()) {
@@ -257,9 +228,7 @@ private fun dividerColor(hasError: Boolean, hasWarning: Boolean, hasFocus: Boole
 private fun TextInputContentActionIcon(
     modifier: Modifier = Modifier,
     hasFocus: Boolean,
-    textInputModel: TextInputModel,
-    onActionIconClick: () -> Unit,
-    onTextChanged: (TextInputModel) -> Unit
+    onActionIconClick: () -> Unit
 ) {
     val icon = if (hasFocus) {
         R.drawable.ic_finish_edit_input
@@ -283,20 +252,6 @@ private fun TextInputContentActionIcon(
                 tint = LocalTableColors.current.primary,
                 contentDescription = ""
             )
-        }
-
-        if (textInputModel.showClearButton() && hasFocus) {
-            IconButton(
-                onClick = {
-                    onTextChanged(textInputModel.copy(currentValue = ""))
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_clear),
-                    tint = Color(0x61000000),
-                    contentDescription = ""
-                )
-            }
         }
     }
 }

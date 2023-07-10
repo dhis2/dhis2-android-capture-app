@@ -5,8 +5,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
@@ -42,7 +45,7 @@ import org.dhis2.composetable.ui.compositions.LocalUpdatingCell
 import org.dhis2.composetable.ui.extensions.collapseIfExpanded
 import org.dhis2.composetable.ui.extensions.expandIfCollapsed
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun DataSetTableScreen(
     tableScreenState: TableScreenState,
@@ -72,7 +75,7 @@ fun DataSetTableScreen(
 
     var alreadyFinish by remember { mutableStateOf(false) }
 
-    val isKeyboardOpen by keyboardAsState()
+    val isKeyboardOpen = WindowInsets.isImeVisible
 
     fun finishEdition() {
         focusManager.clearFocus(true)
@@ -126,6 +129,7 @@ fun DataSetTableScreen(
     ) {
         collapseBottomSheet(finish = true)
     }
+
     LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
         if (
             bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed &&
@@ -136,7 +140,7 @@ fun DataSetTableScreen(
     }
 
     LaunchedEffect(isKeyboardOpen) {
-        if (isKeyboardOpen == Keyboard.Closed) {
+        if (!isKeyboardOpen) {
             if (tableConfiguration.textInputViewMode) {
                 focusManager.clearFocus(true)
             } else if (bottomSheetState.bottomSheetState.isExpanded) {
@@ -191,10 +195,9 @@ fun DataSetTableScreen(
             val textInputInteractions by remember(tableScreenState) {
                 derivedStateOf {
                     object : TextInputInteractions {
-                        override fun onTextChanged(textInputModel: TextInputModel) {
-                            currentInputType = textInputModel
+                        override fun onTextChanged(inputTextValue: String) {
                             currentCell = currentCell?.copy(
-                                value = textInputModel.currentValue,
+                                value = inputTextValue,
                                 error = null
                             )
                         }
