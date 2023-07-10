@@ -16,18 +16,17 @@ import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
+import org.dhis2.usescases.BaseTest
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
-import org.dhis2.common.viewactions.clickClickableSpan
 import org.dhis2.ui.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
 import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
-import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
-
 fun loginRobot(loginBody: LoginRobot.() -> Unit) {
     LoginRobot().apply {
         loginBody()
@@ -47,7 +46,7 @@ class LoginRobot : BaseRobot() {
 
     fun typeUsername(username: String) {
         onView(withId(R.id.user_name_edit)).perform(TypeTextAction(username))
-        closeKeyboard()
+        pressImeActionButton()
     }
 
     fun clearUsernameField() {
@@ -56,7 +55,7 @@ class LoginRobot : BaseRobot() {
 
     fun typePassword(password: String) {
         onView(withId(R.id.user_pass_edit)).perform(TypeTextAction(password))
-        closeKeyboard()
+        pressImeActionButton()
     }
 
     fun clearPasswordField() {
@@ -104,7 +103,7 @@ class LoginRobot : BaseRobot() {
             CoreMatchers.allOf(
                 hasExtra(
                     WebViewActivity.WEB_VIEW_URL,
-                    "${BaseTest.MOCK_SERVER_URL}/dhis-web-commons/security/recovery.action"
+                    "${MOCK_SERVER_URL}/dhis-web-commons/security/recovery.action"
                 ),
                 hasComponent(WebViewActivity::class.java.name)
             )

@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.App
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
@@ -178,11 +177,16 @@ class LoginViewModel(
     }
 
     fun onLoginButtonClick() {
-        view.hideKeyboard()
-        analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-        increment()
-        logIn()
-        decrement()
+        try {
+            view.hideKeyboard()
+            analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
+            increment()
+            logIn()
+            decrement()
+        } catch (throwable: Throwable) {
+            Timber.e(throwable)
+            handleError(throwable)
+        }
     }
 
     private fun logIn() {
@@ -217,26 +221,28 @@ class LoginViewModel(
     }
 
     fun openIdLogin(config: OpenIDConnectConfig) {
-        disposable.add(
-            Observable.just(
-                (view.abstracContext.applicationContext as App).createServerComponent()
-                    .userManager()
-            )
-                .flatMap { userManager ->
-                    this.userManager = userManager
-                    userManager.logIn(config)
-                }
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .subscribe(
-                    {
-                        view.openOpenIDActivity(it)
-                    },
-                    {
-                        Timber.e(it)
+        try {
+            disposable.add(
+                Observable.just(view.initLogin())
+                    .flatMap { userManager ->
+                        this.userManager = userManager
+                        userManager.logIn(config)
                     }
-                )
-        )
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
+                    .subscribe(
+                        {
+                            view.openOpenIDActivity(it)
+                        },
+                        {
+                            Timber.e(it)
+                        }
+                    )
+            )
+        } catch (throwable: Throwable) {
+            Timber.e(throwable)
+            handleError(throwable)
+        }
     }
 
     fun handleAuthResponseData(serverUrl: String, data: Intent, requestCode: Int) {
