@@ -196,7 +196,7 @@ private fun TextInputContent(
                 modifier = Modifier
                     .testTag(INPUT_ICON_TEST_TAG),
                 hasFocus = hasFocus,
-                onActionIconClick = onActionIconClick,
+                onActionIconClick = onActionIconClick
             )
         }
         if (textInputModel.hasErrorOrWarning()) {
