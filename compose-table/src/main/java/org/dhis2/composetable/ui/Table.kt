@@ -2,7 +2,6 @@ package org.dhis2.composetable.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -92,7 +91,10 @@ fun Table(
             LaunchedEffect(keyboardState) {
                 val isCellSelection = tableSelection is TableSelection.CellSelection
                 val isKeyboardOpen = keyboardState == Keyboard.Opened
-                verticalScrollState.animateToIf(isCellSelection && isKeyboardOpen)
+                verticalScrollState.animateToIf(
+                    tableSelection.getSelectedCellRowIndex(tableSelection.tableId),
+                    isCellSelection && isKeyboardOpen
+                )
             }
 
             LazyColumn(
@@ -142,10 +144,12 @@ private fun LastRowDivider(tableId: String, isLastRow: Boolean) {
     }
 }
 
-private suspend fun LazyListState.animateToIf(condition: Boolean) {
+private suspend fun LazyListState.animateToIf(index: Int, condition: Boolean) {
     if (condition) {
         apply {
-            animateScrollBy(layoutInfo.viewportSize.height / 2f)
+            if (index >= 0) {
+                animateScrollToItem(index)
+            }
         }
     }
 }
