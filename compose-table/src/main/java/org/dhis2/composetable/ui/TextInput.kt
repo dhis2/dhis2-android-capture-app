@@ -80,18 +80,18 @@ fun TextInput(
 }
 
 @Composable
-private fun InputTitle(mainLabel: String, secondaryLabels: List<String>) {
+private fun InputTitle(mainTitle: String, secondaryTitle: List<String>) {
     Row(
         modifier = Modifier
             .padding(end = 12.dp)
             .fillMaxWidth()
             .semantics {
-                mainLabel
-                secondaryLabels.joinToString(separator = ",")
+                mainLabel = mainTitle
+                secondaryLabel = secondaryTitle.joinToString(separator = ",")
             }
     ) {
         Text(
-            text = displayName(mainLabel, secondaryLabels),
+            text = displayName(mainTitle, secondaryTitle),
             fontSize = 10.sp,
             maxLines = 1
         )
