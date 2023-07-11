@@ -88,14 +88,14 @@ fun Table(
             }
         } else {
             val verticalScrollState = rememberLazyListState()
-            val keyboardState = WindowInsets.isImeVisible
+            val isKeyboardOpen = WindowInsets.isImeVisible
             val tableSelection = LocalTableSelection.current
 
-            LaunchedEffect(keyboardState) {
+            LaunchedEffect(isKeyboardOpen) {
                 val isCellSelection = tableSelection is TableSelection.CellSelection
                 verticalScrollState.animateToIf(
                     tableSelection.getSelectedCellRowIndex(tableSelection.tableId),
-                    isCellSelection && keyboardState
+                    isCellSelection && isKeyboardOpen
                 )
             }
 
@@ -115,7 +115,7 @@ fun Table(
             ) {
                 tableList.forEachIndexed { index, tableModel ->
                     fixedStickyHeader(
-                        fixHeader = !keyboardState,
+                        fixHeader = !isKeyboardOpen,
                         key = tableModel.id
                     ) {
                         tableHeaderRow?.invoke(index, tableModel)
@@ -127,7 +127,7 @@ fun Table(
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
                         LastRowDivider(tableModel.id ?: "", tableRowModel.isLastRow)
                     }
-                    stickyFooter(!keyboardState)
+                    stickyFooter(!isKeyboardOpen)
                 }
                 bottomContent?.let { item { it.invoke() } }
             }
