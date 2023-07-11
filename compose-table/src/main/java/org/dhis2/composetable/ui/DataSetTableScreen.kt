@@ -5,11 +5,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
@@ -45,7 +42,7 @@ import org.dhis2.composetable.ui.compositions.LocalUpdatingCell
 import org.dhis2.composetable.ui.extensions.collapseIfExpanded
 import org.dhis2.composetable.ui.extensions.expandIfCollapsed
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DataSetTableScreen(
     tableScreenState: TableScreenState,
@@ -75,7 +72,7 @@ fun DataSetTableScreen(
 
     var alreadyFinish by remember { mutableStateOf(false) }
 
-    val isKeyboardOpen = WindowInsets.isImeVisible
+    val isKeyboardOpen by keyboardAsState()
 
     fun finishEdition() {
         focusManager.clearFocus(true)
@@ -140,7 +137,7 @@ fun DataSetTableScreen(
     }
 
     LaunchedEffect(isKeyboardOpen) {
-        if (!isKeyboardOpen) {
+        if (isKeyboardOpen == Keyboard.Closed) {
             if (tableConfiguration.textInputViewMode) {
                 focusManager.clearFocus(true)
             } else if (bottomSheetState.bottomSheetState.isExpanded) {

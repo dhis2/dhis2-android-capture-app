@@ -39,7 +39,7 @@ import org.dhis2.composetable.ui.TableTheme.tableSelection
 import org.dhis2.composetable.ui.compositions.LocalTableResizeActions
 import org.dhis2.composetable.ui.extensions.fixedStickyHeader
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Table(
     tableList: List<TableModel>,
@@ -88,11 +88,12 @@ fun Table(
             }
         } else {
             val verticalScrollState = rememberLazyListState()
-            val isKeyboardOpen = WindowInsets.isImeVisible
+            val keyboardState by keyboardAsState()
             val tableSelection = LocalTableSelection.current
 
-            LaunchedEffect(isKeyboardOpen) {
+            LaunchedEffect(keyboardState) {
                 val isCellSelection = tableSelection is TableSelection.CellSelection
+                val isKeyboardOpen = keyboardState == Keyboard.Opened
                 verticalScrollState.animateToIf(
                     tableSelection.getSelectedCellRowIndex(tableSelection.tableId),
                     isCellSelection && isKeyboardOpen
@@ -115,7 +116,7 @@ fun Table(
             ) {
                 tableList.forEachIndexed { index, tableModel ->
                     fixedStickyHeader(
-                        fixHeader = !isKeyboardOpen,
+                        fixHeader = keyboardState == Keyboard.Closed,
                         key = tableModel.id
                     ) {
                         tableHeaderRow?.invoke(index, tableModel)
@@ -127,7 +128,7 @@ fun Table(
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
                         LastRowDivider(tableModel.id ?: "", tableRowModel.isLastRow)
                     }
-                    stickyFooter(!isKeyboardOpen)
+                    stickyFooter(keyboardState == Keyboard.Closed)
                 }
                 bottomContent?.let { item { it.invoke() } }
             }
