@@ -142,8 +142,10 @@ class CarouselTeiHolder(
     }
 
     override fun showNavigateButton() {
-        dataModel?.setShowNavigationButton(true)
-        binding.mapNavigateFab.show()
+        if (dataModel?.tei?.geometry() != null) {
+            dataModel?.setShowNavigationButton(true)
+            binding.mapNavigateFab.show()
+        }
     }
 
     override fun hideNavigateButton() {
