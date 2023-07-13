@@ -48,6 +48,10 @@ class TeiDashboardRobot : BaseRobot() {
         Thread.sleep(500)
     }
 
+    fun clickOnSync() {
+        onView(withId(R.id.syncButton)).perform(click())
+    }
+
     fun goToRelationships() {
         onView(withId(R.id.navigation_relationships)).perform(click())
         Thread.sleep(500)
