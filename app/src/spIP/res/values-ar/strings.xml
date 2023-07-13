@@ -3,4 +3,5 @@
     <string name="app_name">Samaritans Purse International Project</string>
     <string name="logo_text">Samaritans Purse International Project</string>
     <string name="logo_number"></string>
+    <string name="open_details">%s فتح تفاصيل التسجيل</string>
 </resources>
