@@ -243,7 +243,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                 boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet().unique();
                 if (isUnique) {
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+                    // Eyeseetea customization - use like for unique att also
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
                 } else if (dataValue.contains("_os_")) {
                     dataValue = dataValue.split("_os_")[1];
                     trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
