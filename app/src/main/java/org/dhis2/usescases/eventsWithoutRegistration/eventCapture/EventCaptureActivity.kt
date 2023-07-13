@@ -211,10 +211,15 @@ class EventCaptureActivity :
                 { presenter!!.deleteEvent() }
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
-        } else {
+        } else if (isFormScreen()) {
             presenter?.emitAction(EventCaptureAction.ON_BACK)
-//            finishDataEntry()
+        } else {
+            finishDataEntry()
         }
+    }
+
+    private fun isFormScreen(): Boolean  {
+        return adapter?.isFormScreenShown(binding?.eventViewPager?.currentItem) == true
     }
 
     override fun updatePercentage(primaryValue: Float) {
