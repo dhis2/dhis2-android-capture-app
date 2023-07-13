@@ -218,7 +218,7 @@ class EventCaptureActivity :
         }
     }
 
-    private fun isFormScreen(): Boolean  {
+    private fun isFormScreen(): Boolean {
         return adapter?.isFormScreenShown(binding?.eventViewPager?.currentItem) == true
     }
 
