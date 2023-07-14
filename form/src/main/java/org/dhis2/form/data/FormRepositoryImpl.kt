@@ -39,8 +39,9 @@ class FormRepositoryImpl(
     private var backupList: List<FieldUiModel> = emptyList()
 
     override fun fetchFormItems(): List<FieldUiModel> {
-        openedSectionUid =
-            dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+        // Eyeseetea customization - No default opened section
+       /* openedSectionUid =
+            dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()*/
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
         backupList = itemList
         return composeList()
@@ -252,8 +253,9 @@ class FormRepositoryImpl(
             }
         }
             .filter { field ->
+                //Eyeseetea customization - return also if openedSection is empty
                 field.isSectionWithFields() ||
-                    field.programStageSection == openedSectionUid
+                    field.programStageSection == openedSectionUid || openedSectionUid == null
             }
     }
 
@@ -263,7 +265,8 @@ class FormRepositoryImpl(
     ): FieldUiModel {
         var total = 0
         var values = 0
-        val isOpen = sectionFieldUiModel.uid == openedSectionUid
+        //Eyeseetea customization - isOpen also if openedSection is empty
+        val isOpen = sectionFieldUiModel.uid == openedSectionUid || openedSectionUid == null
         fields.filter {
             it.programStageSection.equals(sectionFieldUiModel.uid) && it.valueType != null
         }.forEach {
