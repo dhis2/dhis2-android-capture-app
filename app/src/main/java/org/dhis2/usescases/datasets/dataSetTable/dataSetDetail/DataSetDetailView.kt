@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
 
 interface DataSetDetailView {
-    fun openSyncDialog()
     fun setCatOptComboName(catComboName: String)
     fun setDataSetDetails(
         dataSetInstance: DataSetInstance,

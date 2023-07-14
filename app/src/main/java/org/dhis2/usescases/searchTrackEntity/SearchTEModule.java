@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerActivity;
@@ -13,51 +12,65 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
-import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
+import org.dhis2.data.forms.dataentry.SearchTEIRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
+import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.data.metadata.OptionSetConfiguration;
+import org.dhis2.form.data.metadata.OrgUnitConfiguration;
+import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactoryImpl;
+import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
-import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
+import org.dhis2.form.ui.provider.LegendValueProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
+import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
-import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature;
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
-import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
+import org.dhis2.maps.geometry.bound.BoundsGeometry;
+import org.dhis2.maps.geometry.bound.GetBoundingBox;
+import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
+import org.dhis2.maps.geometry.mapper.MapGeometryToFeature;
+import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapAttributeToFeature;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
+import org.dhis2.maps.geometry.point.MapPointToFeature;
+import org.dhis2.maps.geometry.polygon.MapPolygonPointToFeature;
+import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
+import org.dhis2.maps.mapper.EventToEventUiComponent;
+import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
+import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
-import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
+
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
+import dispatch.core.DispatcherProvider;
 
-@PerActivity
 @Module
 public class SearchTEModule {
 
@@ -65,15 +78,18 @@ public class SearchTEModule {
     private final String teiType;
     private final String initialProgram;
     private final Context moduleContext;
+    private final Map<String, String> initialQuery;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
                           String initialProgram,
-                          Context context) {
+                          Context context,
+                          Map<String, String> initialQuery) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
         this.moduleContext = context;
+        this.initialQuery = initialQuery;
     }
 
     @Provides
@@ -85,32 +101,17 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchTEContractsModule.Presenter providePresenter(D2 d2,
-                                                       DhisMapUtils mapUtils,
                                                        SearchRepository searchRepository,
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
-                                                       MapTeisToFeatureCollection mapTeisToFeatureCollection,
-                                                       MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
-                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
-                                                       FieldViewModelFactory fieldViewModelFactory,
-                                                       MatomoAnalyticsController matomoAnalyticsController,
-                                                       SearchMessageMapper searchMessageMapper) {
-        return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
-                new EventToEventUiComponent(), preferenceProvider,
-                teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper);
-    }
-
-    @Provides
-    @PerActivity
-    SearchMessageMapper searchMessageMapper(Context context) {
-        return new SearchMessageMapper(
-                new SearchResources(context)
-        );
+                                                       MatomoAnalyticsController matomoAnalyticsController) {
+        return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
+                analyticsHelper, initialProgram, teiType, preferenceProvider,
+                teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
+                matomoAnalyticsController);
     }
 
     @Provides
@@ -138,20 +139,48 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter, FieldViewModelFactory fieldFactory, DhisPeriodUtils periodUtils, Charts charts, CrashReportController crashReportController) {
-        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory, periodUtils, charts, crashReportController);
+    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter,
+                                      ResourceManager resources,
+                                      SearchSortingValueSetter searchSortingValueSetter,
+                                      DhisPeriodUtils periodUtils, Charts charts,
+                                      CrashReportController crashReportController,
+                                      NetworkUtils networkUtils,
+                                      SearchTEIRepository searchTEIRepository,
+                                      ThemeManager themeManager) {
+        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
+                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository,
+                themeManager);
     }
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl(), new HintProviderImpl(context), new DisplayNameProviderImpl(d2));
+    SearchTEIRepository searchTEIRepository(D2 d2) {
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), new CrashReportControllerImpl());
     }
 
     @Provides
     @PerActivity
-    FormUiColorFactory provideFormUiColorFactory() {
-        return new FormUiModelColorFactoryImpl(moduleContext, false);
+    FieldViewModelFactory fieldViewModelFactory(
+            Context context,
+            D2 d2,
+            ResourceManager resourceManager
+    ) {
+        return new FieldViewModelFactoryImpl(
+                true,
+                new UiStyleProviderImpl(
+                        new FormUiModelColorFactoryImpl(moduleContext, false),
+                        new LongTextUiColorFactoryImpl(moduleContext, false)
+
+                ),
+                new LayoutProviderImpl(),
+                new HintProviderImpl(context),
+                new DisplayNameProviderImpl(
+                        new OptionSetConfiguration(d2),
+                        new OrgUnitConfiguration(d2)
+                ),
+                new UiEventTypesProviderImpl(),
+                new KeyboardActionProviderImpl(),
+                new LegendValueProviderImpl(d2, resourceManager));
     }
 
     @Provides
@@ -209,17 +238,75 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FormRepository provideFormRepository(D2 d2) {
+    FormRepository provideFormRepository(D2 d2, DataEntryRepository dataEntryRepository) {
         return new FormRepositoryImpl(
                 null,
                 new FieldErrorMessageProvider(moduleContext),
-                new DisplayNameProviderImpl(d2)
+                new DisplayNameProviderImpl(
+                        new OptionSetConfiguration(d2),
+                        new OrgUnitConfiguration(d2)
+                ),
+                dataEntryRepository,
+                null,
+                null,
+                null
         );
     }
 
     @Provides
     @PerActivity
-    NavigationPageConfigurator providePageConfigurator(SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
-        return new SearchPageConfigurator(searchRepository, schedulerProvider);
+    DataEntryRepository provideDataEntryRepository(
+            D2 d2,
+            FieldViewModelFactory fieldViewModelFactory) {
+        return new SearchRepositoy(
+                d2,
+                fieldViewModelFactory,
+                initialProgram,
+                teiType,
+                initialQuery
+        );
+    }
+
+    @Provides
+    @PerActivity
+    SearchTeiViewModelFactory providesViewModelFactory(
+            SearchTEContractsModule.Presenter presenter,
+            SearchRepository searchRepository,
+            MapDataRepository mapDataRepository,
+            NetworkUtils networkUtils) {
+        return new SearchTeiViewModelFactory(
+                presenter,
+                searchRepository,
+                new SearchPageConfigurator(searchRepository),
+                initialProgram,
+                initialQuery,
+                mapDataRepository,
+                networkUtils,
+                new SearchDispatchers()
+        );
+    }
+
+    @Provides
+    @PerActivity
+    MapDataRepository mapDataRepository(
+            SearchRepository searchRepository,
+            MapTeisToFeatureCollection mapTeisToFeatureCollection,
+            MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+            MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
+            DhisMapUtils mapUtils
+    ) {
+        return new MapDataRepository(
+                searchRepository,
+                mapTeisToFeatureCollection,
+                mapTeiEventsToFeatureCollection,
+                mapCoordinateFieldToFeatureCollection,
+                new EventToEventUiComponent(),
+                mapUtils);
+    }
+
+    @Provides
+    @PerActivity
+    SearchNavigator searchNavigator(D2 d2) {
+        return new SearchNavigator((SearchTEActivity) moduleContext, new SearchNavigationConfiguration(d2));
     }
 }

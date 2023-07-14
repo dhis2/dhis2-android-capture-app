@@ -19,9 +19,9 @@ import io.reactivex.Observable
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.databinding.DialogOptionSetBinding
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.hisp.dhis.android.core.option.Option
@@ -35,7 +35,7 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
 
     private var adapter: OptionSetAdapter? = null
 
-    var optionSet: SpinnerViewModel? = null
+    var optionSet: FieldUiModel? = null
     var optionSetTable: TableSpinnerViewModel? = null
     var listener: OptionSetOnClickListener? = null
     var clearListener: View.OnClickListener? = null
@@ -59,8 +59,8 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false)
 
-        binding.title.text = if (optionSet != null) optionSet?.label() else optionSetTable?.label()
-        binding.title.text = if (optionSet != null) optionSet?.label() else optionSetTable?.label()
+        binding.title.text = if (optionSet != null) optionSet?.label else optionSetTable?.label()
+        binding.title.text = if (optionSet != null) optionSet?.label else optionSetTable?.label()
 
         if (optionSet != null) {
             presenter.init(optionSet!!)
@@ -113,13 +113,13 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
     }
 
     override fun showDialog(): Boolean {
-        return presenter.getCount(
-            if (optionSet != null) {
-                optionSet!!.optionSet()
-            } else {
-                optionSetTable!!.optionSet()
-            }
-        )!! > defaultSize
+        return if (optionSet != null) {
+            optionSet?.optionSet
+        } else {
+            optionSetTable!!.optionSet()
+        }?.let {
+            presenter.getCount(it)
+        }!! > defaultSize
     }
 
     override fun dismiss() {

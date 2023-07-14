@@ -6,7 +6,6 @@ import dagger.Provides
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.data.forms.RulesRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfoD2Repository
@@ -17,7 +16,6 @@ import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInf
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoRepository
 import org.hisp.dhis.android.core.D2
 
-@PerActivity
 @Module
 class FeedbackModule(
     private val programUid: String,

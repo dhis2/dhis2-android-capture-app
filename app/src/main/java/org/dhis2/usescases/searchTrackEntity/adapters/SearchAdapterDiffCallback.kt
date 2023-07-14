@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity.adapters
 
 import androidx.recyclerview.widget.DiffUtil
+import org.dhis2.commons.data.SearchTeiModel
 
 class SearchAdapterDiffCallback() : DiffUtil.ItemCallback<SearchTeiModel>() {
     override fun areItemsTheSame(oldItem: SearchTeiModel, newItem: SearchTeiModel): Boolean {

@@ -32,6 +32,8 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
         }
     }
 
+    private var locationListener: LocationListener? = null
+
     @SuppressLint("MissingPermission")
     override fun getLastKnownLocation(
         onNewLocation: (Location) -> Unit,
@@ -55,20 +57,19 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     }
 
     @SuppressLint("MissingPermission")
-    override fun requestLocationUpdates(onNewLocation: (Location) -> Unit) {
+    private fun requestLocationUpdates(onNewLocation: (Location) -> Unit) {
         if (hasPermission()) {
+            locationListener = LocationListener { location ->
+                location.let {
+                    onNewLocation(it)
+                    stopLocationUpdates()
+                }
+            }
             locationManager.requestLocationUpdates(
                 1000,
                 5f,
                 locationCriteria,
-                object : LocationListener {
-                    override fun onLocationChanged(location: Location) {
-                        location.let {
-                            onNewLocation(it)
-                            locationManager.removeUpdates(this)
-                        }
-                    }
-                },
+                locationListener!!,
                 null
             )
         }
@@ -83,5 +84,11 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
 
     private fun hasLocationEnabled(): Boolean {
         return locationProvider?.let { locationManager.isProviderEnabled(it) } ?: false
+    }
+
+    override fun stopLocationUpdates() {
+        locationListener?.let {
+            locationManager.removeUpdates(it)
+        }
     }
 }

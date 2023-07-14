@@ -178,9 +178,6 @@
     <string name="log_out">Чиқиш</string>
     <string name="block_session">Сессияни блоклаш</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Жойни танланг</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 дақиқа</string>
     <string name="fifteen_minute">15 дақиқа</string>
@@ -266,7 +263,6 @@
     <string name="dashboard_indicators">Кўрсатгичлар</string>
     <string name="dashboard_notes">Изоҳлар</string>
     <string name="event_overview">Тафсилотлари</string>
-    <string name="event_event">Ҳодиса/Тадбир</string>
     <string name="event_indicators">Индикаторлар</string>
     <string name="event_notes">Изоҳлар</string>
     <string name="skip">Ўтказиб юбориш</string>
@@ -317,7 +313,6 @@
     <string name="enrollment_status_active">Очиш</string>
     <string name="enrollment_status_completed">Бажарилди</string>
     <string name="enrollment_status_cancelled">Бекор қилинди</string>
-    <string name="no_data">Маълумот йўқ</string>
     <string name="event_data">Маълумот</string>
     <string name="are_you_sure">Ишончинигиз комилми?</string>
     <string name="filters_title_date">Сана</string>

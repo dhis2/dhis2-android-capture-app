@@ -5,9 +5,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -124,7 +124,7 @@ public class TEIDataContracts {
 
         boolean hasAssignment();
 
-        void onSyncDialogClick(String eventUid);
+        void onSyncDialogClick();
 
         boolean enrollmentOrgUnitInCaptureScope(String enrollmentOrgUnit);
 

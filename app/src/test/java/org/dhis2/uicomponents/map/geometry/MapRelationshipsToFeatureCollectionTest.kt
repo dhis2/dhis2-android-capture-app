@@ -8,14 +8,14 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.geometry.point.MapPointToFeature
+import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModel
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModelSecond
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -128,7 +128,9 @@ class MapRelationshipsToFeatureCollectionTest {
         )
     }
 
-    private fun getPointFromFeature(model: RelationshipUiComponentModel): Feature {
+    private fun getPointFromFeature(
+        model: RelationshipUiComponentModel
+    ): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.from.geometry!!)
 
         val point = Point.fromLngLat(coordinates1[0], coordinates1[1])

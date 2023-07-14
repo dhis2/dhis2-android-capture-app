@@ -12,11 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -36,17 +33,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
-import org.dhis2.form.model.LegendValue;
-import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
-import org.dhis2.databinding.DataElementLegendBinding;
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
-import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
-import org.dhis2.utils.CatComboAdapter;
+import org.dhis2.commons.filters.CatOptionComboFilter;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
+import org.dhis2.commons.data.ProgramEventViewModel;
+import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
-import org.dhis2.commons.filters.CatOptionComboFilter;
-import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
@@ -63,19 +57,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
-
 
 public class Bindings {
-
-    @BindingAdapter("date")
-    public static void parseDate(TextView textView, Date date) {
-        if (date != null) {
-            SimpleDateFormat formatOut = DateUtils.uiDateFormat();
-            String dateOut = formatOut.format(date);
-            textView.setText(dateOut);
-        }
-    }
 
     @BindingAdapter("drawableEnd")
     public static void setDrawableEnd(TextView textView, Drawable drawable) {
@@ -365,19 +348,7 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter("eventWithoutRegistrationStatusIcon")
-    public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
-        int drawableResource;
-        switch (event.eventStatus()) {
-            case COMPLETED:
-                drawableResource = event.canBeEdited() ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_complete_read;
-                break;
-            default:
-                drawableResource = event.canBeEdited() ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
-                break;
-        }
-        imageView.setImageResource(drawableResource);
-    }
+
 
     @BindingAdapter("stateText")
     public static void setStateText(TextView textView, State state) {
@@ -396,45 +367,6 @@ public class Bindings {
                 break;
             default:
                 break;
-        }
-    }
-
-    @BindingAdapter(value = {"stateIcon", "showSynced"}, requireAll = false)
-    public static void setStateIcon(ImageView imageView, State state, boolean showSynced) {
-        if (state != null) {
-            switch (state) {
-                case TO_POST:
-                case TO_UPDATE:
-                case UPLOADING:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_problem_grey);
-                    break;
-                case ERROR:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_red);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_problem_red);
-                    break;
-                case SYNCED:
-                    imageView.setImageResource(R.drawable.ic_sync);
-                    if (!showSynced) {
-                        imageView.setVisibility(View.GONE);
-                    }
-                    imageView.setTag(R.drawable.ic_sync);
-                    break;
-                case WARNING:
-                    imageView.setImageResource(R.drawable.ic_sync_warning);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_warning);
-                    break;
-                case SENT_VIA_SMS:
-                case SYNCED_VIA_SMS:
-                    imageView.setImageResource(R.drawable.ic_sync_sms);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_sms);
-                default:
-                    break;
-            }
         }
     }
 
@@ -483,42 +415,6 @@ public class Bindings {
         }
     }
 
-    public static void setObjectStyle(View view, View itemView, ObjectStyle objectStyle) {
-        Resources resources = view.getContext().getResources();
-
-        if (objectStyle != null) {
-            int icon = new ResourceManager(view.getContext())
-                    .getObjectStyleDrawableResource(objectStyle.icon(), R.drawable.ic_default_outline);
-            if (view instanceof ImageView)
-                ((ImageView) view).setImageResource(icon);
-        }
-
-        if (objectStyle != null && objectStyle.color() != null) {
-            String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
-            int colorRes;
-            if (color.length() == 4)
-                colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
-            else
-                colorRes = Color.parseColor(color);
-
-            itemView.setBackgroundColor(colorRes);
-            setFromResBgColor(view, colorRes);
-        } else if (objectStyle != null && objectStyle.color() == null) {
-            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
-            itemView.setBackgroundColor(colorRes);
-            setFromResBgColor(view, colorRes);
-        }
-
-        if (objectStyle == null) {
-            Drawable drawable = resources.getDrawable(R.drawable.ic_default_outline);
-            if (view instanceof ImageView)
-                ((ImageView) view).setImageDrawable(drawable);
-            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
-            itemView.setBackgroundColor(colorRes);
-            setFromResBgColor(view, colorRes);
-        }
-    }
-
     @BindingAdapter("imageBackground")
     public static void setImageBackground(ImageView imageView, Drawable drawable) {
 
@@ -534,21 +430,6 @@ public class Bindings {
 
         imageView.setBackground(drawable);
 
-    }
-
-    @BindingAdapter("searchOrAdd")
-    public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
-        Drawable drawable;
-        if (needSearch) {
-            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search_add);
-        } else {
-            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
-        }
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = fab.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int colorPrimary = a.getColor(0, 0);
-        fab.setColorFilter(colorPrimary);
-        fab.setImageDrawable(drawable);
     }
 
     @BindingAdapter("versionVisibility")
@@ -652,96 +533,6 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter("setTextColor")
-    public static void setTextColorRadioButton(RadioButton radioButton, boolean isBgTransparent) {
-        radioButton.setTextColor(getColorStateViewChecked(radioButton.getContext(), isBgTransparent));
-    }
-
-    @BindingAdapter("tintRadioButton")
-    public static void tintRadioButton(RadioButton radioButton, boolean isBg) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
-            radioButton.invalidate();
-        }
-    }
-
-    @BindingAdapter("setTextColor")
-    public static void setTextColorCheckbox(MaterialCheckBox checkbox, boolean isBgTransparent) {
-        checkbox.setTextColor(getColorStateViewChecked(checkbox.getContext(), isBgTransparent));
-    }
-
-    @BindingAdapter("tintCheckboxButton")
-    public static void tintCheckbox(MaterialCheckBox radioButton, boolean isBg) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
-            radioButton.invalidate();
-        }
-    }
-
-    @BindingAdapter("setTextColor")
-    public static void setTextColor(TextView textView, boolean isBgTransparent) {
-        textView.setTextColor(getColorStateViewChecked(textView.getContext(), isBgTransparent));
-    }
-
-    private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground) {
-        int colorStateChecked;
-        int colorStateUnchecked;
-
-        if (isBackground) {
-            colorStateChecked = ColorUtils.getPrimaryColor(context,
-                    ColorUtils.ColorType.PRIMARY);
-            colorStateUnchecked = ContextCompat.getColor(context, R.color.textPrimary);
-        } else {
-            colorStateChecked = ColorUtils.getPrimaryColor(context,
-                    ColorUtils.ColorType.ACCENT);
-            colorStateUnchecked = colorStateChecked;
-        }
-
-
-        return new ColorStateList(
-                new int[][]{
-                        new int[]{android.R.attr.state_checked},
-                        new int[]{-android.R.attr.state_checked}
-                },
-                new int[]{
-                        colorStateChecked,
-                        colorStateUnchecked
-                }
-        );
-    }
-
-    @BindingAdapter("requestFocus")
-    public static void requestFocus(EditText editText, boolean focused) {
-        if (focused) {
-            editText.requestFocus();
-            editText.setCursorVisible(true);
-            openKeyboard(editText);
-        } else {
-            editText.clearFocus();
-            editText.setCursorVisible(false);
-        }
-    }
-
-
-    @BindingAdapter("checkListener")
-    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel) {
-        radioGroup.setOnCheckedChangeListener(null);
-        if (viewModel.isAffirmativeChecked()) {
-            radioGroup.check(R.id.yes);
-        } else if (viewModel.isNegativeChecked()) {
-            radioGroup.check(R.id.no);
-        } else {
-            radioGroup.clearCheck();
-        }
-        radioGroup.setOnCheckedChangeListener((radioGroup1, checkedId) -> {
-            if (checkedId == R.id.yes) {
-                viewModel.onValueChanged(true);
-            } else if (checkedId == R.id.no) {
-                viewModel.onValueChanged(false);
-            }
-        });
-    }
-
     @BindingAdapter("clipCorners")
     public static void setClipCorners(View view, int cornerRadiusInDp) {
         ViewExtensionsKt.clipWithRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
@@ -750,19 +541,6 @@ public class Bindings {
     @BindingAdapter("clipAllCorners")
     public static void setAllClipCorners(View view, int cornerRadiusInDp) {
         ViewExtensionsKt.clipWithAllRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
-    }
-
-    @BindingAdapter("legendValue")
-    public static void setLegend(TextView textView, LegendValue legendValue) {
-        if (legendValue != null) {
-            Drawable bg = textView.getBackground();
-            DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.getColor(), 38));
-            Drawable[] drawables = textView.getCompoundDrawables();
-            for (Drawable drawable : drawables) {
-                if (drawable != null)
-                    DrawableCompat.setTint(drawable, legendValue.getColor());
-            }
-        }
     }
 
     @BindingAdapter("fabVisibility")
@@ -780,19 +558,6 @@ public class Bindings {
             ViewAnimationsKt.show(view);
         } else {
             ViewAnimationsKt.hide(view);
-        }
-    }
-
-    @BindingAdapter("legendBadge")
-    public static void setLegendBadge(FrameLayout legendLayout, LegendValue legendValue) {
-        legendLayout.setVisibility(
-                legendValue != null ? View.VISIBLE : View.GONE
-        );
-        if (legendValue != null) {
-            DataElementLegendBinding legendBinding = DataElementLegendBinding.inflate(LayoutInflater.from(legendLayout.getContext()));
-            legendBinding.setLegend(legendValue);
-            legendLayout.removeAllViews();
-            legendLayout.addView(legendBinding.getRoot());
         }
     }
 }

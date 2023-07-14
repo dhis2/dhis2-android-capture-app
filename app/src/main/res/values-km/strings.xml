@@ -143,9 +143,6 @@
     <string name="log_out">ចាកចេញ</string>
     <string name="block_session">ការទប់ស្កាត់</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">ជ្រើសរើសទីតាំង</string>
-
     <!-- SYNC -->
     <string name="a_minute">១នាទី</string>
     <string name="fifteen_minute">១៥នាទី</string>
@@ -183,7 +180,6 @@
     <string name="enroll_in">ចុះឈ្មោះក្នុង %s</string>
     <string name="missing_mandatory_fields_title">ទិន្នន័យចាំបាច់មិនមាន</string>
     <string name="missing_mandatory_fields_text">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន, ប្រសិនបើអ្នកចង់ត្រឡប់ទៅវិញ រាល់ពត៏មាននិងត្រូវលុយចោល</string>
-    <string name="missing_mandatory_fields_events">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន។ អ្នកអាចត្រឡប់ក្រោយបាន ប៉ុន្ដែព្រឹត្តិការណ៏នេះនិងមិនបានសំរេច</string>
     <string name="missing_mandatory_fields_go_back">លុប ហើយត្រឡប់ទៅវិញ</string>
     <!--EVENT SUMMARY-->
     <string name="section_list">បញ្ជីតាមផ្នែក</string>

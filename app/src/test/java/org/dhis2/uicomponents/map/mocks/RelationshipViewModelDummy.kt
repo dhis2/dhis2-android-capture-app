@@ -2,9 +2,9 @@ package org.dhis2.uicomponents.map.mocks
 
 import java.text.ParseException
 import java.util.Date
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipDirection
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipOwnerType
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel
+import org.dhis2.commons.data.RelationshipDirection
+import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.commons.data.RelationshipViewModel
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipType

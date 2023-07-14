@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide;
 
 import org.dhis2.R;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.Preconditions;
+import org.dhis2.commons.extensions.Preconditions;
 
 public class QrFragment extends FragmentGlobalAbstract {
 

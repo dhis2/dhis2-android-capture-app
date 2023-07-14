@@ -25,6 +25,7 @@ class EventListPresenter(
 
 
     fun init() {
+        // CountingIdlingResourceSingleton.increment()
         disposable.add(
             filterFlowable.startWith(filterManager)
                 .map { eventRepository.filteredProgramEvents(textFilter) }

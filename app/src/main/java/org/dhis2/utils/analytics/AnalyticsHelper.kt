@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import javax.inject.Inject
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.hisp.dhis.android.core.D2Manager
 
 class AnalyticsHelper @Inject constructor(
     private val matomoAnalyticsController: MatomoAnalyticsController
@@ -16,21 +15,11 @@ class AnalyticsHelper @Inject constructor(
             put(param, value)
         }
 
-        // trackMatomoEvent(param, value, event)
         setEvent(event, params)
     }
 
     fun trackMatomoEvent(category: String, action: String, label: String) {
         matomoAnalyticsController.trackEvent(category, action, label)
-    }
-
-    private fun trackUserId() {
-        val d2 = D2Manager.getD2()
-
-        if (d2 != null && d2.userModule().blockingIsLogged()) {
-            val userUid = d2.userModule().user().blockingGet()?.uid()
-            matomoAnalyticsController.setUserId(userUid)
-        }
     }
 
     fun setEvent(event: String, params: Map<String, String>) {

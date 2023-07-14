@@ -100,11 +100,14 @@ data class SerieData(
     val coordinates: List<GraphPoint>
 )
 
+data class LegendValue(val color: Int, val label: String?)
+
 data class GraphPoint(
     val eventDate: Date,
     val position: Float? = -1f,
     val fieldValue: Float,
-    val legend: String? = null
+    val legend: String? = null,
+    val legendValue: LegendValue? = null
 )
 
 fun Graph.toChartBuilder(): Chart.ChartBuilder {

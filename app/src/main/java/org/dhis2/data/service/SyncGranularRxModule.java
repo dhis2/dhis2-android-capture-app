@@ -12,7 +12,6 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-@PerService
 public class SyncGranularRxModule {
 
     @Provides

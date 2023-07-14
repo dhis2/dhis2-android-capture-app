@@ -4,7 +4,6 @@ package org.dhis2.data.forms.dataentry.tablefields.datetime;
 import androidx.databinding.ViewDataBinding;
 
 import org.dhis2.BR;
-import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.TableDateTextBinding;

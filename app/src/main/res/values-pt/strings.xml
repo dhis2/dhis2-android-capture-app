@@ -171,9 +171,6 @@
     <string name="log_out">Sair</string>
     <string name="block_session">Bloquear Sessão</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Selecionar local</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Minuto</string>
     <string name="fifteen_minute">15 Minutos</string>
@@ -208,6 +205,7 @@
     <string name="settings_sms_response_wait_switch">Aguardar resposta do resultado do SMS</string>
     <plurals name="settings_specific_programs">
         <item quantity="one">Há sim %s programa com configurações específicas</item>
+        <item quantity="many">Há%s programas com configurações específicas</item>
         <item quantity="other">Há%s programas com configurações específicas</item>
     </plurals>
     <string name="settings_sync_period">Período de sincronização</string>
@@ -250,7 +248,6 @@
     <string name="missing_mandatory_fields_title">Faltam campos obrigatórios</string>
     <string name="missing_mandatory_fields_text">Alguns campos obrigatórios estão ausentes. Se você quiser voltar agora, todas as informações salvas serão excluídas.</string>
     <string name="missing_mandatory_fields_text_not_delete">Alguns campos obrigatórios estão ausentes. Se você quiser voltar, por favor preencha-os. </string>
-    <string name="missing_mandatory_fields_events">Alguns campos obrigatórios estão ausentes. Você pode voltar agora, mas este evento não poderá ser concluído.</string>
     <string name="title_delete_go_back">Seus dados não são salvos</string>
     <string name="delete_go_back">Se você voltar agora, todas as informações inseridas serão excluídas.</string>
     <string name="missing_mandatory_fields_events_2.0">Alguns campos obrigatórios estão ausentes:/n%s/nVocê pode voltar agora, mas este evento não poderá ser concluído.</string>
@@ -439,7 +436,6 @@
     <string name="dashboard_indicators">Indicadores</string>
     <string name="empty_indicators">Não há indicadores para este programa.</string>
     <string name="dashboard_notes">Notas</string>
-    <string name="unable_to_complete">Não foi possível concluir</string>
     <string name="field_errors">Alguns campos possuem erros. Por favor, verifique-os para poder concluir</string>
     <string name="unselect_enrollment">Todas as inscrições</string>
     <string name="unselect_enrollment_description">Mostrar painel com todos os programas ativos</string>
@@ -450,7 +446,6 @@
     <string name="sectionSelectorPrev">ANTERIOR</string>
     <string name="sectionSelectorNext">PRÓXIMO</string>
     <string name="event_overview">Detalhes</string>
-    <string name="event_event">Evento</string>
     <string name="event_indicators">Indicadores</string>
     <string name="event_notes">Notas</string>
     <string name="complete_add_new"><![CDATA[Conclua e adicione novo]]></string>
@@ -516,10 +511,8 @@
     <string name="sync_setting">Configuração de sincronização: %s</string>
     <string name="relationship_without_enrollment">O registro que você está tentando acessar não tem inscrição. Você não pode acessar o painel.</string>
     <string name="formatting_error">Erro de formatação</string>
-    <string name="dashboard_menu_delete_tei">SUPRIMIR TEI</string>
     <string name="dashboard_menu_delete_enrollment">Suprimir somente inscrição</string>
     <string name="delete_authority_error">Você não tem autoridade para suprimir este registro</string>
-    <string name="record_marked_for_deletion">Este registro está marcado para exclusão. Você não pode acessá-lo.</string>
     <string name="validation_url">Este url não é válido</string>
     <string name="uncomplete_authority_error">Você não tem autoridade para reabrir este evento</string>
     <string name="adjusting_form">Ajustando formulário...</string>
@@ -572,10 +565,8 @@
     <string name="value_required_but_not_provided">%s é obrigatório mas não foi fornecido.</string>
     <string name="polygon_captured">Polígono capturado</string>
     <string name="polygon">Poligono</string>
-    <string name="map_layers">Camadas do mapa</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">Não é um formato correto.</string>
     <string name="fingerprint_title">Impressão digital</string>
     <string name="fingerprint_message">Por favor, coloque o dedo no seu leitor de impressões digitais.</string>
     <string name="security_title">Segurança</string>
@@ -666,10 +657,6 @@
     <string name="syncing_period_not_editable">O período de sincronização não é editável</string>
     <string name="sync_parameters_not_editable">Os parâmetros de sincronização não são editáveis</string>
     <string name="rv_no_editable">O número de valores reservados baixados não é editável</string>
-    <string name="dialog_layer_satellite">Mostrar vista de satélite</string>
-    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas tei</string>
-    <string name="dialog_layer_enrollment_coordinates">Mostrar coordenadas de inscrição</string>
-    <string name="dialog_layer_heatmap">Mostrar camada do mapa de calor</string>
     <string name="downloading">Baixando</string>
     <string name="filter_sync_synced">Sincronizado</string>
     <string name="filter_sync_not_synced">Não sincronizado</string>

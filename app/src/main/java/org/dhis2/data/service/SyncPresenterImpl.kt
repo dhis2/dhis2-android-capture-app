@@ -331,10 +331,16 @@ class SyncPresenterImpl(
     }
 
     override fun syncGranularTEI(uid: String): Observable<D2Progress> {
+        val enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet()
         Completable.fromObservable(
-            d2.trackedEntityModule().trackedEntityInstances().byUid().eq(uid).upload()
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byUid().eq(enrollment.trackedEntityInstance()!!)
+                .byProgramUids(listOf(enrollment.program()!!))
+                .upload()
         ).blockingAwait()
-        return d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().eq(uid)
+        return d2.trackedEntityModule().trackedEntityInstanceDownloader()
+            .byUid().eq(enrollment.trackedEntityInstance())
+            .byProgramUid(enrollment.program()!!)
             .download()
     }
 

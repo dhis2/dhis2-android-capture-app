@@ -1,11 +1,11 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
+import org.dhis2.commons.data.EventViewModel
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.filter
 import org.dhis2.core.types.root
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 
 sealed class FeedbackFailure {
     object NotFound : FeedbackFailure()
@@ -79,7 +79,7 @@ class GetFeedback(
         return root(null, teiEvents.map { event ->
             val children = mapValuesToTreeNodes(event.values)
 
-            Tree.Node(FeedbackItem(event.name, null, event.uid), children)
+            Tree.Node(FeedbackItem(event.name, null, event.uid), 1, children)
         })
     }
 
@@ -91,7 +91,7 @@ class GetFeedback(
             .flatMap { it.values }
             .distinctBy { it.dataElement }
             .filter { it.feedbackOrder.level == 0 }
-            .sortedBy{ it.feedbackOrder }
+            .sortedBy { it.feedbackOrder }
 
         return root(null, level0DistinctValues.map {
             val eventsChildren =
@@ -100,7 +100,7 @@ class GetFeedback(
             val finalChildren = if (it.feedbackHelp != null)
                 listOf(Tree.Leaf(FeedbackHelpItem(it.feedbackHelp))) + eventsChildren else eventsChildren
 
-            Tree.Node(FeedbackItem(it.name, null, it.dataElement), finalChildren)
+            Tree.Node(FeedbackItem(it.name, null, it.dataElement), 1, finalChildren)
         })
     }
 
@@ -109,11 +109,19 @@ class GetFeedback(
         onlyFailed: Boolean,
         root: Tree.Root<*>
     ): Tree.Root<*> {
+        val onlyFailedPredicate = { node: Tree<*> ->
+            ((node.content is FeedbackItem && node.content.value != null &&
+                !node.content.value.success && onlyFailed) || !onlyFailed)
+        }
+
+        val criticalPredicate = { node: Tree<*> ->
+            (node is Tree.Node && node.content is FeedbackItem && node.content.value != null &&
+                node.level != 2 && node.content.value.critical == criticalFilter)
+                || criticalFilter == null
+        }
+
         val predicate = { node: Tree<*> ->
-            (((node.content is FeedbackItem && node.content.value != null &&
-                !node.content.value.success && onlyFailed) || !onlyFailed) &&
-                ((node.content is FeedbackItem && node.content.value != null &&
-                    node.content.value.critical == criticalFilter) || criticalFilter == null)) ||
+            (onlyFailedPredicate(node) && criticalPredicate(node)) ||
                 node.content is FeedbackHelpItem ||
                 node is Tree.Node && anyChildrenIsFailed(criticalFilter, onlyFailed, node)
         }
@@ -193,7 +201,7 @@ class GetFeedback(
                         eventValueLevel0.isNumeric
                     ),
                     event.uid
-                ), children
+                ), eventValueLevel0.feedbackOrder.level + 2, children
             )
         }
     }
@@ -218,7 +226,7 @@ class GetFeedback(
                     eventValue.isNumeric
                 ) else null,
                 eventValue.dataElement
-            ), finalChildren
+            ), eventValue.feedbackOrder.level + 2, finalChildren
         )
     }
 
@@ -228,7 +236,7 @@ class GetFeedback(
         return enrolmentEvents.map {
             val values = valuesRepository.getByEvent(it.event!!.uid())
 
-            Event(it.event.uid(), it.stage?.displayName()!!, it.stage.uid(), values)
+            Event(it.event!!.uid(), it.stage?.displayName()!!, it.stage!!.uid(), values)
         }
     }
 
@@ -296,10 +304,10 @@ class GetFeedback(
 
         return feedbackOrderByParent.map { entry ->
             entry.value.mapIndexed { index, order ->
-                if (index == 0){
+                if (index == 0) {
                     false
                 } else {
-                    order.lastNumber -  entry.value[index-1].lastNumber > 1
+                    order.lastNumber - entry.value[index - 1].lastNumber > 1
                 }
             }.any { it }
         }.any { it }

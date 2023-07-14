@@ -11,23 +11,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.AsyncDifferConfig
+import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 import org.dhis2.BuildConfig
 import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.animations.collapse
 import org.dhis2.commons.animations.expand
+import org.dhis2.commons.data.EventViewModel
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailLiveAdapter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.utils.DataElementsAdapter
 import org.hisp.dhis.android.core.dataelement.DataElement
 
 class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
-    private lateinit var binding: FragmentProgramEventDetailListBinding
+    lateinit var binding: FragmentProgramEventDetailListBinding
     private var liveAdapter: ProgramEventDetailLiveAdapter? = null
     private val programEventsViewModel by lazy {
         ViewModelProviders.of(requireActivity())[ProgramEventDetailViewModel::class.java]
@@ -43,7 +48,23 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
     ): View? {
         (activity as ProgramEventDetailActivity).component.plus(EventListModule(this)).inject(this)
         programEventsViewModel.setProgress(true)
-        liveAdapter = ProgramEventDetailLiveAdapter(presenter.program(), programEventsViewModel)
+
+        val bgThreadPoolExecutor = IdlingThreadPoolExecutor(
+            "DiffExecutor",
+            2,
+            2,
+            0L,
+            TimeUnit.MILLISECONDS,
+            LinkedBlockingQueue(),
+            Executors.defaultThreadFactory()
+        )
+
+        val config = AsyncDifferConfig.Builder(ProgramEventDetailLiveAdapter.getDiffCallback())
+            .setBackgroundThreadExecutor(bgThreadPoolExecutor)
+            .build()
+
+        liveAdapter =
+            ProgramEventDetailLiveAdapter(presenter.program(), programEventsViewModel, config)
         return FragmentProgramEventDetailListBinding.inflate(inflater, container, false)
             .apply {
                 binding = this
@@ -73,6 +94,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
                         binding.emptyTeis.visibility = View.GONE
                         binding.recycler.visibility = View.VISIBLE
                     }
+                    //   CountingIdlingResourceSingleton.decrement()
                 }
             }
         )

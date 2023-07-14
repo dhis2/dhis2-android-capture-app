@@ -6,12 +6,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.AsyncDifferConfig;
 import androidx.recyclerview.widget.DiffUtil;
 
 import org.dhis2.R;
+import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.hisp.dhis.android.core.program.Program;
 
 import kotlin.Pair;
@@ -19,22 +20,27 @@ import kotlin.Unit;
 
 public class ProgramEventDetailLiveAdapter extends PagedListAdapter<EventViewModel, EventViewHolder> {
 
-    private static final DiffUtil.ItemCallback<EventViewModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<EventViewModel>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull EventViewModel oldItem, @NonNull EventViewModel newItem) {
-            return oldItem.getEvent().uid().equals(newItem.getEvent().uid());
-        }
+    public static DiffUtil.ItemCallback<EventViewModel> getDiffCallback(){
+        return new DiffUtil.ItemCallback<EventViewModel>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull EventViewModel oldItem, @NonNull EventViewModel newItem) {
+                return oldItem.getEvent().uid().equals(newItem.getEvent().uid());
+            }
 
-        @Override
-        public boolean areContentsTheSame(@NonNull EventViewModel oldItem, @NonNull EventViewModel newItem) {
-            return oldItem.equals(newItem);
-        }
-    };
+            @Override
+            public boolean areContentsTheSame(@NonNull EventViewModel oldItem, @NonNull EventViewModel newItem) {
+                return oldItem.equals(newItem);
+            }
+        };
+    }
+
     private final Program program;
     private ProgramEventDetailViewModel eventViewModel;
 
-    public ProgramEventDetailLiveAdapter(Program program, ProgramEventDetailViewModel eventViewModel) {
-        super(DIFF_CALLBACK);
+    public ProgramEventDetailLiveAdapter(Program program,
+                                         ProgramEventDetailViewModel eventViewModel,
+                                         AsyncDifferConfig<EventViewModel> config) {
+        super(config);
         this.eventViewModel = eventViewModel;
         this.program = program;
     }

@@ -5,7 +5,6 @@ import android.view.View;
 
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.data.forms.dataentry.fields.radiobutton.YesNoView;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;

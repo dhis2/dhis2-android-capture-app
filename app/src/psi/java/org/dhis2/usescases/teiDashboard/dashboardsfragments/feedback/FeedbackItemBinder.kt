@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.core.types.Tree
 import org.dhis2.core.ui.tree.TreeAdapterBinder
-import java.text.DecimalFormat
 
 class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
     override val layoutId: Int

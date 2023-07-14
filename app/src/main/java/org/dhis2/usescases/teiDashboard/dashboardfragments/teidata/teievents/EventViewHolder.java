@@ -12,11 +12,14 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.databinding.ItemEventBinding;
-import org.dhis2.databinding.ItemFieldValueBinding;
+import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.databinding.ItemFieldValueBinding;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.ui.MetadataIconData;
+import org.dhis2.commons.ui.MetadataIconKt;
+import org.dhis2.databinding.ItemEventBinding;
+import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
@@ -55,6 +58,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onSyncClick = syncClick;
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
+        MetadataIconKt.handleComposeDispose(binding.composeStageIcon);
     }
 
     public void bind(EventViewModel eventModel, Enrollment enrollment, @NotNull Function0<Unit> toggleList) {
@@ -71,13 +75,13 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
                     ContextCompat.getColor(itemView.getContext(),
                             program.programType() == ProgramType.WITH_REGISTRATION ? R.color.form_field_background : R.color.white));
             binding.programStageName.setVisibility(View.GONE);
-            binding.stageIconImage.setVisibility(View.INVISIBLE);
+            binding.composeStageIcon.setVisibility(View.INVISIBLE);
             binding.stageIconStatusImage.setVisibility(View.INVISIBLE);
             binding.eventStatus.setVisibility(View.VISIBLE);
         } else {
             binding.eventCard.setCardBackgroundColor(Color.WHITE);
             binding.programStageName.setVisibility(View.VISIBLE);
-            binding.stageIconImage.setVisibility(View.VISIBLE);
+            binding.composeStageIcon.setVisibility(View.VISIBLE);
             binding.stageIconStatusImage.setVisibility(View.VISIBLE);
             binding.eventStatus.setVisibility(View.GONE);
             renderStageIcon(programStage.style());
@@ -137,21 +141,23 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private void renderStageIcon(ObjectStyle style) {
         int color = ColorUtils.getColorFrom(
                 style.color(),
-                ColorUtils.getPrimaryColor(binding.stageIconImage.getContext(), ColorUtils.ColorType.PRIMARY)
+                ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT)
         );
 
-        binding.stageIconImage.setBackground(
-                ColorUtils.tintDrawableWithColor(
-                        binding.stageIconImage.getBackground(),
-                        color
-                ));
+        int imageResource = new ResourceManager(itemView.getContext()).getObjectStyleDrawableResource(
+                style.icon(),
+                R.drawable.ic_default_outline
+        );
 
-        binding.stageIconImage.setImageResource(
-                new ResourceManager(itemView.getContext()).getObjectStyleDrawableResource(
-                        style.icon(),
-                        R.drawable.ic_default_outline
-                ));
-        binding.stageIconImage.setColorFilter(ColorUtils.getContrastColor(color));
+        MetadataIconKt.setUpMetadataIcon(
+                binding.composeStageIcon,
+                new MetadataIconData(
+                        color,
+                        imageResource,
+                        40
+                ),
+                false
+        );
     }
 
     private void initValues(boolean valueListIsOpen, List<Pair<String, String>> dataElementValues) {

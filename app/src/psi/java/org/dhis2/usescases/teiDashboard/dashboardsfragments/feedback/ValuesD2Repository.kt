@@ -3,13 +3,9 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 import android.content.Context
 import android.os.Build
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.R
-import org.dhis2.data.forms.EventRepository
-import org.dhis2.data.forms.RulesRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventRuleEngineRepository
 import org.dhis2.utils.JsonCheckResult
 import org.dhis2.utils.JsonChecker
 import org.hisp.dhis.android.core.D2
@@ -35,7 +31,7 @@ class ValuesD2Repository(
 
         val teiDataValues =
             d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid)
-                .get().blockingGet()
+                .get().blockingGet().filter { it.value() != null }
 
         val dataElementsWithFeedbackOrder =
             getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode)
