@@ -178,7 +178,7 @@ android {
         spOCC {
             applicationId "org.samaritan.cpr"
             dimension "default"
-            versionCode 120
+            versionCode versions.vCode
             versionName "2.7.1.1-spOCC-fork-1"
         }
     }
