@@ -4,10 +4,10 @@
     <data>
         <variable
             name="currentSelectedStyle"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.maps.layer.BaseMapType&gt;" />
+            type="androidx.databinding.ObservableInt" />
         <variable
             name="itemStyle"
-            type="org.dhis2.maps.layer.BaseMapType" />
+            type="Integer" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="100dp"
@@ -27,7 +27,7 @@
             app:strokeWidth="@{currentSelectedStyle == itemStyle ? 5 : 0}"
             app:layout_constraintEnd_toStartOf="parent"
             android:scaleType="centerCrop"
-            app:srcCompat="@drawable/satellite_map_preview"
+            app:srcCompat="@drawable/basemap_bing_aerial_labels"
             android:layout_height="60dp"/>
 
         <TextView

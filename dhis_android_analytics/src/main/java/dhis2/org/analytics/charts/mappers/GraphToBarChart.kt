@@ -51,13 +51,19 @@ class GraphToBarChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                val padding = ceil((graph.maxValue() - graph.minValue()) * 0.05f)
+                val minValue = getMinValue(graph)
+                val padding = ceil((graph.maxValue() - minValue) * 0.05f)
                 axisMaximum = graph.maxValue() + padding
-                axisMinimum = if (graph.minValue() == 0f) {
-                    graph.minValue()
+                axisMinimum = if (minValue == 0f) {
+                    minValue
                 } else {
-                    graph.minValue() - padding
+                    minValue - padding
                 }
+                if (graph.isSingleValue() && graph.series[0].coordinates[0].fieldValue < 0) {
+                    axisMaximum = minValue
+                    axisMinimum = graph.maxValue() + padding
+                }
+
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false
@@ -92,6 +98,14 @@ class GraphToBarChart {
 
             layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
+        }
+    }
+
+    private fun getMinValue(graph: Graph): Float {
+        return if (graph.isSingleValue()) {
+            0f
+        } else {
+            graph.minValue()
         }
     }
 }

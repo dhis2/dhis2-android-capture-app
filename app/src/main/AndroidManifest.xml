@@ -4,6 +4,7 @@
     package="org.dhis2">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -14,6 +15,14 @@
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="false" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="smsto" android:host="*" />
+        </intent>
+
+    </queries>
 
     <application
         android:name=".App"
@@ -47,7 +56,8 @@
 
         <activity
             android:name=".usescases.splash.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -81,13 +91,8 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden" />
-        <!--<activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />-->
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk" />
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
@@ -96,7 +101,8 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
 
-        <receiver android:name=".widgets.DhisCustomLauncher">
+        <receiver android:name=".widgets.DhisCustomLauncher"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -118,16 +124,6 @@
 
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
         <activity android:name=".usescases.about.PolicyView" />
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/content_provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
 
         <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
@@ -153,8 +149,15 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
-        <activity android:name=".data.forms.ScanCaptureActivity"/>
         <activity android:name=".usescases.login.accounts.AccountsActivity" />
+        <activity
+            android:exported="false"
+            android:name=".usescases.crash.CrashActivity"
+            android:process=":error_activity">
+            <intent-filter>
+                <action android:name="cat.ereza.customactivityoncrash.ERROR" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

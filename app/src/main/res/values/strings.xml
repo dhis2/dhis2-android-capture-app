@@ -65,6 +65,7 @@
     <string name="configuration_sync_failed">Configuration sync failed</string>
     <string name="data_sync_failed">Data sync failed</string>
     <string name="account_recovery">Account recovery</string>
+    <string name="no_network_to_recover_account">A network connection is needed to recover your account.</string>
 
     <!--PERIOD-->
     <string name="DAILY">Daily</string>
@@ -104,7 +105,6 @@
     <string name="event_approved">Event Approved</string>
     <string name="event_inactive">Event Inactive</string>
     <string name="read_only">Read only</string>
-    <string name="complete">Complete</string>
     <string name="finish_and_complete">Finish and complete</string>
     <string name="completed">Completed</string>
     <string name="cancelled">Cancelled</string>
@@ -215,7 +215,7 @@
     <string name="settings_sms_module_title">SMS module:</string>
     <string name="settings_sms_receiver_number">SMS gateway</string>
     <string name="settings_sms_result_sender_number">SMS result sender</string>
-    <string name="settings_sms_result_timeout">SMS result timeout</string>
+    <string name="settings_sms_result_timeout">SMS result timeout (sec)</string>
     <string name="settings_sms_result_timeout_hint">seconds</string>
     <string name="settings_sms_result_sender_hint">number</string>
     <string name="settings_sms_receiver_number_hint">number</string>
@@ -268,7 +268,6 @@
     <string name="missing_mandatory_fields_events">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="title_delete_go_back">Your data is not saved</string>
     <string name="delete_go_back">If you go back now all information entered will be deleted.</string>
-    <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="missing_mandatory_fields_events_2.0">Some mandatory fields are missing:\n%s\nYou can go back now, but this event won\'t be able to be completed.</string>
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
     <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
@@ -460,7 +459,6 @@
     <string name="unable_to_save">Unable to save</string>
     <string name="warnings_in_form">There are warnings in the form</string>
     <string name="what_to_do">What do yo want to do?</string>
-    <string name="review">Review</string>
     <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>
     <string name="unselect_enrollment">All enrollments</string>
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
@@ -740,7 +738,6 @@
     <string name="show_events_timeline">Show events timeline</string>
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Event date</string>
-    <string name="dataset_data">Data</string>
     <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
     <string name="privacy_policy_title">Privacy Policy</string>
     <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
@@ -765,7 +762,6 @@
     <string name="jira_issue_sent">Issue Sent</string>
     <string name="jira_issue_sent_error">Error sending issue</string>
     <string name="section_charts">Charts</string>
-    <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
     <string name="navigation_list_view">List view</string>
     <string name="navigation_table_view">Table view</string>
     <string name="navigation_map_view">Map view</string>
@@ -870,10 +866,7 @@
     <string name="troubleshooting_pass_rule_validation">No warnings found</string>
     <string name="troobleshooting_pass_rule_validation_title">Everything looks great</string>
     <string name="not_saved">Not saved</string>
-    <string name="discard_changes">Discard changes</string>
-    <string name="keep_editing">Keep editing</string>
     <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
-    <string name="not_now">Not now</string>
     <string name="search_loading_more">Loading more results</string>
     <string name="search_no_results_in_program">No more results for %s</string>
     <string name="search_outside_action">Search outside this program</string>
@@ -891,14 +884,35 @@
     <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
     <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
     <string name="event_error_on_complete">You have some error messages.\nDo you want to review them?</string>
-    <string name="field_errors_not_saved_discard">Some fields have errors and they are not saved. \nIf you exit now the changes will be discarded.</string>
-    <string name="field_errors_not_saved">Some fields have errors and they are not saved.</string>
-    <string name="fields_mandatory_missing">Some mandatory fields are missing and the form cannot be saved.</string>
-    <string name="fields_mandatory_missing_discard">Some mandatory fields are missing and the form cannot be saved. \nIf you exit now the changes will be discarded.</string>
     <string name="changes_will_be_discarted">If you exit now the changes will be discarded.</string>
     <string name="re_opened">Re-opened</string>
     <string name="account_disable_title">Account disabled</string>
     <string name="account_disable_message">Your account has been disabled by an administrator.</string>
     <string name="search_unable_search_outside">To search outside this program open the search form and fill one of the following %s fields:</string>
     <string name="enrollment_org_unit">Enrollment Org Unit</string>
+    <string name="customactivityoncrash_error_activity_build_version">Build version: %s</string>
+    <string name="customactivityoncrash_error_activity_buid_date">Build date: %s</string>
+    <string name="customactivityoncrash_error_activity_current_date">Current date: %s</string>
+    <string name="customactivityoncrash_error_activity_device">Device: %s</string>
+    <string name="customactivityoncrash_error_activity_os_version">Os version: %s</string>
+    <string name="open_details">Open %s details</string>
+    <string name="syncing_resource">Syncing %s…</string>
+    <string name="sms_sync_waiting_for_response">SMS sent. Waiting for server response.</string>
+    <string name="sms_sync_sms_reached_server">SMS confirmed to reach server. Updating Status</string>
+    <string name="sms_sync_sms_reached_server_error">We can\'t confirm the SMS reached the server. Updating Status</string>
+    <string name="sms_sync_sent">SMS sent. Updating status.</string>
+    <string name="sms_sync_not_sent">SMS not sent.</string>
+    <string name="sms_sync_opening_app">Opening SMS app. Do not modify the message please.</string>
+    <string name="sms_sync_sms_app_chooser_title">Send Sms with</string>
+    <string name="sms_sync_is_sms_sent">Did you send the sms?</string>
+    <string name="sms_sync_manual_confirmation">Awaiting manual confirmation</string>
+    <string name="syncing_events">Syncing events</string>
+    <string name="syncing_teis">Syncing tracked entities</string>
+    <string name="syncing_data_sets">Syncing data sets</string>
+    <string name="syncing_resources">Syncing resources</string>
+    <string name="syncing_done">Syncing done</string>
+    <string name="sms_available_for_individual_records">SMS sync is available but has to be accessed for each individual record</string>
+    <string name="downloading_image_resources">Downloading images...</string>
+    <string name="program_description">Program description</string>
+    <string name="wrong_pin">Wrong pin</string>
 </resources>

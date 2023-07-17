@@ -10,7 +10,8 @@ data class TableData(
     val accessDataWrite: Boolean,
     val showRowTotals: Boolean = false,
     val showColumnTotals: Boolean = false,
-    val overriddenMeasure: TableMeasure
+    val overriddenMeasure: TableMeasure,
+    val hasDataElementDecoration: Boolean
 ) {
     fun columnHeaders() = dataTableModel.header
     fun catCombo() = dataTableModel.catCombo

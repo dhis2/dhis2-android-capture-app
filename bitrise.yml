@@ -21,10 +21,10 @@ trigger_map:
   workflow: primary
 - push_branch: hotfix/2.4.2
   workflow: primary
-- push_branch: release/2.6
+- push_branch: release/2.7.0
   workflow: primary
 - pull_request_target_branch: "*"
-  workflow: primary
+  workflow: PullRequest
 workflows:
   BuildSignReleaseAPKs:
     envs:
@@ -98,6 +98,7 @@ workflows:
               exit 0
             fi
 
+
             FILE=zxing-core/core/build.gradle
             if [ -f "$FILE" ]; then
                 echo "$FILE exist"
@@ -129,6 +130,8 @@ workflows:
         asset_urls:
           icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/sign-apk/assets/icon.svg
         inputs:
+        - signer_scheme: v2
+        - use_apk_signer: 'true'
         - android_app: "$BITRISE_APK_PATH_LIST"
     - deploy-to-bitrise-io:
         asset_urls:
@@ -199,73 +202,6 @@ workflows:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.1: {}
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
-              exit 0
-            fi
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -321,73 +257,41 @@ workflows:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.1: {}
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
         - content: |-
             chmod +x ./scripts/change_java_version.sh
             ./scripts/change_java_version.sh
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            if [ "$BITRISE_GIT_BRANCH" = "master_legacy" ]; then
+              exit 0
+            fi
+
+            SUBMODULE=zxing-core
+            if [ -d "$SUBMODULE" ]; then
+              echo "$SUBMODULE exist"
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
+            fi
     - install-missing-android-tools:
         inputs:
         - gradlew_path: "./gradlew"
@@ -500,27 +404,6 @@ workflows:
             cd scripts/
             chmod +x flow_tests_configurator.sh
             ./flow_tests_configurator.sh
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug
@@ -611,73 +494,6 @@ workflows:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.1: {}
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
-              exit 0
-            fi
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -787,6 +603,150 @@ workflows:
         inputs:
         - notify_user_groups: none
     - cache-push: {}
+  JacocoAndSonarqubeTest:
+    description: |+
+      Workflow that
+
+      1)Choose random reviewers for a PR
+
+      2)Run tests
+
+      3)Publish Results on slack
+
+    steps:
+    - activate-ssh-key@4.1:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@6.1:
+        inputs:
+        - merge_pr: 'no'
+        - fetch_tags: 'yes'
+        - manual_merge: 'no'
+    - cache-pull@2: {}
+    - script@1:
+        title: Set Java 8 as default
+        inputs:
+        - content: |
+            chmod +x ./scripts/change_java_version.sh
+            ./scripts/change_java_version.sh
+    - script:
+        title: Rule engine build.gradle
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            SUBMODULE=dhis2-rule-engine
+            if [ -d "$SUBMODULE" ]; then
+              cd dhis2-rule-engine
+
+              FILE=build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE rule engine exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'
+
+              dependencies {
+
+                  testImplementation 'junit:junit:4.12'
+                  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
+                  testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
+                  testCompile 'com.google.truth:truth:0.30'
+                  testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
+
+                  implementation 'com.google.code.findbugs:jsr305:3.0.1'
+                  compileOnly 'com.google.auto.value:auto-value:1.3'
+                  annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
+                  compile 'com.google.guava:guava:16+'
+                  compile 'joda-time:joda-time:2.10.5'
+                  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+                  implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
+                  implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
+              }" > build.gradle
+
+              cd ..
+              echo "Rule engine build gradle created"
+
+            fi
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            if [ "$BITRISE_GIT_BRANCH" = "master_legacy" ]; then
+              exit 0
+            fi
+
+            SUBMODULE=zxing-core
+            if [ -d "$SUBMODULE" ]; then
+              echo "$SUBMODULE exist"
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
+            fi
+
+    - install-missing-android-tools:
+        inputs:
+        - gradlew_path: "./gradlew"
+    - script@1:
+        title: Run Unit tests with covergae
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            git fetch origin develop
+            ./gradlew testDhisDebugUnitTestCoverage
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - script@1:
+        title: Run sonarqube
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            ./gradlew sonarqube
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
   LocalPrimary:
     description: |+
       Workflow that
@@ -798,7 +758,7 @@ workflows:
       3)Publish Results on slack
 
     steps:
-    - gradle-runner@1:
+    - gradle-runner@2:
         title: Verify Kotlin codestyle
         inputs:
         - gradlew_path: "./gradlew"
@@ -807,28 +767,7 @@ workflows:
         - test_apk_file_include_filter: ''
         - mapping_file_include_filter: ''
         - retry_on_failure: 'no'
-        - gradle_task: ":app:ktlintCheck :form:ktlintCheck :dhis_android_analytics:ktlintCheck"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
+        - gradle_task: ktlintCheck
     - android-unit-test@1:
         inputs:
         - variant: dhisDebug
@@ -850,22 +789,6 @@ workflows:
 
             chmod +x ./browserstackBitrise.sh
             ./browserstackBitrise.sh
-    - slack@3.1.3:
-        inputs:
-        - channel: "#android-capture-app-ci"
-        - emoji: ":white_check_mark:"
-        - from_username: Continuous integration
-        - buttons: |
-            View Build|${BITRISE_BUILD_URL}
-            View UnitTests|https://addons-testing.bitrise.io/builds/${BITRISE_BUILD_SLUG}/summary?status=all
-            View UITests|${BROWSERSTACK_TEST_REPORTS}
-            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
-        - emoji_on_error: ":laptop:"
-        - from_username_on_error: Local Continuous integration
-        - color_on_error: "#f01f33"
-        - pretext: "*Local Build Succeeded!*"
-        - pretext_on_error: "*Local Build Failed!*"
-        - webhook_url: "$SLACK_CI_WEBHOOK"
   LocalUITest:
     description: |+
       Workflow that
@@ -1120,9 +1043,164 @@ workflows:
       3)Publish Results on slack
 
     steps:
-    - activate-ssh-key@4.0.5:
+    - activate-ssh-key@4:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@4.1: {}
+    - git-clone@6:
+        inputs:
+        - manual_merge: 'no'
+        - fetch_tags: 'yes'
+        - merge_pr: 'no'
+    - cache-pull@2: {}
+    - script@1:
+        title: Set Java 8 as default
+        inputs:
+        - content: |
+            chmod +x ./scripts/change_java_version.sh
+            ./scripts/change_java_version.sh
+    - script:
+        title: Choose reviewers randomly
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            exit 0
+
+            if [ ! -z "$BITRISE_PULL_REQUEST" ]; then
+
+            cd scripts
+            echo "Downloading and installing script dependencies"
+            apt-get update
+            apt-get install "-y" "python3-pip"
+            pip3 install -r requirements.txt
+
+            python3 reviewers.py
+            fi
+    - install-missing-android-tools:
+        inputs:
+        - gradlew_path: "./gradlew"
+    - gradle-runner@2:
+        title: Verify Kotlin codestyle
+        inputs:
+        - gradlew_path: "./gradlew"
+        - app_file_include_filter: "*.apk"
+        - app_file_exclude_filter: "\n"
+        - test_apk_file_include_filter: ''
+        - mapping_file_include_filter: ''
+        - retry_on_failure: 'no'
+        - gradle_task: ktlintCheck
+    - script@1:
+        title: Run Unit tests with covergae
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            git fetch
+            ./gradlew testDhisDebugUnitTestCoverage
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - script@1:
+        title: Run sonarqube
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            ./gradlew sonarqube
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - android-build-for-ui-testing@0:
+        inputs:
+        - variant: dhisUITestingDebug
+        - module: app
+        is_always_run: true
+    - script@1:
+        title: BrowserStack Tests
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            cd scripts/
+
+            apt-get install "-y" "jq"
+
+            chmod +x ./browserstackBitrise.sh
+            ./browserstackBitrise.sh
+
+    - avd-manager@1:
+        inputs:
+        - api_level: '30'
+    - wait-for-android-emulator@1: {}
+    - gradle-runner@2:
+        inputs:
+        - gradle_task: compose-table:connectedAndroidTest
+        - gradlew_path: "./gradlew"
+    - slack@3:
+        inputs:
+        - channel: "#android-capture-app-ci"
+        - emoji: ":white_check_mark:"
+        - from_username: Continuous integration
+        - buttons: |
+            View Build|${BITRISE_BUILD_URL}
+            View UnitTests|https://addons-testing.bitrise.io/builds/${BITRISE_BUILD_SLUG}/summary?status=all
+            View UITests|${BROWSERSTACK_TEST_REPORTS}
+            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
+        - emoji_on_error: ":imp:"
+        - from_username_on_error: Continuous integration
+        - color_on_error: "#f01f33"
+        - webhook_url: "$SLACK_CI_WEBHOOK"
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_email_list: "$APP_DEVS_MAILS"
+        - notify_user_groups: none
+    - cache-push@2: {}
+  primary-browserstack:
+    description: |+
+      Workflow that
+
+      1)Choose random reviewers for a PR
+
+      2)Run tests
+
+      3)Publish Results on slack
+
+    steps:
+    - activate-ssh-key@4.0:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@6.1:
+        inputs:
+        - manual_merge: 'no'
+        - fetch_tags: 'yes'
+        - merge_pr: 'no'
     - cache-pull@2: {}
     - script@1:
         title: Set Java 8 as default
@@ -1153,110 +1231,32 @@ workflows:
 
             python3 reviewers.py
             fi
-    - script:
-        title: Rule engine build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
-              exit 0
-            fi
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - install-missing-android-tools:
         inputs:
         - gradlew_path: "./gradlew"
-    - gradle-runner@1:
-        title: Verify Kotlin codestyle
-        inputs:
-        - gradlew_path: "./gradlew"
-        - app_file_include_filter: "*.apk"
-        - app_file_exclude_filter: "\n"
-        - test_apk_file_include_filter: ''
-        - mapping_file_include_filter: ''
-        - retry_on_failure: 'no'
-        - gradle_task: ":app:ktlintCheck :form:ktlintCheck :dhis_android_analytics:ktlintCheck"
-    - android-unit-test@1:
-        inputs:
-        - variant: dhisDebug
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug
         - module: app
-    - script@1:
-        title: BrowserStack Tests
+        is_always_run: true
+    - browserstack-bitrise-espresso-step@1:
         inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd scripts/
-
-            apt-get install "-y" "jq"
-
-            chmod +x ./uiTests.sh
-            ./uiTests.sh
+        - browserstack_accesskey: "$BROWSERSTACK_ACCESS_KEY"
+        - devices_list: Google Pixel 3a-9.0
+        - check_build_status: 'false'
+        - use_test_sharding: '{"numberOfShards": 2}'
+        - api_params: ''
+        - filter_test: class org.dhis2.usescases.UseCaseTestsSuite
+        - project: "${BITRISE_TRIGGERED_WORKFLOW_ID}"
+        - browserstack_username: "$BROWSERSTACK_USERNAME"
+    - avd-manager@1:
+        inputs:
+        - api_level: '30'
+    - wait-for-android-emulator@1: {}
+    - gradle-runner@2:
+        inputs:
+        - gradle_task: compose-table:connectedAndroidTest
+        - gradlew_path: "./gradlew"
     - slack@3.1.3:
         inputs:
         - channel: "#android-capture-app-ci"
@@ -1601,6 +1601,156 @@ workflows:
         - notify_email_list: "$APP_DEVS_MAILS"
         - notify_user_groups: none
     - cache-push@2: {}
+  PrimaryCompose:
+    description: |+
+      Workflow that
+
+      1)Choose random reviewers for a PR
+
+      2)Run tests
+
+      3)Publish Results on slack
+
+    steps:
+    - activate-ssh-key@4.0:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@6.1:
+        inputs:
+        - manual_merge: 'no'
+        - fetch_tags: 'yes'
+        - merge_pr: 'no'
+    - cache-pull@2: {}
+    - script@1:
+        title: Set Java 8 as default
+        inputs:
+        - content: |
+            chmod +x ./scripts/change_java_version.sh
+            ./scripts/change_java_version.sh
+    - script:
+        title: Choose reviewers randomly
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            if [ ! -z "$BITRISE_PULL_REQUEST" ]; then
+
+            cd scripts
+            echo "Downloading and installing script dependencies"
+            apt-get update
+            apt-get install "-y" "python3-pip"
+            pip3 install -r requirements.txt
+
+            python3 reviewers.py
+            fi
+    - install-missing-android-tools:
+        inputs:
+        - gradlew_path: "./gradlew"
+    - gradle-runner@1:
+        title: Verify Kotlin codestyle
+        inputs:
+        - gradlew_path: "./gradlew"
+        - app_file_include_filter: "*.apk"
+        - app_file_exclude_filter: "\n"
+        - test_apk_file_include_filter: ''
+        - mapping_file_include_filter: ''
+        - retry_on_failure: 'no'
+        - gradle_task: ":app:ktlintFormat :form:ktlintFormat :dhis_android_analytics:ktlintFormat
+            :commons:ktlintFormat :compose-table:ktlintFormat :dhis2_android_maps:ktlintFormat"
+    - script@1:
+        title: Run Unit tests with covergae
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            git fetch
+            ./gradlew testDhisDebugUnitTestCoverage
+            #./gradlew :app:testDhisDebugUnitTest :dhis_android_analytics:testDhisDebugUnitTest :form:testDhisDebugUnitTest
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - script@1:
+        title: Run sonarqube
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            ./gradlew sonarqube
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - android-build-for-ui-testing@0:
+        inputs:
+        - variant: dhisUITestingDebug
+        - module: app
+    - script@1:
+        title: BrowserStack Tests
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            cd scripts/
+
+            apt-get install "-y" "jq"
+
+            chmod +x ./browserstackBitrise.sh
+            ./browserstackBitrise.sh
+
+    - avd-manager@1:
+        inputs:
+        - api_level: '30'
+    - wait-for-android-emulator@1: {}
+    - gradle-runner@2:
+        inputs:
+        - gradle_task: compose-table:connectedAndroidTest
+        - gradlew_path: "./gradlew"
+    - slack@3.1.3:
+        inputs:
+        - channel: "#android-capture-app-ci"
+        - emoji: ":white_check_mark:"
+        - from_username: Continuous integration
+        - buttons: |
+            View Build|${BITRISE_BUILD_URL}
+            View UnitTests|https://addons-testing.bitrise.io/builds/${BITRISE_BUILD_SLUG}/summary?status=all
+            View UITests|${BROWSERSTACK_TEST_REPORTS}
+            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
+        - emoji_on_error: ":imp:"
+        - from_username_on_error: Continuous integration
+        - color_on_error: "#f01f33"
+        - webhook_url: "$SLACK_CI_WEBHOOK"
+    - deploy-to-bitrise-io@1:
+        inputs:
+        - notify_email_list: "$APP_DEVS_MAILS"
+        - notify_user_groups: none
+    - cache-push@2: {}
   PrimaryCopy:
     description: |+
       Workflow that
@@ -1776,6 +1926,155 @@ workflows:
         - color_on_error: "#f01f33"
         - webhook_url: "$SLACK_CI_WEBHOOK"
     - deploy-to-bitrise-io@1:
+        inputs:
+        - notify_email_list: "$APP_DEVS_MAILS"
+        - notify_user_groups: none
+    - cache-push@2: {}
+  PullRequest:
+    description: |+
+      Workflow that
+
+      1)Choose random reviewers for a PR
+
+      2)Run tests
+
+      3)Publish Results on slack
+
+    steps:
+    - activate-ssh-key@4:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@6:
+        inputs:
+        - manual_merge: 'no'
+        - fetch_tags: 'yes'
+        - merge_pr: 'no'
+    - cache-pull@2: {}
+    - script@1:
+        title: Set Java 8 as default
+        inputs:
+        - content: |
+            chmod +x ./scripts/change_java_version.sh
+            ./scripts/change_java_version.sh
+    - script:
+        title: Choose reviewers randomly
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            if [ ! -z "$BITRISE_PULL_REQUEST" ]; then
+
+            cd scripts
+            echo "Downloading and installing script dependencies"
+            apt-get update
+            apt-get install "-y" "python3-pip"
+            pip3 install -r requirements.txt
+
+            python3 reviewers.py
+            fi
+    - install-missing-android-tools:
+        inputs:
+        - gradlew_path: "./gradlew"
+    - gradle-runner@2:
+        title: Verify Kotlin codestyle
+        inputs:
+        - gradlew_path: "./gradlew"
+        - app_file_include_filter: "*.apk"
+        - app_file_exclude_filter: "\n"
+        - test_apk_file_include_filter: ''
+        - mapping_file_include_filter: ''
+        - retry_on_failure: 'no'
+        - gradle_task: ktlintCheck
+    - script@1:
+        title: Run Unit tests with covergae
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            git fetch
+            ./gradlew testDhisDebugUnitTestCoverage
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - script@1:
+        title: Run sonarqube
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            ./gradlew sonarqube
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - android-build-for-ui-testing@0:
+        inputs:
+        - variant: dhisUITestingDebug
+        - module: app
+        is_always_run: true
+    - script@1:
+        title: BrowserStack Tests
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            cd scripts/
+
+            apt-get install "-y" "jq"
+
+            chmod +x ./browserstackBitrise.sh
+            ./browserstackBitrise.sh
+
+    - avd-manager@1:
+        inputs:
+        - api_level: '30'
+    - wait-for-android-emulator@1: {}
+    - gradle-runner@2:
+        inputs:
+        - gradle_task: compose-table:connectedAndroidTest
+        - gradlew_path: "./gradlew"
+    - slack@3:
+        inputs:
+        - channel: "#android-capture-app-ci"
+        - emoji: ":white_check_mark:"
+        - from_username: Continuous integration
+        - buttons: |
+            View Build|${BITRISE_BUILD_URL}
+            View UnitTests|https://addons-testing.bitrise.io/builds/${BITRISE_BUILD_SLUG}/summary?status=all
+            View UITests|${BROWSERSTACK_TEST_REPORTS}
+            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
+        - emoji_on_error: ":imp:"
+        - from_username_on_error: Continuous integration
+        - color_on_error: "#f01f33"
+        - webhook_url: "$SLACK_CI_WEBHOOK"
+    - deploy-to-bitrise-io@2:
         inputs:
         - notify_email_list: "$APP_DEVS_MAILS"
         - notify_user_groups: none
@@ -2282,6 +2581,63 @@ workflows:
             Thanks and happy weekend!!
         - webhook_url: "$SLACK_CI_WEBHOOK"
     - cache-push: {}
+  TestingContributions:
+    steps:
+    - activate-ssh-key@4.0.5:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - script@1:
+        title: Clone Contribution project
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -e
+            set -x
+
+            # write your script here
+            echo "Hello World!"
+
+            git "init"
+            git "remote" "add" "origin" "https://github.com/Saudigitus/dhis2-android-capture-app.git"
+            git "fetch" "origin" "refs/heads/$BITRISE_GIT_BRANCH"
+            git "checkout" "$BITRISE_GIT_BRANCH"
+            git "submodule" "update" "--init" "--recursive"
+            git "merge" "origin/$BITRISE_GIT_BRANCH"
+            pwd
+            ls -la
+    - cache-pull: {}
+    - install-missing-android-tools:
+        inputs:
+        - gradlew_path: "./gradlew"
+    - android-build:
+        inputs:
+        - variant: "$VARIANT"
+        - module: app
+    - deploy-to-bitrise-io:
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/deploy-to-bitrise-io/assets/icon.svg
+        inputs:
+        - notify_user_groups: none
+    - create-install-page-qr-code@1.0.0: {}
+    - slack@3.1.3:
+        is_always_run: false
+        run_if: '{{getenv "SLACK" | ne "no"}}'
+        inputs:
+        - channel: C03MLE6898W
+        - emoji: ":white_check_mark:"
+        - from_username: CI Test Deployment
+        - pretext: ''
+        - buttons: 'Bitrise apk|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
+
+'
+        - fields: ''
+        - author_name: ''
+        - title: ''
+        - text: Apk from ${BITRISE_GIT_BRANCH} ready for pixel perfect ! Click on
+            the link below or scan the QR.
+        - message: ''
+        - image_url: "$BITRISE_PUBLIC_INSTALL_PAGE_QR_CODE_IMAGE_URL"
+        - webhook_url: "$SLACK_CI_WEBHOOK"
+    - cache-push@2.2.3: {}
   TestingDeployment:
     steps:
     - activate-ssh-key@4.0.5:
@@ -2290,67 +2646,6 @@ workflows:
         inputs:
         - limit_submodule_update_depth: 'no'
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -2490,14 +2785,22 @@ workflows:
             # debug log
             set -x
 
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
+            if [ "$BITRISE_GIT_BRANCH" = "master_legacy" ]; then
+              exit 0
             fi
 
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
+            SUBMODULE=zxing-core
+            if [ -d "$SUBMODULE" ]; then
+              echo "$SUBMODULE exist"
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
+            fi
     - script@1:
         title: Sets JAVA 8
         inputs:
@@ -2527,6 +2830,7 @@ workflows:
 
             chmod +x ./browserstackBitrise.sh
             ./browserstackBitrise.sh
+    - virtual-device-testing-for-android@1: {}
     - slack@3.1.3:
         run_if: '{{getenv "SLACK" | eq "yes"}}'
         inputs:
@@ -2545,123 +2849,6 @@ workflows:
         - footer: Browserstack
         - webhook_url: "$SLACK_CI_WEBHOOK"
     - cache-push@2.2.3: {}
-  UiTests:
-    description: |+
-      Workflow that
-
-      1)Choose random reviewers for a PR
-
-      2)Run tests
-
-      3)Publish Results on slack
-
-    steps:
-    - activate-ssh-key@4.0.5:
-        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@4.1: {}
-    - cache-pull@2: {}
-    - script@1:
-        title: Set Java 8 as default
-        inputs:
-        - content: |
-            chmod +x ./scripts/change_java_version.sh
-            ./scripts/change_java_version.sh
-    - script:
-        title: Rule engine build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
-              exit 0
-            fi
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
-    - install-missing-android-tools:
-        inputs:
-        - gradlew_path: "./gradlew"
-    - android-build-for-ui-testing@0:
-        inputs:
-        - variant: dhisUITestingDebug
-        - module: app
-    - script@1:
-        title: BrowserStack Tests
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd scripts/
-
-            apt-get install "-y" "jq"
-
-            chmod +x ./uiTests.sh
-            ./uiTests.sh
-    - deploy-to-bitrise-io@1:
-        inputs:
-        - notify_email_list: "$APP_DEVS_MAILS"
-        - notify_user_groups: none
-    - cache-push@2: {}
   WebSettingsAppDeployment:
     description: |+
       Workflow that

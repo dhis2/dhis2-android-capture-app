@@ -3,7 +3,8 @@ package org.dhis2.commons.prefs
 class Preference {
     companion object {
         const val EVENT_COORDINATE_CHANGED = "EVENT_COORDINATE_CHANGED"
-        const val INITIAL_SYNC_DONE = "INITIAL_SYNC_DONE"
+        const val INITIAL_METADATA_SYNC_DONE = "INITIAL_META_SYNC_DONE"
+        const val INITIAL_DATA_SYNC_DONE = "INITIAL_DATA_SYNC_DONE"
         const val SESSION_LOCKED = "SessionLocked"
         const val PIN = "pin"
 
@@ -18,9 +19,7 @@ class Preference {
         const val TIME_DATA = "timeData"
         const val INITIAL_SYNC = "INITIAL_SYNC"
         const val META = "METADATA"
-        const val META_NOW = "METADATA_NOW"
         const val DATA = "DATA"
-        const val DATA_NOW = "DATA_NOW"
 
         // METADATA SYNC TIME RANGES
         const val TIME_DAILY = 86400

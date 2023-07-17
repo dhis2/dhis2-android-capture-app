@@ -35,12 +35,14 @@ interface WorkManagerController {
 
     fun syncDataForWorker(workerItem: WorkerItem)
     fun syncDataForWorkers(metadataWorkerTag: String, dataWorkerTag: String, workName: String)
+    fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String)
     fun syncDataForWorker(metadataWorkerTag: String, workName: String)
     fun beginUniqueWork(workerItem: WorkerItem)
     fun enqueuePeriodicWork(workerItem: WorkerItem)
 
     fun getWorkInfosForUniqueWorkLiveData(workerName: String): LiveData<List<WorkInfo>>
     fun getWorkInfosByTagLiveData(tag: String): LiveData<List<WorkInfo>>
+    fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>>
 
     fun cancelAllWork()
     fun cancelAllWorkByTag(tag: String)

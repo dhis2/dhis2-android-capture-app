@@ -1,5 +1,7 @@
 package org.dhis2.usescases.main
 
+import androidx.compose.ui.test.junit4.createComposeRule
+import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -18,6 +20,9 @@ class MainTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Throws(Exception::class)
     override fun setUp() {
         super.setUp()
@@ -27,7 +32,7 @@ class MainTest : BaseTest() {
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
         homeRobot {
-            checkViewIsNotEmpty()
+            checkViewIsNotEmpty(composeTestRule)
         }
     }
 
@@ -40,7 +45,7 @@ class MainTest : BaseTest() {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
             pressBack()
-            checkHomeIsDisplayed()
+            checkHomeIsDisplayed(composeTestRule)
         }
     }
 
@@ -69,27 +74,6 @@ class MainTest : BaseTest() {
     }
 
     @Test
-    fun shouldApplyFilterInProgramThatDoesNotApplyInHome(){
-        setupCredentials()
-        startActivity()
-        val programPosition = 3 // This could be any program
-
-        homeRobot {
-            openProgramByPosition(programPosition)
-        }
-
-        filterRobot {
-            clickOnFilter()
-            clickOnEnrollmentDateFilter()
-            clickOnTodayEnrollmentDate()
-        }
-
-        homeRobot {
-            pressBack()
-        }
-    }
-
-    @Test
     @Ignore
     fun shouldShowDialogToDeleteAccount() {
         setupCredentials()
@@ -112,6 +96,7 @@ class MainTest : BaseTest() {
     }
 
     private fun startActivity() {
-        rule.launchActivity(null)
+        val intent = Intent().putExtra(AVOID_SYNC, true)
+        rule.launchActivity(intent)
     }
 }

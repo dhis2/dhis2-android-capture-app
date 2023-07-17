@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_bar_graph">Lihat sebagai Bar</string>
+    <string name="show_line_graph">Lihat sebagai Garis</string>
+    <string name="show_table_graph">Lihat sebagai tabel</string>
+    <string name="show_table_value">Lihat sebagai Nilai</string>
+    <string name="action_accept">Terima</string>
+    <string name="period">Periode</string>
+    <string name="none">Tidak ada</string>
+    <string name="daily">Harian</string>
+    <string name="today">Hari ini</string>
+    <string name="other">Lainnya</string>
+    <string name="yesterday">Kemarin</string>
+    <string name="thisyear">Tahun ini</string>
+    <string name="weekly">Mingguan</string>
+    <string name="monthly">Bulanan</string>
+    <string name="yearly">Tahunan</string>
+    <string name="all">Semua</string>
+    <string name="reset">Reset</string>
+    </resources>

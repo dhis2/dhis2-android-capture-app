@@ -24,10 +24,12 @@ class OrgUnitSelectorHolder(
         binding.checkBox.setOnCheckedChangeListener(null)
 
         binding.ouName.text = node.displayName()
-        binding.ouName.setTextStyle(when {
-            node.selectedChildrenCount > 0 -> Typeface.BOLD
-            else -> Typeface.NORMAL
-        })
+        binding.ouName.setTextStyle(
+            when {
+                node.selectedChildrenCount > 0 -> Typeface.BOLD
+                else -> Typeface.NORMAL
+            }
+        )
         node.isChecked = preselected
         val marginParams = binding.root.layoutParams as ViewGroup.MarginLayoutParams
         marginParams.leftMargin = (node.level - 1) * 16.dp

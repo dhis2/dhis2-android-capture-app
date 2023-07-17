@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import java.util.Locale
 import org.dhis2.R
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.rules.models.Rule

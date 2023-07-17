@@ -10,7 +10,7 @@ object SearchIdlingResourceSingleton {
     val countingIdlingResource = CountingIdlingResource(RESOURCE)
 
     fun increment() {
-        if(countingIdlingResource.isIdleNow) {
+        if (countingIdlingResource.isIdleNow) {
             countingIdlingResource.increment()
         }
         countingIdlingResource.dumpStateToLogs()

@@ -12,9 +12,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.DatePickerMatchers.Companion.matchesDate
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorHolder
 import org.dhis2.commons.filters.FilterHolder
-import org.hamcrest.Matchers.allOf
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorHolder
+import org.hamcrest.CoreMatchers.allOf
 
 fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
     FiltersRobot().apply {

@@ -14,8 +14,8 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.robot.EnrollmentRobot
-import org.hamcrest.Matchers.containsString
-import org.hamcrest.Matchers.equalTo
+import org.hamcrest.CoreMatchers.containsString
+import org.hamcrest.CoreMatchers.equalTo
 
 
 fun enrollmentFormRobot(enrollmentFormRobot: EnrollmentFormRobot.() -> Unit) {

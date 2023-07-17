@@ -63,13 +63,13 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
 
         for (DateRangeInputPeriodModel inputPeriodModel : inputPeriod) {
             do {
-                if ((getCurrentDate().after(inputPeriodModel.initialPeriodDate()) || getCurrentDate ().equals(inputPeriodModel.initialPeriodDate())) && getCurrentDate().before(inputPeriodModel.endPeriodDate())
-                        && (inputPeriodModel.openingDate() == null || (inputPeriodModel.openingDate() != null && (DateUtils.getInstance().getToday().after(inputPeriodModel.openingDate())))
-                        || DateUtils.getInstance().getToday().equals(inputPeriodModel.openingDate()))
+                if ((inputPeriodModel.openingDate() == null || (inputPeriodModel.openingDate() != null && (DateUtils.getInstance().getToday().after(inputPeriodModel.openingDate()))) || DateUtils.getInstance().getToday().equals(inputPeriodModel.openingDate()))
                         && (inputPeriodModel.closingDate() == null || (inputPeriodModel.closingDate() != null && DateUtils.getInstance().getToday().before(inputPeriodModel.closingDate())))
-                        && (organisationUnit == null || (organisationUnit.openingDate() == null || getCurrentDate().after(organisationUnit.openingDate())) &&
-                                (organisationUnit.closedDate() == null || getCurrentDate().before(organisationUnit.closedDate()))))
-                    isAllowed = true;
+                        && (organisationUnit == null || (organisationUnit.openingDate() == null || getCurrentDate().after(organisationUnit.openingDate())) && (organisationUnit.closedDate() == null || getCurrentDate().before(organisationUnit.closedDate())))
+                )
+                    if (getCurrentDate().before(inputPeriodModel.endPeriodDate())) {
+                        isAllowed = true;
+                    }
                 else if (getCurrentDate().before(inputPeriod.get(inputPeriod.size() - 1).initialPeriodDate()) ||
                         getCurrentDate().before(inputPeriodModel.initialPeriodDate()))
                     break;

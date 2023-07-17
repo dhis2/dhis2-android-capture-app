@@ -12,6 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 const val JIRA_URL = "https://jira.dhis2.org/"
 
+@Suppress("UNCHECKED_CAST")
 class JiraViewModelFactory(
     val preferenceProvider: PreferenceProvider,
     val resourceManager: ResourceManager,
@@ -30,7 +31,7 @@ class JiraViewModelFactory(
         return retrofit.create<JiraIssueService>(JiraIssueService::class.java)
     }
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return JiraViewModel(
             JiraRepository(jiraService(), preferenceProvider),
             resourceManager,

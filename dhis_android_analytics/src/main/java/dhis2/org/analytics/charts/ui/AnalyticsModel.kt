@@ -508,6 +508,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
     fun showError(): Boolean = graph.hasError
 
     fun pieChartDataIsZero(): Boolean = observableChartType.get() == ChartType.PIE_CHART &&
+        !graph.hasError &&
         graph.series.all { serie -> serie.coordinates.all { point -> point.fieldValue == 0f } }
 
     fun showNoDataMessage(): Boolean {

@@ -4,12 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
-import org.dhis2.Bindings.drawableFrom
 import org.dhis2.Bindings.userComponent
 import org.dhis2.R
 import org.dhis2.databinding.ActivitySynchronizationBinding
@@ -41,12 +39,9 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
 
     override fun onResume() {
         super.onResume()
-        presenter.observeSyncProcess().observe(
-            this,
-            Observer<List<WorkInfo>> { workInfoList: List<WorkInfo> ->
-                presenter.handleSyncInfo(workInfoList)
-            }
-        )
+        presenter.observeSyncProcess().observe(this) { workInfoList: List<WorkInfo> ->
+            presenter.handleSyncInfo(workInfoList)
+        }
     }
 
     override fun setMetadataSyncStarted() {
@@ -89,22 +84,6 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
         )
     }
 
-    override fun setDataSyncStarted() {
-        binding.eventsText.apply {
-            text = getString(R.string.syncing_data)
-            Bindings.setDrawableEnd(this, drawableFrom(R.drawable.animator_sync))
-            alpha = 1.0f
-        }
-    }
-
-    override fun setDataSyncSucceed() {
-        binding.eventsText.apply {
-            text = getString(R.string.data_ready)
-            Bindings.setDrawableEnd(this, drawableFrom(R.drawable.animator_done))
-        }
-        presenter.onDataSyncSuccess()
-    }
-
     override fun onStart() {
         super.onStart()
         animations.startLottieAnimation(binding.lottieView)
@@ -135,7 +114,12 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
     }
 
     override fun goToMain() {
-        navigateTo<MainActivity>(true, flagsToApply = Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(
+            MainActivity.intent(this, launchDataSync = true).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        )
+        finish()
     }
 
     override fun goToLogin() {

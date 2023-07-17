@@ -2,12 +2,10 @@
 <resources>
     <string name="select_location">Seleccione ubicación</string>
     <string name="map_layers">Capas del Mapa</string>
-    <string name="dialog_layer_street_base_map">Vista de calle</string>
-    <string name="dialog_layer_satellite_base_map">Vista satélite</string>
     <string name="action_apply">Aplicar</string>
     <string name="dialog_layer_satellite">Mostrar vista satélite</string>
     <string name="dialog_layer_event">Mostrar eventos</string>
+    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
     <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
     <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
-    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
 </resources>

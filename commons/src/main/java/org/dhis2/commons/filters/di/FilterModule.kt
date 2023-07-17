@@ -37,7 +37,7 @@ class FilterModule {
 
     @Provides
     @Singleton
-    fun provideFilterResources(resourceManager: ResourceManager) : FilterResources {
+    fun provideFilterResources(resourceManager: ResourceManager): FilterResources {
         return FilterResources(resourceManager)
     }
 }

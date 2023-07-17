@@ -1,8 +1,3 @@
-This is a patch version that fixes:
-- [ANDROAPP-4824] Attribute option combo set to null in auto generated events
-- [ANDROAPP-4823] Dropdown for type Number/Integer are displayed as normal input
-- [ANDROAPP-4814] Infinite login with wrong url/username/password
-- [ANDROAPP-4795] SMS Sync Unable to Send
-....
-General system stability improvements to enhance the user's experience.
+This is a hotfix version that fixes:
+-  [ANDROAPP-5194](https://jira.dhis2.org/browse/ANDROAPP-5194) RuntimeException: Unable to start activity ComponentInfo{com.dhis2/org.dhis2.usescases.eventsWithoutRegistration.ev...
 You can find all the details on Jira and Github.

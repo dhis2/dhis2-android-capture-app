@@ -123,12 +123,6 @@
         <item name="android:paddingRight">4dp</item>
     </style>
 
-    <style name="CustomDialog" parent="Base.AlertDialog.AppCompat.Light">
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:textColor">?colorPrimary</item>
-        <item name="colorAccent">?colorPrimary</item>
-    </style>
-
     <style name="ButtonRoundedGrey" parent="Base.TextAppearance.AppCompat.Button">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
@@ -181,11 +175,6 @@
 
     <style name="PrimaryOulineButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="colorAccent">?colorAccent</item>
-    </style>
-
-    <style name="DhisMaterialDialog" parent="Base.ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="colorAccent">@color/text_black_333</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
     <style name="radioPrimary">

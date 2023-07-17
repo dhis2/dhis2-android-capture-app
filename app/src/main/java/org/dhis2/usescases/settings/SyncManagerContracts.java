@@ -1,8 +1,5 @@
 package org.dhis2.usescases.settings;
 
-import androidx.annotation.Nullable;
-import androidx.work.WorkInfo;
-
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
@@ -10,7 +7,6 @@ import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
-import org.hisp.dhis.android.core.settings.LimitScope;
 
 import java.util.List;
 
@@ -25,8 +21,6 @@ public class SyncManagerContracts {
         void showInvalidGatewayError();
 
         void hideGatewayError();
-
-        void wipeDatabase();
 
         void deleteLocalData();
 
@@ -67,70 +61,11 @@ public class SyncManagerContracts {
         void onDataSyncInProgress();
 
         void onDataFinished();
-    }
 
-    public interface Presenter {
+        boolean isGatewayValid();
 
-        int getMetadataPeriodSetting();
+        boolean isResultTimeoutValid();
 
-        int getDataPeriodSetting();
-
-        void validateGatewayObservable(String gateway);
-
-        void onItemClick(SettingItem settingItem);
-
-        void init();
-
-        void syncData(int seconds, String scheduleTag);
-
-        void syncMeta(int seconds, String scheduleTag);
-
-        void syncData();
-
-        void syncMeta();
-
-        void dispose();
-
-        void resetSyncParameters();
-
-        void onWipeData();
-
-        void wipeDb();
-
-        void onDeleteLocalData();
-
-        void deleteLocalData();
-
-        void onReservedValues();
-
-        void checkSyncErrors();
-
-        void checkData();
-
-        void cancelPendingWork(String meta);
-
-        boolean isGatewaySetAndValid(String gateway);
-
-        void saveLimitScope(LimitScope global);
-
-        void saveEventMaxCount(Integer eventCount);
-
-        void saveTeiMaxCount(Integer teiCount);
-
-        void saveReservedValues(Integer reservedValuesCount);
-
-        void saveGatewayNumber(String gatewayNumber);
-
-        void saveSmsResultSender(String smsResultSender);
-
-        void saveSmsResponseTimeout(Integer smsResponseTimeout);
-
-        void saveWaitForSmsResponse(boolean shouldWait);
-
-        void enableSmsModule(boolean enableSms);
-
-        void resetFilters();
-
-        void onWorkStatusesUpdate(@Nullable WorkInfo.State workState, String workerTag);
+        void enabledSMSSwitchAndSender(SMSSettingsViewModel settingsViewModel);
     }
 }

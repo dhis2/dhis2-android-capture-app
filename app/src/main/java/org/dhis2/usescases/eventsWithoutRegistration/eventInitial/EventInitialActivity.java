@@ -1,12 +1,12 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PERMANENT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.commons.Constants.ENROLLMENT_UID;
+import static org.dhis2.commons.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.commons.Constants.EVENT_PERIOD_TYPE;
+import static org.dhis2.commons.Constants.ORG_UNIT;
+import static org.dhis2.commons.Constants.PERMANENT;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
+import static org.dhis2.commons.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
@@ -38,7 +38,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
@@ -126,7 +126,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 getContext())
                 );
         eventInitialComponent.inject(this);
-        setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);

@@ -9,6 +9,7 @@ import org.dhis2.commons.date.Period;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.RxDateDialog;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
@@ -43,6 +44,7 @@ public class DateUtils {
         return instance;
     }
 
+    public static final String DATABASE_FORMAT_EXPRESSION_MILLIS = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
@@ -200,6 +202,11 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat dateTimeFormat() {
         return new SimpleDateFormat(DATE_TIME_FORMAT_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat databaseDateFormatMillis() {
+        return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_MILLIS, Locale.US);
     }
 
     @NonNull
@@ -788,6 +795,26 @@ public class DateUtils {
 
         return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
                 && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+    }
+
+    public Boolean isInsideFutureInputPeriod(DateRangeInputPeriodModel inputPeriod, Integer futureOpenDays) {
+        if (futureOpenDays != null && futureOpenDays > 0) {
+            boolean isInside = false;
+
+            Date today = DateUtils.getInstance().getToday();
+            Date inputPeriodOpeningDate = inputPeriod.endPeriodDate();
+
+            long diffInMillis = Math.abs(inputPeriodOpeningDate.getTime() - today.getTime());
+            long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+
+
+            if (diffInDays < futureOpenDays) {
+                isInside = true;
+            }
+            return isInside;
+        } else {
+            return false;
+        }
     }
 
     public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {

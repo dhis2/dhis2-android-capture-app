@@ -36,4 +36,8 @@
         android:id="@+id/deactivate"
         android:icon="@drawable/ic_cancel_menu"
         android:title="@string/deactivate" />
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_share_menu"
+        android:title="@string/share" />
 </menu>

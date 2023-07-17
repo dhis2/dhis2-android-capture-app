@@ -27,7 +27,7 @@ interface PreferenceProvider {
     fun getSet(key: String, default: Set<String>): Set<String>?
     fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T
     fun <T> saveAsJson(key: String, objectToSave: T)
-    fun lastMetadataSync():Date?
-    fun lastDataSync():Date?
-    fun lastSync():Date?
+    fun lastMetadataSync(): Date?
+    fun lastDataSync(): Date?
+    fun lastSync(): Date?
 }

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">Hodisa/Tadbir</string>
+    <string name="no_data">Maʼlumot yoʼq</string>
+    <string name="change_calendar_view">Taqvim koʼrinishini oʼzgartirish</string>
+    <string name="clear">aniq</string>
+    <string name="action_accept">Qabul qiling</string>
+    <string name="next">Кейинги</string>
+    <string name="cancel">Бекор қилиш</string>
+    <string name="yes">Ҳа</string>
+    <string name="no">Йўқ</string>
+    <string name="clear_all">aniq tanlov</string>
+    <string name="navigation_list_view">Roʼyxat koʼrinishi</string>
+    <string name="navigation_table_view">Jadval koʼrinishi</string>
+    <string name="navigation_map_view">Xarita koʼrinishi</string>
+    <string name="navigation_analytics">Аnalitika</string>
+    <string name="navigation_tasks">Vazifalar</string>
+    <string name="navigation_programs">Dasturlar</string>
+    <string name="navigation_events">Hodisa/tadbirlar</string>
+    <string name="navigation_relationships">Oʼzaro aloqalar</string>
+    <string name="navigation_notes">Izohlar</string>
+    <string name="navigation_data_entry">Maʼlumot kiritish</string>
+    <string name="navigation_tei_data">Тафсилотлари</string>
+    <string name="event_overview">Тафсилотлари</string>
+    <string name="select_option">Variant tanlang</string>
+    <string name="search">Izlash</string>
+    <string name="jira_issue_sent">Muammo yuborildi</string>
+    <string name="jira_issue_sent_error">Muammoni yuborishda xxatolik yuz berdi</string>
+    <string name="data_sets">Maʼlumotlar toʼplami</string>
+    <string name="tei">TEI</string>
+    <string name="info">Аxborot</string>
+    <!-- Filters -->
+    <string name="filters_active">Filtrlar qoʼllaniladi</string>
+    <string name="filters_disabled">Hech qanday filtr qoʼllanilmagan</string>
+    <string name="filters_title_period">davr</string>
+    <string name="filters_title_org_unit">Tashkiliy boʼlim</string>
+    <string name="filters_title_sorting">Tartiblash</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Sinxronlash</string>
+    <string name="filters_title_assigned">Menga berilgan vakolat</string>
+    <string name="filters_title_date">Sana</string>
+    <string name="filters_title_event_date">Hodisa/Tadbir sanasi</string>
+    <string name="enrollment_date">Qayd qilingan sana</string>
+    <string name="filters_title_event_status">Hodisa/Tadbir holati</string>
+    <string name="filters_title_enrollment_status">roʼyxatga olish holati</string>
+    <!-- State -->
+    <string name="state_synced">Sinxronlash</string>
+    <string name="state_to_post">Yuborish uchun</string>
+    <string name="state_to_update">Yangilash uchun</string>
+    <string name="state_to_delete">Oʼchirib tashlash uchun</string>
+    <string name="state_error">Xatolik</string>
+    <string name="state_warning">Ogohlantirish</string>
+    <string name="state_relationship">Oʼzaro aloqa</string>
+    <string name="sync_by_sms">SMS orqali sinxronlash</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Ochiq</string>
+    <string name="filter_event_status_schedule">Reja</string>
+    <string name="filter_event_status_overdue">Muddat oʼtgan</string>
+    <string name="filter_event_status_visited">Tashrif buyurdi</string>
+    <string name="filter_event_status_completed">bajarildi</string>
+    <string name="filter_event_status_skipped">Oʼtkazib yuborildi</string>
+    <string name="active">Faol</string>
+    <string name="cancelled">Bekor qilindi</string>
+    <string name="enrollment_status_active">Ochiq</string>
+    <string name="enrollment_status_completed">Bajarildi</string>
+    <string name="enrollment_status_cancelled">Bekor qilindi</string>
+    <string name="record_marked_for_deletion">Ushbu yozuv oʼchirib tashlash uchun belgilab qoʼyilgan. Sizda kirib koʼrish huquqi mavjud emas.</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">бугун</string>
+    <string name="filter_period_yesterday">Кеча</string>
+    <string name="filter_period_tomorrow">Ertaga</string>
+    <string name="filter_period_this_week">Ушбу ҳафта</string>
+    <string name="filter_period_last_week">Охирги ҳафта</string>
+    <string name="filter_perdior_next_week">Keyingi hafta</string>
+    <string name="filter_period_this_month">Ушбу ой</string>
+    <string name="filter_period_last_month">Охирги ой</string>
+    <string name="filter_period_next_month">Keyingi oy</string>
+    <string name="filter_period_form_to">Dan-Gacha</string>
+    <string name="filter_period_other">Boshqa</string>
+    <string name="filter_period_any">Istalgan vaqt</string>
+    <string name="filter_period_this_year">Ушбу йил</string>
+    <string name="filter_period_this_bimonth">Ushbu juft oylik</string>
+    <string name="filter_period_last_bimonth">Oxirgi juft oylik</string>
+    <string name="filter_period_this_quarter">Ушбу квартал</string>
+    <string name="filter_period_last_quarter">Охирги квартал</string>
+    <string name="filter_period_weeks_this_year">Haftalar ayni yilda</string>
+    <string name="filter_period_months_this_year">Oylar ushbu yilda</string>
+    <string name="filter_period_bimonths_this_year">Ushbu yildagi juft oylar</string>
+    <string name="filter_period_quarters_this_year">Ushbu yildagi kvartallar</string>
+    <string name="filter_period_months_last_year">Oʼtgan yildagi oylar</string>
+    <string name="filter_period_last_year">Охирги йил</string>
+    <string name="filter_period_this_financial_year">Ушбу молиявий йил</string>
+    <string name="filter_period_last_financial_year">Охирги молиявий йил</string>
+    <string name="period">davr</string>
+    <string name="DAILY">Кунлик</string>
+    <string name="WEEKLY">Ҳафталик</string>
+    <string name="MONTHLY">Ойлик</string>
+    <string name="YEARLY">Йиллик</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Sinxronizatsiyalangan</string>
+    <string name="filter_sync_not_synced">Sinxronizatsiyalanmagan</string>
+    <string name="filter_sync_error">Sinxronlashda xatolik</string>
+    <string name="filter_sync_sms">SMS Sinxronizatsiyalangan</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">hozir</string>
+    <string name="interval_minute_ago">%d daqiqa oldin</string>
+    <string name="interval_hour_ago">%d soat oldin</string>
+    <string name="interval_yesterday">Кеча</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Fikr-mulohaza</string>
+    <string name="section_indicators">Koʼrsatgichlar</string>
+    <string name="section_charts">Diagrammalar</string>
+    <string name="login_error_dhis_version">Ushbu server 2.29 dan farqli versiyani ishlatmoqda. Server versiyasini yangilang yoki davom etish uchun sinov muddatidan foydalaning.</string>
+    <string name="online_search_parsing_error">Natijalarni tahlil qilishda xatolik yuz berdi</string>
+    <string name="add_image">Rasm qoʼshish</string>
+    <string name="enable_location_message">Sizning qoʼrilmangiz internet aloqasi uzildi. Iltimos, koordinatalarni olish uchun uni yoqing</string>
+    <string name="keep_editing">Tahrirni davom eting</string>
+    <string name="complete">Bajarildi</string>
+    <string name="default_table_header_label">Қиймат</string>
+    <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>
+    </resources>

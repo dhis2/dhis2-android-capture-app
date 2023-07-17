@@ -76,5 +76,11 @@ public class TeiDashboardContracts {
         void setTotalFilters();
 
         String getTEType();
+
+        void trackDashboardAnalytics();
+
+        void trackDashboardRelationships();
+
+        void trackDashboardNotes();
     }
 }

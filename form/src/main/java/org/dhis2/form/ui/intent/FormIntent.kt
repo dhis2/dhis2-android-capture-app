@@ -61,4 +61,12 @@ sealed class FormIntent : MviIntent {
     data class OnSection(
         val sectionUid: String
     ) : FormIntent()
+
+    data class OnRequestCoordinates(
+        val uid: String
+    ) : FormIntent()
+
+    data class OnCancelRequestCoordinates(
+        val uid: String
+    ) : FormIntent()
 }

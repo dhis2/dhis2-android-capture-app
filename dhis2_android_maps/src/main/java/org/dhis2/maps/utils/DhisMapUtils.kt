@@ -1,5 +1,6 @@
 package org.dhis2.maps.utils
 
+import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -12,7 +13,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import javax.inject.Inject
 
 class DhisMapUtils @Inject constructor(val d2: D2) {
 
@@ -45,7 +45,9 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
             }
     }
 
-    private fun dataElementHasCoordinateValue(trackedEntityDataValue: TrackedEntityDataValue): Boolean {
+    private fun dataElementHasCoordinateValue(
+        trackedEntityDataValue: TrackedEntityDataValue
+    ): Boolean {
         val isCoordinateValueType = d2.dataElementModule().dataElements()
             .uid(trackedEntityDataValue.dataElement()).blockingGet()
             .valueType() == ValueType.COORDINATE
@@ -75,7 +77,9 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
             }
     }
 
-    private fun attributeHasCoordinateValue(trackedEntityAttributeValue: TrackedEntityAttributeValue): Boolean {
+    private fun attributeHasCoordinateValue(
+        trackedEntityAttributeValue: TrackedEntityAttributeValue
+    ): Boolean {
         val isCoordinateValueType = d2.trackedEntityModule().trackedEntityAttributes()
             .uid(trackedEntityAttributeValue.trackedEntityAttribute()).blockingGet()
             .valueType() == ValueType.COORDINATE

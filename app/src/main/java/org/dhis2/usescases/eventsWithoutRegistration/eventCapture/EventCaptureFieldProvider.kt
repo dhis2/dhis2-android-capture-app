@@ -7,6 +7,7 @@ import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.LegendValue
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
@@ -17,7 +18,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 
@@ -145,7 +145,7 @@ class EventCaptureFieldProvider(
             de.valueType() == ValueType.ORGANISATION_UNIT
         )
 
-        val options = options(optionSet)
+        val optionSetConfiguration = options(optionSet)
 
         val error: String = checkConflicts(eventUid, de.uid(), rawValue)
 
@@ -163,10 +163,9 @@ class EventCaptureFieldProvider(
                 programStageSection?.renderType()?.mobile()?.type(),
                 de.displayDescription(),
                 programStageDataElement.renderType()?.mobile(),
-                options.size,
                 de.style() ?: ObjectStyle.builder().build(),
                 de.fieldMask(),
-                options,
+                optionSetConfiguration,
                 FeatureType.POINT
             )
 
@@ -266,11 +265,12 @@ class EventCaptureFieldProvider(
         }
     }
 
-    private fun options(optionSetUid: String?): List<Option> =
-        if (optionSetUid?.isNotEmpty() == true) {
-            d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
+    private fun options(optionSetUid: String?): OptionSetConfiguration? = optionSetUid?.let {
+        OptionSetConfiguration.config(
+            d2.optionModule().options().byOptionSetUid().eq(it).blockingCount()
+        ) {
+            d2.optionModule().options().byOptionSetUid().eq(it)
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
-        } else {
-            emptyList()
         }
+    }
 }

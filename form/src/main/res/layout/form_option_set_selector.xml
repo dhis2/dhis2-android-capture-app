@@ -142,7 +142,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
-                android:textSize="@dimen/textSize_12"
                 android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
                 app:error="@{item.error}"
                 app:input_style="@{item}"

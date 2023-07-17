@@ -1,3 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Even</string>
+    <string name="no_data">Tidak ada data</string>
+    <string name="change_calendar_view">Ubah tampilan kalender</string>
+    <string name="clear">Kosongkan</string>
+    <string name="action_accept">Terima</string>
+    <string name="next">Selanjutnya</string>
+    <string name="cancel">Batal</string>
+    <string name="yes">Iya</string>
+    <string name="no">Tidak</string>
+    <string name="clear_all">hapus pilihan</string>
+    <string name="navigation_list_view">Tampilan daftar</string>
+    <string name="navigation_table_view">Tampilan tabel</string>
+    <string name="navigation_map_view">Tampilan peta</string>
+    <string name="navigation_analytics">Analitik</string>
+    <string name="navigation_tasks">Tugas</string>
+    <string name="navigation_programs">Program-program</string>
+    <string name="navigation_events">Even</string>
+    <string name="navigation_relationships">Hubungan</string>
+    <string name="navigation_notes">Catatan</string>
+    <string name="navigation_data_entry">Data entri</string>
+    <string name="navigation_tei_data">Rincian</string>
+    <string name="event_overview">Rincian</string>
+    <string name="select_option">Pilih opsi</string>
+    <string name="search">Pencarian</string>
+    <string name="jira_issue_sent">Masalah Terkirim</string>
+    <string name="jira_issue_sent_error">Terjadi kesalahan saat melaporkan masalah</string>
+    <string name="events">Even</string>
+    <string name="data_sets">Data set</string>
+    <string name="tei">TEI</string>
+    <string name="info">Info</string>
+    <string name="done">Selesai</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Filter menerapkan</string>
+    <string name="filters_disabled">Tidak ada filter yang diterapkan</string>
+    <string name="filters_title_period">Periode</string>
+    <string name="filters_title_org_unit">Organisasi Satuan</string>
+    <string name="filters_title_sorting">Penyortiran</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Sinkronkan</string>
+    <string name="filters_title_assigned">Ditugaskan kepada saya</string>
+    <string name="filters_title_date">Tanggal</string>
+    <string name="filters_title_event_date">Tanggal Even</string>
+    <string name="enrollment_date">Tanggal pendaftaran</string>
+    <string name="filters_title_event_status">Status Even</string>
+    <string name="filters_title_enrollment_status">Status pendaftaran</string>
+    <!-- State -->
+    <string name="state_synced">Sinkronkan</string>
+    <string name="state_to_post">Untuk dikirim</string>
+    <string name="state_to_update">Untuk diperbarui</string>
+    <string name="state_to_delete">Untuk dihapus</string>
+    <string name="state_error">Kesalahan</string>
+    <string name="state_warning">Peringatan</string>
+    <string name="state_uploading">Mengunggah</string>
+    <string name="state_relationship">Hubungan</string>
+    <string name="sent_by_sms">Dikirim melalui sms</string>
+    <string name="sync_by_sms">Sinkronkan dengan SMS</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Buka</string>
+    <string name="filter_event_status_schedule">Jadwal</string>
+    <string name="filter_event_status_overdue">Lewat waktu</string>
+    <string name="filter_event_status_visited">Dikunjungi</string>
+    <string name="filter_event_status_completed">Selesai</string>
+    <string name="filter_event_status_skipped">Dilewati</string>
+    <string name="active">Aktif</string>
+    <string name="cancelled">Dibatalkan</string>
+    <string name="enrollment_status_active">Buka</string>
+    <string name="enrollment_status_completed">Lengkap</string>
+    <string name="enrollment_status_cancelled">Dibatalkan</string>
+    <!-- Periods -->
+    <string name="filter_period_today">Hari ini</string>
+    <string name="filter_period_yesterday">Kemarin</string>
+    <string name="filter_period_tomorrow">Besok</string>
+    <string name="filter_period_this_week">Minggu ini</string>
+    <string name="filter_period_last_week">Minggu lalu</string>
+    <string name="filter_perdior_next_week">Minggu depan</string>
+    <string name="filter_period_this_month">Bulan ini</string>
+    <string name="filter_period_last_month">Bulan lalu</string>
+    <string name="filter_period_next_month">Bulan depan</string>
+    <string name="filter_period_form_to">Dari untuk</string>
+    <string name="filter_period_other">Lainnya</string>
+    <string name="filter_period_any">Kapan saja</string>
+    <string name="working_list_default_label">Daftar kerja %s</string>
+    <string name="filter_period_this_year">Tahun ini</string>
+    <string name="filter_period_this_bimonth">Dwiwulan ini</string>
+    <string name="filter_period_last_bimonth">Dwiwulan yang lalu</string>
+    <string name="filter_period_this_quarter">Triwulan ini</string>
+    <string name="filter_period_last_quarter">Triwulan yang lalu</string>
+    <string name="filter_period_six_months">Enam bulan ini</string>
+    <string name="filter_period_last_six_months">Enam bulan terakhir</string>
+    <string name="filter_period_last_n_years">%d tahun terakhir</string>
+    <string name="filter_period_last_n_months">%d bulan terakhir</string>
+    <string name="filter_period_weeks_this_year">Mingguan tahun ini</string>
+    <string name="filter_period_months_this_year">Bulanan tahun ini</string>
+    <string name="filter_period_bimonths_this_year">Dwiwulan tahun ini</string>
+    <string name="filter_period_quarters_this_year">Triwulanan tahun ini</string>
+    <string name="filter_period_months_last_year">Bulanan tahun lalu</string>
+    <string name="filter_period_quarters_last_year">Triwulan tahun lalu</string>
+    <string name="filter_period_last_year">Tahun lalu</string>
+    <string name="filter_period_this_biweek">dua minggu ini</string>
+    <string name="filter_period_last_biweek">dua minggu terakhir</string>
+    <string name="filter_period_last_n_bimonths">Dua bulan terakhir %d</string>
+    <string name="filter_period_last_n_quarters">Kuartal %d terakhir</string>
+    <string name="last_n_months">%d bulan terakhir</string>
+    <string name="filter_period_this_financial_year">Anggaran tahun ini</string>
+    <string name="filter_period_last_financial_year">Anggaran tahun lalu</string>
+    <string name="filter_period_last_n_financial_years">Anggaran tahun %d terakhir</string>
+    <string name="period">Periode</string>
+    <string name="DAILY">Harian</string>
+    <string name="WEEKLY">Mingguan</string>
+    <string name="MONTHLY">Bulanan</string>
+    <string name="YEARLY">Tahunan</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Tersinkronisasi</string>
+    <string name="filter_sync_not_synced">Tidak tersinkronisasi</string>
+    <string name="filter_sync_error">Kesalahan sinkronisasi</string>
+    <string name="filter_sync_sms">SMS tersinkronisasi</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">sekarang</string>
+    <string name="interval_minute_ago">%d mnt. lalu</string>
+    <string name="interval_hour_ago">%d jam yang lalu</string>
+    <string name="interval_yesterday">Kemarin</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Umpan balik</string>
+    <string name="section_indicators">Indikator</string>
+    <string name="section_charts">Grafik</string>
+    <string name="section_charts_indicators">Grafik dan indikator</string>
+
+    <string name="login_error_dhis_version">Server ini menjalankan versi dhis yang berbeda dari 2.29. Perbarui versi server Anda atau gunakan pengujian lingkungan untuk melanjutkan.</string>
+    <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
+    <string name="add_image">Tambahkan gambar</string>
+    <string name="complete">Lengkap</string>
+    <string name="default_table_header_label">Nilai</string>
+    <string name="discard_changes">Hapus perubahan</string>
     </resources>

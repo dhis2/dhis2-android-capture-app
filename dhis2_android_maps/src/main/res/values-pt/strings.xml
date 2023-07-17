@@ -2,7 +2,9 @@
 <resources>
     <string name="select_location">Selecionar local</string>
     <string name="map_layers">Camadas do mapa</string>
+    <string name="action_apply">Aplicar</string>
     <string name="dialog_layer_satellite">Mostrar vista de satélite</string>
+    <string name="dialog_layer_event">Mostrar eventos</string>
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas tei</string>
     <string name="dialog_layer_enrollment_coordinates">Mostrar coordenadas de inscrição</string>
     <string name="dialog_layer_heatmap">Mostrar camada do mapa de calor</string>
