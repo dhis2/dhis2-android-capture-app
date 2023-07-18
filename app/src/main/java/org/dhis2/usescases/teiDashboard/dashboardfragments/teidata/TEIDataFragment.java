@@ -61,6 +61,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector;
 import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -658,5 +659,22 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void showProgramRuleErrorMessage(@NonNull String message) {
         activity.runOnUiThread(() -> showDescription(message));
+    }
+
+    @Override
+    public void showCatOptComboDialog(String catComboUid) {
+        new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                catComboUid,
+                false,
+                null,
+                selectedCatOptionCombo -> {
+                    presenter.filterCatOptCombo(selectedCatOptionCombo);
+                    return null;
+                }
+        ).show(
+                getChildFragmentManager(),
+                CategoryDialog.Companion.getTAG()
+        );
     }
 }
