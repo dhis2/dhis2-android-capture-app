@@ -33,9 +33,8 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createComposeRule()
-
+    @Ignore("SDK related, also indeterminate")
     @Test
-    @Ignore("SDK related")
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
