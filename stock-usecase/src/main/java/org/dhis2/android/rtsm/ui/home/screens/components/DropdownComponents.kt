@@ -47,6 +47,7 @@ import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
@@ -211,6 +212,7 @@ fun DropdownComponentTransactions(
 
 @Composable
 fun DropdownComponentFacilities(
+    viewModel: HomeViewModel,
     settingsUiState: SettingsUiState,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
     hasUnsavedData: Boolean,
@@ -231,6 +233,7 @@ fun DropdownComponentFacilities(
     val interactionSource = remember { MutableInteractionSource() }
     if (interactionSource.collectIsPressedAsState().value) {
         openOrgUnitTreeSelector(
+            viewModel,
             supportFragmentManager,
             settingsUiState,
             hasUnsavedData,
@@ -272,6 +275,7 @@ fun DropdownComponentFacilities(
                 IconButton(
                     onClick = {
                         openOrgUnitTreeSelector(
+                            viewModel,
                             supportFragmentManager,
                             settingsUiState,
                             hasUnsavedData,
@@ -463,6 +467,7 @@ fun DropdownComponentDistributedTo(
 }
 
 fun openOrgUnitTreeSelector(
+    viewModel: HomeViewModel,
     supportFragmentManager: FragmentManager,
     settingsUiState: SettingsUiState,
     hasUnsavedData: Boolean,
@@ -473,17 +478,18 @@ fun openOrgUnitTreeSelector(
         .showAsDialog()
         .singleSelection()
         .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
-        .withPreselectedOrgUnits(orgUnitData?.let { listOf(it.uid()) } ?: emptyList())
+//        .withPreselectedOrgUnits(orgUnitData?.let { listOf(it.uid()) } ?: emptyList())
+        .withPreselectedOrgUnits(viewModel.orgUnitData.value?.let { listOf(it.uid()) } ?: emptyList())
         .onSelection { selectedOrgUnits ->
             val selectedOrgUnit = selectedOrgUnits.firstOrNull()
             if (selectedOrgUnit != null) {
-                if (orgUnitData != selectedOrgUnit && hasUnsavedData) {
+                if (viewModel.orgUnitData.value != selectedOrgUnit && hasUnsavedData) {
                     launchDialog.invoke(R.string.transaction_discarted) { result ->
                         when (result) {
                             EditionDialogResult.DISCARD -> {
                                 // Perform the transaction change and clear data
                                 onFacilitySelected.invoke(selectedOrgUnit)
-                                orgUnitData = selectedOrgUnit
+                                viewModel.setOrgUnitData(selectedOrgUnit)
                             }
                             EditionDialogResult.KEEP -> {
                                 // Leave it as it was
@@ -492,7 +498,7 @@ fun openOrgUnitTreeSelector(
                     }
                 } else {
                     onFacilitySelected.invoke(selectedOrgUnit)
-                    orgUnitData = selectedOrgUnit
+                    viewModel.setOrgUnitData(selectedOrgUnit)
                 }
             }
         }

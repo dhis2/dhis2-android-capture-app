@@ -38,6 +38,7 @@ import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncDialog
 import org.dhis2.commons.sync.SyncStatusItem
+import timber.log.Timber
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -182,5 +183,10 @@ class HomeActivity : AppCompatActivity() {
     private fun onScanCompleted(result: ScanIntentResult) {
         val data = result.contents
         manageStockViewModel.onSearchQueryChanged(data)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetOrgUnitData()
     }
 }

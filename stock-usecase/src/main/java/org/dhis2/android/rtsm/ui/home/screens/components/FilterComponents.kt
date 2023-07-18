@@ -63,6 +63,7 @@ fun FilterList(
 
         item {
             DropdownComponentFacilities(
+                viewModel,
                 settingsUiState,
                 onFacilitySelected,
                 dataEntryUiState.hasUnsavedData,

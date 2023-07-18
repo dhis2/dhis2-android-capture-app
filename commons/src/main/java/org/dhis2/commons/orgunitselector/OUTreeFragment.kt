@@ -21,6 +21,7 @@ import javax.inject.Inject
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import timber.log.Timber
 
 const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
 const val ARG_SINGLE_SELECTION = "OUTreeFragment.ARG_SINGLE_SELECTION"
@@ -138,7 +139,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
                             override val onSearch: (String) -> Unit
                                 get() = presenter::searchByName
                             override val onOrgUnitChecked:
-                                (orgUnitUid: String, isChecked: Boolean) -> Unit
+                                        (orgUnitUid: String, isChecked: Boolean) -> Unit
                                 get() = presenter::onOrgUnitCheckChanged
                             override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
                                 get() = presenter::onOpenChildren
