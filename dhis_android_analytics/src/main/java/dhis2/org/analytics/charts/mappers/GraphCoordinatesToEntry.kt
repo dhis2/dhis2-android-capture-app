@@ -11,7 +11,7 @@ class GraphCoordinatesToEntry {
     private val dateToPosition = DateToPosition()
     fun map(graph: Graph, coordinates: List<GraphPoint>, serieLabel: String): List<Entry> {
         var minMonth: YearMonth? = null
-        return coordinates.mapIndexed { index, graphPoint ->
+        return coordinates.mapIndexed { _, graphPoint ->
 
             val position = graphPoint.position ?: dateToPosition(
                 graphPoint.eventDate,

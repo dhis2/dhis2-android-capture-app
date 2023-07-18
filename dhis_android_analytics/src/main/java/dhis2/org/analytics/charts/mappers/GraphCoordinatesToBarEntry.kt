@@ -17,7 +17,7 @@ class GraphCoordinatesToBarEntry {
         serieLabel: String
     ): List<BarEntry> {
         var minMonth: YearMonth? = null
-        return coordinates.mapIndexed { index, graphPoint ->
+        return coordinates.mapIndexed { _, graphPoint ->
             BarEntry(
                 when {
                     seriesCount > 1 ->

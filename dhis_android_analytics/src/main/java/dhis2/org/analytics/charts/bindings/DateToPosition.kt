@@ -34,7 +34,7 @@ class DateToPosition {
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov -> {
-                val dayInMonth = localDate.get(ChronoField.DAY_OF_MONTH)
+                val dayInMonth = localDate[ChronoField.DAY_OF_MONTH]
 
                 val monthDiff = minMonth?.let { ChronoUnit.MONTHS.between(it, yearMonth) } ?: 0
 

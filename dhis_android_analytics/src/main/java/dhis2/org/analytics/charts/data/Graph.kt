@@ -130,15 +130,6 @@ data class Graph(
                 YearMonth.from(date).atDay(1)
             }
         }
-
-        /*return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
-            return null
-        } else {
-            Date(
-                baseSeries().first().coordinates.first().eventDate.time +
-                    numberOfSteps * periodStep
-            )
-        }*/
     }
 
     fun maxValue(): Float {

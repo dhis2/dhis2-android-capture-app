@@ -29,13 +29,9 @@ class DateLabelFormatter(
 
                 return labelDate?.let {
                     val calendar = Calendar.getInstance()
-
                     calendar.timeInMillis = it.time
 
-                    if (prevCalendar == null || prevCalendar?.get(Calendar.MONTH) != calendar.get(
-                            Calendar.MONTH
-                        )
-                    ) {
+                    if (shouldFormatLabel(calendar)) {
                         prevCalendar = calendar
                         monthFormat.format(calendar.time)
                     } else {
@@ -43,11 +39,8 @@ class DateLabelFormatter(
                     }
                 } ?: EMPTY_LABEL
             }
-
-        /*return if (value < 0f) {
-            BLANK_LABEL
-        } else {
-            labelDate?.let { DateFormat.getDateInstance().format(it) } ?: EMPTY_LABEL
-        }*/
     }
+
+    private fun shouldFormatLabel(calendar: Calendar) =
+        prevCalendar == null || prevCalendar?.get(Calendar.MONTH) != calendar[Calendar.MONTH]
 }
