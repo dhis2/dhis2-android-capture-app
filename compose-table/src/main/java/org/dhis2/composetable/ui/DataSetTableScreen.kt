@@ -192,9 +192,10 @@ fun DataSetTableScreen(
             val textInputInteractions by remember(tableScreenState) {
                 derivedStateOf {
                     object : TextInputInteractions {
-                        override fun onTextChanged(inputTextValue: String) {
+                        override fun onTextChanged(textInputModel: TextInputModel) {
+                            currentInputType = textInputModel
                             currentCell = currentCell?.copy(
-                                value = inputTextValue,
+                                value = textInputModel.currentValue,
                                 error = null
                             )
                         }

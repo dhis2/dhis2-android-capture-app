@@ -136,7 +136,7 @@ private fun InputTitle(mainTitle: String, secondaryTitle: List<String>) {
 @Composable
 private fun TextInputContent(
     textInputModel: TextInputModel,
-    onTextChanged: (String) -> Unit,
+    onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit,
     focusRequester: FocusRequester
@@ -150,17 +150,6 @@ private fun TextInputContent(
         hasWarning = textInputModel.warning != null,
         hasFocus = hasFocus
     )
-
-    var fieldValue by remember(textInputModel.currentValue) {
-        mutableStateOf(
-            TextFieldValue(
-                text = textInputModel.currentValue ?: "",
-                selection = textInputModel.selection ?: TextRange(
-                    textInputModel.currentValue?.length ?: 0
-                )
-            )
-        )
-    }
 
     val keyboardOptions by remember(textInputModel.keyboardInputType) {
         mutableStateOf(
@@ -204,10 +193,20 @@ private fun TextInputContent(
                                 onSave()
                             }
                         },
-                    value = fieldValue,
+                    value = TextFieldValue(
+                        text = textInputModel.currentValue ?: "",
+                        selection = textInputModel.selection ?: TextRange(
+                            textInputModel.currentValue?.length ?: 0
+                        )
+                    ),
                     onValueChange = {
-                        fieldValue = it
-                        onTextChanged(it.text)
+                        onTextChanged(
+                            textInputModel.copy(
+                                currentValue = it.text,
+                                selection = it.selection,
+                                error = null
+                            )
+                        )
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,
