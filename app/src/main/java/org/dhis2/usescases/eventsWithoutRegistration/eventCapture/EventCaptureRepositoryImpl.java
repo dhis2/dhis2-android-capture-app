@@ -26,6 +26,7 @@ import java.util.Objects;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import timber.log.Timber;
 
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
 
@@ -101,7 +102,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 d2.eventModule().events().uid(eventUid).setStatus(EventStatus.COMPLETED);
                 return true;
             } catch (D2Error d2Error) {
-                d2Error.printStackTrace();
+                Timber.e(d2Error);
                 return false;
             }
         });
