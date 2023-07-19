@@ -12,10 +12,9 @@ class OUTreeRepository(
         return availableOrgUnits.withParents().sortedBy { it.displayNamePath()?.joinToString(" ") }
     }
 
-    fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> =
-        availableOrgUnits
-            .filter { it.uid() != parentUid && it.path()?.contains(parentUid) == true }
-            .sortedBy { it.displayNamePath()?.joinToString(" ") }
+    fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> = availableOrgUnits
+        .filter { it.uid() != parentUid && it.path()?.contains(parentUid) == true }
+        .sortedBy { it.displayNamePath()?.joinToString(" ") }
     fun orgUnit(uid: String): OrganisationUnit? = availableOrgUnits.firstOrNull { it.uid() == uid }
 
     fun canBeSelected(orgUnitUid: String): Boolean =
