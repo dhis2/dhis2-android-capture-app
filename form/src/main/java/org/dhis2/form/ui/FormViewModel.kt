@@ -602,6 +602,7 @@ class FormViewModel(
         val currentField = queryData.value
         return when (currentField?.id) {
             uiEvent.uid -> currentField.copy(
+                type = ActionType.ON_SAVE,
                 error = checkFieldError(
                     currentField.valueType,
                     currentField.value,
