@@ -106,9 +106,10 @@ class TextInputUiTest {
                 val textInputInteractions by remember(tableData) {
                     derivedStateOf {
                         object : TextInputInteractions {
-                            override fun onTextChanged(inputTextValue: String) {
+                            override fun onTextChanged(inputModel: TextInputModel) {
+                                currentInputType = inputModel
                                 currentCell = currentCell?.copy(
-                                    value = inputTextValue,
+                                    value = inputModel.currentValue,
                                     error = null
                                 )
                             }
