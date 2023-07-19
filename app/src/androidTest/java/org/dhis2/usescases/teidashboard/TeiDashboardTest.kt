@@ -227,7 +227,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Flaky")
+    @Ignore("Indeterminate test (Flaky)")
     @Test
     fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)

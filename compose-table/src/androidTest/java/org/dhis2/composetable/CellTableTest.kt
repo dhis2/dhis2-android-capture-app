@@ -131,7 +131,7 @@ class CellTableTest {
             assertInputComponentIsHidden()
         }
     }
-    @Ignore("indeterministic test")
+    @Ignore("indeterminate test")
     @Test
     fun shouldHideInputComponentIfSelectedCellDoesNotRequireIt() {
         val testingTableId = "PjKGwf9WxBE"
