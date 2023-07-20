@@ -73,7 +73,7 @@ fun TextInput(
             )
             .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp)
     ) {
-        InputTitle(textInputModel)
+        InputTitle(textInputModel.mainLabel, textInputModel.secondaryLabels)
         TextInputContent(
             textInputModel,
             onTextChanged = textInputInteractions::onTextChanged,
@@ -115,21 +115,18 @@ fun keyboardAsState(): State<Keyboard> {
 }
 
 @Composable
-private fun InputTitle(textInputModel: TextInputModel) {
+private fun InputTitle(mainTitle: String, secondaryTitle: List<String>) {
     Row(
         modifier = Modifier
             .padding(end = 12.dp)
             .fillMaxWidth()
             .semantics {
-                mainLabel = textInputModel.mainLabel
-                secondaryLabel = textInputModel.secondaryLabels.joinToString(separator = ",")
+                mainLabel = mainTitle
+                secondaryLabel = secondaryTitle.joinToString(separator = ",")
             }
     ) {
         Text(
-            text = displayName(
-                textInputModel.mainLabel,
-                textInputModel.secondaryLabels
-            ),
+            text = displayName(mainTitle, secondaryTitle),
             fontSize = 10.sp,
             maxLines = 1
         )
@@ -153,6 +150,27 @@ private fun TextInputContent(
         hasWarning = textInputModel.warning != null,
         hasFocus = hasFocus
     )
+
+    val keyboardOptions by remember(textInputModel.keyboardInputType) {
+        mutableStateOf(
+            KeyboardOptions(
+                capitalization = textInputModel.keyboardInputType.keyboardCapitalization(),
+                imeAction = ImeAction.Next,
+                keyboardType = textInputModel.keyboardInputType.toKeyboardType()
+            )
+        )
+    }
+
+    val onActionIconClick = remember {
+        {
+            if (textInputModel.actionIconCanBeClicked(hasFocus)) {
+                focusManager.clearFocus(force = true)
+                onSave()
+            } else {
+                focusRequester.requestFocus()
+            }
+        }
+    }
 
     Column {
         Row(
@@ -194,11 +212,7 @@ private fun TextInputContent(
                         fontSize = 12.sp,
                         textAlign = TextAlign.Start
                     ),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = textInputModel.keyboardInputType.keyboardCapitalization(),
-                        imeAction = ImeAction.Next,
-                        keyboardType = textInputModel.keyboardInputType.toKeyboardType()
-                    ),
+                    keyboardOptions = keyboardOptions,
                     keyboardActions = KeyboardActions(
                         onNext = {
                             onNextSelected()
@@ -216,16 +230,7 @@ private fun TextInputContent(
                 modifier = Modifier
                     .testTag(INPUT_ICON_TEST_TAG),
                 hasFocus = hasFocus,
-                textInputModel,
-                onActionIconClick = {
-                    if (textInputModel.actionIconCanBeClicked(hasFocus)) {
-                        focusManager.clearFocus(force = true)
-                        onSave()
-                    } else {
-                        focusRequester.requestFocus()
-                    }
-                },
-                onTextChanged
+                onActionIconClick = onActionIconClick
             )
         }
         if (textInputModel.hasErrorOrWarning()) {
@@ -257,9 +262,7 @@ private fun dividerColor(hasError: Boolean, hasWarning: Boolean, hasFocus: Boole
 private fun TextInputContentActionIcon(
     modifier: Modifier = Modifier,
     hasFocus: Boolean,
-    textInputModel: TextInputModel,
-    onActionIconClick: () -> Unit,
-    onTextChanged: (TextInputModel) -> Unit
+    onActionIconClick: () -> Unit
 ) {
     val icon = if (hasFocus) {
         R.drawable.ic_finish_edit_input
@@ -283,20 +286,6 @@ private fun TextInputContentActionIcon(
                 tint = LocalTableColors.current.primary,
                 contentDescription = ""
             )
-        }
-
-        if (textInputModel.showClearButton() && hasFocus) {
-            IconButton(
-                onClick = {
-                    onTextChanged(textInputModel.copy(currentValue = ""))
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_clear),
-                    tint = Color(0x61000000),
-                    contentDescription = ""
-                )
-            }
         }
     }
 }

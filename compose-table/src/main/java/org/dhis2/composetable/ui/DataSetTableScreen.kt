@@ -126,6 +126,7 @@ fun DataSetTableScreen(
     ) {
         collapseBottomSheet(finish = true)
     }
+
     LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
         if (
             bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed &&
