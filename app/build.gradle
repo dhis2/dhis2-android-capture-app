@@ -179,7 +179,7 @@ android {
             applicationId "org.samaritan.cpr"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.7.1.1-spOCC-fork-1"
+            versionName "2.7.1.1-spOCC-fork-2"
         }
     }
 
