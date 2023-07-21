@@ -54,7 +54,8 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = mandatoryFields,
             warningFields = warningFields,
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true
         )
 
         // Then Dialog should has Error info
@@ -76,7 +77,8 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = mandatoryFields,
             warningFields = warningFields,
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true
         )
 
         // Then Dialog should has Error info
@@ -97,7 +99,8 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = warningFields,
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true
         )
 
         // Then Dialog should has Error info
@@ -116,7 +119,8 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = emptyList(),
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true
         )
 
         // Then Dialog should has Error info
@@ -135,7 +139,8 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = emptyList(),
             canComplete = true,
-            onCompleteMessage = WARNING_MESSAGE
+            onCompleteMessage = WARNING_MESSAGE,
+            canSkipErrorFix = true
         )
 
         // Then Dialog should has Error info
@@ -154,7 +159,8 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = emptyList(),
             canComplete = false,
-            onCompleteMessage = ERROR_INFO
+            onCompleteMessage = ERROR_INFO,
+            canSkipErrorFix = true
         )
 
         // Then Dialog should has Error info

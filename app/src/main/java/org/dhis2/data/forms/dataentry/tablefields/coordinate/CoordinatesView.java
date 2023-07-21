@@ -52,6 +52,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import kotlin.Unit;
+import timber.log.Timber;
 
 public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener, ActivityResultObserver {
 
@@ -425,7 +426,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     this.latitude.setText(String.valueOf(list.get(1)));
                     this.longitude.setText(String.valueOf(list.get(0)));
                 } catch (D2Error d2Error) {
-                    d2Error.printStackTrace();
+                    Timber.e(d2Error);
                 }
 
             } else if (geometry.type() == FeatureType.POLYGON) {
