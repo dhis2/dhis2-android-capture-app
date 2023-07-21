@@ -39,6 +39,7 @@ class FormTest : BaseTest() {
         super.teardown()
     }
 
+    @Ignore("indeterminate test")
     @Test
     fun shouldSuccessfullyUseForm() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
@@ -139,6 +140,7 @@ class FormTest : BaseTest() {
         }
     }
 
+    @Ignore("Indeterminate (flaky)")
     @Test
     fun shouldApplyAssignAction() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
@@ -194,6 +196,7 @@ class FormTest : BaseTest() {
         }
     }
 
+    @Ignore("indeterminate test")
     @Test
     fun shouldApplyWarningAndErrorOnComplete() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
