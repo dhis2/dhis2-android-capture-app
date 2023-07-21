@@ -58,15 +58,15 @@ class DataSetFilterSearchHelperTest {
         filterManager.clearAllFilters()
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should return dataset instance summaries`() {
         dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
         verify(filterRepository).dataSetInstanceSummaries()
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should not apply any filters if not set`() {
         dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
         verify(filterRepository, times(0))
@@ -77,8 +77,8 @@ class DataSetFilterSearchHelperTest {
             .applyPeriodFilter(any(), any())
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should apply filters if set`() {
         filterManager.apply {
             addOrgUnit(

@@ -28,8 +28,8 @@ class MapLayerManagerTest {
         mapLayerManager = org.dhis2.maps.layer.MapLayerManager(mapboxMap, baseMapManager)
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should add layer with sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
@@ -39,8 +39,8 @@ class MapLayerManagerTest {
         assert(mapLayerManager.mapLayers[sourceId] is TeiMapLayer)
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should add layer without sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
@@ -51,8 +51,8 @@ class MapLayerManagerTest {
         assert(mapLayerManager.mapLayers[sourceId] is HeatmapMapLayer)
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should add layers with sourceIds`() {
         val otherSourceId = "otherSourceId"
         whenever(mapboxMap.style) doReturn style

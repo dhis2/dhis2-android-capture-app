@@ -23,8 +23,8 @@ class BasicFormUiModelStyleTest {
         basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory, valueType, true)
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldGetColorsFromStyle() {
         val mapOfColors = mapOf(
             FormUiColorType.PRIMARY to 1,

@@ -55,8 +55,8 @@ class FormViewModelTest {
         )
     }
 
-    @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
+    @Test
     fun `should show dialog if a unique field has a coincidence in a unique attribute`() = runTest {
         val storeResult = StoreResult(
             "fieldUid",
@@ -74,8 +74,8 @@ class FormViewModelTest {
         assertNotNull("Info message is generated", viewModel.showInfo.value)
     }
 
-    @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
+    @Test
     fun `Missing and errors fields should show mandatory fields dialog`() {
         whenever(
             repository.runDataIntegrityCheck(false)
@@ -93,8 +93,8 @@ class FormViewModelTest {
         assertTrue(viewModel.dataIntegrityResult.value is MissingMandatoryResult)
     }
 
-    @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
+    @Test
     fun `Error fields should show mandatory fields dialog`() {
         whenever(
             repository.runDataIntegrityCheck(false)
@@ -112,8 +112,8 @@ class FormViewModelTest {
         assertTrue(viewModel.dataIntegrityResult.value is FieldsWithErrorResult)
     }
 
-    @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
+    @Test
     fun `Check data integrity is a success`() {
         whenever(
             repository.runDataIntegrityCheck(false)

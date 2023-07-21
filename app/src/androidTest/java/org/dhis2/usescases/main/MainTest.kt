@@ -73,8 +73,8 @@ class MainTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldShowDialogToDeleteAccount() {
         setupCredentials()
         startActivity()

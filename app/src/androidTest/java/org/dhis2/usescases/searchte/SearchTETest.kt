@@ -100,8 +100,8 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore("Actions are being performed, but the test fails upon selecting the option in the spinner")
+    @Test
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
@@ -331,8 +331,8 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore("Unique value exception")
+    @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
         val firstName = "Lynn"
 

@@ -156,8 +156,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore("Nondeterministic")
+    @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
@@ -241,8 +241,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore("Nondeterministic")
+    @Test
     fun shouldSuccessfullyCreateANewEvent() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
@@ -336,8 +336,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
         val teiLastName = "Banks"
@@ -359,8 +359,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
         val teiLastName = "Jones"
