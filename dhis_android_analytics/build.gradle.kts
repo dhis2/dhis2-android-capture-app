@@ -43,6 +43,7 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -64,4 +65,6 @@ dependencies {
     api(libs.bundles.analytics.api)
     kapt(libs.bundles.analytics.kapt)
     testImplementation(libs.bundles.analytics.test)
+
+    coreLibraryDesugaring(libs.desugar)
 }

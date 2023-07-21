@@ -1,10 +1,14 @@
 package dhis2.org.analytics.charts.mappers
 
 import com.github.mikephil.charting.data.BarEntry
+import dhis2.org.analytics.charts.bindings.DateToPosition
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
+import java.time.YearMonth
 
 class GraphCoordinatesToBarEntry {
+
+    private val dateToPosition = DateToPosition()
     fun map(
         graph: Graph,
         coordinates: List<GraphPoint>,
@@ -12,13 +16,21 @@ class GraphCoordinatesToBarEntry {
         seriesCount: Int,
         serieLabel: String
     ): List<BarEntry> {
-        return coordinates.mapIndexed { index, graphPoint ->
+        var minMonth: YearMonth? = null
+        return coordinates.mapIndexed { _, graphPoint ->
             BarEntry(
                 when {
                     seriesCount > 1 ->
                         groupedBarIndex(graphPoint.position ?: 0f, serieIndex, seriesCount)
+
                     else ->
-                        singleBarIndex(index, graphPoint, graph)
+                        graphPoint.position ?: dateToPosition(
+                            graphPoint.eventDate,
+                            graph.eventPeriodType,
+                            minMonth
+                        ) { newValue ->
+                            minMonth = newValue
+                        }
                 },
                 graphPoint.fieldValue,
                 serieLabel
@@ -33,13 +45,5 @@ class GraphCoordinatesToBarEntry {
                     default_gap / 2f +
                     default_bar_group_separation
                 )
-    }
-
-    private fun singleBarIndex(index: Int, graphPoint: GraphPoint, graph: Graph): Float {
-        return if (index > 0) {
-            graphPoint.position ?: graph.numberOfStepsToDate(graphPoint.eventDate)
-        } else {
-            index.toFloat()
-        }
     }
 }
