@@ -100,8 +100,8 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("Actions are being performed, but the test fails upon selecting the option in the spinner")
     @Test
+    @Ignore("Actions are being performed, but the test fails upon selecting the option in the spinner")
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
@@ -331,12 +331,11 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("Unique value exception")
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
-        val firstName = "Lynn"
+        val firstName = "Filona"
 
-        prepareTBIntentAndLaunchActivity(rule)
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnShowMap()
