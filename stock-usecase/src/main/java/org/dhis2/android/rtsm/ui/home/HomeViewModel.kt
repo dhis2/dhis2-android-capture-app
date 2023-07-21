@@ -66,8 +66,8 @@ class HomeViewModel @Inject constructor(
                     {
                         it.printStackTrace()
                         _destinations.value = (
-                                OperationState.Error(R.string.destinations_load_error)
-                                )
+                            OperationState.Error(R.string.destinations_load_error)
+                            )
                     }
                 )
         )

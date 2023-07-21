@@ -138,7 +138,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
                             override val onSearch: (String) -> Unit
                                 get() = presenter::searchByName
                             override val onOrgUnitChecked:
-                                        (orgUnitUid: String, isChecked: Boolean) -> Unit
+                                (orgUnitUid: String, isChecked: Boolean) -> Unit
                                 get() = presenter::onOrgUnitCheckChanged
                             override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
                                 get() = presenter::onOpenChildren

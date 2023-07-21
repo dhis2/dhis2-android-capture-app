@@ -479,7 +479,9 @@ fun openOrgUnitTreeSelector(
         .singleSelection()
         .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
 //        .withPreselectedOrgUnits(orgUnitData?.let { listOf(it.uid()) } ?: emptyList())
-        .withPreselectedOrgUnits(viewModel.orgUnitData.value?.let { listOf(it.uid()) } ?: emptyList())
+        .withPreselectedOrgUnits(
+            viewModel.orgUnitData.value?.let { listOf(it.uid()) } ?: emptyList()
+        )
         .onSelection { selectedOrgUnits ->
             val selectedOrgUnit = selectedOrgUnits.firstOrNull()
             if (selectedOrgUnit != null) {
