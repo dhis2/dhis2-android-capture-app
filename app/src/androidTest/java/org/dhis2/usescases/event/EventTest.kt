@@ -91,8 +91,8 @@ class EventTest: BaseTest() {
         }
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldSuccessfullyUpdateAndSaveEvent() {
         val labMonitoring = "Lab monitoring"
         val eventDate = "1/6/2020"

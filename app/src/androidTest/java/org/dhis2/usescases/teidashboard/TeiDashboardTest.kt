@@ -33,9 +33,8 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createComposeRule()
-
+    @Ignore("SDK related, also indeterminate")
     @Test
-    @Ignore("SDK related")
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
@@ -157,8 +156,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore("Nondeterministic")
+    @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
@@ -228,7 +227,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Flaky")
+    @Ignore("Indeterminate test (Flaky)")
     @Test
     fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -242,8 +241,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore("Nondeterministic")
+    @Test
     fun shouldSuccessfullyCreateANewEvent() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
@@ -337,8 +336,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
         val teiLastName = "Banks"
@@ -360,8 +359,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
         val teiLastName = "Jones"

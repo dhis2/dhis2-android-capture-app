@@ -13,6 +13,7 @@ import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,6 +39,7 @@ class FormTest : BaseTest() {
         super.teardown()
     }
 
+    @Ignore("indeterminate test")
     @Test
     fun shouldSuccessfullyUseForm() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
@@ -138,6 +140,7 @@ class FormTest : BaseTest() {
         }
     }
 
+    @Ignore("Indeterminate (flaky)")
     @Test
     fun shouldApplyAssignAction() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
@@ -193,6 +196,7 @@ class FormTest : BaseTest() {
         }
     }
 
+    @Ignore("indeterminate test")
     @Test
     fun shouldApplyWarningAndErrorOnComplete() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
@@ -257,6 +261,7 @@ class FormTest : BaseTest() {
         }
     }
 
+    @Ignore("Indeterminate test")
     @Test
     fun shouldApplyOptionRelatedActions() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"

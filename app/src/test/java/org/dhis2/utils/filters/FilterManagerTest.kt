@@ -62,8 +62,8 @@ class FilterManagerTest {
         assertTrue(filterManager.observeField(Filters.ASSIGNED_TO_ME).get() == 0)
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should only add one sync state filter if to_post, to_update and uploading are set`() {
         filterManager.addState(
             false,

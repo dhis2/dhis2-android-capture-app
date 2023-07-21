@@ -58,8 +58,8 @@ class EventProgramFilterSearchHelperTest {
         RxAndroidPlugins.reset()
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should return query by program`() {
         eventFilterSearchHelper.getFilteredEventRepository(
             Program.builder().uid("programUid").build()
@@ -67,8 +67,8 @@ class EventProgramFilterSearchHelperTest {
         verify(filterRepository).eventsByProgram("programUid")
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should not apply any filters if not set`() {
         eventFilterSearchHelper.getFilteredEventRepository(
             Program.builder().uid("programUid").build()
@@ -87,8 +87,8 @@ class EventProgramFilterSearchHelperTest {
             .applyAssignToMe(any<EventQueryCollectionRepository>())
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should apply filters if set`() {
         filterManager.apply {
             addOrgUnit(
@@ -129,8 +129,8 @@ class EventProgramFilterSearchHelperTest {
             .applyAssignToMe(any<EventQueryCollectionRepository>())
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should apply sorting for supported sorting type`() {
         filterManager.sortingItem = SortingItem(Filters.PERIOD, SortingStatus.ASC)
         eventFilterSearchHelper.getFilteredEventRepository(

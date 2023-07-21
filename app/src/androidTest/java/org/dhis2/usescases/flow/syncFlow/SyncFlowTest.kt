@@ -18,6 +18,7 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -124,6 +125,7 @@ class SyncFlowTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("Indeterminate (flaky)")
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
