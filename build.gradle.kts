@@ -18,7 +18,6 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint").version("11.3.2")
     id("org.sonarqube").version("3.5.0.2730")
     id("com.github.ben-manes.versions").version("0.46.0")
-    id("com.autonomousapps.dependency-analysis").version("1.19.0")
 }
 
 sonarqube {
@@ -43,48 +42,12 @@ sonarqube {
     }
 }
 
-dependencyAnalysis {
-    issues {
-        all {
-            onUnusedDependencies {
-                severity("fail")
-            }
-            onUsedTransitiveDependencies {
-                severity("warn")
-            }
-            onIncorrectConfiguration {
-                severity("fail")
-            }
-            onUnusedAnnotationProcessors {
-                severity("fail")
-            }
-            onRedundantPlugins {
-                severity("fail")
-            }
-            // Ignore ktx dependencies if a transitive dependency is used
-            ignoreKtx(true)
-        }
-    }
-}
-
 val isNonStable: (String) -> Boolean = { version ->
     val stableKeyword =
         listOf("RELEASE", "FINAL", "GA").any { it -> version.toUpperCase().contains(it) }
     val regex = """^[0-9,.v-]+(-r)?$""".toRegex()
     !stableKeyword && !(version matches regex)
 }
-
-/*tasks.named("dependencyUpdates") {
-    configure<ResolutionStrategy> {
-        componentSelection {
-            all { selection: com.github.benmanes.gradle.versions.updates.resolutionstrategy.ComponentSelectionWithCurrent ->
-                if (isNonStable(selection.candidate.version) && !isNonStable(selection.currentVersion)) {
-                    selection.reject("Release candidate")
-                }
-            }
-        }
-    }
-}*/
 
 allprojects {
     configurations.all {
