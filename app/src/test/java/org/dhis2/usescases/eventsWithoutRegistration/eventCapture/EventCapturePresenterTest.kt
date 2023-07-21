@@ -1,26 +1,35 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import java.util.Date
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class EventCapturePresenterTest {
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
+
     private lateinit var presenter: EventCapturePresenterImpl
     private val view: EventCaptureContract.View = mock()
     private val eventUid = "eventUid"
@@ -210,6 +219,141 @@ class EventCapturePresenterTest {
 
         val result = presenter.completionPercentageVisibility
         assertTrue(!result)
+    }
+
+    @Test
+    fun `Should update actions`() {
+        presenter.emitAction(EventCaptureAction.ON_BACK)
+        val result = presenter.observeActions().value
+        assertTrue(result == EventCaptureAction.ON_BACK)
+    }
+
+    @Test
+    fun `Should check completed event expiration`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(true)
+        whenever(eventRepository.isEventEditable(any())) doReturn false
+
+        presenter.init()
+
+        assertTrue(presenter.hasExpired())
+    }
+
+    @Test
+    fun `Should set action by status if event is completed and expired`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(true)
+        whenever(eventRepository.isEventEditable(any())) doReturn true
+
+        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
+
+        verify(view).SaveAndFinish()
+    }
+
+    @Test
+    fun `Should set action by status if event is completed and not expired`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        presenter.init()
+
+        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
+        whenever(eventRepository.isEventEditable(any())) doReturn true
+        whenever(eventRepository.isEnrollmentCancelled) doReturn true
+
+        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
+
+        verify(view).finishDataEntry()
+    }
+
+    @Test
+    fun `Should set action by status if event is overdue`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.OVERDUE)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        presenter.init()
+
+        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
+        whenever(eventRepository.isEventEditable(any())) doReturn true
+
+        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
+
+        verify(view).attemptToSkip()
+    }
+
+    @Test
+    fun `Should set action by status if event is skipped`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.SKIPPED)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        presenter.init()
+
+        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
+        whenever(eventRepository.isEventEditable(any())) doReturn true
+
+        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
+
+        verify(view).attemptToReschedule()
+    }
+
+    @Test
+    fun `Should set action by status if event is active`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.ACTIVE)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        whenever(
+            eventRepository.validationStrategy()
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        val eventCompletionDialog: EventCompletionDialog = mock()
+        whenever(
+            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any())
+        ) doReturn eventCompletionDialog
+        whenever(
+            eventRepository.isEnrollmentOpen
+        ) doReturn true
+
+        presenter.attemptFinish(
+            canComplete = true,
+            onCompleteMessage = "Complete",
+            errorFields = emptyList(),
+            emptyMandatoryFields = emptyMap(),
+            warningFields = emptyList()
+        )
+
+        verify(view).showCompleteActions(
+            any(),
+            any(),
+            any()
+        )
+        verify(view).showNavigationBar()
+    }
+
+    @Test
+    fun `Should init note counter`() {
+        whenever(eventRepository.noteCount) doReturnConsecutively listOf(
+            0,
+            1
+        ).map { Single.just(it) }
+        presenter.initNoteCounter()
+        verify(view).updateNoteBadge(0)
+        presenter.initNoteCounter()
+        verify(view).updateNoteBadge(1)
     }
 
     private fun initializeMocks() {
