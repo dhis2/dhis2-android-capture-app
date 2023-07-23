@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="android.view.Gravity" />
 
         <variable
             name="followUp"
@@ -38,6 +39,10 @@
         <variable
             name="attributeListOpened"
             type="java.lang.Boolean" />
+
+        <variable
+            name="gravityPosition"
+            type="String" />
 
         <variable
             name="orgUnit"
@@ -166,9 +171,10 @@
                 app:layout_constraintTop_toTopOf="@id/tei_image_back_ground"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintWidth_max="wrap"
-                app:layout_constraintWidth_percent="0.2"
+                app:layout_constraintWidth_percent="0.7"
                 tools:text="Attribute 1:" />
 
+<!--            android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"-->
             <TextView
                 android:id="@+id/attribute_b_name"
                 android:layout_width="wrap_content"
@@ -189,8 +195,31 @@
                 app:layout_constraintTop_toBottomOf="@id/attribute_a_name"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintWidth_max="wrap"
-                app:layout_constraintWidth_percent="0.2"
+                app:layout_constraintWidth_percent="0.9"
                 tools:text="Attribute 2:" />
+
+            <TextView
+                android:id="@+id/attribute_c_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="@{attributeNames.size()>1?attributeNames.toArray()[2]:null}"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.9"
+                tools:text="Attribute 3:" />
 
             <TextView
                 android:id="@+id/enrolled_orgUnit"
@@ -204,10 +233,10 @@
                 android:textColor="@color/textPrimary"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
-                app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
+                app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.2"
-                tools:text="Attribute 3:" />
+                tools:text="Attribute:" />
 
             <TextView
                 android:id="@+id/sorting_field_name"
@@ -236,11 +265,12 @@
                 android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
                 android:textColor="@color/textSecondary"
                 android:textSize="14sp"
+                android:layout_weight="1"
                 android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/attribute_a_name"
                 app:layout_constraintTop_toTopOf="@id/attribute_a_name"
-                tools:text="dfsgsdfgsdfgsdfgsdfgsdfgsdfg" />
+                tools:text="attribute 1" />
 
             <TextView
                 android:id="@+id/entity_attribute_2"
@@ -255,11 +285,32 @@
                 android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
                 android:textColor="@color/textSecondary"
                 android:textSize="12sp"
+                android:layout_weight="1"
                 android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/attribute_b_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+
+            <TextView
+                android:id="@+id/entity_attribute_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 1 ? attribute.get(2).value() : "" , default="attribute 3"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:layout_weight="1"
+                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_b_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
 
             <TextView
                 android:id="@+id/entity_orgUnit"
@@ -275,8 +326,8 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/enrolled_orgUnit"
-                app:layout_constraintTop_toBottomOf="@id/entity_attribute_2"
-                tools:text="attribute 3" />
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_3"
+                tools:text="OrgUnit" />
 
             <TextView
                 android:id="@+id/sorting_field_value"

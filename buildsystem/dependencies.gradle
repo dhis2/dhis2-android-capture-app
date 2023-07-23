@@ -9,7 +9,7 @@ ext {
     ]
     libraries = [
             //DHIS2
-            dhis2sdk                  : "1.7.1-SNAPSHOT",
+            dhis2sdk                  : "1.7.1",
             ruleEngine                : "2.0.43.1",
 
             //androidX

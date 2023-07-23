@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-
+import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -204,19 +204,28 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         System.out.println(this.teiModel.getAttributeValues());
         System.out.println(this.teiModel.getSelectedEnrollment());
 
+        binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
+        binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
+        binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
+
 //        binding.cardFront.setFollowUp(false);
         if (OrientationUtilsKt.isLandscape()) {
 
             binding.cardFrontLand.setAttributeListOpened(false);
             binding.cardFrontLand.showAttributesButton.setOnClickListener((event) -> {
 
+                System.out.println("I got click on Tei");
+//                binding.cardFrontLand.setAttributeListOpened(true);
                 if (binding.cardFrontLand.getAttributeListOpened()) {
-
-//                    showAttributeList();
-//                    binding.cardFrontLand.setAttributeListOpened(true);
+                    binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
+                    binding.cardFrontLand.setAttributeListOpened(false);
+//                    binding.cardFrontLand.setGravityPosition("start");
                 } else {
-//                    hideAttributeList();
-//                    binding.cardFrontLand.setAttributeListOpened(true);
+                    binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
+                    binding.cardFrontLand.setAttributeListOpened(true);
+                    binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
+                    binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
+                    binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
 
                 }
 

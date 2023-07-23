@@ -328,12 +328,11 @@
                         android:id="@+id/syncState"
                         style="@style/ActionIconNoPadding"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginStart="4dp"
                         android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
                         app:layout_constraintEnd_toStartOf="@+id/download"
-                        app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintTop_toTopOf="parent"
                         app:stateIcon="@{teiSyncState}"
+                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"
                         tools:src="@drawable/ic_sync_green" />
 
                     <ImageView
@@ -389,7 +388,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:srcCompat="@drawable/ic_arrow_down"
-                        app:tint="#61333333" />
+                        app:tint="#61333333"
+                        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>

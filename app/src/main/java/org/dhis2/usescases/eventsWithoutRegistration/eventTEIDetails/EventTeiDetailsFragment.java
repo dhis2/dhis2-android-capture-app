@@ -219,14 +219,20 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             public void onClick(View view) {
                 System.out.println("i got clicked");
 
-
                 binding.cardFrontLand.setAttributeListOpened(!binding.cardFrontLand.getAttributeListOpened());
 
-                if (binding.cardFrontLand.getAttributeListOpened() == true) {
-                    binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
-                } else {
-                    binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
-                }
+                binding.cardFrontLand.showAttributesButton.setOnClickListener((event) -> {
+
+                    System.out.println("I got click on eventStagePage");
+                    if (binding.cardFrontLand.getAttributeListOpened()) {
+                        binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
+                        binding.cardFrontLand.setAttributeListOpened(false);
+                    } else {
+                        binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
+                        binding.cardFrontLand.setAttributeListOpened(true);
+                    }
+
+                });
             }
         });
 
@@ -402,11 +408,16 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         this.teiModel.setAttributeValues(linkedHashMapOfAttrValues);
 
         System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+//        System.out.println(this.teiModel.getAttributeValues());
         System.out.println(this.teiModel.getAttributeValues().keySet());
         System.out.println(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
 
         if (OrientationUtilsKt.isLandscape()) {
+            binding.cardFrontLand.setAttributeListOpened(true);
+//            binding.cardFrontLand.showAttributeList();
+
             binding.cardFrontLand.setAttributeNames(this.teiModel.getAttributeValues().keySet());
+//            binding.cardFrontLand.setAttributeNames(this.teiModel.attributeValues.keys);
             binding.cardFrontLand.setAttribute(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
         }
 
