@@ -208,10 +208,10 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/rubik_regular"
                 android:singleLine="true"
-                android:text="@{attributeNames.size()>1?attributeNames.toArray()[2]:null}"
+                android:text="@{attributeNames.size()>2?attributeNames.toArray()[2]:null}"
                 android:textColor="@color/textPrimary"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@+id/infoLayout"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
@@ -220,6 +220,29 @@
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.9"
                 tools:text="Attribute 3:" />
+
+            <TextView
+                android:id="@+id/attribute_d_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="@{attributeNames.size()>3?attributeNames.toArray()[3]:null}"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 3 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.9"
+                tools:text="Attribute 4:" />
 
             <TextView
                 android:id="@+id/enrolled_orgUnit"
@@ -233,7 +256,7 @@
                 android:textColor="@color/textPrimary"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
-                app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
+                app:layout_constraintTop_toBottomOf="@id/attribute_d_name"
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.2"
                 tools:text="Attribute:" />
@@ -302,15 +325,35 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/rubik_regular"
                 android:singleLine="true"
-                android:text='@{attribute.size() > 1 ? attribute.get(2).value() : "" , default="attribute 3"}'
+                android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "" , default="attribute 3"}'
                 android:textColor="@color/textSecondary"
                 android:textSize="12sp"
                 android:layout_weight="1"
-                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/attribute_b_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
+
+            <TextView
+                android:id="@+id/entity_attribute_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 3 ? attribute.get(3).value() : "" , default="attribute 4"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:layout_weight="1"
+                android:visibility='@{attribute.size() > 3 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_b_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_3" />
 
             <TextView
                 android:id="@+id/entity_orgUnit"
@@ -326,7 +369,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/enrolled_orgUnit"
-                app:layout_constraintTop_toBottomOf="@id/entity_attribute_3"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_4"
                 tools:text="OrgUnit" />
 
             <TextView

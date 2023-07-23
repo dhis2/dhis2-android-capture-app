@@ -207,6 +207,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
         binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
         binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
+        binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
+
 
 //        binding.cardFront.setFollowUp(false);
         if (OrientationUtilsKt.isLandscape()) {
@@ -226,6 +228,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
                     binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
                     binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
+                    binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
 
                 }
 
