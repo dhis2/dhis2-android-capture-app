@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -230,6 +231,10 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                     } else {
                         binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
                         binding.cardFrontLand.setAttributeListOpened(true);
+                        binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
+                        binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
+                        binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
+                        binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
                     }
 
                 });
@@ -241,6 +246,11 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         } catch (Exception e) {
             Timber.e(e);
         }
+
+        binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
+        binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
+        binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
+        binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
 
         return binding.getRoot();
 

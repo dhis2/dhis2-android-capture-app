@@ -116,10 +116,10 @@
                 <include
                     android:id="@+id/card_front_land"
                     layout="@layout/item_search_tracked_entity"
-                    app:teiSyncState="@{trackEntity.syncState()}"
+                    app:followUp="@{enrollment.followUp()}"
                     app:highRisk="@{highRisk}"
                     app:lowRisk="@{lowRisk}"
-                    app:followUp="@{enrollment.followUp()}"/>
+                    app:teiSyncState="@{trackEntity.syncState()}" />
             </androidx.cardview.widget.CardView>
 
             <androidx.recyclerview.widget.RecyclerView

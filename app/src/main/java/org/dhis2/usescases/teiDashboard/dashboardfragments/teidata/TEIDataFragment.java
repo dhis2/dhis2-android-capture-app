@@ -372,6 +372,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         System.out.println(this.teiModel.getAttributeValues().keySet());
+        System.out.println(this.teiModel.getAttributeValues());
         System.out.println(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
 
         if (OrientationUtilsKt.isLandscape()) {
