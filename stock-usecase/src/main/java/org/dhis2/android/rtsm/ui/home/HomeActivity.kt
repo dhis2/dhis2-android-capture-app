@@ -183,4 +183,9 @@ class HomeActivity : AppCompatActivity() {
         val data = result.contents
         manageStockViewModel.onSearchQueryChanged(data)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetOrgUnitData()
+    }
 }
