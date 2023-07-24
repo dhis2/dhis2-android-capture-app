@@ -48,9 +48,6 @@ class HomeViewModel @Inject constructor(
     private val _settingsUiSate = MutableStateFlow(SettingsUiState(programUid = config.program))
     val settingsUiState: StateFlow<SettingsUiState> = _settingsUiSate
 
-    private val _orgUnitData = MutableStateFlow<OrganisationUnit?>(null)
-    val orgUnitData: StateFlow<OrganisationUnit?> = _orgUnitData
-
     init {
         loadFacilities()
         loadDestinations()
@@ -165,14 +162,5 @@ class HomeViewModel @Inject constructor(
             )
         }
         selectTransaction(TransactionType.DISTRIBUTION)
-        resetOrgUnitData()
-    }
-
-    fun setOrgUnitData(organisationUnit: OrganisationUnit?) {
-        _orgUnitData.value = organisationUnit!!
-    }
-
-    fun resetOrgUnitData() {
-        _orgUnitData.value = null
     }
 }
