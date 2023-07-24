@@ -58,7 +58,6 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-var orgUnitData: OrganisationUnit? = null
 var orgUnitName: String? = null
 
 @Composable
@@ -227,7 +226,6 @@ fun DropdownComponentFacilities(
 
     if (data.size == 1) {
         onFacilitySelected.invoke(data.get(0))
-        orgUnitData = data.get(0)
     }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -478,20 +476,18 @@ fun openOrgUnitTreeSelector(
         .showAsDialog()
         .singleSelection()
         .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
-//        .withPreselectedOrgUnits(orgUnitData?.let { listOf(it.uid()) } ?: emptyList())
         .withPreselectedOrgUnits(
-            viewModel.orgUnitData.value?.let { listOf(it.uid()) } ?: emptyList()
+            viewModel.settingsUiState.value.facility?.let { listOf(it.uid()) } ?: emptyList()
         )
         .onSelection { selectedOrgUnits ->
             val selectedOrgUnit = selectedOrgUnits.firstOrNull()
             if (selectedOrgUnit != null) {
-                if (viewModel.orgUnitData.value != selectedOrgUnit && hasUnsavedData) {
+                if (viewModel.settingsUiState.value.facility != selectedOrgUnit && hasUnsavedData) {
                     launchDialog.invoke(R.string.transaction_discarted) { result ->
                         when (result) {
                             EditionDialogResult.DISCARD -> {
                                 // Perform the transaction change and clear data
                                 onFacilitySelected.invoke(selectedOrgUnit)
-                                viewModel.setOrgUnitData(selectedOrgUnit)
                             }
                             EditionDialogResult.KEEP -> {
                                 // Leave it as it was
@@ -500,7 +496,6 @@ fun openOrgUnitTreeSelector(
                     }
                 } else {
                     onFacilitySelected.invoke(selectedOrgUnit)
-                    viewModel.setOrgUnitData(selectedOrgUnit)
                 }
             }
         }
