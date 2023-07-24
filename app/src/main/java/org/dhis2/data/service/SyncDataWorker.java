@@ -77,7 +77,6 @@ public class SyncDataWorker extends Worker {
             if (!new NetworkUtils(getApplicationContext()).isOnline()) {
                 presenter.setNetworkUnavailable();
             }
-            Timber.e(e);
             isEventOk = false;
         }
 
@@ -92,7 +91,6 @@ public class SyncDataWorker extends Worker {
             if (!new NetworkUtils(getApplicationContext()).isOnline()) {
                 presenter.setNetworkUnavailable();
             }
-            Timber.e(e);
             isTeiOk = false;
         }
 
