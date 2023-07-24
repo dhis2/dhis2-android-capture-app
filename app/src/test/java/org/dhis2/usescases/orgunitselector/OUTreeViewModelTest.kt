@@ -54,7 +54,7 @@ class OUTreeViewModelTest {
 
         whenever(
             repository.orgUnits()
-        ) doReturn orgUnits.map { it.uid() }
+        ) doReturn orgUnits
 
         whenever(
             repository.orgUnit(any())
@@ -112,7 +112,7 @@ class OUTreeViewModelTest {
 
         whenever(
             repository.orgUnits(searchInput)
-        ) doReturn listOf(parentOrgUnit.uid(), childOrgUnits[0].uid())
+        ) doReturn listOf(parentOrgUnit, childOrgUnits[0])
 
         whenever(
             repository.orgUnit(childOrgUnits[0].uid())
@@ -217,7 +217,7 @@ class OUTreeViewModelTest {
     ) {
         whenever(
             repository.orgUnits()
-        ) doReturn orgUnits.map { it.uid() }
+        ) doReturn orgUnits
 
         whenever(
             repository.orgUnit(any())
