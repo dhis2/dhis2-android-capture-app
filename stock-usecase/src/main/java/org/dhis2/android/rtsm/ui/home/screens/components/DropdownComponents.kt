@@ -47,7 +47,6 @@ import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
-import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
@@ -57,8 +56,6 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-
-var orgUnitName: String? = null
 
 @Composable
 fun DropdownComponentTransactions(
@@ -211,7 +208,6 @@ fun DropdownComponentTransactions(
 
 @Composable
 fun DropdownComponentFacilities(
-    viewModel: HomeViewModel,
     settingsUiState: SettingsUiState,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
     hasUnsavedData: Boolean,
@@ -231,7 +227,6 @@ fun DropdownComponentFacilities(
     val interactionSource = remember { MutableInteractionSource() }
     if (interactionSource.collectIsPressedAsState().value) {
         openOrgUnitTreeSelector(
-            viewModel,
             supportFragmentManager,
             settingsUiState,
             hasUnsavedData,
@@ -273,7 +268,6 @@ fun DropdownComponentFacilities(
                 IconButton(
                     onClick = {
                         openOrgUnitTreeSelector(
-                            viewModel,
                             supportFragmentManager,
                             settingsUiState,
                             hasUnsavedData,
@@ -465,7 +459,6 @@ fun DropdownComponentDistributedTo(
 }
 
 fun openOrgUnitTreeSelector(
-    viewModel: HomeViewModel,
     supportFragmentManager: FragmentManager,
     settingsUiState: SettingsUiState,
     hasUnsavedData: Boolean,
@@ -477,12 +470,12 @@ fun openOrgUnitTreeSelector(
         .singleSelection()
         .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
         .withPreselectedOrgUnits(
-            viewModel.settingsUiState.value.facility?.let { listOf(it.uid()) } ?: emptyList()
+            settingsUiState.facility?.let { listOf(it.uid()) } ?: emptyList()
         )
         .onSelection { selectedOrgUnits ->
             val selectedOrgUnit = selectedOrgUnits.firstOrNull()
             if (selectedOrgUnit != null) {
-                if (viewModel.settingsUiState.value.facility != selectedOrgUnit && hasUnsavedData) {
+                if (settingsUiState.facility != selectedOrgUnit && hasUnsavedData) {
                     launchDialog.invoke(R.string.transaction_discarted) { result ->
                         when (result) {
                             EditionDialogResult.DISCARD -> {
