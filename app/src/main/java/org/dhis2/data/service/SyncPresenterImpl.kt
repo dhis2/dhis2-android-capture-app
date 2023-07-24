@@ -201,7 +201,6 @@ class SyncPresenterImpl(
         Completable.fromObservable(
             d2.metadataModule().download()
                 .doOnNext { data ->
-                    Timber.log(1, data.toString())
                     progressUpdate.onProgressUpdate(ceil(data.percentage() ?: 0.0).toInt())
                 }
                 .doOnComplete {
@@ -305,6 +304,7 @@ class SyncPresenterImpl(
             SyncResult.SYNC -> {
                 ListenableWorker.Result.success()
             }
+
             SyncResult.ERROR -> {
                 val trackerImportConflicts = messageTrackerImportConflict(teiUid)
                 val mergeDateConflicts = ArrayList<String>()
@@ -320,6 +320,7 @@ class SyncPresenterImpl(
                     .build()
                 ListenableWorker.Result.failure(data)
             }
+
             SyncResult.INCOMPLETE -> {
                 val data = Data.Builder()
                     .putStringArray("incomplete", arrayOf("INCOMPLETE"))
@@ -543,19 +544,19 @@ class SyncPresenterImpl(
         var trackerImportConflicts: List<TrackerImportConflict>? =
             d2.importModule().trackerImportConflicts().byTrackedEntityInstanceUid().eq(uid)
                 .blockingGet()
-        if (trackerImportConflicts != null && trackerImportConflicts.isNotEmpty()) {
+        if (!trackerImportConflicts.isNullOrEmpty()) {
             return trackerImportConflicts
         }
 
         trackerImportConflicts =
             d2.importModule().trackerImportConflicts().byEventUid().eq(uid).blockingGet()
-        if (trackerImportConflicts != null && trackerImportConflicts.isNotEmpty()) {
+        if (!trackerImportConflicts.isNullOrEmpty()) {
             return trackerImportConflicts
         }
 
         trackerImportConflicts =
             d2.importModule().trackerImportConflicts().byEnrollmentUid().eq(uid).blockingGet()
-        return if (trackerImportConflicts != null && trackerImportConflicts.isNotEmpty()) {
+        return if (!trackerImportConflicts.isNullOrEmpty()) {
             trackerImportConflicts
         } else {
             null
