@@ -47,7 +47,6 @@ abstract class BaseIndicatorRepository(
                         val indicatorValue = try {
                             indicatorValueCalculator(indicator.uid())
                         } catch (e: Exception) {
-                            Timber.e(e)
                             null
                         }
                         Pair.create(indicator, indicatorValue ?: "")
@@ -80,10 +79,10 @@ abstract class BaseIndicatorRepository(
                     .get()
             }
             .flatMapPublisher { ruleAction ->
-                if (ruleAction.isEmpty()) {
-                    return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
+                return@flatMapPublisher if (ruleAction.isEmpty()) {
+                    Flowable.just<List<AnalyticsModel>>(listOf())
                 } else {
-                    return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
+                    ruleEngineRepository.updateRuleEngine()
                         .flatMap { ruleEngineRepository.reCalculate() }
                         .map { effects ->
                             // Restart rule engine to take into account value changes
@@ -139,7 +138,7 @@ abstract class BaseIndicatorRepository(
     private fun getLegendColorForIndicator(
         indicator: ProgramIndicator,
         value: String?
-    ): Observable<Trio<ProgramIndicator?, String?, String?>?>? {
+    ): Observable<Trio<ProgramIndicator?, String?, String?>?> {
         var color: String
         try {
             color = if (value?.toFloat()?.isNaN() == true) {
@@ -195,17 +194,23 @@ abstract class BaseIndicatorRepository(
                     }
                 )
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
-            if (indicatorList.isNotEmpty() && charts.isNotEmpty()) {
-                add(SectionTitle(resourceManager.sectionChartsAndIndicators()))
-                add(SectionTitle(resourceManager.sectionIndicators(), SectionType.SUBSECTION))
-                addAll(indicatorList)
-                addAll(charts)
-            } else if (indicatorList.isNotEmpty() && charts.isEmpty()) {
-                add(SectionTitle(resourceManager.sectionIndicators()))
-                addAll(indicatorList)
-            } else if (indicatorList.isEmpty() && charts.isNotEmpty()) {
-                add(SectionTitle(resourceManager.sectionCharts()))
-                addAll(charts)
+            when {
+                indicatorList.isNotEmpty() && charts.isNotEmpty() -> {
+                    add(SectionTitle(resourceManager.sectionChartsAndIndicators()))
+                    add(SectionTitle(resourceManager.sectionIndicators(), SectionType.SUBSECTION))
+                    addAll(indicatorList)
+                    addAll(charts)
+                }
+
+                indicatorList.isNotEmpty() -> {
+                    add(SectionTitle(resourceManager.sectionIndicators()))
+                    addAll(indicatorList)
+                }
+
+                charts.isNotEmpty() -> {
+                    add(SectionTitle(resourceManager.sectionCharts()))
+                    addAll(charts)
+                }
             }
         }
     }
