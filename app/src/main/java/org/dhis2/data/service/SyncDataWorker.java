@@ -17,9 +17,9 @@ import androidx.work.WorkerParameters;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 
 import java.util.Calendar;
@@ -107,7 +107,6 @@ public class SyncDataWorker extends Worker {
             if (!new NetworkUtils(getApplicationContext()).isOnline()) {
                 presenter.setNetworkUnavailable();
             }
-            Timber.e(e);
             isDataValue = false;
         }
 
@@ -142,7 +141,7 @@ public class SyncDataWorker extends Worker {
 
         presenter.finishSync();
 
-        return Result.success(createOutputData(true));
+        return Result.success(createOutputData());
     }
 
     @Override
@@ -151,9 +150,9 @@ public class SyncDataWorker extends Worker {
         super.onStopped();
     }
 
-    private Data createOutputData(boolean state) {
+    private Data createOutputData() {
         return new Data.Builder()
-                .putBoolean("DATA_STATE", state)
+                .putBoolean("DATA_STATE", true)
                 .build();
     }
 
