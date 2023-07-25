@@ -52,7 +52,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
-import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.datastore.KeyValuePair;
 import org.jetbrains.annotations.NotNull;
@@ -117,7 +116,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         MapController.Companion.init(this);
 
         setUpAppComponent();
-        Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));
+        if(BuildConfig.DEBUG){
+            Timber.plant(new DebugTree());
+        }
 
         setUpSecurityProvider();
         setUpServerComponent();
