@@ -42,6 +42,9 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
 
+const val ENROLLMENT_ICONS_TO_SHOW = 4
+const val MAX_NUMBER_REMAINING_ENROLLMENTS = 99
+
 fun List<Enrollment>.hasFollowUp(): Boolean {
     return firstOrNull { enrollment ->
         enrollment.followUp() == true
@@ -103,7 +106,11 @@ fun List<Program>.addEnrollmentIcons(
 }
 
 private fun getOtherEnrollmentsForTei(teiEnrollmentCount: Int): Int {
-    return if (teiEnrollmentCount - 4 > 99) 99 else teiEnrollmentCount - 4
+    return if (teiEnrollmentCount - ENROLLMENT_ICONS_TO_SHOW > MAX_NUMBER_REMAINING_ENROLLMENTS) {
+        MAX_NUMBER_REMAINING_ENROLLMENTS
+    } else {
+        teiEnrollmentCount - ENROLLMENT_ICONS_TO_SHOW
+    }
 }
 
 private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawable? {
