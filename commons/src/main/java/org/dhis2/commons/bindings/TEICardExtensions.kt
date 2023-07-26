@@ -76,11 +76,7 @@ fun List<Program>.addEnrollmentIcons(
                                 )
                                 programCount++
                                 if (programCount >= 4 && listSize > 4) {
-                                    val otherEnrollmentsCount = if (listSize - 4 > 99) {
-                                        99
-                                    } else {
-                                        (listSize - 4)
-                                    }
+                                    val otherEnrollmentsCount = getOtherEnrollmentsForTei(listSize)
                                     SquareWithNumber(otherEnrollmentsCount)
                                     return@outer
                                 } else {
@@ -104,6 +100,10 @@ fun List<Program>.addEnrollmentIcons(
             }
         }
     }
+}
+
+private fun getOtherEnrollmentsForTei( teiEnrollmentCount : Int): Int {
+    if (teiEnrollmentCount  - 4 > 99) return 99 else return teiEnrollmentCount -4
 }
 
 private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawable? {
