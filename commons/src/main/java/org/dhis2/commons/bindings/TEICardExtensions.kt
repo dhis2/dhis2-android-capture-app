@@ -35,6 +35,7 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.SquareWithNumber
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
@@ -54,6 +55,8 @@ fun List<Program>.addEnrollmentIcons(
     parent: ComposeView,
     currentProgram: String?
 ) {
+    val listSize = this.size
+    var programCount = 0
     parent.apply {
         setContent {
             MdcTheme {
@@ -61,29 +64,42 @@ fun List<Program>.addEnrollmentIcons(
                     horizontalArrangement = spacedBy(Dp(4f)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    filter { it.uid() != currentProgram }
-                        .forEach { program ->
-                            val color = ColorUtils.getColorFrom(
-                                program.style().color(),
-                                ColorUtils.getPrimaryColor(
-                                    context,
-                                    ColorUtils.ColorType.PRIMARY
-                                )
-                            )
-                            val imageResource =
-                                ResourceManager(context)
-                                    .getObjectStyleDrawableResource(
-                                        program.style().icon(),
-                                        R.drawable.ic_default_icon
+                    run outer@{
+                        filter { it.uid() != currentProgram }
+                            .forEach inner@{ program ->
+                                val color = ColorUtils.getColorFrom(
+                                    program.style().color(),
+                                    ColorUtils.getPrimaryColor(
+                                        context,
+                                        ColorUtils.ColorType.PRIMARY
                                     )
-                            MetadataIcon(
-                                metadataIconData = MetadataIconData(
-                                    programColor = color,
-                                    iconResource = imageResource,
-                                    sizeInDp = 24
                                 )
-                            )
-                        }
+                                programCount++
+                                if (programCount >= 4 && listSize > 4) {
+                                    val otherEnrollmentsCount = if (listSize - 4 > 99) {
+                                        99
+                                    } else {
+                                        (listSize - 4)
+                                    }
+                                    SquareWithNumber(otherEnrollmentsCount)
+                                    return@outer
+                                } else {
+                                    val imageResource =
+                                        ResourceManager(context)
+                                            .getObjectStyleDrawableResource(
+                                                program.style().icon(),
+                                                R.drawable.ic_default_icon
+                                            )
+                                    MetadataIcon(
+                                        metadataIconData = MetadataIconData(
+                                            programColor = color,
+                                            iconResource = imageResource,
+                                            sizeInDp = 24
+                                        )
+                                    )
+                                }
+                            }
+                    }
                 }
             }
         }
