@@ -162,5 +162,4 @@ class StockTableDimensionStore @Inject constructor(
         "table_width_${programUid}_${sectionUid}_$tableId"
 
     private fun tableExtraWidthForProgram() = "table_width_${programUid}_${sectionUid}_%"
-
 }

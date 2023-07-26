@@ -278,7 +278,8 @@ fun MainContent(
                                 scope.launch { backdropState.conceal() }
                             },
                             onResized = { actions ->
-                                tableResizeActions = actions                            }
+                                tableResizeActions = actions
+                            }
                         )
                     }
                 } else if (settingsUiState.transactionType == TransactionType.DISCARD) {
@@ -290,7 +291,8 @@ fun MainContent(
                                 scope.launch { backdropState.conceal() }
                             },
                             onResized = { actions ->
-                                tableResizeActions = actions                            }
+                                tableResizeActions = actions
+                            }
                         )
                     }
                 }
