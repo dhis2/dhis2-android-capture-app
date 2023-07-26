@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -36,11 +37,14 @@ import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 
 @Composable
-fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -> Unit) {
+fun ManageStockTable(
+    viewModel: ManageStockViewModel,
+    concealBackdropState: () -> Unit,
+    onResized: (resizeActions: TableResizeActions?) -> Unit
+) {
     val screenState by viewModel.screenState.observeAsState(
         initial = TableScreenState(
-            tables = emptyList(),
-            overwrittenRowHeaderWidth = 200F
+            tables = emptyList()
         )
     )
 
@@ -48,6 +52,8 @@ fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -
         if (viewModel.hasData.collectAsState().value) {
             val localDensity = LocalDensity.current
             val conf = LocalConfiguration.current
+            val tableConfState by viewModel.tableConfigurationState.collectAsState()
+
             var dimensions by remember {
                 mutableStateOf(
                     TableDimensions(
@@ -56,9 +62,24 @@ fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -
                             (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
                                 .roundToInt()
                         },
-                        extraWidths = emptyMap(),
-                        rowHeaderWidths = emptyMap(),
-                        columnWidth = emptyMap(),
+                        extraWidths = with(localDensity) {
+                            tableConfState.overwrittenTableWidth?.mapValues { (_, width) ->
+                                width.dp.roundToPx()
+                            }
+                        } ?: emptyMap(),
+                        rowHeaderWidths = with(localDensity) {
+                            tableConfState.overwrittenRowHeaderWidth
+                                ?.mapValues { (_, width) ->
+                                    width.dp.roundToPx()
+                                }
+                        } ?: emptyMap(),
+                        columnWidth = with(localDensity) {
+                            tableConfState.overwrittenColumnWidth?.mapValues { (_, value) ->
+                                value.mapValues { (_, width) ->
+                                    width.dp.roundToPx()
+                                }
+                            }
+                        } ?: emptyMap(),
                         defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt(),
                         tableBottomPadding = 100.dp
                     )
@@ -72,19 +93,42 @@ fun ManageStockTable(viewModel: ManageStockViewModel, concealBackdropState: () -
 
                 override fun onRowHeaderResize(tableId: String, newValue: Float) {
                     dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+                    val widthDpValue = with(localDensity) {
+                        dimensions.getRowHeaderWidth(tableId).toDp().value
+                    }
+                    viewModel.tableDimensionStore.saveWidthForSection(tableId, widthDpValue)
+                    onResized(this)
                 }
 
                 override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
                     dimensions =
                         dimensions.updateColumnWidth(tableId, column, newValue)
+                    viewModel.tableDimensionStore.saveColumnWidthForSection(
+                        tableId,
+                        column,
+                        newValue
+                    )
+                    onResized(this)
                 }
 
                 override fun onTableDimensionResize(tableId: String, newValue: Float) {
                     dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                    viewModel.tableDimensionStore.saveTableWidth(tableId, newValue)
+                    onResized(this)
                 }
 
                 override fun onTableDimensionReset(tableId: String) {
                     dimensions = dimensions.resetWidth(tableId)
+                    viewModel.tableDimensionStore.resetTable(tableId)
+                    onResized(null)
+                }
+            }
+
+            LaunchedEffect(key1 = tableConfState) {
+                if (tableConfState.isResized()) {
+                    onResized(tableResizeActions)
+                } else {
+                    onResized(null)
                 }
             }
 

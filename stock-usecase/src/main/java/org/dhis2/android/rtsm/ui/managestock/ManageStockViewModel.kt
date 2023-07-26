@@ -32,6 +32,7 @@ import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
+import org.dhis2.android.rtsm.services.StockTableDimensionStore
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.OnQuantityValidated
@@ -43,6 +44,7 @@ import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.KeyboardInputType
@@ -62,7 +64,8 @@ class ManageStockViewModel @Inject constructor(
     speechRecognitionManager: SpeechRecognitionManager,
     private val resources: ResourceManager,
     private val tableModelMapper: TableModelMapper,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
+    val tableDimensionStore: StockTableDimensionStore
 ) : Validator, SpeechRecognitionAwareViewModel(
     schedulerProvider,
     speechRecognitionManager
@@ -83,8 +86,7 @@ class ManageStockViewModel @Inject constructor(
 
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(
-            tables = emptyList(),
-            overwrittenRowHeaderWidth = 200F
+            tables = emptyList()
         )
     )
     val screenState: LiveData<TableScreenState> = _screenState
@@ -109,6 +111,10 @@ class ManageStockViewModel @Inject constructor(
 
     val shouldNavigateBack = MutableLiveData<Void?>()
 
+    private val _tableConfigurationState = MutableStateFlow(refreshTableConfiguration())
+
+    val tableConfigurationState: StateFlow<TableConfigurationState> = _tableConfigurationState
+
     init {
         configureRelays()
     }
@@ -125,8 +131,8 @@ class ManageStockViewModel @Inject constructor(
     private fun didTransactionParamsChange(transaction: Transaction): Boolean {
         return if (_transaction.value != null) {
             _transaction.value!!.transactionType != transaction.transactionType ||
-                _transaction.value!!.facility != transaction.facility ||
-                _transaction.value!!.distributedTo != transaction.distributedTo
+                    _transaction.value!!.facility != transaction.facility ||
+                    _transaction.value!!.distributedTo != transaction.distributedTo
         } else {
             true
         }
@@ -143,6 +149,10 @@ class ManageStockViewModel @Inject constructor(
 
     fun setConfig(config: AppConfig) {
         _config.value = config
+        tableDimensionStore.setUids(config.program)
+        viewModelScope.launch {
+            _tableConfigurationState.emit(refreshTableConfiguration())
+        }
     }
 
     fun setThemeColor(themeColor: Color) {
@@ -193,8 +203,8 @@ class ManageStockViewModel @Inject constructor(
                 .debounce(QUANTITY_ENTRY_DEBOUNCE, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged { t1, t2 ->
                     t1.entry.item.id == t2.entry.item.id &&
-                        t1.position == t2.position &&
-                        t1.entry.qty == t2.entry.qty
+                            t1.position == t2.position &&
+                            t1.entry.qty == t2.entry.qty
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -242,8 +252,7 @@ class ManageStockViewModel @Inject constructor(
 
         _screenState.postValue(
             TableScreenState(
-                tables = tables,
-                overwrittenRowHeaderWidth = 200F
+                tables = tables
             )
         )
 
@@ -359,9 +368,9 @@ class ManageStockViewModel @Inject constructor(
     ) {
         if (ruleEffect.ruleAction() is RuleActionAssign &&
             (
-                (ruleEffect.ruleAction() as RuleActionAssign).field()
-                    == config.value?.stockOnHand
-                )
+                    (ruleEffect.ruleAction() as RuleActionAssign).field()
+                            == config.value?.stockOnHand
+                    )
         ) {
             val data = ruleEffect.data()
             val isValid: Boolean = isValidStockOnHand(data)
@@ -568,4 +577,10 @@ class ManageStockViewModel @Inject constructor(
     fun onBottomSheetClosed() {
         _bottomSheetState.value = false
     }
+
+    private fun refreshTableConfiguration() = TableConfigurationState(
+        overwrittenTableWidth = tableDimensionStore.getTableWidth(),
+        overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
+        overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null)
+    )
 }
