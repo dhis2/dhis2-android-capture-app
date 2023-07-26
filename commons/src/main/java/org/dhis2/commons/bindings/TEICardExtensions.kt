@@ -102,8 +102,8 @@ fun List<Program>.addEnrollmentIcons(
     }
 }
 
-private fun getOtherEnrollmentsForTei( teiEnrollmentCount : Int): Int {
-    if (teiEnrollmentCount  - 4 > 99) return 99 else return teiEnrollmentCount -4
+private fun getOtherEnrollmentsForTei(teiEnrollmentCount: Int): Int {
+    return if (teiEnrollmentCount - 4 > 99) 99 else teiEnrollmentCount - 4
 }
 
 private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawable? {
