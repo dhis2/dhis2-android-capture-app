@@ -52,7 +52,7 @@ fun SquareWithNumber(number: Int) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "+99",
+            text = "+$number",
             color = "#6f6f6f".toColor(),
             textAlign = TextAlign.Center,
             fontFamily = FontFamily(Font(R.font.rubik_regular))
