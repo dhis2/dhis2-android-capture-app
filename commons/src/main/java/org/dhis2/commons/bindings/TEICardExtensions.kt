@@ -28,6 +28,7 @@ import java.io.File
 import java.util.ArrayList
 import java.util.Date
 import org.dhis2.commons.R
+import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.databinding.ItemFieldValueBinding
 import org.dhis2.commons.date.toUiText
@@ -53,13 +54,50 @@ fun List<Enrollment>.hasFollowUp(): Boolean {
     } ?: false
 }
 
-fun List<Program>.addEnrollmentIcons(
+fun List<Program>.getEnrollmentIconsData(
     context: Context,
-    parent: ComposeView,
     currentProgram: String?
-) {
-    val listSize = this.size
+): List<EnrollmentIconData> {
     var programCount = 0
+    val listSize = this.size
+    var enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
+    // this.filter {  it.uid() != currentProgram}.forEach { program ->  }
+    run outer@{
+        filter { it.uid() != currentProgram }
+            .forEach inner@{ program ->
+                var enrollmentIconData: EnrollmentIconData
+                val color = ColorUtils.getColorFrom(
+                    program.style().color(),
+                    ColorUtils.getPrimaryColor(
+                        context,
+                        ColorUtils.ColorType.PRIMARY
+                    )
+                )
+                val imageResource =
+                    ResourceManager(context)
+                        .getObjectStyleDrawableResource(
+                            program.style().icon(),
+                            R.drawable.ic_default_icon
+                        )
+                programCount++
+                if (programCount < 4 || listSize == 4) {
+                    enrollmentIconData = EnrollmentIconData(color, imageResource, true, 0)
+                    enrollmentIconDataList.add(enrollmentIconData)
+                } else {
+                    enrollmentIconData = EnrollmentIconData(
+                        0,
+                        0,
+                        false,
+                        getRemainingEnrollmentsForTei(this.size)
+                    )
+                    enrollmentIconDataList.add(enrollmentIconData)
+                    return@outer
+                }
+            }
+    }
+    return enrollmentIconDataList
+}
+fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
     parent.apply {
         setContent {
             MdcTheme {
@@ -67,37 +105,18 @@ fun List<Program>.addEnrollmentIcons(
                     horizontalArrangement = spacedBy(Dp(4f)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    run outer@{
-                        filter { it.uid() != currentProgram }
-                            .forEach inner@{ program ->
-                                val color = ColorUtils.getColorFrom(
-                                    program.style().color(),
-                                    ColorUtils.getPrimaryColor(
-                                        context,
-                                        ColorUtils.ColorType.PRIMARY
-                                    )
+                    forEach { enrollmentIcon ->
+                        if (enrollmentIcon.isIcon) {
+                            MetadataIcon(
+                                metadataIconData = MetadataIconData(
+                                    programColor = enrollmentIcon.color,
+                                    iconResource = enrollmentIcon.imageResource,
+                                    sizeInDp = 24
                                 )
-                                programCount++
-                                if (programCount >= 4 && listSize > 4) {
-                                    val otherEnrollmentsCount = getOtherEnrollmentsForTei(listSize)
-                                    SquareWithNumber(otherEnrollmentsCount)
-                                    return@outer
-                                } else {
-                                    val imageResource =
-                                        ResourceManager(context)
-                                            .getObjectStyleDrawableResource(
-                                                program.style().icon(),
-                                                R.drawable.ic_default_icon
-                                            )
-                                    MetadataIcon(
-                                        metadataIconData = MetadataIconData(
-                                            programColor = color,
-                                            iconResource = imageResource,
-                                            sizeInDp = 24
-                                        )
-                                    )
-                                }
-                            }
+                            )
+                        } else {
+                            SquareWithNumber(enrollmentIcon.remainingEnrollments)
+                        }
                     }
                 }
             }
@@ -105,7 +124,7 @@ fun List<Program>.addEnrollmentIcons(
     }
 }
 
-private fun getOtherEnrollmentsForTei(teiEnrollmentCount: Int): Int {
+fun getRemainingEnrollmentsForTei(teiEnrollmentCount: Int): Int {
     return if (teiEnrollmentCount - ENROLLMENT_ICONS_TO_SHOW > MAX_NUMBER_REMAINING_ENROLLMENTS) {
         MAX_NUMBER_REMAINING_ENROLLMENTS
     } else {
