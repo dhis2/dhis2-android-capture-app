@@ -60,12 +60,11 @@ fun List<Program>.getEnrollmentIconsData(
 ): List<EnrollmentIconData> {
     var programCount = 0
     val listSize = this.size
-    var enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
-    // this.filter {  it.uid() != currentProgram}.forEach { program ->  }
+    val enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
     run outer@{
         filter { it.uid() != currentProgram }
             .forEach inner@{ program ->
-                var enrollmentIconData: EnrollmentIconData
+                val enrollmentIconData: EnrollmentIconData
                 val color = ColorUtils.getColorFrom(
                     program.style().color(),
                     ColorUtils.getPrimaryColor(
