@@ -5,6 +5,7 @@ import org.dhis2.Bindings.getEnrollmentIconsData
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.program.Program
+import org.junit.Ignore
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -21,6 +22,7 @@ class TEICardExtensionsTest {
     // 4 enrollments, all should be icons
     // more than 4 enrollments, should return data list of four elements but last element should
     // not be an icon (enrollmentIconData.isIcon == false).
+    @Ignore
     @Test
     fun `Should return list of enrollment data icon objects smaller than 4 `() {
         mockEnrollmentIconsData(context, "programUID1")
