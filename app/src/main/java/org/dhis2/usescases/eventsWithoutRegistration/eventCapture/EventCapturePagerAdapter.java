@@ -40,7 +40,8 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String programUid,
                                     String eventUid,
                                     boolean displayAnalyticScreen,
-                                    boolean displayRelationshipScreen
+                                    boolean displayRelationshipScreen,
+                                    boolean displayNotes
 
     ) {
         super(fragmentActivity);
@@ -57,7 +58,10 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         if (displayRelationshipScreen) {
             pages.add(EventPageType.RELATIONSHIPS);
         }
-        pages.add(EventPageType.NOTES);
+
+        if (displayNotes) {
+            pages.add(EventPageType.NOTES);
+        }
     }
 
     public int getDynamicTabIndex(@IntegerRes int tabClicked) {

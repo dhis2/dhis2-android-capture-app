@@ -115,7 +115,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID),
                 pageConfigurator.displayAnalytics(),
-                pageConfigurator.displayRelationships()
+                pageConfigurator.displayRelationships(),
+                pageConfigurator.displayNotes()
         );
         binding.eventViewPager.setAdapter(adapter);
         binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);

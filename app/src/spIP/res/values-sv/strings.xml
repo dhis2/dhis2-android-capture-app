@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Samaritans Purse International Project</string>
+    <string name="logo_text">Samaritans Purse International Project</string>
+    <string name="logo_number"></string>
+    <string name="open_details">%s Registreringsinformation</string>
+</resources>
