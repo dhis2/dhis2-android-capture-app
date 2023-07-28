@@ -12,8 +12,6 @@
     <string name="error_wrong_credentials">证书不正确</string>
     <string name="error_unexpected_error">未知错误</string>
     <string name="error_internal_server_error">服务器内部错误</string>
-    <string name="yes">是</string>
-    <string name="no">否</string>
     <string name="no_value">无值</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="no_reserved_values_connection">没有更多保留值，连接网络重新填充他们</string>
@@ -206,7 +204,6 @@
     <string name="settings_sms_module_title">短信模块：</string>
     <string name="settings_sms_receiver_number">短信网关</string>
     <string name="settings_sms_result_sender_number">短信结果发送者</string>
-    <string name="settings_sms_result_timeout">短信结果超时</string>
     <string name="settings_sms_result_timeout_hint">秒</string>
     <string name="settings_sms_result_sender_hint">数量</string>
     <string name="settings_sms_receiver_number_hint">数量</string>

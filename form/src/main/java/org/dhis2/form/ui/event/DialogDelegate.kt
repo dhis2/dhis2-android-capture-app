@@ -8,12 +8,7 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class DialogDelegate {
 
-    fun handleDateInput(
-        uid: String,
-        year: Int,
-        month: Int,
-        day: Int
-    ): FormIntent {
+    fun handleDateInput(uid: String, year: Int, month: Int, day: Int): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
             set(Calendar.YEAR, year)
@@ -34,12 +29,7 @@ class DialogDelegate {
         )
     }
 
-    fun handleYearMonthDayInput(
-        uid: String,
-        year: Int,
-        month: Int,
-        day: Int
-    ): FormIntent {
+    fun handleYearMonthDayInput(uid: String, year: Int, month: Int, day: Int): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
             add(Calendar.YEAR, year)
@@ -60,12 +50,7 @@ class DialogDelegate {
         )
     }
 
-    fun handleTimeInput(
-        uid: String,
-        date: Date?,
-        hourOfDay: Int,
-        minutes: Int
-    ): FormIntent {
+    fun handleTimeInput(uid: String, date: Date?, hourOfDay: Int, minutes: Int): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val dateTime = with(currentCalendar) {
             date?.let { time = it }

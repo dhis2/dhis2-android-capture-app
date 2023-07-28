@@ -15,11 +15,9 @@ import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.dhis2.databinding.FragmentIndicatorsBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 const val VISUALIZATION_TYPE = "VISUALIZATION_TYPE"
 
@@ -71,7 +69,9 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_indicators, container, false
+            R.layout.fragment_indicators,
+            container,
+            false
         )
         binding.indicatorsRecycler.adapter = adapter
         return binding.root
@@ -121,19 +121,19 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     }
 
     private fun showOUTreeSelector(chartModel: ChartModel) {
-        val ouTreeFragment =
-            OUTreeFragment.newInstance(
-                true,
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
                 chartModel.graph.orgUnitsSelected.toMutableList()
             )
-        ouTreeFragment.selectionCallback = object : OnOrgUnitSelectionFinished {
-            override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
+            .onSelection { selectedOrgUnits ->
                 presenter.filterByOrgUnit(
-                    chartModel, selectedOrgUnits,
+                    chartModel,
+                    selectedOrgUnits,
                     OrgUnitFilterType.SELECTION
                 )
             }
-        }
-        ouTreeFragment.show(childFragmentManager, "OUTreeFragment")
+            .build()
+            .show(childFragmentManager, "OUTreeFragment")
     }
 }

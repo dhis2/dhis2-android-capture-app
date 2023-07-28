@@ -1,51 +1,73 @@
 package org.dhis2.commons.orgunitselector
 
-import io.reactivex.Single
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.dhis2.commons.bindings.addIf
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-class OUTreeRepository(private val d2: D2) {
+class OUTreeRepository(
+    private val orgUnitRepositoryConfiguration: OURepositoryConfiguration
+) {
+    private var cachedOrgUnits: List<String> = emptyList()
+    private var availableOrgUnits: List<String> = emptyList()
+    private val parentOrgUnits: MutableList<String> = mutableListOf()
 
-    fun orgUnits(
-        parentUid: String? = null,
-        name: String? = null
-    ): Single<MutableList<OrganisationUnit>> {
-        var orgUnitRepository = d2.organisationUnitModule().organisationUnits()
-            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+    fun orgUnits(name: String? = null): List<String> {
+        val orgUnits =
+            orgUnitRepositoryConfiguration.orgUnitRepository(name)
+                .sortedWith(compareBy({ it.level() }, { it.parent()?.uid() }, { it.displayName() }))
 
-        orgUnitRepository = when {
-            parentUid != null -> orgUnitRepository.byParentUid().eq(parentUid)
-            name != null -> orgUnitRepository.byDisplayName().like("%$name%")
-            else -> orgUnitRepository.byRootOrganisationUnit(true)
-        }
+        val orderedList = mutableListOf<String>()
+        availableOrgUnits = orgUnits.map { it.uid() }
 
-        return when {
-            orgUnitRepository
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                .blockingCount() > 0 ->
-                orgUnitRepository
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                    .get()
-            else ->
-                orgUnitRepository
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                    .get()
+        orderList(
+            orgUnits,
+            orderedList
+        )
+        cachedOrgUnits = orderedList
+
+        return cachedOrgUnits
+    }
+
+    private fun orderList(
+        orgUnitToOrder: List<OrganisationUnit>,
+        orderedList: MutableList<String>
+    ) {
+        orgUnitToOrder.forEach { org ->
+            val parentPath = org.path()?.split("/")
+            parentPath?.filter { it.isNotEmpty() }
+                ?.forEach { str ->
+                    if (str != org.uid()) {
+                        parentOrgUnits.add(str)
+                    }
+                    orderedList.addIf(!orderedList.contains(str), str)
+                }
+            if (orgUnitHasChildren(org.uid())) {
+                orderList(childrenOrgUnits(org.uid()), orderedList)
+            }
         }
     }
 
-    fun orgUnit(uid: String): OrganisationUnit? =
-        d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet()
+    fun childrenOrgUnits(parentUid: String? = null): List<OrganisationUnit> {
+        val childrenOrgUnits = orgUnitRepositoryConfiguration.childrenOrgUnits(parentUid)
+        return childrenOrgUnits.filter {
+            cachedOrgUnits.contains(it.uid())
+        }
+    }
 
-    fun orgUnitHasChildren(uid: String): Boolean =
-        !d2.organisationUnitModule().organisationUnits().byParentUid().eq(uid).blockingIsEmpty()
+    fun orgUnit(uid: String): OrganisationUnit? = orgUnitRepositoryConfiguration.orgUnit(uid)
 
-    fun countSelectedChildren(
-        parentOrgUnit: OrganisationUnit,
-        selectedOrgUnits: List<String>
-    ): Int {
-        return d2.organisationUnitModule().organisationUnits()
-            .byPath().like("%${parentOrgUnit.uid()}%")
-            .byUid().`in`(selectedOrgUnits).blockingCount()
+    fun canBeSelected(orgUnitUid: String): Boolean = availableOrgUnits.any { it == orgUnitUid }
+
+    fun orgUnitHasChildren(uid: String): Boolean {
+        return parentOrgUnits.contains(uid) or orgUnitRepositoryConfiguration.hasChildren(
+            uid,
+            availableOrgUnits.contains(uid)
+        )
+    }
+
+    fun countSelectedChildren(parentOrgUnitUid: String, selectedOrgUnits: List<String>): Int {
+        return orgUnitRepositoryConfiguration.countChildren(
+            parentOrgUnitUid,
+            selectedOrgUnits
+        )
     }
 }

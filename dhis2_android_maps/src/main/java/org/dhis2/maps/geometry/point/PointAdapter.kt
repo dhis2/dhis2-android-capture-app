@@ -13,7 +13,9 @@ class PointAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding: ItemPointGeoBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_point_geo, parent, false
+            R.layout.item_point_geo,
+            parent,
+            false
         )
         return Holder(binding)
     }

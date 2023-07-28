@@ -4,9 +4,12 @@ package org.dhis2.usescases.settings;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.UserManager;
+import org.dhis2.data.service.VersionRepository;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
@@ -37,7 +40,11 @@ public final class SyncManagerModule {
             WorkManagerController workManagerController,
             SettingsRepository settingsRepository,
             AnalyticsHelper analyticsHelper,
-            MatomoAnalyticsController matomoAnalyticsController) {
+            MatomoAnalyticsController matomoAnalyticsController,
+            ResourceManager resourceManager,
+            VersionRepository versionRepository,
+            DispatcherProvider dispatcherProvider
+    ) {
         return new SyncManagerPresenter(d2,
                 schedulerProvider,
                 gatewayValidator,
@@ -48,7 +55,11 @@ public final class SyncManagerModule {
                 view,
                 analyticsHelper,
                 new ErrorModelMapper(view.getContext().getString(R.string.fk_message)),
-                matomoAnalyticsController);
+                matomoAnalyticsController,
+                resourceManager,
+                versionRepository,
+                dispatcherProvider
+        );
     }
 
     @Provides

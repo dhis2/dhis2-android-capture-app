@@ -55,7 +55,7 @@ class LocaleSelector(private val base: Context, private val d2: D2) {
 
     private fun changeToUserLanguage(base: Context): Context {
         var context = base
-        if (!d2.userModule().isLogged.blockingGet()) {
+        if (!d2.userModule().isLogged().blockingGet()) {
             return context
         }
         getUserLanguage()?.let { newLocale ->

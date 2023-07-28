@@ -362,9 +362,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         }
     }
 
-    private fun propagateRelativePeriod(
-        @IdRes itemId: Int
-    ) {
+    private fun propagateRelativePeriod(@IdRes itemId: Int) {
         val relativePeriodSelected =
             periodToId.filterValues { it == itemId }.keys.first()
         val thisPeriod = relativePeriodSelected.getThisFromPeriod()

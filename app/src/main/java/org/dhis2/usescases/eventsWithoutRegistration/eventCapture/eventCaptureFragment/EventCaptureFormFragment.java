@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
 
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt.OPEN_ERROR_LOCATION;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,10 +38,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private SectionSelectorFragmentBinding binding;
     private FormView formView;
 
-    public static EventCaptureFormFragment newInstance(String eventUid) {
+    public static EventCaptureFormFragment newInstance(String eventUid, Boolean openErrorSection) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
         Bundle args = new Bundle();
         args.putString(Constants.EVENT_UID, eventUid);
+        args.putBoolean(OPEN_ERROR_LOCATION, openErrorSection);
         fragment.setArguments(args);
         return fragment;
     }
@@ -85,6 +87,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 })
                 .factory(activity.getSupportFragmentManager())
                 .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
+                .openErrorLocation(getArguments().getBoolean(OPEN_ERROR_LOCATION, false))
                 .build();
         activity.setFormEditionListener(this);
         super.onCreate(savedInstanceState);

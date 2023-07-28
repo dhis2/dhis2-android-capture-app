@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
@@ -18,7 +18,6 @@ import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
@@ -37,7 +36,8 @@ import timber.log.Timber
 class FormViewModel(
     private val repository: FormRepository,
     private val dispatcher: DispatcherProvider,
-    private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
+    private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
+    private val openErrorLocation: Boolean = false
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
@@ -93,7 +93,9 @@ class FormViewModel(
                     processCalculatedItems()
                 }
                 ValueStoreResult.ERROR_UPDATING_VALUE -> {
+                    loading.postValue(false)
                     showToast.value = R.string.update_field_error
+                    processCalculatedItems(true)
                 }
                 ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                     Timber.tag(TAG)
@@ -157,7 +159,15 @@ class FormViewModel(
                     )
                 } else {
                     val saveResult = repository.save(action.id, action.value, action.extraData)
-                    repository.updateValueOnList(action.id, action.value, action.valueType)
+                    if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
+                        repository.updateValueOnList(action.id, action.value, action.valueType)
+                    } else {
+                        repository.updateErrorList(
+                            action.copy(
+                                error = Throwable(saveResult.valueStoreResultMessage)
+                            )
+                        )
+                    }
                     saveResult ?: StoreResult(
                         action.id,
                         ValueStoreResult.VALUE_CHANGED
@@ -239,18 +249,20 @@ class FormViewModel(
         ValueStoreResult.VALUE_HAS_NOT_CHANGED
     )
 
-    fun valueTypeIsTextField(valueType: ValueType, renderType: UiRenderType? = null): Boolean {
-        return valueType.isNumeric ||
-            valueType.isText && renderType?.isPolygon() != true ||
-            valueType == ValueType.URL ||
-            valueType == ValueType.EMAIL ||
-            valueType == ValueType.PHONE_NUMBER
+    fun valueTypeIsTextField(valueType: ValueType?, renderType: UiRenderType? = null): Boolean {
+        return if (valueType == null) {
+            false
+        } else {
+            valueType.isNumeric ||
+                valueType.isText && renderType?.isPolygon() != true ||
+                valueType == ValueType.URL ||
+                valueType == ValueType.EMAIL ||
+                valueType == ValueType.PHONE_NUMBER
+        }
     }
 
     private fun getLastFocusedTextItem() = repository.currentFocusedItem()?.takeIf {
-        it.valueType?.let { valueType ->
-            valueTypeIsTextField(valueType, it.renderingType)
-        } ?: false
+        it.optionSet == null && valueTypeIsTextField(it.valueType, it.renderingType)
     }
 
     private fun getSaveIntent(field: FieldUiModel) = when (field.valueType) {
@@ -371,7 +383,7 @@ class FormViewModel(
         return fieldValue.let { value ->
             var error =
                 when (
-                    val result = valueType?.takeIf { it != ValueType.IMAGE }
+                    val result = valueType?.takeIf { it != ValueType.IMAGE && !it.isFile }
                         ?.validator?.validate(value)
                 ) {
                     is Result.Failure -> result.failure
@@ -456,7 +468,7 @@ class FormViewModel(
 
     fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
-            val result = async(Dispatchers.IO) {
+            val result = async(dispatcher.io()) {
                 repository.runDataIntegrityCheck(allowDiscard = backButtonPressed ?: false)
             }
             try {
@@ -471,7 +483,7 @@ class FormViewModel(
 
     fun calculateCompletedFields() {
         viewModelScope.launch {
-            val result = async(Dispatchers.IO) {
+            val result = async(dispatcher.io()) {
                 repository.completedFieldsPercentage(_items.value ?: emptyList())
             }
             try {
@@ -484,7 +496,7 @@ class FormViewModel(
 
     fun displayLoopWarningIfNeeded() {
         viewModelScope.launch {
-            val result = async(Dispatchers.IO) {
+            val result = async(dispatcher.io()) {
                 repository.calculationLoopOverLimit()
             }
             try {
@@ -510,9 +522,9 @@ class FormViewModel(
 
     fun loadData() {
         loading.postValue(true)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.io()) {
             val result = async {
-                repository.fetchFormItems()
+                repository.fetchFormItems(openErrorLocation)
             }
             try {
                 _items.postValue(result.await())

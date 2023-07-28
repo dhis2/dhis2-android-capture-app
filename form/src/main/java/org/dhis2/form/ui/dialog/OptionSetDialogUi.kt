@@ -88,7 +88,10 @@ fun OptionSetDialogScreen(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                when (searchValue.isNotEmpty()) {
+                    true -> Text(stringResource(R.string.no_option_found))
+                    else -> CircularProgressIndicator()
+                }
             }
         }
         DialogButtonActions(
@@ -141,13 +144,15 @@ private fun SearchBar(
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Box(Modifier.weight(1f)) {
-                    if (searchValue.isEmpty()) Text(
-                        text = stringResource(id = R.string.search),
-                        style = LocalTextStyle.current.copy(
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
-                            fontSize = 16.sp
+                    if (searchValue.isEmpty()) {
+                        Text(
+                            text = stringResource(id = R.string.search),
+                            style = LocalTextStyle.current.copy(
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
+                                fontSize = 16.sp
+                            )
                         )
-                    )
+                    }
                     innerTextField()
                 }
                 if (searchValue.isNotEmpty()) {
@@ -193,10 +198,7 @@ private fun OptionList(options: List<Option>, onOptionClick: (code: String?) -> 
 }
 
 @Composable
-private fun DialogButtonActions(
-    onClearClick: () -> Unit,
-    onCancelClick: () -> Unit
-) {
+private fun DialogButtonActions(onClearClick: () -> Unit, onCancelClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),

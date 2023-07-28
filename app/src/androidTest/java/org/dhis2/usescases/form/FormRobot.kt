@@ -29,7 +29,7 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.form.ui.FormViewHolder
-import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.CoreMatchers.`is`

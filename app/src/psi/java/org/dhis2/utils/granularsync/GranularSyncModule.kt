@@ -28,11 +28,15 @@ package org.dhis2.utils.granularsync
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.Dispatchers
 import org.dhis2.R
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
+import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.settings.models.ErrorModelMapper
@@ -41,47 +45,56 @@ import org.hisp.dhis.android.core.D2
 @Module
 class GranularSyncModule(
     private val context: Context,
-    private val conflictType: ConflictType,
-    private val recordUid: String,
-    private val dvOrgUnit: String?,
-    private val dvAttrCombo: String?,
-    private val dvPeriodId: String?
+    private val view: GranularSyncContracts.View,
+    private val syncContext: SyncContext
 ) {
-
     @Provides
-    fun providesPresenter(
-        context: Context,
+    fun providesViewModelFactory(
         d2: D2,
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController,
-        preferenceProvider: PreferenceProvider,
-        smsSyncProvider: SMSSyncProvider
-    ): GranularSyncContracts.Presenter {
-        return GranularSyncPresenterImpl(
+        smsSyncProvider: SMSSyncProvider,
+        repository: GranularSyncRepository
+    ): GranularSyncViewModelFactory {
+        return GranularSyncViewModelFactory(
             d2,
-            DhisProgramUtils(d2),
+            view,
+            repository,
             schedulerProvider,
-            conflictType,
-            recordUid,
-            dvOrgUnit,
-            dvAttrCombo,
-            dvPeriodId,
+            object : DispatcherProvider {
+                override fun io() = Dispatchers.IO
+
+                override fun computation() = Dispatchers.Default
+
+                override fun ui() = Dispatchers.Main
+            },
+            syncContext,
             workManagerController,
-            ErrorModelMapper(context.getString(R.string.fk_message)),
-            preferenceProvider,
             smsSyncProvider
         )
     }
 
     @Provides
+    fun granularSyncRepository(
+        d2: D2,
+        dhisProgramUtils: DhisProgramUtils,
+        periodUtils: DhisPeriodUtils,
+        preferenceProvider: PreferenceProvider,
+        resourceManager: ResourceManager
+    ): GranularSyncRepository = GranularSyncRepository(
+        d2,
+        syncContext,
+        preferenceProvider,
+        dhisProgramUtils,
+        periodUtils,
+        resourceManager
+    )
+
+    @Provides
     fun smsSyncProvider(d2: D2): SMSSyncProvider {
         return SMSSyncProviderImpl(
             d2,
-            conflictType,
-            recordUid,
-            dvOrgUnit,
-            dvAttrCombo,
-            dvPeriodId,
+            syncContext,
             ResourceManager(context)
         )
     }

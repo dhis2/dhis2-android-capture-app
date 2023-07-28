@@ -128,9 +128,7 @@ class MapRelationshipsToFeatureCollectionTest {
         )
     }
 
-    private fun getPointFromFeature(
-        model: RelationshipUiComponentModel
-    ): Feature {
+    private fun getPointFromFeature(model: RelationshipUiComponentModel): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.from.geometry!!)
 
         val point = Point.fromLngLat(coordinates1[0], coordinates1[1])

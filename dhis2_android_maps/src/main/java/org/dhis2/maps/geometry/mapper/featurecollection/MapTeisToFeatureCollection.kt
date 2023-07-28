@@ -77,8 +77,10 @@ class MapTeisToFeatureCollection(
         return Pair<HashMap<String, FeatureCollection>, BoundingBox>(
             featureCollectionMap,
             BoundingBox.fromLngLats(
-                bounds.westBound, bounds.southBound,
-                bounds.eastBound, bounds.northBound
+                bounds.westBound,
+                bounds.southBound,
+                bounds.eastBound,
+                bounds.northBound
             )
         )
     }

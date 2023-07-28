@@ -1,13 +1,13 @@
+plugins {
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
+}
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
-
-def libraries = rootProject.ext.libraries
-def versions = rootProject.ext.versions
+apply plugin: "dagger.hilt.android.plugin"
 
 sonarqube {
     properties {
@@ -20,14 +20,21 @@ repositories {
     mavenCentral()
 }
 
-paperwork {
-    set = [
-            buildTime: buildTime("yyyy-MM-dd HH:mm"),
-            gitSha   : gitSha()
-    ]
-}
-
 android {
+
+    def getBuildDate = {
+        return new Date().format("yyyy-MM-dd HH:mm")
+    }
+
+    def getCommitHash = {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
@@ -37,6 +44,13 @@ android {
         animationsDisabled = true
     }
 
+    sourceSets {
+        androidTest {
+            java.srcDirs = ['src/androidTest/java']
+            resources.srcDirs = ['src/androidTest/java']
+        }
+    }
+
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
@@ -44,7 +58,9 @@ android {
 
     ndkVersion versions.ndk
     compileSdkVersion versions.sdk
-    buildToolsVersion versions.tools
+
+    namespace "org.dhis2"
+    testNamespace "org.dhis2.test"
 
     defaultConfig {
         applicationId "com.dhis2"
@@ -59,12 +75,14 @@ android {
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         def mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") != null ? System.getenv("MAPBOX_ACCESS_TOKEN") : "pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
+        def bitriseSentryDSN = System.getenv("SENTRY_DSN") != null ? System.getenv("SENTRY_DSN") : ""
 
-        buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+        buildConfigField "String", "SDK_VERSION", "\"" + versions.dhis2AndroidSDK + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\""
         buildConfigField "String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\""
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
         buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
+        buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
 
         manifestPlaceholders = [
                 appAuthRedirectScheme: ''
@@ -73,6 +91,7 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
+        javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
     }
 
     testOptions {
@@ -91,8 +110,6 @@ android {
 
     buildTypes {
 
-        def bitriseSentryDSN = System.getenv("SENTRY_DSN") != null ? System.getenv("SENTRY_DSN") : ""
-
         debug {
             // custom application suffix which allows to
             // install debug and release builds at the same time
@@ -106,34 +123,16 @@ android {
             signingConfig = signingConfigs.debug
 
             buildConfigField "int", "MATOMO_ID", "2"
-
-            applicationVariants.all { variant ->
-                if (variant.getFlavorName() == "dhisUITesting") {
-                    bitriseSentryDSN = ""
-                }
-            }
-
-            //Sentry variables
-            manifestPlaceholders = [
-                    sentry_dsn        : bitriseSentryDSN,
-                    sentry_environment: "debug",
-                    sentry_debug      : "true",
-                    sentry_sample_rate: "1.0"
-            ]
+            buildConfigField "String", "BUILD_DATE", "\"" + getBuildDate() + "\""
+            buildConfigField "String", "GIT_SHA", "\"" + getCommitHash() + "\""
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField "int", "MATOMO_ID", "1"
-
-            //Sentry variables
-            manifestPlaceholders = [
-                    sentry_dsn        : bitriseSentryDSN,
-                    sentry_environment: "production",
-                    sentry_debug      : "false",
-                    sentry_sample_rate: "0.1"
-            ]
+            buildConfigField "String", "BUILD_DATE", "\"" + getBuildDate() + "\""
+            buildConfigField "String", "GIT_SHA", "\"" + getCommitHash() + "\""
         }
     }
 
@@ -172,7 +171,7 @@ android {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.7.1-psi-fork-2"
+            versionName "2.8.1.1-psi-fork-1"
         }
     }
 
@@ -182,8 +181,8 @@ android {
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-        targetCompatibility = JavaVersion.VERSION_1_8
-        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility versions.targetCompat
+        sourceCompatibility versions.sourceCompat
     }
 
     buildFeatures {
@@ -203,10 +202,8 @@ android {
         exclude "META-INF/licenses/**"
         exclude "META-INF/AL2.0"
         exclude "META-INF/LGPL2.1"
-    }
-
-    dexOptions {
-        javaMaxHeapSize "4g"
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+        exclude 'META-INF/gradle/incremental.annotation.processors'
     }
 
     configurations.all {
@@ -219,153 +216,100 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = versions.targetCompat
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0"
+        kotlinCompilerExtensionVersion = versions.kotlinCompilerExtensionVersion
     }
 }
 
 dependencies {
-    implementation "androidx.activity:activity-compose:${libraries.activityCompose}"
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':viewpagerdotsindicator')
     implementation project(":dhis_android_analytics")
     implementation project(":form")
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
     implementation project(":compose-table")
+    implementation project(':stock-usecase')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:${libraries.kotlinmetadata}"
+    implementation libs.security.conscrypt
+    implementation libs.security.fingerprint
+    implementation libs.security.rootDetector
+    implementation libs.security.openId
+    coreLibraryDesugaring libs.android.desugar
+    implementation libs.kotlin.serialization
+    implementation libs.androidx.activityCompose
+    implementation libs.androidx.annotation
+    implementation libs.androidx.cardView
+    implementation libs.androidx.legacySupport
+    implementation libs.androidx.multidex
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.work
+    implementation libs.androidx.workRx
+    implementation libs.androidx.exifinterface
+    dhisPlayServicesImplementation libs.google.auth
+    dhisPlayServicesImplementation libs.google.authApiPhone
+    implementation libs.google.flexbox
+    implementation libs.google.guava
+    implementation libs.github.pinlock
+    implementation libs.github.fancyshowcase
+    implementation libs.animation.lottie
+    kapt libs.dagger.daggerCompiler
+    implementation libs.dagger.hilt
+    kapt libs.dagger.hiltAndroidCompiler
+    kapt libs.dagger.hiltCompiler
+    implementation libs.rx.rxKotlin
+    implementation libs.network.gsonConverter
+    implementation libs.network.okhttp
+    implementation libs.dates.jodatime
+    kapt libs.deprecated.autoValueParcel
+    implementation libs.analytics.matomo
+    debugImplementation libs.analytics.flipper
+    debugImplementation libs.analytics.soloader
+    debugImplementation libs.analytics.flipperNetwork
+    debugImplementation libs.analytics.flipperLeak
+    debugImplementation libs.analytics.leakcanary
+    releaseImplementation libs.analytics.leakcanaryNoop
+    releaseImplementation libs.analytics.flipperNoop
+    implementation libs.analytics.rxlint
+    implementation libs.analytics.crashActivity
+    testImplementation libs.test.archCoreTesting
+    testImplementation libs.test.testCore
+    testImplementation libs.test.mockitoCore
+    testImplementation libs.test.mockitoInline
+    testImplementation libs.test.mockitoKotlin
+    testImplementation libs.test.truth
+    androidTestUtil libs.test.orchestrator
+    androidTestImplementation libs.test.testRunner
+    androidTestImplementation libs.test.espressoIntents
+    androidTestImplementation libs.test.espressoContrib
+    androidTestImplementation libs.test.espressoAccessibility
+    androidTestImplementation libs.test.espressoWeb
+    androidTestImplementation libs.test.uiAutomator
+    androidTestImplementation libs.test.testCore
+    androidTestImplementation libs.test.testRules
+    androidTestImplementation libs.test.testCoreKtx
+    androidTestImplementation libs.test.testJUnitKtx
+    androidTestImplementation libs.test.mockitoAndroid
+    androidTestImplementation libs.test.mockitoCore
+    androidTestImplementation libs.test.supportAnnotations
+    androidTestImplementation libs.test.espressoIdlingResource
+    androidTestImplementation libs.test.rxIdler
+    testImplementation libs.test.kotlinCoroutines
+    androidTestImplementation libs.test.composeUiTestJUnit
+    debugImplementation libs.test.composeUiTestManifest
+    androidTestImplementation libs.test.hamcrest
+    implementation(platform(libs.dispatcher.dispatchBOM))
+    implementation(libs.dispatcher.dispatchCore)
+    androidTestImplementation(libs.dispatcher.dispatchEspresso)
+    testImplementation libs.test.turbine
 
-    implementation "androidx.annotation:annotation:${libraries.annotation}"
-    implementation "androidx.cardview:cardview:${libraries.cardview}"
-    implementation "androidx.legacy:legacy-support-v4:${libraries.legacysupport}"
-    implementation "androidx.multidex:multidex:${libraries.multidex}"
-    implementation "androidx.constraintlayout:constraintlayout:${libraries.constraintlayout}"
-    implementation "androidx.work:work-runtime:${libraries.work}"
-    implementation "androidx.work:work-rxjava2:${libraries.work}"
-    implementation "androidx.exifinterface:exifinterface:${libraries.exif}"
+    //Eyeseetea
+    implementation libs.eyeseetea.atv
+    implementation libs.eyeseetea.markwon
+    implementation libs.eyeseetea.coroutinesCore
+    implementation libs.eyeseetea.coroutinesAndroid
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${libraries.coroutines}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${libraries.coroutines}"
-    implementation 'com.google.code.findbugs:jsr305:3.0.1'
-
-    //region UI LIBRARIES
-    //Google
-    implementation "com.google.android.flexbox:flexbox:${libraries.flexbox}"
-
-    //AndroidTreeView
-    implementation "com.github.bmelnychuk:atv:${libraries.atv}"
-
-    implementation "io.noties.markwon:core:${libraries.markwon}"
-
-    //PIN LOCK
-    implementation "com.github.aritraroy:PinLockView:${libraries.pinlock}"
-
-    //FancyShowCase
-    implementation "com.github.faruktoptas:FancyShowCaseView:${libraries.fancyshowcase}"
-
-    //Lottie animations
-    implementation "com.airbnb.android:lottie:${libraries.lottie}"
-    //endregion
-
-    //region DEPENDENCY INJECTION
-    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
-
-    //region RXJAVA
-    implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
-
-    //endregion
-
-    // Extension which generates mappers for work with cursors
-    kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
-    kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
-    //endregion
-
-    //region Analytics
-    implementation "com.github.matomo-org:matomo-sdk-android:${libraries.matomo}"
-    //endregion
-
-    //region Debug
-    //Flipper
-    debugImplementation "com.facebook.flipper:flipper:${libraries.flipper}"
-    debugImplementation "com.facebook.soloader:soloader:${libraries.soloader}"
-    debugImplementation "com.facebook.flipper:flipper-network-plugin:${libraries.flippernetwork}"
-    debugImplementation "com.facebook.flipper:flipper-leakcanary-plugin:${libraries.flipperleak}"
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:${libraries.leakcannary}"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcannarynoop}"
-    releaseImplementation "com.facebook.flipper:flipper-noop:${libraries.flippernoop}"
-    //RXLint
-    implementation "nl.littlerobots.rxlint:rxlint:${libraries.rxlint}"
-    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
-    implementation "cat.ereza:customactivityoncrash:${libraries.crashactivity}"
-    //endregion
-
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${libraries.desugar_jdk_libs}"
-    //endregion
-
-    //region Security
-    implementation "co.infinum:goldfinger-rx:${libraries.goldfinger}"
-    implementation "com.scottyab:rootbeer-lib:${libraries.root}"
-    implementation "net.openid:appauth:${libraries.openid}"
-    //endregion
-
-    //region Other
-    implementation "com.squareup.retrofit2:converter-gson:${libraries.gsonconverter}"
-    implementation "com.squareup.okhttp3:okhttp:${libraries.okhttp}"
-    implementation "joda-time:joda-time:${libraries.jodatime}"
-    implementation "com.google.guava:guava:${libraries.guava}"
-    //endregion
-
-    //region Test
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-
-    testImplementation "androidx.arch.core:core-testing:2.1.0"
-    testImplementation "androidx.test:core:$libraries.androidx_test"
-
-    testImplementation "org.mockito:mockito-core:$libraries.mockito"
-    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$libraries.mockito_kotlin"
-    testImplementation "com.google.truth:truth:$libraries.google_truth"
-
-    implementation(platform("com.rickbusarow.dispatch:dispatch-bom:1.0.0-beta10"))
-    implementation("com.rickbusarow.dispatch:dispatch-core")
-
-    androidTestImplementation("com.rickbusarow.dispatch:dispatch-android-espresso:1.0.0-beta10")
-
-    androidTestUtil 'androidx.test:orchestrator:1.4.1'
-    androidTestImplementation "androidx.test:runner:$libraries.androidx_test"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$libraries.espresso_core"
-
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$libraries.espresso_core"
-    androidTestImplementation "androidx.test.espresso:espresso-accessibility:$libraries.espresso_core"
-    androidTestImplementation "androidx.test.espresso:espresso-web:$libraries.espresso_core"
-    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
-    androidTestImplementation "androidx.test:core:$libraries.androidx_test"
-    androidTestImplementation "androidx.test:rules:$libraries.androidx_test"
-    androidTestImplementation "androidx.test:core-ktx:$libraries.androidx_test"
-    androidTestImplementation "androidx.test.ext:junit-ktx:$libraries.junit_ext"
-    androidTestImplementation "org.mockito:mockito-android:$libraries.mockito_android"
-    androidTestImplementation "org.mockito:mockito-core:$libraries.mockito"
-    androidTestImplementation 'com.android.support:support-annotations:28.0.0'
-    androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
-    androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.11.0'
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$libraries.kotlinxcoroutines"
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$libraries.compose_ui_test")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$libraries.compose_ui_test")
-    androidTestImplementation "org.hamcrest:hamcrest:$libraries.hamcrest"
-    //endregion
-
-    //Serialization library
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
-
-    dhisPlayServicesImplementation("com.google.android.gms:play-services-auth:20.2.0")
-    dhisPlayServicesImplementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
-
-    //Conscrypt
-    implementation "org.conscrypt:conscrypt-android:${libraries.conscrypt}"
 }

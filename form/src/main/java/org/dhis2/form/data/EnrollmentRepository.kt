@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
-import org.hisp.dhis.android.core.imports.TrackerImportConflict
+import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramSection
@@ -138,8 +138,8 @@ class EnrollmentRepository(
                         .byProgram().eq(program.blockingGet().uid())
                         .byTrackedEntityAttribute().eq(attribute.uid())
                         .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                        fields.add(transform(programTrackedEntityAttribute, section.uid()))
-                    }
+                            fields.add(transform(programTrackedEntityAttribute, section.uid()))
+                        }
                 }
             }
             return@fromCallable fields
@@ -181,7 +181,7 @@ class EnrollmentRepository(
             }
         }
 
-        var warning: String? = null
+        var (error, warning) = getConflictErrorsAndWarnings(attribute.uid(), dataValue)
 
         if (generated && dataValue == null) {
             mandatory = true
@@ -192,15 +192,6 @@ class EnrollmentRepository(
                 attrValueRepository.blockingSet(dataValue)
             }
         }
-
-        val conflicts = d2.importModule().trackerImportConflicts()
-            .byEnrollmentUid().eq(enrollmentUid)
-            .blockingGet()
-
-        val conflict = conflicts
-            .find { it.trackedEntityAttribute() == attribute.uid() }
-
-        val error = getError(conflict, dataValue)
 
         if ((valueType == ValueType.ORGANISATION_UNIT || valueType?.isDate == true) &&
             !dataValue.isNullOrEmpty()
@@ -218,7 +209,7 @@ class EnrollmentRepository(
 
         val renderingType = getSectionRenderingType(programSection)
 
-        val fieldViewModel = fieldFactory.create(
+        var fieldViewModel = fieldFactory.create(
             attribute.uid(),
             attribute.displayFormName() ?: "",
             valueType!!,
@@ -237,30 +228,44 @@ class EnrollmentRepository(
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
         )
 
-        return if (!error.isNullOrEmpty()) {
-            fieldViewModel.setError(error)
-        } else if (warning != null) {
-            fieldViewModel.setWarning(warning)
-        } else {
-            fieldViewModel
+        if (!error.isNullOrEmpty()) {
+            fieldViewModel = fieldViewModel.setError(error)
         }
+
+        if (!warning.isNullOrEmpty()) {
+            fieldViewModel = fieldViewModel.setWarning(warning)
+        }
+
+        return fieldViewModel
+    }
+
+    private fun getConflictErrorsAndWarnings(
+        attributeUid: String,
+        dataValue: String?
+    ): Pair<String?, String?> {
+        var error: String? = null
+        var warning: String? = null
+
+        val conflicts = d2.importModule().trackerImportConflicts()
+            .byEnrollmentUid().eq(enrollmentUid)
+            .blockingGet()
+
+        val conflict = conflicts
+            .find { it.trackedEntityAttribute() == attributeUid }
+
+        when (conflict?.status()) {
+            ImportStatus.WARNING -> warning = getError(conflict, dataValue)
+            ImportStatus.ERROR -> error = getError(conflict, dataValue)
+            else -> {}
+        }
+
+        return Pair(error, warning)
     }
 
     private fun isEditable(generated: Boolean) = !generated && canBeEdited()
 
     private fun getSectionRenderingType(programSection: ProgramSection?) =
         programSection?.renderType()?.mobile()?.type()
-
-    private fun getError(
-        conflict: TrackerImportConflict?,
-        dataValue: String?
-    ) = conflict?.let {
-        if (it.value() == dataValue) {
-            it.displayDescription()
-        } else {
-            null
-        }
-    }
 
     private fun getAttributeValue(
         attrValueRepository: TrackedEntityAttributeValueObjectRepository
@@ -436,9 +441,7 @@ class EnrollmentRepository(
         )
     }
 
-    private fun getTeiCoordinatesField(
-        featureType: FeatureType?
-    ): FieldUiModel {
+    private fun getTeiCoordinatesField(featureType: FeatureType?): FieldUiModel {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(
                 enrollmentRepository.blockingGet()!!.trackedEntityInstance()
@@ -466,9 +469,7 @@ class EnrollmentRepository(
         )
     }
 
-    private fun getEnrollmentCoordinatesField(
-        featureType: FeatureType?
-    ): FieldUiModel {
+    private fun getEnrollmentCoordinatesField(featureType: FeatureType?): FieldUiModel {
         return fieldFactory.create(
             ENROLLMENT_COORDINATES_UID,
             enrollmentFormLabelsProvider.provideEnrollmentCoordinatesLabel(),

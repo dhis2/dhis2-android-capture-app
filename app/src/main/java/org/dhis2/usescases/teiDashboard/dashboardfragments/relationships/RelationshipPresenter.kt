@@ -86,10 +86,7 @@ class RelationshipPresenter internal constructor(
         )
     }
 
-    fun goToAddRelationship(
-        teiTypeToAdd: String,
-        relationshipType: RelationshipType
-    ) {
+    fun goToAddRelationship(teiTypeToAdd: String, relationshipType: RelationshipType) {
         val writeAccess =
             d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
 
@@ -149,7 +146,9 @@ class RelationshipPresenter internal constructor(
         try {
             val relationship =
                 RelationshipHelper.eventToTeiRelationship(
-                    eventUid, selectedTei, relationshipTypeUid
+                    eventUid,
+                    selectedTei,
+                    relationshipTypeUid
                 )
             d2.relationshipModule().relationships().blockingAdd(relationship)
         } catch (e: D2Error) {

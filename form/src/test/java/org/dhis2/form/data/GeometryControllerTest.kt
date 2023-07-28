@@ -36,7 +36,8 @@ class GeometryControllerTest {
         ) doReturn point
 
         val result = controller.generateLocationFromCoordinates(
-            FeatureType.POINT, "coordinates"
+            FeatureType.POINT,
+            "coordinates"
         )
 
         assertTrue(

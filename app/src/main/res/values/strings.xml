@@ -15,8 +15,6 @@
     <string name="error_wrong_credentials">Wrong credentials</string>
     <string name="error_unexpected_error">Unexpected error</string>
     <string name="error_internal_server_error">Internal server error</string>
-    <string name="yes">yes</string>
-    <string name="no">no</string>
     <string name="no_value">no value</string>
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
     <string name="no_reserved_values_connection">There are no more reserved values. Connect to the network to refill them</string>
@@ -247,6 +245,8 @@
     <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
     <string name="settingsSms">SMS Settings</string>
     <string name="settingsSms_descr">Check and edit parameters related to the sms gateway</string>
+    <string name="settingsCheckVersion">Software update</string>
+    <string name="settingsCheckVersionMessage">Software</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>
@@ -503,8 +503,9 @@
     <string name="org_unit_selection_warning">At least one organisation unit must be selected</string>
     <string name="send_user_name_title">Send data</string>
     <string name="send_user_name_mesage">Help DHIS2 improve this app by sharing error logs associated to your user id.</string>
-    <string name="analytics_crash_name_message">This application will send error logs associated to your user id in order to improve its performance and untraceable statistics to improve the user experience.</string>
-    <string name="send_user_privacy_policy">For more information check our privacy policy</string>
+    <string name="improve_app_msg_title">Do you want to help us improve this app?</string>
+    <string name="improve_app_msg_text">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.\n\nFor further details, please refer to our privacy policy.</string>
+    <string name="improve_app_msg_clickable_word">privacy policy</string>
     <string name="check_mandatory_field">Check fields</string>
     <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
     <string name="action_agree">Agree</string>
@@ -896,6 +897,7 @@
     <string name="customactivityoncrash_error_activity_device">Device: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Os version: %s</string>
     <string name="open_details">Open %s details</string>
+    <string name="tracked_entity_type_details">%s details</string>
     <string name="syncing_resource">Syncing %s…</string>
     <string name="sms_sync_waiting_for_response">SMS sent. Waiting for server response.</string>
     <string name="sms_sync_sms_reached_server">SMS confirmed to reach server. Updating Status</string>
@@ -915,4 +917,41 @@
     <string name="downloading_image_resources">Downloading images...</string>
     <string name="program_description">Program description</string>
     <string name="wrong_pin">Wrong pin</string>
+    <string name="enrolledIn">Enrolled in:</string>
+    <string name="sync_dialog_title_not_synced">Sync needed</string>
+    <string name="sync_dialog_title_error">Sync error</string>
+    <string name="sync_dialog_title_synced">Synced</string>
+    <string name="sync_dialog_title_warning">Sync warning</string>
+    <string name="sync_dialog_title_syncing">Syncing</string>
+    <string name="sync_dialog_title_sms_syced">SMS sent</string>
+    <string name="sync_dialog_message_not_synced_all">Do you want to send all your changes?</string>
+    <string name="sync_dialog_message_not_synced_program">Do you want to send your changes for %s?</string>
+    <string name="sync_dialog_message_not_synced_tei">Do you want to send your changes for this %s</string>
+    <string name="sync_dialog_message_synced_all">Do you want to check for updates?</string>
+    <string name="sync_dialog_message_synced_program">Do you want to check for updates on %s?</string>
+    <string name="sync_dialog_message_synced_tei">Do you want to check for updates for this %s?</string>
+    <string name="sync_dialog_message_sms_synced">Do you want to send the SMS again?</string>
+    <string name="sync_dialog_action_send">Send</string>
+    <string name="sync_dialog_action_refresh">Refresh</string>
+    <string name="sync_dialog_action_not_now">Not now</string>
+    <string name="tap_to_explore_action">Tap here to explore</string>
+    <plurals name="error_count_label">
+        <item quantity="one">%s error</item>
+        <item quantity="other">%s errors</item>
+    </plurals>
+    <plurals name="warning_count_label">
+        <item quantity="one">%s warning</item>
+        <item quantity="other">%s warnings</item>
+    </plurals>
+    <string name="new_version_message">App version <b>%s</b> is now available.\nDo you want to download it?</string>
+    <string name="software_update">"Software update"</string>
+    <string name="remind_me_later">Later</string>
+    <string name="download_now">Download now</string>
+    <string name="check_for_updates">Check for updates</string>
+    <string name="checking_for_updates">Checking for updates</string>
+    <string name="no_updates">There are no new updates</string>
+    <string name="unknow_sources_denied">Unknown sources permission is denied.\nYou need to enable it to install version.</string>
+    <string name="storage_denied">Storage permission is denied.\nYou need to enable it to install version.</string>
+    <string name="app_version">App version</string>
+    <string name="error_applying_rule_effects">"Something went wrong with the program configuration, we cannot load this event. Please contact your system admin."</string>
 </resources>

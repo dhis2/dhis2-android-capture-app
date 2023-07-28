@@ -1,11 +1,11 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain
 
-import org.dhis2.commons.data.FieldWithIssue
-import org.dhis2.commons.data.IssueType
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.CompleteButton
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.MainButton
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.SecondaryButton
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.CompleteButton
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.SecondaryButton
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.COMPLETE_ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.MANDATORY
@@ -40,14 +40,8 @@ class ConfigureEventCompletionDialog(
         )
         val bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = getTitle(dialogType),
-            subtitle = getSubtitle(dialogType),
+            message = getSubtitle(dialogType),
             iconResource = getIcon(dialogType),
-            fieldsWithIssues = getFieldsWithIssues(
-                errorFields = errorFields,
-                mandatoryFields = mandatoryFields.keys.toList(),
-                warningFields = warningFields,
-                onCompleteField = getOnCompleteMessage(canComplete, onCompleteMessage)
-            ),
             mainButton = mainButton.buttonStyle,
             secondaryButton = secondaryButton.buttonStyle
         )
@@ -55,7 +49,13 @@ class ConfigureEventCompletionDialog(
         return EventCompletionDialog(
             bottomSheetDialogUiModel = bottomSheetDialogUiModel,
             mainButtonAction = mainButton.action,
-            secondaryButtonAction = secondaryButton.action
+            secondaryButtonAction = secondaryButton.action,
+            fieldsWithIssues = getFieldsWithIssues(
+                errorFields = errorFields,
+                mandatoryFields = mandatoryFields.keys.toList(),
+                warningFields = warningFields,
+                onCompleteField = getOnCompleteMessage(canComplete, onCompleteMessage)
+            )
         )
     }
 

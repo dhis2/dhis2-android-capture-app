@@ -7,13 +7,12 @@ class Sorting {
 
     companion object {
         @JvmStatic
-        fun getSortingOptions(programType: ProgramType) =
-            when (programType) {
-                ProgramType.EVENT -> eventsSorting()
-                ProgramType.TRACKER -> trackerSearchSorting()
-                ProgramType.DASHBOARD -> trackerDashboardSorting()
-                else -> emptyList()
-            }
+        fun getSortingOptions(programType: ProgramType) = when (programType) {
+            ProgramType.EVENT -> eventsSorting()
+            ProgramType.TRACKER -> trackerSearchSorting()
+            ProgramType.DASHBOARD -> trackerDashboardSorting()
+            else -> emptyList()
+        }
 
         private fun trackerSearchSorting(): List<Filters> {
             return arrayListOf(

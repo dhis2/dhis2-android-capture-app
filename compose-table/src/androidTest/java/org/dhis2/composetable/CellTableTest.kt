@@ -1,24 +1,24 @@
 package org.dhis2.composetable
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import org.dhis2.composetable.activity.TableTestActivity
+import androidx.test.espresso.Espresso
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.test.TestActivity
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
 class CellTableTest {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TableTestActivity>()
+    val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     @Test
     fun shouldDisplayMandatoryIcon() {
         tableRobot(composeTestRule) {
             val fakeModel = initTable(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -31,7 +31,6 @@ class CellTableTest {
     fun shouldBlockClickAndSetCorrectColorIfNonEditable() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -45,7 +44,6 @@ class CellTableTest {
     fun shouldUpdateValueWhenTypingInComponent() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -61,7 +59,6 @@ class CellTableTest {
         var savedValue: TableCell? = null
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             ) {
                 savedValue = it
@@ -78,7 +75,6 @@ class CellTableTest {
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -101,7 +97,6 @@ class CellTableTest {
     fun shouldMoveToNextRowWhenClickingNext() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -111,12 +106,15 @@ class CellTableTest {
             composeTestRule.waitForIdle()
             clickOnAccept()
             composeTestRule.waitForIdle()
+            Espresso.pressBack()
             assertCellSelected(firstId, 1, 0)
+            clickOnCell(firstId, 1, 0)
             assertInputComponentInfo(
                 expectedMainLabel = "Text 2",
                 expectedSecondaryLabels =
                 fakeModel.find { it.id == firstId }?.tableHeaderModel?.rows
-                    ?.joinToString(separator = ",") { it.cells[0 % it.cells.size].value } ?: "")
+                    ?.joinToString(separator = ",") { it.cells[0 % it.cells.size].value } ?: ""
+            )
         }
     }
 
@@ -124,7 +122,6 @@ class CellTableTest {
     fun shouldClearSelectionWhenClickingNextOnLastCell() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!
@@ -142,7 +139,6 @@ class CellTableTest {
         val testingTableId = "PjKGwf9WxBE"
         tableRobot(composeTestRule) {
             initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE,
                 TableAppScreenOptions(
                     inputRowsOptions = listOf(
@@ -163,7 +159,6 @@ class CellTableTest {
     fun shouldSetCorrectColorIfHasError() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val firstId = fakeModel.first().id!!

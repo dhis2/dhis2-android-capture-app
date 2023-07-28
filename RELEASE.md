@@ -1,29 +1,22 @@
-Android Capture App for DHIS 2 (v2.7.1.1) - Patch version
+Android Capture App for DHIS 2 (v2.8.1.1) - Hotfix
 <table>
 <tr> 
 <td> 
 <img src="https://s3-eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/android-chrome-384x384.png" width="800"> 
 </td> 
 <td>
-This is a patch version of the <strong>DHIS2 Android App</strong> It builds upon the last version including bug fixes that couldn't wait to the next version. 
-It includes no functional improvements neither changes in the User Interface. It means that yours users can update without experiencing any change in the UI. 
+This is a patch version of the DHIS2 Android App It builds upon the last version including bug fixes that couldn't wait to the next version. It includes no functional improvements neither changes in the User Interface. It means that yours users can update without experiencing any change in the UI. 
 </td>
 </tr> 
 <tr> 
 <td colspan="2" bgcolor="white">
 
 ## Bugs fixed
-* [ANDROAPP-5194](https://jira.dhis2.org/browse/ANDROAPP-5194) RuntimeException: Unable to start activity ComponentInfo{com.dhis2/org.dhis2.usescases.eventsWithoutRegistration.ev...
-* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.7.1.
-    
-You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=10368) in this version. 
+* [ANDROAPP-5371](https://dhis2.atlassian.net/browse/ANDROAPP-5371) Update SDK to 1.8.1.1
+* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.8.1.1
 
-Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed 
-information of the features included in the App and how to configure DHIS2 to use it. 
+**Bug fixing:** You can find the list of bugs fixed [here](https://dhis2.atlassian.net/projects/ANDROAPP/versions/10808).
 
-Please create a [Jira](https://jira.dhis2.org/secure/Dashboard.jspa) Issue if you find a bug or 
-you want to propose a new functionality. [Project: Android App for DHIS2 | Component: 
-AndroidApp].
 </td>
 </tr>
 </table>

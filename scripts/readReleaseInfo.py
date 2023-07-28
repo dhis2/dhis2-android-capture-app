@@ -12,10 +12,8 @@ with open(RELEASE_INFO_PATH, 'r') as file:
 
 name = "envman add --key NAME_RELEASE --value {}".format(release_versions.get('vName'))
 branch = "envman add --key BRANCH_RELEASE --value {}".format(release_versions.get('vBranch'))
-sdk_version = "envman add --key SDK_VERSION --value {}".format(release_versions.get('sdkVersion'))
 
 os.system(name)
 os.system(branch)
-os.system(sdk_version)
 
 print("*** Done! ***")

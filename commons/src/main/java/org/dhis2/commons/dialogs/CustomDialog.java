@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.dhis2.commons.R;
 import org.dhis2.commons.databinding.CustomDialogBinding;
 
@@ -18,7 +20,7 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
     public static final int DESCRIPTION_DIALOG = 111;
     public static final int NO_RQ_CODE = -1;
     private Context context;
-    private AlertDialog dialog;
+    private androidx.appcompat.app.AlertDialog dialog;
     private String title;
     private String message;
     private String positiveText;
@@ -46,7 +48,7 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
 
     @Override
     public void show() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, R.style.MaterialDialog);
         LayoutInflater inflater = LayoutInflater.from(context);
         CustomDialogBinding binding = DataBindingUtil.inflate(inflater, R.layout.custom_dialog, null, false);
 

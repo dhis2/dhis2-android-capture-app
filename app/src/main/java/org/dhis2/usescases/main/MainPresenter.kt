@@ -1,10 +1,20 @@
 package org.dhis2.usescases.main
 
+import android.content.Context
+import android.net.Uri
 import android.view.Gravity
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
@@ -18,12 +28,15 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
+import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -36,9 +49,9 @@ import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
 const val DEFAULT = "default"
-const val MIN_USERS = 1
 const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
+const val PLAY_FLAVOR = "dhisPlayServices"
 
 class MainPresenter(
     private val view: MainView,
@@ -52,10 +65,19 @@ class MainPresenter(
     private val userManager: UserManager,
     private val deleteUserData: DeleteUserData,
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
-    private val syncStatusController: SyncStatusController
-) {
+    private val syncStatusController: SyncStatusController,
+    private val versionRepository: VersionRepository,
+    private val dispatcherProvider: DispatcherProvider
+) : CoroutineScope {
+
+    private var job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = job + dispatcherProvider.io()
 
     var disposable: CompositeDisposable = CompositeDisposable()
+
+    val versionToUpdate = versionRepository.newAppVersion.asLiveData(coroutineContext)
+    val downloadingVersion = MutableLiveData(false)
 
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
@@ -177,7 +199,7 @@ class MainPresenter(
                 workManagerController.cancelAllWork()
                 FilterManager.getInstance().clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
-                preferences.setValue(Preference.PIN, null)
+                userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
             }.andThen(
                 repository.logOut()
             )
@@ -236,10 +258,6 @@ class MainPresenter(
         )
     }
 
-    fun hasProgramWithAssignment(): Boolean {
-        return repository.hasProgramWithAssignment()
-    }
-
     fun onNavigateBackToHome() {
         view.goToHome()
         initFilters()
@@ -253,7 +271,10 @@ class MainPresenter(
         filterRepository.collapseAllFilters()
     }
 
+    fun isPinStored() = repository.isPinStored()
+
     fun launchInitialDataSync() {
+        checkVersionUpdate()
         workManagerController
             .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
         val workerItem = WorkerItem(
@@ -298,5 +319,42 @@ class MainPresenter(
 
     fun trackJiraReport() {
         matomoAnalyticsController.trackEvent(HOME, JIRA_REPORT, CLICK)
+    }
+
+    fun checkVersionUpdate() {
+        launch {
+            versionRepository.checkVersionUpdates()
+        }
+    }
+
+    fun remindLaterAlertNewVersion() {
+        val workerItem = WorkerItem(
+            Constants.NEW_APP_VERSION,
+            WorkerType.NEW_VERSION,
+            delayInSeconds = 24 * 60 * 60,
+            policy = ExistingWorkPolicy.REPLACE
+        )
+        workManagerController.beginUniqueWork(workerItem)
+        versionRepository.removeVersionInfo()
+    }
+
+    fun downloadVersion(
+        context: Context,
+        onDownloadCompleted: (Uri) -> Unit,
+        onLaunchUrl: (Uri) -> Unit
+    ) {
+        if (BuildConfig.FLAVOR == PLAY_FLAVOR) {
+            val url = versionRepository.getUrl()
+            onLaunchUrl(Uri.parse(url))
+        } else {
+            versionRepository.download(
+                context = context,
+                onDownloadCompleted = {
+                    onDownloadCompleted(it)
+                    downloadingVersion.value = false
+                },
+                onDownloading = { downloadingVersion.value = true }
+            )
+        }
     }
 }

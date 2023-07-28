@@ -6,23 +6,18 @@ import org.dhis2.commons.components.ComponentProvider
 class SyncDialog(
     val activity: FragmentActivity,
     val recordUid: String,
-    val conflictType: ConflictType,
-    private val orgUnitDataValue: String? = null,
-    private val attributeComboDataValue: String? = null,
-    private val periodIdDataValue: String? = null,
-    private val dismissListener: OnDismissListener? = null
+    val syncContext: SyncContext,
+    private val dismissListener: OnDismissListener? = null,
+    private val onSyncNavigationListener: OnSyncNavigationListener? = null
 ) {
     fun show() {
         (activity.applicationContext as? ComponentProvider)
             ?.syncComponentProvider
             ?.showSyncStatusDialog(
                 activity,
-                recordUid,
-                conflictType,
-                orgUnitDataValue,
-                attributeComboDataValue,
-                periodIdDataValue,
-                dismissListener
+                syncContext,
+                dismissListener,
+                onSyncNavigationListener
             )
     }
 }

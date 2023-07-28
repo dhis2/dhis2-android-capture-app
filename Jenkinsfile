@@ -23,8 +23,10 @@ pipeline {
             }
             steps {
                 script {
-                    echo 'Running unit tests'
+                    echo 'Running unit tests on App Module'
                     sh './gradlew testDhisDebugUnitTestCoverage'
+                    echo 'Running unit tests on all other modules'
+                    sh './gradlew testDebugUnitTest'
                 }
             }
         }
@@ -49,7 +51,23 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest'
+                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :compose-table:assembleAndroidTest'
+                }
+            }
+        }
+        stage('Deploy compose-table module Tests') {
+            environment {
+                BROWSERSTACK = credentials('android-browserstack')
+                compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p')
+                compose_table_apk_path = "${env.WORKSPACE}/${compose_table_apk}"
+            }
+            steps {
+                dir("${env.WORKSPACE}/scripts"){
+                    script {
+                        echo 'Browserstack deployment and running compose-table module tests'
+                        sh 'chmod +x browserstackJenkinsCompose.sh'
+                        sh './browserstackJenkinsCompose.sh'
+                    }
                 }
             }
         }
@@ -62,7 +80,7 @@ pipeline {
                 test_apk_path = "${env.WORKSPACE}/${test_apk}"
             }
             steps {
-               dir("${env.WORKSPACE}/scripts"){
+                dir("${env.WORKSPACE}/scripts"){
                     script {
                         echo 'Browserstack deployment and running tests'
                         sh 'chmod +x browserstackJenkins.sh'

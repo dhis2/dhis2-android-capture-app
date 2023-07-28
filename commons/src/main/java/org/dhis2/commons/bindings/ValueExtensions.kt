@@ -151,11 +151,11 @@ fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
 ): TrackedEntityAttributeValue? {
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().let {
         if (blockingExists() && check(
-            d2,
-            it.valueType(),
-            it.optionSet()?.uid(),
-            blockingGet().value()!!
-        )
+                d2,
+                it.valueType(),
+                it.optionSet()?.uid(),
+                blockingGet().value()!!
+            )
         ) {
             blockingGet()
         } else {
@@ -205,11 +205,11 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
 ): TrackedEntityDataValue? {
     return d2.dataElementModule().dataElements().uid(deUid).blockingGet().let {
         if (blockingExists() && check(
-            d2,
-            it.valueType(),
-            it.optionSet()?.uid(),
-            blockingGet().value()!!
-        )
+                d2,
+                it.valueType(),
+                it.optionSet()?.uid(),
+                blockingGet().value()!!
+            )
         ) {
             blockingGet()
         } else {
@@ -219,12 +219,7 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
     }
 }
 
-private fun check(
-    d2: D2,
-    valueType: ValueType?,
-    optionSetUid: String?,
-    value: String
-): Boolean {
+private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: String): Boolean {
     return when {
         optionSetUid != null -> {
             val optionByCodeExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)

@@ -21,9 +21,7 @@ import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.bindings.scrollToPosition
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -168,20 +166,20 @@ class GroupAnalyticsFragment : Fragment() {
     }
 
     private fun showOUTreeSelector(chartModel: ChartModel) {
-        val ouTreeFragment =
-            OUTreeFragment.newInstance(
-                true,
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
                 chartModel.graph.orgUnitsSelected.toMutableList()
             )
-        ouTreeFragment.selectionCallback = object : OnOrgUnitSelectionFinished {
-            override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
+            .onSelection { selectedOrgUnits ->
                 groupViewModel.filterByOrgUnit(
-                    chartModel, selectedOrgUnits,
+                    chartModel,
+                    selectedOrgUnits,
                     OrgUnitFilterType.SELECTION
                 )
             }
-        }
-        ouTreeFragment.show(childFragmentManager, "OUTreeFragment")
+            .build()
+            .show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -230,7 +228,8 @@ class GroupAnalyticsFragment : Fragment() {
             binding?.analyticChipGroup?.addView(
                 AnalyticsItemBinding.inflate(
                     layoutInflater,
-                    binding?.analyticChipGroup, false
+                    binding?.analyticChipGroup,
+                    false
                 ).apply {
                     chip.id = idChip
                     chip.text = analyticGroup.name

@@ -11,9 +11,9 @@ import kotlinx.coroutines.withContext
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
@@ -304,6 +304,7 @@ class SearchTEIViewModel(
                     }
                     SearchScreenState.MAP -> {
                         SearchIdlingResourceSingleton.increment()
+                        _refreshData.value = Unit
                         setMapScreen()
                         fetchMapResults()
                     }
@@ -468,9 +469,9 @@ class SearchTEIViewModel(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
                         uiData = UnableToSearchOutsideData(
                             trackedEntityTypeAttributes =
-                                searchRepository.trackedEntityTypeFields(),
+                            searchRepository.trackedEntityTypeFields(),
                             trackedEntityTypeName =
-                                searchRepository.trackedEntityType.displayName()!!
+                            searchRepository.trackedEntityType.displayName()!!
                         )
                     )
                 )

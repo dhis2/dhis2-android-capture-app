@@ -23,10 +23,7 @@ import org.dhis2.ui.theme.programColorLight
 import org.dhis2.ui.utils.getAlphaContrastColor
 
 @Composable
-fun MetadataIcon(
-    modifier: Modifier = Modifier,
-    metadataIconData: MetadataIconData
-) {
+fun MetadataIcon(modifier: Modifier = Modifier, metadataIconData: MetadataIconData) {
     Image(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))

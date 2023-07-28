@@ -167,8 +167,8 @@ public class SearchTEModule {
                 true,
                 new UiStyleProviderImpl(
                         new FormUiModelColorFactoryImpl(moduleContext, false),
-                        new LongTextUiColorFactoryImpl(moduleContext, false)
-
+                        new LongTextUiColorFactoryImpl(moduleContext, false),
+                        false
                 ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),

@@ -13,8 +13,6 @@
     <string name="error_wrong_credentials">Feil opplysninger</string>
     <string name="error_unexpected_error">Uventet feil</string>
     <string name="error_internal_server_error">Intern serverfeil</string>
-    <string name="yes">ja</string>
-    <string name="no">nei</string>
     <string name="no_value">ingen verdi</string>
     <string name="no_reserved_values">Det er ingen flere reserverte verdier. Kontakt din systemadministrator</string>
     <string name="no_reserved_values_connection">Det er ingen flere reserverte verdier. Koble til nettverket for å fylle på dem</string>
@@ -206,7 +204,6 @@
     <string name="settings_sms_module_title">SMS modul:</string>
     <string name="settings_sms_receiver_number">SMS inngangsport</string>
     <string name="settings_sms_result_sender_number">SMS resultat sender</string>
-    <string name="settings_sms_result_timeout">SMS resultat tidsavbrudd</string>
     <string name="settings_sms_result_timeout_hint">sekunder</string>
     <string name="settings_sms_result_sender_hint">nummer</string>
     <string name="settings_sms_receiver_number_hint">nummer</string>

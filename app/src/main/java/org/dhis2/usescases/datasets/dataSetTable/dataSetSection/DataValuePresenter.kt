@@ -12,16 +12,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.ValidationResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import timber.log.Timber
@@ -30,18 +34,23 @@ class DataValuePresenter(
     private val view: DataValueContract.View,
     private val repository: DataValueRepository,
     private val valueStore: ValueStore,
+    private val tableDimensionStore: TableDimensionStore,
     private val schedulerProvider: SchedulerProvider,
     private val mapper: TableDataToTableModelMapper,
     private val dispatcherProvider: DispatcherProvider
-) : CoroutineScope {
+) : CoroutineScope, Validator {
     var disposable: CompositeDisposable = CompositeDisposable()
     private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
-        TableScreenState(
-            emptyList(),
-            false,
-            overwrittenRowHeaderWidth = repository.getWidthForSection()
+        TableScreenState(emptyList())
+    )
+    private val tableConfigurationState = MutableStateFlow(
+        TableConfigurationState(
+            overwrittenTableWidth = tableDimensionStore.getTableWidth(),
+            overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
+            overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null)
         )
     )
+
     private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val dataSetInfo = repository.getDataSetInfo()
@@ -61,11 +70,7 @@ class DataValuePresenter(
                     indicators?.let { list.add(indicators) }
                 }
             }.map {
-                TableScreenState(
-                    tables = it,
-                    selectNext = false,
-                    overwrittenRowHeaderWidth = repository.getWidthForSection()
-                )
+                TableScreenState(tables = it)
             }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
@@ -95,7 +100,7 @@ class DataValuePresenter(
         null
     }
 
-    private fun updateData(catComboUid: String, selectNext: Boolean) {
+    private fun updateData(catComboUid: String) {
         val dataTableModel =
             repository.getDataTableModel(catComboUid)
                 .blockingFirst()
@@ -115,7 +120,7 @@ class DataValuePresenter(
         }
 
         screenState.update { currentScreenState ->
-            currentScreenState.copy(tables = updatedTables, selectNext = selectNext)
+            currentScreenState.copy(tables = updatedTables)
         }
     }
 
@@ -124,6 +129,7 @@ class DataValuePresenter(
     }
 
     fun currentState(): StateFlow<TableScreenState> = screenState
+    fun currentTableConfState(): StateFlow<TableConfigurationState> = tableConfigurationState
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun mutableTableData() = screenState
@@ -142,15 +148,15 @@ class DataValuePresenter(
         handleElementInteraction(dataElement, cell, updateCellValue)
         return dataElement.takeIf { it.optionSetUid() == null }
             ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
-            TextInputModel(
-                id = cell.id ?: "",
-                mainLabel = dataElement.displayFormName() ?: "-",
-                secondaryLabels = repository.getCatOptComboOptions(ids[1]),
-                currentValue = cell.value,
-                keyboardInputType = inputType,
-                error = errors[cell.id]
-            )
-        }
+                TextInputModel(
+                    id = cell.id ?: "",
+                    mainLabel = dataElement.displayFormName() ?: "-",
+                    secondaryLabels = repository.getCatOptComboOptions(ids[1]),
+                    currentValue = cell.value,
+                    keyboardInputType = inputType,
+                    error = errors[cell.id]
+                )
+            }
     }
 
     private fun handleElementInteraction(
@@ -165,21 +171,27 @@ class DataValuePresenter(
                 getSpinnerViewModel(dataElement, cell),
                 updateCellValue
             )
-        } else when (dataElement.valueType()) {
-            ValueType.BOOLEAN,
-            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
-            ValueType.DATE -> view.showCalendar(dataElement, cell, false, updateCellValue)
-            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true, updateCellValue)
-            ValueType.TIME -> view.showTimePicker(dataElement, cell, updateCellValue)
-            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell, updateCellValue)
-            ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
-                dataElement,
-                cell,
-                repository.orgUnits(),
-                updateCellValue
-            )
-            ValueType.AGE -> view.showAgeDialog(dataElement, cell, updateCellValue)
-            else -> {}
+        } else {
+            when (dataElement.valueType()) {
+                ValueType.BOOLEAN,
+                ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
+                ValueType.DATE -> view.showCalendar(dataElement, cell, false, updateCellValue)
+                ValueType.DATETIME -> view.showCalendar(dataElement, cell, true, updateCellValue)
+                ValueType.TIME -> view.showTimePicker(dataElement, cell, updateCellValue)
+                ValueType.COORDINATE -> view.showCoordinatesDialog(
+                    dataElement,
+                    cell,
+                    updateCellValue
+                )
+                ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
+                    dataElement,
+                    cell,
+                    repository.orgUnits(),
+                    updateCellValue
+                )
+                ValueType.AGE -> view.showAgeDialog(dataElement, cell, updateCellValue)
+                else -> {}
+            }
         }
     }
 
@@ -191,46 +203,66 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onSaveValueChange(cell: TableCell, selectNext: Boolean = false) {
+    fun onSaveValueChange(cell: TableCell) {
         launch(dispatcherProvider.io()) {
-            saveValue(cell, selectNext)
+            saveValue(cell)
             view.onValueProcessed()
         }
     }
 
-    private suspend fun saveValue(cell: TableCell, selectNext: Boolean) =
-        withContext(dispatcherProvider.io()) {
-            val ids = cell.id?.split("_")
-            val dataElementUid = ids!![0]
-            val catOptCombUid = ids[1]
-            val catComboUid = screenState.value.tables
-                .find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
-
-            val result = valueStore.save(
-                dataSetInfo.second,
-                dataSetInfo.first,
-                dataSetInfo.third,
-                dataElementUid,
-                catOptCombUid,
-                cell.value
-            )
-            val storeResult = result.blockingFirst()
-            val saveResult = storeResult.valueStoreResult
-            if (
-                saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
-                saveResult == VALUE_HAS_NOT_CHANGED
-            ) {
-                if (saveResult == ERROR_UPDATING_VALUE) {
-                    errors[cell.id!!] =
-                        storeResult.valueStoreResultMessage ?: "-"
-                } else {
-                    errors.remove(cell.id!!)
-                }
-                updateData(catComboUid!!, selectNext)
-            }
+    override fun validate(tableCell: TableCell): ValidationResult {
+        val ids = tableCell.id?.split("_")
+        val dataElementUid = ids!![0]
+        return when (val result = valueStore.validate(dataElementUid, tableCell.value)) {
+            is Result.Failure -> ValidationResult.Error(result.failure.message ?: "")
+            is Result.Success -> ValidationResult.Success(tableCell.value)
         }
+    }
 
-    fun saveWidth(widthDpValue: Float) {
-        repository.saveWidthForSection(widthDpValue)
+    private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
+        val ids = cell.id?.split("_")
+        val dataElementUid = ids!![0]
+        val catOptCombUid = ids[1]
+        val catComboUid = screenState.value.tables
+            .find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
+
+        val result = valueStore.save(
+            dataSetInfo.second,
+            dataSetInfo.first,
+            dataSetInfo.third,
+            dataElementUid,
+            catOptCombUid,
+            cell.value
+        )
+        val storeResult = result.blockingFirst()
+        val saveResult = storeResult.valueStoreResult
+        if (
+            saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
+            saveResult == VALUE_HAS_NOT_CHANGED
+        ) {
+            if (saveResult == ERROR_UPDATING_VALUE) {
+                errors[cell.id!!] =
+                    storeResult.valueStoreResultMessage ?: "-"
+            } else {
+                errors.remove(cell.id!!)
+            }
+            updateData(catComboUid!!)
+        }
+    }
+
+    fun saveWidth(tableId: String, widthDpValue: Float) {
+        tableDimensionStore.saveWidthForSection(tableId, widthDpValue)
+    }
+
+    fun saveColumnWidth(tableId: String, column: Int, widthDpValue: Float) {
+        tableDimensionStore.saveColumnWidthForSection(tableId, column, widthDpValue)
+    }
+
+    fun resetTableDimensions(tableId: String) {
+        tableDimensionStore.resetTable(tableId)
+    }
+
+    fun saveTableWidth(tableId: String, widthDpValue: Float) {
+        tableDimensionStore.saveTableWidth(tableId, widthDpValue)
     }
 }

@@ -16,9 +16,9 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.forEach
+import androidx.databinding.BindingAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
@@ -36,7 +36,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
     private var currentItemId: Int = -1
-    var initialPage: Int
+    internal var initialPage: Int = 0
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
     private var forceShowAnalytics = false
 
@@ -57,7 +57,6 @@ class NavigationBottomBar @JvmOverloads constructor(
             )
             itemIndicatorDrawable =
                 getDrawable(R.styleable.NavigationBottomBar_currentItemSelectorDrawable)
-            initialPage = getInt(R.styleable.NavigationBottomBar_initialPage, 0)
             forceShowAnalytics =
                 getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
             recycle()
@@ -88,6 +87,16 @@ class NavigationBottomBar @JvmOverloads constructor(
         }
     }
 
+    override fun setOnItemSelectedListener(listener: OnItemSelectedListener?) {
+        super.setOnItemSelectedListener { item ->
+            currentItemId = item.itemId
+            findViewById<View>(item.itemId)?.let { itemView ->
+                animateItemIndicatorPosition(itemView)
+            }
+            updateBadges()
+            listener?.onNavigationItemSelected(item) ?: false
+        }
+    }
     override fun setOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener?) {
         super.setOnNavigationItemSelectedListener { item ->
             currentItemId = item.itemId
@@ -257,4 +266,9 @@ class NavigationBottomBar @JvmOverloads constructor(
     fun currentPage(): Int {
         return visibleItemCount().indexOfFirst { it.itemId == currentItemId }
     }
+}
+
+@BindingAdapter("initialPage")
+fun NavigationBottomBar.setInitialPage(initialPage: Int) {
+    this.initialPage = initialPage
 }

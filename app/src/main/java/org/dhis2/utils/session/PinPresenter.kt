@@ -8,27 +8,39 @@ import timber.log.Timber
 class PinPresenter(
     val view: PinView,
     val preferenceProvider: PreferenceProvider,
-    val d2: D2?
+    val d2: D2
 ) {
 
-    fun unlockSession(pin: String): Boolean {
-        return if (preferenceProvider.getString(Preference.PIN, "") == pin) {
-            preferenceProvider.setValue(Preference.SESSION_LOCKED, true)
-            true
-        } else {
-            false
+    fun unlockSession(
+        pin: String,
+        attempts: Int,
+        onPinCorrect: () -> Unit,
+        onError: () -> Unit,
+        onTwoManyAttempts: () -> Unit
+    ) {
+        val pinStored = d2.dataStoreModule()
+            .localDataStore()
+            .value(Preference.PIN)
+            .blockingGet().value()
+        when {
+            pinStored == pin -> {
+                preferenceProvider.setValue(Preference.SESSION_LOCKED, true)
+                onPinCorrect()
+            }
+            attempts < 2 -> onError()
+            else -> onTwoManyAttempts()
         }
     }
 
     fun savePin(pin: String) {
-        preferenceProvider.setValue(Preference.PIN, pin)
+        d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingSet(pin)
         preferenceProvider.setValue(Preference.SESSION_LOCKED, true)
     }
 
     fun logOut() {
         try {
-            d2?.userModule()?.blockingLogOut()
-            preferenceProvider.setValue(Preference.PIN, null)
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingDelete()
+            d2.userModule().blockingLogOut()
             preferenceProvider.setValue(Preference.SESSION_LOCKED, false)
         } catch (e: Exception) {
             Timber.e(e)

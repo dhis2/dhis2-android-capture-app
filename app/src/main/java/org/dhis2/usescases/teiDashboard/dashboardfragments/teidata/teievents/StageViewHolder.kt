@@ -13,12 +13,12 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.setUpMetadataIcon
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 
 internal class StageViewHolder(
     private val binding: ItemStageSectionBinding,
     private val stageSelector: FlowableProcessor<StageSection>,
-    private val presenter: TEIDataContracts.Presenter
+    private val presenter: TEIDataPresenter
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
@@ -32,6 +32,9 @@ internal class StageViewHolder(
         val stage = eventItem.stage!!
 
         binding.programStageName.text = stage.displayName()
+        binding.programStageName.post {
+            binding.programStageName.isSelected = true
+        }
 
         val color = ColorUtils.getColorFrom(
             stage.style().color(),

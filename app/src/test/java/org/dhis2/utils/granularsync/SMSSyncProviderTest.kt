@@ -11,6 +11,7 @@ import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.Event
@@ -238,27 +239,36 @@ class SMSSyncProviderTest {
 
     fun smsSyncProvider(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
-        conflictType,
-        "uid",
-        null,
-        null,
-        null,
+        when (conflictType) {
+            ConflictType.ALL -> SyncContext.Global()
+            ConflictType.PROGRAM -> SyncContext.TrackerProgram("uid")
+            ConflictType.TEI -> SyncContext.TrackerProgramTei("uid")
+            ConflictType.EVENT -> SyncContext.Event("uid")
+            ConflictType.DATA_SET -> SyncContext.DataSet("uid")
+            ConflictType.DATA_VALUES -> SyncContext.DataSetInstance(
+                "uid",
+                "periodId",
+                "orgUnitUid",
+                "attComboUid"
+            )
+        },
         resources
     )
 
     fun smsSyncProviderDataValue(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
-        conflictType,
-        "uid",
-        "orgUnitUid",
-        "attComboUid",
-        "periodId",
+        SyncContext.DataSetInstance(
+            "uid",
+            "periodId",
+            "orgUnitUid",
+            "attComboUid"
+        ),
         resources
     )
 
     private fun mockTrackerSMSVersion(version: SMSVersion) {
         val dhisVersionManager: DHISVersionManager = mock {
-            on { smsVersion } doReturn version
+            on { getSmsVersion() } doReturn version
         }
         whenever(
             d2.systemInfoModule().versionManager()

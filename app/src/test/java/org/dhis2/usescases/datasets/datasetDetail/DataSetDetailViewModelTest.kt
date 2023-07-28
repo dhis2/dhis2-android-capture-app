@@ -9,7 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import mock
-import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

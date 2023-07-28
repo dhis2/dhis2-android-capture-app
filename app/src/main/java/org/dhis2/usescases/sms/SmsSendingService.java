@@ -1,11 +1,14 @@
 package org.dhis2.usescases.sms;
 
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
@@ -191,7 +194,26 @@ public class SmsSendingService extends Service {
 
     private void startBackgroundSubmissionNotification() {
         submissionRunning = true;
-        startForeground(SMS_NOTIFICATION_ID, makeNotification(statesList.get(statesList.size() - 1)));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                startForeground(
+                        SMS_NOTIFICATION_ID,
+                        makeNotification(statesList.get(statesList.size() - 1)),
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                );
+            } catch (ForegroundServiceStartNotAllowedException exception) {
+                Timber.e("Unable to start foreground: %s", exception.getMessage());
+            }
+        } else {
+            try {
+                startForeground(
+                        SMS_NOTIFICATION_ID,
+                        makeNotification(statesList.get(statesList.size() - 1))
+                );
+            } catch (Exception exception) {
+                Timber.e("Unable to start foreground: %s", exception.getMessage());
+            }
+        }
     }
 
     private void stopBackgroundSubmissionNotification() {
@@ -292,23 +314,26 @@ public class SmsSendingService extends Service {
         COUNT_NOT_ACCEPTED, SENDING, SENT, WAITING_RESULT, RESULT_CONFIRMED,
         WAITING_RESULT_TIMEOUT, COMPLETED, ERROR;
 
-        private static final Set<State> STARTING_TYPES = new HashSet<>(Arrays.asList(STARTED,WAITING_COUNT_CONFIRMATION,CONVERTED));
-        private static final Set<State> SENDING_TYPES = new HashSet<>(Arrays.asList(SENDING,WAITING_RESULT,RESULT_CONFIRMED,SENT));
-        private static final Set<State> ERROR_TYPES = new HashSet<>(Arrays.asList(ITEM_NOT_READY,COUNT_NOT_ACCEPTED,WAITING_RESULT_TIMEOUT,ERROR));
+        private static final Set<State> STARTING_TYPES = new HashSet<>(Arrays.asList(STARTED, WAITING_COUNT_CONFIRMATION, CONVERTED));
+        private static final Set<State> SENDING_TYPES = new HashSet<>(Arrays.asList(SENDING, WAITING_RESULT, RESULT_CONFIRMED, SENT));
+        private static final Set<State> ERROR_TYPES = new HashSet<>(Arrays.asList(ITEM_NOT_READY, COUNT_NOT_ACCEPTED, WAITING_RESULT_TIMEOUT, ERROR));
         private static final Set<State> COMPLETED_TYPES = new HashSet<>(Arrays.asList(COMPLETED));
-        public boolean isError(){
+
+        public boolean isError() {
             return ERROR_TYPES.contains(this);
         }
 
-        public boolean isSending(){
+        public boolean isSending() {
             return SENDING_TYPES.contains(this);
         }
 
-        public boolean isCompleted(){
+        public boolean isCompleted() {
             return COMPLETED_TYPES.contains(this);
         }
 
-        public boolean isStarting() { return STARTING_TYPES.contains(this); }
+        public boolean isStarting() {
+            return STARTING_TYPES.contains(this);
+        }
 
     }
 

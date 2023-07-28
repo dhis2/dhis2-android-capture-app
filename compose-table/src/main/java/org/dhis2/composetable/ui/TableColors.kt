@@ -15,14 +15,13 @@ data class TableColors(
     val disabledCellText: Color = Color(0x61000000),
     val disabledCellBackground: Color = Color(0x0A000000),
     val errorColor: Color = Color(0xFFE91E63),
+    val warningColor: Color = Color(0xFFFF9800),
     val tableBackground: Color = Color(0xFFFFFFFF),
     val iconColor: Color = Color.LightGray
 ) {
-    fun cellTextColor(
-        hasError: Boolean,
-        isEditable: Boolean
-    ) = when {
+    fun cellTextColor(hasError: Boolean, hasWarning: Boolean, isEditable: Boolean) = when {
         hasError -> errorColor
+        hasWarning -> warningColor
         !isEditable -> disabledCellText
         else -> cellText
     }

@@ -1,17 +1,23 @@
 package org.dhis2.form.ui.event
 
+import android.content.Intent
 import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiEventType.ADD_FILE
 import org.dhis2.form.model.UiEventType.ADD_PICTURE
+import org.dhis2.form.model.UiEventType.ADD_SIGNATURE
 import org.dhis2.form.model.UiEventType.AGE_CALENDAR
 import org.dhis2.form.model.UiEventType.AGE_YEAR_MONTH_DAY
 import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
 import org.dhis2.form.model.UiEventType.DATE_TIME
+import org.dhis2.form.model.UiEventType.EMAIL
+import org.dhis2.form.model.UiEventType.OPEN_FILE
 import org.dhis2.form.model.UiEventType.OPTION_SET
 import org.dhis2.form.model.UiEventType.ORG_UNIT
+import org.dhis2.form.model.UiEventType.PHONE_NUMBER
 import org.dhis2.form.model.UiEventType.QR_CODE
 import org.dhis2.form.model.UiEventType.REQUEST_CURRENT_LOCATION
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
@@ -122,6 +128,11 @@ class UiEventFactoryImpl(
                     }
                 }
                 OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)
+                ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)
+                ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
+                OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
+                EMAIL -> RecyclerViewUiEvents.OpenChooserIntent(Intent.ACTION_SENDTO, value)
+                PHONE_NUMBER -> RecyclerViewUiEvents.OpenChooserIntent(Intent.ACTION_DIAL, value)
                 else -> null
             }
         } catch (e: Exception) {

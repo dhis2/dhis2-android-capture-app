@@ -1,5 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.Transition
@@ -7,9 +9,9 @@ import android.transition.TransitionManager
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -24,11 +26,11 @@ import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.orgunitselector.OUTreeFragment.Companion.newInstance
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
-import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
+import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -42,14 +44,13 @@ import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 
 class ProgramEventDetailActivity :
     ActivityGlobalAbstract(),
-    ProgramEventDetailView,
-    OnOrgUnitSelectionFinished {
+    ProgramEventDetailView {
 
     private lateinit var binding: ActivityProgramEventDetailBinding
 
@@ -64,6 +65,10 @@ class ProgramEventDetailActivity :
 
     @Inject
     lateinit var networkUtils: NetworkUtils
+
+    @JvmField
+    @Inject
+    var themeManager: ThemeManager? = null
 
     @Inject
     lateinit var viewModelFactory: ProgramEventDetailViewModelFactory
@@ -80,6 +85,7 @@ class ProgramEventDetailActivity :
     public override fun onCreate(savedInstanceState: Bundle?) {
         initExtras()
         initInjection()
+        themeManager?.setProgramTheme(programUid)
         super.onCreate(savedInstanceState)
         initEventFilters()
         initViewModel()
@@ -119,6 +125,10 @@ class ProgramEventDetailActivity :
         binding.filterLayout.adapter = filtersAdapter
         presenter.init()
         binding.syncButton.setOnClickListener { showSyncDialogProgram() }
+
+        if (intent.shouldLaunchSyncDialog()) {
+            showSyncDialogProgram()
+        }
     }
 
     private fun initExtras() {
@@ -178,16 +188,14 @@ class ProgramEventDetailActivity :
     }
 
     private fun showSyncDialogProgram() {
-        val syncDialog = SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.PROGRAM)
-            .setUid(programUid)
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(SyncContext.EventProgram(programUid))
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            })
-            .build()
-        syncDialog.show(supportFragmentManager, "EVENT_SYNC")
+            }).show("EVENT_SYNC")
     }
 
     public override fun onPause() {
@@ -217,11 +225,13 @@ class ProgramEventDetailActivity :
     }
 
     override fun renderError(message: String) {
-        if (activity != null) AlertDialog.Builder(activity)
-            .setPositiveButton(getString(R.string.button_ok), null)
-            .setTitle(getString(R.string.error))
-            .setMessage(message)
-            .show()
+        if (activity != null) {
+            MaterialAlertDialogBuilder(activity, R.style.MaterialDialog)
+                .setPositiveButton(getString(R.string.button_ok), null)
+                .setTitle(getString(R.string.error))
+                .setMessage(message)
+                .show()
+        }
     }
 
     override fun showHideFilter() {
@@ -329,13 +339,14 @@ class ProgramEventDetailActivity :
     }
 
     override fun openOrgUnitTreeSelector() {
-        val ouTreeFragment = newInstance(true, FilterManager.getInstance().orgUnitUidsFilters)
-        ouTreeFragment.selectionCallback = this
-        ouTreeFragment.show(supportFragmentManager, "OUTreeFragment")
-    }
-
-    override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
-        presenter.setOrgUnitFilters(selectedOrgUnits)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(FilterManager.getInstance().orgUnitUidsFilters)
+            .onSelection { selectedOrgUnits ->
+                presenter.setOrgUnitFilters(selectedOrgUnits)
+            }
+            .build()
+            .show(supportFragmentManager, "OUTreeFragment")
     }
 
     override fun showTutorial(shaked: Boolean) {
@@ -351,21 +362,21 @@ class ProgramEventDetailActivity :
         startActivity(
             EventCaptureActivity::class.java,
             EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK),
-            false, false, null
+            false,
+            false,
+            null
         )
     }
 
     override fun showSyncDialog(uid: String) {
-        val dialog = SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.EVENT)
-            .setUid(uid)
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(SyncContext.Event(uid))
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            })
-            .build()
-        dialog.show(supportFragmentManager, FRAGMENT_TAG)
+            }).show(FRAGMENT_TAG)
     }
 
     private fun showList() {
@@ -395,7 +406,8 @@ class ProgramEventDetailActivity :
 
     private fun showAnalytics() {
         supportFragmentManager.beginTransaction().replace(
-            R.id.fragmentContainer, GroupAnalyticsFragment.forProgram(programUid)
+            R.id.fragmentContainer,
+            GroupAnalyticsFragment.forProgram(programUid)
         ).commitNow()
         binding.addEventButton.visibility = View.GONE
         binding.filter.visibility = View.GONE
@@ -427,6 +439,12 @@ class ProgramEventDetailActivity :
             val bundle = Bundle()
             bundle.putString(EXTRA_PROGRAM_UID, programUid)
             return bundle
+        }
+
+        fun intent(context: Context, programUid: String): Intent {
+            return Intent(context, ProgramEventDetailActivity::class.java).apply {
+                putExtra(EXTRA_PROGRAM_UID, programUid)
+            }
         }
     }
 }
