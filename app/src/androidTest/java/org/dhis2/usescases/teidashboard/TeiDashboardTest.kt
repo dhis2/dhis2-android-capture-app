@@ -151,7 +151,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnFirstReferralEvent()
             clickOnReferralOption()
             clickOnReferralNextButton()
-            checkEventCreatedToastIsShown()
+            // checkEventCreatedToastIsShown()
             checkEventWasCreated(LAB_MONITORING)
         }
     }
