@@ -268,7 +268,9 @@ class LoginViewModel(
     }
 
     private fun trackUserInfo() {
-        crashReportController.trackServer(serverUrl.value)
+        val serverVersion =
+            userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version() ?: ""
+        crashReportController.trackServer(serverUrl.value, serverVersion)
         crashReportController.trackUser(userName.value, serverUrl.value)
     }
 
@@ -403,9 +405,11 @@ class LoginViewModel(
                                             preferenceProvider.getString(SECURE_USER_NAME)!!,
                                             preferenceProvider.getString(SECURE_PASS)!!
                                         )
+
                                     Type.INFO -> {
                                         /*Do nothing*/
                                     }
+
                                     Type.ERROR ->
                                         view.showCredentialsData(
                                             data,
