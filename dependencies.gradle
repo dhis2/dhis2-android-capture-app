@@ -98,12 +98,12 @@ ext.versions = [
         ndk                           : "21.4.7075529",
         sdk                           : 33,
         minSdk                        : 21,
-        vCode                         : 126,
-        vName                         : "2.8.1.1-psi-fork-2",
+        vCode                         : 127,
+        vName                         : "2.8.1.1-psi-fork-1",
         sourceCompat                  : JavaVersion.VERSION_11,
         targetCompat                  : JavaVersion.VERSION_11,
         kotlinCompilerExtensionVersion: "1.4.2",
-        dhis2AndroidSDK               : "$dhis2sdk"
+        dhis2AndroidSDK               : "$dhis2sdk-eyeseetea-fork-1"
 ]
 
 ext.libs = [
