@@ -12,6 +12,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
@@ -88,7 +89,8 @@ class EventDetailsModule(
                 HintProviderImpl(context),
                 DisplayNameProviderImpl(
                     OptionSetConfiguration(d2),
-                    OrgUnitConfiguration(d2)
+                    OrgUnitConfiguration(d2),
+                    FileResourceConfiguration(d2)
                 ),
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),

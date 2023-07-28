@@ -25,6 +25,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
+import org.dhis2.form.data.metadata.FileResourceConfiguration;
 import org.dhis2.form.data.metadata.OptionSetConfiguration;
 import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
@@ -172,7 +173,8 @@ public class SearchTEModule {
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2)
+                        new OrgUnitConfiguration(d2),
+                        new FileResourceConfiguration(d2)
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
