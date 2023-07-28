@@ -61,12 +61,6 @@ allprojects {
 
     repositories {
         google()
-        jcenter() {
-            content {
-                includeModule("com.journeyapps", "zxing-android-embedded")
-                //Only works for API 24+ using Maven Repository, 19+ can be used but we have to downgrade zxing to 3.3.0
-            }
-        }
         mavenCentral()
         maven {
             url = uri("https://maven.google.com")
