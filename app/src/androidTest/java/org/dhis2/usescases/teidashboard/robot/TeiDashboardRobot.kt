@@ -212,7 +212,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuDeleteTEI() {
-        onView(withText(R.string.dashboard_menu_delete_tei_v2)).perform(click())
+        onView(withText(R.string.dashboard_menu_delete_person)).perform(click())
     }
 
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {

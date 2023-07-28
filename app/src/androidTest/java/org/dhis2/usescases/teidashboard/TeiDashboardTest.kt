@@ -336,52 +336,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore
-    @Test
-    fun shouldDeleteTeiSuccessfully() {
-        val teiName = "Anthony"
-        val teiLastName = "Banks"
-
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuDeleteTEI()
-        }
-
-        searchTeiRobot {
-            checkTEIsDelete(teiName, teiLastName)
-        }
-    }
-
-    @Ignore
-    @Test
-    fun shouldDeleteEnrollmentSuccessfully() {
-        val teiName = "Anna"
-        val teiLastName = "Jones"
-
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            //     waitToDebounce(400)
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuDeleteEnrollment()
-        }
-
-        searchTeiRobot {
-            checkTEIsDelete(teiName, teiLastName)
-        }
-    }
 
     @Test
     fun shouldShowAnalytics() {
