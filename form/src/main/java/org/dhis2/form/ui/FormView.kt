@@ -810,7 +810,7 @@ class FormView : Fragment() {
     private fun requestAddImage(event: RecyclerViewUiEvents.AddImage) {
         onSavePicture = { picture ->
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnStoreFile(
                     event.uid,
                     picture,
                     ValueType.IMAGE
@@ -869,7 +869,7 @@ class FormView : Fragment() {
     private fun openFileSelector(event: RecyclerViewUiEvents.OpenFileSelector) {
         onSavePicture = { file ->
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnStoreFile(
                     event.field.uid,
                     file,
                     event.field.valueType
