@@ -33,7 +33,6 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createComposeRule()
-    //@Ignore("SDK related, also indeterminate")
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
@@ -127,7 +126,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    //@Ignore("Some QRs are not being generated")
     @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -156,7 +154,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    //@Ignore("Nondeterministic")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
@@ -227,7 +224,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    //@Ignore("Indeterminate test (Flaky)")
     @Test
     fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -241,7 +237,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    //@Ignore("Nondeterministic")
     @Test
     fun shouldSuccessfullyCreateANewEvent() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)

@@ -59,7 +59,6 @@ class TeiDashboardTestNoComposable : BaseTest() {
         }
     }
 
-    // @Ignore
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Gertrude"
@@ -89,7 +88,6 @@ class TeiDashboardTestNoComposable : BaseTest() {
         }
     }
 
-    //@Ignore
     @Test
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
