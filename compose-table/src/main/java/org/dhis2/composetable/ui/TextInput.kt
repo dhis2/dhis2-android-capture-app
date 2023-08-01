@@ -172,6 +172,15 @@ private fun TextInputContent(
         }
     }
 
+    var textFieldValueState by remember(textInputModel) {
+        mutableStateOf(
+            TextFieldValue(
+                text = textInputModel.currentValue ?: "",
+                selection = TextRange(textInputModel.currentValue?.length ?: 0)
+            )
+        )
+    }
+
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -193,13 +202,9 @@ private fun TextInputContent(
                                 onSave()
                             }
                         },
-                    value = TextFieldValue(
-                        text = textInputModel.currentValue ?: "",
-                        selection = textInputModel.selection ?: TextRange(
-                            textInputModel.currentValue?.length ?: 0
-                        )
-                    ),
+                    value = textFieldValueState,
                     onValueChange = {
+                        textFieldValueState = it
                         onTextChanged(
                             textInputModel.copy(
                                 currentValue = it.text,
