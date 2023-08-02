@@ -64,25 +64,30 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
             d2.organisationUnitModule().organisationUnits()
                 .uid(value)
                 .blockingGet()
-                .displayName()!!
+                .displayName() ?: value
+
         ValueType.IMAGE, ValueType.FILE_RESOURCE ->
             if (d2.fileResourceModule().fileResources().uid(value).blockingExists()) {
                 d2.fileResourceModule().fileResources().uid(value).blockingGet().path()!!
             } else {
                 ""
             }
+
         ValueType.DATE ->
             DateUtils.uiDateFormat().format(
                 DateUtils.oldUiDateFormat().parse(value) ?: ""
             )
+
         ValueType.DATETIME ->
             DateUtils.dateTimeFormat().format(
                 DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
             )
+
         ValueType.TIME ->
             DateUtils.timeFormat().format(
                 DateUtils.timeFormat().parse(value) ?: ""
             )
+
         else -> value
     }
 }
@@ -158,6 +163,7 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
             ValueType.INTEGER_ZERO_OR_POSITIVE -> (
                 it.toIntOrNull() ?: it.toFloat().toInt()
                 ).toString()
+
             ValueType.UNIT_INTERVAL -> (it.toIntOrNull() ?: it.toFloat()).toString()
             else -> this
         }
@@ -193,6 +199,7 @@ private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: S
                 .byDisplayName().eq(value).one().blockingExists()
             optionByCodeExist || optionByNameExist
         }
+
         valueType != null -> {
             if (valueType.isNumeric) {
                 try {
@@ -206,12 +213,15 @@ private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: S
                     ValueType.FILE_RESOURCE, ValueType.IMAGE ->
                         d2.fileResourceModule().fileResources()
                             .byUid().eq(value).one().blockingExists()
+
                     ValueType.ORGANISATION_UNIT ->
                         d2.organisationUnitModule().organisationUnits().uid(value).blockingExists()
+
                     else -> true
                 }
             }
         }
+
         else -> false
     }
 }

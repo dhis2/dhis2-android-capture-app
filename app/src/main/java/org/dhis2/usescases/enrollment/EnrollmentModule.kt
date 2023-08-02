@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.data.RulesRepository
+import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentMode
@@ -122,7 +123,8 @@ class EnrollmentModule(
             HintProviderImpl(context),
             DisplayNameProviderImpl(
                 OptionSetConfiguration(d2),
-                OrgUnitConfiguration(d2)
+                OrgUnitConfiguration(d2),
+                FileResourceConfiguration(d2)
             ),
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl(),

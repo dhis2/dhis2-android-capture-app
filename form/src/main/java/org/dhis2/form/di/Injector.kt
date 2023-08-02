@@ -19,6 +19,7 @@ import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
 import org.dhis2.form.data.SearchRepository
+import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentRecords
@@ -108,10 +109,12 @@ object Injector {
                 context,
                 repositoryRecords as EnrollmentRecords
             )
+
             EntryMode.DE -> provideEventRepository(
                 context,
                 repositoryRecords as EventRecords
             )
+
             else -> provideSearchRepository(
                 context,
                 repositoryRecords as SearchRecords
@@ -243,7 +246,8 @@ object Injector {
 
     private fun provideDisplayNameProvider() = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
-        OrgUnitConfiguration(provideD2())
+        OrgUnitConfiguration(provideD2()),
+        FileResourceConfiguration(provideD2())
     )
 
     private fun provideRuleEngineRepository(

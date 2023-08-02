@@ -50,7 +50,7 @@ class FormValueStore(
         }
     }
 
-    fun storeFile(uid: String, filePath: String?): StoreResult? {
+    fun storeFile(uid: String, filePath: String?): StoreResult {
         val valueType = when (entryMode) {
             EntryMode.DE ->
                 d2.dataElementModule().dataElements()
