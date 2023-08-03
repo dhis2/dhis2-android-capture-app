@@ -6,6 +6,8 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import kotlin.math.ceil
 import org.dhis2.Bindings.toSeconds
@@ -207,10 +209,17 @@ class SyncPresenterImpl(
                 .doOnComplete {
                     updateProyectAnalytics()
                     setUpSMS()
+                    downloadDataStore()
                 }
 
         ).andThen(
             d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        ).blockingAwait()
+    }
+
+    private fun downloadDataStore() {
+        Completable.fromObservable(
+            d2.dataStoreModule().dataStoreDownloader().download()
         ).blockingAwait()
     }
 
@@ -305,6 +314,7 @@ class SyncPresenterImpl(
             SyncResult.SYNC -> {
                 ListenableWorker.Result.success()
             }
+
             SyncResult.ERROR -> {
                 val trackerImportConflicts = messageTrackerImportConflict(teiUid)
                 val mergeDateConflicts = ArrayList<String>()
@@ -320,6 +330,7 @@ class SyncPresenterImpl(
                     .build()
                 ListenableWorker.Result.failure(data)
             }
+
             SyncResult.INCOMPLETE -> {
                 val data = Data.Builder()
                     .putStringArray("incomplete", arrayOf("INCOMPLETE"))
