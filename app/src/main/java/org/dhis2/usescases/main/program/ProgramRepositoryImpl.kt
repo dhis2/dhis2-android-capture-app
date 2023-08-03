@@ -1,7 +1,12 @@
 package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.parallel.ParallelFlowable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -11,8 +16,10 @@ import org.dhis2.data.service.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
+import timber.log.Timber
 
 internal class ProgramRepositoryImpl(
     private val d2: D2,
@@ -51,6 +58,10 @@ internal class ProgramRepositoryImpl(
 
     override fun clearCache() {
         baseProgramCache = emptyList()
+    }
+
+    override fun getDataStoreData(): Flow<List<DataStoreEntry>> {
+        return flowOf(d2.dataStoreModule().dataStore().byKey().eq("SC002").blockingGet())
     }
 
     private fun aggregatesModels(): Flowable<List<ProgramViewModel>> {
@@ -138,15 +149,19 @@ internal class ProgramRepositoryImpl(
                 downloadState = when {
                     syncStatusData.hasDownloadError(programModel.uid) ->
                         ProgramDownloadState.ERROR
+
                     syncStatusData.isProgramDownloading(programModel.uid) ->
                         ProgramDownloadState.DOWNLOADING
+
                     syncStatusData.wasProgramDownloading(lastSyncStatus, programModel.uid) ->
                         when (syncStatusData.programSyncStatusMap[programModel.uid]?.syncStatus) {
                             D2ProgressSyncStatus.SUCCESS -> ProgramDownloadState.DOWNLOADED
                             D2ProgressSyncStatus.ERROR,
                             D2ProgressSyncStatus.PARTIAL_ERROR -> ProgramDownloadState.ERROR
+
                             null -> ProgramDownloadState.DOWNLOADED
                         }
+
                     else ->
                         ProgramDownloadState.NONE
                 },
