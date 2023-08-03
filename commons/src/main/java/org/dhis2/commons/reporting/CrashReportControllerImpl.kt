@@ -20,10 +20,11 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
         }
     }
 
-    override fun trackServer(server: String?) {
+    override fun trackServer(server: String?, serverDhisVersion: String?) {
         if (isCrashReportPermissionGranted()) {
             Sentry.configureScope { scope ->
                 scope.setTag(SERVER_NAME, server ?: "")
+                scope.setTag(SERVER_VERSION, serverDhisVersion ?: "")
             }
         }
     }
@@ -52,6 +53,7 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
 
     companion object {
         const val SERVER_NAME = "server_name"
+        const val SERVER_VERSION = "server_version"
     }
 
     private fun isCrashReportPermissionGranted(): Boolean {
