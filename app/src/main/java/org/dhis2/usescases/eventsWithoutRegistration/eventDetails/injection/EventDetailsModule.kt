@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -71,7 +72,8 @@ class EventDetailsModule(
     @PerFragment
     fun provideEventDetailsRepository(
         d2: D2,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
+        networkUtils: NetworkUtils
     ): EventDetailsRepository {
         return EventDetailsRepository(
             d2 = d2,
@@ -96,7 +98,7 @@ class EventDetailsModule(
                 KeyboardActionProviderImpl(),
                 LegendValueProviderImpl(d2, resourceManager)
             ),
-            d2ErrorMapper = D2ErrorUtils(context)
+            d2ErrorMapper = D2ErrorUtils(context, networkUtils)
         )
     }
 

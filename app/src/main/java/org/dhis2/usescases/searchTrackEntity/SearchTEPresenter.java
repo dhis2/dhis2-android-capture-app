@@ -29,6 +29,7 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.commons.prefs.Preference;
@@ -413,7 +414,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         view.showBreakTheGlass(teiUid, enrollmentUid);
                                         break;
                                     default:
-                                        view.displayMessage(new D2ErrorUtils(view.getContext()).getErrorMessage(t));
+                                        view.displayMessage(
+                                                new D2ErrorUtils(view.getContext(),
+                                                        new NetworkUtils(view.getContext())).getErrorMessage(t));
                                         break;
                                 }
                             } else {
