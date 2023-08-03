@@ -186,7 +186,7 @@ android {
             applicationId "org.samaritan.platform"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.7.1.1-spIP-fork-2"
+            versionName "2.7.1.1-spIP-fork-3"
         }
     }
 
