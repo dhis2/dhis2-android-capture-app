@@ -155,10 +155,7 @@ class TeiDashboardRobot : BaseRobot() {
     fun clickOnReferralNextButton() {
         waitForView(withId(R.id.action_button)).perform(click())
     }
-
-    fun checkEventCreatedToastIsShown() {
-        onView(withText(R.string.event_created)).inRoot(isToast()).check(matches(isDisplayed()))
-    }
+    
 
     fun checkEventWasCreated(eventName: String) {
         onView(withId(R.id.tei_recycler))

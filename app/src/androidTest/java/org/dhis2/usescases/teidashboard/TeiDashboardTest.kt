@@ -149,7 +149,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnFirstReferralEvent()
             clickOnReferralOption()
             clickOnReferralNextButton()
-            // checkEventCreatedToastIsShown()
             checkEventWasCreated(LAB_MONITORING)
         }
     }
@@ -165,7 +164,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnScheduleNew()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
-          //  checkEventCreatedToastIsShown()
             checkEventWasCreated(LAB_MONITORING)
         }
     }
