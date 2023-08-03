@@ -1,8 +1,15 @@
 package org.dhis2.usescases.main.program
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
@@ -11,7 +18,10 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
+import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
@@ -25,10 +35,27 @@ class ProgramPresenter internal constructor(
     private val identifyProgramType: IdentifyProgramType,
     private val stockManagementMapper: StockManagementMapper
 ) {
-
     private val programs = MutableLiveData<List<ProgramViewModel>>(emptyList())
+    private val _dataStore = MutableStateFlow<List<DataStoreEntry>>(emptyList())
+    val dataStore: StateFlow<List<DataStoreEntry>> = _dataStore
+
+    private val _programsGrid = MutableStateFlow<List<Program>>(emptyList())
+    val programsGrid: StateFlow<List<Program>> = _programsGrid
+
+    private val _programsList = MutableStateFlow<List<Program>>(emptyList())
+    val programsList: StateFlow<List<Program>> = _programsList
+
     private val refreshData = PublishProcessor.create<Unit>()
     var disposable: CompositeDisposable = CompositeDisposable()
+    private fun getStore() {
+//        runBlocking(Dispatchers.IO) {
+//            launch {
+//                programRepository.getDataStoreData().collectLatest {
+//                    _dataStore.value = (it)
+//                }
+//            }
+//        }
+    }
 
     fun init() {
         val applyFiler = PublishProcessor.create<FilterManager>()
@@ -82,8 +109,8 @@ class ProgramPresenter internal constructor(
                     { Timber.e(it) }
                 )
         )
+//        getStore()
     }
-
     fun onSyncStatusClick(program: ProgramViewModel) {
         val programTitle = "$CLICK_ON${program.title}"
         matomoAnalyticsController.trackEvent(HOME, SYNC_BTN, programTitle)
@@ -99,6 +126,7 @@ class ProgramPresenter internal constructor(
         when (getHomeItemType(programModel)) {
             HomeItemType.PROGRAM_STOCK ->
                 view.navigateToStockManagement(stockManagementMapper.map(programModel))
+
             else ->
                 view.navigateTo(programModel)
         }
@@ -109,9 +137,11 @@ class ProgramPresenter internal constructor(
             ProgramType.WITH_REGISTRATION.name -> {
                 identifyProgramType(programModel.uid)
             }
+
             ProgramType.WITHOUT_REGISTRATION.name -> {
                 HomeItemType.EVENTS
             }
+
             else -> {
                 HomeItemType.DATA_SET
             }
