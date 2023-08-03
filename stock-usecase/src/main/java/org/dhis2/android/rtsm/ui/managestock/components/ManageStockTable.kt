@@ -103,17 +103,23 @@ fun ManageStockTable(
                 override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
                     dimensions =
                         dimensions.updateColumnWidth(tableId, column, newValue)
+                    val widthDpValue = with(localDensity) {
+                        dimensions.getColumnWidth(tableId, column).toDp().value
+                    }
                     viewModel.tableDimensionStore.saveColumnWidthForSection(
                         tableId,
                         column,
-                        newValue
+                        widthDpValue
                     )
                     onResized(this)
                 }
 
                 override fun onTableDimensionResize(tableId: String, newValue: Float) {
                     dimensions = dimensions.updateAllWidthBy(tableId, newValue)
-                    viewModel.tableDimensionStore.saveTableWidth(tableId, newValue)
+                    val widthDpValue = with(localDensity) {
+                        dimensions.getExtraWidths(tableId).toDp().value
+                    }
+                    viewModel.tableDimensionStore.saveTableWidth(tableId, widthDpValue)
                     onResized(this)
                 }
 
