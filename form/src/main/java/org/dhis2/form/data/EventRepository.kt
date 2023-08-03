@@ -33,6 +33,7 @@ class EventRepository(
         d2.programModule().programStageSections()
             .byProgramStageUid().eq(event.programStage())
             .withDataElements()
+            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .blockingGet()
             .map { section -> section.uid() to section }
             .toMap()
@@ -46,6 +47,7 @@ class EventRepository(
         return d2.programModule().programStageSections()
             .byProgramStageUid().eq(event.programStage())
             .withDataElements()
+            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .get()
             .flatMap { programStageSection ->
                 if (programStageSection.isEmpty()) {
