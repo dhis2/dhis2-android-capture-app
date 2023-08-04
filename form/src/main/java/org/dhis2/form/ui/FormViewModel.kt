@@ -126,8 +126,7 @@ class FormViewModel(
                 }
 
                 ValueStoreResult.FINISH -> {
-                    processCalculatedItems()
-                    runDataIntegrityCheck()
+                    processCalculatedItems(finish = true)
                 }
 
                 ValueStoreResult.FILE_SAVED -> {
@@ -511,13 +510,16 @@ class FormViewModel(
         return items.value?.first { it.focused }?.uid
     }
 
-    private fun processCalculatedItems(skipProgramRules: Boolean = false) {
+    private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {
         FormCountingIdlingResource.increment()
         viewModelScope.launch(dispatcher.io()) {
             val result = async {
                 repository.composeList(skipProgramRules)
             }
             _items.postValue(result.await())
+            if (finish) {
+                runDataIntegrityCheck()
+            }
         }
     }
 
