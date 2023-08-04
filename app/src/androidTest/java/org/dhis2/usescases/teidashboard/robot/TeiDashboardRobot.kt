@@ -155,10 +155,7 @@ class TeiDashboardRobot : BaseRobot() {
     fun clickOnReferralNextButton() {
         waitForView(withId(R.id.action_button)).perform(click())
     }
-
-    fun checkEventCreatedToastIsShown() {
-        onView(withText(R.string.event_created)).inRoot(isToast()).check(matches(isDisplayed()))
-    }
+    
 
     fun checkEventWasCreated(eventName: String) {
         onView(withId(R.id.tei_recycler))
@@ -212,7 +209,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuDeleteTEI() {
-        onView(withText(R.string.dashboard_menu_delete_tei_v2)).perform(click())
+        onView(withText(R.string.dashboard_menu_delete_person)).perform(click())
     }
 
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
