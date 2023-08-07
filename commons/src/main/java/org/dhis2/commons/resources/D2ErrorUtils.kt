@@ -147,9 +147,9 @@ class D2ErrorUtils(
             D2ErrorCode.PROGRAM_ACCESS_CLOSED ->
                 TODO("Implement for ANDROAPP-657")
             D2ErrorCode.SERVER_CONNECTION_ERROR ->
-                if(networkUtils.isOnline()) {
+                if (networkUtils.isOnline()) {
                     context.getString(R.string.error_server_unavailable)
-                }else{
+                } else {
                     context.getString(R.string.error_no_internet_connection)
                 }
         }
