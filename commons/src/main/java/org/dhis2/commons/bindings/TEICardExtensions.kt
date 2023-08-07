@@ -32,6 +32,7 @@ import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.databinding.ItemFieldValueBinding
 import org.dhis2.commons.date.toUiText
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.ui.MetadataIcon
@@ -56,7 +57,8 @@ fun List<Enrollment>.hasFollowUp(): Boolean {
 
 fun List<Program>.getEnrollmentIconsData(
     context: Context,
-    currentProgram: String?
+    currentProgram: String?,
+    colorUtils: ColorUtils
 ): List<EnrollmentIconData> {
     var programCount = 0
     val listSize = this.size
@@ -65,15 +67,15 @@ fun List<Program>.getEnrollmentIconsData(
         filter { it.uid() != currentProgram }
             .forEach inner@{ program ->
                 val enrollmentIconData: EnrollmentIconData
-                val color = ColorUtils.getColorFrom(
+                val color = colorUtils.getColorFrom(
                     program.style().color(),
-                    ColorUtils.getPrimaryColor(
+                    colorUtils.getPrimaryColor(
                         context,
-                        ColorUtils.ColorType.PRIMARY
+                        ColorType.PRIMARY
                     )
                 )
                 val imageResource =
-                    ResourceManager(context)
+                    ResourceManager(context, colorUtils)
                         .getObjectStyleDrawableResource(
                             program.style().icon(),
                             R.drawable.ic_default_icon
@@ -131,7 +133,12 @@ fun getRemainingEnrollmentsForTei(teiEnrollmentCount: Int): Int {
     }
 }
 
-private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawable? {
+private fun getProgramDrawable(
+    context: Context,
+    color: Int,
+    icon: Int,
+    colorUtils: ColorUtils
+): Drawable? {
     var iconImage: Drawable?
     try {
         iconImage = AppCompatResources.getDrawable(
@@ -156,7 +163,7 @@ private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawabl
     val finalDrawable = LayerDrawable(arrayOf(wrappedBg, wrappedIcon))
     finalDrawable.mutate()
     finalDrawable.getDrawable(1).colorFilter = PorterDuffColorFilter(
-        ColorUtils.getContrastColor(color),
+        colorUtils.getContrastColor(color),
         PorterDuff.Mode.SRC_IN
     )
     finalDrawable.getDrawable(0).colorFilter =
@@ -202,6 +209,7 @@ fun SearchTeiModel.setTeiImage(
     context: Context,
     teiImageView: ImageView,
     teiTextImageView: TextView,
+    colorUtils: ColorUtils,
     pictureListener: (String) -> Unit
 ) {
     val imageBg = AppCompatResources.getDrawable(
@@ -209,15 +217,15 @@ fun SearchTeiModel.setTeiImage(
         R.drawable.photo_temp_gray
     )
     imageBg!!.colorFilter = PorterDuffColorFilter(
-        ColorUtils.getPrimaryColor(
+        colorUtils.getPrimaryColor(
             context,
-            ColorUtils.ColorType.PRIMARY
+            ColorType.PRIMARY
         ),
         PorterDuff.Mode.SRC_IN
     )
     teiImageView.background = imageBg
     val file = File(profilePicturePath)
-    val placeHolderId = ResourceManager(context)
+    val placeHolderId = ResourceManager(context, colorUtils)
         .getObjectStyleDrawableResource(defaultTypeIcon, -1)
     teiImageView.setOnClickListener(null)
     if (file.exists()) {
@@ -242,10 +250,10 @@ fun SearchTeiModel.setTeiImage(
             teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
         }
         teiTextImageView.setTextColor(
-            ColorUtils.getContrastColor(
-                ColorUtils.getPrimaryColor(
+            colorUtils.getContrastColor(
+                colorUtils.getPrimaryColor(
                     context,
-                    ColorUtils.ColorType.PRIMARY
+                    ColorType.PRIMARY
                 )
             )
         )
@@ -261,10 +269,10 @@ fun SearchTeiModel.setTeiImage(
             teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
         }
         teiTextImageView.setTextColor(
-            ColorUtils.getContrastColor(
-                ColorUtils.getPrimaryColor(
+            colorUtils.getContrastColor(
+                colorUtils.getPrimaryColor(
                     context,
-                    ColorUtils.ColorType.PRIMARY
+                    ColorType.PRIMARY
                 )
             )
         )
@@ -275,10 +283,10 @@ fun SearchTeiModel.setTeiImage(
             placeHolderId
         )
         icon!!.colorFilter = PorterDuffColorFilter(
-            ColorUtils.getContrastColor(
-                ColorUtils.getPrimaryColor(
+            colorUtils.getContrastColor(
+                colorUtils.getPrimaryColor(
                     context,
-                    ColorUtils.ColorType.PRIMARY
+                    ColorType.PRIMARY
                 )
             ),
             PorterDuff.Mode.SRC_IN
@@ -289,10 +297,10 @@ fun SearchTeiModel.setTeiImage(
         teiTextImageView.visibility = View.VISIBLE
         teiTextImageView.text = "?"
         teiTextImageView.setTextColor(
-            ColorUtils.getContrastColor(
-                ColorUtils.getPrimaryColor(
+            colorUtils.getContrastColor(
+                colorUtils.getPrimaryColor(
                     context,
-                    ColorUtils.ColorType.PRIMARY
+                    ColorType.PRIMARY
                 )
             )
         )

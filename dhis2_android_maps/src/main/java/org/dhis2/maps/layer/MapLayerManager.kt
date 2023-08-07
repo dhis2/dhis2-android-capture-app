@@ -5,6 +5,7 @@ import androidx.annotation.ColorRes
 import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
@@ -20,7 +21,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager(
     val mapboxMap: MapboxMap,
-    val baseMapManager: BaseMapManager
+    val baseMapManager: BaseMapManager,
+    val colorUtils: ColorUtils
 ) {
     private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
@@ -72,13 +74,15 @@ class MapLayerManager(
                     style,
                     featureType ?: FeatureType.POINT,
                     mapStyle?.teiColor!!,
-                    mapStyle?.programDarkColor!!
+                    mapStyle?.programDarkColor!!,
+                    colorUtils
                 )
                 LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
                     mapStyle?.enrollmentColor!!,
-                    mapStyle?.programDarkColor!!
+                    mapStyle?.programDarkColor!!,
+                    colorUtils
                 )
                 LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
                     style
@@ -87,18 +91,21 @@ class MapLayerManager(
                     style,
                     featureType ?: FeatureType.POINT,
                     sourceId!!,
-                    getNextAvailableDrawable(sourceId)?.second
+                    getNextAvailableDrawable(sourceId)?.second,
+                    colorUtils
                 )
                 LayerType.EVENT_LAYER -> EventMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
-                    relationShipColors.firstOrNull()
+                    relationShipColors.firstOrNull(),
+                    colorUtils
                 )
                 LayerType.TEI_EVENT_LAYER -> TeiEventMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
                     sourceId!!,
-                    mapStyle?.programDarkColor!!
+                    mapStyle?.programDarkColor!!,
+                    colorUtils
                 )
                 LayerType.FIELD_COORDINATE_LAYER -> FieldMapLayer(
                     style,

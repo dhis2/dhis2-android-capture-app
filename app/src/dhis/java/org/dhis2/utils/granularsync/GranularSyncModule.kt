@@ -30,6 +30,7 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.SyncContext
@@ -89,11 +90,14 @@ class GranularSyncModule(
     )
 
     @Provides
-    fun smsSyncProvider(d2: D2): SMSSyncProvider {
+    fun smsSyncProvider(
+        d2: D2,
+        colorUtils: ColorUtils
+    ): SMSSyncProvider {
         return SMSSyncProviderImpl(
             d2,
             syncContext,
-            ResourceManager(context)
+            ResourceManager(context, colorUtils)
         )
     }
 }

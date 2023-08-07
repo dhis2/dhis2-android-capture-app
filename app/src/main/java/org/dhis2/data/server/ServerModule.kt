@@ -13,6 +13,7 @@ import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.service.SyncStatusController
@@ -103,14 +104,16 @@ class ServerModule {
     fun providesThemeManager(
         userManager: UserManager,
         d2: D2,
-        preferenceProvider: PreferenceProvider
+        preferenceProvider: PreferenceProvider,
+        colorUtils: ColorUtils
     ): ThemeManager {
         return ThemeManager(
             userManager,
             ProgramConfiguration(d2),
             DataSetConfiguration(d2),
             TrackedEntityTypeConfiguration(d2),
-            preferenceProvider
+            preferenceProvider,
+            colorUtils
         )
     }
 

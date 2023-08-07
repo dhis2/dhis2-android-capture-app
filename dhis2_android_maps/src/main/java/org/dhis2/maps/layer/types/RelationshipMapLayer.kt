@@ -34,7 +34,8 @@ class RelationshipMapLayer(
     val style: Style,
     val featureType: FeatureType,
     val sourceId: String,
-    private val lineColor: Int?
+    private val lineColor: Int?,
+    private val colorUtils: ColorUtils
 ) : MapLayer {
 
     private val LINE_LAYER_ID: String = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
@@ -168,7 +169,7 @@ class RelationshipMapLayer(
             ?: FillLayer(POLYGON_LAYER_ID, sourceId)
                 .withProperties(
                     PropertyFactory.fillColor(
-                        ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50)
+                        colorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50)
                     )
                 ).withFilter(isPolygon())
 

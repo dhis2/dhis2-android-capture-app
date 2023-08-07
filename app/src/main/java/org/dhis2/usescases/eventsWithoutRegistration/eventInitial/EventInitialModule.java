@@ -9,6 +9,7 @@ import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
@@ -85,12 +86,12 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, D2 d2, ResourceManager resourceManager) {
+    FieldViewModelFactory fieldFactory(Context context, D2 d2, ResourceManager resourceManager, ColorUtils colorUtils) {
         return new FieldViewModelFactoryImpl(
                 false,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(activityContext, true),
-                        new LongTextUiColorFactoryImpl(activityContext, true),
+                        new FormUiModelColorFactoryImpl(activityContext, true, colorUtils),
+                        new LongTextUiColorFactoryImpl(activityContext, true, colorUtils),
                         true
                 ),
                 new LayoutProviderImpl(),

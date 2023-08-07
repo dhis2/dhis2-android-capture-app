@@ -6,10 +6,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemProgramStageBinding
 import org.hisp.dhis.android.core.program.ProgramStage
 
 class ProgramStageSelectionAdapter(
+    val colorUtils: ColorUtils,
     val onItemClick: (ProgramStage) -> Unit
 ) : ListAdapter<ProgramStage, ProgramStageSelectionViewHolder>(object :
         DiffUtil.ItemCallback<ProgramStage>() {
@@ -31,7 +33,7 @@ class ProgramStageSelectionAdapter(
             parent,
             false
         )
-        return ProgramStageSelectionViewHolder(binding, onItemClick)
+        return ProgramStageSelectionViewHolder(binding, colorUtils, onItemClick)
     }
 
     override fun onBindViewHolder(holder: ProgramStageSelectionViewHolder, position: Int) {

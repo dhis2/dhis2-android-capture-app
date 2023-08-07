@@ -10,6 +10,7 @@ import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -21,6 +22,10 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
 
     @Inject
     lateinit var presenter: ProgramStageSelectionPresenter
+
+    @Inject
+    lateinit var colorUtils: ColorUtils
+
     private lateinit var adapter: ProgramStageSelectionAdapter
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +34,7 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection)
 
         binding.presenter = presenter
-        adapter = ProgramStageSelectionAdapter { programStage ->
+        adapter = ProgramStageSelectionAdapter(colorUtils) { programStage ->
             presenter.onProgramStageClick(programStage)
         }
         binding.recyclerView.adapter = adapter

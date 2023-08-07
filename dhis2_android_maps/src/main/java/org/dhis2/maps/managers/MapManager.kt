@@ -20,6 +20,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.commons.bindings.dp
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.camera.initCameraToViewAllElements
@@ -29,6 +30,7 @@ import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
+import javax.inject.Inject
 
 abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
@@ -41,6 +43,9 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     var style: Style? = null
     var permissionsManager: PermissionsManager? = null
     private var mapStyles: List<BaseMapStyle> = emptyList()
+
+    @Inject
+    lateinit var colorUtils: ColorUtils
 
     var numberOfUiIcons: Int = 2
     val defaultUiIconLeftMargin = 8.dp
@@ -65,7 +70,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                     baseMapManager.styleJson(this.mapStyles.first())
                 ) { styleLoaded ->
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded, baseMapManager).apply {
+                    mapLayerManager = MapLayerManager(mapLoaded, baseMapManager, colorUtils).apply {
                         styleChangeCallback = { newStyle ->
                             style = newStyle
                             mapLayerManager.clearLayers()

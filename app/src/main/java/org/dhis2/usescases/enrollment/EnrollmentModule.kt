@@ -10,6 +10,7 @@ import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -110,13 +111,14 @@ class EnrollmentModule(
     fun fieldFactory(
         context: Context,
         d2: D2,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
+        colorUtils: ColorUtils
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             false,
             UiStyleProviderImpl(
-                FormUiModelColorFactoryImpl(activityContext, true),
-                LongTextUiColorFactoryImpl(activityContext, true),
+                FormUiModelColorFactoryImpl(activityContext, true, colorUtils),
+                LongTextUiColorFactoryImpl(activityContext, true, colorUtils),
                 true
             ),
             LayoutProviderImpl(),

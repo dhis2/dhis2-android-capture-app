@@ -8,13 +8,15 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
+import java.security.PrivateKey
 
 class ThemeManager(
     private val userManager: UserManager,
     private val programConfiguration: ProgramConfiguration,
     private val dataSetConfiguration: DataSetConfiguration,
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration,
-    private val preferenceProvider: PreferenceProvider
+    private val preferenceProvider: PreferenceProvider,
+    private val colorUtils: ColorUtils
 ) {
 
     fun setProgramTheme(programUid: String) {
@@ -40,7 +42,7 @@ class ThemeManager(
         trackedEntityTypeConfiguration.getTrackedEntityTypeColor(teTypeUid)
 
     private fun setThemeFromColor(colorString: String?) {
-        val theme = ColorUtils.getThemeFromColor(colorString)
+        val theme = colorUtils.getThemeFromColor(colorString)
         if (theme != -1) {
             preferenceProvider.setValue(Constants.PROGRAM_THEME, theme)
         } else {
@@ -72,7 +74,7 @@ class ThemeManager(
 
     private fun primaryColorForProgramTheme(programUid: String): Int? {
         return programConfiguration.getProgramColor(programUid)?.let {
-            ColorUtils.parseColor(it)
+            colorUtils.parseColor(it)
         }
     }
 

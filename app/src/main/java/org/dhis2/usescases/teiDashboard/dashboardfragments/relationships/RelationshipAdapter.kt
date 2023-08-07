@@ -7,9 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.R
 import org.dhis2.commons.data.RelationshipViewModel
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemRelationshipBinding
 
-class RelationshipAdapter(private val presenter: RelationshipPresenter) :
+class RelationshipAdapter(
+    private val presenter: RelationshipPresenter,
+    private val colorUtils: ColorUtils
+) :
     ListAdapter<RelationshipViewModel, RelationshipViewHolder>(object :
             DiffUtil.ItemCallback<RelationshipViewModel>() {
             override fun areItemsTheSame(
@@ -33,7 +37,7 @@ class RelationshipAdapter(private val presenter: RelationshipPresenter) :
             parent,
             false
         )
-        return RelationshipViewHolder(binding)
+        return RelationshipViewHolder(binding, colorUtils)
     }
 
     override fun onBindViewHolder(holder: RelationshipViewHolder, position: Int) {

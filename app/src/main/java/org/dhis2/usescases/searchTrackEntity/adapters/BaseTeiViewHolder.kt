@@ -12,10 +12,12 @@ import org.dhis2.Bindings.setTeiImage
 import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 
 abstract class BaseTeiViewHolder(
-    private val binding: ItemSearchTrackedEntityBinding
+    private val binding: ItemSearchTrackedEntityBinding,
+    private val colorUtils: ColorUtils
 ) : RecyclerView.ViewHolder(binding.root) {
 
     lateinit var teiModel: SearchTeiModel
@@ -59,7 +61,8 @@ abstract class BaseTeiViewHolder(
             val enrollmentIconDataList: List<EnrollmentIconData> =
                 programInfo.getEnrollmentIconsData(
                     itemView.context,
-                    if (selectedEnrollment != null) selectedEnrollment.program() else null
+                    if (selectedEnrollment != null) selectedEnrollment.program() else null,
+                    colorUtils
                 )
             enrollmentIconDataList.paintAllEnrollmentIcons(
                 binding.composeProgramList
@@ -76,6 +79,7 @@ abstract class BaseTeiViewHolder(
                 itemView.context,
                 binding.trackedEntityImage,
                 binding.imageText,
+                colorUtils,
                 profileImagePreviewCallback
             )
             attributeValues.setAttributeList(

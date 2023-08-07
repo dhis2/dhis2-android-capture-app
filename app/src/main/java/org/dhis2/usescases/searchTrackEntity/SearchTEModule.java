@@ -16,6 +16,7 @@ import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -106,11 +107,12 @@ public class SearchTEModule {
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SyncStatusController syncStatusController,
-                                                       ResourceManager resourceManager) {
+                                                       ResourceManager resourceManager,
+                                                       ColorUtils colorUtils) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, syncStatusController, resourceManager);
+                matomoAnalyticsController, syncStatusController, resourceManager, colorUtils);
     }
 
     @Provides
@@ -162,13 +164,14 @@ public class SearchTEModule {
     FieldViewModelFactory fieldViewModelFactory(
             Context context,
             D2 d2,
-            ResourceManager resourceManager
+            ResourceManager resourceManager,
+            ColorUtils colorUtils
     ) {
         return new FieldViewModelFactoryImpl(
                 true,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(moduleContext, false),
-                        new LongTextUiColorFactoryImpl(moduleContext, false),
+                        new FormUiModelColorFactoryImpl(moduleContext, false, colorUtils),
+                        new LongTextUiColorFactoryImpl(moduleContext, false, colorUtils),
                         false
                 ),
                 new LayoutProviderImpl(),

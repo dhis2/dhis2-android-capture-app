@@ -4,11 +4,14 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
+import org.dhis2.commons.resources.ColorType
 import javax.inject.Inject
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 
-class SyncAnimations @Inject constructor() {
+class SyncAnimations @Inject constructor(
+    private val colorUtils: ColorUtils
+) {
 
     private val themeAnimationDuration = 2000L
 
@@ -26,14 +29,14 @@ class SyncAnimations @Inject constructor() {
         initCallback: () -> Unit,
         updateCallback: (Int) -> Unit
     ) {
-        val startColor = ColorUtils.getPrimaryColor(
+        val startColor = colorUtils.getPrimaryColor(
             activity.context,
-            ColorUtils.ColorType.PRIMARY
+            ColorType.PRIMARY
         )
         initCallback()
-        val endColor = ColorUtils.getPrimaryColor(
+        val endColor = colorUtils.getPrimaryColor(
             activity.context,
-            ColorUtils.ColorType.PRIMARY
+            ColorType.PRIMARY
         )
 
         ValueAnimator.ofObject(

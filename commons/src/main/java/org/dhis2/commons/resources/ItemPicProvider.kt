@@ -21,7 +21,8 @@ fun ImageView.setItemPic(
     defaultColorRes: Int,
     defaultValue: String?,
     isSingleEvent: Boolean = false,
-    textView: TextView?
+    textView: TextView,
+    colorUtils: ColorUtils
 ) {
     when {
         imagePath?.isNotEmpty() == true -> {
@@ -43,7 +44,7 @@ fun ImageView.setItemPic(
             textView?.clipWithAllRoundedCorners(20.dp)
             setImageDrawable(null)
             textView?.text = defaultValue.first().toString().toUpperCase(Locale.getDefault())
-            textView?.setTextColor(ColorUtils.getAlphaContrastColor(defaultColorRes))
+            textView?.setTextColor(colorUtils.getAlphaContrastColor(defaultColorRes))
             textView?.setBackgroundColor(defaultColorRes)
         }
         else -> {
@@ -53,7 +54,7 @@ fun ImageView.setItemPic(
             clipWithAllRoundedCorners(6.dp)
             ContextCompat.getDrawable(context, defaultImageRes)?.let {
                 Glide.with(context).load(
-                    ColorUtils.tintDrawableReosurce(it, defaultColorRes)
+                    colorUtils.tintDrawableReosurce(it, defaultColorRes)
                 ).transform(RoundedCorners(6.dp))
                     .placeholder(defaultImageRes)
                     .error(defaultImageRes)

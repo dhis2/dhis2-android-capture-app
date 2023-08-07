@@ -10,6 +10,7 @@ import javax.inject.Singleton
 import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.SpeechRecognitionManagerImpl
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
@@ -35,12 +36,20 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideResourcesProvider(@ApplicationContext appContext: Context): ResourceManager {
-        return ResourceManager(appContext)
+    fun provideResourcesProvider(
+        @ApplicationContext appContext: Context,
+        colorUtils: ColorUtils): ResourceManager {
+        return ResourceManager(appContext, colorUtils)
     }
 
     @Provides
     fun provideDispatcherProvider(): DispatcherProvider {
         return StockDispatcherProvider()
+    }
+
+    @Provides
+    @Singleton
+    fun provideColorUtilsProvider(): ColorUtils {
+        return  ColorUtils()
     }
 }

@@ -18,6 +18,7 @@ import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchMapBinding
 import org.dhis2.maps.ExternalMapNavigation
@@ -51,6 +52,9 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
 
     @Inject
     lateinit var animations: CarouselViewAnimations
+
+    @Inject
+    lateinit var colorUtils: ColorUtils
 
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
@@ -128,9 +132,9 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                 presenter.enrollmentColor,
                 presenter.enrollmentSymbolIcon,
                 presenter.programStageStyle,
-                ColorUtils.getPrimaryColor(
+                colorUtils.getPrimaryColor(
                     requireContext(),
-                    ColorUtils.ColorType.PRIMARY_DARK
+                    ColorType.PRIMARY_DARK
                 )
             )
         initializeCarousel()

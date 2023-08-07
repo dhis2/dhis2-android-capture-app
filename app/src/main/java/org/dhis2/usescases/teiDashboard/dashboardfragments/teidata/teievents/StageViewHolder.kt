@@ -8,6 +8,7 @@ import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.ItemStageSectionBinding
@@ -18,9 +19,9 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresen
 internal class StageViewHolder(
     private val binding: ItemStageSectionBinding,
     private val stageSelector: FlowableProcessor<StageSection>,
-    private val presenter: TEIDataPresenter
-) :
-    RecyclerView.ViewHolder(binding.root) {
+    private val presenter: TEIDataPresenter,
+    private val colorUtils: ColorUtils
+): RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeProgramStageIcon.setViewCompositionStrategy(
@@ -36,18 +37,19 @@ internal class StageViewHolder(
             binding.programStageName.isSelected = true
         }
 
-        val color = ColorUtils.getColorFrom(
+        val color = colorUtils.getColorFrom(
             stage.style().color(),
-            ColorUtils.getPrimaryColor(
+            colorUtils.getPrimaryColor(
                 itemView.context,
-                ColorUtils.ColorType.PRIMARY_LIGHT
+                ColorType.PRIMARY_LIGHT
             )
         )
 
-        val iconResource = ResourceManager(itemView.context).getObjectStyleDrawableResource(
-            stage.style().icon(),
-            R.drawable.ic_default_outline
-        )
+        val iconResource = ResourceManager(itemView.context, colorUtils)
+            .getObjectStyleDrawableResource(
+                stage.style().icon(),
+                R.drawable.ic_default_outline
+            )
 
         binding.composeProgramStageIcon.setUpMetadataIcon(
             MetadataIconData(

@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
@@ -29,6 +30,9 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
     @Inject
     lateinit var presenter: EventListPresenter
+
+    @Inject
+    lateinit var colorUtils: ColorUtils
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +59,12 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
             .build()
 
         liveAdapter =
-            ProgramEventDetailLiveAdapter(presenter.program(), programEventsViewModel, config)
+            ProgramEventDetailLiveAdapter(
+                presenter.program(),
+                programEventsViewModel,
+                colorUtils,
+                config
+            )
         return FragmentProgramEventDetailListBinding.inflate(inflater, container, false)
             .apply {
                 binding = this

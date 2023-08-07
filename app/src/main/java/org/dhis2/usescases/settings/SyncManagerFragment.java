@@ -51,6 +51,7 @@ import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
@@ -84,6 +85,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Inject
     NetworkUtils networkUtils;
+
+    @Inject
+    ColorUtils colorUtils;
 
     private FragmentSettingsBinding binding;
     private Context context;
@@ -673,7 +677,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             SpannableString str = new SpannableString(String.format(quantityString,
                     parameterSettings.getHasSpecificProgramSettings()));
             int indexOfNumber = str.toString().indexOf(String.valueOf(parameterSettings.getHasSpecificProgramSettings()));
-            str.setSpan(new ForegroundColorSpan(ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)),
+            str.setSpan(new ForegroundColorSpan(colorUtils.getPrimaryColor(context, ColorType.PRIMARY)),
                     indexOfNumber,
                     indexOfNumber + 1,
                     SPAN_INCLUSIVE_EXCLUSIVE);

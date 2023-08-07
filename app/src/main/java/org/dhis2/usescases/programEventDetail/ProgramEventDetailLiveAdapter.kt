@@ -6,6 +6,7 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hisp.dhis.android.core.program.Program
@@ -13,6 +14,7 @@ import org.hisp.dhis.android.core.program.Program
 class ProgramEventDetailLiveAdapter(
     private val program: Program,
     private val eventViewModel: ProgramEventDetailViewModel,
+    private val colorUtils: ColorUtils,
     config: AsyncDifferConfig<EventViewModel>
 ) : PagedListAdapter<EventViewModel, EventViewHolder>(config) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
@@ -21,6 +23,7 @@ class ProgramEventDetailLiveAdapter(
         return EventViewHolder(
             binding,
             program,
+            colorUtils,
             { eventUid ->
                 eventViewModel.eventSyncClicked.value = eventUid
             },

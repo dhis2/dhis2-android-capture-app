@@ -14,10 +14,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.io.File
+import javax.inject.Inject
 import org.dhis2.commons.R
 import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.bindings.widthAndHeight
 import org.dhis2.commons.databinding.DetailImageBottomDialogBinding
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 
 class ImageDetailBottomDialog(
@@ -30,6 +32,9 @@ class ImageDetailBottomDialog(
 
     private lateinit var binding: DetailImageBottomDialogBinding
 
+    @Inject
+    lateinit var colorUtils: ColorUtils
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,9 +44,9 @@ class ImageDetailBottomDialog(
             DataBindingUtil.inflate(inflater, R.layout.detail_image_bottom_dialog, container, false)
         binding.setTitle(label)
         binding.closeButton.setImageDrawable(
-            ColorUtils.tintDrawableWithColor(
+            colorUtils.tintDrawableWithColor(
                 binding.closeButton.drawable,
-                ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+                colorUtils.getPrimaryColor(requireContext(), ColorType.PRIMARY)
             )
         )
         binding.closeButton.setOnClickListener { dismiss() }

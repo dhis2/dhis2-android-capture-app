@@ -23,6 +23,7 @@ import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
@@ -41,6 +42,9 @@ class SearchTEList : FragmentGlobalAbstract() {
     @Inject
     lateinit var viewModelFactory: SearchTeiViewModelFactory
 
+    @Inject
+    lateinit var colorUtils: ColorUtils
+
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
     private val initialLoadingAdapter by lazy {
@@ -52,6 +56,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val liveAdapter by lazy {
         SearchTeiLiveAdapter(
             fromRelationship,
+            colorUtils,
             onAddRelationship = viewModel::onAddRelationship,
             onSyncIconClick = viewModel::onSyncIconClick,
             onDownloadTei = viewModel::onDownloadTei,
@@ -63,6 +68,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val globalAdapter by lazy {
         SearchTeiLiveAdapter(
             fromRelationship,
+            colorUtils,
             onAddRelationship = viewModel::onAddRelationship,
             onSyncIconClick = viewModel::onSyncIconClick,
             onDownloadTei = viewModel::onDownloadTei,

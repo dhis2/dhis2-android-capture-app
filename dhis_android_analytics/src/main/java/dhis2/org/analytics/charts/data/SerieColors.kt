@@ -49,7 +49,7 @@ class SerieColors {
             return if (higlight) {
                 getColors()[colorIndex]
             } else {
-                ColorUtils.withAlpha(getColors()[colorIndex], ColorUtils.ALPHA_20_PERCENT)
+                ColorUtils().withAlpha(getColors()[colorIndex], ColorUtils.ALPHA_20_PERCENT)
             }
         }
     }
