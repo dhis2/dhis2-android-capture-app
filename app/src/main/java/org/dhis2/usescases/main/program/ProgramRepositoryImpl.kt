@@ -5,6 +5,7 @@ import io.reactivex.Single
 import io.reactivex.parallel.ParallelFlowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.data.FilterPresenter
@@ -13,6 +14,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusData
+import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
@@ -61,7 +63,14 @@ internal class ProgramRepositoryImpl(
     }
 
     override fun getDataStoreData(): Flow<List<DataStoreEntry>> {
-        return flowOf(d2.dataStoreModule().dataStore().byKey().eq("SC002").blockingGet())
+        return flowOf(d2.dataStoreModule().dataStore().byKey().eq("SC001").blockingGet())
+    }
+
+    override fun getFilteredDataStore(): Flow<DataStoreAppConfig?> {
+        val dataStore = DataStoreAppConfig.fromJson(
+            d2.dataStoreModule().dataStore().byKey().eq("SC001").blockingGet().getOrNull(0)?.value()
+        )
+        return flowOf(dataStore);
     }
 
     private fun aggregatesModels(): Flowable<List<ProgramViewModel>> {

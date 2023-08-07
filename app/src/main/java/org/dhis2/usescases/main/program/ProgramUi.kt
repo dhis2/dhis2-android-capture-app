@@ -46,6 +46,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,14 +80,16 @@ import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
+import org.dhis2.usescases.uiboost.data.model.Program
+import org.dhis2.usescases.uiboost.ui.model.DataEntryUiStateBoost
 import org.hisp.dhis.android.core.common.State
 import timber.log.Timber
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ProgramList(
     programs: List<ProgramViewModel>,
-//    dataStore: DataStoreAppConfig?,
+    dataStore: DataStoreAppConfig?,
+    presenter: ProgramPresenter,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
     downLoadState: SyncStatusData?
@@ -158,11 +161,39 @@ fun ProgramList(
 //                            )
 //                        ) {
 //                            itemsIndexed(items = programs) { index, program ->
+//                                ProgramItemCard(
+//                                    modifier = Modifier.semantics {
+//                                        testTag = HOME_ITEM.format(index)
+//                                    },
+//                                    programViewModel = program,
+//                                    onItemClick = onItemClick,
+//                                    onGranularSyncClick = onGranularSyncClick
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+
+
+//                    Column(
+//                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+//                    ) {
+//                        Text(
+//                            text = "Serviços complementares",
+//                            modifier = Modifier.padding(8.dp)
+//                        )
+//
+//                        LazyColumn(
+//                            modifier = Modifier.testTag(HOME_ITEMS),
+//                            contentPadding = PaddingValues(bottom = 56.dp)
+//                        ) {
+//                            itemsIndexed(items = programs) { index, program ->
+//
 ////                                dataStore?.let {
 ////                                    it.programs.forEach { programDataStore ->
 ////                                        if (program.uid == programDataStore.program) {
 ////                                            if (programDataStore.hidden == "false") {
-//                                                ProgramItemCard(
+//                                                ProgramItem(
 //                                                    modifier = Modifier.semantics {
 //                                                        testTag = HOME_ITEM.format(index)
 //                                                    },
@@ -170,59 +201,79 @@ fun ProgramList(
 //                                                    onItemClick = onItemClick,
 //                                                    onGranularSyncClick = onGranularSyncClick
 //                                                )
+//                                                Divider(
+//                                                    color = colorResource(id = R.color.divider_bg),
+//                                                    thickness = 1.dp,
+//                                                    startIndent = 72.dp
+//                                                )
 ////                                            }
 ////                                        }
 ////                                    }
 ////                                }
-//                            }
+////                            }
 //                        }
 //                    }
 //
-                    Column(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    ) {
-                        Text(
-                            text = "Serviços complementares",
-                            modifier = Modifier.padding(8.dp)
+//                }
+
+                dataStore?.let { dataStoreAppConfig ->
+
+                    val gridData = dataStoreAppConfig.programGroups.filter {
+                        it.style == "LIST"
+                    }
+
+                    val flatPrograms = gridData.flatMap { it.programs }
+                    val filteredPrograms = null
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(128.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .testTag(HOME_ITEMS),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            16.dp,
+                            Alignment.Top
+                        ),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            16.dp,
+                            Alignment.CenterHorizontally
                         )
+                    ) {
+                        programs.forEach {model ->
+                            flatPrograms.forEach { store ->
+                                if ((model.uid ==store.program) && store.hidden == "false") {
+                                    presenter._programsTest.value
+                                }
+                            }
+                        }
+                        Timber.tag("STORE2").d("${presenter._programsTest.value}")
+                        itemsIndexed(items = presenter.programsTest.value) { index, program ->
+                            ProgramItemCard(
+                                modifier = Modifier.semantics {
+                                    testTag = HOME_ITEM.format(index)
+                                },
+                                programViewModel = program,
+                                onItemClick = onItemClick,
+                                onGranularSyncClick = onGranularSyncClick
+                            )
 
-                        LazyColumn(
-                            modifier = Modifier.testTag(HOME_ITEMS),
-                            contentPadding = PaddingValues(bottom = 56.dp)
-                        ) {
-                            itemsIndexed(items = programs) { index, program ->
-
-//                                dataStore?.let {
-//                                    it.programs.forEach { programDataStore ->
-//                                        if (program.uid == programDataStore.program) {
-//                                            if (programDataStore.hidden == "false") {
-                                                ProgramItem(
-                                                    modifier = Modifier.semantics {
-                                                        testTag = HOME_ITEM.format(index)
-                                                    },
-                                                    programViewModel = program,
-                                                    onItemClick = onItemClick,
-                                                    onGranularSyncClick = onGranularSyncClick
-                                                )
-                                                Divider(
-                                                    color = colorResource(id = R.color.divider_bg),
-                                                    thickness = 1.dp,
-                                                    startIndent = 72.dp
-                                                )
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
                         }
                     }
+
+
+
+
+                    Timber.tag("GRID_DATA").d("$gridData")
 
                 }
 
 
+//                 First STEP
 //                dataStore?.let {
-//                    it.programs.forEach { programDataStore ->
-//                        if (programDataStore.programGroup == "PRIMARY") {
+//                    it.programGroups.forEach { programDataStore ->
+//                        if (programDataStore.style == "GRID") {
 //                            LazyVerticalGrid(
 //                                columns = GridCells.Adaptive(128.dp),
 //                                modifier = Modifier
@@ -240,22 +291,25 @@ fun ProgramList(
 //                                )
 //                            ) {
 //                                itemsIndexed(items = programs) { index, program ->
-//                                    if (program.uid == programDataStore.program) {
-//                                        if (programDataStore.hidden == "false") {
-//                                            ProgramItemCard(
-//                                                modifier = Modifier.semantics {
-//                                                    testTag = HOME_ITEM.format(index)
-//                                                },
-//                                                programViewModel = program,
-//                                                onItemClick = onItemClick,
-//                                                onGranularSyncClick = onGranularSyncClick
-//                                            )
+//                                    programDataStore.programs.forEach { localProgram ->
+//
+//                                        if (program.uid == localProgram.program) {
+//                                            if (localProgram.hidden == "false") {
+//                                                ProgramItemCard(
+//                                                    modifier = Modifier.semantics {
+//                                                        testTag = HOME_ITEM.format(index)
+//                                                    },
+//                                                    programViewModel = program,
+//                                                    onItemClick = onItemClick,
+//                                                    onGranularSyncClick = onGranularSyncClick
+//                                                )
+//                                            }
 //                                        }
 //                                    }
 //                                }
 //                            }
 //                        }
-//                        if (programDataStore.programGroup == "SECONDARY") {
+//                        if (programDataStore.style == "LIST") {
 //                            LazyColumn(
 //                                modifier = Modifier
 //                                    .testTag(HOME_ITEMS)
@@ -265,22 +319,24 @@ fun ProgramList(
 //                            ) {
 //                                itemsIndexed(items = programs) { index, program ->
 //
-//                                    Timber.tag("TEST_PROGRAM").d("${program}")
-//                                    if (program.uid == programDataStore.program) {
-//                                        if (programDataStore.hidden == "false") {
-//                                            ProgramItem(
-//                                                modifier = Modifier.semantics {
-//                                                    testTag = HOME_ITEM.format(index)
-//                                                },
-//                                                programViewModel = program,
-//                                                onItemClick = onItemClick,
-//                                                onGranularSyncClick = onGranularSyncClick
-//                                            )
-//                                            Divider(
-//                                                color = colorResource(id = R.color.divider_bg),
-//                                                thickness = 1.dp,
-//                                                startIndent = 72.dp
-//                                            )
+//                                    programDataStore.programs.forEach { localProgram ->
+//
+//                                        if (program.uid == localProgram.program) {
+//                                            if (localProgram.hidden == "false") {
+//                                                ProgramItem(
+//                                                    modifier = Modifier.semantics {
+//                                                        testTag = HOME_ITEM.format(index)
+//                                                    },
+//                                                    programViewModel = program,
+//                                                    onItemClick = onItemClick,
+//                                                    onGranularSyncClick = onGranularSyncClick
+//                                                )
+//                                                Divider(
+//                                                    color = colorResource(id = R.color.divider_bg),
+//                                                    thickness = 1.dp,
+//                                                    startIndent = 72.dp
+//                                                )
+//                                            }
 //                                        }
 //                                    }
 //                                }
@@ -289,6 +345,11 @@ fun ProgramList(
 //
 //                    }
 //                }
+
+
+            }
+        }
+    }
 //                LazyColumn(
 //                    modifier = Modifier.testTag(HOME_ITEMS),
 //                    contentPadding = PaddingValues(bottom = 56.dp)
@@ -332,9 +393,9 @@ fun ProgramList(
 ////                        )
 //                    }
 //                }
-            }
-        }
-    }
+//            }
+//        }
+//    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -758,25 +819,25 @@ fun ProgramTestDownloaded() {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ListPreview() {
-    ProgramList(
-        programs = listOf(
-            testingProgramModel().copy(state = State.WARNING),
-            testingProgramModel().copy(state = State.ERROR),
-            testingProgramModel().copy(state = State.SYNCED),
-            testingProgramModel().copy(state = State.TO_POST),
-            testingProgramModel().copy(state = State.TO_UPDATE),
-            testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
-            testingProgramModel().copy(state = State.SENT_VIA_SMS)
-        ),
+//@Preview(showBackground = true)
+//@Composable
+//fun ListPreview() {
+//    ProgramList(
+//        programs = listOf(
+//            testingProgramModel().copy(state = State.WARNING),
+//            testingProgramModel().copy(state = State.ERROR),
+//            testingProgramModel().copy(state = State.SYNCED),
+//            testingProgramModel().copy(state = State.TO_POST),
+//            testingProgramModel().copy(state = State.TO_UPDATE),
+//            testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
+//            testingProgramModel().copy(state = State.SENT_VIA_SMS)
+//        ),
 //        dataStore = null,
-        onItemClick = {},
-        onGranularSyncClick = {},
-        downLoadState = SyncStatusData(true, true, emptyMap())
-    )
-}
+//        onItemClick = {},
+//        onGranularSyncClick = {},
+//        downLoadState = SyncStatusData(true, true, emptyMap())
+//    )
+//}
 
 @Preview(showBackground = true)
 @Composable
