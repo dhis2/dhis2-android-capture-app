@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProgramGroup(
-    val key: String,
+    val label: String,
     val order: Int,
+    val programs: List<Program>,
     val style: String
 )

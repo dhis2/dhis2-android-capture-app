@@ -1,4 +1,5 @@
 package org.dhis2.usescases.uiboost.data.model
+
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
@@ -9,15 +10,14 @@ import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig.Mapper.translat
 @Serializable
 data class DataStoreAppConfig(
     val key: String,
-    val programGroups: List<ProgramGroup>,
-    val programs: List<Program>
+    val programGroups: List<ProgramGroup>
 ) {
     private fun toJson(): String = translateJsonToObject().writeValueAsString(this)
 
     companion object {
         fun fromJson(json: String?): DataStoreAppConfig? = if (json != null) {
             translateJsonToObject()
-            .readValue(json, DataStoreAppConfig::class.java)
+                .readValue(json, DataStoreAppConfig::class.java)
         } else {
             null
         }

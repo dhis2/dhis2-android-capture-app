@@ -6,6 +6,5 @@ import kotlinx.serialization.Serializable
 data class Program(
     val hidden: String,
     val icon: String,
-    val program: String,
-    val programGroup: String
+    val program: String
 )
