@@ -16,6 +16,7 @@ import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
+import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -104,11 +105,12 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
-                                                       SyncStatusController syncStatusController) {
+                                                       SyncStatusController syncStatusController,
+                                                       ResourceManager resourceManager) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, syncStatusController);
+                matomoAnalyticsController, syncStatusController, resourceManager);
     }
 
     @Provides
