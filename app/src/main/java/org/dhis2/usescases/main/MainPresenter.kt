@@ -97,7 +97,7 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryCombo ->
-                        preferences.setValue(DEFAULT_CAT_COMBO, categoryCombo.uid())
+                        preferences.setValue(DEFAULT_CAT_COMBO, categoryCombo?.uid())
                     },
                     { Timber.e(it) }
                 )
@@ -110,7 +110,7 @@ class MainPresenter(
                     { categoryOptionCombo ->
                         preferences.setValue(
                             PREF_DEFAULT_CAT_OPTION_COMBO,
-                            categoryOptionCombo.uid()
+                            categoryOptionCombo?.uid()
                         )
                     },
                     { Timber.e(it) }
@@ -163,7 +163,7 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { systemInfo -> compareAndTrack(systemInfo) },
+                    { systemInfo -> systemInfo?.let { compareAndTrack(systemInfo) } },
                     { Timber.e(it) }
                 )
         )
@@ -187,7 +187,7 @@ class MainPresenter(
 
     private fun getUserUid(): String {
         return try {
-            userManager.d2.userModule().user().blockingGet().uid()
+            userManager.d2.userModule().user().blockingGet()?.uid()?:""
         } catch (e: Exception) {
             ""
         }

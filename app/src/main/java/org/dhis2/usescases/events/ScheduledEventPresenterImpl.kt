@@ -33,12 +33,10 @@ class ScheduledEventPresenterImpl(
                 .flatMap {
                     Single.zip(
                         d2.programModule().programStages().uid(it.programStage()).get(),
-                        d2.programModule().programs().uid(it.program()).get(),
-                        BiFunction<ProgramStage, Program, Triple<ProgramStage, Program, Event>>
-                        { stage, program ->
-                            Triple(stage, program, it)
-                        }
-                    )
+                        d2.programModule().programs().uid(it.program()).get()
+                    ) { stage, program ->
+                        Triple(stage, program, it)
+                    }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -66,11 +64,11 @@ class ScheduledEventPresenterImpl(
             .get()
             .map {
                 d2.enrollmentModule().enrollments().uid(it.enrollment()).blockingGet()
-                    .trackedEntityInstance()
+                    ?.trackedEntityInstance()
             }.blockingGet()!!
     }
 
-    override fun getEnrollment(): Enrollment {
+    override fun getEnrollment(): Enrollment? {
         return d2.eventModule().events().uid(eventUid)
             .get()
             .map { it.enrollment() }
@@ -108,7 +106,7 @@ class ScheduledEventPresenterImpl(
             .eq(catComboUid)
             .one()
             .blockingGet()
-            .uid()
+            ?.uid()
         d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(catOptComboUid)
     }
 }

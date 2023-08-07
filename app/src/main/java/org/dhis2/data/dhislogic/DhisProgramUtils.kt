@@ -41,12 +41,6 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
         }
     }
 
-    fun getProgramState(programUid: String): State {
-        return getProgramState(
-            d2.programModule().programs().uid(programUid).blockingGet()
-        )
-    }
-
     fun getProgramsInCaptureOrgUnits(): Flowable<List<Program>> {
         return d2.programModule().programs()
             .withTrackedEntityType()

@@ -6,7 +6,7 @@ class FileResourceConfiguration(val d2: D2) {
 
     fun getFilePath(uid: String): String? {
         return if (d2.fileResourceModule().fileResources().uid(uid).blockingExists()) {
-            d2.fileResourceModule().fileResources().uid(uid).blockingGet().path()
+            d2.fileResourceModule().fileResources().uid(uid).blockingGet()?.path()
         } else {
             null
         }

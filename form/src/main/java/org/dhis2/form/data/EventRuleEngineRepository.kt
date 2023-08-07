@@ -23,13 +23,13 @@ class EventRuleEngineRepository(
     private val event: Event by lazy {
         d2.eventModule().events()
             .uid(eventUid)
-            .blockingGet()
+            .blockingGet()?:throw NullPointerException()
     }
 
     private val program: Program by lazy {
         d2.programModule().programs()
             .uid(event.program())
-            .blockingGet()
+            .blockingGet()?:throw NullPointerException()
     }
 
     init {
@@ -64,12 +64,12 @@ class EventRuleEngineRepository(
         eventBuilder
             .event(eventUid)
             .programStage(event.programStage())
-            .programStageName(currentStage.displayName())
+            .programStageName(currentStage?.displayName())
             .status(RuleEvent.Status.valueOf(event.status()!!.name))
             .eventDate(event.eventDate())
             .dueDate(if (event.dueDate() != null) event.dueDate() else event.eventDate())
             .organisationUnit(event.organisationUnit())
-            .organisationUnitCode(ou.code())
+            .organisationUnitCode(ou?.code())
     }
 
     override fun calculate(): List<RuleEffect> {

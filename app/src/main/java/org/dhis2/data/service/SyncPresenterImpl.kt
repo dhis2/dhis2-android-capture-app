@@ -402,13 +402,13 @@ class SyncPresenterImpl(
         val enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet()
         Completable.fromObservable(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byUid().eq(enrollment.trackedEntityInstance()!!)
-                .byProgramUids(listOf(enrollment.program()!!))
+                .byUid().eq(enrollment?.trackedEntityInstance())
+                .byProgramUids(listOf(enrollment?.program()))
                 .upload()
         ).blockingAwait()
         return d2.trackedEntityModule().trackedEntityInstanceDownloader()
-            .byUid().eq(enrollment.trackedEntityInstance())
-            .byProgramUid(enrollment.program()!!)
+            .byUid().eq(enrollment?.trackedEntityInstance())
+            .byProgramUid(enrollment?.program()?:"")
             .download()
     }
 

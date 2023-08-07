@@ -12,7 +12,7 @@ import org.hisp.dhis.android.core.program.ProgramStage
 
 class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
     EnrollmentEventGeneratorRepository {
-    override fun enrollment(enrollmentUid: String): Enrollment {
+    override fun enrollment(enrollmentUid: String): Enrollment? {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
     }
 
@@ -27,7 +27,7 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
             .blockingGet()
     }
 
-    override fun enrollmentProgram(programUid: String): Program {
+    override fun enrollmentProgram(programUid: String): Program? {
         return d2.programModule().programs().uid(programUid).blockingGet()
     }
 
@@ -52,12 +52,12 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
             .one().blockingExists()
     }
 
-    override fun eventUidInEnrollment(enrollmentUid: String, stageUid: String): String {
+    override fun eventUidInEnrollment(enrollmentUid: String, stageUid: String): String? {
         return d2.eventModule().events()
             .byEnrollmentUid().eq(enrollmentUid)
             .byProgramStageUid().eq(stageUid)
             .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-            .one().blockingGet().uid()
+            .one().blockingGet()?.uid()
     }
 
     override fun addEvent(
@@ -69,9 +69,9 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
         val catComboUid = d2.programModule().programs()
             .uid(programUid)
             .blockingGet()
-            .categoryComboUid()
+            ?.categoryComboUid()
         val catCombo = d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet()
-        val catOptionCombo = if (catCombo.isDefault == true) {
+        val catOptionCombo = if (catCombo?.isDefault == true) {
             d2.categoryModule().categoryOptionCombos()
                 .byCategoryComboUid().eq(catComboUid)
                 .blockingGet()

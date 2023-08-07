@@ -14,15 +14,15 @@ class HomeRepositoryImpl(
     private val d2: D2,
     private val charts: Charts?
 ) : HomeRepository {
-    override fun user(): Single<User> {
+    override fun user(): Single<User?> {
         return d2.userModule().user().get()
     }
 
-    override fun defaultCatCombo(): Single<CategoryCombo> {
+    override fun defaultCatCombo(): Single<CategoryCombo?> {
         return d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get()
     }
 
-    override fun defaultCatOptCombo(): Single<CategoryOptionCombo> {
+    override fun defaultCatOptCombo(): Single<CategoryOptionCombo?> {
         return d2
             .categoryModule()
             .categoryOptionCombos().byCode().eq(DEFAULT).one().get()
@@ -45,7 +45,7 @@ class HomeRepositoryImpl(
         return charts?.getHomeVisualizations(null)?.isNotEmpty() == true
     }
 
-    override fun getServerVersion(): Single<SystemInfo> {
+    override fun getServerVersion(): Single<SystemInfo?> {
         return d2.systemInfoModule().systemInfo().get()
     }
 

@@ -222,11 +222,11 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             EventCreationType.DEFAULT.name,
             presenter.getEventTei(),
             stage.periodType(),
-            presenter.getEnrollment().organisationUnit(),
+            presenter.getEnrollment()?.organisationUnit(),
             stage.uid(),
             event.enrollment(),
             stage.standardInterval() ?: 0,
-            presenter.getEnrollment().status()
+            presenter.getEnrollment()?.status()
         )
         startActivity(Intent(this, EventInitialActivity::class.java).apply { putExtras(bundle) })
         finish()

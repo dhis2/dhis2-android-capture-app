@@ -43,7 +43,7 @@ class RuleValidationHelperImpl @Inject constructor(
         appConfig: AppConfig
     ): Flowable<List<RuleEffect>> {
         return ruleEngine(entry.item.id, appConfig.program).flatMap { ruleEngine ->
-            val programStage = programStage(program)
+            val programStage = programStage(program) ?: return@flatMap Flowable.empty()
 
             Flowable.fromCallable(
                 prepareForDataEntry(ruleEngine, programStage, transaction, entry.date)
@@ -250,7 +250,7 @@ class RuleValidationHelperImpl @Inject constructor(
             .map {
                 if (eventUid != null) {
                     val programStage = d2.eventModule().events()
-                        .uid(eventUid).blockingGet().programStage()
+                        .uid(eventUid).blockingGet()?.programStage()
                     it.filter { rule ->
                         rule.programStage() == null || rule.programStage() == programStage
                     }
@@ -281,7 +281,7 @@ class RuleValidationHelperImpl @Inject constructor(
                         .options()
                         .uid(distributedTo.uid)
                         .blockingGet()
-                        .code()?.let { code ->
+                        ?.code()?.let { code ->
                             values.add(
                                 RuleDataValue.create(
                                     eventDate,

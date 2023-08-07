@@ -112,7 +112,7 @@ class EventCaptureFieldProvider(
             stageSections.forEach { section ->
                 dataElementsOrder.addAll(getUidsList(section.dataElements()!!))
             }
-            stageDataElements.sortWith(
+            stageDataElements.toMutableList().sortWith(
                 Comparator { de1: ProgramStageDataElement, de2: ProgramStageDataElement ->
                     val pos1 = dataElementsOrder.indexOf(de1.dataElement()!!.uid())
                     val pos2 = dataElementsOrder.indexOf(de2.dataElement()!!.uid())
@@ -134,26 +134,26 @@ class EventCaptureFieldProvider(
 
         val programStageSection: ProgramStageSection? =
             programStageSections.firstOrNull { section ->
-                getUidsList(section.dataElements()!!).contains(de.uid())
+                getUidsList(section.dataElements()!!).contains(de?.uid())
             }
 
-        val optionSet = de.optionSetUid()
+        val optionSet = de?.optionSetUid()
 
         val (rawValue, friendlyValue) = dataValue(
             eventUid,
-            de.uid(),
-            de.valueType() == ValueType.ORGANISATION_UNIT
+            de?.uid()?:"",
+            de?.valueType() == ValueType.ORGANISATION_UNIT
         )
 
         val optionSetConfiguration = options(optionSet)
 
-        val error: String = checkConflicts(eventUid, de.uid(), rawValue)
+        val error: String = checkConflicts(eventUid, de?.uid()?:"", rawValue)
 
         val fieldViewModel: FieldUiModel =
             fieldFactory.create(
-                de.uid(),
-                de.formName() ?: de.displayName()!!,
-                de.valueType()!!,
+                de?.uid()?:"",
+                de?.formName() ?: de?.displayName()?:"",
+                de?.valueType()!!,
                 programStageDataElement.compulsory() == true,
                 de.optionSetUid(),
                 friendlyValue,
@@ -198,7 +198,7 @@ class EventCaptureFieldProvider(
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(eventUid, dataElementUid)
         return if (valueRepository.blockingExists()) {
-            val value = valueRepository.blockingGet().value()
+            val value = valueRepository.blockingGet()?.value()
             var friendlyValue =
                 valueRepository.blockingGetValueCheck(d2, dataElementUid).userFriendlyValue(d2)
             if (value != null && isValueTypeOrgUnit) {
@@ -222,8 +222,8 @@ class EventCaptureFieldProvider(
         }?.displayDescription() ?: ""
     }
 
-    private fun getColorByLegend(value: String?, dataElement: DataElement): LegendValue? {
-        return if (value == null) {
+    private fun getColorByLegend(value: String?, dataElement: DataElement?): LegendValue? {
+        return if (value == null || dataElement == null) {
             null
         } else {
             try {

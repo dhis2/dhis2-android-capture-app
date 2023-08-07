@@ -40,8 +40,8 @@ class ConfigureEventDetails(
         val programStage = repository.getProgramStage()
         return flowOf(
             EventDetails(
-                name = programStage.displayName(),
-                description = programStage.displayDescription(),
+                name = programStage?.displayName(),
+                description = programStage?.displayDescription(),
                 style = repository.getObjectStyle(),
                 enabled = isEnable(storedEvent),
                 isEditable = isEditable(),

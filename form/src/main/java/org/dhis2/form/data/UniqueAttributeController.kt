@@ -84,7 +84,7 @@ class UniqueAttributeController(
 
     private fun getOrgUnit(teiUid: String): String? {
         return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
-            .organisationUnit()
+            ?.organisationUnit()
     }
 
     private fun trackSentryError(

@@ -24,12 +24,12 @@ class EnrollmentRuleEngineRepository(
     private val enrollment: Enrollment by lazy {
         d2.enrollmentModule().enrollments()
             .uid(enrollmentUid)
-            .blockingGet()
+            .blockingGet()?:throw NullPointerException()
     }
     private val program: Program by lazy {
         d2.programModule().programs()
             .uid(enrollment.program())
-            .blockingGet()
+            .blockingGet()?:throw NullPointerException()
     }
 
     init {
@@ -65,7 +65,7 @@ class EnrollmentRuleEngineRepository(
             .organisationUnitCode(
                 d2.organisationUnitModule().organisationUnits().uid(
                     enrollment.organisationUnit()
-                ).blockingGet().code()
+                ).blockingGet()?.code()
             )
             .programName(program.displayName())
     }

@@ -371,9 +371,9 @@ class FilterRepository @Inject constructor(
 
         val dataSet = d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()
         val categoryCombo =
-            d2.categoryModule().categoryCombos().uid(dataSet.categoryCombo()?.uid())
+            d2.categoryModule().categoryCombos().uid(dataSet?.categoryCombo()?.uid())
                 .blockingGet()
-        if (categoryCombo.isDefault == false) {
+        if (categoryCombo?.isDefault == false) {
             CatOptionComboFilter(
                 categoryCombo,
                 d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
@@ -499,7 +499,7 @@ class FilterRepository @Inject constructor(
             .trackedEntityTypes()
             .uid(program.trackedEntityType()?.uid())
             .blockingGet()
-            .displayName() ?: ""
+            ?.displayName() ?: ""
         val followUpFilter = FollowUpFilter(
             ProgramType.TRACKER,
             observableSortingInject,
@@ -720,7 +720,7 @@ class FilterRepository @Inject constructor(
         }
         val categoryCombo =
             d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()
-        if (categoryCombo.isDefault == false) {
+        if (categoryCombo?.isDefault == false) {
             defaultEventFilter[ProgramFilter.CAT_COMBO] = CatOptionComboFilter(
                 categoryCombo,
                 d2.categoryModule().categoryOptionCombos().byCategoryComboUid()

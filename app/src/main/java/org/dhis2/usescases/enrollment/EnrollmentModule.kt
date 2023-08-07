@@ -70,7 +70,7 @@ class EnrollmentModule(
         enrollmentRepository: EnrollmentObjectRepository
     ): TrackedEntityInstanceObjectRepository {
         return d2.trackedEntityModule().trackedEntityInstances()
-            .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
+            .uid(enrollmentRepository.blockingGet()?.trackedEntityInstance())
     }
 
     @Provides
@@ -184,7 +184,7 @@ class EnrollmentModule(
         val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
         return ValueStoreImpl(
             d2,
-            enrollmentRepository.blockingGet().trackedEntityInstance()!!,
+            enrollmentRepository.blockingGet()?.trackedEntityInstance()!!,
             EntryMode.ATTR,
             DhisEnrollmentUtils(d2),
             crashReportController,

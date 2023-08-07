@@ -66,7 +66,7 @@ class EnrollmentPresenterImpl(
                     val attributesValues =
                         teiAttributesProvider
                             .getListOfValuesFromProgramTrackedEntityAttributesByProgram(
-                                programRepository.blockingGet().uid(),
+                                programRepository.blockingGet()?.uid()?:"",
                                 tei.uid()
                             )
                     val teiTypeAttributeValue = mutableListOf<TrackedEntityAttributeValue>()
@@ -86,9 +86,9 @@ class EnrollmentPresenterImpl(
                         attributes = attrList,
                         profileImage = tei.profilePicturePath(
                             d2,
-                            programRepository.blockingGet().uid()
+                            programRepository.blockingGet()?.uid()
                         ),
-                        teTypeName = d2.trackedEntityTypeForTei(tei.uid()).displayName()!!
+                        teTypeName = d2.trackedEntityTypeForTei(tei.uid())?.displayName()!!
                     )
                 }
                 .subscribeOn(schedulerProvider.io())
@@ -189,14 +189,14 @@ class EnrollmentPresenterImpl(
     }
 
     fun openInitial(eventUid: String): Boolean {
-        val catComboUid = getProgram().categoryComboUid()
+        val catComboUid = getProgram()?.categoryComboUid()
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
-        val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
-        val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
+        val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
+        val needsCatCombo = programRepository.blockingGet()?.categoryComboUid() != null &&
             d2.categoryModule().categoryCombos().uid(catComboUid)
-            .blockingGet().isDefault == false
+            .blockingGet()?.isDefault == false
         val needsCoordinates =
-            stage.featureType() != null && stage.featureType() != FeatureType.NONE
+            stage?.featureType() != null && stage.featureType() != FeatureType.NONE
 
         return needsCatCombo || needsCoordinates
     }
@@ -205,13 +205,13 @@ class EnrollmentPresenterImpl(
         return enrollmentObjectRepository.blockingGet()
     }
 
-    fun getProgram(): Program {
+    fun getProgram(): Program? {
         return programRepository.blockingGet()
     }
 
     fun updateEnrollmentStatus(newStatus: EnrollmentStatus): Boolean {
         return try {
-            if (getProgram().access()?.data()?.write() == true) {
+            if (getProgram()?.access()?.data()?.write() == true) {
                 enrollmentObjectRepository.setStatus(newStatus)
                 view.renderStatus(newStatus)
                 true
@@ -224,7 +224,7 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun hasAccess() = getProgram().access()?.data()?.write() ?: false
+    fun hasAccess() = getProgram()?.access()?.data()?.write() ?: false
 
     fun saveEnrollmentGeometry(geometry: Geometry?) {
         enrollmentObjectRepository.setGeometry(geometry)
@@ -235,7 +235,7 @@ class EnrollmentPresenterImpl(
     }
 
     fun deleteAllSavedData() {
-        if (teiRepository.blockingGet().syncState() == State.TO_POST) {
+        if (teiRepository.blockingGet()?.syncState() == State.TO_POST) {
             teiRepository.blockingDelete()
         } else {
             enrollmentObjectRepository.blockingDelete()
@@ -266,8 +266,8 @@ class EnrollmentPresenterImpl(
         enrollmentFormRepository.getProgramStageUidFromEvent(eventUid)
 
     fun showOrHideSaveButton() {
-        val teiUid = teiRepository.blockingGet().uid()
-        val programUid = getProgram().uid()
+        val teiUid = teiRepository.blockingGet()?.uid()?:""
+        val programUid = getProgram()?.uid()?:""
         val hasEnrollmentAccess = d2.enrollmentModule().enrollmentService()
             .blockingGetEnrollmentAccess(teiUid, programUid)
         if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS) {
@@ -279,8 +279,8 @@ class EnrollmentPresenterImpl(
 
     fun isEventScheduleOrSkipped(eventUid: String): Boolean {
         val event = eventCollectionRepository.uid(eventUid).blockingGet()
-        return event.status() == EventStatus.SCHEDULE ||
-            event.status() == EventStatus.SKIPPED ||
-            event.status() == EventStatus.OVERDUE
+        return event?.status() == EventStatus.SCHEDULE ||
+            event?.status() == EventStatus.SKIPPED ||
+            event?.status() == EventStatus.OVERDUE
     }
 }

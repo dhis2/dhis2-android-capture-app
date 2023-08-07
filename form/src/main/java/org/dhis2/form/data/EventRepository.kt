@@ -31,7 +31,7 @@ class EventRepository(
 
     private val sectionMap by lazy {
         d2.programModule().programStageSections()
-            .byProgramStageUid().eq(event.programStage())
+            .byProgramStageUid().eq(event?.programStage())
             .withDataElements()
             .blockingGet()
             .map { section -> section.uid() to section }
@@ -44,7 +44,7 @@ class EventRepository(
 
     override fun list(): Flowable<MutableList<FieldUiModel>> {
         return d2.programModule().programStageSections()
-            .byProgramStageUid().eq(event.programStage())
+            .byProgramStageUid().eq(event?.programStage())
             .withDataElements()
             .get()
             .flatMap { programStageSection ->
@@ -67,7 +67,7 @@ class EventRepository(
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {
         return Single.fromCallable {
             val stageDataElements = d2.programModule().programStageDataElements().withRenderType()
-                .byProgramStage().eq(event.programStage())
+                .byProgramStage().eq(event?.programStage())
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .blockingGet()
 
@@ -89,7 +89,7 @@ class EventRepository(
                 )
                 programStageSection.dataElements()?.forEach { dataElement ->
                     d2.programModule().programStageDataElements().withRenderType()
-                        .byProgramStage().eq(event.programStage())
+                        .byProgramStage().eq(event?.programStage())
                         .byDataElement().eq(dataElement.uid())
                         .one().blockingGet()?.let {
                             fields.add(
@@ -107,36 +107,36 @@ class EventRepository(
             programStageDataElement.dataElement()!!.uid()
         ).blockingGet()
         val valueRepository =
-            d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de.uid())
+            d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de?.uid())
         val programStageSection: ProgramStageSection? = sectionMap.values.firstOrNull { section ->
-            section.dataElements()?.map { it.uid() }?.contains(de.uid()) ?: false
+            section.dataElements()?.map { it.uid() }?.contains(de?.uid()) ?: false
         }
-        val uid = de.uid()
-        val displayName = de.displayName()!!
-        val valueType = de.valueType()
+        val uid = de?.uid() ?: ""
+        val displayName = de?.displayName() ?: ""
+        val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false
-        val optionSet = de.optionSetUid()
+        val optionSet = de?.optionSetUid()
         var dataValue = when {
-            valueRepository.blockingExists() -> valueRepository.blockingGet().value()
+            valueRepository.blockingExists() -> valueRepository.blockingGet()?.value()
             else -> null
         }
         val friendlyValue = dataValue?.let {
             valueRepository.blockingGetValueCheck(d2, uid).userFriendlyValue(d2)
         }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
-        val formName = de.displayFormName()
-        val description = de.displayDescription()
+        val formName = de?.displayFormName()
+        val description = de?.displayDescription()
         var optionSetConfig: OptionSetConfiguration? = null
         if (!TextUtils.isEmpty(optionSet)) {
             if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options().byOptionSetUid()
-                .eq(optionSet).byCode()
-                .eq(dataValue)
-                .one().blockingExists()
+                    .eq(optionSet).byCode()
+                    .eq(dataValue)
+                    .one().blockingExists()
             ) {
                 dataValue =
                     d2.optionModule().options().byOptionSetUid().eq(optionSet)
                         .byCode()
-                        .eq(dataValue).one().blockingGet().displayName()
+                        .eq(dataValue).one().blockingGet()?.displayName()
             }
             val optionCount =
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
@@ -151,7 +151,9 @@ class EventRepository(
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
         val objectStyle = getObjectStyle(de)
 
-        var (error, warning) = getConflictErrorsAndWarnings(de.uid(), dataValue)
+        var (error, warning) = de?.uid()?.let { deUid ->
+            getConflictErrorsAndWarnings(deUid, dataValue)
+        } ?: Pair(null, null)
 
         val isOrgUnit =
             valueType === ValueType.ORGANISATION_UNIT
@@ -215,8 +217,7 @@ class EventRepository(
         return Pair(error, warning)
     }
 
-    private fun getObjectStyle(de: DataElement) =
-        if (de.style() != null) de.style() else ObjectStyle.builder().build()
+    private fun getObjectStyle(de: DataElement?) = de?.style() ?: ObjectStyle.builder().build()
 
     private fun getValueTypeDeviceRendering(programStageDataElement: ProgramStageDataElement) =
         if (programStageDataElement.renderType() != null) {
@@ -242,7 +243,7 @@ class EventRepository(
             .blockingGet()
             .firstOrNull { conflict ->
                 conflict.event() == eventUid &&
-                    conflict.dataElement() == dataElementUid
+                        conflict.dataElement() == dataElementUid
             }?.displayDescription() ?: ""
     }
 }

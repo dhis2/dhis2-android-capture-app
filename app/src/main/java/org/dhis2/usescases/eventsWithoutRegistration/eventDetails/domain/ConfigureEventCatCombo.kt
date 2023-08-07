@@ -22,14 +22,14 @@ class ConfigureEventCatCombo(
         repository.catCombo().apply {
             return flowOf(
                 EventCatCombo(
-                    uid = getCatComboUid(uid(), isDefault ?: false),
-                    isDefault = isDefault ?: false,
-                    categories = getCategories(categories()),
+                    uid = getCatComboUid(this?.uid()?:"", this?.isDefault ?: false),
+                    isDefault = this?.isDefault ?: false,
+                    categories = getCategories(this?.categories()),
                     categoryOptions = getCategoryOptions(),
                     selectedCategoryOptions = selectedCategoryOptions,
                     isCompleted = isCompleted(
-                        isDefault = isDefault ?: true,
-                        categories = categories(),
+                        isDefault = this?.isDefault ?: true,
+                        categories = this?.categories(),
                         selectedCategoryOptions = selectedCategoryOptions
                     )
                 )

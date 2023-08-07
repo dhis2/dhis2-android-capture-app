@@ -21,27 +21,31 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
             .byEvent().`in`(eventUidList)
             .blockingGet().filter { trackedEntityDataValue ->
                 dataElementHasCoordinateValue(trackedEntityDataValue)
-            }.map {
+            }.mapNotNull {
                 val event = d2.eventModule().events().uid(it.event()).blockingGet()
                 val stage = d2.programModule().programStages()
-                    .uid(event.programStage()).blockingGet()
+                    .uid(event?.programStage()).blockingGet()
                 val geometry = Geometry.builder()
                     .coordinates(it.value())
                     .type(FeatureType.POINT)
                     .build()
                 val de = d2.dataElementModule().dataElements()
                     .uid(it.dataElement()).blockingGet()
-                val enrollment = event.enrollment()?.let { enrollmentUid ->
+                val enrollment = event?.enrollment()?.let { enrollmentUid ->
                     d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
                 }
 
-                CoordinateDataElementInfo(
-                    event,
-                    stage,
-                    de,
-                    enrollment,
-                    geometry
-                )
+                if(event!=null && stage!= null && de!= null) {
+                    CoordinateDataElementInfo(
+                        event,
+                        stage,
+                        de,
+                        enrollment,
+                        geometry
+                    )
+                }else{
+                    null
+                }
             }
     }
 
@@ -50,7 +54,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         val isCoordinateValueType = d2.dataElementModule().dataElements()
             .uid(trackedEntityDataValue.dataElement()).blockingGet()
-            .valueType() == ValueType.COORDINATE
+            ?.valueType() == ValueType.COORDINATE
         val hasValue = trackedEntityDataValue.value() != null
         return isCoordinateValueType && hasValue
     }
@@ -60,7 +64,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
             .byTrackedEntityInstance().`in`(teiUidList)
             .blockingGet().filter { trackedEntityAttributeValue ->
                 attributeHasCoordinateValue(trackedEntityAttributeValue)
-            }.map {
+            }.mapNotNull {
                 val tei = d2.trackedEntityModule().trackedEntityInstances()
                     .uid(it.trackedEntityInstance()).blockingGet()
                 val attribute = d2.trackedEntityModule().trackedEntityAttributes()
@@ -69,11 +73,15 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
                     .coordinates(it.value())
                     .type(FeatureType.POINT)
                     .build()
-                CoordinateAttributeInfo(
-                    tei,
-                    attribute,
-                    geometry
-                )
+                if(tei!=null && attribute!=null) {
+                    CoordinateAttributeInfo(
+                        tei,
+                        attribute,
+                        geometry
+                    )
+                }else{
+                    null
+                }
             }
     }
 
@@ -82,7 +90,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         val isCoordinateValueType = d2.trackedEntityModule().trackedEntityAttributes()
             .uid(trackedEntityAttributeValue.trackedEntityAttribute()).blockingGet()
-            .valueType() == ValueType.COORDINATE
+            ?.valueType() == ValueType.COORDINATE
         val hasValue = trackedEntityAttributeValue.value() != null
         return isCoordinateValueType && hasValue
     }

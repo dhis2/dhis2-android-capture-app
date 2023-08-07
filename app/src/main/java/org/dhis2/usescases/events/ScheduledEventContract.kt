@@ -27,6 +27,6 @@ class ScheduledEventContract {
         fun setCatOptionCombo(catComboUid: String, arrayList: ArrayList<CategoryOption>)
         fun onBackClick()
         fun getEventTei(): String
-        fun getEnrollment(): Enrollment
+        fun getEnrollment(): Enrollment?
     }
 }

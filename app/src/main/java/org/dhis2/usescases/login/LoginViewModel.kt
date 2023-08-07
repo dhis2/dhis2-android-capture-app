@@ -152,7 +152,8 @@ class LoginViewModel(
         return if (userManager.isUserLoggedIn.blockingFirst() &&
             userManager.d2.systemInfoModule().systemInfo().blockingGet() != null
         ) {
-            userManager.d2.systemInfoModule().systemInfo().blockingGet()
+            userManager.d2.systemInfoModule().systemInfo().blockingGet() ?: SystemInfo.builder()
+                .build()
         } else {
             SystemInfo.builder().build()
         }
@@ -359,13 +360,13 @@ class LoginViewModel(
 
     fun areSameCredentials(): Boolean {
         return (
-            preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(
-                    serverUrl.value!!,
-                    userName.value!!,
-                    password.value!!
-                )
-            ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
+                preferenceProvider.areCredentialsSet() &&
+                        preferenceProvider.areSameCredentials(
+                            serverUrl.value!!,
+                            userName.value!!,
+                            password.value!!
+                        )
+                ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
     }
 
     private fun saveUserCredentials() {
@@ -522,8 +523,8 @@ class LoginViewModel(
 
     private fun checkData() {
         val newValue = !serverUrl.value.isNullOrEmpty() &&
-            !userName.value.isNullOrEmpty() &&
-            !password.value.isNullOrEmpty()
+                !userName.value.isNullOrEmpty() &&
+                !password.value.isNullOrEmpty()
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }

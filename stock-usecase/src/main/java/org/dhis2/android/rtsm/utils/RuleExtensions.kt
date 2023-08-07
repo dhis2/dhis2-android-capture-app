@@ -137,13 +137,13 @@ fun ProgramRuleVariable.toRuleVariable(
         ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
             dataElement()?.let {
                 dataElementRepository.uid(it.uid()).blockingGet()
-                    .valueType()?.toRuleValueType()
+                    ?.valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
 
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
             trackedEntityAttribute()?.let {
                 attributeRepository.uid(it.uid()).blockingGet()
-                    .valueType()?.toRuleValueType()
+                    ?.valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
 
         ProgramRuleVariableSourceType.CALCULATED_VALUE, null -> RuleValueType.TEXT
@@ -263,7 +263,7 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
     return map {
         var value = if (it.value() != null) it.value() else ""
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
-        if (!de.optionSetUid().isNullOrEmpty()) {
+        if (!de?.optionSetUid().isNullOrEmpty()) {
             if (ruleVariableRepository
                 .byProgramUid().eq(event.program())
                 .byDataElementUid().eq(it.dataElement())
@@ -272,19 +272,19 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             ) {
                 value =
                     if (optionRepository
-                        .byOptionSetUid().eq(de.optionSetUid())
+                        .byOptionSetUid().eq(de?.optionSetUid())
                         .byCode().eq(value)
                         .one().blockingExists()
                     ) {
                         optionRepository
-                            .byOptionSetUid().eq(de.optionSetUid())
+                            .byOptionSetUid().eq(de?.optionSetUid())
                             .byCode().eq(value)
-                            .one().blockingGet().name()
+                            .one().blockingGet()?.name()
                     } else {
                         ""
                     }
             }
-        } else if (de.valueType()!!.isNumeric) {
+        } else if (de?.valueType()?.isNumeric == true) {
             value = try {
                 value?.toFloat().toString()
             } catch (e: Exception) {

@@ -34,7 +34,7 @@ class MetadataManagerImpl @Inject constructor(
      * intersection of the program OUs (without DESCENDANTS) and
      * the user data capture OUs (with DESCENDANTS)
      */
-    override fun facilities(programUid: String): Single<MutableList<OrganisationUnit>> {
+    override fun facilities(programUid: String): Single<List<OrganisationUnit>> {
         return Single.defer {
             stockManagementProgram(programUid).map { program ->
                 // TODO: Flag situations where the intersection is nil (i.e. no facility obtained)

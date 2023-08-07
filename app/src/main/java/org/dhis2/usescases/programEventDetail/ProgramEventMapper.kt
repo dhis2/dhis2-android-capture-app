@@ -47,13 +47,13 @@ class ProgramEventMapper @Inject constructor(
             canAddNewEvent = true,
             orgUnitName = d2.organisationUnitModule().organisationUnits()
                 .uid(event.organisationUnit())
-                .blockingGet().displayName() ?: "-",
+                .blockingGet()?.displayName() ?: "-",
             catComboName = getCatComboName(event.attributeOptionCombo()),
             dataElementValues = getEventValues(event.uid(), event.programStage()!!),
             groupedByStage = true,
             displayDate = eventDate?.let {
                 periodUtils.getPeriodUIString(
-                    programStage.periodType() ?: PeriodType.Daily,
+                    programStage?.periodType() ?: PeriodType.Daily,
                     it,
                     Locale.getDefault()
                 )
@@ -108,7 +108,7 @@ class ProgramEventMapper @Inject constructor(
     }
 
     private fun getOrgUnitName(orgUnitUid: String?) =
-        d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet().displayName()
+        d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()?.displayName()
 
     private fun getProgramStageDataElements(programStageUid: String?) =
         d2.programModule().programStageDataElements()
@@ -123,8 +123,7 @@ class ProgramEventMapper @Inject constructor(
         val data: MutableList<Pair<String, String>> = mutableListOf()
 
         dataValues?.let {
-            val stageSections = getStageSections(programStage)
-            stageSections.sortBy { it.sortOrder() }
+            val stageSections = getStageSections(programStage).sortedBy { it.sortOrder() }
             val dataElementsOrder = mutableListOf<String>()
             if (stageSections.isEmpty()) {
                 val programStageDataElements = getProgramStageDataElements(programStage)
@@ -176,19 +175,19 @@ class ProgramEventMapper @Inject constructor(
             event.eventDate(),
             event.completedDate(),
             event.status(),
-            program.completeEventsExpiryDays() ?: -1,
-            program.expiryPeriodType(),
-            program.expiryDays() ?: -1
+            program?.completeEventsExpiryDays() ?: -1,
+            program?.expiryPeriodType(),
+            program?.expiryDays() ?: -1
         )
     }
 
     private fun checkOrgUnitRange(orgUnitUid: String?, eventDate: Date): Boolean {
         var inRange = true
         val orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()
-        if (orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate())) {
+        if (orgUnit?.openingDate() != null && eventDate.before(orgUnit.openingDate())) {
             inRange = false
         }
-        if (orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate())) {
+        if (orgUnit?.closedDate() != null && eventDate.after(orgUnit.closedDate())) {
             inRange = false
         }
 
@@ -223,7 +222,7 @@ class ProgramEventMapper @Inject constructor(
                 val de = d2.dataElementModule().dataElements()
                     .uid(it).blockingGet()
                 Pair(
-                    de.displayFormName() ?: de.displayName() ?: "",
+                    de?.displayFormName() ?: de?.displayName() ?: "",
                     if (valueRepo.blockingExists()) {
                         valueRepo.blockingGet().userFriendlyValue(d2)
                     } else {
@@ -239,7 +238,7 @@ class ProgramEventMapper @Inject constructor(
     private fun getCatComboName(categoryOptionComboUid: String?): String? {
         return categoryOptionComboUid?.let {
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
-                .displayName()
+                ?.displayName()
         }
     }
 }

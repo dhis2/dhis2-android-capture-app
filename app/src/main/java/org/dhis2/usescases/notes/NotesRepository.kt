@@ -12,7 +12,7 @@ class NotesRepository(private val d2: D2, val programUid: String) {
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .one().blockingGet().uid()
+                .one().blockingGet()?.uid()
         ).get()
         .map { notes ->
             notes.sortedWith(
@@ -33,5 +33,6 @@ class NotesRepository(private val d2: D2, val programUid: String) {
             }
 
     fun hasProgramWritePermission(): Boolean =
-        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
+        d2.programModule().programs().uid(programUid).blockingGet()?.access()?.data()
+            ?.write() == true
 }

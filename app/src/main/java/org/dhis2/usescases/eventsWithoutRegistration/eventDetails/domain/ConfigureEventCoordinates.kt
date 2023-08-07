@@ -30,7 +30,7 @@ class ConfigureEventCoordinates(
 
     private fun isActive(): Boolean {
         repository.getProgramStage().let { programStage ->
-            programStage.featureType()?.let {
+            programStage?.featureType()?.let {
                 return it != NONE
             }
         }

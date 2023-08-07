@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
+import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
 
 internal class ProgramRepositoryImpl(
     private val d2: D2,
@@ -57,21 +58,23 @@ internal class ProgramRepositoryImpl(
         return filterPresenter.filteredDataSetInstances().get()
             .toFlowable()
             .map { dataSetSummaries ->
-                dataSetSummaries.map {
-                    val dataSet = d2.dataSetModule().dataSets()
+                dataSetSummaries.mapNotNull {
+                    d2.dataSetModule().dataSets()
                         .uid(it.dataSetUid())
-                        .blockingGet()
-                    programViewModelMapper.map(
-                        dataSet,
-                        it,
-                        if (filterPresenter.isAssignedToMeApplied()) {
-                            0
-                        } else {
-                            it.dataSetInstanceCount()
-                        },
-                        resourceManager.defaultDataSetLabel(),
-                        filterPresenter.areFiltersActive()
-                    )
+                        .blockingGet()?.let { dataSet ->
+                            programViewModelMapper.map(
+                                dataSet,
+                                it,
+                                if (filterPresenter.isAssignedToMeApplied()) {
+                                    0
+                                } else {
+                                    it.dataSetInstanceCount()
+                                },
+                                resourceManager.defaultDataSetLabel(),
+                                filterPresenter.areFiltersActive()
+                            )
+                        }
+
                 }
             }
     }
@@ -117,10 +120,12 @@ internal class ProgramRepositoryImpl(
         return map { programModel ->
             val program = d2.programModule().programs().uid(programModel.uid).blockingGet()
             val (count, hasOverdue) =
-                if (program.programType() == WITHOUT_REGISTRATION) {
+                if (program?.programType() == WITHOUT_REGISTRATION) {
                     getSingleEventCount(program)
-                } else {
+                } else if(program?.programType() == WITH_REGISTRATION) {
                     getTrackerTeiCountAndOverdue(program)
+                }else{
+                    Pair(0,false)
                 }
             programModel.copy(
                 count = count,
@@ -138,15 +143,19 @@ internal class ProgramRepositoryImpl(
                 downloadState = when {
                     syncStatusData.hasDownloadError(programModel.uid) ->
                         ProgramDownloadState.ERROR
+
                     syncStatusData.isProgramDownloading(programModel.uid) ->
                         ProgramDownloadState.DOWNLOADING
+
                     syncStatusData.wasProgramDownloading(lastSyncStatus, programModel.uid) ->
                         when (syncStatusData.programSyncStatusMap[programModel.uid]?.syncStatus) {
                             D2ProgressSyncStatus.SUCCESS -> ProgramDownloadState.DOWNLOADED
                             D2ProgressSyncStatus.ERROR,
                             D2ProgressSyncStatus.PARTIAL_ERROR -> ProgramDownloadState.ERROR
+
                             null -> ProgramDownloadState.DOWNLOADED
                         }
+
                     else ->
                         ProgramDownloadState.NONE
                 },

@@ -149,12 +149,12 @@ class DataValuePresenter(
         val ids = cell.id?.split("_") ?: return null
         val dataElementUid = ids[0]
         val dataElement = getDataElement(dataElementUid)
-        handleElementInteraction(dataElement, cell, updateCellValue)
-        return dataElement.takeIf { it.optionSetUid() == null }
+        dataElement?.let {handleElementInteraction(dataElement, cell, updateCellValue)}
+        return dataElement.takeIf { it?.optionSetUid() == null }
             ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
                 TextInputModel(
                     id = cell.id ?: "",
-                    mainLabel = dataElement.displayFormName() ?: "-",
+                    mainLabel = dataElement?.displayFormName() ?: "-",
                     secondaryLabels = repository.getCatOptComboOptions(ids[1]),
                     currentValue = cell.value,
                     keyboardInputType = inputType,
@@ -203,7 +203,7 @@ class DataValuePresenter(
         return repository.getOptionSetViewModel(dataElement, cell)
     }
 
-    private fun getDataElement(dataElementUid: String): DataElement {
+    private fun getDataElement(dataElementUid: String): DataElement? {
         return repository.getDataElement(dataElementUid)
     }
 

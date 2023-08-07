@@ -56,13 +56,13 @@ class FormValueStore(
                 d2.dataElementModule().dataElements()
                     .uid(uid)
                     .blockingGet()
-                    .valueType()
+                    ?.valueType()
 
             EntryMode.ATTR ->
                 d2.trackedEntityModule().trackedEntityAttributes()
                     .uid(uid)
                     .blockingGet()
-                    .valueType()
+                    ?.valueType()
 
             EntryMode.DV ->
                 throw IllegalArgumentException(
@@ -198,8 +198,8 @@ class FormValueStore(
                 EntryMode.DE -> {
                     val event = d2.eventModule().events().uid(recordUid).blockingGet()
                     val enrollment = d2.enrollmentModule().enrollments()
-                        .uid(event.enrollment()).blockingGet()
-                    enrollment.trackedEntityInstance()
+                        .uid(event?.enrollment()).blockingGet()
+                    enrollment?.trackedEntityInstance()
                 }
 
                 EntryMode.ATTR -> recordUid
@@ -214,11 +214,11 @@ class FormValueStore(
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, teiUid)
         val attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()
-        val valueType = attribute.valueType()
+        val valueType = attribute?.valueType()
         val newValue = value.withValueTypeCheck(valueType) ?: ""
 
         val currentValue = if (valueRepository.blockingExists()) {
-            valueRepository.blockingGet().value().withValueTypeCheck(valueType)
+            valueRepository.blockingGet()?.value().withValueTypeCheck(valueType)
         } else {
             ""
         }
@@ -311,11 +311,11 @@ class FormValueStore(
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
         val dataElement = d2.dataElementModule().dataElements().uid(uid).blockingGet()
-        val valueType = dataElement.valueType()
+        val valueType = dataElement?.valueType()
         val newValue = value.withValueTypeCheck(valueType) ?: ""
 
         val currentValue = if (valueRepository.blockingExists()) {
-            valueRepository.blockingGet().value().withValueTypeCheck(valueType)
+            valueRepository.blockingGet()?.value().withValueTypeCheck(valueType)
         } else {
             ""
         }
@@ -361,11 +361,11 @@ class FormValueStore(
 
     private fun deleteDataElementValue(field: String, optionUid: String): StoreResult {
         val option = d2.optionModule().options().uid(optionUid).blockingGet()
-        val possibleValues = arrayListOf(option.name()!!, option.code()!!)
+        val possibleValues = arrayListOf(option?.name(), option?.code()).filterNotNull()
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(recordUid, field)
         return if (valueRepository.blockingExists() &&
-            possibleValues.contains(valueRepository.blockingGet().value())
+            possibleValues.contains(valueRepository.blockingGet()?.value())
         ) {
             saveDataElement(field, null).blockingFirst()
         } else {
@@ -375,11 +375,11 @@ class FormValueStore(
 
     private fun deleteAttributeValue(field: String, optionUid: String): StoreResult {
         val option = d2.optionModule().options().uid(optionUid).blockingGet()
-        val possibleValues = arrayListOf(option.name()!!, option.code()!!)
+        val possibleValues = arrayListOf(option?.name(), option?.code()).filterNotNull()
         val valueRepository =
             d2.trackedEntityModule().trackedEntityAttributeValues().value(field, recordUid)
         return if (valueRepository.blockingExists() &&
-            possibleValues.contains(valueRepository.blockingGet().value())
+            possibleValues.contains(valueRepository.blockingGet()?.value())
         ) {
             saveAttribute(field, null).blockingFirst()
         } else {
@@ -397,8 +397,8 @@ class FormValueStore(
                 .withOptions()
                 .uid(optionGroupUid)
                 .blockingGet()
-                .options()
-                ?.map { d2.optionModule().options().uid(it.uid()).blockingGet().code()!! }
+                ?.options()
+                ?.map { d2.optionModule().options().uid(it.uid()).blockingGet()?.code()!! }
                 ?: arrayListOf()
         return when (entryMode) {
             EntryMode.DE -> deleteDataElementValueIfNotInGroup(
@@ -428,7 +428,7 @@ class FormValueStore(
         val valueRepository =
             d2.trackedEntityModule().trackedEntityAttributeValues().value(field, recordUid)
         return if (valueRepository.blockingExists() &&
-            optionCodesToShow.contains(valueRepository.blockingGet().value()) == isInGroup
+            optionCodesToShow.contains(valueRepository.blockingGet()?.value()) == isInGroup
         ) {
             saveAttribute(field, null).blockingFirst()
         } else {
@@ -444,7 +444,7 @@ class FormValueStore(
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(recordUid, field)
         return if (valueRepository.blockingExists() &&
-            optionCodesToShow.contains(valueRepository.blockingGet().value()) == isInGroup
+            optionCodesToShow.contains(valueRepository.blockingGet()?.value()) == isInGroup
         ) {
             saveDataElement(field, null).blockingFirst()
         } else {

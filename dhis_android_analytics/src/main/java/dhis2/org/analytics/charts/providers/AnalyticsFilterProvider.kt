@@ -52,7 +52,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
         return if (isValueSaved("${visualizationUid}_p")) {
             val entry = valueFromKey("${visualizationUid}_p")
             val type = object : TypeToken<List<RelativePeriod>?>() {}.type
-            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+            return entry?.value()?.let { Gson().fromJson(entry.value(), type) }
         } else {
             null
         }
@@ -62,7 +62,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
         return if (isValueSaved("${visualizationUid}_ou_type")) {
             val entry = valueFromKey("${visualizationUid}_ou_type")
             val type = object : TypeToken<OrgUnitFilterType>() {}.type
-            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+            return entry?.value()?.let { Gson().fromJson(entry.value(), type) }
         } else {
             null
         }
@@ -72,7 +72,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
         return if (isValueSaved("${visualizationUid}_ou")) {
             val entry = valueFromKey("${visualizationUid}_ou")
             val type = object : TypeToken<List<String>?>() {}.type
-            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+            return entry?.value()?.let { Gson().fromJson(entry.value(), type) }
         } else {
             null
         }
@@ -90,7 +90,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
             .blockingExists()
     }
 
-    private fun valueFromKey(key: String): KeyValuePair {
+    private fun valueFromKey(key: String): KeyValuePair? {
         return d2.dataStoreModule().localDataStore()
             .value(key)
             .blockingGet()
