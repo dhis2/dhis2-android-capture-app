@@ -2,7 +2,7 @@ import os
 
 print("*** Read version name and code ***")
 
-RELEASE_INFO_PATH = '../release.info'
+RELEASE_INFO_PATH = '../gradle/libs.versions.toml'
 
 release_versions = {}
 with open(RELEASE_INFO_PATH, 'r') as file:
@@ -11,7 +11,13 @@ with open(RELEASE_INFO_PATH, 'r') as file:
         release_versions[y[0]] = str(y[1])
 
 name = "envman add --key NAME_RELEASE --value {}".format(release_versions.get('vName'))
-branch = "envman add --key BRANCH_RELEASE --value {}".format(release_versions.get('vBranch'))
+branch = "envman add --key BRANCH_RELEASE --value release/{}".format(release_versions.get('vName'))
+
+print("NAME: ")
+print(name)
+print("BRANCH: ")
+print(branch)
+
 
 os.system(name)
 os.system(branch)
