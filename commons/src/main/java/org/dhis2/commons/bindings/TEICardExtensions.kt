@@ -44,7 +44,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
 
-const val ENROLLMENT_ICONS_TO_SHOW = 4
+const val ENROLLMENT_ICONS_TO_SHOW = 3
 const val MAX_NUMBER_REMAINING_ENROLLMENTS = 99
 
 fun List<Enrollment>.hasFollowUp(): Boolean {
@@ -60,44 +60,46 @@ fun List<Program>.getEnrollmentIconsData(
     currentProgram: String?,
     colorUtils: ColorUtils
 ): List<EnrollmentIconData> {
-    var programCount = 0
-    val listSize = this.size
     val enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
-    run outer@{
-        filter { it.uid() != currentProgram }
-            .forEach inner@{ program ->
-                val enrollmentIconData: EnrollmentIconData
-                val color = colorUtils.getColorFrom(
-                    program.style().color(),
-                    colorUtils.getPrimaryColor(
-                        context,
-                        ColorType.PRIMARY
-                    )
+
+    val filteredList = filter { it.uid() != currentProgram }
+    this.filter { it.uid() != currentProgram }
+        .forEachIndexed { index, program ->
+            val color = colorUtils.getColorFrom(
+                program.style().color(),
+                colorUtils.getPrimaryColor(
+                    context,
+                    ColorType.PRIMARY
                 )
-                val imageResource =
-                    ResourceManager(context, colorUtils)
-                        .getObjectStyleDrawableResource(
-                            program.style().icon(),
-                            R.drawable.ic_default_icon
-                        )
-                programCount++
-                if (programCount < 4 || listSize == 4) {
-                    enrollmentIconData = EnrollmentIconData(color, imageResource, true, 0)
-                    enrollmentIconDataList.add(enrollmentIconData)
-                } else {
-                    enrollmentIconData = EnrollmentIconData(
-                        0,
-                        0,
-                        false,
-                        getRemainingEnrollmentsForTei(this.size)
+            )
+            val imageResource =
+                ResourceManager(context, colorUtils)
+                    .getObjectStyleDrawableResource(
+                        program.style().icon(),
+                        R.drawable.ic_default_icon
                     )
-                    enrollmentIconDataList.add(enrollmentIconData)
-                    return@outer
+
+            if (filteredList.size <= 4) {
+                enrollmentIconDataList.add(EnrollmentIconData(color, imageResource, true, 0))
+            } else {
+                if (index in 0..2) {
+                    enrollmentIconDataList.add(EnrollmentIconData(color, imageResource, true, 0))
+                }
+                if (index == 3) {
+                    enrollmentIconDataList.add(
+                        EnrollmentIconData(
+                            0,
+                            0,
+                            false,
+                            getRemainingEnrollmentsForTei(filteredList.size)
+                        )
+                    )
                 }
             }
-    }
+        }
     return enrollmentIconDataList
 }
+
 fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
     parent.apply {
         setContent {
