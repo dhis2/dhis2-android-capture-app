@@ -12,7 +12,8 @@ with open(RELEASE_INFO_PATH, 'r') as file:
             release_versions[y[0]] = str(y[1])
 
 name = "envman add --key NAME_RELEASE --value {}".format(release_versions.get('vName'))
-branch = "envman add --key BRANCH_RELEASE --value release/{}".format(release_versions.get('vName'))
+branchName = "release/" + release_versions.get('vName')
+branch = "envman add --key BRANCH_RELEASE --value {}".format(branchName)
 
 print("NAME: ")
 print(name)
