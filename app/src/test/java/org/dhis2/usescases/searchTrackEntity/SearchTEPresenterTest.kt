@@ -7,6 +7,7 @@ import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
@@ -42,6 +43,7 @@ class SearchTEPresenterTest {
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val resourceManager: ResourceManager = mock()
+    private val colorUtils: ColorUtils = mock()
 
     @Before
     fun setUp() {
@@ -74,7 +76,8 @@ class SearchTEPresenterTest {
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,
             syncStatusController,
-            resourceManager
+            resourceManager,
+            colorUtils
         )
     }
 

@@ -21,7 +21,7 @@ internal class StageViewHolder(
     private val stageSelector: FlowableProcessor<StageSection>,
     private val presenter: TEIDataPresenter,
     private val colorUtils: ColorUtils
-): RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeProgramStageIcon.setViewCompositionStrategy(

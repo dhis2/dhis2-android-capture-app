@@ -4,6 +4,7 @@ import io.reactivex.Single
 import org.dhis2.commons.Constants
 import org.dhis2.commons.R
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.data.server.UserManager
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
@@ -21,12 +22,14 @@ class ThemeManagerTest {
     private val dataSetConfiguration: DataSetConfiguration = mock()
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration = mock()
     private val preferenceProvider: PreferenceProvider = mock()
+    private val colorUtils: ColorUtils = mock()
     private val themeManager = ThemeManager(
         userManager,
         programConfiguration,
         dataSetConfiguration,
         trackedEntityTypeConfiguration,
-        preferenceProvider
+        preferenceProvider,
+        colorUtils
     )
 
     @Test

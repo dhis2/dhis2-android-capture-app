@@ -20,7 +20,6 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.DialFabItemBinding
-import javax.inject.Inject
 
 const val FAB_ID = 99
 

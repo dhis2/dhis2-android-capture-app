@@ -10,11 +10,11 @@ import androidx.core.widget.doOnTextChanged
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.BreakTheGlassBottomDialogBindingImpl
-import javax.inject.Inject
 
 class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 

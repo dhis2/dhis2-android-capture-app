@@ -8,7 +8,6 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
-import java.security.PrivateKey
 
 class ThemeManager(
     private val userManager: UserManager,

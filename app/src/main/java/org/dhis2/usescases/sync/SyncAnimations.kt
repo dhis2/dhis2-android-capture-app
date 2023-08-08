@@ -4,8 +4,8 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
-import org.dhis2.commons.resources.ColorType
 import javax.inject.Inject
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 

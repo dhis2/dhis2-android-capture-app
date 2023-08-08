@@ -2,6 +2,8 @@ package org.dhis2.commons.resources
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Color.BLACK
+import android.graphics.Color.WHITE
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
@@ -15,11 +17,11 @@ class ColorUtils {
     }
     fun parseColor(hexColor: String): Int {
         var newHexColor = hexColor
-        if (hexColor.length == 4) { //Color is formatted as #fff
+        if (hexColor.length == 4) { // Color is formatted as #fff
             val r = hexColor[1]
             val g = hexColor[2]
             val b = hexColor[3]
-            newHexColor = "#$r$r$g$g$b$b" //formatted to #ffff
+            newHexColor = "#$r$r$g$g$b$b" // formatted to #ffff
         }
         return Color.parseColor(newHexColor)
     }
@@ -38,13 +40,12 @@ class ColorUtils {
     }
 
     fun getColorFrom(hexColor: String?, defaultPrimaryColor: Int): Int {
-        var colorToReturn = Color.BLACK
+        var colorToReturn = BLACK
 
-        if(!hexColor.isNullOrEmpty()) {
+        if (!hexColor.isNullOrEmpty()) {
             colorToReturn = parseColor(Objects.requireNonNull(hexColor))
         }
-        if(hexColor.isNullOrEmpty() ||
-            colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
+        if (hexColor.isNullOrEmpty() || colorToReturn == BLACK || colorToReturn == WHITE) {
             colorToReturn = defaultPrimaryColor
         }
         return colorToReturn

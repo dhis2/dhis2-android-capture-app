@@ -35,10 +35,11 @@ class ProgramStageSelectionViewHolder(
             )
         )
 
-        val iconResource = ResourceManager(itemView.context, colorUtils).getObjectStyleDrawableResource(
-            programStage.style().icon(),
-            R.drawable.ic_default_outline
-        )
+        val iconResource =
+            ResourceManager(itemView.context, colorUtils).getObjectStyleDrawableResource(
+                programStage.style().icon(),
+                R.drawable.ic_default_outline
+            )
 
         binding.composeProgramStageIcon.setUpMetadataIcon(
             MetadataIconData(
