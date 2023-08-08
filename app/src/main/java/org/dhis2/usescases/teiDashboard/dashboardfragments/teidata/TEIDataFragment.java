@@ -183,15 +183,17 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     private void updateFabItems() {
         List<DialItem> dialItems = new ArrayList<>();
-        dialItems.add(
+        // Eyeseetea customization: remove Referral
+ /*       dialItems.add(
                 new DialItem(REFERAL_ID, getString(R.string.referral), R.drawable.ic_arrow_forward)
-        );
+        );*/
         dialItems.add(
                 new DialItem(ADD_NEW_ID, getString(R.string.add_new), R.drawable.ic_note_add)
         );
-        dialItems.add(
+        // Eyeseetea customization: remove schedule
+/*        dialItems.add(
                 new DialItem(SCHEDULE_ID, getString(R.string.schedule_new), R.drawable.ic_date_range)
-        );
+        );*/
         binding.dialFabLayout.addDialItems(dialItems, clickedId -> {
             switch (clickedId) {
                 case REFERAL_ID:
