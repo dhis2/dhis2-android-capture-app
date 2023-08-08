@@ -55,8 +55,10 @@ import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
+import org.dhis2.android.rtsm.ui.managestock.STOCK_TABLE_ID
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
+import org.dhis2.composetable.actions.TableResizeActions
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -71,6 +73,7 @@ fun MainContent(
     val scope = rememberCoroutineScope()
     val resource = painterResource(R.drawable.ic_arrow_up)
     val qrcodeResource = painterResource(R.drawable.ic_qr_code_scanner)
+    val resetResize = painterResource(id = R.drawable.ic_restart_alt)
     val searchResource = painterResource(R.drawable.ic_search)
     val closeResource = painterResource(R.drawable.ic_close)
     var closeButtonVisibility by remember { mutableStateOf(0f) }
@@ -83,6 +86,10 @@ fun MainContent(
     var columnHeightDp by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
     val tablePadding = if (backdropState.isRevealed) 200.dp else 0.dp
+
+    var tableResizeActions by remember {
+        mutableStateOf<TableResizeActions?>(null)
+    }
 
     Column(
         modifier = Modifier
@@ -193,6 +200,25 @@ fun MainContent(
                     tint = themeColor
                 )
             }
+
+            AnimatedVisibility(visible = tableResizeActions != null) {
+                IconButton(
+                    onClick = {
+                        tableResizeActions?.onTableDimensionReset(STOCK_TABLE_ID)
+                    },
+                    modifier = Modifier
+                        .weight(weightValue)
+                        .alignBy(FirstBaseline)
+                        .align(alignment = Alignment.CenterVertically)
+                ) {
+                    Icon(
+                        painter = resetResize,
+                        contentDescription = "",
+                        tint = themeColor
+                    )
+                }
+            }
+
             AnimatedVisibility(
                 visible = backdropState.isRevealed
             ) {
@@ -233,23 +259,41 @@ fun MainContent(
                         settingsUiState.hasDestinationSelected()
                     ) {
                         manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(manageStockViewModel) {
-                            scope.launch { backdropState.conceal() }
-                        }
+                        ManageStockTable(
+                            manageStockViewModel,
+                            concealBackdropState = {
+                                scope.launch { backdropState.conceal() }
+                            },
+                            onResized = { actions ->
+                                tableResizeActions = actions
+                            }
+                        )
                     }
                 } else if (settingsUiState.transactionType == TransactionType.CORRECTION) {
                     if (settingsUiState.hasFacilitySelected()) {
                         manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(manageStockViewModel) {
-                            scope.launch { backdropState.conceal() }
-                        }
+                        ManageStockTable(
+                            manageStockViewModel,
+                            concealBackdropState = {
+                                scope.launch { backdropState.conceal() }
+                            },
+                            onResized = { actions ->
+                                tableResizeActions = actions
+                            }
+                        )
                     }
                 } else if (settingsUiState.transactionType == TransactionType.DISCARD) {
                     if (settingsUiState.hasFacilitySelected()) {
                         manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(manageStockViewModel) {
-                            scope.launch { backdropState.conceal() }
-                        }
+                        ManageStockTable(
+                            manageStockViewModel,
+                            concealBackdropState = {
+                                scope.launch { backdropState.conceal() }
+                            },
+                            onResized = { actions ->
+                                tableResizeActions = actions
+                            }
+                        )
                     }
                 }
             }

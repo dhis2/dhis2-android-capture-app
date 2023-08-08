@@ -29,6 +29,7 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.commons.prefs.Preference;
@@ -36,6 +37,7 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.maps.model.StageStyle;
@@ -75,6 +77,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final BehaviorSubject<String> currentProgram;
     private final PreferenceProvider preferences;
     private final FilterRepository filterRepository;
+    private final ResourceManager resourceManager;
     private Program selectedProgram;
 
     private final CompositeDisposable compositeDisposable;
@@ -98,7 +101,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              FilterRepository filterRepository,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
                              MatomoAnalyticsController matomoAnalyticsController,
-                             SyncStatusController syncStatusController) {
+                             SyncStatusController syncStatusController,
+                             ResourceManager resourceManager) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -109,6 +113,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.disableHomeFilters = disableHomeFilters;
         this.matomoAnalyticsController = matomoAnalyticsController;
         this.syncStatusController = syncStatusController;
+        this.resourceManager = resourceManager;
         compositeDisposable = new CompositeDisposable();
         selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
@@ -413,7 +418,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         view.showBreakTheGlass(teiUid, enrollmentUid);
                                         break;
                                     default:
-                                        view.displayMessage(new D2ErrorUtils(view.getContext()).getErrorMessage(t));
+                                        view.displayMessage(resourceManager.parseD2Error(t));
                                         break;
                                 }
                             } else {

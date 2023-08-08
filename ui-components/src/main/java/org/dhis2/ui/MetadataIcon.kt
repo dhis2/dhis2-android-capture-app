@@ -2,9 +2,12 @@ package org.dhis2.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -13,6 +16,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -35,6 +41,23 @@ fun MetadataIcon(modifier: Modifier = Modifier, metadataIconData: MetadataIconDa
             metadataIconData.programColor.getAlphaContrastColor()
         )
     )
+}
+
+@Composable
+fun SquareWithNumber(number: Int) {
+    Box(
+        modifier = Modifier.size(25.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background("#f2f2f2".toColor()),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "+$number",
+            color = "#6f6f6f".toColor(),
+            textAlign = TextAlign.Center,
+            fontFamily = FontFamily(Font(R.font.rubik_regular))
+        )
+    }
 }
 
 fun ComposeView.setUpMetadataIcon(
@@ -64,6 +87,7 @@ fun MetadataIconPreview(
 ) {
     MetadataIcon(metadataIconData = metadataIconData)
 }
+fun String.toColor() = Color(android.graphics.Color.parseColor(this))
 
 class MetadataIconDataParamProvider : PreviewParameterProvider<MetadataIconData> {
     override val values: Sequence<MetadataIconData>

@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerZeroOrPositiveFailure
 
+const val STOCK_TABLE_ID = "STOCK"
 class TableModelMapper @Inject constructor(
     private val resources: ResourceManager
 ) {
@@ -61,7 +62,7 @@ class TableModelMapper @Inject constructor(
 
         return mutableListOf(
             TableModel(
-                id = "STOCK",
+                id = STOCK_TABLE_ID,
                 tableHeaderModel = TableHeader(
                     rows = mutableListOf(
                         TableHeaderRow(
