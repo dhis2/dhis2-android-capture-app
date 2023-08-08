@@ -15,11 +15,6 @@ name = "envman add --key NAME_RELEASE --value {}".format(release_versions.get('v
 branchName = "release/" + release_versions.get('vName').replace("\"", "")
 branch = "envman add --key BRANCH_RELEASE --value {}".format(branchName)
 
-print("NAME: ")
-print(name)
-print("BRANCH: ")
-print(branch)
-
 
 os.system(name)
 os.system(branch)
