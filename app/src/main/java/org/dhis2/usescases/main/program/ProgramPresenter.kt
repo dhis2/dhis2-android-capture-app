@@ -52,31 +52,20 @@ class ProgramPresenter internal constructor(
     private val _dataStoreFiltered = MutableStateFlow<DataStoreAppConfig?>(null)
     val dataStoreFiltered: StateFlow<DataStoreAppConfig?> = _dataStoreFiltered
 
-    val _programsTest = MutableStateFlow<List<ProgramViewModel>>(emptyList())
-    val programsTest: StateFlow<List<ProgramViewModel>> = _programsTest
-
     private val _dataStoreProgram =
         MutableStateFlow<List<org.dhis2.usescases.uiboost.data.model.Program>>(emptyList())
     val dataStoreProgram: StateFlow<List<org.dhis2.usescases.uiboost.data.model.Program>> =
         _dataStoreProgram
 
-    val programsGridTest = MutableLiveData<List<ProgramViewModel>>(emptyList())
     private val _programsGrid = MutableStateFlow<List<ProgramViewModel>>(emptyList())
     val programsGrid: StateFlow<List<ProgramViewModel>> = _programsGrid
 
-    //    private val _programsList = MutableLiveData<List<ProgramViewModel>>(emptyList())
     private val _programsList = MutableStateFlow<List<ProgramViewModel>>(emptyList())
     val programsList: StateFlow<List<ProgramViewModel>> = _programsList
 
     private val _programsGridUiSate =
         MutableStateFlow(ProgramGridUiState(programsListGridUiState = emptyList()))
     val programsGridUiSate: StateFlow<ProgramGridUiState> = _programsGridUiSate
-//    private val _settingsUiSate = MutableStateFlow(SettingsUiState(programUid = config.program))
-//    val settingsUiState: StateFlow<SettingsUiState> = _settingsUiSate
-
-    private val _dataEntryUiState = MutableStateFlow(DataEntryUiStateBoost())
-    val dataEntryUiState: StateFlow<DataEntryUiStateBoost> = _dataEntryUiState
-
 
     private val programsGridArray = ArrayList<ProgramViewModel>()
     private val programsListArray = ArrayList<ProgramViewModel>()
@@ -89,36 +78,20 @@ class ProgramPresenter internal constructor(
             launch {
                 programRepository.getDataStoreData().collectLatest {
                     _dataStore.value = (it)
-                    Timber.tag("STORE").d("$it")
                 }
                 programRepository.getFilteredDataStore().collectLatest {
-
                     _dataStoreFiltered.value = it
-
-                    val flatPrograms = it!!.programGroups.flatMap { it.programs }
-                    Timber.tag("FLAT_PROGRAMS").d("$flatPrograms")
-
-                    val items = flatPrograms.map { it }
-                    Timber.tag("ITEM_PROGRAMS").d("$items")
-
-                    _dataStoreProgram.value = items
-
-                    items.map {
-                        it
-                    }
-
-
-                    val mapPrograms = it.programGroups.map { it.programs }
-                    Timber.tag("MAP_PROGRAMS").d("$mapPrograms")
-
-//                    _programs2.collectLatest {
-//                        Timber.tag("REAL_PROGRAMS_STATE").d("${it}")
-//                    }
-
                 }
             }
         }
-        Timber.tag("REAL_PROGRAMS").d("${programs().value}")
+    }
+
+    fun setProgramsGrid(program: List<ProgramViewModel>) {
+        _programsGrid.value = program
+    }
+
+    fun setProgramsList(program: List<ProgramViewModel>) {
+        _programsList.value = program
     }
 
     fun getGrid(): Flow<List<ProgramViewModel>> {
@@ -128,121 +101,6 @@ class ProgramPresenter internal constructor(
     fun getList(): Flow<List<ProgramViewModel>> {
         return flowOf(programsListArray)
     }
-
-    fun setProgramsByDataStore2() {
-        val dataStore = DataStoreAppConfig.fromJson(_dataStore.value.getOrNull(0)?.value())
-        dataStore?.let { config ->
-
-            config.programGroups.forEach { group ->
-
-                programs.value?.let { programsList ->
-
-                    programsList.forEach { programViewModel ->
-
-                        if (group.style == "GRID") {
-                            val listGrid = group.programs.filter { p ->
-                                p.program == programViewModel.uid
-                            }
-                            Timber.tag("DO").d("$listGrid")
-
-                            group.programs.forEach { localProgram ->
-                                if ((localProgram.program == programViewModel.uid) && localProgram.hidden == "false") {
-                                    programsGridTest.postValue(listOf(programViewModel))
-//                                    _programsGrid.value = _programsGrid.value.toMutableList() + programViewModel
-                                    Timber.tag("GRID1").d("${_programsGrid.value}")
-                                    _programsGridUiSate.update { currentUiState ->
-                                        currentUiState.copy(
-                                            programsListGridUiState = listOf(programViewModel)
-                                        )
-                                    }
-                                    programsGridArray.add(programViewModel)
-                                }
-                            }
-                            _programsGrid.value = programsGridArray
-                        }
-                        if (group.style == "LIST") {
-                            group.programs.forEach { localProgram ->
-                                if ((localProgram.program == programViewModel.uid) && localProgram.hidden == "false") {
-                                    _programsList.value =
-                                        _programsList.value.toMutableList() + programViewModel
-                                    Timber.tag("LIST1").d("${_programsList.value}")
-                                }
-                            }
-                        }
-                    }
-
-                }
-
-            }
-
-
-        }
-
-
-//        programs.value?.let { programsData ->
-//            programsData.forEach { programViewModel ->
-//
-//                dataStore?.let { config ->
-//                    config.programs.forEach {
-//                        if (programViewModel.uid == it.program) {
-//                            if (it.programGroup == "PRIMARY") {
-//                                programsGridArray.add(programViewModel)
-//                                _programsGrid.value = programsGridArray
-//                            }
-//
-//                            if (it.programGroup == "SECONDARY") {
-//                                programsListArray.add(programViewModel)
-//                                _programsList.value = programsListArray
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-    }
-
-    fun setProgramsByDataStore() {
-        val dataStore = DataStoreAppConfig.fromJson(_dataStore.value.getOrNull(0)?.value())
-        dataStore?.let { config ->
-            config.programGroups.forEach { group ->
-
-                programs.value?.let { programsList ->
-
-                    programsList.forEach { programViewModel ->
-
-                        if (group.style == "GRID") {
-                            group.programs.forEach { localProgram ->
-                                if ((localProgram.program == programViewModel.uid) && localProgram.hidden == "false") {
-                                    programsGridTest.postValue(listOf(programViewModel))
-//                                    _programsGrid.value = _programsGrid.value.toMutableList() + programViewModel
-                                    Timber.tag("GRID1").d("${_programsGrid.value}")
-                                    _programsGridUiSate.update { currentUiState ->
-                                        currentUiState.copy(
-                                            programsListGridUiState = listOf(programViewModel)
-                                        )
-                                    }
-                                    programsGridArray.add(programViewModel)
-                                }
-                            }
-                            _programsGrid.value = programsGridArray
-                        }
-                        if (group.style == "LIST") {
-                            group.programs.forEach { localProgram ->
-                                if ((localProgram.program == programViewModel.uid) && localProgram.hidden == "false") {
-                                    _programsList.value =
-                                        _programsList.value.toMutableList() + programViewModel
-                                    Timber.tag("LIST1").d("${_programsList.value}")
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
     fun init() {
         val applyFiler = PublishProcessor.create<FilterManager>()
         programRepository.clearCache()
@@ -251,7 +109,7 @@ class ProgramPresenter internal constructor(
             applyFiler
                 .switchMap {
                     refreshData.debounce(
-                        500,
+                        100,
                         TimeUnit.MILLISECONDS,
                         schedulerProvider.io()
                     ).startWith(Unit).switchMap {
@@ -296,7 +154,6 @@ class ProgramPresenter internal constructor(
                 )
         )
         getStore()
-        setProgramsByDataStore()
     }
 
     fun onSyncStatusClick(program: ProgramViewModel) {
@@ -360,9 +217,6 @@ class ProgramPresenter internal constructor(
     }
 
     fun programs() = programs
-    fun programsList() = _programsList
-    fun programsGrid() = _programsGrid
-
     fun downloadState() = syncStatusController.observeDownloadProcess()
 
     fun setIsDownloading() {
