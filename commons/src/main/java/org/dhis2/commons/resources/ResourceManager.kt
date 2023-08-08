@@ -6,6 +6,7 @@ import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.commons.R
+import org.dhis2.commons.network.NetworkUtils
 import org.hisp.dhis.android.core.D2Manager
 
 class ResourceManager(val context: Context) {
@@ -59,7 +60,8 @@ class ResourceManager(val context: Context) {
     }
 
     fun parseD2Error(throwable: Throwable) =
-        D2ErrorUtils(getWrapperContext()).getErrorMessage(throwable)
+        D2ErrorUtils(getWrapperContext(), NetworkUtils(getWrapperContext()))
+            .getErrorMessage(throwable)
 
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
     fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)

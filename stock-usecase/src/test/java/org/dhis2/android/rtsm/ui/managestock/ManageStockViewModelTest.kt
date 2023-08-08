@@ -15,6 +15,7 @@ import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
+import org.dhis2.android.rtsm.services.StockTableDimensionStore
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
@@ -66,6 +67,7 @@ class ManageStockViewModelTest {
     private val resourceManager: ResourceManager = mock()
     private val tableModelMapper: TableModelMapper = mock()
     private val dispatcherProvider: DispatcherProvider = mock()
+    private val stockTableDimensionStore: StockTableDimensionStore = mock()
 
     private fun getModel() = ManageStockViewModel(
         disposable,
@@ -75,7 +77,8 @@ class ManageStockViewModelTest {
         speechRecognitionManagerImpl,
         resourceManager,
         tableModelMapper,
-        dispatcherProvider
+        dispatcherProvider,
+        stockTableDimensionStore
     )
 
     private fun createStockEntry(

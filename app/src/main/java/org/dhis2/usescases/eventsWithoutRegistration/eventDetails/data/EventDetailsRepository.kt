@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 import io.reactivex.Observable
 import java.util.Calendar
 import java.util.Date
-import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.form.model.FieldUiModel
@@ -34,7 +33,7 @@ class EventDetailsRepository(
     private val eventUid: String?,
     private val programStageUid: String?,
     private val fieldFactory: FieldViewModelFactory,
-    private val d2ErrorMapper: D2ErrorUtils
+    private val onError: (Throwable) -> String?
 ) {
 
     fun getProgramStage(): ProgramStage {
@@ -306,7 +305,7 @@ class EventDetailsRepository(
     } catch (d2Error: D2Error) {
         Result.failure(
             java.lang.Exception(
-                d2ErrorMapper.getErrorMessage(d2Error),
+                onError(d2Error),
                 d2Error
             )
         )
