@@ -208,6 +208,8 @@
     <string name="error_min_attributes">There are not enough attributes to perform the search. Please refine your search with more attributes.</string>
     <string name="error_org_unit_scope">Online search is only available for your user search organisation units.</string>
     <string name="error_invalid_characters">There are invalid characters in the query. Please ask the administrator to verify the server configuration (relaxedQueryChars,...).</string>
+    <string name="error_server_unavailable">The server is currently unavailable. Try again later.</string>
+    <string name="error_no_internet_connection">You are offline. Connect to the internet and try again.</string>
     <string name="unsupported_field_description">This field is not available for mobile capture</string>
     <string name="add_image">Add Image</string>
     <string name="add_signature">Add signature</string>
