@@ -99,12 +99,8 @@ class TEICardExtensionsTest {
         mockEnrollmentIconsData()
         val result = programs.getEnrollmentIconsData(context, "uid_100", colorUtils)
         assert(result.size == 4)
-        result.forEachIndexed { index, item ->
-            if (index == result.size - 1) {
-                assert(!item.isIcon)
-                assert(item.remainingEnrollments == 99)
-            }
-        }
+        assert(!result.last().isIcon)
+        assert(result.last().remainingEnrollments == 99)
     }
 
     private fun mockEnrollmentIconsData() {
