@@ -1,13 +1,9 @@
 package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.parallel.ParallelFlowable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -21,7 +17,6 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
-import timber.log.Timber
 
 internal class ProgramRepositoryImpl(
     private val d2: D2,
@@ -70,7 +65,7 @@ internal class ProgramRepositoryImpl(
         val dataStore = DataStoreAppConfig.fromJson(
             d2.dataStoreModule().dataStore().byKey().eq("SC001").blockingGet().getOrNull(0)?.value()
         )
-        return flowOf(dataStore);
+        return flowOf(dataStore)
     }
 
     private fun aggregatesModels(): Flowable<List<ProgramViewModel>> {

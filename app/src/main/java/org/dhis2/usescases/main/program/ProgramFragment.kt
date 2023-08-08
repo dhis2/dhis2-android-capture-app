@@ -18,11 +18,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
@@ -105,8 +105,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                     downLoadState = state,
                     programs = items,
                     dataStore = DataStoreAppConfig
-                        .fromJson(presenter.dataStore.
-                        collectAsState().value.getOrNull(0)?.value()),
+                        .fromJson(
+                            presenter.dataStore
+                                .collectAsState().value.getOrNull(0)?.value()
+                        ),
                     presenter = presenter,
                     onItemClick = {
                         presenter.onItemClick(it)

@@ -9,7 +9,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +45,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,7 +66,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,10 +78,7 @@ import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
-import org.dhis2.usescases.uiboost.data.model.Program
-import org.dhis2.usescases.uiboost.ui.model.DataEntryUiStateBoost
 import org.hisp.dhis.android.core.common.State
-import timber.log.Timber
 
 @Composable
 fun ProgramList(
@@ -133,7 +127,6 @@ fun ProgramList(
                 }
 
             else -> {
-
                 dataStore?.let { dataStoreAppConfig ->
 
                     val gridData = dataStoreAppConfig.programGroups.filter {
@@ -151,7 +144,6 @@ fun ProgramList(
 
                     val gridOrder = gridData.map { it.order }
                     val listOrder = listData.map { it.order }
-
 
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -194,13 +186,17 @@ fun ProgramList(
                                         val list: ArrayList<ProgramViewModel> = ArrayList()
                                         for (program in programs) {
                                             for (flat in flatPrograms) {
-                                                if ((flat.program == program.uid) && flat.hidden == "false") {
+                                                if ((flat.program == program.uid) &&
+                                                    flat.hidden == "false"
+                                                ) {
                                                     list.add(program)
                                                 }
                                             }
                                         }
                                         presenter.setProgramsGrid(list)
-                                        itemsIndexed(items = presenter.programsGrid.value) { index, program ->
+                                        itemsIndexed(
+                                            items = presenter.programsGrid.value
+                                        ) { index, program ->
                                             ProgramItemCard(
                                                 modifier = Modifier.semantics {
                                                     testTag = HOME_ITEM.format(index)
@@ -211,7 +207,6 @@ fun ProgramList(
                                             )
                                         }
                                     }
-
                                 }
                             }
 
@@ -235,16 +230,21 @@ fun ProgramList(
                                         modifier = Modifier.testTag(HOME_ITEMS),
                                         contentPadding = PaddingValues(bottom = 56.dp)
                                     ) {
-                                        val list: ArrayList<ProgramViewModel> = ArrayList()
+                                        val list: ArrayList<ProgramViewModel> =
+                                            ArrayList()
                                         for (program in programs) {
                                             for (flat in flatProgramsList) {
-                                                if ((flat.program == program.uid) && flat.hidden == "false") {
+                                                if ((flat.program == program.uid) &&
+                                                    flat.hidden == "false"
+                                                ) {
                                                     list.add(program)
                                                 }
                                             }
                                         }
                                         presenter.setProgramsList(list)
-                                        itemsIndexed(items = presenter.programsList.value) { index, program ->
+                                        itemsIndexed(
+                                            items = presenter.programsList.value
+                                        ) { index, program ->
                                             ProgramItem(
                                                 modifier = Modifier.semantics {
                                                     testTag = HOME_ITEM.format(index)
@@ -261,7 +261,6 @@ fun ProgramList(
                                         }
                                     }
                                 }
-
                             }
                         }
                     }
@@ -394,7 +393,6 @@ fun ProgramItemCard(
         }
     }
 }
-
 
 @Composable
 fun ProgramItem(
@@ -692,9 +690,9 @@ fun ProgramTestDownloaded() {
     )
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun ListPreview() {
+// @Preview(showBackground = true)
+// @Composable
+// fun ListPreview() {
 //    ProgramList(
 //        programs = listOf(
 //            testingProgramModel().copy(state = State.WARNING),
@@ -710,7 +708,7 @@ fun ProgramTestDownloaded() {
 //        onGranularSyncClick = {},
 //        downLoadState = SyncStatusData(true, true, emptyMap())
 //    )
-//}
+// }
 
 @Preview(showBackground = true)
 @Composable

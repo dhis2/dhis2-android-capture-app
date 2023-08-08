@@ -1,9 +1,10 @@
 package org.dhis2.usescases.uiboost.viewmodels
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.dhis2.commons.filters.FilterManager
@@ -16,8 +17,6 @@ import org.dhis2.usescases.main.program.ProgramView
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.usescases.main.program.StockManagementMapper
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 class HomeProgramViewModel @Inject internal constructor(
     private val view: ProgramView,
@@ -62,7 +61,7 @@ class HomeProgramViewModel @Inject internal constructor(
                     { programs ->
                         _programs.value = programs
                         view.swapProgramModelData(programs)
-                        Timber.tag("PGRAM").d("${programs}")
+                        Timber.tag("PGRAM").d("$programs")
                     },
                     { throwable -> Timber.d(throwable) },
                     { Timber.tag("INIT DATA").d("LOADING ENDED") }

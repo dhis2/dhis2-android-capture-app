@@ -40,7 +40,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
@@ -308,8 +307,8 @@ class GranularSyncPresenter(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-                last.sent == sent &&
-                last.total == total
+            last.sent == sent &&
+            last.total == total
     }
 
     private fun updateStateList(currentStatus: SmsSendingService.SendingStatus) {

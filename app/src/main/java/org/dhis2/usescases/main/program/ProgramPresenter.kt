@@ -1,23 +1,17 @@
 package org.dhis2.usescases.main.program
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
-import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
-import java.util.concurrent.TimeUnit
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.commons.matomo.Categories.Companion.HOME
@@ -26,7 +20,6 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
-import org.dhis2.usescases.uiboost.ui.model.DataEntryUiStateBoost
 import org.dhis2.usescases.uiboost.ui.model.ProgramGridUiState
 import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit

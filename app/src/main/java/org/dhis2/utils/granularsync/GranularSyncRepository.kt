@@ -1,9 +1,9 @@
 package org.dhis2.utils.granularsync
 
 import io.reactivex.Single
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.commons.bindings.categoryOptionCombo
 import org.dhis2.commons.bindings.countEventImportConflicts
@@ -51,7 +51,6 @@ import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramType
-import timber.log.Timber
 
 class GranularSyncRepository(
     private val d2: D2,
@@ -919,12 +918,12 @@ class GranularSyncRepository(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
 
             stateCandidates.contains(State.TO_POST) ||
-                    stateCandidates.contains(State.UPLOADING) ||
-                    stateCandidates.contains(State.TO_UPDATE) ->
+                stateCandidates.contains(State.UPLOADING) ||
+                stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
 
             else -> State.SYNCED

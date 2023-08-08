@@ -1,8 +1,6 @@
 package org.dhis2.usescases.main.program
 
-import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
-import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
@@ -14,5 +12,5 @@ internal interface ProgramRepository {
     fun aggregatesModels(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>>
     fun clearCache()
     fun getDataStoreData(): Flow<List<DataStoreEntry>>
-    fun getFilteredDataStore():  Flow<DataStoreAppConfig?>
+    fun getFilteredDataStore(): Flow<DataStoreAppConfig?>
 }
