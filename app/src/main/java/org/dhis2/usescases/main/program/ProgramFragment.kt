@@ -12,18 +12,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,7 +31,6 @@ import org.dhis2.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.ui.home.HomeActivity
-import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
@@ -52,7 +47,6 @@ import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
@@ -110,8 +104,9 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                 ProgramList(
                     downLoadState = state,
                     programs = items,
-                    dataStore = DataStoreAppConfig.fromJson(presenter.dataStore.collectAsState().value.getOrNull(0)?.value()),
-//                    dataEntryUiStateBoost = dataEntryUiState,
+                    dataStore = DataStoreAppConfig
+                        .fromJson(presenter.dataStore.
+                        collectAsState().value.getOrNull(0)?.value()),
                     presenter = presenter,
                     onItemClick = {
                         presenter.onItemClick(it)
@@ -125,18 +120,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
     override fun onResume() {
         super.onResume()
-        Timber.tag("LIFE").d("RESUME")
         presenter.init()
         animation.initBackdropCorners(
             binding.drawerLayout.background.mutate() as GradientDrawable
         )
         CoroutineScope(Dispatchers.IO).launch {
-            presenter.dataStoreProgram.collectLatest {
-                Timber.tag("response2Program").d("$it")
-            }
-            presenter.programsList.collectLatest {
-                Timber.tag("GRID").d("$it")
-            }
+            presenter.dataStoreProgram.collectLatest {}
+            presenter.programsList.collectLatest {}
         }
     }
 
