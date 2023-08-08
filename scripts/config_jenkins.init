@@ -1,6 +1,6 @@
 build_time_average=660
 polling_interval=10
-browserstack_device_list="\"Samsung Galaxy S10-9.0\""
+browserstack_device_list="\"Samsung Galaxy S21-12.0\""
 browserstack_video=true
 browserstack_local=false
 browserstack_gps_location="40.730610,-73.935242"
