@@ -16,21 +16,21 @@ class FormUiModelColorFactoryImpl(
             return mapOf(
                 FormUiColorType.PRIMARY to
                     colorUtils.getPrimaryColor(context, ColorType.PRIMARY),
-            FormUiColorType.TEXT_PRIMARY to
-                ContextCompat.getColor(context, R.color.textPrimary),
-            FormUiColorType.FIELD_LABEL_TEXT to
-                ContextCompat.getColor(context, R.color.text_black_A63),
-            FormUiColorType.WARNING to
-                ContextCompat.getColor(context, R.color.warning_color),
-            FormUiColorType.ERROR to
-                ContextCompat.getColor(context, R.color.error_color),
-            FormUiColorType.ACTION_ICON to
-                ContextCompat.getColor(context, R.color.colorGreyDefault)
-        )
-    }
-    return mapOf(
-    FormUiColorType.PRIMARY to
-    colorUtils.getPrimaryColor(context, ColorType.ACCENT),
+                FormUiColorType.TEXT_PRIMARY to
+                    ContextCompat.getColor(context, R.color.textPrimary),
+                FormUiColorType.FIELD_LABEL_TEXT to
+                    ContextCompat.getColor(context, R.color.text_black_A63),
+                FormUiColorType.WARNING to
+                    ContextCompat.getColor(context, R.color.warning_color),
+                FormUiColorType.ERROR to
+                    ContextCompat.getColor(context, R.color.error_color),
+                FormUiColorType.ACTION_ICON to
+                    ContextCompat.getColor(context, R.color.colorGreyDefault)
+            )
+        }
+        return mapOf(
+            FormUiColorType.PRIMARY to
+                colorUtils.getPrimaryColor(context, ColorType.ACCENT),
             FormUiColorType.TEXT_PRIMARY to
                 colorUtils.getPrimaryColor(context, ColorType.ACCENT),
             FormUiColorType.FIELD_LABEL_TEXT to

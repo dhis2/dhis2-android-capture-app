@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import javax.inject.Inject
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
@@ -29,7 +30,6 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICON
-import javax.inject.Inject
 
 class MapLayerDialog(
     private val mapManager: MapManager

@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
+import javax.inject.Inject
 import org.dhis2.Bindings.getEnrollmentIconsData
 import org.dhis2.Bindings.hasFollowUp
 import org.dhis2.Bindings.paintAllEnrollmentIcons
@@ -16,7 +17,6 @@ import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselTeiBinding
-import javax.inject.Inject
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,

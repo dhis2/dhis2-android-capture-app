@@ -22,7 +22,12 @@ import org.hisp.dhis.android.core.option.Option
 @BindingAdapter("optionImage")
 fun ImageView.setOptionImage(option: Option) {
     val iconDrawable =
-        ObjectStyleUtils.getIconResource(context, option.style().icon(), R.drawable.ic_default_icon, ColorUtils())
+        ObjectStyleUtils.getIconResource(
+            context,
+            option.style().icon(),
+            R.drawable.ic_default_icon,
+            ColorUtils()
+        )
     val color =
         ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
     iconDrawable?.let {

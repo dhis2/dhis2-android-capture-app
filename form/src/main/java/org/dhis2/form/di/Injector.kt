@@ -103,7 +103,7 @@ object Injector {
     private fun provideDataEntryRepository(
         entryMode: EntryMode?,
         context: Context,
-        repositoryRecords: FormRepositoryRecords,
+        repositoryRecords: FormRepositoryRecords
     ): DataEntryRepository {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRepository(
@@ -250,7 +250,8 @@ object Injector {
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
     private fun provideResourcesManager(context: Context) = ResourceManager(
-        context, provideColorUtils()
+        context,
+        provideColorUtils()
     )
 
     private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
@@ -285,9 +286,7 @@ object Injector {
 
     private fun provideOptionsRepository() = OptionsRepository(provideD2())
 
-    private fun provideLegendValueProvider(
-        context: Context
-    ) = LegendValueProviderImpl(
+    private fun provideLegendValueProvider(context: Context) = LegendValueProviderImpl(
         provideD2(),
         provideResourcesManager(context)
     )

@@ -19,6 +19,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
+import javax.inject.Inject
 import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
@@ -30,7 +31,6 @@ import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
-import javax.inject.Inject
 
 abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 

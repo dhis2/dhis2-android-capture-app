@@ -38,7 +38,8 @@ class AppModule {
     @Singleton
     fun provideResourcesProvider(
         @ApplicationContext appContext: Context,
-        colorUtils: ColorUtils): ResourceManager {
+        colorUtils: ColorUtils
+    ): ResourceManager {
         return ResourceManager(appContext, colorUtils)
     }
 
@@ -50,6 +51,6 @@ class AppModule {
     @Provides
     @Singleton
     fun provideColorUtilsProvider(): ColorUtils {
-        return  ColorUtils()
+        return ColorUtils()
     }
 }

@@ -9,7 +9,8 @@ import org.dhis2.form.R
 class LongTextUiColorFactoryImpl(
     val context: Context,
     val isBackgroundTransparent: Boolean,
-    val colorUtils: ColorUtils) :
+    val colorUtils: ColorUtils
+) :
     FormUiColorFactory {
     override fun getBasicColors(): Map<FormUiColorType, Int> {
         if (isBackgroundTransparent) {

@@ -23,8 +23,8 @@ import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
-import org.dhis2.commons.resources.ColorUtils
 import javax.inject.Singleton
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
@@ -134,10 +134,7 @@ class ChartsModule {
     }
 
     @Provides
-    internal fun provideResourceManager(
-        context: Context,
-        colorUtils: ColorUtils
-    ): ResourceManager {
+    internal fun provideResourceManager(context: Context, colorUtils: ColorUtils): ResourceManager {
         return ResourceManager(context, colorUtils)
     }
 

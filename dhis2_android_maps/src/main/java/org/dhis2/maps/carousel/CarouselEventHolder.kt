@@ -3,6 +3,7 @@ package org.dhis2.maps.carousel
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
+import javax.inject.Inject
 import org.dhis2.Bindings.setTeiImage
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.DateUtils
@@ -16,7 +17,6 @@ import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.setUpMetadataIcon
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import javax.inject.Inject
 
 class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,
