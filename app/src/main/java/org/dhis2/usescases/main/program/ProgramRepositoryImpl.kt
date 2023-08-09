@@ -59,12 +59,18 @@ internal class ProgramRepositoryImpl(
     }
 
     override fun getDataStoreData(): Flow<List<DataStoreEntry>> {
-        return flowOf(d2.dataStoreModule().dataStore().byKey().eq(Constants.DATA_STORE_KEY).blockingGet())
+        return flowOf(
+            d2.dataStoreModule().dataStore().byKey().eq(Constants.DATA_STORE_KEY).blockingGet()
+        )
     }
 
     override fun getFilteredDataStore(): Flow<DataStoreAppConfig?> {
         val dataStore = DataStoreAppConfig.fromJson(
-            d2.dataStoreModule().dataStore().byKey().eq(Constants.DATA_STORE_KEY).blockingGet().getOrNull(0)?.value()
+            d2.dataStoreModule().dataStore().byKey()
+                .eq(Constants.DATA_STORE_KEY).blockingGet()
+                .getOrNull(
+                    0
+                )?.value()
         )
         return flowOf(dataStore)
     }

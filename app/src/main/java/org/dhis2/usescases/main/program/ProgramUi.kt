@@ -128,7 +128,6 @@ fun ProgramList(
                 }
 
             else -> {
-
                 if (dataStore != null) {
                     dataStore.let { dataStoreAppConfig ->
 
@@ -158,19 +157,46 @@ fun ProgramList(
                                     colorResource(id = R.color.primaryAlpha)
                                 )
                             } else {
-
                                 if (gridOrder[0] == 0) {
-                                    GridLayout(programs, flatPrograms, labelGrid, presenter, onItemClick, onGranularSyncClick)
+                                    GridLayout(
+                                        programs,
+                                        flatPrograms,
+                                        labelGrid,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
                                 }
                                 if (listOrder[0] == 1) {
-                                    ListLayout(programs, flatProgramsList, labelList, presenter, onItemClick, onGranularSyncClick)
+                                    ListLayout(
+                                        programs,
+                                        flatProgramsList,
+                                        labelList,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
                                 }
 
                                 if (listOrder[0] == 0) {
-                                    ListLayout(programs, flatProgramsList, labelList, presenter, onItemClick, onGranularSyncClick)
+                                    ListLayout(
+                                        programs,
+                                        flatProgramsList,
+                                        labelList,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
                                 }
                                 if (gridOrder[0] == 1) {
-                                    GridLayout(programs, flatPrograms, labelGrid, presenter, onItemClick, onGranularSyncClick)
+                                    GridLayout(
+                                        programs,
+                                        flatPrograms,
+                                        labelGrid,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
                                 }
                             }
                         }
@@ -201,6 +227,7 @@ fun ProgramList(
         }
     }
 }
+
 @Composable
 fun GridLayout(
     programs: List<ProgramViewModel>,
@@ -749,9 +776,9 @@ fun ProgramTestDownloaded() {
     )
 }
 
- @Preview(showBackground = true)
- @Composable
- fun ListPreview() {
+@Preview(showBackground = true)
+@Composable
+fun ListPreview() {
     ProgramList(
         programs = listOf(
             testingProgramModel().copy(state = State.WARNING),
@@ -768,7 +795,7 @@ fun ProgramTestDownloaded() {
         onGranularSyncClick = {},
         downLoadState = SyncStatusData(true, true, emptyMap())
     )
- }
+}
 
 @Preview(showBackground = true)
 @Composable
