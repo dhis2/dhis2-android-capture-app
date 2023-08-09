@@ -93,6 +93,7 @@ class NavigationBottomBar @JvmOverloads constructor(
             listener?.onNavigationItemSelected(item) ?: false
         }
     }
+
     @Deprecated("Deprecated in Java")
     override fun setOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener?) {
         super.setOnNavigationItemSelectedListener { item ->
