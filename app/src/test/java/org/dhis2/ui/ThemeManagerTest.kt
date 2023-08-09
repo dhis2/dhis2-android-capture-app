@@ -37,6 +37,7 @@ class ThemeManagerTest {
         val programColor = "#ffcdd2"
         val themeColor = R.style.colorPrimary_Pink
         whenever(programConfiguration.getProgramColor("uid")) doReturn programColor
+        whenever(colorUtils.getThemeFromColor(programColor)) doReturn themeColor
         themeManager.setProgramTheme("uid")
         verify(programConfiguration).getProgramColor("uid")
         verify(preferenceProvider).setValue(Constants.PROGRAM_THEME, themeColor)
@@ -46,6 +47,7 @@ class ThemeManagerTest {
     fun shouldRemoveProgramThemeForProgramWithNoColor() {
         val programColor = null
         whenever(programConfiguration.getProgramColor("uid")) doReturn programColor
+        whenever(colorUtils.getThemeFromColor(programColor)) doReturn -1
         themeManager.setProgramTheme("uid")
         verify(preferenceProvider).removeValue(Constants.PROGRAM_THEME)
     }
@@ -57,6 +59,7 @@ class ThemeManagerTest {
         whenever(
             trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid")
         ) doReturn teTypeColor
+        whenever(colorUtils.getThemeFromColor(teTypeColor)) doReturn themeColor
         themeManager.setTrackedEntityTypeTheme("uid")
         verify(trackedEntityTypeConfiguration).getTrackedEntityTypeColor("uid")
         verify(preferenceProvider).setValue(Constants.PROGRAM_THEME, themeColor)
@@ -69,6 +72,7 @@ class ThemeManagerTest {
         whenever(
             trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid")
         ) doReturn teTypeColor
+        whenever(colorUtils.getThemeFromColor(teTypeColor)) doReturn themeColor
         themeManager.setTrackedEntityTypeTheme("uid")
         verify(trackedEntityTypeConfiguration).getTrackedEntityTypeColor("uid")
         verify(preferenceProvider).setValue(Constants.PROGRAM_THEME, themeColor)
