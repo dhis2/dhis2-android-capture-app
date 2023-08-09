@@ -10,7 +10,5 @@ class UBDataStoreRepositoryImpl @Inject constructor(
     override suspend fun downloadDataStore() {
         d2.dataStoreModule().dataStoreDownloader().download()
         val result = d2.dataStoreModule().dataStore().blockingGet()
-
-        Timber.tag("DATA_STORE").d("$result")
     }
 }

@@ -84,7 +84,7 @@ import org.hisp.dhis.android.core.common.State
 fun ProgramList(
     programs: List<ProgramViewModel>,
     dataStore: DataStoreAppConfig?,
-    presenter: ProgramPresenter,
+    presenter: ProgramPresenter?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
     downLoadState: SyncStatusData?
@@ -193,7 +193,7 @@ fun ProgramList(
                                                 }
                                             }
                                         }
-                                        presenter.setProgramsGrid(list)
+                                        presenter!!.setProgramsGrid(list)
                                         itemsIndexed(
                                             items = presenter.programsGrid.value
                                         ) { index, program ->
@@ -241,7 +241,7 @@ fun ProgramList(
                                                 }
                                             }
                                         }
-                                        presenter.setProgramsList(list)
+                                        presenter!!.setProgramsList(list)
                                         itemsIndexed(
                                             items = presenter.programsList.value
                                         ) { index, program ->
@@ -690,25 +690,26 @@ fun ProgramTestDownloaded() {
     )
 }
 
-// @Preview(showBackground = true)
-// @Composable
-// fun ListPreview() {
-//    ProgramList(
-//        programs = listOf(
-//            testingProgramModel().copy(state = State.WARNING),
-//            testingProgramModel().copy(state = State.ERROR),
-//            testingProgramModel().copy(state = State.SYNCED),
-//            testingProgramModel().copy(state = State.TO_POST),
-//            testingProgramModel().copy(state = State.TO_UPDATE),
-//            testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
-//            testingProgramModel().copy(state = State.SENT_VIA_SMS)
-//        ),
-//        dataStore = null,
-//        onItemClick = {},
-//        onGranularSyncClick = {},
-//        downLoadState = SyncStatusData(true, true, emptyMap())
-//    )
-// }
+ @Preview(showBackground = true)
+ @Composable
+ fun ListPreview() {
+    ProgramList(
+        programs = listOf(
+            testingProgramModel().copy(state = State.WARNING),
+            testingProgramModel().copy(state = State.ERROR),
+            testingProgramModel().copy(state = State.SYNCED),
+            testingProgramModel().copy(state = State.TO_POST),
+            testingProgramModel().copy(state = State.TO_UPDATE),
+            testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
+            testingProgramModel().copy(state = State.SENT_VIA_SMS)
+        ),
+        dataStore = null,
+        presenter = null,
+        onItemClick = {},
+        onGranularSyncClick = {},
+        downLoadState = SyncStatusData(true, true, emptyMap())
+    )
+ }
 
 @Preview(showBackground = true)
 @Composable
