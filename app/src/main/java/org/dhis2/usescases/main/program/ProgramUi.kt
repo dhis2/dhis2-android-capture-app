@@ -127,141 +127,165 @@ fun ProgramList(
                 }
 
             else -> {
-                dataStore?.let { dataStoreAppConfig ->
 
-                    val gridData = dataStoreAppConfig.programGroups.filter {
-                        it.style == "GRID"
-                    }
-                    val flatPrograms = gridData.flatMap { it.programs }
+                if (dataStore != null) {
+                    dataStore.let { dataStoreAppConfig ->
 
-                    val listData = dataStoreAppConfig.programGroups.filter {
-                        it.style == "LIST"
-                    }
-                    val flatProgramsList = listData.flatMap { it.programs }
+                        val gridData = dataStoreAppConfig.programGroups.filter {
+                            it.style == "GRID"
+                        }
+                        val flatPrograms = gridData.flatMap { it.programs }
 
-                    val labelGrid = gridData.map { it.label }
-                    val labelList = listData.map { it.label }
+                        val listData = dataStoreAppConfig.programGroups.filter {
+                            it.style == "LIST"
+                        }
+                        val flatProgramsList = listData.flatMap { it.programs }
 
-                    val gridOrder = gridData.map { it.order }
-                    val listOrder = listData.map { it.order }
+                        val labelGrid = gridData.map { it.label }
+                        val labelList = listData.map { it.label }
 
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        if (programs.isEmpty()) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.padding(8.dp),
-                                colorResource(id = R.color.primaryAlpha)
-                            )
-                        } else {
-                            if (flatPrograms.isNotEmpty()) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = labelGrid[0],
-                                        modifier = Modifier.padding(8.dp),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    LazyVerticalGrid(
-                                        columns = GridCells.Adaptive(128.dp),
+                        val gridOrder = gridData.map { it.order }
+                        val listOrder = listData.map { it.order }
+
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (programs.isEmpty()) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(8.dp),
+                                    colorResource(id = R.color.primaryAlpha)
+                                )
+                            } else {
+                                if (flatPrograms.isNotEmpty()) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = labelGrid[0],
+                                            modifier = Modifier.padding(8.dp),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        LazyVerticalGrid(
+                                            columns = GridCells.Adaptive(128.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                                .testTag(HOME_ITEMS),
+                                            contentPadding = PaddingValues(16.dp),
+                                            verticalArrangement = Arrangement.spacedBy(
+                                                16.dp,
+                                                Alignment.Top
+                                            ),
+                                            horizontalArrangement = Arrangement.spacedBy(
+                                                16.dp,
+                                                Alignment.CenterHorizontally
+                                            )
+                                        ) {
+                                            val list: ArrayList<ProgramViewModel> = ArrayList()
+                                            for (program in programs) {
+                                                for (flat in flatPrograms) {
+                                                    if ((flat.program == program.uid) &&
+                                                        flat.hidden == "false"
+                                                    ) {
+                                                        list.add(program)
+                                                    }
+                                                }
+                                            }
+                                            presenter!!.setProgramsGrid(list)
+                                            itemsIndexed(
+                                                items = presenter.programsGrid.value
+                                            ) { index, program ->
+                                                ProgramItemCard(
+                                                    modifier = Modifier.semantics {
+                                                        testTag = HOME_ITEM.format(index)
+                                                    },
+                                                    programViewModel = program,
+                                                    onItemClick = onItemClick,
+                                                    onGranularSyncClick = onGranularSyncClick
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (flatProgramsList.isNotEmpty()) {
+                                    Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .testTag(HOME_ITEMS),
-                                        contentPadding = PaddingValues(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(
-                                            16.dp,
-                                            Alignment.Top
-                                        ),
-                                        horizontalArrangement = Arrangement.spacedBy(
-                                            16.dp,
-                                            Alignment.CenterHorizontally
+                                            .wrapContentHeight(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = labelList[0],
+                                            modifier = Modifier.padding(8.dp),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Bold
                                         )
-                                    ) {
-                                        val list: ArrayList<ProgramViewModel> = ArrayList()
-                                        for (program in programs) {
-                                            for (flat in flatPrograms) {
-                                                if ((flat.program == program.uid) &&
-                                                    flat.hidden == "false"
-                                                ) {
-                                                    list.add(program)
+
+                                        LazyColumn(
+                                            modifier = Modifier.testTag(HOME_ITEMS),
+                                            contentPadding = PaddingValues(bottom = 56.dp)
+                                        ) {
+                                            val list: ArrayList<ProgramViewModel> =
+                                                ArrayList()
+                                            for (program in programs) {
+                                                for (flat in flatProgramsList) {
+                                                    if ((flat.program == program.uid) &&
+                                                        flat.hidden == "false"
+                                                    ) {
+                                                        list.add(program)
+                                                    }
                                                 }
                                             }
-                                        }
-                                        presenter!!.setProgramsGrid(list)
-                                        itemsIndexed(
-                                            items = presenter.programsGrid.value
-                                        ) { index, program ->
-                                            ProgramItemCard(
-                                                modifier = Modifier.semantics {
-                                                    testTag = HOME_ITEM.format(index)
-                                                },
-                                                programViewModel = program,
-                                                onItemClick = onItemClick,
-                                                onGranularSyncClick = onGranularSyncClick
-                                            )
+                                            presenter!!.setProgramsList(list)
+                                            itemsIndexed(
+                                                items = presenter.programsList.value
+                                            ) { index, program ->
+                                                ProgramItem(
+                                                    modifier = Modifier.semantics {
+                                                        testTag = HOME_ITEM.format(index)
+                                                    },
+                                                    programViewModel = program,
+                                                    onItemClick = onItemClick,
+                                                    onGranularSyncClick = onGranularSyncClick
+                                                )
+                                                Divider(
+                                                    color = colorResource(id = R.color.divider_bg),
+                                                    thickness = 1.dp,
+                                                    startIndent = 72.dp
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
-
-                            if (flatProgramsList.isNotEmpty()) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = labelList[0],
-                                        modifier = Modifier.padding(8.dp),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                    LazyColumn(
-                                        modifier = Modifier.testTag(HOME_ITEMS),
-                                        contentPadding = PaddingValues(bottom = 56.dp)
-                                    ) {
-                                        val list: ArrayList<ProgramViewModel> =
-                                            ArrayList()
-                                        for (program in programs) {
-                                            for (flat in flatProgramsList) {
-                                                if ((flat.program == program.uid) &&
-                                                    flat.hidden == "false"
-                                                ) {
-                                                    list.add(program)
-                                                }
-                                            }
-                                        }
-                                        presenter!!.setProgramsList(list)
-                                        itemsIndexed(
-                                            items = presenter.programsList.value
-                                        ) { index, program ->
-                                            ProgramItem(
-                                                modifier = Modifier.semantics {
-                                                    testTag = HOME_ITEM.format(index)
-                                                },
-                                                programViewModel = program,
-                                                onItemClick = onItemClick,
-                                                onGranularSyncClick = onGranularSyncClick
-                                            )
-                                            Divider(
-                                                color = colorResource(id = R.color.divider_bg),
-                                                thickness = 1.dp,
-                                                startIndent = 72.dp
-                                            )
-                                        }
-                                    }
-                                }
-                            }
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.testTag(HOME_ITEMS),
+                        contentPadding = PaddingValues(bottom = 56.dp)
+                    ) {
+                        itemsIndexed(programs) { index, program ->
+                            ProgramItem(
+                                modifier = Modifier.semantics {
+                                    testTag = HOME_ITEM.format(index)
+                                },
+                                programViewModel = program,
+                                onItemClick = onItemClick,
+                                onGranularSyncClick = onGranularSyncClick
+                            )
+                            Divider(
+                                color = colorResource(id = R.color.divider_bg),
+                                thickness = 1.dp,
+                                startIndent = 72.dp
+                            )
                         }
                     }
                 }
