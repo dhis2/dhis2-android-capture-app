@@ -11,6 +11,7 @@ import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
+import org.dhis2.usescases.uiboost.data.util.Constants
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
@@ -58,7 +59,7 @@ internal class ProgramRepositoryImpl(
     }
 
     override fun getDataStoreData(): Flow<List<DataStoreEntry>> {
-        return flowOf(d2.dataStoreModule().dataStore().byKey().eq("SC001").blockingGet())
+        return flowOf(d2.dataStoreModule().dataStore().byKey().eq(Constants.DATA_STORE_KEY).blockingGet())
     }
 
     override fun getFilteredDataStore(): Flow<DataStoreAppConfig?> {
