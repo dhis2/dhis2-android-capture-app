@@ -36,6 +36,7 @@ class WebViewActivity : Activity() {
                 }
 
                 // Compatibility with APIs below 24
+                @Deprecated("Deprecated in Java")
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                     return super.shouldOverrideUrlLoading(view, url)
                 }
@@ -50,6 +51,7 @@ class WebViewActivity : Activity() {
         finish()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         finish()
     }

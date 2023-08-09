@@ -161,6 +161,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         super.onDestroy()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -243,6 +244,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         onBackPressed()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         formView.onEditionFinish()
         attemptFinish()

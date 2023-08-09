@@ -129,6 +129,7 @@ class EventMapFragment :
         eventMapManager?.onSaveInstanceState(outState)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
