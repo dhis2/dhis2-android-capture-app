@@ -64,7 +64,7 @@ internal class ProgramRepositoryImpl(
 
     override fun getFilteredDataStore(): Flow<DataStoreAppConfig?> {
         val dataStore = DataStoreAppConfig.fromJson(
-            d2.dataStoreModule().dataStore().byKey().eq("SC001").blockingGet().getOrNull(0)?.value()
+            d2.dataStoreModule().dataStore().byKey().eq(Constants.DATA_STORE_KEY).blockingGet().getOrNull(0)?.value()
         )
         return flowOf(dataStore)
     }
