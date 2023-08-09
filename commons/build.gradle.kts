@@ -70,7 +70,6 @@ dependencies {
         exclude("junit", "junit")
     }
 
-    kapt(libs.metadata.jvm)
     api(libs.google.autoValue)
     kapt(libs.google.autoValue)
     api(libs.androidx.coreKtx)
