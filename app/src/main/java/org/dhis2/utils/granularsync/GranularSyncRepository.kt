@@ -78,6 +78,11 @@ class GranularSyncRepository(
             d2.dataStoreModule().dataStoreDownloader().download()
         }
     }
+    suspend fun downloadDataStoreBlockingGet() {
+        withContext(Dispatchers.IO) {
+            d2.dataStoreModule().dataStoreDownloader().blockingDownload()
+        }
+    }
 
     private fun getState(): Single<State> {
         return when (syncContext.conflictType()) {
