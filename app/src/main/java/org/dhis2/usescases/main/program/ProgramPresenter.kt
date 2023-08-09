@@ -4,6 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.commons.matomo.Categories.Companion.HOME
@@ -11,7 +19,11 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
+import org.dhis2.usescases.uiboost.ui.model.ProgramGridUiState
+import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
@@ -25,11 +37,63 @@ class ProgramPresenter internal constructor(
     private val identifyProgramType: IdentifyProgramType,
     private val stockManagementMapper: StockManagementMapper
 ) {
-
     private val programs = MutableLiveData<List<ProgramViewModel>>(emptyList())
+
+    private val _dataStore = MutableStateFlow<List<DataStoreEntry>>(emptyList())
+    val dataStore: StateFlow<List<DataStoreEntry>> = _dataStore
+
+    private val _dataStoreFiltered = MutableStateFlow<DataStoreAppConfig?>(null)
+    val dataStoreFiltered: StateFlow<DataStoreAppConfig?> = _dataStoreFiltered
+
+    private val _dataStoreProgram =
+        MutableStateFlow<List<org.dhis2.usescases.uiboost.data.model.Program>>(emptyList())
+    val dataStoreProgram: StateFlow<List<org.dhis2.usescases.uiboost.data.model.Program>> =
+        _dataStoreProgram
+
+    private val _programsGrid = MutableStateFlow<List<ProgramViewModel>>(emptyList())
+    val programsGrid: StateFlow<List<ProgramViewModel>> = _programsGrid
+
+    private val _programsList = MutableStateFlow<List<ProgramViewModel>>(emptyList())
+    val programsList: StateFlow<List<ProgramViewModel>> = _programsList
+
+    private val _programsGridUiSate =
+        MutableStateFlow(ProgramGridUiState(programsListGridUiState = emptyList()))
+    val programsGridUiSate: StateFlow<ProgramGridUiState> = _programsGridUiSate
+
+    private val programsGridArray = ArrayList<ProgramViewModel>()
+    private val programsListArray = ArrayList<ProgramViewModel>()
+
     private val refreshData = PublishProcessor.create<Unit>()
     var disposable: CompositeDisposable = CompositeDisposable()
 
+    private fun getStore() {
+        runBlocking(Dispatchers.IO) {
+            launch {
+                programRepository.getDataStoreData().collectLatest {
+                    _dataStore.value = (it)
+                }
+                programRepository.getFilteredDataStore().collectLatest {
+                    _dataStoreFiltered.value = it
+                }
+            }
+        }
+    }
+
+    fun setProgramsGrid(program: List<ProgramViewModel>) {
+        _programsGrid.value = program
+    }
+
+    fun setProgramsList(program: List<ProgramViewModel>) {
+        _programsList.value = program
+    }
+
+    fun getGrid(): Flow<List<ProgramViewModel>> {
+        return flowOf(programsGridArray)
+    }
+
+    fun getList(): Flow<List<ProgramViewModel>> {
+        return flowOf(programsListArray)
+    }
     fun init() {
         val applyFiler = PublishProcessor.create<FilterManager>()
         programRepository.clearCache()
@@ -38,7 +102,7 @@ class ProgramPresenter internal constructor(
             applyFiler
                 .switchMap {
                     refreshData.debounce(
-                        500,
+                        100,
                         TimeUnit.MILLISECONDS,
                         schedulerProvider.io()
                     ).startWith(Unit).switchMap {
@@ -82,6 +146,7 @@ class ProgramPresenter internal constructor(
                     { Timber.e(it) }
                 )
         )
+        getStore()
     }
 
     fun onSyncStatusClick(program: ProgramViewModel) {
@@ -99,6 +164,7 @@ class ProgramPresenter internal constructor(
         when (getHomeItemType(programModel)) {
             HomeItemType.PROGRAM_STOCK ->
                 view.navigateToStockManagement(stockManagementMapper.map(programModel))
+
             else ->
                 view.navigateTo(programModel)
         }
@@ -109,9 +175,11 @@ class ProgramPresenter internal constructor(
             ProgramType.WITH_REGISTRATION.name -> {
                 identifyProgramType(programModel.uid)
             }
+
             ProgramType.WITHOUT_REGISTRATION.name -> {
                 HomeItemType.EVENTS
             }
+
             else -> {
                 HomeItemType.DATA_SET
             }
@@ -142,7 +210,6 @@ class ProgramPresenter internal constructor(
     }
 
     fun programs() = programs
-
     fun downloadState() = syncStatusController.observeDownloadProcess()
 
     fun setIsDownloading() {

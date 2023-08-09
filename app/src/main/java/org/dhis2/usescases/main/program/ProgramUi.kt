@@ -9,24 +9,27 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
@@ -38,6 +41,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -61,6 +66,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,12 +77,15 @@ import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
+import org.dhis2.usescases.uiboost.data.model.Program
 import org.hisp.dhis.android.core.common.State
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ProgramList(
     programs: List<ProgramViewModel>,
+    dataStore: DataStoreAppConfig?,
+    presenter: ProgramPresenter?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
     downLoadState: SyncStatusData?
@@ -116,25 +126,356 @@ fun ProgramList(
                         )
                     }
                 }
-            else ->
-                LazyColumn(
-                    modifier = Modifier.testTag(HOME_ITEMS),
-                    contentPadding = PaddingValues(bottom = 56.dp)
-                ) {
-                    itemsIndexed(items = programs) { index, program ->
-                        ProgramItem(
-                            modifier = Modifier.semantics { testTag = HOME_ITEM.format(index) },
-                            programViewModel = program,
-                            onItemClick = onItemClick,
-                            onGranularSyncClick = onGranularSyncClick
-                        )
-                        Divider(
-                            color = colorResource(id = R.color.divider_bg),
-                            thickness = 1.dp,
-                            startIndent = 72.dp
-                        )
+
+            else -> {
+                if (dataStore != null) {
+                    dataStore.let { dataStoreAppConfig ->
+
+                        val gridData = dataStoreAppConfig.programGroups.filter {
+                            it.style == "GRID"
+                        }
+                        val flatPrograms = gridData.flatMap { it.programs }
+
+                        val listData = dataStoreAppConfig.programGroups.filter {
+                            it.style == "LIST"
+                        }
+                        val flatProgramsList = listData.flatMap { it.programs }
+
+                        val labelGrid = gridData.map { it.label }
+                        val labelList = listData.map { it.label }
+
+                        val gridOrder = gridData.map { it.order }
+                        val listOrder = listData.map { it.order }
+
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (programs.isEmpty()) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(8.dp),
+                                    colorResource(id = R.color.primaryAlpha)
+                                )
+                            } else {
+                                if (gridOrder[0] == 0) {
+                                    GridLayout(
+                                        programs,
+                                        flatPrograms,
+                                        labelGrid,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
+                                }
+                                if (listOrder[0] == 1) {
+                                    ListLayout(
+                                        programs,
+                                        flatProgramsList,
+                                        labelList,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
+                                }
+
+                                if (listOrder[0] == 0) {
+                                    ListLayout(
+                                        programs,
+                                        flatProgramsList,
+                                        labelList,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
+                                }
+                                if (gridOrder[0] == 1) {
+                                    GridLayout(
+                                        programs,
+                                        flatPrograms,
+                                        labelGrid,
+                                        presenter,
+                                        onItemClick,
+                                        onGranularSyncClick
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.testTag(HOME_ITEMS),
+                        contentPadding = PaddingValues(bottom = 56.dp)
+                    ) {
+                        itemsIndexed(programs) { index, program ->
+                            ProgramItem(
+                                modifier = Modifier.semantics {
+                                    testTag = HOME_ITEM.format(index)
+                                },
+                                programViewModel = program,
+                                onItemClick = onItemClick,
+                                onGranularSyncClick = onGranularSyncClick
+                            )
+                            Divider(
+                                color = colorResource(id = R.color.divider_bg),
+                                thickness = 1.dp,
+                                startIndent = 72.dp
+                            )
+                        }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun GridLayout(
+    programs: List<ProgramViewModel>,
+    flatPrograms: List<Program>,
+    labelGrid: List<String>,
+    presenter: ProgramPresenter?,
+    onItemClick: (programViewModel: ProgramViewModel) -> Unit,
+    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit
+) {
+    if (flatPrograms.isNotEmpty()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = labelGrid[0],
+                modifier = Modifier.padding(8.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(128.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .testTag(HOME_ITEMS),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(
+                    16.dp,
+                    Alignment.Top
+                ),
+                horizontalArrangement = Arrangement.spacedBy(
+                    16.dp,
+                    Alignment.CenterHorizontally
+                )
+            ) {
+                val list: ArrayList<ProgramViewModel> = ArrayList()
+                for (program in programs) {
+                    for (flat in flatPrograms) {
+                        if ((flat.program == program.uid) &&
+                            flat.hidden == "false"
+                        ) {
+                            list.add(program)
+                        }
+                    }
+                }
+                presenter!!.setProgramsGrid(list)
+                itemsIndexed(
+                    items = presenter.programsGrid.value
+                ) { index, program ->
+                    ProgramItemCard(
+                        modifier = Modifier.semantics {
+                            testTag = HOME_ITEM.format(index)
+                        },
+                        programViewModel = program,
+                        onItemClick = onItemClick,
+                        onGranularSyncClick = onGranularSyncClick
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ListLayout(
+    programs: List<ProgramViewModel>,
+    flatProgramsList: List<Program>,
+    labelList: List<String>,
+    presenter: ProgramPresenter?,
+    onItemClick: (programViewModel: ProgramViewModel) -> Unit,
+    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit
+) {
+    if (flatProgramsList.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = labelList[0],
+                modifier = Modifier.padding(8.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            LazyColumn(
+                modifier = Modifier.testTag(HOME_ITEMS),
+                contentPadding = PaddingValues(bottom = 56.dp)
+            ) {
+                val list: ArrayList<ProgramViewModel> =
+                    ArrayList()
+                for (program in programs) {
+                    for (flat in flatProgramsList) {
+                        if ((flat.program == program.uid) &&
+                            flat.hidden == "false"
+                        ) {
+                            list.add(program)
+                        }
+                    }
+                }
+                presenter!!.setProgramsList(list)
+                itemsIndexed(
+                    items = presenter.programsList.value
+                ) { index, program ->
+                    ProgramItem(
+                        modifier = Modifier.semantics {
+                            testTag = HOME_ITEM.format(index)
+                        },
+                        programViewModel = program,
+                        onItemClick = onItemClick,
+                        onGranularSyncClick = onGranularSyncClick
+                    )
+                    Divider(
+                        color = colorResource(id = R.color.divider_bg),
+                        thickness = 1.dp,
+                        startIndent = 72.dp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProgramItemCard(
+    modifier: Modifier = Modifier,
+    programViewModel: ProgramViewModel,
+    onItemClick: (programViewModel: ProgramViewModel) -> Unit = {},
+    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit = {}
+) {
+    androidx.compose.material3.Card(
+        modifier = modifier,
+        enabled = !programViewModel.isDownloading(),
+        onClick = { onItemClick(programViewModel) },
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 3.dp
+        ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color(0xFFFAFBFE)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            androidx.compose.material3.Text(
+                text = programViewModel.title,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Medium,
+                color = colorResource(id = R.color.textPrimary),
+                maxLines = 2,
+                softWrap = true,
+                overflow = TextOverflow.Ellipsis,
+                style = LocalTextStyle.current.copy(
+                    fontFamily = FontFamily(Font(R.font.rubik_regular))
+                )
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                when (programViewModel.downloadState) {
+                    ProgramDownloadState.DOWNLOADING -> {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        DownloadingProgress()
+                    }
+
+                    ProgramDownloadState.DOWNLOADED -> {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        DownloadedIcon(programViewModel)
+                    }
+
+                    ProgramDownloadState.NONE -> {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        StateIcon(programViewModel.state) {
+                            onGranularSyncClick(programViewModel)
+                        }
+                    }
+
+                    ProgramDownloadState.ERROR -> {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        DownloadErrorIcon {
+                            onGranularSyncClick(programViewModel)
+                        }
+                    }
+                }
+
+                if (programViewModel.hasOverdueEvent) {
+                    Icon(
+                        modifier = Modifier.padding(top = 12.dp),
+                        painter = painterResource(id = R.drawable.ic_overdue),
+                        contentDescription = "Overdue",
+                        tint = Color.Unspecified
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier.padding(vertical = 16.dp),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                MetadataIcon(
+                    modifier = Modifier.alpha(programViewModel.getAlphaValue()),
+                    metadataIconData = programViewModel.metadataIconData
+                )
+                var openDescriptionDialog by remember {
+                    mutableStateOf(false) // Initially dialog is closed
+                }
+
+                if (programViewModel.description != null) {
+                    ProgramDescriptionIcon {
+                        openDescriptionDialog = true
+                    }
+                }
+
+                if (openDescriptionDialog) {
+                    ProgramDescriptionDialog(programViewModel.description ?: "") {
+                        openDescriptionDialog = false
+                    }
+                }
+            }
+            androidx.compose.material3.Text(
+                text = if (programViewModel.downloadState == ProgramDownloadState.DOWNLOADING) {
+                    stringResource(R.string.syncing_resource, programViewModel.typeName.lowercase())
+                } else {
+                    programViewModel.countDescription()
+                },
+                color = colorResource(id = R.color.textSecondary),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 2,
+                softWrap = true,
+                overflow = TextOverflow.Ellipsis,
+                style = LocalTextStyle.current.copy(
+                    fontFamily = FontFamily(Font(R.font.rubik_regular))
+                )
+            )
         }
     }
 }
@@ -214,6 +555,7 @@ fun ProgramItem(
             ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
                 onGranularSyncClick(programViewModel)
             }
+
             ProgramDownloadState.ERROR -> DownloadErrorIcon {
                 onGranularSyncClick(programViewModel)
             }
@@ -447,6 +789,8 @@ fun ListPreview() {
             testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
             testingProgramModel().copy(state = State.SENT_VIA_SMS)
         ),
+        dataStore = null,
+        presenter = null,
         onItemClick = {},
         onGranularSyncClick = {},
         downLoadState = SyncStatusData(true, true, emptyMap())

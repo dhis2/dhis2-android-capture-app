@@ -207,10 +207,17 @@ class SyncPresenterImpl(
                 .doOnComplete {
                     updateProyectAnalytics()
                     setUpSMS()
+                    downloadDataStore()
                 }
 
         ).andThen(
             d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        ).blockingAwait()
+    }
+
+    private fun downloadDataStore() {
+        Completable.fromObservable(
+            d2.dataStoreModule().dataStoreDownloader().download()
         ).blockingAwait()
     }
 
@@ -305,6 +312,7 @@ class SyncPresenterImpl(
             SyncResult.SYNC -> {
                 ListenableWorker.Result.success()
             }
+
             SyncResult.ERROR -> {
                 val trackerImportConflicts = messageTrackerImportConflict(teiUid)
                 val mergeDateConflicts = ArrayList<String>()
@@ -320,6 +328,7 @@ class SyncPresenterImpl(
                     .build()
                 ListenableWorker.Result.failure(data)
             }
+
             SyncResult.INCOMPLETE -> {
                 val data = Data.Builder()
                     .putStringArray("incomplete", arrayOf("INCOMPLETE"))

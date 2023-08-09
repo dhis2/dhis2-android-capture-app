@@ -94,6 +94,7 @@ class GranularSyncPresenter(
             _currentState.update {
                 syncState.copy(shouldDismissOnUpdate = dismissOnUpdate)
             }
+            repository.downloadDataStoreBlockingGet()
         }
     }
 
@@ -111,6 +112,7 @@ class GranularSyncPresenter(
             ALL,
             PROGRAM,
             DATA_SET -> false
+
             TEI,
             EVENT,
             DATA_VALUES -> true
@@ -138,6 +140,7 @@ class GranularSyncPresenter(
                         )
                         .build()
                 }
+
             ALL -> { // Do nothing
             }
         }
@@ -356,6 +359,7 @@ class GranularSyncPresenter(
                 true -> {
                     updateStatusToSyncedWithSMS()
                 }
+
                 false -> {
                     updateStatusToSentBySMS()
                 }
@@ -397,6 +401,7 @@ class GranularSyncPresenter(
             WorkInfo.State.RUNNING -> {
                 loadSyncInfo(State.UPLOADING)
             }
+
             WorkInfo.State.SUCCEEDED,
             WorkInfo.State.FAILED,
             WorkInfo.State.CANCELLED -> {

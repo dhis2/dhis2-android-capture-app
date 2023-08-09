@@ -276,6 +276,10 @@ dependencies {
     testImplementation(libs.test.turbine)
 
     androidTestUtil(libs.test.orchestrator)
+    
+    implementation ("androidx.compose.material3:material3:1.1.1")
+    implementation("androidx.compose.material:material-icons-core:1.4.3")
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
 
     androidTestImplementation(libs.test.testRunner)
     androidTestImplementation(libs.test.espresso.intents)

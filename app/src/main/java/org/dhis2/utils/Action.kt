@@ -29,8 +29,8 @@ open class Action<out T>(private val content: T) {
 }
 
 class ActionObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Action<T>> {
-    override fun onChanged(event: Action<T>?) {
-        event?.getContentIfNotHandled()?.let { value ->
+    override fun onChanged(event: Action<T>) {
+        event.getContentIfNotHandled()?.let { value ->
             onEventUnhandledContent(value)
         }
     }
