@@ -94,7 +94,7 @@ class GranularSyncPresenter(
             _currentState.update {
                 syncState.copy(shouldDismissOnUpdate = dismissOnUpdate)
             }
-            repository.downloadDataStore()
+            repository.downloadDataStoreBlockingGet()
         }
     }
 
