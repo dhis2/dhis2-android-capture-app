@@ -476,7 +476,7 @@ class ChartsRepositoryTest {
             .build()
     }
 
-    private fun mockAnalyticsSettingsCall(result: MutableList<AnalyticsTeiSetting>?) {
+    private fun mockAnalyticsSettingsCall(result: List<AnalyticsTeiSetting>?) {
         whenever(
             d2.settingModule().analyticsSetting().teis()
         ) doReturn mock()
@@ -492,7 +492,7 @@ class ChartsRepositoryTest {
             d2.settingModule().analyticsSetting().teis()
                 .byProgram().eq("programUid")
                 .blockingGet()
-        ) doReturn result
+        ) doReturn (result ?: emptyList())
     }
 
     private fun mockRepeatableStagesCall() {
@@ -594,7 +594,7 @@ class ChartsRepositoryTest {
         ) doReturn de
     }
 
-    private fun mockedAnalyticsSettings(): MutableList<AnalyticsTeiSetting>? {
+    private fun mockedAnalyticsSettings(): List<AnalyticsTeiSetting> {
         return arrayListOf(
             AnalyticsTeiSetting.builder()
                 .uid("analyticsTeiSettings_1")
