@@ -57,7 +57,7 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
     private fun getDhis2Version(): String? {
         if (serverVersionName == null) {
             serverVersionName =
-                D2Manager.getD2().systemInfoModule().systemInfo().blockingGet().version()
+                D2Manager.getD2().systemInfoModule().systemInfo().blockingGet()?.version()
         }
         return serverVersionName
     }

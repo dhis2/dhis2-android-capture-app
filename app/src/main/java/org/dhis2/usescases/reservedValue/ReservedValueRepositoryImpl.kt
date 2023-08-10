@@ -13,13 +13,13 @@ class ReservedValueRepositoryImpl(
     private val mapper: ReservedValueMapper
 ) : ReservedValueRepository {
     override fun reservedValues(): Single<List<ReservedValueModel>> =
-        d2.trackedEntityModule().reservedValueManager().reservedValueSummaries
+        d2.trackedEntityModule().reservedValueManager().getReservedValueSummaries()
             .map { mapper.map(it) }
 
     override fun refillReservedValues(uidToRefill: String): Observable<D2Progress> {
         val maxReservedValues = d2.settingModule().generalSetting()
             .blockingGet()
-            .reservedValues() ?: prefs.getInt(Preference.NUMBER_RV, Preference.DEFAULT_NUMBER_RV)
+            ?.reservedValues() ?: prefs.getInt(Preference.NUMBER_RV, Preference.DEFAULT_NUMBER_RV)
         return d2.trackedEntityModule()
             .reservedValueManager()
             .downloadReservedValues(uidToRefill, maxReservedValues)

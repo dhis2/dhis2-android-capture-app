@@ -31,7 +31,7 @@ class EventListPresenter(
         )
     }
 
-    fun program(): Program {
+    fun program(): Program? {
         return eventRepository.program().blockingGet()
     }
 }

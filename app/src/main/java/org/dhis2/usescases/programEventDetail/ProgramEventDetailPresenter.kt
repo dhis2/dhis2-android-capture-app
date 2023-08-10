@@ -31,16 +31,19 @@ class ProgramEventDetailPresenter(
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) {
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    val program: Program
+    val program: Program?
         get() = eventRepository.program().blockingGet()
-    val featureType: FeatureType
+    val featureType: FeatureType?
         get() = eventRepository.featureType().blockingGet()
-    val stageUid: String
-        get() = eventRepository.programStage().blockingGet().uid()
+    val stageUid: String?
+        get() = eventRepository.programStage().blockingGet()?.uid()
 
     fun init() {
+
         compositeDisposable.add(
-            Observable.just(filterRepository.programFilters(program.uid()))
+            Observable.fromCallable {
+                program?.uid()?.let { filterRepository.programFilters(it) }?: emptyList()
+            }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -82,7 +85,7 @@ class ProgramEventDetailPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
-                    { programModel -> view.setProgram(programModel) },
+                    { programModel -> view.setProgram(programModel!!) },
                     { t -> Timber.e(t) }
                 )
         )

@@ -22,11 +22,11 @@ class SettingsProgramPresenter(
                 .map { programSetting ->
                     val style = d2.programModule().programs()
                         .uid(programSetting.uid()).blockingGet()
-                        .style()
+                        ?.style()
                     ProgramSettingsViewModel(
                         programSetting,
-                        style.icon(),
-                        style.color()
+                        style?.icon(),
+                        style?.color()
                     )
                 }
                 .toList()

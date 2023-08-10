@@ -26,9 +26,9 @@ interface TeiDataRepository {
         sortingItem: SortingItem?
     ): Single<List<EventViewModel>>
 
-    fun getEnrollment(): Single<Enrollment>
-    fun getEnrollmentProgram(): Single<Program>
-    fun getTrackedEntityInstance(): Single<TrackedEntityInstance>
+    fun getEnrollment(): Single<Enrollment?>
+    fun getEnrollmentProgram(): Single<Program?>
+    fun getTrackedEntityInstance(): Single<TrackedEntityInstance?>
     fun enrollingOrgUnit(): Single<OrganisationUnit>
     fun eventsWithoutCatCombo(): Single<List<EventViewModel>>
     fun getOrgUnitName(orgUnitUid: String): String

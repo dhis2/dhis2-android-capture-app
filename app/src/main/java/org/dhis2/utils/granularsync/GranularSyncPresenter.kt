@@ -376,7 +376,7 @@ class GranularSyncPresenter(
                         d2.dataElementModule()
                             .dataElements()
                             .uid(dataSetElement.dataElement().uid())
-                            .blockingGet().categoryComboUid()
+                            .blockingGet()?.categoryComboUid()
                     }
                 }?.distinct()
             }

@@ -36,13 +36,8 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
 
     init {
         val orgUnitUid =
-            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit()
-        cachedRuleEngineFlowable = Single.zip<List<Rule>,
-            List<RuleVariable>,
-            List<RuleEvent>,
-            Map<String, List<String>>,
-            Map<String, String>,
-            RuleEngine>(
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()?.organisationUnit()
+        cachedRuleEngineFlowable = Single.zip(
             rulesRepository.rulesNew(programUid, null),
             rulesRepository.ruleVariablesProgramStages(programUid),
             rulesRepository.enrollmentEvents(enrollmentUid!!),
@@ -103,7 +98,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                             getOrgUnitCode(enrollment.organisationUnit()),
                             attributeValues.toRuleAttributeValue(d2, enrollment.program()!!),
                             d2.programModule().programs().uid(enrollment.program()).blockingGet()
-                                .name()
+                                ?.name()
                         )
                     }
             }.toFlowable()
@@ -111,7 +106,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
 
     private fun getOrgUnitCode(orgUnitUid: String?): String {
         return d2.organisationUnitModule().organisationUnits()
-            .uid(orgUnitUid).blockingGet().code() ?: ""
+            .uid(orgUnitUid).blockingGet()?.code() ?: ""
     }
 
     override fun enrollmentProgramStages(): Flowable<List<ProgramStage>> {
@@ -161,7 +156,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
             }
     }
 
-    override fun getStage(programStageUid: String): ProgramStage {
+    override fun getStage(programStageUid: String): ProgramStage? {
         return d2.programModule().programStages().uid(programStageUid).blockingGet()
     }
 }

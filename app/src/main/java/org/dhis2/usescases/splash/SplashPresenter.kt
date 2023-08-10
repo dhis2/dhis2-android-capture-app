@@ -50,8 +50,8 @@ class SplashPresenter internal constructor(
                                 val systemInfo =
                                     userManager.d2.systemInfoModule().systemInfo().blockingGet()
                                 trackUserInfo(
-                                    serverUrl = systemInfo.contextPath() ?: "",
-                                    serverVersion = systemInfo.version() ?: "",
+                                    serverUrl = systemInfo?.contextPath() ?: "",
+                                    serverVersion = systemInfo?.version() ?: "",
                                     userName = userManager.userName().blockingGet()
                                 )
                             }

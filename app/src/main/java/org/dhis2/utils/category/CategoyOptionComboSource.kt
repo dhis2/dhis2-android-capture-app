@@ -68,7 +68,7 @@ class CategoyOptionComboSource(
     private fun categoryOptionComboHasOptions(categoryOptionComboUid: String): Boolean {
         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
             .uid(categoryOptionComboUid)
-            .blockingGet().categoryOptions()?.isNotEmpty() ?: false
+            .blockingGet()?.categoryOptions()?.isNotEmpty() ?: false
     }
 
     private fun categoryOptions(categoryOptionComboUid: String): List<CategoryOption> {
