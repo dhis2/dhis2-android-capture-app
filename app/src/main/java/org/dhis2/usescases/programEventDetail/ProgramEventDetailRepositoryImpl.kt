@@ -37,7 +37,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
 
     private val programRepository = d2.programModule().programs().uid(programUid)
     private val stageRepository = d2.programModule().programStages().byProgramUid().eq(programUid)
-    private val filterRepository =programRepository.blockingGet()?.let {
+    private val filterRepository = programRepository.blockingGet()?.let {
         filterPresenter.filteredEventProgram(it)
     }
 
@@ -75,7 +75,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                     second
                 )
             }
-            ?.toFlowable()?:Flowable.empty()
+            ?.toFlowable() ?: Flowable.empty()
     }
 
     override fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel> {

@@ -23,13 +23,13 @@ class EventRuleEngineRepository(
     private val event: Event by lazy {
         d2.eventModule().events()
             .uid(eventUid)
-            .blockingGet()?:throw NullPointerException()
+            .blockingGet() ?: throw NullPointerException()
     }
 
     private val program: Program by lazy {
         d2.programModule().programs()
             .uid(event.program())
-            .blockingGet()?:throw NullPointerException()
+            .blockingGet() ?: throw NullPointerException()
     }
 
     init {

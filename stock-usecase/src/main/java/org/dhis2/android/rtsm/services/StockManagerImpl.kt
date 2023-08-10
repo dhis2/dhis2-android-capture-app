@@ -171,10 +171,10 @@ class StockManagerImpl @Inject constructor(
             .byProgramUid()
             .eq(appConfig.program)
             .one()
-            .blockingGet()?:return Single.just(Unit)
+            .blockingGet() ?: return Single.just(Unit)
 
         items.forEach { entry ->
-            getEnrollment(entry.item.id)?.let {enrollment->
+            getEnrollment(entry.item.id)?.let { enrollment ->
                 createEvent(entry, programStage, enrollment, transaction, appConfig)
             }
         }

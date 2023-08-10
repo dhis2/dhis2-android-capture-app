@@ -42,7 +42,7 @@ class EnrollmentRepository(
         val selectedProgram = d2.programModule().programs().uid(
             d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()?.program()
         ).blockingGet()
-        val programAccess =selectedProgram?.access()?.data()?.write() == true
+        val programAccess = selectedProgram?.access()?.data()?.write() == true
         val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
             selectedProgram?.trackedEntityType()?.uid()
         ).blockingGet()?.access()?.data()?.write() == true

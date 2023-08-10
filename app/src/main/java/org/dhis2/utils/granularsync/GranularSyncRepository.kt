@@ -1,6 +1,7 @@
 package org.dhis2.utils.granularsync
 
 import io.reactivex.Single
+import java.util.Locale
 import org.dhis2.R
 import org.dhis2.commons.bindings.categoryOptionCombo
 import org.dhis2.commons.bindings.countEventImportConflicts
@@ -48,7 +49,6 @@ import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramType
-import java.util.Locale
 
 class GranularSyncRepository(
     private val d2: D2,
@@ -506,12 +506,12 @@ class GranularSyncRepository(
         return mapTeiToSyncStatusItem(
             enrollment?.program(),
             enrollment?.trackedEntityInstance()
-        )?.let { listOf(it) }?: emptyList()
+        )?.let { listOf(it) } ?: emptyList()
     }
 
     private fun mapTeiToSyncStatusItem(programUid: String?, teiUid: String?): SyncStatusItem? {
-        if(programUid == null || teiUid == null) return null
-        val tei = d2.tei(teiUid)?:return null
+        if (programUid == null || teiUid == null) return null
+        val tei = d2.tei(teiUid) ?: return null
         val description = when (tei.aggregatedSyncState()) {
             State.WARNING,
             State.ERROR -> {
@@ -535,7 +535,7 @@ class GranularSyncRepository(
 
         val teiMainAttribute = tei.let {
             d2.teiMainAttributes(it.uid(), programUid)
-        }?: emptyList()
+        } ?: emptyList()
 
         val label = teiMainAttribute.firstOrNull()?.let { (attributeName, value) ->
             "$attributeName: $value"
@@ -553,13 +553,13 @@ class GranularSyncRepository(
             ),
             displayName = label,
             description = description,
-            state = tei.aggregatedSyncState()?:State.SYNCED
+            state = tei.aggregatedSyncState() ?: State.SYNCED
         )
     }
 
     private fun mapEventToSyncStatusItem(programUid: String?, eventUid: String?): SyncStatusItem? {
-        if(eventUid==null || programUid == null) return null
-        val event = d2.event(eventUid)?:return null
+        if (eventUid == null || programUid == null) return null
+        val event = d2.event(eventUid) ?: return null
         val eventConflicts = d2.eventImportConflictsBy(eventUid)
         val description = when (event.aggregatedSyncState()) {
             State.WARNING,
@@ -602,8 +602,8 @@ class GranularSyncRepository(
         enrollmentUid: String,
         vararg states: State
     ): List<SyncStatusItem> {
-        val enrollment = d2.enrollment(enrollmentUid)?:return emptyList()
-        val enrollmentProgram = enrollment.program()?:return emptyList()
+        val enrollment = d2.enrollment(enrollmentUid) ?: return emptyList()
+        val enrollmentProgram = enrollment.program() ?: return emptyList()
         val conflicts = if (states.contains(State.ERROR) || states.contains(State.WARNING)) {
             val allConflicts = d2.enrollmentImportConflicts(enrollmentUid)
             val enrollmentConflicts =
@@ -617,15 +617,16 @@ class GranularSyncRepository(
                                     enrollmentUid = trackerImportConflict.enrollment()!!,
                                     programUid = enrollmentProgram
                                 ),
-                                displayName = attribute?.displayFormName() ?: attribute?.uid()?:"",
+                                displayName =
+                                attribute?.displayFormName() ?: attribute?.uid() ?: "",
                                 description = trackerImportConflict.displayDescription() ?: "",
                                 state = trackerImportConflict.status()?.toState()
-                                    ?: enrollment.aggregatedSyncState()?:State.SYNCED
+                                    ?: enrollment.aggregatedSyncState() ?: State.SYNCED
                             )
                         }
 
                         else -> {
-                            val program = d2.program(enrollmentProgram)?:return@mapNotNull null
+                            val program = d2.program(enrollmentProgram) ?: return@mapNotNull null
                             SyncStatusItem(
                                 type = SyncStatusType.Enrollment(
                                     enrollmentUid = enrollment.uid(),
@@ -667,7 +668,7 @@ class GranularSyncRepository(
                                 programUid = enrollment.program(),
                                 enrollmentUid = trackerImportConflict.enrollment()
                             ),
-                            displayName = attribute?.displayFormName() ?: attribute?.uid()?:"",
+                            displayName = attribute?.displayFormName() ?: attribute?.uid() ?: "",
                             description = trackerImportConflict.displayDescription() ?: "",
                             state = trackerImportConflict.status()?.toState()
                                 ?: enrollment.aggregatedSyncState()!!
@@ -684,7 +685,7 @@ class GranularSyncRepository(
                             displayName = resourceManager.getString(R.string.conflict),
                             description = trackerImportConflict.displayDescription() ?: "",
                             state = trackerImportConflict.status()?.toState()
-                                ?: tei?.aggregatedSyncState()?:State.SYNCED
+                                ?: tei?.aggregatedSyncState() ?: State.SYNCED
                         )
                     }
 
@@ -715,7 +716,7 @@ class GranularSyncRepository(
         dataElementUid: String?,
         description: String
     ): SyncStatusItem? {
-        val event = d2.event(eventUid)?:return null
+        val event = d2.event(eventUid) ?: return null
         val dataElement = dataElementUid?.let { d2.dataElement(dataElementUid) }
         return SyncStatusItem(
             type = SyncStatusType.Event(
@@ -758,7 +759,7 @@ class GranularSyncRepository(
         return if (states.contains(State.ERROR) || states.contains(State.WARNING)) {
             d2.eventImportConflictsBy(eventUid).mapNotNull { trackerImportConflict ->
                 mapEventToSyncStatusItem(
-                    trackerImportConflict.event()?:"",
+                    trackerImportConflict.event() ?: "",
                     trackerImportConflict.dataElement(),
                     trackerImportConflict.displayDescription() ?: ""
                 )
@@ -871,7 +872,7 @@ class GranularSyncRepository(
                 dataValueConflict.categoryOptionCombo() != null -> {
                     val catOptCombo =
                         d2.categoryOptionCombo(dataValueConflict.categoryOptionCombo()!!)
-                    val catOptComboLabel = catOptCombo?.displayName() ?: catOptCombo?.uid()?:""
+                    val catOptComboLabel = catOptCombo?.displayName() ?: catOptCombo?.uid() ?: ""
                     SyncStatusItem(
                         type = SyncStatusType.DataSetInstance(
                             dataSetUid = dataSetUid,
@@ -914,12 +915,12 @@ class GranularSyncRepository(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
 
             stateCandidates.contains(State.TO_POST) ||
-                    stateCandidates.contains(State.UPLOADING) ||
-                    stateCandidates.contains(State.TO_UPDATE) ->
+                stateCandidates.contains(State.UPLOADING) ||
+                stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
 
             else -> State.SYNCED

@@ -408,7 +408,7 @@ class SyncPresenterImpl(
         ).blockingAwait()
         return d2.trackedEntityModule().trackedEntityInstanceDownloader()
             .byUid().eq(enrollment?.trackedEntityInstance())
-            .byProgramUid(enrollment?.program()?:"")
+            .byProgramUid(enrollment?.program() ?: "")
             .download()
     }
 

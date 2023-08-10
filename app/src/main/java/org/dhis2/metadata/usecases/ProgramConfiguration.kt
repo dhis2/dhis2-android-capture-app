@@ -1,7 +1,6 @@
 package org.dhis2.metadata.usecases
 
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.program.Program
 
 class ProgramConfiguration(private val d2: D2) {
 
@@ -19,7 +18,7 @@ class ProgramConfiguration(private val d2: D2) {
         val programAccess = selectedProgram?.access()?.data()?.write() == true
         val teTypeAccess: Boolean = d2.trackedEntityModule().trackedEntityTypes().uid(
             selectedProgram?.trackedEntityType()?.uid()
-        ).blockingGet()?.access()?.data()?.write()==true
+        ).blockingGet()?.access()?.data()?.write() == true
         return programAccess && teTypeAccess
     }
 }

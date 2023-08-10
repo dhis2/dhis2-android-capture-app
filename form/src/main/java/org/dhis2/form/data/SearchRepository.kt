@@ -65,7 +65,7 @@ class SearchRepository(
                     }
             }.filter { item: FieldUiModel ->
                 item.valueType !== ValueType.IMAGE &&
-                        item.valueType !== ValueType.COORDINATE
+                    item.valueType !== ValueType.COORDINATE
             }
         }
     }
@@ -109,7 +109,7 @@ class SearchRepository(
                     }
             }.filter { item: FieldUiModel? ->
                 item!!.valueType !== ValueType.IMAGE &&
-                        item!!.valueType !== ValueType.COORDINATE
+                    item!!.valueType !== ValueType.COORDINATE
             }
         }
     }

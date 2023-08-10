@@ -58,7 +58,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
             .setBackgroundThreadExecutor(bgThreadPoolExecutor)
             .build()
 
-        val program = presenter.program()?:throw NullPointerException()
+        val program = presenter.program() ?: throw NullPointerException()
         liveAdapter =
             ProgramEventDetailLiveAdapter(
                 program,

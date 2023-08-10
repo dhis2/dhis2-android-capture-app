@@ -141,18 +141,18 @@ class EventCaptureFieldProvider(
 
         val (rawValue, friendlyValue) = dataValue(
             eventUid,
-            de?.uid()?:"",
+            de?.uid() ?: "",
             de?.valueType() == ValueType.ORGANISATION_UNIT
         )
 
         val optionSetConfiguration = options(optionSet)
 
-        val error: String = checkConflicts(eventUid, de?.uid()?:"", rawValue)
+        val error: String = checkConflicts(eventUid, de?.uid() ?: "", rawValue)
 
         val fieldViewModel: FieldUiModel =
             fieldFactory.create(
-                de?.uid()?:"",
-                de?.formName() ?: de?.displayName()?:"",
+                de?.uid() ?: "",
+                de?.formName() ?: de?.displayName() ?: "",
                 de?.valueType()!!,
                 programStageDataElement.compulsory() == true,
                 de.optionSetUid(),

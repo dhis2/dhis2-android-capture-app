@@ -106,7 +106,10 @@ class ConflictGenerator(private val d2: D2) {
                         dataValueConflict.categoryOptionCombo()!!,
                         dataValueConflict.attributeOptionCombo()!!
                     ).blockingGet()
-                    val cv = dataValue?.toBuilder()?.syncState(State.SYNCED)?.build()?.toContentValues()
+                    val cv = dataValue?.toBuilder()
+                        ?.syncState(State.SYNCED)
+                        ?.build()
+                        ?.toContentValues()
                     d2.databaseAdapter().update(
                         DataValueTableInfo.TABLE_INFO.name(),
                         cv,
@@ -234,7 +237,9 @@ class ConflictGenerator(private val d2: D2) {
         val enrollment = d2.enrollment(enrollmentUid)
         val build =
             TrackerImportConflict.builder().conflict("Generated error conflict in enrollment")
-                .trackedEntityInstance(enrollment?.trackedEntityInstance()).enrollment(enrollmentUid)
+                .trackedEntityInstance(enrollment?.trackedEntityInstance()).enrollment(
+                    enrollmentUid
+                )
                 .displayDescription("Generated error description in enrollment")
                 .status(importStatus).build()
         val cv = build.toContentValues()

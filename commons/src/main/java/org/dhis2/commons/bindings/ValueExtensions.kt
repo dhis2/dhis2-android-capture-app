@@ -69,7 +69,7 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
                 ?.displayName() ?: value
 
         ValueType.IMAGE, ValueType.FILE_RESOURCE ->
-            d2.fileResourceModule().fileResources().uid(value).blockingGet()?.path()?:""
+            d2.fileResourceModule().fileResources().uid(value).blockingGet()?.path() ?: ""
 
         ValueType.DATE ->
             DateUtils.uiDateFormat().format(
@@ -110,7 +110,7 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
             blockingDeleteIfExist()
             false
         }
-    }?:false
+    } ?: false
 }
 
 fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
@@ -147,7 +147,7 @@ fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
             blockingDeleteIfExist()
             false
         }
-    }?:false
+    } ?: false
 }
 
 fun String?.withValueTypeCheck(valueType: ValueType?): String? {
@@ -159,8 +159,8 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_NEGATIVE,
             ValueType.INTEGER_ZERO_OR_POSITIVE -> (
-                    it.toIntOrNull() ?: it.toFloat().toInt()
-                    ).toString()
+                it.toIntOrNull() ?: it.toFloat().toInt()
+                ).toString()
 
             ValueType.UNIT_INTERVAL -> (it.toIntOrNull() ?: it.toFloat()).toString()
             else -> this
@@ -227,9 +227,9 @@ private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: S
 private fun assureCodeForOptionSet(d2: D2, optionSetUid: String?, value: String): String {
     return optionSetUid?.let {
         if (d2.optionModule().options()
-                .byOptionSetUid().eq(it)
-                .byName().eq(value)
-                .one().blockingExists()
+            .byOptionSetUid().eq(it)
+            .byName().eq(value)
+            .one().blockingExists()
         ) {
             d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
                 .blockingGet()?.code()

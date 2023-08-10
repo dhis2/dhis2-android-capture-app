@@ -129,9 +129,9 @@ class EventRepository(
         var optionSetConfig: OptionSetConfiguration? = null
         if (!TextUtils.isEmpty(optionSet)) {
             if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options().byOptionSetUid()
-                    .eq(optionSet).byCode()
-                    .eq(dataValue)
-                    .one().blockingExists()
+                .eq(optionSet).byCode()
+                .eq(dataValue)
+                .one().blockingExists()
             ) {
                 dataValue =
                     d2.optionModule().options().byOptionSetUid().eq(optionSet)
@@ -243,7 +243,7 @@ class EventRepository(
             .blockingGet()
             .firstOrNull { conflict ->
                 conflict.event() == eventUid &&
-                        conflict.dataElement() == dataElementUid
+                    conflict.dataElement() == dataElementUid
             }?.displayDescription() ?: ""
     }
 }

@@ -39,10 +39,9 @@ class ProgramEventDetailPresenter(
         get() = eventRepository.programStage().blockingGet()?.uid()
 
     fun init() {
-
         compositeDisposable.add(
             Observable.fromCallable {
-                program?.uid()?.let { filterRepository.programFilters(it) }?: emptyList()
+                program?.uid()?.let { filterRepository.programFilters(it) } ?: emptyList()
             }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())

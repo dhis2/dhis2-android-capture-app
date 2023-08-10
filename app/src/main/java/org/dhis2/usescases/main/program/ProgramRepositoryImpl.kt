@@ -74,7 +74,6 @@ internal class ProgramRepositoryImpl(
                                 filterPresenter.areFiltersActive()
                             )
                         }
-
                 }
             }
     }
@@ -122,10 +121,10 @@ internal class ProgramRepositoryImpl(
             val (count, hasOverdue) =
                 if (program?.programType() == WITHOUT_REGISTRATION) {
                     getSingleEventCount(program)
-                } else if(program?.programType() == WITH_REGISTRATION) {
+                } else if (program?.programType() == WITH_REGISTRATION) {
                     getTrackerTeiCountAndOverdue(program)
-                }else{
-                    Pair(0,false)
+                } else {
+                    Pair(0, false)
                 }
             programModel.copy(
                 count = count,

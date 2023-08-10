@@ -372,7 +372,7 @@ class DataSetTableRepositoryImpl(
         dataElementUids: MutableSet<DataElementOperand>
     ): List<DataToReview> {
         val dataToReview = arrayListOf<DataToReview>()
-        dataElementUids.mapNotNull {deOperand->
+        dataElementUids.mapNotNull { deOperand ->
             d2.dataElementModule().dataElements()
                 .uid(deOperand.dataElement()?.uid())
                 .blockingGet()?.let {

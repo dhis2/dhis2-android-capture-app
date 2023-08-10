@@ -69,7 +69,7 @@ class EventDetailsRepository(
 
     fun getMinDaysFromStartByProgramStage(): Int {
         val programStage = getProgramStage()
-        return programStage?.minDaysFromStart()?:0
+        return programStage?.minDaysFromStart() ?: 0
     }
 
     fun getStageLastDate(enrollmentUid: String?): Date {

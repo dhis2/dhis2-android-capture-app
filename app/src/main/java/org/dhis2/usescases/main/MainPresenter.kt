@@ -187,7 +187,7 @@ class MainPresenter(
 
     private fun getUserUid(): String {
         return try {
-            userManager.d2.userModule().user().blockingGet()?.uid()?:""
+            userManager.d2.userModule().user().blockingGet()?.uid() ?: ""
         } catch (e: Exception) {
             ""
         }

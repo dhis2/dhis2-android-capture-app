@@ -66,7 +66,7 @@ class EnrollmentPresenterImpl(
                     val attributesValues =
                         teiAttributesProvider
                             .getListOfValuesFromProgramTrackedEntityAttributesByProgram(
-                                programRepository.blockingGet()?.uid()?:"",
+                                programRepository.blockingGet()?.uid() ?: "",
                                 tei.uid()
                             )
                     val teiTypeAttributeValue = mutableListOf<TrackedEntityAttributeValue>()
@@ -266,8 +266,8 @@ class EnrollmentPresenterImpl(
         enrollmentFormRepository.getProgramStageUidFromEvent(eventUid)
 
     fun showOrHideSaveButton() {
-        val teiUid = teiRepository.blockingGet()?.uid()?:""
-        val programUid = getProgram()?.uid()?:""
+        val teiUid = teiRepository.blockingGet()?.uid() ?: ""
+        val programUid = getProgram()?.uid() ?: ""
         val hasEnrollmentAccess = d2.enrollmentModule().enrollmentService()
             .blockingGetEnrollmentAccess(teiUid, programUid)
         if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS) {

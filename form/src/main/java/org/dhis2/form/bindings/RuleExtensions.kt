@@ -465,7 +465,7 @@ fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
                         d2.optionModule().options().byOptionSetUid().eq(attr?.optionSet()?.uid())
                             .byCode().eq(value)
                             .one()
-                            .blockingGet()?.name()?:""
+                            .blockingGet()?.name() ?: ""
                     } else {
                         ""
                     }

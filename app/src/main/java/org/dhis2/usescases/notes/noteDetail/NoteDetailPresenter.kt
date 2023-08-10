@@ -19,7 +19,7 @@ class NoteDetailPresenter(
                 .subscribeOn(scheduler.io())
                 .observeOn(scheduler.ui())
                 .subscribe(
-                    { note-> note?.let { view.setNote(note) } },
+                    { note -> note?.let { view.setNote(note) } },
                     Timber::d
                 )
         )

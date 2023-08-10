@@ -31,9 +31,12 @@ class EnrollmentFormRepositoryImpl(
 
     private var cachedRuleEngineFlowable: Flowable<RuleEngine>
     private var ruleEnrollmentBuilder: RuleEnrollment.Builder
-    private var programUid: String = programRepository.blockingGet()?.uid()?:throw NullPointerException()
-    private var enrollmentUid: String = enrollmentRepository.blockingGet()?.uid()?:throw NullPointerException()
-    private val tei: TrackedEntityInstance = teiRepository.blockingGet()?:throw NullPointerException()
+    private var programUid: String =
+        programRepository.blockingGet()?.uid() ?: throw NullPointerException()
+    private var enrollmentUid: String =
+        enrollmentRepository.blockingGet()?.uid() ?: throw NullPointerException()
+    private val tei: TrackedEntityInstance =
+        teiRepository.blockingGet() ?: throw NullPointerException()
 
     init {
         this.cachedRuleEngineFlowable =
@@ -41,11 +44,11 @@ class EnrollmentFormRepositoryImpl(
                 rulesRepository.rulesNew(programUid),
                 rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
-                    enrollmentRepository.blockingGet()?.uid()?:""
+                    enrollmentRepository.blockingGet()?.uid() ?: ""
                 ),
                 rulesRepository.queryConstants(),
                 rulesRepository.supplementaryData(
-                    enrollmentRepository.blockingGet()?.organisationUnit()?:""
+                    enrollmentRepository.blockingGet()?.organisationUnit() ?: ""
                 ),
                 { rules, variables, events, constants, supplData ->
                     val builder = RuleEngineContext.builder()

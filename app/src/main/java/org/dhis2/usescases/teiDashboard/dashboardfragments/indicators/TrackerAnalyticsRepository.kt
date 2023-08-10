@@ -31,7 +31,7 @@ class TrackerAnalyticsRepository(
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid)
         }
 
-        enrollmentUid = enrollmentRepository.one().blockingGet()?.uid()?:""
+        enrollmentUid = enrollmentRepository.one().blockingGet()?.uid() ?: ""
     }
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {

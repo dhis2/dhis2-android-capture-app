@@ -3,17 +3,13 @@ package org.dhis2.usescases.events
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
 import java.util.Date
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber
 
 class ScheduledEventPresenterImpl(

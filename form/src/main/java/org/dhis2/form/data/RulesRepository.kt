@@ -57,7 +57,10 @@ class RulesRepository(private val d2: D2) {
             .map { it.toRuleList() }
             .map {
                 if (eventUid != null) {
-                    val stage = d2.eventModule().events().uid(eventUid).blockingGet()?.programStage()
+                    val stage = d2.eventModule().events()
+                        .uid(eventUid)
+                        .blockingGet()
+                        ?.programStage()
                     it.filter { rule ->
                         rule.programStage() == null || rule.programStage() == stage
                     }

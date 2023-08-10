@@ -79,7 +79,7 @@ class RelationshipRepositoryImpl(
         val programUid = event?.program() ?: ""
         return d2.relationshipModule().relationshipTypes()
             .withConstraints()
-            .byAvailableForEvent(event?.uid()?:"")
+            .byAvailableForEvent(event?.uid() ?: "")
             .get().map { relationshipTypes ->
                 relationshipTypes.mapNotNull { relationshipType ->
                     val secondaryUid = when {
@@ -228,7 +228,7 @@ class RelationshipRepositoryImpl(
                 val relationshipType =
                     d2.relationshipModule().relationshipTypes()
                         .uid(relationship.relationshipType())
-                        .blockingGet()?:return@mapNotNull null
+                        .blockingGet() ?: return@mapNotNull null
                 val direction: RelationshipDirection
                 val relationshipOwnerUid: String?
                 val relationshipOwnerType: RelationshipOwnerType?
@@ -358,7 +358,9 @@ class RelationshipRepositoryImpl(
                 } else {
                     val programStage =
                         d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-                    resources.getColorFrom(programStage?.style()?.color() ?: program?.style()?.color())
+                    resources.getColorFrom(
+                        programStage?.style()?.color() ?: program?.style()?.color()
+                    )
                 }
             }
             RelationshipOwnerType.TEI -> {
@@ -393,7 +395,7 @@ class RelationshipRepositoryImpl(
 
         val attrValueFromProgramTrackedEntityAttribute = mutableListOf<Pair<String, String>>()
         val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
-            .uid(teiTypeUid).blockingGet()?.name()?:""
+            .uid(teiTypeUid).blockingGet()?.name() ?: ""
 
         if (attrValuesFromType.isEmpty()) {
             teiUid?.let {
@@ -448,13 +450,15 @@ class RelationshipRepositoryImpl(
             valuesFromEvent
         } else {
             val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-            listOf(Pair("displayName", stage?.displayName() ?: event?.uid()?:""))
+            listOf(Pair("displayName", stage?.displayName() ?: event?.uid() ?: ""))
         }
     }
 
     private fun getTeiDefaultRes(tei: TrackedEntityInstance?): Int {
         val teiType =
-            d2.trackedEntityModule().trackedEntityTypes().uid(tei?.trackedEntityType()).blockingGet()
+            d2.trackedEntityModule().trackedEntityTypes()
+                .uid(tei?.trackedEntityType())
+                .blockingGet()
         return getTeiTypeDefaultRes(teiType?.uid())
     }
 

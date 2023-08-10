@@ -365,7 +365,7 @@ class DataValueRepository(
         categoryOptionCombo: CategoryOptionCombo
     ): List<CategoryOption> {
         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
-            .uid(categoryOptionCombo.uid()).blockingGet()?.categoryOptions()?: emptyList()
+            .uid(categoryOptionCombo.uid()).blockingGet()?.categoryOptions() ?: emptyList()
     }
 
     private fun getCatOptionFromUid(catOption: String): CategoryOption? {
@@ -486,7 +486,7 @@ class DataValueRepository(
 
     fun getDataTableModel(categoryComboUid: String): Observable<DataTableModel> {
         val categoryCombo = d2.categoryModule().categoryCombos().uid(categoryComboUid).blockingGet()
-        return categoryCombo?.let { getDataTableModel(categoryCombo) }?:Observable.empty()
+        return categoryCombo?.let { getDataTableModel(categoryCombo) } ?: Observable.empty()
     }
 
     fun getDataTableModel(categoryCombo: CategoryCombo): Observable<DataTableModel> {

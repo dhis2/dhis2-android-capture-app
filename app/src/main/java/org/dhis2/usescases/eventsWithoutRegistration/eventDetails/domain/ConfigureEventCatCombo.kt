@@ -22,7 +22,7 @@ class ConfigureEventCatCombo(
         repository.catCombo().apply {
             return flowOf(
                 EventCatCombo(
-                    uid = getCatComboUid(this?.uid()?:"", this?.isDefault ?: false),
+                    uid = getCatComboUid(this?.uid() ?: "", this?.isDefault ?: false),
                     isDefault = this?.isDefault ?: false,
                     categories = getCategories(this?.categories()),
                     categoryOptions = getCategoryOptions(),

@@ -207,7 +207,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             eventCreationIntent.putExtras(
                 EventCaptureActivity.getActivityBundle(
                     eventUid,
-                    presenter.getProgram()?.uid()?:"",
+                    presenter.getProgram()?.uid() ?: "",
                     EventMode.CHECK
                 )
             )

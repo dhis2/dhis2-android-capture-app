@@ -35,7 +35,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
                     d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
                 }
 
-                if(event!=null && stage!= null && de!= null) {
+                if (event != null && stage != null && de != null) {
                     CoordinateDataElementInfo(
                         event,
                         stage,
@@ -43,7 +43,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
                         enrollment,
                         geometry
                     )
-                }else{
+                } else {
                     null
                 }
             }
@@ -73,13 +73,13 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
                     .coordinates(it.value())
                     .type(FeatureType.POINT)
                     .build()
-                if(tei!=null && attribute!=null) {
+                if (tei != null && attribute != null) {
                     CoordinateAttributeInfo(
                         tei,
                         attribute,
                         geometry
                     )
-                }else{
+                } else {
                     null
                 }
             }
