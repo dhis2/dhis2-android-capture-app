@@ -107,7 +107,7 @@ class ProgramEventMapperTest {
         ) doReturn mock()
         whenever(
             d2.organisationUnitModule().organisationUnits().uid("orgUnitUid").blockingGet()
-                .displayName()
+                ?.displayName()
         ) doReturn "OrgUnitName"
     }
 

@@ -53,11 +53,11 @@ class RelationshipPresenterTest {
             d2.trackedEntityModule().trackedEntityInstances()
                 .withTrackedEntityAttributeValues()
                 .uid("teiUid")
-                .blockingGet().trackedEntityType()
+                .blockingGet()?.trackedEntityType()
         ) doReturn "teiType"
         whenever(
             d2.eventModule().events()
-                .uid("eventUid").blockingGet().programStage()
+                .uid("eventUid").blockingGet()?.programStage()
         ) doReturn "programStageUid"
         presenter = RelationshipPresenter(
             view,

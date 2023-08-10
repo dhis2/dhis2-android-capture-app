@@ -223,7 +223,7 @@ class ProgramStageSelectionPresenterTest {
     fun `Should return the standard interval`() {
         val interval = 3
         whenever(repository.getStage("programUid")) doReturn mock()
-        whenever(repository.getStage("programUid").standardInterval()) doReturn interval
+        whenever(repository.getStage("programUid")?.standardInterval()) doReturn interval
 
         val result = presenter.getStandardInterval("programUid")
 
@@ -234,7 +234,7 @@ class ProgramStageSelectionPresenterTest {
     fun `Should return 0 if the standard interval is not configured`() {
         val interval = null
         whenever(repository.getStage("programUid")) doReturn mock()
-        whenever(repository.getStage("programUid").standardInterval()) doReturn interval
+        whenever(repository.getStage("programUid")?.standardInterval()) doReturn interval
 
         val result = presenter.getStandardInterval("programUid")
 

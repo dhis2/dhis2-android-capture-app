@@ -71,7 +71,7 @@ class EventInitialRepositoryImplTest {
         nonEditableStatus.add(EventStatus.SKIPPED)
         val shouldBlockEdition = !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
             nonEditableStatus.contains(
-                d2.eventModule().events().uid(eventUid).blockingGet().status()
+                d2.eventModule().events().uid(eventUid).blockingGet()?.status()
             )
 
         val editableField = accessDataWrite && !shouldBlockEdition
@@ -107,7 +107,7 @@ class EventInitialRepositoryImplTest {
         nonEditableStatus.add(EventStatus.SKIPPED)
         val shouldBlockEdition = !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
             nonEditableStatus.contains(
-                d2.eventModule().events().uid(eventUid).blockingGet().status()
+                d2.eventModule().events().uid(eventUid).blockingGet()?.status()
             )
 
         val editableField = accessDataWrite && !shouldBlockEdition
@@ -143,7 +143,7 @@ class EventInitialRepositoryImplTest {
         nonEditableStatus.add(EventStatus.SKIPPED)
         val shouldBlockEdition = !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
             nonEditableStatus.contains(
-                d2.eventModule().events().uid(eventUid).blockingGet().status()
+                d2.eventModule().events().uid(eventUid).blockingGet()?.status()
             )
 
         val editableField = accessDataWrite && !shouldBlockEdition

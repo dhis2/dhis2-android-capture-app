@@ -80,7 +80,7 @@ class RulesRepositoryTest {
         }
     }
 
-    private fun getTestUserRoles(): MutableList<UserRole>? {
+    private fun getTestUserRoles(): List<UserRole> {
         return arrayListOf(
             UserRole.builder()
                 .uid("role1")

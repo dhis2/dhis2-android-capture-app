@@ -365,7 +365,7 @@ class FilterRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
-                .blockingGet().displayName()
+                .blockingGet()?.displayName()
         ) doReturn program.trackedEntityType()?.displayName()
         whenever(
             d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
@@ -446,7 +446,7 @@ class FilterRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
-                .blockingGet().displayName()
+                .blockingGet()?.displayName()
         ) doReturn program.trackedEntityType()?.displayName()
         whenever(
             d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
