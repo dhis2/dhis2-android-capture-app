@@ -3,7 +3,6 @@ package org.dhis2.android.rtsm.ui.managestock.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +52,7 @@ fun ManageStockTable(
             val localDensity = LocalDensity.current
             val conf = LocalConfiguration.current
             val tableConfState by viewModel.tableConfigurationState.collectAsState()
+            val themeColor = viewModel.themeColor.collectAsState()
 
             var dimensions by remember {
                 mutableStateOf(
@@ -140,8 +140,8 @@ fun ManageStockTable(
 
             TableTheme(
                 tableColors = TableColors(
-                    primary = MaterialTheme.colors.primary,
-                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                    primary = themeColor.value,
+                    primaryLight = themeColor.value.copy(alpha = 0.2f)
                 ),
                 tableDimensions = dimensions,
                 tableConfiguration = TableConfiguration(
