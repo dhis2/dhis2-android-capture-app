@@ -21,7 +21,7 @@ class ProgramEventDetailViewModel(
     }
     private val _currentScreen = MutableLiveData(EventProgramScreen.LIST)
     val currentScreen: LiveData<EventProgramScreen>
-        get() = currentScreen.distinctUntilChanged()
+        get() = _currentScreen.distinctUntilChanged()
 
     private val _backdropActive = MutableLiveData<Boolean>()
     val backdropActive: LiveData<Boolean> get() = _backdropActive
