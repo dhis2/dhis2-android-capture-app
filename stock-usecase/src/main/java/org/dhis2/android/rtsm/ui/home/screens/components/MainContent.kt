@@ -250,23 +250,23 @@ fun MainContent(
                 .padding(bottom = tablePadding)
                 .height(columnHeightDp)
         ) {
-            if (manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                != DataEntryStep.COMPLETED ||
+            if ((
                 manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                != DataEntryStep.START
+                    != DataEntryStep.COMPLETED ||
+                    manageStockViewModel.dataEntryUiState.collectAsState().value.step
+                    != DataEntryStep.START
+                ) && shouldDisplayTable(settingsUiState)
             ) {
-                if (shouldDisplayTable(settingsUiState)) {
-                    manageStockViewModel.setup(viewModel.getData())
-                    ManageStockTable(
-                        manageStockViewModel,
-                        concealBackdropState = {
-                            scope.launch { backdropState.conceal() }
-                        },
-                        onResized = { actions ->
-                            tableResizeActions = actions
-                        }
-                    )
-                }
+                manageStockViewModel.setup(viewModel.getData())
+                ManageStockTable(
+                    manageStockViewModel,
+                    concealBackdropState = {
+                        scope.launch { backdropState.conceal() }
+                    },
+                    onResized = { actions ->
+                        tableResizeActions = actions
+                    }
+                )
             }
         }
     }
