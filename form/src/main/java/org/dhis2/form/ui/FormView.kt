@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package org.dhis2.form.ui
 
 import android.Manifest
@@ -13,6 +15,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -22,8 +26,21 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
@@ -35,6 +52,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import com.journeyapps.barcodescanner.ScanOptions
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
@@ -54,6 +72,7 @@ import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
@@ -67,6 +86,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.exception.RepositoryRecordsException
 import org.dhis2.form.ui.dialog.OptionSetDialog
@@ -104,6 +124,25 @@ class FormView : Fragment() {
     private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
+
+    val textWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            // Not needed
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            viewModel.items.value?.find { it.focused }?.onTextChange(p0)
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            // Not needed
+        }
+    }
+
+    val coordinateTextWatcher = LatitudeLongitudeTextWatcher { coordinates ->
+        viewModel.items.value?.find { it.focused && it.valueType == ValueType.COORDINATE }
+            ?.onTextChange(coordinates)
+    }
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -299,7 +338,21 @@ class FormView : Fragment() {
             retainInstance = true
         }
         FormFileProvider.init(contextWrapper.applicationContext)
-        return binding.root
+
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val items by viewModel.items.observeAsState(emptyList())
+                Form(
+                    items,
+                    ::intentHandler,
+                    ::uiEventHandler,
+                    textWatcher,
+                    coordinateTextWatcher,
+                    needToForceUpdate
+                )
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -511,10 +564,12 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
                 uiEvent
             )
+
             is RecyclerViewUiEvents.OpenTimePicker -> showTimePicker(uiEvent)
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent
             )
+
             is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
             is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
             is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
@@ -548,6 +603,7 @@ class FormView : Fragment() {
                     Intent.ACTION_DIAL -> {
                         data = Uri.parse("tel:${currentValue.value}")
                     }
+
                     Intent.ACTION_SENDTO -> {
                         data = Uri.parse("mailto:${currentValue.value}")
                     }
@@ -613,9 +669,9 @@ class FormView : Fragment() {
             binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-            lastVisiblePosition == adapter.itemCount - 1 ||
-                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-            )
+                lastVisiblePosition == adapter.itemCount - 1 ||
+                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+                )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
@@ -654,6 +710,7 @@ class FormView : Fragment() {
                                 datePicker.dayOfMonth
                             )
                         )
+
                         else -> intentHandler(
                             dialogDelegate.handleDateInput(
                                 intent.uid,
