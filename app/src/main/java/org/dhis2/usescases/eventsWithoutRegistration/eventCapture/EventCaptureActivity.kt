@@ -127,7 +127,6 @@ class EventCaptureActivity :
         )
         binding!!.eventViewPager.adapter = adapter
         binding!!.eventViewPager.setCurrentItem(initialPage, false)
-        binding!!.eventViewPager.clipWithRoundedCorners(16.dp)
         binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)

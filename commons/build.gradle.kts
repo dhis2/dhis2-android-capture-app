@@ -55,6 +55,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
+
+    configurations.all {
+        resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+    }
 }
 
 dependencies {
@@ -117,5 +121,7 @@ dependencies {
     api(libs.test.espresso.idlingconcurrent)
     api(libs.analytics.sentry)
     implementation(libs.github.treeView)
-    api(libs.dhis2.mobile.designsystem)
+    api(libs.dhis2.mobile.designsystem) {
+        isChanging = true
+    }
 }

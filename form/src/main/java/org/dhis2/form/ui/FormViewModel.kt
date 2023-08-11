@@ -1,5 +1,8 @@
 package org.dhis2.form.ui
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,6 +49,10 @@ class FormViewModel(
     val focused = MutableLiveData<Boolean>()
     val showInfo = MutableLiveData<InfoUiModel>()
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
+
+    private val _formFields: MutableState<List<FieldUiModel>> = mutableStateOf(emptyList())
+    val formFields : State<List<FieldUiModel>>
+        get() = _formFields
 
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
@@ -517,6 +524,7 @@ class FormViewModel(
                 repository.composeList(skipProgramRules)
             }
             _items.postValue(result.await())
+            _formFields.value = result.await()
             if (finish) {
                 runDataIntegrityCheck()
             }
@@ -537,7 +545,9 @@ class FormViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
-                _items.postValue(repository.composeList())
+                val list = repository.composeList()
+                _items.postValue(list)
+                _formFields.value = list
             }
         }
     }
@@ -545,7 +555,7 @@ class FormViewModel(
     fun calculateCompletedFields() {
         viewModelScope.launch {
             val result = async(dispatcher.io()) {
-                repository.completedFieldsPercentage(_items.value ?: emptyList())
+                repository.completedFieldsPercentage(_items.value ?: _formFields.value)
             }
             try {
                 _completionPercentage.postValue(result.await())
@@ -588,10 +598,13 @@ class FormViewModel(
                 repository.fetchFormItems(openErrorLocation)
             }
             try {
-                _items.postValue(result.await())
+                val result = result.await()
+                _items.postValue(result)
+                _formFields.value = result
             } catch (e: Exception) {
                 Timber.e(e)
                 _items.postValue(emptyList())
+                _formFields.value = emptyList()
             }
         }
     }
