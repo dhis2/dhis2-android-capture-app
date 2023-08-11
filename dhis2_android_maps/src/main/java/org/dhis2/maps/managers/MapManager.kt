@@ -19,7 +19,6 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
-import javax.inject.Inject
 import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
@@ -44,8 +43,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     var permissionsManager: PermissionsManager? = null
     private var mapStyles: List<BaseMapStyle> = emptyList()
 
-    @Inject
-    lateinit var colorUtils: ColorUtils
+    private val colorUtils: ColorUtils = ColorUtils()
 
     var numberOfUiIcons: Int = 2
     val defaultUiIconLeftMargin = 8.dp

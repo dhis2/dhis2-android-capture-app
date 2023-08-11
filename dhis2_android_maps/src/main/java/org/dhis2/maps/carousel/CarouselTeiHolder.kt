@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import javax.inject.Inject
 import org.dhis2.Bindings.getEnrollmentIconsData
 import org.dhis2.Bindings.hasFollowUp
 import org.dhis2.Bindings.paintAllEnrollmentIcons
@@ -20,6 +19,7 @@ import org.dhis2.maps.databinding.ItemCarouselTeiBinding
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
+    val colorUtils: ColorUtils,
     val onClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Boolean,
     val onSyncClick: (String) -> Boolean,
     val onNavigate: (teiUid: String) -> Unit,
@@ -30,9 +30,6 @@ class CarouselTeiHolder(
     CarouselBinder<SearchTeiModel> {
 
     private var dataModel: SearchTeiModel? = null
-
-    @Inject
-    lateinit var colorUtils: ColorUtils
 
     init {
         binding.composeProgramList.setViewCompositionStrategy(

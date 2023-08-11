@@ -8,6 +8,7 @@ import org.dhis2.commons.data.CarouselItemModel
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.databinding.ItemCarouselEventBinding
 import org.dhis2.maps.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.maps.databinding.ItemCarouselRelationshipBinding
@@ -50,7 +51,8 @@ class CarouselAdapter private constructor(
     private val onProfileImageClick: (String) -> Unit,
     private val onNavigateListener: (String) -> Unit,
     private val allItems: MutableList<CarouselItemModel>,
-    private val mapManager: MapManager?
+    private val mapManager: MapManager?,
+    private val colorUtils: ColorUtils
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -69,6 +71,7 @@ class CarouselAdapter private constructor(
                         parent,
                         false
                     ),
+                    colorUtils,
                     onTeiClickListener,
                     onSyncClickListener,
                     onNavigateListener,
@@ -329,7 +332,8 @@ class CarouselAdapter private constructor(
         var onNavigateClickListener: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null,
-        var mapManager: MapManager? = null
+        var mapManager: MapManager? = null,
+        val colorUtils: ColorUtils = ColorUtils()
     ) {
         fun addCurrentTei(currentTei: String?) = apply {
             if (currentTei != null) {
@@ -407,7 +411,8 @@ class CarouselAdapter private constructor(
             onProfileImageClick,
             onNavigateClickListener,
             items,
-            mapManager
+            mapManager,
+            colorUtils
         )
     }
 }
