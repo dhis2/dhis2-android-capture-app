@@ -79,7 +79,30 @@ import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.uiboost.data.model.DataStoreAppConfig
 import org.dhis2.usescases.uiboost.data.model.Program
+import org.dhis2.utils.SampleDevicePreview
 import org.hisp.dhis.android.core.common.State
+import java.util.UUID
+
+@SampleDevicePreview
+@Composable
+fun PreviewProgramList() {
+    ProgramList(
+        programs = listOf(
+            testingProgramModel().copy(state = State.WARNING),
+            testingProgramModel().copy(state = State.ERROR),
+            testingProgramModel().copy(state = State.SYNCED),
+            testingProgramModel().copy(state = State.TO_POST),
+            testingProgramModel().copy(state = State.TO_UPDATE),
+            testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
+            testingProgramModel().copy(state = State.SENT_VIA_SMS)
+        ),
+        dataStore = null,
+        presenter = null,
+        onItemClick = {},
+        onGranularSyncClick = {},
+        downLoadState = SyncStatusData(true, true, emptyMap())
+    )
+}
 
 @Composable
 fun ProgramList(
@@ -88,7 +111,7 @@ fun ProgramList(
     presenter: ProgramPresenter?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
-    downLoadState: SyncStatusData?
+    downLoadState: SyncStatusData?,
 ) {
     val conf = LocalConfiguration.current
     Column {
@@ -134,7 +157,7 @@ fun ProgramList(
                         val gridData = dataStoreAppConfig.programGroups.filter {
                             it.style == "GRID"
                         }
-                        val flatPrograms = gridData.flatMap { it.programs }
+                        val flatProgramsGrid = gridData.flatMap { it.programs }
 
                         val listData = dataStoreAppConfig.programGroups.filter {
                             it.style == "LIST"
@@ -157,21 +180,23 @@ fun ProgramList(
                                     colorResource(id = R.color.primaryAlpha)
                                 )
                             } else {
+
                                 if (gridOrder[0] == 0) {
                                     GridLayout(
                                         programs,
-                                        flatPrograms,
+                                        flatProgramsGrid,
                                         labelGrid,
                                         presenter,
                                         onItemClick,
                                         onGranularSyncClick
                                     )
                                 }
-                                if (listOrder[0] == 1) {
-                                    ListLayout(
+
+                                if (gridOrder[0] == 1) {
+                                    GridLayout(
                                         programs,
-                                        flatProgramsList,
-                                        labelList,
+                                        flatProgramsGrid,
+                                        labelGrid,
                                         presenter,
                                         onItemClick,
                                         onGranularSyncClick
@@ -188,11 +213,12 @@ fun ProgramList(
                                         onGranularSyncClick
                                     )
                                 }
-                                if (gridOrder[0] == 1) {
-                                    GridLayout(
+
+                                if (listOrder[0] == 1) {
+                                    ListLayout(
                                         programs,
-                                        flatPrograms,
-                                        labelGrid,
+                                        flatProgramsList,
+                                        labelList,
                                         presenter,
                                         onItemClick,
                                         onGranularSyncClick
@@ -235,20 +261,16 @@ fun GridLayout(
     labelGrid: List<String>,
     presenter: ProgramPresenter?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
-    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit
+    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
 ) {
     if (flatPrograms.isNotEmpty()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = labelGrid[0],
-                modifier = Modifier.padding(8.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextLayoutTitle(title = labelGrid[0])
+
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(128.dp),
                 modifier = Modifier
@@ -294,13 +316,27 @@ fun GridLayout(
 }
 
 @Composable
+private fun TextLayoutTitle(title: String) {
+    Text(
+        text = title,
+        modifier = Modifier.padding(8.dp),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        fontSize = 22.sp,
+        style = LocalTextStyle.current.copy(
+            fontFamily = FontFamily(Font(R.font.rubik_regular))
+        )
+    )
+}
+
+@Composable
 fun ListLayout(
     programs: List<ProgramViewModel>,
     flatProgramsList: List<Program>,
     labelList: List<String>,
     presenter: ProgramPresenter?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
-    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit
+    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
 ) {
     if (flatProgramsList.isNotEmpty()) {
         Column(
@@ -309,14 +345,7 @@ fun ListLayout(
                 .wrapContentHeight(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = labelList[0],
-                modifier = Modifier.padding(8.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+            TextLayoutTitle(title = labelList[0])
 
             LazyColumn(
                 modifier = Modifier.testTag(HOME_ITEMS),
@@ -362,7 +391,7 @@ fun ProgramItemCard(
     modifier: Modifier = Modifier,
     programViewModel: ProgramViewModel,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit = {},
-    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit = {}
+    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit = {},
 ) {
     androidx.compose.material3.Card(
         modifier = modifier,
@@ -378,22 +407,10 @@ fun ProgramItemCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(vertical = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            androidx.compose.material3.Text(
-                text = programViewModel.title,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Medium,
-                color = colorResource(id = R.color.textPrimary),
-                maxLines = 2,
-                softWrap = true,
-                overflow = TextOverflow.Ellipsis,
-                style = LocalTextStyle.current.copy(
-                    fontFamily = FontFamily(Font(R.font.rubik_regular))
-                )
-            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -437,7 +454,7 @@ fun ProgramItemCard(
                 }
             }
             Box(
-                modifier = Modifier.padding(vertical = 16.dp),
+                modifier = Modifier.padding(vertical = 8.dp),
                 contentAlignment = Alignment.BottomEnd
             ) {
                 MetadataIcon(
@@ -460,24 +477,117 @@ fun ProgramItemCard(
                     }
                 }
             }
-            androidx.compose.material3.Text(
-                text = if (programViewModel.downloadState == ProgramDownloadState.DOWNLOADING) {
+
+            TextCount(text = programViewModel.count.toString())
+
+            LineDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            TextProgramItemCardTitle(
+                title = programViewModel.typeName,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            LineDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            val countDescription =
+                if (programViewModel.downloadState == ProgramDownloadState.DOWNLOADING) {
                     stringResource(R.string.syncing_resource, programViewModel.typeName.lowercase())
                 } else {
                     programViewModel.countDescription()
-                },
-                color = colorResource(id = R.color.textSecondary),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = 2,
-                softWrap = true,
-                overflow = TextOverflow.Ellipsis,
-                style = LocalTextStyle.current.copy(
-                    fontFamily = FontFamily(Font(R.font.rubik_regular))
+                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                //Todo: Stop using this deprecated function
+                TextCountDescription(
+//                text = countDescription,
+                    text = "Há duas horas",
+                    modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 4.dp)
                 )
-            )
+                Icon(
+                    painter = painterResource(id = R.drawable.temp_animated_sync_green),
+                    modifier = modifier
+                        .size(24.dp)
+                        .padding(top = 8.dp),
+                    contentDescription = null,
+                    tint = Color.Green
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun TextCount(text: String) {
+    Text(
+        text = text,
+        color = colorResource(id = R.color.textPrimary),
+        fontSize = 28.sp,
+        fontWeight = FontWeight.SemiBold,
+        maxLines = 1,
+        style = LocalTextStyle.current.copy(
+            fontFamily = FontFamily(Font(R.font.rubik_regular))
+        )
+    )
+}
+
+@Composable
+private fun LineDivider(modifier: Modifier) {
+    Divider(
+        modifier = modifier,
+        color = colorResource(id = R.color.divider_bg),
+        thickness = 1.dp
+    )
+}
+
+@Composable
+private fun TextProgramItemCardTitle(
+    title: String,
+    modifier: Modifier,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material3.Text(
+            text = title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colorResource(id = R.color.textPrimary),
+            maxLines = 2,
+            softWrap = true,
+            overflow = TextOverflow.Ellipsis,
+            style = LocalTextStyle.current.copy(
+                fontFamily = FontFamily(Font(R.font.rubik_regular))
+            )
+        )
+    }
+}
+
+@Deprecated(
+    message = "We don't need to show count description any more",
+    ReplaceWith("Rename this function to be used to show a last sync time")
+)
+@Composable
+private fun TextCountDescription(text: String, modifier: Modifier) {
+    androidx.compose.material3.Text(
+        text = text,
+        modifier = modifier,
+        color = colorResource(id = R.color.textSecondary),
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Medium,
+        maxLines = 2,
+        softWrap = true,
+        overflow = TextOverflow.Ellipsis,
+        style = LocalTextStyle.current.copy(
+            fontFamily = FontFamily(Font(R.font.rubik_regular))
+        )
+    )
 }
 
 @Composable
@@ -485,7 +595,7 @@ fun ProgramItem(
     modifier: Modifier = Modifier,
     programViewModel: ProgramViewModel,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit = {},
-    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit = {}
+    onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -697,7 +807,7 @@ fun ProgramDescriptionDialog(description: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-@Preview
+//@Preview
 fun DownloadMedia() {
     Box(
         modifier = Modifier.padding(vertical = 16.dp)
@@ -734,7 +844,7 @@ fun DownloadMedia() {
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun ProgramTest() {
     ProgramItem(
@@ -742,7 +852,7 @@ fun ProgramTest() {
     )
 }
 
-@Preview
+//@Preview
 @Composable
 fun ProgramTestToPost() {
     ProgramItem(
@@ -750,7 +860,7 @@ fun ProgramTestToPost() {
     )
 }
 
-@Preview
+//@Preview
 @Composable
 fun ProgramTestWithDescription() {
     ProgramItem(
@@ -758,7 +868,7 @@ fun ProgramTestWithDescription() {
     )
 }
 
-@Preview
+//@Preview
 @Composable
 fun ProgramTestDownloaded() {
     var downloadState by remember {
@@ -776,7 +886,7 @@ fun ProgramTestDownloaded() {
     )
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun ListPreview() {
     ProgramList(
@@ -797,14 +907,14 @@ fun ListPreview() {
     )
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun ProgramDescriptionDialogPReview() {
     ProgramDescriptionDialog(description = "Program description") { }
 }
 
 private fun testingProgramModel() = ProgramViewModel(
-    uid = "qweqwe",
+    uid = UUID.randomUUID().toString(),
     title = "Program title",
     metadataIconData = MetadataIconData(
         programColor = android.graphics.Color.parseColor("#00BCD4"),
