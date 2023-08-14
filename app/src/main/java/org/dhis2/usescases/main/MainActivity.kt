@@ -338,6 +338,7 @@ class MainActivity :
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         when {
             !mainNavigator.isHome() -> presenter.onNavigateBackToHome()

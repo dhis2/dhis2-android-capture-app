@@ -425,6 +425,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         } */
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (isPinScreenVisible) {
             binding.pinLayout.root.visibility = View.GONE
@@ -435,6 +436,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {

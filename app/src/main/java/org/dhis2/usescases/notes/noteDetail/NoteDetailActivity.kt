@@ -99,6 +99,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         back()
     }

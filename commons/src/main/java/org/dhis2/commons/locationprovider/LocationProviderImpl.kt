@@ -73,6 +73,8 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                 override fun onProviderDisabled(provider: String) {
                     // Need implementation for compatibility
                 }
+
+                @Deprecated("Deprecated in Java")
                 override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
                     // Need implementation for compatibility
                 }

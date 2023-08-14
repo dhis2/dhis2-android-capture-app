@@ -15,9 +15,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -91,11 +91,9 @@ class JiraViewModelTest {
             jiraRepository.sendJiraIssue(any(), any())
         ) doReturn Single.error(Throwable("This is an error"))
         jiraViewModel.sendIssue()
-        val captor = ArgumentCaptor.forClass(String::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(value == "This is an error")
-        }
+        val captor = argumentCaptor<String>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(captor.firstValue == "This is an error")
     }
 
     @Test
@@ -115,11 +113,10 @@ class JiraViewModelTest {
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
         jiraViewModel.sendIssue()
 
-        val captor = ArgumentCaptor.forClass(String::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(value == "Sent")
-        }
+        val captor = argumentCaptor<String>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(captor.firstValue == "Sent")
+
         verify(jiraRepository, times(1)).getJiraIssues(anyOrNull())
     }
 
@@ -138,11 +135,10 @@ class JiraViewModelTest {
 
         jiraViewModel.getJiraTickets()
 
-        val captor = ArgumentCaptor.forClass(JiraIssuesResult::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(value.isSuccess())
-        }
+        val captor = argumentCaptor<JiraIssuesResult>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(captor.firstValue.isSuccess())
+
         verify(jiraRepository).saveCredentials()
         assertTrue(jiraViewModel.isSessionOpen.get() == true)
     }
@@ -158,11 +154,10 @@ class JiraViewModelTest {
 
         jiraViewModel.getJiraTickets()
 
-        val captor = ArgumentCaptor.forClass(JiraIssuesResult::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(!value.isSuccess())
-        }
+        val captor = argumentCaptor<JiraIssuesResult>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(!captor.firstValue.isSuccess())
+
         verify(jiraRepository).closeSession()
         assertTrue(jiraViewModel.isSessionOpen.get() == false)
     }
