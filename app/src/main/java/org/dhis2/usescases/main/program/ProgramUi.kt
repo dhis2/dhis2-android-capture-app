@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
@@ -101,7 +100,11 @@ fun PreviewProgramList() {
         presenter = null,
         onItemClick = {},
         onGranularSyncClick = {},
-        downLoadState = SyncStatusData(true, true, emptyMap())
+        downLoadState = SyncStatusData(
+            running = true,
+            downloadingMedia = true,
+            programSyncStatusMap = emptyMap()
+        )
     )
 }
 
@@ -255,11 +258,61 @@ fun ProgramList(
     }
 }
 
+@SampleDevicePreview
+@Composable
+private fun PreviewGridLayout() {
+    val programs = listOf(
+        testingProgramModel(),
+        testingProgramModel(),
+        testingProgramModel()
+    )
+    val flatPrograms = listOf(
+        Program(hidden = "false", icon = "", program = "SrMd1fSO8JG"),
+        Program(hidden = "false", icon = "", program = "z5saE9QyXfC"),
+        Program(hidden = "false", icon = "", program = "ztif0p5TvEq")
+    )
+    val labelGrid = listOf("Seguimento nas Comunidades")
+
+    GridLayout(
+        programs = programs,
+        flatPrograms = flatPrograms,
+        label = labelGrid,
+        presenter = null,
+        onItemClick = { },
+        onGranularSyncClick = { }
+    )
+}
+
+@SampleDevicePreview
+@Composable
+private fun PreviewListLayout() {
+    val programs = listOf(
+        testingProgramModel(),
+        testingProgramModel(),
+        testingProgramModel()
+    )
+    val flatPrograms = listOf(
+        Program(hidden = "false", icon = "", program = "SrMd1fSO8JG"),
+        Program(hidden = "false", icon = "", program = "z5saE9QyXfC"),
+        Program(hidden = "false", icon = "", program = "ztif0p5TvEq")
+    )
+    val label = listOf("Seguimento nas Comunidades")
+
+    ListLayout(
+        programs = programs,
+        flatPrograms = flatPrograms,
+        label = label,
+        presenter = null,
+        onItemClick = { },
+        onGranularSyncClick = { }
+    )
+}
+
 @Composable
 fun GridLayout(
     programs: List<ProgramViewModel>,
     flatPrograms: List<Program>,
-    labelGrid: List<String>,
+    label: List<String>,
     presenter: ProgramPresenter?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
@@ -270,7 +323,7 @@ fun GridLayout(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextLayoutTitle(title = labelGrid[0])
+            TextLayoutTitle(title = label[0])
 
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(128.dp),
@@ -288,19 +341,14 @@ fun GridLayout(
                     Alignment.CenterHorizontally
                 )
             ) {
-                val list: ArrayList<ProgramViewModel> = ArrayList()
-                for (program in programs) {
-                    for (flat in flatPrograms) {
-                        if ((flat.program == program.uid) &&
-                            flat.hidden == "false"
-                        ) {
-                            list.add(program)
-                        }
-                    }
-                }
-                presenter!!.setProgramsGrid(list)
+                val list = getPrograms(
+                    programs = programs,
+                    flatPrograms = flatPrograms
+                )
+                presenter!!.setProgramsGrid(list) //Comment this line to see previews
                 itemsIndexed(
-                    items = presenter.programsGrid.value
+                    items = presenter.programsGrid.value //Comment this line to see previews
+                    //items = list //Uncomment this line to see previews
                 ) { index, program ->
                     ProgramItemCard(
                         modifier = Modifier.semantics {
@@ -314,6 +362,35 @@ fun GridLayout(
             }
         }
     }
+}
+
+private fun getPrograms(
+    programs: List<ProgramViewModel>,
+    flatPrograms: List<Program>,
+): ArrayList<ProgramViewModel> {
+    val list: ArrayList<ProgramViewModel> = ArrayList()
+
+    /** Uncomment This Code To See (Grid/List Layout) Previews */
+
+//    for (program in programs) {
+//        for (flat in flatPrograms) {
+////            if ((flat.program == program.uid) &&
+////                flat.hidden == "false"
+////            ) {
+//            list.add(program)
+////            }
+//        }
+//    }
+    for (program in programs) {
+        for (flat in flatPrograms) {
+            if ((flat.program == program.uid) &&
+                flat.hidden == "false"
+            ) {
+                list.add(program)
+            }
+        }
+    }
+    return list
 }
 
 @Composable
@@ -333,39 +410,33 @@ private fun TextLayoutTitle(title: String) {
 @Composable
 fun ListLayout(
     programs: List<ProgramViewModel>,
-    flatProgramsList: List<Program>,
-    labelList: List<String>,
+    flatPrograms: List<Program>,
+    label: List<String>,
     presenter: ProgramPresenter?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
 ) {
-    if (flatProgramsList.isNotEmpty()) {
+    if (flatPrograms.isNotEmpty()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextLayoutTitle(title = labelList[0])
+            TextLayoutTitle(title = label[0])
 
             LazyColumn(
                 modifier = Modifier.testTag(HOME_ITEMS),
                 contentPadding = PaddingValues(bottom = 56.dp)
             ) {
-                val list: ArrayList<ProgramViewModel> =
-                    ArrayList()
-                for (program in programs) {
-                    for (flat in flatProgramsList) {
-                        if ((flat.program == program.uid) &&
-                            flat.hidden == "false"
-                        ) {
-                            list.add(program)
-                        }
-                    }
-                }
-                presenter!!.setProgramsList(list)
+                val list = getPrograms(
+                    programs = programs,
+                    flatPrograms = flatPrograms
+                )
+                presenter!!.setProgramsList(list) //Comment this line to see previews
                 itemsIndexed(
-                    items = presenter.programsList.value
+                    items = presenter.programsList.value //Comment this line to see previews
+                    //items = list //Uncomment this line to see previews
                 ) { index, program ->
                     ProgramItem(
                         modifier = Modifier.semantics {
@@ -490,20 +561,12 @@ fun ProgramItemCard(
 
             LineDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-            val countDescription =
-                if (programViewModel.downloadState == ProgramDownloadState.DOWNLOADING) {
-                    stringResource(R.string.syncing_resource, programViewModel.typeName.lowercase())
-                } else {
-                    programViewModel.countDescription()
-                }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                //Todo: Stop using this deprecated function
-                TextCountDescription(
-//                text = countDescription,
+                TextTimeFromLastDataUpdate(
                     text = "Há duas horas",
                     modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 4.dp)
                 )
@@ -570,12 +633,8 @@ private fun TextProgramItemCardTitle(
     }
 }
 
-@Deprecated(
-    message = "We don't need to show count description any more",
-    ReplaceWith("Rename this function to be used to show a last sync time")
-)
 @Composable
-private fun TextCountDescription(text: String, modifier: Modifier) {
+private fun TextTimeFromLastDataUpdate(text: String, modifier: Modifier) {
     androidx.compose.material3.Text(
         text = text,
         modifier = modifier,
@@ -710,7 +769,6 @@ fun DownloadingProgress() {
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DownloadedIcon(programViewModel: ProgramViewModel) {
     val visible = visibility(programViewModel)
@@ -809,7 +867,7 @@ fun ProgramDescriptionDialog(description: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-//@Preview
+@Preview
 fun DownloadMedia() {
     Box(
         modifier = Modifier.padding(vertical = 16.dp)
@@ -846,7 +904,7 @@ fun DownloadMedia() {
     }
 }
 
-//@Preview
+@Preview
 @Composable
 fun ProgramTest() {
     ProgramItem(
@@ -854,7 +912,7 @@ fun ProgramTest() {
     )
 }
 
-//@Preview
+@Preview
 @Composable
 fun ProgramTestToPost() {
     ProgramItem(
@@ -862,7 +920,7 @@ fun ProgramTestToPost() {
     )
 }
 
-//@Preview
+@Preview
 @Composable
 fun ProgramTestWithDescription() {
     ProgramItem(
@@ -870,7 +928,7 @@ fun ProgramTestWithDescription() {
     )
 }
 
-//@Preview
+@Preview
 @Composable
 fun ProgramTestDownloaded() {
     var downloadState by remember {
@@ -888,7 +946,7 @@ fun ProgramTestDownloaded() {
     )
 }
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun ListPreview() {
     ProgramList(
@@ -905,11 +963,15 @@ fun ListPreview() {
         presenter = null,
         onItemClick = {},
         onGranularSyncClick = {},
-        downLoadState = SyncStatusData(true, true, emptyMap())
+        downLoadState = SyncStatusData(
+            running = true,
+            downloadingMedia = true,
+            programSyncStatusMap = emptyMap()
+        )
     )
 }
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun ProgramDescriptionDialogPReview() {
     ProgramDescriptionDialog(description = "Program description") { }
@@ -922,7 +984,7 @@ private fun testingProgramModel() = ProgramViewModel(
         programColor = android.graphics.Color.parseColor("#00BCD4"),
         iconResource = R.drawable.ic_positive_negative
     ),
-    count = 12,
+    count = (2..98).random(),
     type = "type",
     typeName = "Persons",
     programType = "WITH_REGISTRATION",
