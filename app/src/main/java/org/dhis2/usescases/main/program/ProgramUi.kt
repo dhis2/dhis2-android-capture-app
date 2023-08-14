@@ -66,6 +66,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -582,6 +583,7 @@ private fun TextCountDescription(text: String, modifier: Modifier) {
         fontSize = 14.sp,
         fontWeight = FontWeight.Medium,
         maxLines = 2,
+        fontStyle = FontStyle.Italic,
         softWrap = true,
         overflow = TextOverflow.Ellipsis,
         style = LocalTextStyle.current.copy(
