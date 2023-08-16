@@ -32,6 +32,7 @@ import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teiDashboard.ui.NoRelationships
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.dialFloatingActionButton.DialItem
@@ -124,6 +125,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             layerDialog.show(childFragmentManager, MapLayerDialog::class.java.name)
         }
         binding.mapPositionButton.setOnClickListener { handleMapPositionClick() }
+        binding.emptyRelationships.setContent { NoRelationships() }
         return binding.root
     }
 
