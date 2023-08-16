@@ -75,6 +75,10 @@ class EventIntegrationTest {
             eventRepository.eventStatus()
         ) doReturn Flowable.just(EventStatus.ACTIVE)
 
+        whenever(
+            eventRepository.validationStrategy()
+        )doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+
         val mandatoryFields = mapOf("uid" to "message")
         val expectedDialog = EventCompletionDialog(
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
@@ -84,10 +88,10 @@ class EventIntegrationTest {
                 clickableWord = null,
                 iconResource = 0,
                 mainButton = DialogButtonStyle.MainButton(textResource = 0),
-                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = 0)
+                secondaryButton = null
             ),
             mainButtonAction = FormBottomDialog.ActionType.CHECK_FIELDS,
-            secondaryButtonAction = FormBottomDialog.ActionType.FINISH,
+            secondaryButtonAction = null,
             fieldsWithIssues = listOf(
                 FieldWithIssue(
                     fieldUid = "uid",

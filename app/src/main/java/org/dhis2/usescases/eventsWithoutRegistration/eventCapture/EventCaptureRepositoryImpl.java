@@ -225,7 +225,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public ValidationStrategy validationStrategy() {
-        return SdkExtensionsKt.programStage(d2, programStage().blockingFirst()).validationStrategy();
+        ValidationStrategy validationStrategy =
+                SdkExtensionsKt.programStage(d2, programStage().blockingFirst())
+                        .validationStrategy();
+
+        return validationStrategy != null ? validationStrategy : ValidationStrategy.ON_COMPLETE;
     }
 }
 

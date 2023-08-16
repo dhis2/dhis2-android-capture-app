@@ -7,6 +7,7 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import java.util.Date
+import org.dhis2.Bindings.canSkipErrorFix
 import org.dhis2.R
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -17,7 +18,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureCo
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
 import org.hisp.dhis.android.core.common.Unit
-import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 
@@ -119,8 +119,10 @@ class EventCapturePresenterImpl(
             setUpActionByStatus(eventStatus)
         } else {
             val validationStrategy = eventCaptureRepository.validationStrategy()
-            val canSkipErrorFix = errorFields.isEmpty() or
-                (validationStrategy != ValidationStrategy.ON_UPDATE_AND_INSERT)
+            val canSkipErrorFix = validationStrategy.canSkipErrorFix(
+                hasErrorFields = errorFields.isNotEmpty(),
+                hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty()
+            )
             val eventCompletionDialog = configureEventCompletionDialog.invoke(
                 errorFields,
                 emptyMandatoryFields,
