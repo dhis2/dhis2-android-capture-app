@@ -264,6 +264,7 @@ fun MainContent(
                         scope.launch { backdropState.conceal() }
                     },
                     onResized = { actions ->
+                        manageStockViewModel.refreshConfig()
                         tableResizeActions = actions
                     }
                 )
