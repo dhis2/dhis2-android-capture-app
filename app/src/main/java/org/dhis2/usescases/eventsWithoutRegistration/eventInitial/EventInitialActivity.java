@@ -126,6 +126,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
 //        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+
+        System.out.println(eventCreationType);
     }
 
     @Override
@@ -277,6 +279,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         // TODO: remove empty strings
+        System.out.println(isNew);
         intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, getTrackedEntityInstance, enrollmentUid));
         startActivity(intent);
         finish();

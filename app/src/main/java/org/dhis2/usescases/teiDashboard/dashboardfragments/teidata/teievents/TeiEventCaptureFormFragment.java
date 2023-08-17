@@ -56,9 +56,6 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
         super.onAttach(context);
         this.activity = (TeiDashboardMobileActivity) context;
 
-        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        System.out.println(getArguments().getString(Constants.EVENT_UID));
-        System.out.println(this);
 //        TODO: reversed
 //        activity.teiDashboardComponent.plus(
 //                new EventCaptureFormModule(

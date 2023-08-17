@@ -179,14 +179,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
                 }
 
-//                System.out.println("----------------------------------");
-//                System.out.println(ruleResult.ruleAction());
-//                System.out.println(ruleResult.ruleAction());
-//                System.out.println(ruleResult.data());
-//                System.out.println("wayaaaaaaaaaaa");
-
-
-
                 followpuSet = true;
                 onSetSpecificFollowup(this.dashboardModel, followpuSet);
 
@@ -281,16 +273,12 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         if (followUp == null || followUp == false) {
             dashboardRepository.setSpecificFollowupStatus(true, enrollmentUid);
 //            view.showToast(followUp ? view.getContext().getString(R.string.follow_up_enabled) : view.getContext().getString(R.string.follow_up_disabled));
-
             view.switchFollowUp(true);
         }
 
-        System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-        System.out.println(setFollowup);
         if (setFollowup == false) {
             dashboardRepository.setSpecificFollowupStatus(false, enrollmentUid);
 //            view.showToast(view.getContext().getString(R.string.follow_up_disabled));
-
             view.switchFollowUp(false);
         }
     }

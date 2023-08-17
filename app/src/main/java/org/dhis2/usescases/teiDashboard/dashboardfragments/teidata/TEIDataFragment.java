@@ -370,11 +370,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         this.teiModel.setAttributeValues(linkedHashMapOfAttrValues);
 
-        System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-        System.out.println(this.teiModel.getAttributeValues().keySet());
-        System.out.println(this.teiModel.getAttributeValues());
-        System.out.println(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
-
         if (OrientationUtilsKt.isLandscape()) {
             binding.cardFrontLand.setAttributeNames(this.teiModel.getAttributeValues().keySet());
             binding.cardFrontLand.setAttribute(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
@@ -385,10 +380,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
 
-        System.out.println("on set tei data 1111111111111111111111111");
-        System.out.println(trackedEntityInstance);
-        System.out.println(organisationUnit);
-
         if (OrientationUtilsKt.isLandscape()) {
             binding.cardFrontLand.setOrgUnit(organisationUnit.name());
             this.attributeValues = trackedEntityAttributeValues;
@@ -398,25 +389,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
 
             }
-//            binding.cardFrontLand.setAttribute(trackedEntityAttributeValues);
-
-//            Set<String> attributeNames = new HashSet<>();
-//
-//            for (TrackedEntityAttributeValue attributeValue : trackedEntityAttributeValues) {
-//                attributeNames.add(attributeValue.trackedEntityAttribute());
-//
-//            }
-//
-//            System.out.println("namesssssssssssssss");
-//            System.out.println(attributeNames);
-//
-//            binding.cardFrontLand.setAttributeNames(attributeNames);
-
-//            binding.cardFrontLand.set
         }
 
         binding.setTrackEntity(trackedEntityInstance);
-//        binding.cardFront.orgUnit.setText(organisationUnit.displayName());
 
         if (this.teiModel == null) {
             this.teiModel = new SearchTeiModel();
@@ -426,16 +401,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
 
         if (teiModel.getSelectedEnrollment() != null) {
-            System.out.println("on set tei 333333333333333333333333333333");
-            System.out.println(this.teiModel.getAttributeValues());
-            System.out.println(this.teiModel.getSelectedEnrollment());
+
         }
-
-        System.out.println("on set tei data");
-        System.out.println(this.teiModel.getAttributeValues());
-        System.out.println(this.teiModel.getSelectedEnrollment());
-
-
     }
 
     @Override
@@ -485,10 +452,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             });
 
         } else {
-
-            System.out.println("******************************************************************");
-            System.out.println(binding.getProgram());
-
             DetailsButtonKt.setButtonContent(
                     binding.cardFrontLand.detailsButton,
                     activity.presenter.getTEType(),
@@ -1038,7 +1001,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         if (OrientationUtilsKt.isLandscape()) {
 
-            System.out.println("do i have attr values");
+            System.out.println("do i have attr valuesQQ");
             if (this.attributeValues != null) {
 
                 setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);

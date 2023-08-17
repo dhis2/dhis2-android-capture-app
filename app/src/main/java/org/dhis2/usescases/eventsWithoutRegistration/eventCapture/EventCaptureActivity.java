@@ -137,9 +137,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
 
-//        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-        System.out.println(programStageUid);
-
         // TODO: fails due to lack of dynamism
 //        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
 
@@ -323,15 +320,38 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showCompleteActions(boolean canComplete, Map<String, String> emptyMandatoryFields, EventCompletionDialog eventCompletionDialog) {
-        if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
-            BottomSheetDialog dialog = new BottomSheetDialog(eventCompletionDialog.getBottomSheetDialogUiModel(), () -> {
-                setAction(eventCompletionDialog.getMainButtonAction());
-                return Unit.INSTANCE;
-            }, () -> {
-                setAction(eventCompletionDialog.getSecondaryButtonAction());
-                return Unit.INSTANCE;
-            });
-            dialog.show(getSupportFragmentManager(), SHOW_OPTIONS);
+
+        if (OrientationUtilsKt.isPortrait(this)) {
+            if (
+                    binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry
+            ) {
+                BottomSheetDialog dialog = new BottomSheetDialog(eventCompletionDialog.getBottomSheetDialogUiModel(), () -> {
+                    setAction(eventCompletionDialog.getMainButtonAction());
+                    return Unit.INSTANCE;
+                }, () -> {
+                    setAction(eventCompletionDialog.getSecondaryButtonAction());
+                    return Unit.INSTANCE;
+                });
+                dialog.show(getSupportFragmentManager(), SHOW_OPTIONS);
+            }
+        }
+
+        if (OrientationUtilsKt.isLandscape(this)) {
+            if (
+                    binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry ||
+                            binding.navigationBar.getSelectedItemId() == R.id.navigation_details ||
+                            binding.navigationBar.getSelectedItemId() == R.id.navigation_analytics ||
+                            binding.navigationBar.getSelectedItemId() == R.id.navigation_notes
+            ) {
+                BottomSheetDialog dialog = new BottomSheetDialog(eventCompletionDialog.getBottomSheetDialogUiModel(), () -> {
+                    setAction(eventCompletionDialog.getMainButtonAction());
+                    return Unit.INSTANCE;
+                }, () -> {
+                    setAction(eventCompletionDialog.getSecondaryButtonAction());
+                    return Unit.INSTANCE;
+                });
+                dialog.show(getSupportFragmentManager(), SHOW_OPTIONS);
+            }
         }
     }
 
@@ -416,8 +436,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void preselectStage(String programStageUid) {
-        System.out.println("whataaaaaaa?????");
-        System.out.println(programStageUid);
+
     }
 
     @Override

@@ -149,7 +149,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         if (eventStatus != EventStatus.ACTIVE) {
             setUpActionByStatus(eventStatus);
         } else {
-
             EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
                     errorFields,
                     emptyMandatoryFields,

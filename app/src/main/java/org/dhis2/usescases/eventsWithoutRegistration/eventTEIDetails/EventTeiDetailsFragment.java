@@ -417,17 +417,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
         this.teiModel.setAttributeValues(linkedHashMapOfAttrValues);
 
-        System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-//        System.out.println(this.teiModel.getAttributeValues());
-        System.out.println(this.teiModel.getAttributeValues().keySet());
-        System.out.println(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
-
         if (OrientationUtilsKt.isLandscape()) {
             binding.cardFrontLand.setAttributeListOpened(true);
-//            binding.cardFrontLand.showAttributeList();
-
             binding.cardFrontLand.setAttributeNames(this.teiModel.getAttributeValues().keySet());
-//            binding.cardFrontLand.setAttributeNames(this.teiModel.attributeValues.keys);
             binding.cardFrontLand.setAttribute(this.teiModel.getAttributeValues().values().stream().collect(Collectors.toList()));
         }
 
@@ -454,10 +446,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             });
 
         } else {
-
-            System.out.println("******************************************************************");
-            System.out.println(binding.getProgram());
-
             DetailsButtonKt.setButtonContent(
                     binding.cardFrontLand.detailsButton,
                     "Person",
@@ -625,9 +613,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             });
 
         } else {
-
-            System.out.println("******************************************************************");
-            System.out.println(binding.getProgram());
 
             DetailsButtonKt.setButtonContent(
                     binding.cardFrontLand.detailsButton,

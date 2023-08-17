@@ -323,9 +323,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public boolean getFollowupStatus(String enrollmentUid) {
         Boolean followUp = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().followUp();
 
-//        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        System.out.println(followUp);
-
         if (followUp == null) {
             return false;
         } else if (followUp == true || followUp == false) {
