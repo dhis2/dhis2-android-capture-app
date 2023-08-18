@@ -11,10 +11,11 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
-    <application
-        android:icon="@mipmap/ic_launcher">
+    <application android:icon="@mipmap/ic_launcher">
 
         <activity android:name=".usescases.development.DevelopmentActivity" />
+
+        <activity android:name=".usescases.development.UIComponentsView" />
 
         <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
 
