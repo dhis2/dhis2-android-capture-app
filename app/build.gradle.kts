@@ -250,6 +250,7 @@ dependencies {
     implementation(libs.analytics.customactivityoncrash)
     implementation(platform(libs.dispatcher.dispatchBOM))
     implementation(libs.dispatcher.dispatchCore)
+    implementation(libs.dhis2.mobile.designsystem)
 
     coreLibraryDesugaring(libs.desugar)
 
