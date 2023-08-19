@@ -332,7 +332,7 @@
                 android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@id/attribute_b_name"
+                app:layout_constraintStart_toEndOf="@id/attribute_c_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
 
             <TextView
@@ -352,7 +352,7 @@
                 android:visibility='@{attribute.size() > 3 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@id/attribute_b_name"
+                app:layout_constraintStart_toEndOf="@id/attribute_d_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_3" />
 
             <TextView
