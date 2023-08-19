@@ -252,6 +252,8 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
         binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
 
+
+
         return binding.getRoot();
 
     }
@@ -292,6 +294,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void setEnrollment(Enrollment enrollment) {
         binding.setEnrollment(enrollment);
+
         dashboardViewModel.updateDashboard(dashboardModel);
         if (adapter != null) {
             adapter.setEnrollment(enrollment);
@@ -686,6 +689,15 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public void setEvents(List<EventViewModel> events, boolean canAddEvents) {
 
         binding.setCanAddEvents(canAddEvents);
+
+        System.out.println("SETTING EVENTS");
+        System.out.println(canAddEvents);
+        System.out.println(binding.getEnrollment().status());
+//        System.out.println(enrollment);
+
+        if (OrientationUtilsKt.isLandscape()) {
+            activity.findViewById(R.id.dialFabLayout).setVisibility(View.GONE);
+        }
 
         if (events.isEmpty()) {
             binding.emptyTeis.setVisibility(View.VISIBLE);

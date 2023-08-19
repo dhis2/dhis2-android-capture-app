@@ -164,6 +164,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardLayout" />
 
+
         <include
             android:id="@+id/loading_progress"
             layout="@layout/progress_layout"
