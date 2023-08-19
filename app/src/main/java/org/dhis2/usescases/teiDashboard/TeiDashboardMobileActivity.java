@@ -49,6 +49,7 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.form.model.EnrollmentMode;
@@ -255,6 +256,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .onFinishDataEntry(
                             () -> presenter.fininshEnrollmentDataEntry()
                     )
+                    .resultDialogUiProvider(new EnrollmentResultDialogUiProvider(new ResourceManager(this.getContext())))
                     .factory(getSupportFragmentManager()).setRecords(new EnrollmentRecords(enrollmentUid, EnrollmentMode.NEW)).build();
 
 
