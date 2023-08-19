@@ -222,16 +222,28 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <FrameLayout
-            android:id="@+id/tei_form_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:elevation="3dp"
-            android:background="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline625"
-            app:layout_constraintStart_toEndOf="@id/guideline25"
-            app:layout_constraintTop_toTopOf="parent" />
+            <FrameLayout
+                android:id="@+id/tei_form_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/white"
+                android:elevation="3dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline625"
+                app:layout_constraintStart_toEndOf="@id/guideline25"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/saveLand"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    app:backgroundTint="?colorPrimary"
+                    app:srcCompat="@drawable/ic_save"
+                    app:tint="@color/white" />
+            </FrameLayout>
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/tei_table_pager"

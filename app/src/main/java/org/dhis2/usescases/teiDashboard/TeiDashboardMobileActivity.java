@@ -20,7 +20,6 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -39,6 +38,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
@@ -53,10 +54,9 @@ import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.form.model.EnrollmentMode;
 import org.dhis2.form.model.EnrollmentRecords;
 import org.dhis2.form.ui.FormView;
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.QrActivity;
@@ -75,11 +75,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View, MapButtonObservable {
+
+
 
     public static final int OVERVIEW_POS = 0;
 
@@ -248,16 +251,27 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         } else {// TODO : activity.hideProgress();
                         }
                         return Unit.INSTANCE;
-                    }).onFinishDataEntry(
+                    })
+                    .onFinishDataEntry(
                             () -> presenter.fininshEnrollmentDataEntry()
                     )
-//                    .resultDialogUiProvider()
                     .factory(getSupportFragmentManager()).setRecords(new EnrollmentRecords(enrollmentUid, EnrollmentMode.NEW)).build();
 
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_form_view, formView)
                     .commitAllowingStateLoss();
+
+            // logics for a save FAB button on enrollment data
+            FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.saveLand);
+
+            saveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    formView.onSaveClick();
+//                    showToast(getString(R.string.saved));
+                }
+            });
         }
 
         if (OrientationUtilsKt.isLandscape()) {
