@@ -20,6 +20,7 @@ import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.locationprovider.LocationSettingLauncher.requestEnableLocationSetting
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentRelationshipsBinding
 import org.dhis2.maps.ExternalMapNavigation
 import org.dhis2.maps.carousel.CarouselAdapter
@@ -48,6 +49,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
 
     @Inject
     lateinit var themeManager: ThemeManager
+
+    @Inject
+    lateinit var colorUtils: ColorUtils
 
     private lateinit var binding: FragmentRelationshipsBinding
     private lateinit var relationshipAdapter: RelationshipAdapter
@@ -92,7 +96,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false)
-        relationshipAdapter = RelationshipAdapter(presenter)
+        relationshipAdapter = RelationshipAdapter(presenter, colorUtils)
         binding.relationshipRecycler.adapter = relationshipAdapter
         relationshipMapManager = RelationshipMapManager(binding.mapView)
         lifecycle.addObserver(relationshipMapManager)

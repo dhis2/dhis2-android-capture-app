@@ -15,6 +15,7 @@ import org.dhis2.commons.data.EventViewModelType.EVENT
 import org.dhis2.commons.data.EventViewModelType.STAGE
 import org.dhis2.commons.data.EventViewModelType.values
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
@@ -23,7 +24,8 @@ import org.hisp.dhis.android.core.program.Program
 
 class EventAdapter(
     val presenter: TEIDataPresenter,
-    val program: Program
+    val program: Program,
+    val colorUtils: ColorUtils
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
@@ -65,7 +67,8 @@ class EventAdapter(
                 StageViewHolder(
                     binding,
                     stageSelector,
-                    presenter
+                    presenter,
+                    colorUtils
                 )
             }
             EVENT -> {
@@ -78,6 +81,7 @@ class EventAdapter(
                 EventViewHolder(
                     binding,
                     program,
+                    colorUtils,
                     { presenter.onSyncDialogClick(it) },
                     { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
                     { eventUid, _, eventStatus, _ ->

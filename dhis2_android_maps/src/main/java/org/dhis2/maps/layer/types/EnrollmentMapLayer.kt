@@ -24,7 +24,8 @@ class EnrollmentMapLayer(
     val style: Style,
     val featureType: FeatureType,
     private val enrollmentColor: Int,
-    private val enrollmentDarkColor: Int
+    private val enrollmentDarkColor: Int,
+    private val colorUtils: ColorUtils
 ) : MapLayer {
 
     private var POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER_ID"
@@ -75,7 +76,7 @@ class EnrollmentMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, ENROLLMENT_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor)),
+                    PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor)),
                     PropertyFactory.visibility(Property.NONE)
                 )
                 .withFilter(isPolygon())

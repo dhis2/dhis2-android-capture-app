@@ -12,6 +12,8 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import javax.inject.Inject
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.DialogMapLayerBinding
@@ -36,6 +38,9 @@ class MapLayerDialog(
     private val layerVisibility: HashMap<String, Boolean> = hashMapOf()
     lateinit var binding: DialogMapLayerBinding
 
+    @Inject
+    lateinit var colorUtils: ColorUtils
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
@@ -50,9 +55,9 @@ class MapLayerDialog(
         binding.baseMapCarousel.adapter = BasemapAdapter(mapManager.mapLayerManager)
         binding.acceptButton.setTextColor(
             ColorStateList.valueOf(
-                ColorUtils.getPrimaryColor(
-                    context,
-                    ColorUtils.ColorType.PRIMARY
+                colorUtils.getPrimaryColor(
+                    requireContext(),
+                    ColorType.PRIMARY
                 )
             )
         )
@@ -197,9 +202,9 @@ class MapLayerDialog(
                 CompoundButtonCompat.setButtonTintList(
                     this,
                     ColorStateList.valueOf(
-                        ColorUtils.getPrimaryColor(
+                        colorUtils.getPrimaryColor(
                             context,
-                            ColorUtils.ColorType.PRIMARY
+                            ColorType.PRIMARY
                         )
                     )
                 )

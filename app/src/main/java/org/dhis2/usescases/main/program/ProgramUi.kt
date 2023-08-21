@@ -9,7 +9,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
@@ -65,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
@@ -72,7 +72,6 @@ import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ProgramList(
     programs: List<ProgramViewModel>,
@@ -250,7 +249,7 @@ fun DownloadingProgress() {
             .size(24.dp)
             .padding(2.dp),
         color = Color(
-            ColorUtils.getPrimaryColor(LocalContext.current, ColorUtils.ColorType.PRIMARY)
+            ColorUtils().getPrimaryColor(LocalContext.current, ColorType.PRIMARY)
         ),
         strokeWidth = 2.dp
     )

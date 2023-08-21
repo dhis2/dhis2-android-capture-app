@@ -2,14 +2,16 @@ package org.dhis2.usescases.searchTrackEntity.adapters
 
 import android.widget.Toast
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 
 class SearchTEViewHolder(
     private val binding: ItemSearchTrackedEntityBinding,
     private val onSyncIconClick: (enrollmentUid: String) -> Unit,
     private val onDownloadTei: (teiUid: String, enrollmentUid: String?) -> Unit,
+    private val colorUtils: ColorUtils,
     private val onTeiClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Unit
-) : BaseTeiViewHolder(binding) {
+) : BaseTeiViewHolder(binding, colorUtils) {
 
     override fun itemConfiguration() {
         binding.sortingFieldName.text = teiModel.sortingKey

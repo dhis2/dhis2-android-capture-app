@@ -17,6 +17,7 @@ import org.dhis2.Bindings.initDialItem
 import org.dhis2.Bindings.rotate
 import org.dhis2.Bindings.showDialItem
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.DialFabItemBinding
 
@@ -30,6 +31,8 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
     private var isActive = false
     private val dialItemViews = mutableListOf<View>()
     private var fab: FloatingActionButton
+
+    private val colorUtils: ColorUtils = ColorUtils()
 
     init {
         clipToPadding = false
@@ -85,12 +88,12 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
         ).apply {
             dialLabel.text = dialItem.label
             dialIcon.setImageResource(dialItem.icon)
-            val colorPrimaryDark = ColorUtils.getPrimaryColor(
+            val colorPrimaryDark = colorUtils.getPrimaryColor(
                 context,
-                ColorUtils.ColorType.PRIMARY_DARK
+                ColorType.PRIMARY_DARK
             )
             dialIcon.supportImageTintList =
-                ColorStateList.valueOf(ColorUtils.getContrastColor(colorPrimaryDark))
+                ColorStateList.valueOf(colorUtils.getContrastColor(colorPrimaryDark))
         }.root.apply {
             id = dialItem.id
             tag = dialItem.label
@@ -101,12 +104,12 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
     private fun initFab(context: Context) = FloatingActionButton(context).apply {
         id = FAB_ID
         setImageResource(R.drawable.ic_add_accent)
-        val colorPrimary = ColorUtils.getPrimaryColor(
+        val colorPrimary = colorUtils.getPrimaryColor(
             context,
-            ColorUtils.ColorType.PRIMARY
+            ColorType.PRIMARY
         )
         supportBackgroundTintList = ColorStateList.valueOf(colorPrimary)
-        supportImageTintList = ColorStateList.valueOf(ColorUtils.getContrastColor(colorPrimary))
+        supportImageTintList = ColorStateList.valueOf(colorUtils.getContrastColor(colorPrimary))
         setOnClickListener { onFabClick() }
         layoutParams =
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {

@@ -47,6 +47,7 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.FragmentTeiDataBinding;
@@ -111,6 +112,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Inject
     FiltersAdapter filtersAdapter;
 
+    @Inject
+    ColorUtils colorUtils;
 
     private EventAdapter adapter;
     private CustomDialog dialog;
@@ -328,7 +331,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
-            adapter = new EventAdapter(presenter, currentProgram);
+            adapter = new EventAdapter(presenter, currentProgram, colorUtils);
             adapter.setEnrollment(currentEnrollment);
             binding.teiRecycler.setAdapter(adapter);
         }
@@ -521,7 +524,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             Glide.with(this)
                     .load(new File(filePath))
                     .error(
-                            ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+                            ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray, colorUtils)
                     )
                     .transition(withCrossFade())
                     .transform(new CircleCrop())

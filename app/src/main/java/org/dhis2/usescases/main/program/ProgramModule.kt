@@ -6,6 +6,7 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
@@ -46,14 +47,15 @@ class ProgramModule(private val view: ProgramView) {
         filterPresenter: FilterPresenter,
         dhisProgramUtils: DhisProgramUtils,
         dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
+        colorUtils: ColorUtils
     ): ProgramRepository {
         return ProgramRepositoryImpl(
             d2,
             filterPresenter,
             dhisProgramUtils,
             dhisTrackedEntityInstanceUtils,
-            ResourceManager(view.context),
+            ResourceManager(view.context, colorUtils),
             schedulerProvider
         )
     }

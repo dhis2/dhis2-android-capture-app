@@ -23,7 +23,8 @@ class TeiEventMapLayer(
     val style: Style,
     val featureType: FeatureType,
     val sourceId: String,
-    val eventColor: Int?
+    val eventColor: Int?,
+    private val colorUtils: ColorUtils
 ) : MapLayer {
 
     private val POINT_LAYER_ID = "POINT_LAYER_$sourceId"
@@ -79,7 +80,7 @@ class TeiEventMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, sourceId)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1)),
+                    PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(isPolygon())
 

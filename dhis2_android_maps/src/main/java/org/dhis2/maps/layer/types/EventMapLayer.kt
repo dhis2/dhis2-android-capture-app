@@ -20,7 +20,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 class EventMapLayer(
     val style: Style,
     val featureType: FeatureType,
-    val eventColor: Int?
+    val eventColor: Int?,
+    private val colorUtils: ColorUtils
 ) : MapLayer {
 
     private val POINT_LAYER_ID = "POINT_LAYER"
@@ -75,7 +76,7 @@ class EventMapLayer(
         get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
             ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_POLYGON_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1))
+                    PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1))
                 )
 
     private fun setVisibility(visibility: String) {
@@ -140,7 +141,7 @@ class EventMapLayer(
         }
 
         selectedPolygonLayer.setProperties(
-            PropertyFactory.fillColor(ColorUtils.withAlpha(Color.WHITE)),
+            PropertyFactory.fillColor(colorUtils.withAlpha(Color.WHITE)),
             PropertyFactory.visibility(Property.VISIBLE)
 
         )
@@ -154,7 +155,7 @@ class EventMapLayer(
             )
         } else {
             selectedPolygonLayer.setProperties(
-                PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1)),
+                PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
                 PropertyFactory.visibility(Property.NONE)
             )
         }

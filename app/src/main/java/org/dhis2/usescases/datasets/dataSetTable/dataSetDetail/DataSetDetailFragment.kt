@@ -12,6 +12,7 @@ import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
@@ -42,6 +43,9 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
 
     @Inject
     lateinit var periodUtils: DhisPeriodUtils
+
+    @Inject
+    lateinit var colorUtils: ColorUtils
 
     companion object {
         @JvmStatic
@@ -114,7 +118,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             } else {
                 dataSetStatus.setText(R.string.data_set_open)
                 completedDate.visibility = View.GONE
-                dataSetStatus.background = ColorUtils.tintDrawableWithColor(
+                dataSetStatus.background = colorUtils.tintDrawableWithColor(
                     dataSetStatus.background,
                     Color.parseColor("#CCFF90")
                 )
@@ -142,14 +146,14 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     }
 
     override fun setStyle(style: ObjectStyle?) {
-        val color = ColorUtils.getColorFrom(
+        val color = colorUtils.getColorFrom(
             style?.color(),
-            ColorUtils.getPrimaryColor(
+            colorUtils.getPrimaryColor(
                 mContext,
-                ColorUtils.ColorType.PRIMARY
+                ColorType.PRIMARY
             )
         )
-        val imageResource = ResourceManager(mContext).getObjectStyleDrawableResource(
+        val imageResource = ResourceManager(mContext, colorUtils).getObjectStyleDrawableResource(
             style?.icon(),
             R.drawable.ic_default_outline
         )

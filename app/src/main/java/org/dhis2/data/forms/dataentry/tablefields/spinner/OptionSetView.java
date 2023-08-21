@@ -8,14 +8,20 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.dhis2.R;
+import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.dhis2.utils.customviews.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.Option;
 
+import javax.inject.Inject;
+
 public class OptionSetView extends FieldLayout implements OptionSetOnClickListener {
     private TextView editText;
     private OnSelectedOption listener;
+
+    @Inject
+    ColorUtils colorUtils;
 
     public OptionSetView(Context context) {
         super(context);
@@ -57,7 +63,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         editText.setFocusable(false);
         editText.setClickable(isEditable);
         editText.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent ? colorUtils.getPrimaryColor(getContext(), ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
     }

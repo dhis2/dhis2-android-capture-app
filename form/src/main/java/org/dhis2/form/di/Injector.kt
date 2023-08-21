@@ -4,6 +4,7 @@ import android.content.Context
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportControllerImpl
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
@@ -201,8 +202,16 @@ object Injector {
         context: Context,
         isBackgroundTransparent: Boolean
     ): UiStyleProvider = UiStyleProviderImpl(
-        colorFactory = FormUiModelColorFactoryImpl(context, isBackgroundTransparent),
-        longTextColorFactory = LongTextUiColorFactoryImpl(context, isBackgroundTransparent),
+        colorFactory = FormUiModelColorFactoryImpl(
+            context,
+            isBackgroundTransparent,
+            provideColorUtils()
+        ),
+        longTextColorFactory = LongTextUiColorFactoryImpl(
+            context,
+            isBackgroundTransparent,
+            provideColorUtils()
+        ),
         actionIconClickable = isBackgroundTransparent
     )
 
@@ -240,7 +249,10 @@ object Injector {
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
-    private fun provideResourcesManager(context: Context) = ResourceManager(context)
+    private fun provideResourcesManager(context: Context) = ResourceManager(
+        context,
+        provideColorUtils()
+    )
 
     private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
 
@@ -278,4 +290,6 @@ object Injector {
         provideD2(),
         provideResourcesManager(context)
     )
+
+    private fun provideColorUtils() = ColorUtils()
 }

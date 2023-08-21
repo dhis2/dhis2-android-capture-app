@@ -21,7 +21,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
 import org.dhis2.form.data.FormFileProvider
@@ -42,6 +44,9 @@ QRDetailBottomDialog(
         const val TAG: String = "QR_DETAIL_DIALOG"
     }
 
+    @Inject
+    lateinit var colorUtils: ColorUtils
+
     private lateinit var binding: QrDetailDialogBinding
     private var qrContentUri: Uri? = null
     private var primaryColor: Int? = -1
@@ -56,7 +61,7 @@ QRDetailBottomDialog(
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        primaryColor = ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+        primaryColor = colorUtils.getPrimaryColor(context, ColorType.PRIMARY)
     }
 
     override fun onCreateView(
@@ -75,7 +80,7 @@ QRDetailBottomDialog(
                 View.GONE
             }
             setImageDrawable(
-                ColorUtils.tintDrawableWithColor(
+                colorUtils.tintDrawableWithColor(
                     drawable,
                     primaryColor!!
                 )
@@ -88,7 +93,7 @@ QRDetailBottomDialog(
 
         binding.shareButton.apply {
             setImageDrawable(
-                ColorUtils.tintDrawableWithColor(
+                colorUtils.tintDrawableWithColor(
                     drawable,
                     primaryColor!!
                 )
@@ -114,7 +119,7 @@ QRDetailBottomDialog(
                 View.GONE
             }
             setImageDrawable(
-                ColorUtils.tintDrawableWithColor(
+                colorUtils.tintDrawableWithColor(
                     drawable,
                     primaryColor!!
                 )

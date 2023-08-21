@@ -281,7 +281,7 @@ fun setLegendBadge(legendLayout: FrameLayout, legendValue: LegendValue?) {
 @BindingAdapter("legendValue")
 fun TextView.setLegend(legendValue: LegendValue?) {
     legendValue?.let {
-        DrawableCompat.setTint(background, ColorUtils.withAlpha(it.color, 38))
+        DrawableCompat.setTint(background, ColorUtils().withAlpha(it.color, 38))
         compoundDrawables
             .filterNotNull()
             .forEach { drawable -> DrawableCompat.setTint(drawable, it.color) }

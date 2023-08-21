@@ -13,11 +13,13 @@ import org.dhis2.Bindings.setTeiImage
 import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselTeiBinding
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
+    val colorUtils: ColorUtils,
     val onClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Boolean,
     val onSyncClick: (String) -> Boolean,
     val onNavigate: (teiUid: String) -> Unit,
@@ -65,7 +67,8 @@ class CarouselTeiHolder(
             val enrollmentIconDataList: List<EnrollmentIconData> =
                 programInfo.getEnrollmentIconsData(
                     itemView.context,
-                    if (selectedEnrollment != null) selectedEnrollment.program() else null
+                    if (selectedEnrollment != null) selectedEnrollment.program() else null,
+                    colorUtils
                 )
             enrollmentIconDataList.paintAllEnrollmentIcons(
                 binding.composeProgramList
@@ -80,6 +83,7 @@ class CarouselTeiHolder(
                 itemView.context,
                 binding.trackedEntityImage,
                 binding.imageText,
+                colorUtils,
                 profileImagePreviewCallback
             )
             attributeValues.setAttributeList(

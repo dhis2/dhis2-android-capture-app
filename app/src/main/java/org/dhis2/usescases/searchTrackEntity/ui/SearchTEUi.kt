@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 
@@ -112,9 +113,9 @@ fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
                 tint = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
+                        ColorType.PRIMARY
                     )
                 )
             )
@@ -176,9 +177,9 @@ fun FullSearchButton(
                             painter = painterResource(id = R.drawable.ic_arrow_up),
                             contentDescription = "",
                             tint = Color(
-                                ColorUtils.getPrimaryColor(
+                                ColorUtils().getPrimaryColor(
                                     LocalContext.current,
-                                    ColorUtils.ColorType.PRIMARY
+                                    ColorType.PRIMARY
                                 )
                             )
                         )
@@ -234,9 +235,9 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
             border = BorderStroke(
                 1.dp,
                 Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
+                        ColorType.PRIMARY
                     )
                 )
             ),
@@ -248,9 +249,9 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
                 tint = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
+                        ColorType.PRIMARY
                     )
                 )
             )
@@ -258,9 +259,9 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
             Text(
                 text = buttonText,
                 color = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
+                        ColorType.PRIMARY
                     )
                 )
             )
@@ -325,9 +326,9 @@ fun AttributeField(fieldName: String) {
                 painter = painterResource(id = R.drawable.ic_circle),
                 contentDescription = "",
                 tint = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
+                        ColorType.PRIMARY
                     )
                 )
             )
@@ -482,9 +483,9 @@ fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () ->
             painter = painterResource(id = R.drawable.ic_add_accent),
             contentDescription = "",
             tint = Color(
-                ColorUtils.getPrimaryColor(
+                ColorUtils().getPrimaryColor(
                     LocalContext.current,
-                    ColorUtils.ColorType.PRIMARY
+                    ColorType.PRIMARY
                 )
             )
         )
@@ -494,9 +495,9 @@ fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () ->
                 Text(
                     text = stringResource(R.string.search_create_new),
                     color = Color(
-                        ColorUtils.getPrimaryColor(
+                        ColorUtils().getPrimaryColor(
                             LocalContext.current,
-                            ColorUtils.ColorType.PRIMARY
+                            ColorType.PRIMARY
                         )
                     )
                 )

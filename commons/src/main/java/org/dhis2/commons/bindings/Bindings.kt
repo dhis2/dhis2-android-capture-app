@@ -11,6 +11,7 @@ import java.util.Date
 import org.dhis2.commons.R
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.ui.MetadataIconData
@@ -162,11 +163,11 @@ fun TextView.parseDate(date: Date?) {
 @BindingAdapter("set_metadata_icon")
 fun ComposeView.setIconStyle(style: ObjectStyle?) {
     style?.let {
-        val color = ColorUtils.getColorFrom(
+        val color = ColorUtils().getColorFrom(
             style.color(),
-            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
+            ColorUtils().getPrimaryColor(context, ColorType.PRIMARY_LIGHT)
         )
-        val resource = ResourceManager(context).getObjectStyleDrawableResource(
+        val resource = ResourceManager(context, ColorUtils()).getObjectStyleDrawableResource(
             style.icon(),
             R.drawable.ic_default_outline
         )
