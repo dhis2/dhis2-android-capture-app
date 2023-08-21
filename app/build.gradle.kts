@@ -91,7 +91,7 @@ android {
             .annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
             "true"
     }
-    packagingOptions {
+    packaging {
         jniLibs {
             excludes.addAll(listOf("META-INF/licenses/**"))
         }
@@ -189,8 +189,8 @@ android {
     configurations.all {
         resolutionStrategy {
             preferProjectModules()
-            force("junit:junit:4.12", "com.squareup.okhttp3:okhttp:3.12.0")
-            setForcedModules("com.squareup.okhttp3:okhttp:3.12.0")
+            /*force("junit:junit:4.12", "com.squareup.okhttp3:okhttp:3.12.0")
+            setForcedModules("com.squareup.okhttp3:okhttp:3.12.0")*/
         }
     }
 

@@ -9,7 +9,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 suspend fun BottomSheetState.collapseIfExpanded(onCollapse: () -> Unit) {
     if (isExpanded) {
         onCollapse()
-        animateTo(BottomSheetValue.Collapsed, tween(400))
+        collapse()
     }
 }
 
@@ -17,6 +17,6 @@ suspend fun BottomSheetState.collapseIfExpanded(onCollapse: () -> Unit) {
 suspend fun BottomSheetState.expandIfCollapsed(onExpand: () -> Unit) {
     if (isCollapsed) {
         onExpand()
-        animateTo(BottomSheetValue.Expanded, tween(400))
+        expand()
     }
 }
