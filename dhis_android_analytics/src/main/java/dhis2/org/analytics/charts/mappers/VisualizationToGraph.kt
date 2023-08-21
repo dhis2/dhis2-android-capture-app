@@ -143,7 +143,7 @@ class VisualizationToGraph(
                         Locale.getDefault(),
                         metadataItem.item
                     )
-                    else -> gridAnalyticsResponse.metadata[it]!!.displayName
+                    else -> gridAnalyticsResponse.metadata[it]?.displayName ?: ""
                 }
             }
             SerieData(

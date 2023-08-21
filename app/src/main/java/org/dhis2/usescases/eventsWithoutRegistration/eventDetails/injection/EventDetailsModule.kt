@@ -6,12 +6,13 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
@@ -70,7 +71,8 @@ class EventDetailsModule(
     @PerFragment
     fun provideEventDetailsRepository(
         d2: D2,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
+        networkUtils: NetworkUtils
     ): EventDetailsRepository {
         return EventDetailsRepository(
             d2 = d2,
@@ -88,13 +90,14 @@ class EventDetailsModule(
                 HintProviderImpl(context),
                 DisplayNameProviderImpl(
                     OptionSetConfiguration(d2),
-                    OrgUnitConfiguration(d2)
+                    OrgUnitConfiguration(d2),
+                    FileResourceConfiguration(d2)
                 ),
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),
                 LegendValueProviderImpl(d2, resourceManager)
             ),
-            d2ErrorMapper = D2ErrorUtils(context)
+            onError = resourceManager::parseD2Error
         )
     }
 

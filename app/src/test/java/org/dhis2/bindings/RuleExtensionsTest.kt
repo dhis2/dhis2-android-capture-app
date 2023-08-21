@@ -1,10 +1,6 @@
 package org.dhis2.bindings
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
-import junit.framework.Assert.assertTrue
 import org.dhis2.form.bindings.toRuleActionList
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.bindings.toRuleDataValue
@@ -30,9 +26,13 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.rules.models.RuleActionUnsupported
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class RuleExtensionsTest {
 

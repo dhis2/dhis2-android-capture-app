@@ -1,15 +1,15 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import androidx.fragment.app.FragmentManager
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
 import org.dhis2.commons.data.EventViewModel
 import org.hisp.dhis.android.core.event.Event
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class EventCatComboOptionSelectorTest {
 

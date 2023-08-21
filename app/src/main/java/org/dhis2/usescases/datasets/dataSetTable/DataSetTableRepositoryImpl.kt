@@ -274,14 +274,18 @@ class DataSetTableRepositoryImpl(
             .get()
             .map {
                 it.compulsoryDataElementOperands()?.filter { dataElementOperand ->
-                    !d2.dataValueModule().dataValues()
-                        .value(
-                            periodId,
-                            orgUnitUid,
-                            dataElementOperand.dataElement()?.uid(),
-                            dataElementOperand.categoryOptionCombo()?.uid(),
-                            catOptCombo
-                        ).blockingExists()
+                    dataElementOperand.dataElement()?.let { dataElement ->
+                        dataElementOperand.categoryOptionCombo()?.let { categoryOptionCombo ->
+                            !d2.dataValueModule().dataValues()
+                                .value(
+                                    periodId,
+                                    orgUnitUid,
+                                    dataElement.uid(),
+                                    categoryOptionCombo.uid(),
+                                    catOptCombo
+                                ).blockingExists()
+                        }
+                    } ?: false
                 }
             }
             .map { dataElementOperands ->

@@ -43,26 +43,6 @@ class OURepositoryConfiguration(
         return orgUnitRepository.blockingGet()
     }
 
-    fun hasChildren(parentUid: String, byScope: Boolean): Boolean {
-        var repository = d2.organisationUnitModule().organisationUnits()
-            .byParentUid().eq(parentUid)
-
-        if (byScope) {
-            repository = when (orgUnitSelectorScope) {
-                is OrgUnitSelectorScope.DataSetCaptureScope,
-                is OrgUnitSelectorScope.DataSetSearchScope ->
-                    repository.byDataSetUids(listOf(orgUnitSelectorScope.uid))
-                is OrgUnitSelectorScope.ProgramCaptureScope,
-                is OrgUnitSelectorScope.ProgramSearchScope ->
-                    repository.byProgramUids(listOf(orgUnitSelectorScope.uid))
-                is OrgUnitSelectorScope.UserCaptureScope,
-                is OrgUnitSelectorScope.UserSearchScope ->
-                    repository
-            }
-        }
-        return !repository.blockingIsEmpty()
-    }
-
     fun countChildren(parentOrgUnitUid: String, selectedOrgUnits: List<String>): Int {
         return d2.organisationUnitModule().organisationUnits()
             .byPath().like("%$parentOrgUnitUid%")
@@ -73,12 +53,6 @@ class OURepositoryConfiguration(
     fun orgUnit(uid: String): OrganisationUnit? {
         return d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet()
     }
-
-    fun childrenOrgUnits(parentUid: String? = null): List<OrganisationUnit> =
-        d2.organisationUnitModule().organisationUnits()
-            .byParentUid().eq(parentUid)
-            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-            .blockingGet()
 
     private fun applyCaptureFilter(orgUnitRepository: OrganisationUnitCollectionRepository) =
         orgUnitRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)

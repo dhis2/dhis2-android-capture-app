@@ -27,7 +27,9 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import java.io.IOException
 import org.dhis2.composetable.actions.TableInteractions
+import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.FakeTableModels
@@ -35,40 +37,40 @@ import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
-import org.dhis2.composetable.ui.CELL_ERROR_UNDERLINE_TEST_TAG
-import org.dhis2.composetable.ui.CELL_TEST_TAG
-import org.dhis2.composetable.ui.CELL_VALUE_TEST_TAG
-import org.dhis2.composetable.ui.CellSelected
-import org.dhis2.composetable.ui.ColumnBackground
-import org.dhis2.composetable.ui.ColumnIndexHeader
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.DrawableId
-import org.dhis2.composetable.ui.HEADER_CELL
-import org.dhis2.composetable.ui.HasError
-import org.dhis2.composetable.ui.INFO_ICON
 import org.dhis2.composetable.ui.INPUT_ERROR_MESSAGE_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_ICON_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
-import org.dhis2.composetable.ui.InfoIconId
-import org.dhis2.composetable.ui.IsBlocked
 import org.dhis2.composetable.ui.LocalTableSelection
-import org.dhis2.composetable.ui.MANDATORY_ICON_TEST_TAG
 import org.dhis2.composetable.ui.MainLabel
-import org.dhis2.composetable.ui.RowBackground
-import org.dhis2.composetable.ui.RowIndex
-import org.dhis2.composetable.ui.RowIndexHeader
 import org.dhis2.composetable.ui.SecondaryLabels
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableConfiguration
-import org.dhis2.composetable.ui.TableId
-import org.dhis2.composetable.ui.TableIdColumnHeader
 import org.dhis2.composetable.ui.TableSelection
 import org.dhis2.composetable.ui.TableTheme
+import org.dhis2.composetable.ui.compositions.LocalInteraction
+import org.dhis2.composetable.ui.semantics.CELL_ERROR_UNDERLINE_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CELL_VALUE_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CellSelected
+import org.dhis2.composetable.ui.semantics.ColumnBackground
+import org.dhis2.composetable.ui.semantics.ColumnIndexHeader
+import org.dhis2.composetable.ui.semantics.HEADER_CELL
+import org.dhis2.composetable.ui.semantics.HasError
+import org.dhis2.composetable.ui.semantics.INFO_ICON
+import org.dhis2.composetable.ui.semantics.InfoIconId
+import org.dhis2.composetable.ui.semantics.IsBlocked
+import org.dhis2.composetable.ui.semantics.MANDATORY_ICON_TEST_TAG
+import org.dhis2.composetable.ui.semantics.RowBackground
+import org.dhis2.composetable.ui.semantics.RowIndex
+import org.dhis2.composetable.ui.semantics.RowIndexHeader
+import org.dhis2.composetable.ui.semantics.TableId
+import org.dhis2.composetable.ui.semantics.TableIdColumnHeader
 import org.dhis2.composetable.utils.KeyboardHelper
 import org.junit.Assert
-import java.io.IOException
 
 fun tableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -99,18 +101,20 @@ class TableRobot(
             }
             TableTheme(
                 tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
-                tableConfiguration = TableConfiguration(headerActionsEnabled = false)
+                tableConfiguration = TableConfiguration(headerActionsEnabled = false),
+                tableResizeActions = object : TableResizeActions {}
             ) {
+                val iteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
+                    }
+                }
                 CompositionLocalProvider(
-                    LocalTableSelection provides tableSelection
+                    LocalTableSelection provides tableSelection,
+                    LocalInteraction provides iteractions
                 ) {
                     DataTable(
-                        tableList = fakeModel,
-                        tableInteractions = object : TableInteractions {
-                            override fun onSelectionChange(newTableSelection: TableSelection) {
-                                tableSelection = newTableSelection
-                            }
-                        }
+                        tableList = fakeModel
                     )
                 }
             }
@@ -133,7 +137,8 @@ class TableRobot(
             var model by remember { mutableStateOf(screenState) }
             TableTheme(
                 tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
-                tableConfiguration = tableConfiguration
+                tableConfiguration = tableConfiguration,
+                tableResizeActions = object : TableResizeActions {}
             ) {
                 DataSetTableScreen(
                     tableScreenState = model,
@@ -311,7 +316,7 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
     }
 
-    fun clickOnBack()  {
+    fun clickOnBack() {
         pressBack()
     }
 

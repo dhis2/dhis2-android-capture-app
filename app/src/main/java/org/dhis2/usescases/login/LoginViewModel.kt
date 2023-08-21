@@ -6,10 +6,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.App
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
@@ -186,11 +184,16 @@ class LoginViewModel(
     }
 
     fun onLoginButtonClick() {
-        view.hideKeyboard()
-        analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-        increment()
-        logIn()
-        decrement()
+        try {
+            view.hideKeyboard()
+            analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
+            increment()
+            logIn()
+            decrement()
+        } catch (throwable: Throwable) {
+            Timber.e(throwable)
+            handleError(throwable)
+        }
     }
 
     private fun logIn() {
@@ -225,26 +228,28 @@ class LoginViewModel(
     }
 
     fun openIdLogin(config: OpenIDConnectConfig) {
-        disposable.add(
-            Observable.just(
-                (view.abstracContext.applicationContext as App).createServerComponent()
-                    .userManager()
-            )
-                .flatMap { userManager ->
-                    this.userManager = userManager
-                    userManager.logIn(config)
-                }
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .subscribe(
-                    {
-                        view.openOpenIDActivity(it)
-                    },
-                    {
-                        Timber.e(it)
+        try {
+            disposable.add(
+                Observable.just(view.initLogin())
+                    .flatMap { userManager ->
+                        this.userManager = userManager
+                        userManager.logIn(config)
                     }
-                )
-        )
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
+                    .subscribe(
+                        {
+                            view.openOpenIDActivity(it)
+                        },
+                        {
+                            Timber.e(it)
+                        }
+                    )
+            )
+        } catch (throwable: Throwable) {
+            Timber.e(throwable)
+            handleError(throwable)
+        }
     }
 
     fun handleAuthResponseData(serverUrl: String, data: Intent, requestCode: Int) {
@@ -270,7 +275,9 @@ class LoginViewModel(
     }
 
     private fun trackUserInfo() {
-        crashReportController.trackServer(serverUrl.value)
+        val serverVersion =
+            userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version() ?: ""
+        crashReportController.trackServer(serverUrl.value, serverVersion)
         crashReportController.trackUser(userName.value, serverUrl.value)
     }
 
@@ -379,7 +386,7 @@ class LoginViewModel(
     fun onFingerprintClick() {
         disposable.add(
 
-            fingerPrintController.authenticate(view.getPromptParams())
+            fingerPrintController.authenticate()
                 .map { result ->
                     if (preferenceProvider.contains(
                             SECURE_SERVER_URL,
@@ -395,21 +402,32 @@ class LoginViewModel(
                 .observeOn(schedulers.ui())
                 .subscribe(
                     {
-                        if (it.isFailure) {
-                            view.showEmptyCredentialsMessage()
-                        } else if (it.isSuccess && it.getOrNull()?.type == Type.SUCCESS) {
-                            view.showCredentialsData(
-                                Goldfinger.Type.SUCCESS,
-                                preferenceProvider.getString(SECURE_SERVER_URL)!!,
-                                preferenceProvider.getString(SECURE_USER_NAME)!!,
-                                preferenceProvider.getString(SECURE_PASS)!!
-                            )
-                        } else if (it.getOrNull()?.type == Type.ERROR) {
-                            view.showCredentialsData(
-                                Goldfinger.Type.ERROR,
-                                it.getOrNull()?.message!!
-                            )
-                        }
+                        it.fold(
+                            onSuccess = { data ->
+                                when (data.type) {
+                                    Type.SUCCESS ->
+                                        view.showCredentialsData(
+                                            data,
+                                            preferenceProvider.getString(SECURE_SERVER_URL)!!,
+                                            preferenceProvider.getString(SECURE_USER_NAME)!!,
+                                            preferenceProvider.getString(SECURE_PASS)!!
+                                        )
+
+                                    Type.INFO -> {
+                                        /*Do nothing*/
+                                    }
+
+                                    Type.ERROR ->
+                                        view.showCredentialsData(
+                                            data,
+                                            it.getOrNull()?.message!!
+                                        )
+                                }
+                            },
+                            onFailure = {
+                                view.showEmptyCredentialsMessage()
+                            }
+                        )
                     },
                     {
                         view.displayMessage(AUTH_ERROR)
@@ -519,13 +537,11 @@ class LoginViewModel(
     }
 
     private fun checkTestingEnvironment(serverUrl: String) {
-        if (testingCredentials?.containsKey(serverUrl) == true &&
-            testingCredentials?.get(serverUrl) != null
-        ) {
+        testingCredentials?.get(serverUrl)?.let { credentials ->
             isTestingEnvironment.value = Trio.create(
                 serverUrl,
-                testingCredentials!![serverUrl]!!.user_name,
-                testingCredentials!![serverUrl]!!.user_pass
+                credentials.user_name,
+                credentials.user_pass
             )
         }
     }
@@ -540,5 +556,9 @@ class LoginViewModel(
     fun setAccountInfo(serverUrl: String?, userName: String?) {
         this.serverUrl.value = serverUrl
         this.userName.value = userName
+    }
+
+    fun testCoverage() {
+        view.setUser("Coverage test")
     }
 }

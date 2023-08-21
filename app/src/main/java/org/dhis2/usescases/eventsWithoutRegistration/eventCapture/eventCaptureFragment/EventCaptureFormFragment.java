@@ -20,7 +20,9 @@ import org.dhis2.commons.Constants;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.jetbrains.annotations.NotNull;
 
@@ -97,7 +99,17 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
-        binding.setPresenter(activity.getPresenter());
+        EventCaptureContract.Presenter activityPresenter = activity.getPresenter();
+        binding.setPresenter(activityPresenter);
+
+        activityPresenter.observeActions().observe(getViewLifecycleOwner(), action ->
+        {
+            if (action == EventCaptureAction.ON_BACK) {
+                formView.onSaveClick();
+                activityPresenter.emitAction(EventCaptureAction.NONE);
+            }
+        });
+
         binding.actionButton.setOnClickListener(view -> {
             closeKeyboard(view);
             performSaveClick();

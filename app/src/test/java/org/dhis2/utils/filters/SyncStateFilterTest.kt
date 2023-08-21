@@ -2,7 +2,6 @@ package org.dhis2.utils.filters
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.databinding.ObservableField
-import com.nhaarman.mockitokotlin2.mock
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.R
@@ -18,6 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.mock
 
 class SyncStateFilterTest {
 

@@ -26,7 +26,8 @@ class ChartCoordinatesProviderImpl(
         teiUid: String,
         dataElementUid: String,
         selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
+        isDefault: Boolean
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
         return d2.analyticsModule().eventLineList()
@@ -56,10 +57,14 @@ class ChartCoordinatesProviderImpl(
                 lineListResponseValue.value?.let { value ->
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
-                        position = periodStepProvider.getPeriodDiff(
-                            initialPeriod!!,
-                            lineListResponse.period
-                        ).toFloat(),
+                        position = if (isDefault) {
+                            null
+                        } else {
+                            periodStepProvider.getPeriodDiff(
+                                initialPeriod!!,
+                                lineListResponse.period
+                            ).toFloat()
+                        },
                         fieldValue = value.toFloat(),
                         legendValue = createLegendValue(legend)
                     )
@@ -72,7 +77,8 @@ class ChartCoordinatesProviderImpl(
         teiUid: String,
         indicatorUid: String,
         selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
+        isDefault: Boolean
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
         return d2.analyticsModule()
@@ -110,10 +116,14 @@ class ChartCoordinatesProviderImpl(
 
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
-                        position = periodStepProvider.getPeriodDiff(
-                            initialPeriod!!,
-                            lineListResponse.period
-                        ).toFloat(),
+                        position = if (isDefault) {
+                            null
+                        } else {
+                            periodStepProvider.getPeriodDiff(
+                                initialPeriod!!,
+                                lineListResponse.period
+                            ).toFloat()
+                        },
                         fieldValue = value.toFloat(),
                         legendValue = createLegendValue(legend)
                     )
@@ -215,7 +225,7 @@ class ChartCoordinatesProviderImpl(
         categories: List<String>
     ): List<GraphPoint> {
         return gridResponseValueList.filter { it.value != null }
-            .mapIndexed { index, gridResponseValue ->
+            .mapIndexed { _, gridResponseValue ->
 
                 val periodId = gridResponseValue.rows.joinToString(separator = " - ") {
                     metadata[it]?.displayName.toString()
@@ -225,10 +235,7 @@ class ChartCoordinatesProviderImpl(
                     0f
                 } else {
                     periodId.let {
-                        when (metadata[periodId]) {
-                            is MetadataItem.RelativePeriodItem -> categories.indexOf(periodId)
-                            else -> categories.indexOf(periodId)
-                        }
+                        categories.indexOf(periodId)
                     }
                 }
 
@@ -238,6 +245,7 @@ class ChartCoordinatesProviderImpl(
                             Locale.getDefault(),
                             metadataItem.item
                         )
+
                         else -> metadata[it]?.displayName
                     }
                 }

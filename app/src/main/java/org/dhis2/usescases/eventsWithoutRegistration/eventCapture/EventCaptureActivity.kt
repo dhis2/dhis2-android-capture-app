@@ -211,9 +211,15 @@ class EventCaptureActivity :
                 { presenter!!.deleteEvent() }
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
+        } else if (isFormScreen()) {
+            presenter?.emitAction(EventCaptureAction.ON_BACK)
         } else {
             finishDataEntry()
         }
+    }
+
+    private fun isFormScreen(): Boolean {
+        return adapter?.isFormScreenShown(binding?.eventViewPager?.currentItem) == true
     }
 
     override fun updatePercentage(primaryValue: Float) {
@@ -235,7 +241,7 @@ class EventCaptureActivity :
                     setAction(eventCompletionDialog.mainButtonAction)
                 },
                 onSecondaryButtonClicked = {
-                    setAction(eventCompletionDialog.secondaryButtonAction)
+                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
                 },
                 content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
                     { bottomSheetDialog ->
@@ -296,11 +302,9 @@ class EventCaptureActivity :
             FormBottomDialog.ActionType.CHECK_FIELDS -> { // Do nothing
             }
             FormBottomDialog.ActionType.FINISH -> finishDataEntry()
+            FormBottomDialog.ActionType.NONE -> { // Do nothing
+            }
         }
-    }
-
-    override fun showErrorSnackBar() {
-        showSnackBar(R.string.fix_error)
     }
 
     override fun showSnackBar(messageId: Int) {
@@ -311,7 +315,6 @@ class EventCaptureActivity :
 
     override fun restartDataEntry() {
         val bundle = Bundle()
-        bundle.putString(Constants.PROGRAM_UID, intent.getStringExtra(Constants.PROGRAM_UID))
         startActivity(EventInitialActivity::class.java, bundle, true, false, null)
     }
 

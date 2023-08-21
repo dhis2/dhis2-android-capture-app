@@ -28,27 +28,24 @@ class OUTreeViewModel(
             val orgUnits = repository.orgUnits(name)
             val treeNodes = ArrayList<OrgUnitTreeItem>()
 
-            orgUnits.forEach { ouUid ->
-                repository.orgUnit(ouUid)?.let { org ->
-                    val canBeSelected = repository.canBeSelected(org.uid())
-                    treeNodes.add(
-                        OrgUnitTreeItem(
-                            uid = org.uid(),
-                            label = org.displayName()!!,
-                            isOpen = true,
-                            hasChildren = repository.orgUnitHasChildren(org.uid()),
-                            selected = selectedOrgUnits.contains(org.uid()),
-                            level = org.level()!!,
-                            selectedChildrenCount = repository.countSelectedChildren(
-                                org.uid(),
-                                selectedOrgUnits
-                            ),
-                            canBeSelected = canBeSelected
-                        )
+            orgUnits.forEach { org ->
+                val canBeSelected = repository.canBeSelected(org.uid())
+                treeNodes.add(
+                    OrgUnitTreeItem(
+                        uid = org.uid(),
+                        label = org.displayName()!!,
+                        isOpen = true,
+                        hasChildren = repository.orgUnitHasChildren(org.uid()),
+                        selected = selectedOrgUnits.contains(org.uid()),
+                        level = org.level()!!,
+                        selectedChildrenCount = repository.countSelectedChildren(
+                            org.uid(),
+                            selectedOrgUnits
+                        ),
+                        canBeSelected = canBeSelected
                     )
-                }
+                )
             }
-
             _treeNodes.update { treeNodes }
         }
     }
@@ -78,7 +75,7 @@ class OUTreeViewModel(
             OrgUnitTreeItem(
                 uid = org.uid(),
                 label = org.displayName()!!,
-                isOpen = !hasChildren,
+                isOpen = hasChildren,
                 hasChildren = hasChildren,
                 selected = selectedOrgUnits.contains(org.uid()),
                 level = org.level()!!,

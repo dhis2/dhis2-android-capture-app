@@ -130,7 +130,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                                                 title = item.displayName,
                                                 subtitle = item.description,
                                                 onClick = {
-                                                    syncStatusDialogNavigator?.navigateTo(item)
+                                                    syncStatusDialogNavigator?.navigateTo(item) {
+                                                        dismiss()
+                                                    }
                                                 }
                                             ) {
                                                 SyncStateIcon(state = item.state)

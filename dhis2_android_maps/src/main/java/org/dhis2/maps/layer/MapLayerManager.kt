@@ -205,7 +205,7 @@ class MapLayerManager(
 
     fun getNextAvailableDrawable(sourceId: String): Pair<Int, Int>? {
         return if (drawableCombinationsUsed.containsKey(sourceId)) {
-            drawableCombinationsUsed[sourceId]!!
+            drawableCombinationsUsed[sourceId]
         } else {
             drawableCombinations.firstOrNull()?.also {
                 drawableCombinationsUsed[sourceId] = it

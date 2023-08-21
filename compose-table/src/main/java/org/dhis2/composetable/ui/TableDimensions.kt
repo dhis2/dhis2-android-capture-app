@@ -174,6 +174,18 @@ data class TableDimensions(
                 ) in minColumnWidth..maxColumnWidth
             } ?: true
     }
+
+    fun getRowHeaderWidth(tableId: String): Int {
+        return rowHeaderWidths[tableId] ?: defaultRowHeaderWidth
+    }
+
+    fun getColumnWidth(tableId: String, column: Int): Int {
+        return columnWidth[tableId]?.get(column) ?: defaultCellWidth
+    }
+
+    fun getExtraWidths(tableId: String): Int {
+        return extraWidths[tableId] ?: 0
+    }
 }
 
 val LocalTableDimensions = compositionLocalOf { TableDimensions() }
