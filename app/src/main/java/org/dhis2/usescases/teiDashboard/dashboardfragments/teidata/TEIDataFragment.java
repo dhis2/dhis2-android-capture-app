@@ -204,14 +204,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         System.out.println(this.teiModel.getAttributeValues());
         System.out.println(this.teiModel.getSelectedEnrollment());
 
-        binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
-        binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
-        binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
-        binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
+
 
 
 //        binding.cardFront.setFollowUp(false);
         if (OrientationUtilsKt.isLandscape()) {
+
+            binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END);
+            binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
+            binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
+            binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
 
             binding.cardFrontLand.setAttributeListOpened(false);
             binding.cardFrontLand.showAttributesButton.setOnClickListener((event) -> {
