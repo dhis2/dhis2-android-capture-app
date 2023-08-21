@@ -10,7 +10,7 @@ data class OrgUnitTreeItem(
     val selectedChildrenCount: Int = 0,
     val canBeSelected: Boolean = true
 ) {
-    fun formattedLabel() = if (selectedChildrenCount == 0) {
+    fun formattedLabel() = if (selectedChildrenCount == 0 || !hasChildren) {
         label
     } else {
         "$label ($selectedChildrenCount)"
