@@ -1,8 +1,6 @@
 package org.dhis2.composetable.ui.extensions
 
-import androidx.compose.animation.core.tween
 import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 
 @OptIn(ExperimentalMaterialApi::class)

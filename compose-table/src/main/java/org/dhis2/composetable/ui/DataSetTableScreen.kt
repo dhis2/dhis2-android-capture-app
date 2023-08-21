@@ -119,7 +119,7 @@ fun DataSetTableScreen(
             }
         }
     }
-bottomSheetState.bottomSheetState.progress
+    bottomSheetState.bottomSheetState.progress
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
             bottomSheetState.bottomSheetState.progress == 1f
