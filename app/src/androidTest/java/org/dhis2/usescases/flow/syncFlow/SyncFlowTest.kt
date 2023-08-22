@@ -245,6 +245,7 @@ class SyncFlowTest : BaseTest() {
             Data.EMPTY,
             arrayListOf("GRANULAR"),
             Data.EMPTY,
+            0,
             0
         )
     }
