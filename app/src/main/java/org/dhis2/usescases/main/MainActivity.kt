@@ -205,8 +205,8 @@ class MainActivity :
         checkNotificationPermission()
     }
 
-    private fun checkNotificationPermission(){
-        if(!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS))){
+    private fun checkNotificationPermission() {
+        if (!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS))) {
             requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
@@ -618,14 +618,14 @@ class MainActivity :
         }
 
     private val requestNotificationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()){granted->
-            if(granted){
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
                 Toast.makeText(
                     context,
                     getString(R.string.permission_notification_granted),
                     Toast.LENGTH_SHORT
                 ).show()
-            }else{
+            } else {
                 Toast.makeText(
                     context,
                     getString(R.string.permission_notification_denied),
