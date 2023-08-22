@@ -35,6 +35,7 @@ fun D2.stockUseCase(programUid: String): StockUseCase? = useCaseModule()
     .uid(programUid)
     .blockingGet()
 
+fun D2.dataSet(dataSetUid: String) = dataSetModule().dataSets().uid(dataSetUid).blockingGet()
 fun D2.dataSetSummaryBy(dataSetUid: String): DataSetInstanceSummary {
     return dataSetModule().dataSetInstanceSummaries()
         .blockingGet()

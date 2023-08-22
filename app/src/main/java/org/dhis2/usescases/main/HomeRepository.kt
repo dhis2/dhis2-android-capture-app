@@ -17,4 +17,6 @@ interface HomeRepository {
     fun getServerVersion(): Single<SystemInfo?>
     fun accountsCount(): Int
     fun isPinStored(): Boolean
+    fun homeItemCount(): Int
+    fun singleHomeItemData(): HomeItemData?
 }

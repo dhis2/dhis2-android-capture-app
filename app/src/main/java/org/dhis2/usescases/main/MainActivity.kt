@@ -96,6 +96,9 @@ class MainActivity :
         setBottomNavigationVisibility(showBottomNavigation)
     }
 
+    private val navigationLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+
     companion object {
         fun intent(
             context: Context,
@@ -133,6 +136,10 @@ class MainActivity :
             binding.presenter = presenter
         } else {
             navigateTo<LoginActivity>(true)
+        }
+
+        if (forceToNotSynced && presenter.hasOneHomeItem()) {
+            navigateToSingleProgram()
         }
 
         binding.navView.setNavigationItemSelectedListener { item ->
@@ -240,7 +247,16 @@ class MainActivity :
                 setFilterButtonVisibility(true)
                 setBottomNavigationVisibility(true)
                 presenter.onDataSuccess()
+                if (presenter.hasOneHomeItem()) {
+                    navigateToSingleProgram()
+                }
             }
+        }
+    }
+
+    private fun navigateToSingleProgram() {
+        presenter.getSingleItemData()?.let { homeItemData ->
+            navigationLauncher.navigateTo(this, homeItemData)
         }
     }
 
@@ -550,8 +566,8 @@ class MainActivity :
                 onClick = {
                     presenter.downloadVersion(
                         context = context,
-                        onDownloadCompleted = { installAPK(it) },
-                        onLaunchUrl = { launchUrl(it) },
+                        onDownloadCompleted = ::installAPK,
+                        onLaunchUrl = ::launchUrl
                     )
                 },
             ),
@@ -596,7 +612,7 @@ class MainActivity :
                 presenter.downloadVersion(
                     context,
                     onDownloadCompleted = { installAPK(it) },
-                    onLaunchUrl = { launchUrl(it) },
+                    onLaunchUrl = ::launchUrl
                 )
             }
         }
@@ -607,7 +623,7 @@ class MainActivity :
                 presenter.downloadVersion(
                     context,
                     onDownloadCompleted = { installAPK(it) },
-                    onLaunchUrl = { launchUrl(it) },
+                    onLaunchUrl = ::launchUrl
                 )
             } else {
                 Toast.makeText(
