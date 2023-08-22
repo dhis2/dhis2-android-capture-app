@@ -75,6 +75,7 @@ jodatime = "2.10.5"
 glide = "4.9.0"
 guava = "31.1-android"
 mockito = "5.2.0"
+mockito-kotlin = "5.1.0"
 junit = "4.13.2"
 mockito_inline = "5.2.0"
 javafaker = "1.0.2"
@@ -142,7 +143,7 @@ kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-s
 
 google-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
-google-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.2.0" }
+google-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.6.0" }
 google-auth-apiphone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version = "18.0.1" }
 google-autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autovalue" } #TODO: this should be removed
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
@@ -200,11 +201,11 @@ security-openId = { group = "net.openid", name = "appauth", version.ref = "openi
 security-conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
 
 test-junit = { group = "junit", name = "junit", version.ref = "junit" }
-test-archCoreTesting = { group = "androidx.arch.core", name = "core-testing", version = "2.1.0" }
+test-archCoreTesting = { group = "androidx.arch.core", name = "core-testing", version = "2.2.0" }
 test-testCore = { group = "androidx.test", name = "core", version.ref = "androidx_test" }
 test-mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 test-mockitoInline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
-test-mockitoKotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
+test-mockitoKotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 test-mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito_android" }
 test-dexmaker-mockitoInline = { group = "com.linkedin.dexmaker", name = "dexmaker-mockito-inline", version.ref = "dexmaker-mockito-inline" }
 test-truth = { group = "com.google.truth", name = "truth", version.ref = "google_truth" }
