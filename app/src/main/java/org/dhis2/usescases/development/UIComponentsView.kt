@@ -10,6 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,22 +26,31 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.ui.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShell
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButton
+import org.hisp.dhis.mobile.ui.designsystem.component.SimpleTextInputField
+import org.hisp.dhis.mobile.ui.designsystem.component.SquareIconButton
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class UIComponentsView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-//            DHIS2Theme {
-            // A surface container using the 'background' color from the theme
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = SurfaceColor.Container
-            ) {
-                Components()
+            DHIS2Theme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = SurfaceColor.Container
+                ) {
+                    Components()
+                }
             }
-//            }
         }
     }
 }
@@ -50,24 +64,72 @@ fun Components() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(text = "Button outlined") {}
-        /*Button(text = "Button with icon",
-            icon = { dhis2IconResource(resource = SharedRes.images.dhis2_4x4_outline) }) {}*/
-        Button(text = "Button elevated", style = ButtonStyle.ELEVATED) {}
+
+        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+
+        InputShell(
+            title = "input shel",
+            primaryButton = {
+                Icon(
+                    imageVector = Icons.Outlined.FileDownload,
+                    contentDescription = ""
+                )
+            },
+            secondaryButton = {
+                Icon(
+                    imageVector = Icons.Outlined.Clear,
+                    contentDescription = ""
+                )
+            },
+            inputField = {
+                SimpleTextInputField()
+            }
+        ) {
+
+        }
         Button(
-            text = "Button icon",
+            text = provideStringResource("show_more"),
+            icon = {
+                Icon(
+                    painter = provideDHIS2Icon(resourceName = "dhis2_blood_a_n_positive"),
+                    contentDescription = ""
+                )
+            },
+            style = ButtonStyle.KEYBOARDKEY
+        ) {}
+        Button(
+            text = "Button app icon",
             icon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_file),
                     contentDescription = ""
                 )
-            }
+            },
+            style = ButtonStyle.ELEVATED
         ) {}
-        Button(text = "Button filled", style = ButtonStyle.FILLED) {}
-        Button(text = "Button text", style = ButtonStyle.TEXT) {}
+        Button(
+            text = "Button material icon",
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.AccountCircle,
+                    contentDescription = ""
+                )
+            },
+            style = ButtonStyle.FILLED
+        ) {}
 
-//        IconButton(icon = { Icons.Rounded.LocationOn }) {}
-//        SquareIconButton(icon = { Icons.Outlined.AccountBox }) {}
+        IconButton(icon = {
+            Icon(
+                imageVector = Icons.Outlined.AccountBox,
+                contentDescription = ""
+            )
+        }) {}
+        SquareIconButton(icon = {
+            Icon(
+                imageVector = Icons.Outlined.AccountBox,
+                contentDescription = ""
+            )
+        }) {}
 
         RadioButton(
             selected = true,
