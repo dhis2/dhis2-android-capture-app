@@ -13,6 +13,7 @@ hilt = '2.47'
 hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
 
+designSystem = "1.0-SNAPSHOT"
 dhis2sdk = "1.9.0-SNAPSHOT"
 ruleEngine = "2.1.9"
 appcompat = "1.6.1"
@@ -105,6 +106,7 @@ jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco
 
 dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
 dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine", version.ref = "ruleEngine" }
+dhis2-mobile-designsystem = { group = "org.hisp.dhis.mobile", name = "designsystem", version.ref = "designSystem" }
 
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
