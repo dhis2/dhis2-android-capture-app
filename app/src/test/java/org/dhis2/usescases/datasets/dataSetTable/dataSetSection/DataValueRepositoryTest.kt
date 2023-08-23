@@ -97,7 +97,7 @@ class DataValueRepositoryTest {
                 .withDataInputPeriods()
                 .uid(dataSetUid)
                 .blockingGet()
-                .dataInputPeriods()
+                ?.dataInputPeriods()
         ) doReturn dataInputPeriods
 
         val result = repository.getDataInputPeriod()
@@ -119,7 +119,7 @@ class DataValueRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-                .dataSetElements()
+                ?.dataSetElements()
         ) doReturn dataSetElements
 
         whenever(
@@ -149,7 +149,7 @@ class DataValueRepositoryTest {
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
                 .blockingGet()
-                .dataElements()
+                ?.dataElements()
         ) doReturn dataElements
 
         val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
@@ -198,7 +198,7 @@ class DataValueRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-                .dataSetElements()
+                ?.dataSetElements()
         ) doReturn dataSetElements
 
         whenever(
@@ -217,7 +217,7 @@ class DataValueRepositoryTest {
                 .dataElements()
                 .uid(dataSetElements.first().dataElement().uid())
                 .blockingGet()
-                .categoryComboUid()
+                ?.categoryComboUid()
         ) doReturn categoryCombosUids.first()
 
         whenever(
@@ -247,7 +247,7 @@ class DataValueRepositoryTest {
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
                 .blockingGet()
-                .dataElements()
+                ?.dataElements()
         ) doReturn dataElements
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
@@ -289,7 +289,7 @@ class DataValueRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-                .dataSetElements()
+                ?.dataSetElements()
         ) doReturn dataSetElements
 
         whenever(
@@ -319,7 +319,7 @@ class DataValueRepositoryTest {
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
                 .blockingGet()
-                .dataElements()
+                ?.dataElements()
         ) doReturn dataElements
 
         val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }

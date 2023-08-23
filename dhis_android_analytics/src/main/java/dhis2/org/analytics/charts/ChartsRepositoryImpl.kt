@@ -33,7 +33,7 @@ class ChartsRepositoryImpl(
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
         val enrollment = getEnrollment(enrollmentUid)
-        if (enrollment.trackedEntityInstance() == null) return emptyList()
+        if (enrollment?.trackedEntityInstance() == null) return emptyList()
 
         val settingsAnalytics = getSettingsAnalytics(enrollment)
         return settingsAnalytics.ifEmpty {
@@ -183,27 +183,31 @@ class ChartsRepositoryImpl(
                 .blockingEvaluate()
                 .fold(
                     { gridAnalyticsResponse ->
-                        graphList.add(
-                            visualizationToGraph.mapToGraph(
-                                customTitle ?: visualization.displayFormName(),
-                                visualization,
-                                gridAnalyticsResponse,
-                                selectedRelativePeriod?.firstOrNull(),
-                                selectedOrgUnits
+                        visualization?.let {
+                            graphList.add(
+                                visualizationToGraph.mapToGraph(
+                                    customTitle ?: visualization.displayFormName(),
+                                    visualization,
+                                    gridAnalyticsResponse,
+                                    selectedRelativePeriod?.firstOrNull(),
+                                    selectedOrgUnits
+                                )
                             )
-                        )
+                        }
                     },
                     { analyticException ->
                         analyticException.printStackTrace()
-                        graphList.add(
-                            visualizationToGraph.addErrorGraph(
-                                customTitle ?: visualization.displayFormName(),
-                                visualization,
-                                selectedRelativePeriod?.firstOrNull(),
-                                selectedOrgUnits,
-                                analyticsResources.analyticsExceptionMessage(analyticException)
+                        visualization?.let {
+                            graphList.add(
+                                visualizationToGraph.addErrorGraph(
+                                    customTitle ?: visualization.displayFormName(),
+                                    visualization,
+                                    selectedRelativePeriod?.firstOrNull(),
+                                    selectedOrgUnits,
+                                    analyticsResources.analyticsExceptionMessage(analyticException)
+                                )
                             )
-                        )
+                        }
                     }
                 )
         }
@@ -212,7 +216,7 @@ class ChartsRepositoryImpl(
     private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
         return d2.settingModule().analyticsSetting().teis()
             .byProgram().eq(enrollment.program())
-            .blockingGet()?.let { analyticsSettings ->
+            .blockingGet().let { analyticsSettings ->
                 analyticsTeiSettingsToGraph.map(
                     enrollment.trackedEntityInstance()!!,
                     analyticsSettings,
@@ -220,11 +224,11 @@ class ChartsRepositoryImpl(
                     analyticsFilterProvider::visualizationOrgUnits,
                     { dataElementUid ->
                         d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
-                            .displayFormName() ?: dataElementUid
+                            ?.displayFormName() ?: dataElementUid
                     },
                     { indicatorUid ->
                         d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
-                            .displayName() ?: indicatorUid
+                            ?.displayName() ?: indicatorUid
                     },
                     { nutritionGenderData ->
                         val genderValue =
@@ -308,8 +312,8 @@ class ChartsRepositoryImpl(
             .byProgramStage().eq(stageUid)
             .blockingGet().filter {
                 d2.dataElementModule().dataElements().uid(it.dataElement()?.uid())
-                    .blockingGet().valueType()?.isNumeric ?: false
-            }.map {
+                    .blockingGet()?.valueType()?.isNumeric ?: false
+            }.mapNotNull {
                 d2.dataElementModule().dataElements().uid(
                     it.dataElement()?.uid()
                 ).blockingGet()

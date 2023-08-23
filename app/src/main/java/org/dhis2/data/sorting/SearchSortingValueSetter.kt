@@ -87,7 +87,7 @@ class SearchSortingValueSetter(
         return teiModel.selectedEnrollment?.let {
             val enrollmentDateLabel = d2.programModule().programs()
                 .uid(it.program())
-                .blockingGet().enrollmentDateLabel() ?: enrollmentDateDefaultLabel
+                .blockingGet()?.enrollmentDateLabel() ?: enrollmentDateDefaultLabel
             val enrollmentDateValue = SimpleDateFormat(uiDateFormat, Locale.getDefault())
                 .format(teiModel.selectedEnrollment.enrollmentDate())
             Pair(enrollmentDateLabel, enrollmentDateValue)

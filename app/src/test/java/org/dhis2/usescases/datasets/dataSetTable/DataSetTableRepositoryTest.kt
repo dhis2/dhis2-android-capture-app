@@ -219,7 +219,7 @@ class DataSetTableRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
-                .uid(uid).blockingGet().displayName()
+                .uid(uid).blockingGet()?.displayName()
         ) doReturn name
 
         val testObserver = repository.getCatComboName().test()
@@ -249,7 +249,7 @@ class DataSetTableRepositoryTest {
         whenever(
             d2.categoryModule().categoryOptionCombos()
                 .byDisplayName().like("default")
-                .one().blockingGet().uid()
+                .one().blockingGet()?.uid()
         ) doReturn categoryOptionCombo.uid()
 
         val returnedValue = repository.getCatOptComboFromOptionList(listOf())
@@ -275,7 +275,7 @@ class DataSetTableRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(catOptionUids).one().blockingGet().uid()
+                .byCategoryOptions(catOptionUids).one().blockingGet()?.uid()
         ) doReturn categoryOptionCombos.uid()
 
         val returnedValue = repository.getCatOptComboFromOptionList(catOptionUids)

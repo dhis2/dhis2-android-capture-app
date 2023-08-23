@@ -171,11 +171,12 @@ class StockManagerImpl @Inject constructor(
             .byProgramUid()
             .eq(appConfig.program)
             .one()
-            .blockingGet()
+            .blockingGet() ?: return Single.just(Unit)
 
         items.forEach { entry ->
-            val enrollment = getEnrollment(entry.item.id)
-            createEvent(entry, programStage, enrollment, transaction, appConfig)
+            getEnrollment(entry.item.id)?.let { enrollment ->
+                createEvent(entry, programStage, enrollment, transaction, appConfig)
+            }
         }
         return Single.just(Unit)
     }
@@ -243,7 +244,7 @@ class StockManagerImpl @Inject constructor(
                     d2.trackedEntityModule().trackedEntityDataValues().value(
                         eventUid,
                         appConfig.distributedTo
-                    ).blockingSet(destination.code())
+                    ).blockingSet(destination?.code())
                 }
             } catch (e: Exception) {
                 if (e is D2Error) {
@@ -320,7 +321,7 @@ class StockManagerImpl @Inject constructor(
         }
     }
 
-    private fun getEnrollment(teiUid: String): Enrollment {
+    private fun getEnrollment(teiUid: String): Enrollment? {
         return d2.enrollmentModule()
             .enrollments()
             .byTrackedEntityInstance()

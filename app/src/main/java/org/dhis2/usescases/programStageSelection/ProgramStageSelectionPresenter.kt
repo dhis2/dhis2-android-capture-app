@@ -95,6 +95,6 @@ class ProgramStageSelectionPresenter(
     }
 
     fun getStandardInterval(programStageUid: String): Int {
-        return programStageSelectionRepository.getStage(programStageUid).standardInterval() ?: 0
+        return programStageSelectionRepository.getStage(programStageUid)?.standardInterval() ?: 0
     }
 }

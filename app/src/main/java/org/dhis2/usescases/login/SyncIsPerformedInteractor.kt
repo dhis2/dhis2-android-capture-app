@@ -14,7 +14,7 @@ class SyncIsPerformedInteractor(private val userManager: UserManager?) {
             val entry = userManager.d2.dataStoreModule().localDataStore().value(
                 WAS_INITIAL_SYNC_DONE
             ).blockingGet()
-            !entry.value().isNullOrEmpty() && entry.value() == "True"
+            !entry?.value().isNullOrEmpty() && entry?.value() == "True"
         } else {
             false
         }

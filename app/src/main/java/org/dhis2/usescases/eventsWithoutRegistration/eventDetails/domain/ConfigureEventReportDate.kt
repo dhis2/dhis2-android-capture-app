@@ -44,7 +44,7 @@ class ConfigureEventReportDate(
     }
 
     private fun isActive(): Boolean {
-        if (creationType == SCHEDULE && getProgramStage().hideDueDate() == true) {
+        if (creationType == SCHEDULE && getProgramStage()?.hideDueDate() == true) {
             return false
         }
         return true
@@ -54,9 +54,9 @@ class ConfigureEventReportDate(
         val programStage = getProgramStage()
         return when (creationType) {
             SCHEDULE ->
-                programStage.dueDateLabel() ?: resourceProvider.provideDueDate()
+                programStage?.dueDateLabel() ?: resourceProvider.provideDueDate()
             else -> {
-                programStage.executionDateLabel() ?: resourceProvider.provideEventDate()
+                programStage?.executionDateLabel() ?: resourceProvider.provideEventDate()
             }
         }
     }
@@ -77,10 +77,10 @@ class ConfigureEventReportDate(
         }
     }
 
-    private fun getProgramStage(): ProgramStage = repository.getProgramStage()
+    private fun getProgramStage(): ProgramStage? = repository.getProgramStage()
 
     private fun getDateBasedOnPeriodType(): Date {
-        getProgramStage().hideDueDate()?.let { hideDueDate ->
+        getProgramStage()?.hideDueDate()?.let { hideDueDate ->
             if (creationType == SCHEDULE && hideDueDate) {
                 return if (periodType != null) {
                     DateUtils.getInstance().today
@@ -106,7 +106,7 @@ class ConfigureEventReportDate(
 
     private fun getNextScheduleDate(): Date {
         val isGeneratedEventBasedOnEnrollment =
-            repository.getProgramStage().generatedByEnrollmentDate()
+            repository.getProgramStage()?.generatedByEnrollmentDate()
 
         val initialDate = if (isGeneratedEventBasedOnEnrollment == true) {
             val enrollmentDate = repository.getEnrollmentDate(enrollmentId)

@@ -60,7 +60,7 @@ interface SMSSyncProvider {
         return when (syncContext.conflictType()) {
             ConflictType.EVENT -> {
                 if (d2.eventModule().events().uid(syncContext.recordUid()).blockingGet()
-                    .enrollment() == null
+                    ?.enrollment() == null
                 ) {
                     convertSimpleEvent()
                 } else {

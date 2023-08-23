@@ -40,24 +40,22 @@ class EnrollmentRepository(
 
     private fun canBeEdited(): Boolean {
         val selectedProgram = d2.programModule().programs().uid(
-            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().program()
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()?.program()
         ).blockingGet()
-        val programAccess =
-            selectedProgram.access().data().write() != null && selectedProgram.access().data()
-                .write()
+        val programAccess = selectedProgram?.access()?.data()?.write() == true
         val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
-            selectedProgram.trackedEntityType()?.uid()
-        ).blockingGet().access().data().write()
+            selectedProgram?.trackedEntityType()?.uid()
+        ).blockingGet()?.access()?.data()?.write() == true
         return programAccess && teTypeAccess
     }
 
     private val program by lazy {
-        d2.programModule().programs().uid(enrollmentRepository.blockingGet().program()).get()
+        d2.programModule().programs().uid(enrollmentRepository.blockingGet()?.program()).get()
     }
 
     private val programSections by lazy {
         d2.programModule().programSections().withAttributes()
-            .byProgramUid().eq(enrollmentRepository.blockingGet().program())
+            .byProgramUid().eq(enrollmentRepository.blockingGet()?.program())
             .blockingGet()
     }
 
@@ -98,15 +96,15 @@ class EnrollmentRepository(
 
     private fun getSingleSectionList(): MutableList<FieldUiModel> {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
+            .uid(enrollmentRepository.blockingGet()?.trackedEntityInstance())
             .blockingGet()
         val teiType = d2.trackedEntityModule().trackedEntityTypes()
-            .uid(tei.trackedEntityType()).blockingGet()
+            .uid(tei?.trackedEntityType()).blockingGet()
         return mutableListOf(
             fieldFactory.createSingleSection(
                 String.format(
                     enrollmentFormLabelsProvider.provideSingleSectionLabel(),
-                    teiType.displayName()
+                    teiType?.displayName()
                 )
             )
         )
@@ -116,7 +114,7 @@ class EnrollmentRepository(
         return Single.fromCallable {
             val programAttributes =
                 d2.programModule().programTrackedEntityAttributes().withRenderType()
-                    .byProgram().eq(program.blockingGet().uid())
+                    .byProgram().eq(program.blockingGet()?.uid())
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet()
 
@@ -135,7 +133,7 @@ class EnrollmentRepository(
                 )
                 section.attributes()?.forEachIndexed { _, attribute ->
                     d2.programModule().programTrackedEntityAttributes().withRenderType()
-                        .byProgram().eq(program.blockingGet().uid())
+                        .byProgram().eq(program.blockingGet()?.uid())
                         .byTrackedEntityAttribute().eq(attribute.uid())
                         .one().blockingGet()?.let { programTrackedEntityAttribute ->
                             fields.add(transform(programTrackedEntityAttribute, section.uid()))
@@ -196,7 +194,7 @@ class EnrollmentRepository(
         if ((valueType == ValueType.ORGANISATION_UNIT || valueType?.isDate == true) &&
             !dataValue.isNullOrEmpty()
         ) {
-            dataValue = attrValueRepository.blockingGet().value()
+            dataValue = attrValueRepository.blockingGet()?.value()
         }
 
         var programSection: ProgramSection? = null
@@ -270,7 +268,7 @@ class EnrollmentRepository(
     private fun getAttributeValue(
         attrValueRepository: TrackedEntityAttributeValueObjectRepository
     ) = if (attrValueRepository.blockingExists()) {
-        attrValueRepository.blockingGet().userFriendlyValue(d2)
+        attrValueRepository.blockingGet()?.userFriendlyValue(d2)
     } else {
         null
     }
@@ -330,7 +328,7 @@ class EnrollmentRepository(
         }
         val orgUnits = d2.organisationUnitModule().organisationUnits()
             .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-            .byProgramUids(listOf(enrollmentRepository.blockingGet().program())).blockingCount()
+            .byProgramUids(listOf(enrollmentRepository.blockingGet()?.program())).blockingCount()
         enrollmentDataList.add(
             getOrgUnitField(enrollmentMode == EnrollmentMode.NEW && orgUnits > 1)
         )
@@ -447,11 +445,11 @@ class EnrollmentRepository(
                 enrollmentRepository.blockingGet()!!.trackedEntityInstance()
             ).blockingGet()
         val teiType = d2.trackedEntityModule().trackedEntityTypes()
-            .uid(tei.trackedEntityType()).blockingGet()
+            .uid(tei?.trackedEntityType()).blockingGet()
         val teiCoordinatesLabel = enrollmentFormLabelsProvider.provideTeiCoordinatesLabel()
         return fieldFactory.create(
             TEI_COORDINATES_UID,
-            "$teiCoordinatesLabel ${teiType.displayName()}",
+            "$teiCoordinatesLabel ${teiType?.displayName()}",
             ValueType.COORDINATE,
             false,
             null,
@@ -497,17 +495,17 @@ class EnrollmentRepository(
     fun hasEventsGeneratedByEnrollmentDate(): Boolean {
         val enrollment = enrollmentRepository.blockingGet()
         val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
+            .byProgramUid().eq(enrollment?.program())
             .byOpenAfterEnrollment().isTrue
             .byReportDateToUse().eq("enrollmentDate")
             .blockingGetUids()
         val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
+            .byProgramUid().eq(enrollment?.program())
             .byAutoGenerateEvent().isTrue
             .byGeneratedByEnrollmentDate().isTrue
             .blockingGetUids()
         return !d2.eventModule().events()
-            .byTrackedEntityInstanceUids(arrayListOf(enrollment.trackedEntityInstance()))
+            .byTrackedEntityInstanceUids(arrayListOf(enrollment?.trackedEntityInstance()))
             .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
             .blockingIsEmpty()
     }
@@ -515,17 +513,17 @@ class EnrollmentRepository(
     fun hasEventsGeneratedByIncidentDate(): Boolean {
         val enrollment = enrollmentRepository.blockingGet()
         val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
+            .byProgramUid().eq(enrollment?.program())
             .byOpenAfterEnrollment().isTrue
             .byReportDateToUse().eq("incidentDate")
             .blockingGetUids()
         val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
+            .byProgramUid().eq(enrollment?.program())
             .byAutoGenerateEvent().isTrue
             .byGeneratedByEnrollmentDate().isFalse
             .blockingGetUids()
         return !d2.eventModule().events()
-            .byTrackedEntityInstanceUids(arrayListOf(enrollment.trackedEntityInstance()))
+            .byTrackedEntityInstanceUids(arrayListOf(enrollment?.trackedEntityInstance()))
             .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
             .blockingIsEmpty()
     }

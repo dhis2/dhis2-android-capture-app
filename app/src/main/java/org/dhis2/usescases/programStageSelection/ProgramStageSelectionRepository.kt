@@ -8,5 +8,5 @@ import org.hisp.dhis.rules.models.RuleEffect
 interface ProgramStageSelectionRepository {
     fun enrollmentProgramStages(): Flowable<List<ProgramStage>>
     fun calculate(): Flowable<Result<RuleEffect>>
-    fun getStage(programStageUid: String): ProgramStage
+    fun getStage(programStageUid: String): ProgramStage?
 }

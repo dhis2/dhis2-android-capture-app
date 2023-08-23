@@ -41,7 +41,7 @@ class CategoryDialogPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setTitle(it.displayName() ?: "-") },
+                    { view.setTitle(it?.displayName() ?: "-") },
                     { Timber.e(it) }
                 )
         )
@@ -81,7 +81,7 @@ class CategoryDialogPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setTitle(it.displayName() ?: "-") },
+                    { view.setTitle(it?.displayName() ?: "-") },
                     { Timber.e(it) }
                 )
         )

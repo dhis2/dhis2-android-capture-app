@@ -43,7 +43,7 @@ class TroubleshootingRepository(
         programRules().mapNotNull { programAndRule ->
             val rule = programAndRule.second
             val program = program(programAndRule.first?.uid())
-            val valueMap: Map<String, RuleVariableValue?> = ruleVariableMap(program.uid())
+            val valueMap: Map<String, RuleVariableValue?> = ruleVariableMap(program?.uid())
             var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid()))
             val ruleConditionResult = process(
                 rule.condition(),
@@ -76,10 +76,12 @@ class TroubleshootingRepository(
                 null
             }
         }.forEach { (program, ruleValidation) ->
-            if (programRulesMap.containsKey(program)) {
-                programRulesMap[program]?.add(ruleValidation)
-            } else {
-                programRulesMap[program] = mutableListOf(ruleValidation)
+            program?.let {
+                if (programRulesMap.containsKey(it)) {
+                    programRulesMap[it]?.add(ruleValidation)
+                } else {
+                    programRulesMap[it] = mutableListOf(ruleValidation)
+                }
             }
         }
         return programRulesMap.map { (program, validationList) ->
@@ -109,11 +111,11 @@ class TroubleshootingRepository(
 
     private fun ruleExternalLink(uid: String) =
         "%s/api/programRules/%s?fields=*,programRuleActions[*]".format(
-            d2.systemInfoModule().systemInfo().blockingGet().contextPath(),
+            d2.systemInfoModule().systemInfo().blockingGet()?.contextPath(),
             uid
         )
 
-    private fun ruleVariableMap(programUid: String, values: Map<String, String>? = null) =
+    private fun ruleVariableMap(programUid: String?, values: Map<String, String>? = null) =
         d2.programModule().programRuleVariables()
             .byProgramUid().eq(programUid)
             .blockingGet().toRuleVariableList(

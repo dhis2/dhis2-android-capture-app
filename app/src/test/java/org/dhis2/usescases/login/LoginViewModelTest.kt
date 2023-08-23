@@ -341,7 +341,7 @@ class LoginViewModelTest {
         whenever(userManager.d2.systemInfoModule().systemInfo()) doReturn mock()
         whenever(userManager.d2.systemInfoModule().systemInfo().blockingGet()) doReturn mock()
         whenever(
-            userManager.d2.systemInfoModule().systemInfo().blockingGet().version()
+            userManager.d2.systemInfoModule().systemInfo().blockingGet()?.version()
         ) doReturn "1234"
         whenever(userManager.d2.dataStoreModule()) doReturn mock()
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()

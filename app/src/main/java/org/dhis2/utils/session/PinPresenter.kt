@@ -21,7 +21,7 @@ class PinPresenter(
         val pinStored = d2.dataStoreModule()
             .localDataStore()
             .value(Preference.PIN)
-            .blockingGet().value()
+            .blockingGet()?.value()
         when {
             pinStored == pin -> {
                 preferenceProvider.setValue(Preference.SESSION_LOCKED, true)

@@ -114,7 +114,7 @@ class DashboardRepositoryImplTest {
         whenever(d2.enrollmentModule().enrollments().uid("uid")) doReturn mock()
         whenever(d2.enrollmentModule().enrollments().uid("uid").blockingGet()) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments().uid("uid").blockingGet().status()
+            d2.enrollmentModule().enrollments().uid("uid").blockingGet()?.status()
         ) doReturn EnrollmentStatus.COMPLETED
 
         val status = repository.getEnrollmentStatus("uid")
@@ -128,13 +128,13 @@ class DashboardRepositoryImplTest {
         whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
         whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()
         ) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access().data()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()?.data()
         ) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access().data().write()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()?.data()?.write()
         ) doReturn true
         whenever(d2.enrollmentModule().enrollments()) doReturn mock()
         whenever(d2.enrollmentModule().enrollments().uid("enrollmentUid")) doReturn mock()
@@ -161,13 +161,13 @@ class DashboardRepositoryImplTest {
         whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
         whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()
         ) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access().data()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()?.data()
         ) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access().data().write()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()?.data()?.write()
         ) doReturn true
         whenever(d2.enrollmentModule().enrollments()) doReturn mock()
         whenever(d2.enrollmentModule().enrollments().uid("enrollmentUid")) doReturn mock()
@@ -191,13 +191,13 @@ class DashboardRepositoryImplTest {
         whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
         whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()
         ) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access().data()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()?.data()
         ) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet().access().data().write()
+            d2.programModule().programs().uid("programUid").blockingGet()?.access()?.data()?.write()
         ) doReturn false
 
         val testObserver =
@@ -276,7 +276,7 @@ class DashboardRepositoryImplTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .uid(anyString()).blockingGet().trackedEntityType()
+                .uid(anyString()).blockingGet()?.trackedEntityType()
         ) doReturn teType
 
         whenever(
@@ -345,7 +345,7 @@ class DashboardRepositoryImplTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .uid(anyString()).blockingGet().trackedEntityType()
+                .uid(anyString()).blockingGet()?.trackedEntityType()
         ) doReturn teType
         whenever(
             teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)

@@ -57,11 +57,11 @@ class MatomoAnalyticsControllerImpl(
         if (dhisImplementationTracker == null && D2Manager.isD2Instantiated() && D2Manager.getD2()
             .userModule().isLogged().blockingGet()
         ) {
-            D2Manager.getD2().settingModule()?.let { settingModule ->
+            D2Manager.getD2().settingModule().let { settingModule ->
                 val settings = settingModule.generalSetting().blockingGet()
                 settings?.let {
-                    val url = settingModule.generalSetting().blockingGet().matomoURL()
-                    val id = settingModule.generalSetting().blockingGet().matomoID()
+                    val url = settingModule.generalSetting().blockingGet()?.matomoURL()
+                    val id = settingModule.generalSetting().blockingGet()?.matomoID()
                     if (url != null && id != null) {
                         updateDhisImplementationTracker(url, id, DEFAULT_EXTERNAL_TRACKER_NAME)
                     }

@@ -36,7 +36,7 @@ class EventDetailsRepository(
     private val onError: (Throwable) -> String?
 ) {
 
-    fun getProgramStage(): ProgramStage {
+    fun getProgramStage(): ProgramStage? {
         return d2.programModule()
             .programStages()
             .uid(programStageUid ?: getEvent()?.programStage())
@@ -44,10 +44,10 @@ class EventDetailsRepository(
     }
 
     fun getObjectStyle(): ObjectStyle? {
-        val programStage: ProgramStage = getProgramStage()
+        val programStage = getProgramStage()
         val program = getProgram()
         return when (program?.registration()) {
-            true -> programStage.style()
+            true -> programStage?.style()
             else -> program?.style()
         }
     }
@@ -69,11 +69,7 @@ class EventDetailsRepository(
 
     fun getMinDaysFromStartByProgramStage(): Int {
         val programStage = getProgramStage()
-        return if (programStage.minDaysFromStart() != null) {
-            programStage.minDaysFromStart()!!
-        } else {
-            0
-        }
+        return programStage?.minDaysFromStart() ?: 0
     }
 
     fun getStageLastDate(enrollmentUid: String?): Date {
@@ -100,14 +96,14 @@ class EventDetailsRepository(
         return if (eventUid != null) {
             d2.eventModule().eventService().isEditable(eventUid).blockingGet()
         } else {
-            return getProgramStage().access().data().write()
+            return getProgramStage()?.access()?.data()?.write() == true
         }
     }
 
     fun isEnrollmentOpen(): Boolean {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         return event?.enrollment() == null || d2.enrollmentModule().enrollments()
-            .uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE
+            .uid(event.enrollment()).blockingGet()?.status() == EnrollmentStatus.ACTIVE
     }
 
     fun getEnrollmentDate(uid: String?): Date? {
@@ -158,12 +154,12 @@ class EventDetailsRepository(
         val shouldBlockEdition = eventUid != null &&
             !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
             nonEditableStatus.contains(
-                d2.eventModule().events().uid(eventUid).blockingGet().status()
+                d2.eventModule().events().uid(eventUid).blockingGet()?.status()
             )
-        val featureType = getProgramStage().featureType()
+        val featureType = getProgramStage()?.featureType()
         val accessDataWrite = hasAccessDataWrite() && isEnrollmentOpen()
         val coordinatesValue = eventUid?.let {
-            d2.eventModule().events().uid(eventUid).blockingGet().geometry()?.coordinates()
+            d2.eventModule().events().uid(eventUid).blockingGet()?.geometry()?.coordinates()
         }
 
         return fieldFactory.create(
@@ -218,12 +214,12 @@ class EventDetailsRepository(
         return getEvent()?.let { event ->
             catCombo().let { categoryCombo ->
                 val map = mutableMapOf<String, CategoryOption>()
-                if (categoryCombo.isDefault == false && event.attributeOptionCombo() != null) {
+                if (categoryCombo?.isDefault == false && event.attributeOptionCombo() != null) {
                     val selectedCatOptions = d2.categoryModule()
                         .categoryOptionCombos()
                         .withCategoryOptions()
                         .uid(event.attributeOptionCombo())
-                        .blockingGet().categoryOptions()
+                        .blockingGet()?.categoryOptions()
                     categoryCombo.categories()?.forEach { category ->
                         selectedCatOptions?.forEach { categoryOption ->
                             val categoryOptions = d2.categoryModule()
@@ -241,7 +237,7 @@ class EventDetailsRepository(
         }
     }
 
-    fun catCombo(): CategoryCombo {
+    fun catCombo(): CategoryCombo? {
         return d2.programModule().programs().uid(programUid).get()
             .flatMap { program: Program ->
                 d2.categoryModule().categoryCombos()
@@ -256,11 +252,11 @@ class EventDetailsRepository(
         selectedOrgUnit: String?,
         catOptionComboUid: String?,
         coordinates: String?
-    ): Event {
+    ): Event? {
         val geometry = coordinates?.let {
             Geometry.builder()
                 .coordinates(it)
-                .type(getProgramStage().featureType())
+                .type(getProgramStage()?.featureType())
                 .build()
         }
 
@@ -273,8 +269,8 @@ class EventDetailsRepository(
                 eventRepository.setAttributeOptionComboUid(catOptionComboUid)
                 val featureType =
                     d2.programModule().programStages()
-                        .uid(eventRepository.blockingGet().programStage())
-                        .blockingGet().featureType()
+                        .uid(eventRepository.blockingGet()?.programStage())
+                        .blockingGet()?.featureType()
                 featureType?.let { type ->
                     when (type) {
                         FeatureType.POINT,

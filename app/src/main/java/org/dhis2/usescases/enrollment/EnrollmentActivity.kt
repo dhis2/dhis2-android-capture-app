@@ -188,7 +188,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             openEventForResult.launch(scheduleEventIntent)
         } else if (presenter.openInitial(eventUid)) {
             val bundle = EventInitialActivity.getBundle(
-                presenter.getProgram().uid(),
+                presenter.getProgram()?.uid(),
                 eventUid,
                 null,
                 presenter.getEnrollment()!!.trackedEntityInstance(),
@@ -207,7 +207,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             eventCreationIntent.putExtras(
                 EventCaptureActivity.getActivityBundle(
                     eventUid,
-                    presenter.getProgram().uid(),
+                    presenter.getProgram()?.uid() ?: "",
                     EventMode.CHECK
                 )
             )
@@ -233,7 +233,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             finish()
         } else {
             val bundle = Bundle()
-            bundle.putString(PROGRAM_UID, presenter.getProgram().uid())
+            bundle.putString(PROGRAM_UID, presenter.getProgram()?.uid())
             bundle.putString(TEI_UID, presenter.getEnrollment()!!.trackedEntityInstance())
             bundle.putString(ENROLLMENT_UID, enrollmentUid)
             startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
@@ -333,7 +333,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             binding.title.visibility = View.VISIBLE
             binding.teiDataHeader.root.visibility = View.GONE
             binding.title.text =
-                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+                String.format(getString(R.string.enroll_in), presenter.getProgram()?.displayName())
         }
     }
 

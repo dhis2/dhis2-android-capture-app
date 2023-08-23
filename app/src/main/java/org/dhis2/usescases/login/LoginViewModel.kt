@@ -152,7 +152,8 @@ class LoginViewModel(
         return if (userManager.isUserLoggedIn.blockingFirst() &&
             userManager.d2.systemInfoModule().systemInfo().blockingGet() != null
         ) {
-            userManager.d2.systemInfoModule().systemInfo().blockingGet()
+            userManager.d2.systemInfoModule().systemInfo().blockingGet() ?: SystemInfo.builder()
+                .build()
         } else {
             SystemInfo.builder().build()
         }

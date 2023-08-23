@@ -47,8 +47,8 @@ class DataSetTablePresenter(
             }
             val renderDetails = async(dispatchers.io()) {
                 DataSetRenderDetails(
-                    tableRepository.getDataSet().blockingGet().displayName()!!,
-                    tableRepository.getOrgUnit().blockingGet().displayName()!!,
+                    tableRepository.getDataSet().blockingGet()?.displayName()!!,
+                    tableRepository.getOrgUnit().blockingGet()?.displayName()!!,
                     tableRepository.getPeriod().map { period ->
                         periodUtils.getPeriodUIString(
                             period.periodType(),

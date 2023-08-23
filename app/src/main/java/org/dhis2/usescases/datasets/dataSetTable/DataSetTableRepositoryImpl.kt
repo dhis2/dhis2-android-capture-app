@@ -42,7 +42,7 @@ class DataSetTableRepositoryImpl(
     private val missingCompleteDataElementsProcessor: FlowableProcessor<List<String>> =
         PublishProcessor.create()
 
-    fun getDataSet(): Single<DataSet> {
+    fun getDataSet(): Single<DataSet?> {
         return d2.dataSetModule().dataSets().uid(dataSetUid).get()
     }
 
@@ -50,7 +50,7 @@ class DataSetTableRepositoryImpl(
         return d2.periodModule().periodHelper().getPeriodForPeriodId(periodId)
     }
 
-    fun getOrgUnit(): Single<OrganisationUnit> {
+    fun getOrgUnit(): Single<OrganisationUnit?> {
         return d2.organisationUnitModule().organisationUnits()
             .uid(orgUnitUid)
             .get()
@@ -163,7 +163,7 @@ class DataSetTableRepositoryImpl(
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId).one().blockingGet()
-            state = dataSetInstance.state()
+            state = dataSetInstance?.state()
             val dscr =
                 d2.dataSetModule().dataSetCompleteRegistrations()
                     .byDataSetUid().eq(dataSetUid)
@@ -186,17 +186,17 @@ class DataSetTableRepositoryImpl(
     fun getCatComboName(): Flowable<String> {
         return Flowable.fromCallable {
             d2.categoryModule().categoryOptionCombos().uid(catOptCombo).blockingGet()
-                .displayName()
+                ?.displayName()
         }
     }
 
-    fun getCatOptComboFromOptionList(catOpts: List<String>): String {
+    fun getCatOptComboFromOptionList(catOpts: List<String>): String? {
         return if (catOpts.isEmpty()) {
             d2.categoryModule().categoryOptionCombos().byDisplayName()
-                .like("default").one().blockingGet().uid()
+                .like("default").one().blockingGet()?.uid()
         } else {
             d2.categoryModule()
-                .categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid()
+                .categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet()?.uid()
         }
     }
 
@@ -222,7 +222,7 @@ class DataSetTableRepositoryImpl(
                 val hasValidCompleteRegistration = if (hasCompleteRegistration == true) {
                     d2.dataSetModule().dataSetCompleteRegistrations()
                         .value(periodId, orgUnitUid, dataSetUid, catOptCombo).blockingGet()
-                        .deleted() != true
+                        ?.deleted() != true
                 } else {
                     false
                 }
@@ -259,7 +259,7 @@ class DataSetTableRepositoryImpl(
                             orgUnitUid,
                             dataSetUid,
                             catOptCombo
-                        ).blockingGet().deleted() == true
+                        ).blockingGet()?.deleted() == true
                 } else {
                     true
                 }
@@ -305,7 +305,7 @@ class DataSetTableRepositoryImpl(
                             val catComboUid = dataSetElement.categoryCombo()?.uid()
                                 ?: d2.dataElementModule().dataElements()
                                     .uid(dataSetElement.dataElement().uid())
-                                    .blockingGet().categoryComboUid()
+                                    .blockingGet()?.categoryComboUid()
                             val categoryOptionCombos =
                                 d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
                                     .eq(catComboUid).blockingGet()
@@ -336,7 +336,7 @@ class DataSetTableRepositoryImpl(
     fun areValidationRulesMandatory(): Boolean {
         return d2.dataSetModule()
             .dataSets().uid(dataSetUid)
-            .blockingGet().validCompleteOnly() ?: false
+            .blockingGet()?.validCompleteOnly() ?: false
     }
 
     fun hasValidationRules(): Boolean {
@@ -372,11 +372,13 @@ class DataSetTableRepositoryImpl(
         dataElementUids: MutableSet<DataElementOperand>
     ): List<DataToReview> {
         val dataToReview = arrayListOf<DataToReview>()
-        for (deOperand in dataElementUids) {
-            val de =
-                d2.dataElementModule().dataElements()
-                    .uid(deOperand.dataElement()?.uid())
-                    .blockingGet()
+        dataElementUids.mapNotNull { deOperand ->
+            d2.dataElementModule().dataElements()
+                .uid(deOperand.dataElement()?.uid())
+                .blockingGet()?.let {
+                    Pair(deOperand, it)
+                }
+        }.forEach { (deOperand, de) ->
             val catOptCombos =
                 if (deOperand.categoryOptionCombo() != null) {
                     d2.categoryModule().categoryOptionCombos()
@@ -393,16 +395,16 @@ class DataSetTableRepositoryImpl(
                     .blockingExists() &&
                     d2.dataValueModule().dataValues()
                         .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
-                        .blockingGet().deleted() != true
+                        .blockingGet()?.deleted() != true
                 ) {
                     d2.dataValueModule().dataValues()
                         .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
-                        .blockingGet().value() ?: "-"
+                        .blockingGet()?.value() ?: "-"
                 } else {
                     "-"
                 }
                 val isFromDefaultCatCombo = d2.categoryModule().categoryCombos()
-                    .uid(catOptCombo.categoryCombo()?.uid()).blockingGet().isDefault == true
+                    .uid(catOptCombo.categoryCombo()?.uid()).blockingGet()?.isDefault == true
                 dataToReview.add(
                     DataToReview(
                         de.uid(),
@@ -425,13 +427,13 @@ class DataSetTableRepositoryImpl(
             .byOrganisationUnitUid().eq(orgUnitUid)
             .byAttributeOptionComboUid().eq(catOptCombo)
             .byDeleted().isFalse
-            .isEmpty
+            .isEmpty()
             .map { isEmpty -> !isEmpty }
     }
 
     fun hasDataElementDecoration(): Boolean {
         return d2.dataSetModule().dataSets().uid(dataSetUid)
             .blockingGet()
-            .dataElementDecoration() == true
+            ?.dataElementDecoration() == true
     }
 }

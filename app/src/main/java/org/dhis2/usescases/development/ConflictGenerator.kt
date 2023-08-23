@@ -52,8 +52,8 @@ class ConflictGenerator(private val d2: D2) {
             .blockingGet().forEach { trackerImportConflict ->
                 trackerImportConflict.apply {
                     trackedEntityInstance()?.let { teiUid ->
-                        val cv = d2.tei(teiUid).toBuilder().syncState(State.SYNCED)
-                            .aggregatedSyncState(State.SYNCED).build().toContentValues()
+                        val cv = d2.tei(teiUid)?.toBuilder()?.syncState(State.SYNCED)
+                            ?.aggregatedSyncState(State.SYNCED)?.build()?.toContentValues()
                         d2.databaseAdapter().update(
                             TrackedEntityInstanceTableInfo.TABLE_INFO.name(),
                             cv,
@@ -62,8 +62,8 @@ class ConflictGenerator(private val d2: D2) {
                         )
                     }
                     enrollment()?.let { enrollmentUid ->
-                        val cv = d2.enrollment(enrollmentUid).toBuilder().syncState(State.SYNCED)
-                            .aggregatedSyncState(State.SYNCED).build().toContentValues()
+                        val cv = d2.enrollment(enrollmentUid)?.toBuilder()?.syncState(State.SYNCED)
+                            ?.aggregatedSyncState(State.SYNCED)?.build()?.toContentValues()
                         d2.databaseAdapter().update(
                             EnrollmentTableInfo.TABLE_INFO.name(),
                             cv,
@@ -72,8 +72,8 @@ class ConflictGenerator(private val d2: D2) {
                         )
                     }
                     event()?.let { eventUid ->
-                        val cv = d2.event(eventUid).toBuilder().syncState(State.SYNCED)
-                            .aggregatedSyncState(State.SYNCED).build().toContentValues()
+                        val cv = d2.event(eventUid)?.toBuilder()?.syncState(State.SYNCED)
+                            ?.aggregatedSyncState(State.SYNCED)?.build()?.toContentValues()
                         d2.databaseAdapter().update(
                             EventTableInfo.TABLE_INFO.name(),
                             cv,
@@ -106,11 +106,14 @@ class ConflictGenerator(private val d2: D2) {
                         dataValueConflict.categoryOptionCombo()!!,
                         dataValueConflict.attributeOptionCombo()!!
                     ).blockingGet()
-                    val cv = dataValue.toBuilder().syncState(State.SYNCED).build().toContentValues()
+                    val cv = dataValue?.toBuilder()
+                        ?.syncState(State.SYNCED)
+                        ?.build()
+                        ?.toContentValues()
                     d2.databaseAdapter().update(
                         DataValueTableInfo.TABLE_INFO.name(),
                         cv,
-                        "_id = ${dataValue.id()}",
+                        "_id = ${dataValue?.id()}",
                         emptyArray()
                     )
                 }
@@ -134,7 +137,7 @@ class ConflictGenerator(private val d2: D2) {
             d2.programModule().programTrackedEntityAttributes().byTrackedEntityAttribute()
                 .eq(attributeValue.trackedEntityAttribute()).one().blockingGet()
 
-        val programUid = programAttribute.program()!!.uid()
+        val programUid = programAttribute?.program()!!.uid()
         val enrollment = d2.enrollmentModule().enrollments().byTrackedEntityInstance()
             .eq(attributeValue.trackedEntityInstance()).byProgram().eq(programUid).one()
             .blockingGet() ?: return generateConflictInAttribute(importStatus)
@@ -234,7 +237,9 @@ class ConflictGenerator(private val d2: D2) {
         val enrollment = d2.enrollment(enrollmentUid)
         val build =
             TrackerImportConflict.builder().conflict("Generated error conflict in enrollment")
-                .trackedEntityInstance(enrollment.trackedEntityInstance()).enrollment(enrollmentUid)
+                .trackedEntityInstance(enrollment?.trackedEntityInstance()).enrollment(
+                    enrollmentUid
+                )
                 .displayDescription("Generated error description in enrollment")
                 .status(importStatus).build()
         val cv = build.toContentValues()
@@ -242,7 +247,7 @@ class ConflictGenerator(private val d2: D2) {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
             d2.databaseAdapter()
                 .execSQL(updateEnrollment(enrollmentUid, importStatus.toSyncState().name))
-            enrollment.trackedEntityInstance()?.let {
+            enrollment?.trackedEntityInstance()?.let {
                 d2.databaseAdapter().execSQL(updateTei(it, importStatus.toSyncState().name))
             }
         } catch (e: Exception) {
@@ -257,13 +262,13 @@ class ConflictGenerator(private val d2: D2) {
         val enrollment = d2.enrollment(enrollmentUid)
         val build =
             TrackerImportConflict.builder().conflict("Generated error conflict in TEI level")
-                .trackedEntityInstance(enrollment.trackedEntityInstance())
+                .trackedEntityInstance(enrollment?.trackedEntityInstance())
                 .displayDescription("Generated error description in TEI level")
                 .status(importStatus).build()
         val cv = build.toContentValues()
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
-            enrollment.trackedEntityInstance()?.let {
+            enrollment?.trackedEntityInstance()?.let {
                 d2.databaseAdapter().execSQL(updateTei(it, importStatus.toSyncState().name))
             }
         } catch (e: Exception) {

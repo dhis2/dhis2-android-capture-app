@@ -41,7 +41,7 @@ class PinPresenterTest {
             d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value()
         ) doReturn testPin
 
         presenter.unlockSession(
@@ -70,7 +70,7 @@ class PinPresenterTest {
             d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value()
         ) doReturn testPin
 
         presenter.unlockSession(
@@ -98,7 +98,7 @@ class PinPresenterTest {
             d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value()
         ) doReturn testPin
 
         presenter.unlockSession(
