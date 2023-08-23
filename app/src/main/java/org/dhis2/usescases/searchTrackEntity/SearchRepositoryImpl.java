@@ -624,7 +624,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid) {
-        return d2.trackedEntityModule().trackedEntityTypes().byUid().eq(trackedEntityUid).one().get().toObservable();
+        return d2.trackedEntityModule().trackedEntityTypes().uid(trackedEntityUid).get().toObservable();
     }
 
     @Override

@@ -119,10 +119,10 @@ fun DataSetTableScreen(
             }
         }
     }
-
+    bottomSheetState.bottomSheetState.progress
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-            !bottomSheetState.bottomSheetState.isAnimationRunning
+            bottomSheetState.bottomSheetState.progress == 1f
     ) {
         collapseBottomSheet(finish = true)
     }

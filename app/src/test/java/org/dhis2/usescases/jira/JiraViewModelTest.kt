@@ -3,8 +3,8 @@ package org.dhis2.usescases.jira
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import io.reactivex.Single
-import okhttp3.MediaType
-import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.jira.JiraIssue
@@ -102,9 +102,12 @@ class JiraViewModelTest {
         jiraViewModel.onDescriptionChanged("description", 0, 0, 0)
         val observer: Observer<String> = mock()
         jiraViewModel.issueMessage.observeForever(observer)
+        val mockedResponse = "{}".toResponseBody(
+            "*/*".toMediaTypeOrNull()
+        )
         whenever(
             jiraRepository.sendJiraIssue(any(), any())
-        ) doReturn Single.just(ResponseBody.create(MediaType.parse("*/*"), "{}"))
+        ) doReturn Single.just(mockedResponse)
         whenever(
             resourceManager.jiraIssueSentMessage()
         ) doReturn "Sent"

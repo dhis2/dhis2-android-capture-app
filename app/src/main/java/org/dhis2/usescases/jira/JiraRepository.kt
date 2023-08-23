@@ -3,8 +3,8 @@ package org.dhis2.usescases.jira
 import android.util.Base64
 import com.google.gson.Gson
 import io.reactivex.Single
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -32,19 +32,17 @@ class JiraRepository(
             prefs.getString(Constants.JIRA_USER, this.userName)!!.toJiraJql(),
             MAX_RESULTS
         )
-        val requestBody =
-            RequestBody.create(MediaType.parse(MEDIA_TYPE_APPLICATION_JSON), Gson().toJson(request))
+
+        val requestBody = Gson().toJson(request)
+            .toRequestBody(MEDIA_TYPE_APPLICATION_JSON.toMediaTypeOrNull())
         return jiraApi.getJiraIssues(basic, requestBody)
     }
 
     fun sendJiraIssue(summary: String, description: String): Single<ResponseBody> {
         val basic = session?.toBasicAuth()
         val issueRequest = IssueRequest(summary, description)
-        val requestBody =
-            RequestBody.create(
-                MediaType.parse(MEDIA_TYPE_APPLICATION_JSON),
-                Gson().toJson(issueRequest)
-            )
+        val requestBody = Gson().toJson(issueRequest)
+            .toRequestBody(MEDIA_TYPE_APPLICATION_JSON.toMediaTypeOrNull())
         return jiraApi.createIssue(basic, requestBody)
     }
 
