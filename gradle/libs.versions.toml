@@ -14,7 +14,7 @@ hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
 
 dhis2sdk = "1.8.2-SNAPSHOT"
-ruleEngine = "2.1.8"
+ruleEngine = "2.1.9"
 appcompat = "1.5.1"
 annotation = "1.4.0"
 cardview = "1.0.0"
