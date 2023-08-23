@@ -64,7 +64,6 @@ fun Components() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
 
         InputShell(
@@ -85,7 +84,6 @@ fun Components() {
                 SimpleTextInputField()
             }
         ) {
-
         }
         Button(
             text = provideStringResource("show_more"),
