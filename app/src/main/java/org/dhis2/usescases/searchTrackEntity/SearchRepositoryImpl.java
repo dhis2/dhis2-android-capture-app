@@ -740,7 +740,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private SearchTeiModel transformResult(Result<TrackedEntityInstance, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
         try {
             return transform(result.getOrThrow(), selectedProgram, offlineOnly, sortingItem);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             SearchTeiModel errorModel = new SearchTeiModel();
             errorModel.onlineErrorMessage = resources.parseD2Error(e);
             errorModel.onlineErrorCode = ((D2Error) e).errorCode();
@@ -754,7 +754,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
         SearchTeiModel searchTei = new SearchTeiModel();
         if (d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingExists() &&
-                d2.trackedEntityModule().trackedEntityInstances().uid(tei.uid()).blockingGet().state() != State.RELATIONSHIP) {
+                d2.trackedEntityModule().trackedEntityInstances().uid(tei.uid()).blockingGet().aggregatedSyncState() != State.RELATIONSHIP) {
             TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingGet();
             searchTei.setTei(localTei);
             if (selectedProgram != null && d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingExists()) {
