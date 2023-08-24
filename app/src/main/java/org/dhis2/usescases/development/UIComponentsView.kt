@@ -13,8 +13,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Clear
-import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,11 +25,9 @@ import org.dhis2.ui.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
-import org.hisp.dhis.mobile.ui.designsystem.component.InputShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButton
-import org.hisp.dhis.mobile.ui.designsystem.component.SimpleTextInputField
 import org.hisp.dhis.mobile.ui.designsystem.component.SquareIconButton
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
@@ -66,25 +62,6 @@ fun Components() {
     ) {
         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
 
-        InputShell(
-            title = "input shel",
-            primaryButton = {
-                Icon(
-                    imageVector = Icons.Outlined.FileDownload,
-                    contentDescription = ""
-                )
-            },
-            secondaryButton = {
-                Icon(
-                    imageVector = Icons.Outlined.Clear,
-                    contentDescription = ""
-                )
-            },
-            inputField = {
-                SimpleTextInputField()
-            }
-        ) {
-        }
         Button(
             text = provideStringResource("show_more"),
             icon = {
