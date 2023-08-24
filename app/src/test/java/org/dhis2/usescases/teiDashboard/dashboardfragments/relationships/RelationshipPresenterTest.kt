@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
 import io.reactivex.Single
+import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
@@ -10,12 +11,9 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.Access
-import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -76,7 +74,9 @@ class RelationshipPresenterTest {
 
     @Test
     fun `Should set relationships and init fab`() {
-        whenever(repository.relationships()) doReturn Single.just(arrayListOf())
+        val relationship: RelationshipViewModel = mock()
+        val relationships = arrayListOf(relationship)
+        whenever(repository.relationships()) doReturn Single.just(relationships)
         whenever(repository.relationshipTypes()) doReturn Single.just(
             arrayListOf()
         )
@@ -84,7 +84,22 @@ class RelationshipPresenterTest {
 
         presenter.init()
 
-        verify(view).setRelationships(any())
+        verify(view).setRelationships(relationships)
+        verify(view).initFab(any())
+    }
+
+    @Test
+    fun `Should show empty relationships info`() {
+        val relationships = emptyList<RelationshipViewModel>()
+        whenever(repository.relationships()) doReturn Single.just(relationships)
+        whenever(repository.relationshipTypes()) doReturn Single.just(
+            arrayListOf()
+        )
+        whenever(repository.getTeiTypeDefaultRes(any())) doReturn -1
+
+        presenter.init()
+
+        verify(view).setRelationships(relationships)
         verify(view).initFab(any())
     }
 
@@ -195,22 +210,6 @@ class RelationshipPresenterTest {
         presenter.openDashboard("teiUid")
 
         verify(view).showRelationshipNotFoundError(getMockedTeiType().displayName()!!)
-    }
-
-    private fun getMockedProgram(access: Boolean): Program {
-        return Program.builder()
-            .uid("programUid")
-            .access(
-                Access.create(
-                    access,
-                    access,
-                    DataAccess.create(
-                        access,
-                        access
-                    )
-                )
-            )
-            .build()
     }
 
     private fun getMockedRelationship(): Relationship {
