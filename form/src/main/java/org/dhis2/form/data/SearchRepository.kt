@@ -13,7 +13,7 @@ class SearchRepository(
     private val fieldViewModelFactory: FieldViewModelFactory,
     private val programUid: String?,
     private val teiTypeUid: String,
-    private val currentSearchValues: Map<String, String>
+    private val currentSearchValues: Map<String, String>,
 ) : DataEntryBaseRepository(d2, fieldViewModelFactory) {
 
     override fun list(): Flowable<List<FieldUiModel>> {
@@ -46,7 +46,7 @@ class SearchRepository(
                             OptionSetConfiguration.config(
                                 d2.optionModule().options()
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                    .blockingCount()
+                                    .blockingCount(),
                             ) {
                                 d2.optionModule().options()
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
@@ -60,7 +60,7 @@ class SearchRepository(
                             null,
                             currentSearchValues[attribute.uid()],
                             true,
-                            optionSetConfiguration
+                            optionSetConfiguration,
                         )
                     }
             }.filter { item: FieldUiModel ->
@@ -91,7 +91,7 @@ class SearchRepository(
                             OptionSetConfiguration.config(
                                 d2.optionModule().options()
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                    .blockingCount()
+                                    .blockingCount(),
                             ) {
                                 d2.optionModule().options()
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
@@ -104,7 +104,7 @@ class SearchRepository(
                             programAttribute,
                             currentSearchValues[attribute.uid()],
                             true,
-                            optionSetConfiguration
+                            optionSetConfiguration,
                         )
                     }
             }.filter { item: FieldUiModel? ->

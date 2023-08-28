@@ -17,15 +17,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.Bindings
-import org.dhis2.Bindings.clipWithRoundedCorners
-import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.ui.home.HomeActivity
+import org.dhis2.bindings.Bindings
+import org.dhis2.bindings.clipWithRoundedCorners
+import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
@@ -43,6 +42,7 @@ import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
+import javax.inject.Inject
 
 class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
@@ -71,7 +71,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
         ViewCompat.setTransitionName(binding.drawerLayout, "contenttest")
@@ -91,7 +91,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     private fun initList() {
         binding.programList.apply {
             setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
                 val items by presenter.programs().observeAsState(emptyList())
@@ -104,7 +104,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                     },
                     onGranularSyncClick = {
                         showSyncDialog(it)
-                    }
+                    },
                 )
             }
         }
@@ -114,13 +114,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         super.onResume()
         presenter.init()
         animation.initBackdropCorners(
-            binding.drawerLayout.background.mutate() as GradientDrawable
+            binding.drawerLayout.background.mutate() as GradientDrawable,
         )
     }
 
     override fun onPause() {
         animation.reverseBackdropCorners(
-            binding.drawerLayout.background.mutate() as GradientDrawable
+            binding.drawerLayout.background.mutate() as GradientDrawable,
         )
         presenter.dispose()
         super.onPause()
@@ -135,7 +135,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun showFilterProgress() {
         Bindings.setViewVisibility(
             binding.clearFilter,
-            FilterManager.getInstance().totalFilters > 0
+            FilterManager.getInstance().totalFilters > 0,
         )
     }
 
@@ -143,7 +143,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         OUTreeFragment.Builder()
             .showAsDialog()
             .withPreselectedOrgUnits(
-                FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
+                FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList(),
             )
             .onSelection { selectedOrgUnits ->
                 presenter.setOrgUnitFilters(selectedOrgUnits)
@@ -161,16 +161,16 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                             val stepCondition = SparseBooleanArray()
                             stepCondition.put(
                                 7,
-                                presenter.programs().value?.size ?: 0 > 0
+                                presenter.programs().value?.size ?: 0 > 0,
                             )
                             HelpManager.getInstance().show(
                                 abstractActivity,
                                 HelpManager.TutorialName.PROGRAM_FRAGMENT,
-                                stepCondition
+                                stepCondition,
                             )
                         }
                     },
-                    500
+                    500,
                 )
             }
         } catch (e: Exception) {
@@ -209,13 +209,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
             } else {
                 program.typeName
             },
-            SELECT_PROGRAM
+            SELECT_PROGRAM,
         )
         bundle.putString(idTag, program.uid)
         bundle.putString(Constants.DATA_SET_NAME, program.title)
         bundle.putString(
             Constants.ACCESS_DATA,
-            program.accessDataWrite.toString()
+            program.accessDataWrite.toString(),
         )
 
         when (program.programType) {
@@ -255,7 +255,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                     "WITH_REGISTRATION" -> SyncContext.GlobalTrackerProgram(program.uid)
                     "WITHOUT_REGISTRATION" -> SyncContext.GlobalEventProgram(program.uid)
                     else -> SyncContext.GlobalDataSet(program.uid)
-                }
+                },
             )
             .onDismissListener(
                 object : OnDismissListener {
@@ -264,7 +264,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                             presenter.updateProgramQueries()
                         }
                     }
-                }
+                },
             ).show(FRAGMENT_TAG)
     }
 

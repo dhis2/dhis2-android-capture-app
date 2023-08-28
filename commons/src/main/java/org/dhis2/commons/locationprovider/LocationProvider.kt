@@ -7,7 +7,7 @@ interface LocationProvider {
     fun getLastKnownLocation(
         onNewLocation: (Location) -> Unit,
         onPermissionNeeded: () -> Unit,
-        onLocationDisabled: () -> Unit
+        onLocationDisabled: () -> Unit,
     )
 
     fun stopLocationUpdates()

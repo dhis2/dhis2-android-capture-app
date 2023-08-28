@@ -8,5 +8,5 @@ data class RowHeader(
     val title: String,
     val row: Int? = null,
     val showDecoration: Boolean = false,
-    val description: String? = null
+    val description: String? = null,
 )

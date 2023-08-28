@@ -10,10 +10,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import java.io.File
-import javax.inject.Inject
-import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
+import org.dhis2.bindings.dp
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
@@ -35,6 +33,8 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.isPortrait
+import java.io.File
+import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
@@ -88,14 +88,14 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (context as SearchTEActivity).searchComponent.plus(
-            SearchTEMapModule()
+            SearchTEMapModule(),
         ).inject(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSearchMapBinding.inflate(inflater, container, false)
 
@@ -134,8 +134,8 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                 presenter.programStageStyle,
                 colorUtils.getPrimaryColor(
                     requireContext(),
-                    ColorType.PRIMARY_DARK
-                )
+                    ColorType.PRIMARY_DARK,
+                ),
             )
         initializeCarousel()
         teiMapManager?.init(
@@ -149,7 +149,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             },
             onMissingPermission = { permissionsManager ->
                 permissionsManager?.requestLocationPermissions(requireActivity())
-            }
+            },
         )
         binding.content.clipWithRoundedCorners()
 
@@ -189,13 +189,13 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         teiMapManager?.permissionsManager?.onRequestPermissionsResult(
             requestCode,
             permissions,
-            grantResults
+            grantResults,
         )
     }
 
@@ -208,7 +208,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                 trackerMapData.teiFeatures,
                 trackerMapData.eventFeatures,
                 trackerMapData.dataElementFeaturess,
-                trackerMapData.teiBoundingBox
+                trackerMapData.teiBoundingBox,
             )
             carouselAdapter?.setAllItems(trackerMapData.allItems())
             carouselAdapter?.updateLayers(teiMapManager?.mapLayerManager?.mapLayers)
@@ -225,7 +225,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                         presenter.addRelationship(
                             teiUid,
                             null,
-                            NetworkUtils.isOnline(requireContext())
+                            NetworkUtils.isOnline(requireContext()),
                         )
                     } else {
                         presenter.onTEIClick(teiUid, enrollmentUid, isDeleted!!)
@@ -262,17 +262,17 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                 if (binding.mapCarousel.carouselEnabled) {
                     ImageDetailBottomDialog(
                         null,
-                        File(path)
+                        File(path),
                     ).show(
                         childFragmentManager,
-                        ImageDetailBottomDialog.TAG
+                        ImageDetailBottomDialog.TAG,
                     )
                 }
                 Unit
             }
             .addOnNavigateClickListener { uuid: String? ->
                 val feature = teiMapManager!!.findFeature(
-                    uuid!!
+                    uuid!!,
                 )
                 if (feature != null) {
                     startActivity(mapNavigation.navigateToMapIntent(feature))

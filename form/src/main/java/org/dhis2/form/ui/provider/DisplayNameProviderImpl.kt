@@ -9,13 +9,13 @@ import org.hisp.dhis.android.core.common.ValueType
 class DisplayNameProviderImpl(
     private val optionSetConfiguration: OptionSetConfiguration,
     private val orgUnitConfiguration: OrgUnitConfiguration,
-    private val fileResourceConfiguration: FileResourceConfiguration
+    private val fileResourceConfiguration: FileResourceConfiguration,
 ) : DisplayNameProvider {
 
     override fun provideDisplayName(
         valueType: ValueType?,
         value: String?,
-        optionSet: String?
+        optionSet: String?,
     ): String? {
         return value?.let {
             optionSet?.let { optionSetUid ->
@@ -42,17 +42,17 @@ class DisplayNameProviderImpl(
 
             ValueType.DATE ->
                 DateUtils.uiDateFormat().format(
-                    DateUtils.oldUiDateFormat().parse(value) ?: ""
+                    DateUtils.oldUiDateFormat().parse(value) ?: "",
                 )
 
             ValueType.DATETIME ->
                 DateUtils.dateTimeFormat().format(
-                    DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
+                    DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
                 )
 
             ValueType.TIME ->
                 DateUtils.timeFormat().format(
-                    DateUtils.timeFormat().parse(value) ?: ""
+                    DateUtils.timeFormat().parse(value) ?: "",
                 )
 
             else -> value

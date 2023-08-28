@@ -1,7 +1,6 @@
 package org.dhis2.usescases.enrollment
 
 import io.reactivex.Single
-import java.util.Date
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.data.RulesRepository
 import org.hisp.dhis.android.core.D2
@@ -18,6 +17,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class EnrollmentFormRepositoryTest {
 
@@ -33,7 +33,7 @@ class EnrollmentFormRepositoryTest {
     fun setUp() {
         whenever(
             (programRepository as ReadOnlyOneObjectRepositoryFinalImpl<Program>)
-                .blockingGet()
+                .blockingGet(),
         ) doReturn Program.builder()
             .uid("programUid")
             .displayName("programName")
@@ -54,11 +54,11 @@ class EnrollmentFormRepositoryTest {
             Single.just(emptyMap())
         whenever(rulesRepository.supplementaryData("enrollmentOrgUnitUid")) doReturn
             Single.just(
-                emptyMap()
+                emptyMap(),
             )
         whenever(
             d2.organisationUnitModule().organisationUnits()
-                .uid("enrollmentOrgUnitUid").blockingGet()
+                .uid("enrollmentOrgUnitUid").blockingGet(),
         ) doReturn OrganisationUnit.builder()
             .uid("enrollmentOrgUnitUid")
             .code("orgUnitCode")
@@ -74,7 +74,7 @@ class EnrollmentFormRepositoryTest {
             enrollmentRepository,
             programRepository,
             teiRepository,
-            enrollmentService
+            enrollmentService,
         )
     }
 }

@@ -23,24 +23,24 @@ sealed class CellStyle {
 fun styleForColumnHeader(
     isSelected: Boolean,
     isParentSelected: Boolean,
-    columnIndex: Int
+    columnIndex: Int,
 ): CellStyle = when {
     isSelected -> CellStyle.HeaderStyle(
         backgroundColor = LocalTableColors.current.primary,
-        textColor = contentColorFor(LocalTableColors.current.primary)
+        textColor = contentColorFor(LocalTableColors.current.primary),
     )
     isParentSelected -> CellStyle.HeaderStyle(
         backgroundColor = LocalTableColors.current.primaryLight,
-        textColor = LocalTableColors.current.headerText
+        textColor = LocalTableColors.current.headerText,
     )
     columnIndex % 2 == 0 -> CellStyle.HeaderStyle(
         backgroundColor = LocalTableColors.current.headerBackground1,
-        textColor = LocalTableColors.current.headerText
+        textColor = LocalTableColors.current.headerText,
     )
     else ->
         CellStyle.HeaderStyle(
             backgroundColor = LocalTableColors.current.headerBackground2,
-            textColor = LocalTableColors.current.headerText
+            textColor = LocalTableColors.current.headerText,
         )
 }
 
@@ -48,15 +48,15 @@ fun styleForColumnHeader(
 fun styleForRowHeader(isSelected: Boolean, isOtherRowSelected: Boolean): CellStyle = when {
     isSelected -> CellStyle.HeaderStyle(
         TableTheme.colors.primary,
-        contentColorFor(TableTheme.colors.primary)
+        contentColorFor(TableTheme.colors.primary),
     )
     isOtherRowSelected -> CellStyle.HeaderStyle(
         TableTheme.colors.primaryLight,
-        TableTheme.colors.primary
+        TableTheme.colors.primary,
     )
     else -> CellStyle.HeaderStyle(
         backgroundColor = TableTheme.colors.tableBackground,
-        textColor = TableTheme.colors.primary
+        textColor = TableTheme.colors.primary,
     )
 }
 
@@ -67,7 +67,7 @@ fun styleForCell(
     hasError: Boolean,
     hasWarning: Boolean,
     isEditable: Boolean,
-    legendColor: Int?
+    legendColor: Int?,
 ) = CellStyle.CellBorderStyle(
     borderColor = when {
         isSelected && hasError -> tableColorProvider().errorColor
@@ -82,5 +82,5 @@ fun styleForCell(
         !isEditable -> tableColorProvider().disabledCellBackground
         isSelected -> tableColorProvider().tableBackground
         else -> tableColorProvider().tableBackground
-    }
+    },
 )

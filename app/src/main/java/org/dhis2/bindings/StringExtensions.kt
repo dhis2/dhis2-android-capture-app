@@ -1,10 +1,10 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import android.content.Context
-import java.util.Date
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.utils.DateUtils
 import timber.log.Timber
+import java.util.Date
 
 val String?.initials: String
     get() {

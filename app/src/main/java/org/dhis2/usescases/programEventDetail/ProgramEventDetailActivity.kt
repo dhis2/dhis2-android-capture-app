@@ -13,11 +13,10 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
-import javax.inject.Inject
-import org.dhis2.Bindings.app
-import org.dhis2.Bindings.clipWithRoundedCorners
-import org.dhis2.Bindings.dp
 import org.dhis2.R
+import org.dhis2.bindings.app
+import org.dhis2.bindings.clipWithRoundedCorners
+import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.filters.FilterItem
@@ -47,6 +46,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
+import javax.inject.Inject
 
 class ProgramEventDetailActivity :
     ActivityGlobalAbstract(),
@@ -109,7 +109,7 @@ class ProgramEventDetailActivity :
                         {
                             binding.navigationBar.selectItemAt(0)
                         },
-                        getString(R.string.msg_network_connection_maps)
+                        getString(R.string.msg_network_connection_maps),
                     )
                     return@setOnNavigationItemSelectedListener true
                 }
@@ -273,7 +273,7 @@ class ProgramEventDetailActivity :
                 ConstraintSet.TOP,
                 R.id.filterLayout,
                 ConstraintSet.BOTTOM,
-                16.dp
+                16.dp,
             )
             binding.navigationBar.hide()
         } else {
@@ -282,7 +282,7 @@ class ProgramEventDetailActivity :
                 ConstraintSet.TOP,
                 R.id.backdropGuideTop,
                 ConstraintSet.BOTTOM,
-                0
+                0,
             )
             binding.navigationBar.show()
         }
@@ -302,14 +302,14 @@ class ProgramEventDetailActivity :
             presenter.stageUid,
             null,
             0,
-            null
+            null,
         )
         startActivity(
             EventInitialActivity::class.java,
             bundle,
             false,
             false,
-            null
+            null,
         )
     }
 
@@ -333,7 +333,7 @@ class ProgramEventDetailActivity :
                 { datePeriods: List<DatePeriod?>? ->
                     FilterManager.getInstance().addPeriod(datePeriods)
                 },
-                true
+                true,
             )
         }
     }
@@ -364,7 +364,7 @@ class ProgramEventDetailActivity :
             EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK),
             false,
             false,
-            null
+            null,
         )
     }
 
@@ -383,7 +383,7 @@ class ProgramEventDetailActivity :
         supportFragmentManager.beginTransaction().replace(
             R.id.fragmentContainer,
             EventListFragment(),
-            "EVENT_LIST"
+            "EVENT_LIST",
         ).commitNow()
         binding.addEventButton.visibility =
             if (programEventsViewModel.writePermission.value == true) {
@@ -398,7 +398,7 @@ class ProgramEventDetailActivity :
         supportFragmentManager.beginTransaction().replace(
             R.id.fragmentContainer,
             EventMapFragment(),
-            "EVENT_MAP"
+            "EVENT_MAP",
         ).commitNow()
         binding.addEventButton.visibility = View.GONE
         binding.filter.visibility = View.VISIBLE
@@ -407,7 +407,7 @@ class ProgramEventDetailActivity :
     private fun showAnalytics() {
         supportFragmentManager.beginTransaction().replace(
             R.id.fragmentContainer,
-            GroupAnalyticsFragment.forProgram(programUid)
+            GroupAnalyticsFragment.forProgram(programUid),
         ).commitNow()
         binding.addEventButton.visibility = View.GONE
         binding.filter.visibility = View.GONE
@@ -418,7 +418,7 @@ class ProgramEventDetailActivity :
             CategoryDialog.Type.CATEGORY_OPTION_COMBO,
             catComboUid,
             false,
-            null
+            null,
         ) { selectedCatOptionCombo ->
             presenter.filterCatOptCombo(selectedCatOptionCombo)
         }.show(supportFragmentManager, TAG)

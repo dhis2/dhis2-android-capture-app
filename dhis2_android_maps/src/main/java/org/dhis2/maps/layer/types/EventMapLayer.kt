@@ -21,7 +21,7 @@ class EventMapLayer(
     val style: Style,
     val featureType: FeatureType,
     val eventColor: Int?,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) : MapLayer {
 
     private val POINT_LAYER_ID = "POINT_LAYER"
@@ -54,7 +54,7 @@ class EventMapLayer(
             ?: SymbolLayer(POINT_LAYER_ID, EventMapManager.EVENTS)
                 .withProperties(
                     PropertyFactory.iconImage(EventMapManager.ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true)
+                    PropertyFactory.iconAllowOverlap(true),
                 ).apply { minZoom = 0f }
 
     private val selectedPointLayer: Layer
@@ -62,21 +62,21 @@ class EventMapLayer(
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(EventMapManager.ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true)
+                    PropertyFactory.iconAllowOverlap(true),
                 ).apply { minZoom = 0f }
 
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, EventMapManager.EVENTS)
                 .withProperties(
-                    PropertyFactory.fillColor(eventColor ?: -1)
+                    PropertyFactory.fillColor(eventColor ?: -1),
                 )
 
     private val selectedPolygonLayer: Layer
         get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
             ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_POLYGON_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1))
+                    PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
                 )
 
     private fun setVisibility(visibility: String) {
@@ -118,14 +118,14 @@ class EventMapLayer(
         style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
             setGeoJson(
                 FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
+                    arrayListOf(Feature.fromGeometry(feature.geometry())),
+                ),
             )
         }
 
         selectedPointLayer.setProperties(
             PropertyFactory.iconSize(1.5f),
-            PropertyFactory.visibility(Property.VISIBLE)
+            PropertyFactory.visibility(Property.VISIBLE),
         )
     }
 
@@ -135,14 +135,14 @@ class EventMapLayer(
         style.getSourceAs<GeoJsonSource>(SELECTED_POLYGON_SOURCE_ID)?.apply {
             setGeoJson(
                 FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
+                    arrayListOf(Feature.fromGeometry(feature.geometry())),
+                ),
             )
         }
 
         selectedPolygonLayer.setProperties(
             PropertyFactory.fillColor(colorUtils.withAlpha(Color.WHITE)),
-            PropertyFactory.visibility(Property.VISIBLE)
+            PropertyFactory.visibility(Property.VISIBLE),
 
         )
     }
@@ -151,12 +151,12 @@ class EventMapLayer(
         if (featureType == FeatureType.POINT) {
             selectedPointLayer.setProperties(
                 PropertyFactory.iconSize(1f),
-                PropertyFactory.visibility(Property.NONE)
+                PropertyFactory.visibility(Property.NONE),
             )
         } else {
             selectedPolygonLayer.setProperties(
                 PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
-                PropertyFactory.visibility(Property.NONE)
+                PropertyFactory.visibility(Property.NONE),
             )
         }
     }
@@ -164,7 +164,7 @@ class EventMapLayer(
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
         return style.getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
             ?.querySourceFeatures(
-                Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty)
+                Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty),
             )?.firstOrNull()?.let {
                 setSelectedItem(it)
                 it

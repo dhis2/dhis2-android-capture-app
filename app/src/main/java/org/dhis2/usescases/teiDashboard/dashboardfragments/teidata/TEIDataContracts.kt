@@ -36,14 +36,14 @@ class TEIDataContracts {
         fun hideFilters()
         fun observeStageSelection(
             currentProgram: Program,
-            currentEnrollment: Enrollment
+            currentEnrollment: Enrollment,
         ): Flowable<StageSection>
 
         fun showNewEventOptions(view: android.view.View, stageUid: ProgramStage)
         fun setEnrollmentData(program: Program?, enrollment: Enrollment?)
         fun setTrackedEntityInstance(
             trackedEntityInstance: TrackedEntityInstance,
-            organisationUnit: OrganisationUnit
+            organisationUnit: OrganisationUnit,
         )
 
         fun showPeriodRequest(periodRequest: PeriodRequest)

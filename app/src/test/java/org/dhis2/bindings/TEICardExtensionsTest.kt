@@ -2,7 +2,6 @@ package org.dhis2.bindings
 
 import android.content.Context
 import android.content.res.Resources
-import org.dhis2.Bindings.getEnrollmentIconsData
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager

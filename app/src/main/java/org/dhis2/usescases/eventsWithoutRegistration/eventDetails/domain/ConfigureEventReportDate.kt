@@ -1,8 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
-import java.util.Calendar.DAY_OF_YEAR
-import java.util.Date
-import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
@@ -16,6 +13,9 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Calendar.DAY_OF_YEAR
+import java.util.Date
+import java.util.Locale
 
 class ConfigureEventReportDate(
     private val creationType: EventCreationType = DEFAULT,
@@ -24,7 +24,7 @@ class ConfigureEventReportDate(
     private val periodType: PeriodType? = null,
     private val periodUtils: DhisPeriodUtils,
     private val enrollmentId: String? = null,
-    private val scheduleInterval: Int = 0
+    private val scheduleInterval: Int = 0,
 ) {
 
     operator fun invoke(selectedDate: Date? = null): Flow<EventDate> {
@@ -38,8 +38,8 @@ class ConfigureEventReportDate(
                 maxDate = getMaxDate(),
                 scheduleInterval = getScheduleInterval(),
                 allowFutureDates = getAllowFutureDates(),
-                periodType = periodType
-            )
+                periodType = periodType,
+            ),
         )
     }
 
@@ -90,7 +90,7 @@ class ConfigureEventReportDate(
                     org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
                         null,
                         calendar.time,
-                        0
+                        0,
                     )
                 }
             }
@@ -100,7 +100,7 @@ class ConfigureEventReportDate(
             .getNextPeriod(
                 periodType,
                 DateUtils.getInstance().today,
-                if (creationType != SCHEDULE) 0 else 1
+                if (creationType != SCHEDULE) 0 else 1,
             )
     }
 
@@ -135,28 +135,28 @@ class ConfigureEventReportDate(
                     return org.dhis2.utils.DateUtils.getInstance().expDate(
                         null,
                         expiryDays,
-                        program.expiryPeriodType()
+                        program.expiryPeriodType(),
                     )
                 }
             } else {
                 var minDate = org.dhis2.utils.DateUtils.getInstance().expDate(
                     null,
                     program.expiryDays() ?: 0,
-                    periodType
+                    periodType,
                 )
                 val lastPeriodDate = org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
                     periodType,
                     minDate,
                     -1,
-                    true
+                    true,
                 )
 
                 if (lastPeriodDate.after(
                         org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
-                                program.expiryPeriodType(),
-                                minDate,
-                                0
-                            )
+                            program.expiryPeriodType(),
+                            minDate,
+                            0,
+                        ),
                     )
                 ) {
                     minDate = org.dhis2.utils.DateUtils.getInstance()
@@ -172,13 +172,15 @@ class ConfigureEventReportDate(
         return if (periodType == null) {
             when (creationType) {
                 ADDNEW,
-                DEFAULT -> Date(System.currentTimeMillis() - 1000)
+                DEFAULT,
+                -> Date(System.currentTimeMillis() - 1000)
                 else -> null
             }
         } else {
             when (creationType) {
                 ADDNEW,
-                DEFAULT -> DateUtils.getInstance().today
+                DEFAULT,
+                -> DateUtils.getInstance().today
                 else -> null
             }
         }

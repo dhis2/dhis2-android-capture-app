@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 data class SyncStatusData(
     val running: Boolean,
     val downloadingMedia: Boolean = false,
-    val programSyncStatusMap: Map<String, D2ProgressStatus> = emptyMap()
+    val programSyncStatusMap: Map<String, D2ProgressStatus> = emptyMap(),
 ) {
 
     fun isProgramDownloading(uid: String): Boolean {

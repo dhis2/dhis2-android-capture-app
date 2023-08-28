@@ -13,7 +13,7 @@ import org.hisp.dhis.rules.models.TriggerEnvironment
 
 class EventRuleEngineRepository(
     private val d2: D2,
-    private val eventUid: String
+    private val eventUid: String,
 ) : RuleEngineRepository {
 
     private val ruleRepository = RulesRepository(d2)
@@ -90,7 +90,7 @@ class EventRuleEngineRepository(
                 event,
                 d2.dataElementModule().dataElements(),
                 d2.programModule().programRuleVariables(),
-                d2.optionModule().options()
+                d2.optionModule().options(),
             )
     }
 }

@@ -32,7 +32,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
     private val mapUtils: DhisMapUtils,
     private val filterPresenter: FilterPresenter,
-    private val charts: Charts?
+    private val charts: Charts?,
 ) : ProgramEventDetailRepository {
 
     private val programRepository = d2.programModule().programs().uid(programUid)
@@ -55,7 +55,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                     return dataSource
                 }
             },
-            20
+            20,
         ).build()
     }
 
@@ -66,13 +66,13 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                 val programEventFeatures = HashMap<String, FeatureCollection>()
                 programEventFeatures[EventMapManager.EVENTS] = first
                 val deFeatureCollection = mapCoordinateFieldToFeatureCollection.map(
-                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents))
+                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents)),
                 )
                 programEventFeatures.putAll(deFeatureCollection)
                 ProgramEventMapData(
                     mapper.eventsToProgramEvents(listEvents),
                     programEventFeatures,
-                    second
+                    second,
                 )
             }
             ?.toFlowable() ?: Flowable.empty()
@@ -131,7 +131,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                         var accessibleOptions = options.size
                         for (categoryOption in options) {
                             if (d2.categoryModule().categoryOptions().uid(categoryOption.uid())
-                                .blockingGet()?.access()?.data()?.write() == false
+                                    .blockingGet()?.access()?.data()?.write() == false
                             ) {
                                 accessibleOptions--
                             }

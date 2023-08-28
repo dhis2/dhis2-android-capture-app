@@ -12,16 +12,19 @@ fun ValueType.toKeyBoardInputType(): KeyboardInputType? {
         ValueType.EMAIL -> KeyboardInputType.EmailInput()
         ValueType.NUMBER -> KeyboardInputType.NumericInput()
         ValueType.UNIT_INTERVAL,
-        ValueType.PERCENTAGE -> KeyboardInputType.NumericInput(allowSigned = false)
+        ValueType.PERCENTAGE,
+        -> KeyboardInputType.NumericInput(allowSigned = false)
         ValueType.INTEGER,
-        ValueType.INTEGER_NEGATIVE -> KeyboardInputType.NumericInput(
+        ValueType.INTEGER_NEGATIVE,
+        -> KeyboardInputType.NumericInput(
             allowDecimal = false,
-            allowSigned = true
+            allowSigned = true,
         )
         ValueType.INTEGER_POSITIVE,
-        ValueType.INTEGER_ZERO_OR_POSITIVE -> KeyboardInputType.NumericInput(
+        ValueType.INTEGER_ZERO_OR_POSITIVE,
+        -> KeyboardInputType.NumericInput(
             allowDecimal = false,
-            allowSigned = false
+            allowSigned = false,
         )
         ValueType.URL -> KeyboardInputType.URLInput()
         else -> null

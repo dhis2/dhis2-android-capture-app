@@ -51,7 +51,7 @@ class FormViewModelTest {
         viewModel = FormViewModel(
             repository,
             dispatcher,
-            geometryController
+            geometryController,
         )
     }
 
@@ -60,14 +60,14 @@ class FormViewModelTest {
     fun `should show dialog if a unique field has a coincidence in a unique attribute`() = runTest {
         val storeResult = StoreResult(
             "fieldUid",
-            ValueStoreResult.VALUE_NOT_UNIQUE
+            ValueStoreResult.VALUE_NOT_UNIQUE,
         )
 //        whenever(repository.processUserAction(any())) doReturn storeResult
 
         val intent = FormIntent.OnSave(
             uid = "fieldUid",
             value = "123",
-            valueType = ValueType.TEXT
+            valueType = ValueType.TEXT,
         )
         viewModel.submitIntent(intent)
 
@@ -78,14 +78,14 @@ class FormViewModelTest {
     @Test
     fun `Missing and errors fields should show mandatory fields dialog`() {
         whenever(
-            repository.runDataIntegrityCheck(false)
+            repository.runDataIntegrityCheck(false),
         ) doReturn MissingMandatoryResult(
             emptyMap(),
             emptyList(),
             emptyList(),
             false,
             null,
-            false
+            false,
         )
 
         viewModel.runDataIntegrityCheck()
@@ -97,14 +97,14 @@ class FormViewModelTest {
     @Test
     fun `Error fields should show mandatory fields dialog`() {
         whenever(
-            repository.runDataIntegrityCheck(false)
+            repository.runDataIntegrityCheck(false),
         ) doReturn FieldsWithErrorResult(
             emptyMap(),
             emptyList(),
             emptyList(),
             false,
             null,
-            false
+            false,
         )
 
         viewModel.runDataIntegrityCheck()
@@ -116,11 +116,11 @@ class FormViewModelTest {
     @Test
     fun `Check data integrity is a success`() {
         whenever(
-            repository.runDataIntegrityCheck(false)
+            repository.runDataIntegrityCheck(false),
         ) doReturn SuccessfulResult(
             null,
             true,
-            null
+            null,
         )
 
         viewModel.runDataIntegrityCheck()
@@ -134,7 +134,7 @@ class FormViewModelTest {
         val uiEvent = RecyclerViewUiEvents.OpenChooserIntent(
             action = Intent.ACTION_DIAL,
             uid = "uid",
-            value = null
+            value = null,
         )
         viewModel.queryData.value = currentData
 
@@ -147,7 +147,7 @@ class FormViewModelTest {
         val uiEvent = RecyclerViewUiEvents.OpenChooserIntent(
             action = Intent.ACTION_DIAL,
             uid = "uid",
-            value = "storedValue"
+            value = "storedValue",
         )
         viewModel.queryData.value = currentData
 

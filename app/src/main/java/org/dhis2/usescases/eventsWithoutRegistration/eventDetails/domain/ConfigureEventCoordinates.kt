@@ -8,15 +8,15 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCo
 import org.hisp.dhis.android.core.common.FeatureType.NONE
 
 class ConfigureEventCoordinates(
-    private val repository: EventDetailsRepository
+    private val repository: EventDetailsRepository,
 ) {
 
     operator fun invoke(value: String? = ""): Flow<EventCoordinates> {
         return flowOf(
             EventCoordinates(
                 active = isActive(),
-                model = getGeometryModel(value)
-            )
+                model = getGeometryModel(value),
+            ),
         )
     }
 

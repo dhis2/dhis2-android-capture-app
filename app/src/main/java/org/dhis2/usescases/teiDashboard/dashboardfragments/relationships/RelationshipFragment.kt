@@ -13,10 +13,9 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
-import javax.inject.Inject
-import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.animations.CarouselViewAnimations
+import org.dhis2.bindings.app
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.locationprovider.LocationSettingLauncher.requestEnableLocationSetting
@@ -37,6 +36,7 @@ import org.dhis2.utils.EventMode
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.relationship.RelationshipType
+import javax.inject.Inject
 
 class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapClickListener {
     @Inject
@@ -85,15 +85,15 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
                 programUid(),
                 requireArguments().getString("ARG_TEI_UID"),
                 requireArguments().getString("ARG_ENROLLMENT_UID"),
-                requireArguments().getString("ARG_EVENT_UID")
-            )
+                requireArguments().getString("ARG_EVENT_UID"),
+            ),
         )?.inject(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false)
@@ -104,7 +104,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         relationshipMapManager.onCreate(savedInstanceState)
         relationshipMapManager.onMapClickListener = this
         relationshipMapManager.init(
-            presenter.fetchMapStyles()
+            presenter.fetchMapStyles(),
         ) { permissionManager ->
             handleMissingPermission(permissionManager)
         }
@@ -120,7 +120,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         }
         binding.mapLayerButton.setOnClickListener {
             val layerDialog = MapLayerDialog(
-                relationshipMapManager
+                relationshipMapManager,
             )
             layerDialog.show(childFragmentManager, MapLayerDialog::class.java.name)
         }
@@ -133,7 +133,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         if (locationProvider.hasLocationEnabled()) {
             relationshipMapManager.centerCameraOnMyPosition { permissionManager ->
                 permissionManager?.requestLocationPermissions(
-                    activity
+                    activity,
                 )
             }
         } else {
@@ -158,7 +158,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (
             binding.mapView.visibility == View.VISIBLE &&
@@ -167,7 +167,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             relationshipMapManager.permissionsManager?.onRequestPermissionsResult(
                 requestCode,
                 permissions,
-                grantResults
+                grantResults,
             )
         }
     }
@@ -206,8 +206,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         addRelationshipLauncher.launch(
             RelationshipInput(
                 teiUid,
-                teiTypeUidToAdd
-            )
+                teiTypeUidToAdd,
+            ),
         )
     }
 
@@ -221,8 +221,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
                 DialItem(
                     dialItemIndex++,
                     relationshipType!!.displayName()!!,
-                    resource
-                )
+                    resource,
+                ),
             )
         }
         binding.dialFabLayout.addDialItems(items) { clickedId: Int ->
@@ -246,8 +246,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
                 context,
                 teiUid,
                 null,
-                null
-            )
+                null,
+            ),
         )
     }
 
@@ -255,7 +255,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         val bundle = EventCaptureActivity.getActivityBundle(
             eventUid,
             programUid,
-            EventMode.CHECK
+            EventMode.CHECK,
         )
         val intent = Intent(context, EventCaptureActivity::class.java)
         intent.putExtras(bundle)
@@ -266,7 +266,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         showInfoDialog(
             String.format(
                 getString(R.string.resource_not_found),
-                teiTypeName
+                teiTypeName,
             ),
             getString(R.string.relationship_without_enrollment),
             getString(R.string.button_ok),
@@ -277,7 +277,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
 
                 override fun onNegativeClick() { // Unused
                 }
-            }
+            },
         )
     }
 
@@ -285,7 +285,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         showInfoDialog(
             String.format(
                 getString(R.string.resource_not_found),
-                teiTypeName
+                teiTypeName,
             ),
             getString(R.string.relationship_not_found_message),
             getString(R.string.button_ok),
@@ -296,14 +296,14 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
 
                 override fun onNegativeClick() { // Unused
                 }
-            }
+            },
         )
     }
 
     override fun setFeatureCollection(
         currentTei: String?,
         relationshipsMapModels: List<RelationshipUiComponentModel>,
-        map: Pair<Map<String, FeatureCollection>, BoundingBox>
+        map: Pair<Map<String, FeatureCollection>, BoundingBox>,
     ) {
         relationshipMapManager.update(map.first, map.second)
         sources = map.first.keys
@@ -349,8 +349,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
                     sourceId,
                     MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
                     features[0].getStringProperty(
-                        MapRelationshipsToFeatureCollection.RELATIONSHIP_UID
-                    )
+                        MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+                    ),
                 )
                 relationshipMapManager.mapLayerManager.getLayer(sourceId, true)
                     ?.setSelectedItem(selectedFeature)
@@ -369,7 +369,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             programUid: String?,
             teiUid: String?,
             enrollmentUid: String?,
-            eventUid: String?
+            eventUid: String?,
         ): Bundle {
             val bundle = Bundle()
             bundle.putString("ARG_PROGRAM_UID", programUid)

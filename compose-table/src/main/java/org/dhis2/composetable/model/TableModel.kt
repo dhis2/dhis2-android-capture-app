@@ -9,11 +9,11 @@ data class TableModel(
     val title: String = "",
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
-    val overwrittenValues: Map<Int, TableCell> = emptyMap()
+    val overwrittenValues: Map<Int, TableCell> = emptyMap(),
 ) {
     fun countChildrenOfSelectedHeader(
         headerRowIndex: Int,
-        headerColumnIndex: Int
+        headerColumnIndex: Int,
     ): Map<Int, TableSelection.HeaderCellRange> {
         return tableHeaderModel.rows
             .filterIndexed { index, _ -> index > headerRowIndex }
@@ -21,7 +21,7 @@ data class TableModel(
                 val rowIndex = headerRowIndex + 1 + index
                 val rowSize =
                     tableHeaderModel.numberOfColumns(rowIndex) / tableHeaderModel.numberOfColumns(
-                        headerRowIndex
+                        headerRowIndex,
                     )
                 val init = headerColumnIndex * rowSize
                 val end = (headerColumnIndex + 1) * rowSize - 1
@@ -31,7 +31,7 @@ data class TableModel(
 
     fun getNextCell(
         cellSelection: TableSelection.CellSelection,
-        successValidation: Boolean
+        successValidation: Boolean,
     ): Pair<TableCell, TableSelection.CellSelection>? = when {
         !successValidation ->
             cellSelection
@@ -41,7 +41,7 @@ data class TableModel(
             cellSelection.copy(
                 columnIndex = 0,
                 rowIndex = cellSelection.rowIndex + 1,
-                globalIndex = cellSelection.globalIndex + 1
+                globalIndex = cellSelection.globalIndex + 1,
             )
         else -> null
     }?.let { nextCell ->

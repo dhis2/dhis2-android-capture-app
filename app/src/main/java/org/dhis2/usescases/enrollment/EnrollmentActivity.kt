@@ -12,8 +12,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -41,6 +39,8 @@ import org.dhis2.utils.EventMode
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -72,7 +72,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             enrollmentUid: String,
             programUid: String,
             enrollmentMode: EnrollmentMode,
-            forRelationship: Boolean? = false
+            forRelationship: Boolean? = false,
         ): Intent {
             val intent = Intent(context, EnrollmentActivity::class.java)
             intent.putExtra(ENROLLMENT_UID_EXTRA, enrollmentUid)
@@ -97,8 +97,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 enrollmentUid,
                 programUid,
                 enrollmentMode,
-                context
-            )
+                context,
+            ),
         ).inject(this)
 
         formView = FormView.Builder()
@@ -119,9 +119,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 EnrollmentRecords(
                     enrollmentUid = enrollmentUid,
                     enrollmentMode = org.dhis2.form.model.EnrollmentMode.valueOf(
-                        enrollmentMode.name
-                    )
-                )
+                        enrollmentMode.name,
+                    ),
+                ),
             )
             .openErrorLocation(openErrorLocation)
             .build()
@@ -169,10 +169,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     if (data?.hasExtra(MapSelectorActivity.DATA_EXTRA) == true) {
                         handleGeometry(
                             FeatureType.valueOfFeatureType(
-                                data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
+                                data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA),
                             ),
                             data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!,
-                            requestCode
+                            requestCode,
                         )
                     }
                 }
@@ -197,7 +197,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.getEventStage(eventUid),
                 presenter.getEnrollment()!!.uid(),
                 0,
-                presenter.getEnrollment()!!.status()
+                presenter.getEnrollment()!!.status(),
             )
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)
@@ -208,19 +208,19 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 EventCaptureActivity.getActivityBundle(
                     eventUid,
                     presenter.getProgram()?.uid() ?: "",
-                    EventMode.CHECK
-                )
+                    EventMode.CHECK,
+                ),
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,
-                presenter.getEnrollment()!!.trackedEntityInstance()
+                presenter.getEnrollment()!!.trackedEntityInstance(),
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
         }
     }
 
     private val openEventForResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {
         openDashboard(presenter.getEnrollment()!!.uid()!!)
     }
@@ -265,19 +265,19 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 message = getString(R.string.discard_go_back),
                 iconResource = R.drawable.ic_error_outline,
                 mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-                secondaryButton = DialogButtonStyle.DiscardButton()
+                secondaryButton = DialogButtonStyle.DiscardButton(),
             ),
             onSecondaryButtonClicked = {
                 presenter.deleteAllSavedData()
                 finish()
-            }
+            },
         ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
         val geometry = GeometryController(GeometryParserImpl()).generateLocationFromCoordinates(
             featureType,
-            dataExtra
+            dataExtra,
         )
 
         if (geometry != null) {
@@ -340,10 +340,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun displayTeiPicture(picturePath: String) {
         ImageDetailBottomDialog(
             null,
-            File(picturePath)
+            File(picturePath),
         ).show(
             supportFragmentManager,
-            ImageDetailBottomDialog.TAG
+            ImageDetailBottomDialog.TAG,
         )
     }
     /*endregion*/

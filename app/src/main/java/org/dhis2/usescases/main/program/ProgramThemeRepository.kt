@@ -4,7 +4,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 internal class ProgramThemeRepository(
-    val d2: D2
+    val d2: D2,
 ) {
 
     fun isStockTheme(programUid: String): Boolean {

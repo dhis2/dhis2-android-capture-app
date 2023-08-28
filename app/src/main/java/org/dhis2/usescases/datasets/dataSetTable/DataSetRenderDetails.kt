@@ -5,7 +5,7 @@ data class DataSetRenderDetails(
     val organisationUnitDisplayName: String,
     val periodDisplayLabel: String,
     val attrOptionComboDisplayName: String,
-    val isComplete: Boolean
+    val isComplete: Boolean,
 ) {
     fun title() = dataSetDisplayName
     fun subtitle(): String {

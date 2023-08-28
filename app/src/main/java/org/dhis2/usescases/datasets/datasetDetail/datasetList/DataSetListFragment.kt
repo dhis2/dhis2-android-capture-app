@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.sync.OnDismissListener
@@ -18,6 +17,7 @@ import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.ActionObserver
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import javax.inject.Inject
 
 class DataSetListFragment : FragmentGlobalAbstract() {
 
@@ -37,7 +37,7 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         activity = requireActivity() as DataSetDetailActivity
         activity.dataSetDetailComponent.plus(DataSetListModule()).inject(this)
@@ -120,8 +120,8 @@ class DataSetListFragment : FragmentGlobalAbstract() {
                     dataSetUid = dataSetUid,
                     periodId = dataSet.periodId(),
                     orgUnitUid = dataSet.orgUnitUid(),
-                    attributeOptionComboUid = dataSet.catOptionComboUid()
-                )
+                    attributeOptionComboUid = dataSet.catOptionComboUid(),
+                ),
             ).onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) {

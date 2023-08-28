@@ -7,9 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.reactivex.Flowable
-import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorType
@@ -25,6 +22,9 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Date
+import java.util.Locale
+import javax.inject.Inject
 
 const val DATASET_UID = "DATASET_UID"
 const val DATASET_ACCESS = "DATASET_ACCESS"
@@ -71,15 +71,15 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         context.dataSetTableComponent?.plus(
             DataSetDetailModule(
                 this,
-                dataSetUid
-            )
+                dataSetUid,
+            ),
         )?.inject(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentDatasetDetailBinding.inflate(inflater, container, false)
         return binding.root
@@ -102,7 +102,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     override fun setDataSetDetails(
         dataSetInstance: DataSetInstance,
         period: Period,
-        isComplete: Boolean
+        isComplete: Boolean,
     ) {
         this.dataSetInstance = dataSetInstance
         binding.apply {
@@ -112,7 +112,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 completedDate.text = String.format(
                     getString(R.string.completed_by),
                     dataSetInstance.completedBy() ?: "?",
-                    dataSetInstance.completionDate().toDateSpan(mContext)
+                    dataSetInstance.completionDate().toDateSpan(mContext),
                 )
                 dataSetStatus.setText(R.string.data_set_complete)
             } else {
@@ -120,20 +120,20 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 completedDate.visibility = View.GONE
                 dataSetStatus.background = colorUtils.tintDrawableWithColor(
                     dataSetStatus.background,
-                    Color.parseColor("#CCFF90")
+                    Color.parseColor("#CCFF90"),
                 )
             }
             lastUpdatedDate.text =
                 String.format(
                     getString(R.string.updated_time),
-                    dataSetInstance.lastUpdated().toDateSpan(mContext)
+                    dataSetInstance.lastUpdated().toDateSpan(mContext),
                 )
 
             binding.dataSetPeriod.text = periodUtils
                 .getPeriodUIString(
                     period.periodType() ?: PeriodType.Daily,
                     period.startDate() ?: Date(),
-                    Locale.getDefault()
+                    Locale.getDefault(),
                 )
             binding.dataSetOrgUnit.text = dataSetInstance.organisationUnitDisplayName()
             binding.dataSetCatCombo.text = dataSetInstance.attributeOptionComboDisplayName()
@@ -150,19 +150,19 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             style?.color(),
             colorUtils.getPrimaryColor(
                 mContext,
-                ColorType.PRIMARY
-            )
+                ColorType.PRIMARY,
+            ),
         )
         val imageResource = ResourceManager(mContext, colorUtils).getObjectStyleDrawableResource(
             style?.icon(),
-            R.drawable.ic_default_outline
+            R.drawable.ic_default_outline,
         )
 
         binding.composeDataSetIcon.setUpMetadataIcon(
             MetadataIconData(
                 programColor = color,
-                iconResource = imageResource
-            )
+                iconResource = imageResource,
+            ),
         )
     }
 

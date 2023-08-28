@@ -8,7 +8,7 @@ import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 
 class ProgramEventDetailViewModel(
-    private val mapStyleConfig: MapStyleConfiguration
+    private val mapStyleConfig: MapStyleConfiguration,
 ) : ViewModel() {
     private val progress = MutableLiveData(true)
     val writePermission = MutableLiveData(false)

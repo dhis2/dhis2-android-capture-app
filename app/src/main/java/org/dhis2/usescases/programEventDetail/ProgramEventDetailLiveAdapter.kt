@@ -15,7 +15,7 @@ class ProgramEventDetailLiveAdapter(
     private val program: Program,
     private val eventViewModel: ProgramEventDetailViewModel,
     private val colorUtils: ColorUtils,
-    config: AsyncDifferConfig<EventViewModel>
+    config: AsyncDifferConfig<EventViewModel>,
 ) : PagedListAdapter<EventViewModel, EventViewHolder>(config) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -30,7 +30,7 @@ class ProgramEventDetailLiveAdapter(
             { _, _ -> },
             { eventUid, orgUnitUid, _, _ ->
                 eventViewModel.eventClicked.value = Pair(eventUid, orgUnitUid)
-            }
+            },
         )
     }
 
@@ -46,14 +46,14 @@ class ProgramEventDetailLiveAdapter(
             get() = object : DiffUtil.ItemCallback<EventViewModel>() {
                 override fun areItemsTheSame(
                     oldItem: EventViewModel,
-                    newItem: EventViewModel
+                    newItem: EventViewModel,
                 ): Boolean {
                     return oldItem.event?.uid() == newItem.event?.uid()
                 }
 
                 override fun areContentsTheSame(
                     oldItem: EventViewModel,
-                    newItem: EventViewModel
+                    newItem: EventViewModel,
                 ): Boolean {
                     return oldItem == newItem
                 }

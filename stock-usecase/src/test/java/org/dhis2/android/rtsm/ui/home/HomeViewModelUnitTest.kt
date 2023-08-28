@@ -10,7 +10,6 @@ import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
-import java.time.LocalDateTime
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.time.LocalDateTime
 
 @RunWith(MockitoJUnitRunner::class)
 class HomeViewModelUnitTest {
@@ -96,7 +96,7 @@ class HomeViewModelUnitTest {
             "yfsEseIcEXr",
             "lpGYJoVUudr",
             "ej1YwWaYGmm",
-            "I7cmT3iXT0y"
+            "I7cmT3iXT0y",
         )
 
         facilities = FacilityFactory.getListOf(3)
@@ -106,7 +106,7 @@ class HomeViewModelUnitTest {
         testSchedulerProvider = TestCoroutineScheduler()
 
         doReturn(
-            Single.just(facilities)
+            Single.just(facilities),
         ).whenever(metadataManager).facilities(appConfig.program)
 
         `when`(metadataManager.destinations(appConfig.distributedTo))
@@ -116,7 +116,7 @@ class HomeViewModelUnitTest {
             disposable,
             schedulerProvider,
             metadataManager,
-            getStateHandle()
+            getStateHandle(),
         )
 
         viewModel.facilities.asLiveData().observeForever(facilitiesObserver)
@@ -125,7 +125,7 @@ class HomeViewModelUnitTest {
 
     private fun getStateHandle(): SavedStateHandle {
         val state = hashMapOf<String, Any>(
-            Constants.INTENT_EXTRA_APP_CONFIG to appConfig
+            Constants.INTENT_EXTRA_APP_CONFIG to appConfig,
         )
         return SavedStateHandle(state)
     }
@@ -156,7 +156,7 @@ class HomeViewModelUnitTest {
         val types = listOf<TransactionType>(
             TransactionType.DISTRIBUTION,
             TransactionType.DISCARD,
-            TransactionType.CORRECTION
+            TransactionType.CORRECTION,
         )
 
         types.forEach {
@@ -176,7 +176,7 @@ class HomeViewModelUnitTest {
         viewModel.selectTransaction(TransactionType.DISCARD)
         assertNotEquals(
             viewModel.settingsUiState.value.transactionType,
-            TransactionType.DISTRIBUTION
+            TransactionType.DISTRIBUTION,
         )
     }
 
@@ -185,7 +185,7 @@ class HomeViewModelUnitTest {
         viewModel.selectTransaction(TransactionType.CORRECTION)
         assertNotEquals(
             viewModel.settingsUiState.value.transactionType,
-            TransactionType.DISTRIBUTION
+            TransactionType.DISTRIBUTION,
         )
     }
 
@@ -345,11 +345,11 @@ class HomeViewModelUnitTest {
         assertEquals(data.transactionType, TransactionType.DISTRIBUTION)
         assertEquals(
             data.facility,
-            ParcelUtils.facilityToIdentifiableModelParcel(facility)
+            ParcelUtils.facilityToIdentifiableModelParcel(facility),
         )
         assertEquals(
             data.distributedTo,
-            ParcelUtils.distributedTo_ToIdentifiableModelParcel(destination)
+            ParcelUtils.distributedTo_ToIdentifiableModelParcel(destination),
         )
         println(data)
         assertEquals(data.transactionDate, now.humanReadableDate())
@@ -367,7 +367,7 @@ class HomeViewModelUnitTest {
         assertEquals(data.transactionType, TransactionType.DISCARD)
         assertEquals(
             data.facility,
-            ParcelUtils.facilityToIdentifiableModelParcel(facility)
+            ParcelUtils.facilityToIdentifiableModelParcel(facility),
         )
         assertEquals(data.transactionDate, now.humanReadableDate())
     }
@@ -384,7 +384,7 @@ class HomeViewModelUnitTest {
         assertEquals(data.transactionType, TransactionType.CORRECTION)
         assertEquals(
             data.facility,
-            ParcelUtils.facilityToIdentifiableModelParcel(facility)
+            ParcelUtils.facilityToIdentifiableModelParcel(facility),
         )
         assertEquals(data.transactionDate, now.humanReadableDate())
     }

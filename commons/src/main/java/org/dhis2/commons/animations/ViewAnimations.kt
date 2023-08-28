@@ -46,11 +46,11 @@ fun View.expand(fromInitialHeight: Boolean = false, callback: () -> Unit) {
     callback.invoke()
     val matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
         (parent as View).width,
-        View.MeasureSpec.EXACTLY
+        View.MeasureSpec.EXACTLY,
     )
     val wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
         0,
-        View.MeasureSpec.UNSPECIFIED
+        View.MeasureSpec.UNSPECIFIED,
     )
     measure(matchParentMeasureSpec, wrapContentMeasureSpec)
     val targetHeight: Int = measuredHeight
@@ -116,7 +116,7 @@ fun View.hide() {
 
 fun View.showWithTranslation(
     verticalTranslation: Boolean = false,
-    horizontalTranslation: Boolean = false
+    horizontalTranslation: Boolean = false,
 ) {
     if (visibility != View.VISIBLE) {
         animate()
@@ -135,7 +135,7 @@ fun View.showWithTranslation(
 
 fun View.hideWithTranslation(
     verticalTranslation: Boolean = false,
-    horizontalTranslation: Boolean = false
+    horizontalTranslation: Boolean = false,
 ) {
     if (visibility != View.GONE) {
         animate()

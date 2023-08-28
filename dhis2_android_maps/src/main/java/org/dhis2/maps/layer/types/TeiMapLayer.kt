@@ -25,7 +25,7 @@ class TeiMapLayer(
     var featureType: FeatureType,
     private val enrollmentColor: Int,
     private val enrollmentDarkColor: Int,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) : MapLayer {
 
     private var POINT_LAYER_ID: String = "TEI_POINT_LAYER_ID"
@@ -63,7 +63,7 @@ class TeiMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(TEI_ICON_ID),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.textAllowOverlap(true)
+                    PropertyFactory.textAllowOverlap(true),
                 ).withFilter(isPoint())
 
     private val teiPointLayer: Layer
@@ -84,7 +84,7 @@ class TeiMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor ?: -1))
+                    PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor ?: -1)),
                 ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
@@ -92,7 +92,7 @@ class TeiMapLayer(
             ?: LineLayer(POLYGON_BORDER_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.lineColor(enrollmentDarkColor ?: -1),
-                    PropertyFactory.lineWidth(2f)
+                    PropertyFactory.lineWidth(2f),
                 ).withFilter(isPolygon())
 
     private fun setVisibility(visibility: String) {
@@ -132,14 +132,14 @@ class TeiMapLayer(
 
         selectedPointLayer.setProperties(
             PropertyFactory.iconSize(1.5f),
-            PropertyFactory.visibility(Property.VISIBLE)
+            PropertyFactory.visibility(Property.VISIBLE),
         )
     }
 
     private fun deselectCurrentPoint() {
         selectedPointLayer.setProperties(
             PropertyFactory.iconSize(1f),
-            PropertyFactory.visibility(Property.NONE)
+            PropertyFactory.visibility(Property.NONE),
         )
     }
 
@@ -160,7 +160,7 @@ class TeiMapLayer(
 
     override fun layerIdsToSearch(): Array<String> {
         return arrayOf(
-            TEI_POINT_LAYER_ID
+            TEI_POINT_LAYER_ID,
         )
     }
 }

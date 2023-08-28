@@ -27,7 +27,7 @@ class EventDetailsViewModelFactory(
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
-    private val eventDetailResourcesProvider: EventDetailResourcesProvider
+    private val eventDetailResourcesProvider: EventDetailResourcesProvider,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -43,7 +43,7 @@ class EventDetailsViewModelFactory(
             geometryController,
             locationProvider,
             createOrUpdateEventDetails,
-            eventDetailResourcesProvider
+            eventDetailResourcesProvider,
         ) as T
     }
 }

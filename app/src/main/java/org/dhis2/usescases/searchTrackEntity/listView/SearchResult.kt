@@ -5,7 +5,7 @@ import org.dhis2.usescases.searchTrackEntity.ui.SearchUIData
 data class SearchResult(
     val type: SearchResultType,
     val extraData: String? = null,
-    val uiData: SearchUIData? = null
+    val uiData: SearchUIData? = null,
 ) {
     enum class SearchResultType {
         LOADING,
@@ -16,7 +16,7 @@ data class SearchResult(
         NO_MORE_RESULTS,
         NO_MORE_RESULTS_OFFLINE,
         NO_RESULTS,
-        TOO_MANY_RESULTS
+        TOO_MANY_RESULTS,
     }
 
     fun shouldClearProgramData() =
@@ -28,7 +28,8 @@ data class SearchResult(
         SearchResultType.SEARCH_OR_CREATE,
         SearchResultType.SEARCH,
         SearchResultType.NO_RESULTS,
-        SearchResultType.TOO_MANY_RESULTS -> true
+        SearchResultType.TOO_MANY_RESULTS,
+        -> true
         else -> false
     }
 }

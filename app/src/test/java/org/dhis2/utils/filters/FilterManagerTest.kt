@@ -3,7 +3,6 @@ package org.dhis2.utils.filters
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.sorting.SortingItem
@@ -22,6 +21,7 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import java.util.Date
 
 class FilterManagerTest {
 
@@ -49,7 +49,7 @@ class FilterManagerTest {
     @Test
     fun `Reset should clear all current values`() {
         filterManager.addPeriod(
-            arrayListOf(DatePeriod.create(Date(), Date()))
+            arrayListOf(DatePeriod.create(Date(), Date())),
         )
         assertTrue(filterManager.totalFilters == 1)
         filterManager.reset()
@@ -69,7 +69,7 @@ class FilterManagerTest {
             false,
             State.TO_POST,
             State.TO_UPDATE,
-            State.UPLOADING
+            State.UPLOADING,
         )
         assertTrue(filterManager.totalFilters == 1)
         assertTrue(filterManager.observeField(Filters.SYNC_STATE).get() == 1)
@@ -84,7 +84,7 @@ class FilterManagerTest {
             EventStatus.SCHEDULE,
             EventStatus.SKIPPED,
             EventStatus.COMPLETED,
-            EventStatus.VISITED
+            EventStatus.VISITED,
         )
         assertTrue(filterManager.totalFilters == 1)
         assertTrue(filterManager.observeField(Filters.EVENT_STATUS).get() == 5)
@@ -97,8 +97,8 @@ class FilterManagerTest {
                 DatePeriod.create(Date(), Date()),
                 DatePeriod.create(Date(), Date()),
                 DatePeriod.create(Date(), Date()),
-                DatePeriod.create(Date(), Date())
-            )
+                DatePeriod.create(Date(), Date()),
+            ),
         )
         assertTrue(filterManager.totalFilters == 1)
         assertTrue(filterManager.observeField(Filters.PERIOD).get() == 1)
@@ -110,10 +110,10 @@ class FilterManagerTest {
         filterManager.addOrgUnit(ou1)
         filterManager.addOrgUnit(ou1)
         filterManager.addOrgUnit(
-            OrganisationUnit.builder().uid("ou2").build()
+            OrganisationUnit.builder().uid("ou2").build(),
         )
         filterManager.addOrgUnit(
-            OrganisationUnit.builder().uid("ou3").build()
+            OrganisationUnit.builder().uid("ou3").build(),
         )
         assertTrue(filterManager.totalFilters == 1)
         assertTrue(filterManager.observeField(Filters.ORG_UNIT).get() == 2)
@@ -122,13 +122,13 @@ class FilterManagerTest {
     @Test
     fun `Should add cat opt combo filter`() {
         filterManager.addCatOptCombo(
-            CategoryOptionCombo.builder().uid("catOptCombo").build()
+            CategoryOptionCombo.builder().uid("catOptCombo").build(),
         )
         filterManager.addCatOptCombo(
-            CategoryOptionCombo.builder().uid("catOptCombo").build()
+            CategoryOptionCombo.builder().uid("catOptCombo").build(),
         )
         filterManager.addCatOptCombo(
-            CategoryOptionCombo.builder().uid("catOptCombo2").build()
+            CategoryOptionCombo.builder().uid("catOptCombo2").build(),
         )
         assertTrue(filterManager.totalFilters == 1)
         assertTrue(filterManager.observeField(Filters.CAT_OPT_COMB).get() == 1)

@@ -15,7 +15,7 @@ class SearchTeiViewModelFactory(
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
     private val dispatchers: DispatcherProvider,
-    private val mapStyleConfig: MapStyleConfiguration
+    private val mapStyleConfig: MapStyleConfiguration,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SearchTEIViewModel(
@@ -26,7 +26,7 @@ class SearchTeiViewModelFactory(
             mapDataRepository,
             networkUtils,
             dispatchers,
-            mapStyleConfig
+            mapStyleConfig,
         ) as T
     }
 }

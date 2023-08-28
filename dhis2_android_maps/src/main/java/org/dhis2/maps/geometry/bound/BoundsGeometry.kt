@@ -4,7 +4,7 @@ class BoundsGeometry(
     var northBound: Double = 0.0,
     var southBound: Double = 0.0,
     var eastBound: Double = 0.0,
-    var westBound: Double = 0.0
+    var westBound: Double = 0.0,
 ) {
     fun initOrReset() {
         northBound = 0.0

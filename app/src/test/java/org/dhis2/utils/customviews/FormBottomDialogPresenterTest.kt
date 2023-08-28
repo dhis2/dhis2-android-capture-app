@@ -10,7 +10,7 @@ class FormBottomDialogPresenterTest {
     fun `Should return current message is showMandatoryFields is false`() {
         val result = presenter.appendMandatoryFieldList(false, HashMap(), "currentMessage")
         assertTrue(
-            result == "currentMessage"
+            result == "currentMessage",
         )
     }
 
@@ -18,14 +18,14 @@ class FormBottomDialogPresenterTest {
     fun `Should append fields names to current message is showMandatoryFields is true`() {
         val result = presenter.appendMandatoryFieldList(true, mandatoryFields(), "currentMessage")
         assertTrue(
-            result == "currentMessage\nlabel1\nlabel2"
+            result == "currentMessage\nlabel1\nlabel2",
         )
     }
 
     private fun mandatoryFields(): Map<String, String> {
         return mapOf(
             Pair("label1", "section"),
-            Pair("label2", "section2")
+            Pair("label2", "section2"),
         )
     }
 }

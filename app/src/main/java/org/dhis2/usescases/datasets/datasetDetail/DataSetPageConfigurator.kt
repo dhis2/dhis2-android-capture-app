@@ -3,7 +3,7 @@ package org.dhis2.usescases.datasets.datasetDetail
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class DataSetPageConfigurator(
-    private val dataSetDetailRepository: DataSetDetailRepository
+    private val dataSetDetailRepository: DataSetDetailRepository,
 ) : NavigationPageConfigurator {
 
     private var canDisplayAnalytics: Boolean = false

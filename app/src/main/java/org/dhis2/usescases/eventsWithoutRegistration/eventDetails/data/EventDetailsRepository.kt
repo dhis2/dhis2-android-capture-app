@@ -1,8 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 
 import io.reactivex.Observable
-import java.util.Calendar
-import java.util.Date
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.form.model.FieldUiModel
@@ -26,6 +24,8 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Calendar
+import java.util.Date
 
 class EventDetailsRepository(
     private val d2: D2,
@@ -33,7 +33,7 @@ class EventDetailsRepository(
     private val eventUid: String?,
     private val programStageUid: String?,
     private val fieldFactory: FieldViewModelFactory,
-    private val onError: (Throwable) -> String?
+    private val onError: (Throwable) -> String?,
 ) {
 
     fun getProgramStage(): ProgramStage? {
@@ -154,7 +154,7 @@ class EventDetailsRepository(
         val shouldBlockEdition = eventUid != null &&
             !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
             nonEditableStatus.contains(
-                d2.eventModule().events().uid(eventUid).blockingGet()?.status()
+                d2.eventModule().events().uid(eventUid).blockingGet()?.status(),
             )
         val featureType = getProgramStage()?.featureType()
         val accessDataWrite = hasAccessDataWrite() && isEnrollmentOpen()
@@ -170,7 +170,7 @@ class EventDetailsRepository(
             value = coordinatesValue,
             editable = accessDataWrite && !shouldBlockEdition,
             description = null,
-            featureType = featureType
+            featureType = featureType,
         )
     }
 
@@ -183,7 +183,7 @@ class EventDetailsRepository(
 
     fun getCategoryOptionCombo(
         categoryComboUid: String?,
-        categoryOptionsUid: List<String?>?
+        categoryOptionsUid: List<String?>?,
     ): String? {
         return d2.categoryModule().categoryOptionCombos()
             .byCategoryComboUid().eq(categoryComboUid)
@@ -251,7 +251,7 @@ class EventDetailsRepository(
         selectedDate: Date,
         selectedOrgUnit: String?,
         catOptionComboUid: String?,
-        coordinates: String?
+        coordinates: String?,
     ): Event? {
         val geometry = coordinates?.let {
             Geometry.builder()
@@ -275,7 +275,8 @@ class EventDetailsRepository(
                     when (type) {
                         FeatureType.POINT,
                         FeatureType.POLYGON,
-                        FeatureType.MULTI_POLYGON -> eventRepository.setGeometry(geometry)
+                        FeatureType.MULTI_POLYGON,
+                        -> eventRepository.setGeometry(geometry)
                         else -> {
                         }
                     }
@@ -302,8 +303,8 @@ class EventDetailsRepository(
         Result.failure(
             java.lang.Exception(
                 onError(d2Error),
-                d2Error
-            )
+                d2Error,
+            ),
         )
     }
 }

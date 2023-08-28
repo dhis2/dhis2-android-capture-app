@@ -9,7 +9,7 @@ class TeiAttributesProvider(private val d2: D2) {
 
     fun getValuesFromTrackedEntityTypeAttributes(
         trackedEntityTypeUid: String?,
-        trackedEntityInstanceUid: String
+        trackedEntityInstanceUid: String,
     ): List<TrackedEntityAttributeValue> {
         val attrFromType = d2.trackedEntityModule().trackedEntityTypeAttributes()
             .byTrackedEntityTypeUid().eq(trackedEntityTypeUid)
@@ -24,7 +24,7 @@ class TeiAttributesProvider(private val d2: D2) {
 
     fun getValuesFromProgramTrackedEntityAttributes(
         trackedEntityTypeUid: String?,
-        trackedEntityInstanceUid: String
+        trackedEntityInstanceUid: String,
     ): List<TrackedEntityAttributeValue> {
         val program = d2.programModule().programs()
             .byTrackedEntityTypeUid().eq(trackedEntityTypeUid).blockingGet()[0]
@@ -42,7 +42,7 @@ class TeiAttributesProvider(private val d2: D2) {
 
     fun getValuesFromProgramTrackedEntityAttributesByProgram(
         programUid: String,
-        trackedEntityInstanceUid: String
+        trackedEntityInstanceUid: String,
     ): Single<List<TrackedEntityAttributeValue>> {
         val attrFromProgramTrackedEntityAttribute =
             d2.programModule().programTrackedEntityAttributes()
@@ -55,13 +55,13 @@ class TeiAttributesProvider(private val d2: D2) {
         return Single.just(
             attrFromProgramTrackedEntityAttribute.mapNotNull {
                 getTrackedEntityAttributeValue(trackedEntityInstanceUid, it.key)
-            }
+            },
         )
     }
 
     fun getListOfValuesFromProgramTrackedEntityAttributesByProgram(
         programUid: String,
-        trackedEntityInstanceUid: String
+        trackedEntityInstanceUid: String,
     ): List<TrackedEntityAttributeValue> {
         val attrFromProgramTrackedEntityAttribute =
             d2.programModule().programTrackedEntityAttributes()
@@ -78,7 +78,7 @@ class TeiAttributesProvider(private val d2: D2) {
 
     private fun getTrackedEntityAttributeValue(
         trackedEntityInstanceUid: String,
-        trackedEntityAttributeUid: String?
+        trackedEntityAttributeUid: String?,
     ): TrackedEntityAttributeValue? {
         return d2.trackedEntityModule().trackedEntityAttributeValues()
             .byTrackedEntityInstance().eq(trackedEntityInstanceUid)

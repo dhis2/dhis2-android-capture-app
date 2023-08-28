@@ -15,7 +15,7 @@ import org.dhis2.ui.dialogs.bottomsheet.IssueType
 class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
 
     fun provideDataEntryUiModel(
-        result: DataIntegrityCheckResult
+        result: DataIntegrityCheckResult,
     ): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>? {
         with(resourceManager) {
             return when (result) {
@@ -28,12 +28,12 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                         secondaryButton = when {
                             result.allowDiscard -> DialogButtonStyle.DiscardButton()
                             else -> null
-                        }
+                        },
                     )
                     val fieldsWithIssues = getFieldsWithIssues(
                         result.fieldUidErrorList,
                         result.mandatoryFields.keys.toList(),
-                        result.warningFields
+                        result.warningFields,
                     )
                     Pair(model, fieldsWithIssues)
                 }
@@ -43,7 +43,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                         message = getString(R.string.review_message),
                         iconResource = R.drawable.ic_warning_alert,
                         mainButton = DialogButtonStyle.MainButton(R.string.review),
-                        secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now)
+                        secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now),
                     )
                     val fieldsWithIssues = result.fieldUidWarningList
 
@@ -59,16 +59,16 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                             when {
                                 result.allowDiscard -> R.string.keep_editing
                                 else -> R.string.review
-                            }
+                            },
                         ),
                         secondaryButton = when {
                             result.allowDiscard -> DialogButtonStyle.DiscardButton()
                             else -> null
-                        }
+                        },
                     )
                     val fieldsWithIssues = getFieldsWithIssues(
                         mandatoryFields = result.mandatoryFields.keys.toList(),
-                        warningFields = result.warningFields
+                        warningFields = result.warningFields,
                     )
                     Pair(model, fieldsWithIssues)
                 }
@@ -78,7 +78,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                         message = getString(R.string.discard_go_back),
                         iconResource = R.drawable.ic_warning_alert,
                         mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-                        secondaryButton = DialogButtonStyle.DiscardButton()
+                        secondaryButton = DialogButtonStyle.DiscardButton(),
                     )
                     Pair(model, emptyList())
                 }
@@ -90,7 +90,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
     private fun getFieldsWithIssues(
         errorFields: List<FieldWithIssue> = emptyList(),
         mandatoryFields: List<String> = emptyList(),
-        warningFields: List<FieldWithIssue> = emptyList()
+        warningFields: List<FieldWithIssue> = emptyList(),
     ): List<FieldWithIssue> {
         return errorFields.plus(
             mandatoryFields.map {
@@ -98,9 +98,9 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                     "uid",
                     it,
                     IssueType.MANDATORY,
-                    resourceManager.getString(R.string.mandatory_field)
+                    resourceManager.getString(R.string.mandatory_field),
                 )
-            }
+            },
         ).plus(warningFields)
     }
 

@@ -19,7 +19,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 class LoginModule(
     private val view: LoginContracts.View,
     private val viewModelStoreOwner: ViewModelStoreOwner,
-    private val userManager: UserManager?
+    private val userManager: UserManager?,
 ) {
 
     @Provides
@@ -30,7 +30,7 @@ class LoginModule(
         fingerPrintController: FingerPrintController,
         analyticsHelper: AnalyticsHelper,
         crashReportController: CrashReportController,
-        networkUtils: NetworkUtils
+        networkUtils: NetworkUtils,
     ): LoginViewModel {
         return ViewModelProvider(
             viewModelStoreOwner,
@@ -42,8 +42,8 @@ class LoginModule(
                 analyticsHelper,
                 crashReportController,
                 networkUtils,
-                userManager
-            )
+                userManager,
+            ),
         )[LoginViewModel::class.java]
     }
 

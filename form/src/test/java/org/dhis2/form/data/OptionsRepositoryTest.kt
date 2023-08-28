@@ -25,15 +25,15 @@ class OptionsRepositoryTest {
     fun setUp() {
         optionsRepository = OptionsRepository(d2)
         whenever(
-            d2.optionModule().options()
+            d2.optionModule().options(),
         ) doReturn mock()
         whenever(
             d2.optionModule().options()
-                .byOptionSetUid()
+                .byOptionSetUid(),
         ) doReturn mock()
         whenever(
             d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
+                .byOptionSetUid().eq("optionSetUid"),
         ) doReturn mock()
     }
 
@@ -42,28 +42,28 @@ class OptionsRepositoryTest {
         whenever(
             d2.optionModule().options()
                 .byOptionSetUid().eq("optionSetUid")
-                .byDisplayName()
+                .byDisplayName(),
         ) doReturn mock()
         whenever(
             d2.optionModule().options()
                 .byOptionSetUid().eq("optionSetUid")
-                .byDisplayName().eq("displayName")
+                .byDisplayName().eq("displayName"),
+        ) doReturn mock()
+        whenever(
+            d2.optionModule().options()
+                .byOptionSetUid().eq("optionSetUid")
+                .byDisplayName().eq("displayName").one(),
         ) doReturn mock()
         whenever(
             d2.optionModule().options()
                 .byOptionSetUid().eq("optionSetUid")
                 .byDisplayName().eq("displayName").one()
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byDisplayName().eq("displayName").one()
-                .blockingGet()
+                .blockingGet(),
         ) doReturn objectResult
 
         assertEquals(
             optionsRepository.getOptionByDisplayName("optionSetUid", "displayName"),
-            objectResult
+            objectResult,
         )
     }
 
@@ -72,28 +72,28 @@ class OptionsRepositoryTest {
         whenever(
             d2.optionModule().options()
                 .byOptionSetUid().eq("optionSetUid")
-                .byCode()
+                .byCode(),
         ) doReturn mock()
         whenever(
             d2.optionModule().options()
                 .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("code")
+                .byCode().eq("code"),
+        ) doReturn mock()
+        whenever(
+            d2.optionModule().options()
+                .byOptionSetUid().eq("optionSetUid")
+                .byCode().eq("code").one(),
         ) doReturn mock()
         whenever(
             d2.optionModule().options()
                 .byOptionSetUid().eq("optionSetUid")
                 .byCode().eq("code").one()
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("code").one()
-                .blockingGet()
+                .blockingGet(),
         ) doReturn objectResult
 
         assertEquals(
             optionsRepository.getOptionByCode("optionSetUid", "code"),
-            objectResult
+            objectResult,
         )
     }
 }

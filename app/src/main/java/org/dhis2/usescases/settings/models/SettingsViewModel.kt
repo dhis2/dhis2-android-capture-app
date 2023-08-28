@@ -5,5 +5,5 @@ data class SettingsViewModel(
     val dataSettingsViewModel: DataSettingsViewModel,
     val syncParametersViewModel: SyncParametersViewModel,
     val reservedValueSettingsViewModel: ReservedValueSettingsViewModel,
-    val smsSettingsViewModel: SMSSettingsViewModel
+    val smsSettingsViewModel: SMSSettingsViewModel,
 )

@@ -5,11 +5,10 @@ import android.os.Bundle
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
 import androidx.work.WorkInfo
-import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.Bindings
-import org.dhis2.Bindings.userComponent
 import org.dhis2.R
+import org.dhis2.bindings.Bindings
+import org.dhis2.bindings.userComponent
 import org.dhis2.databinding.ActivitySynchronizationBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
@@ -17,6 +16,7 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.extension.share
+import javax.inject.Inject
 
 class SyncActivity : ActivityGlobalAbstract(), SyncView {
 
@@ -49,8 +49,8 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
             binding.metadataText,
             AppCompatResources.getDrawable(
                 this,
-                R.drawable.animator_sync
-            )
+                R.drawable.animator_sync,
+            ),
         )
     }
 
@@ -60,8 +60,8 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
             binding.metadataText,
             AppCompatResources.getDrawable(
                 this,
-                R.drawable.animator_done
-            )
+                R.drawable.animator_done,
+            ),
         )
         presenter.onMetadataSyncSuccess()
     }
@@ -80,7 +80,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
                 override fun onNegativeClick() {
                     presenter.onLogout()
                 }
-            }
+            },
         )
     }
 
@@ -103,7 +103,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
 
     override fun setFlag(flagName: String?) {
         binding.logoFlag.setImageResource(
-            resources.getIdentifier(flagName, "drawable", packageName)
+            resources.getIdentifier(flagName, "drawable", packageName),
         )
         animations.startFlagAnimation { value: Float? ->
             binding.apply {
@@ -117,7 +117,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
         startActivity(
             MainActivity.intent(this, launchDataSync = true).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
+            },
         )
         finish()
     }

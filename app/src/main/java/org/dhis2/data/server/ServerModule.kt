@@ -6,9 +6,9 @@ import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.DhisAnalyticCharts
 import okhttp3.Interceptor
-import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -89,7 +89,7 @@ class ServerModule {
             d2,
             context.getString(R.string.period_span_default_label),
             context.getString(R.string.week_period_span_default_label),
-            context.getString(R.string.biweek_period_span_default_label)
+            context.getString(R.string.biweek_period_span_default_label),
         )
     }
 
@@ -105,7 +105,7 @@ class ServerModule {
         userManager: UserManager,
         d2: D2,
         preferenceProvider: PreferenceProvider,
-        colorUtils: ColorUtils
+        colorUtils: ColorUtils,
     ): ThemeManager {
         return ThemeManager(
             userManager,
@@ -113,7 +113,7 @@ class ServerModule {
             DataSetConfiguration(d2),
             TrackedEntityTypeConfiguration(d2),
             preferenceProvider,
-            colorUtils
+            colorUtils,
         )
     }
 
@@ -139,11 +139,11 @@ class ServerModule {
     @PerServer
     fun providesUniqueAttributeController(
         d2: D2,
-        crashReportController: CrashReportController
+        crashReportController: CrashReportController,
     ): UniqueAttributeController {
         return UniqueAttributeController(
             d2,
-            crashReportController
+            crashReportController,
         )
     }
 
@@ -157,8 +157,8 @@ class ServerModule {
             }
             interceptors.add(
                 AnalyticsInterceptor(
-                    AnalyticsHelper(context.app().appComponent().matomoController())
-                )
+                    AnalyticsHelper(context.app().appComponent().matomoController()),
+                ),
             )
             return D2Configuration.builder()
                 .appName(BuildConfig.APPLICATION_ID)

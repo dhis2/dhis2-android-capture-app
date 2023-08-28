@@ -14,7 +14,7 @@ class TeiDownloader(
     private val teiConfiguration: TrackedEntityInstanceConfiguration,
     private val fileConfiguration: FileResourceConfiguration,
     private val currentProgram: String?,
-    private val resources: ResourceManager
+    private val resources: ResourceManager,
 ) {
 
     private var downloadRepository: TrackedEntityInstanceDownloader? = null
@@ -49,12 +49,12 @@ class TeiDownloader(
     private fun handleD2Error(
         d2Error: D2Error?,
         teiUid: String,
-        enrollmentUid: String?
+        enrollmentUid: String?,
     ): TeiDownloadResult {
         return when (d2Error!!.errorCode()) {
             D2ErrorCode.OWNERSHIP_ACCESS_DENIED -> TeiDownloadResult.BreakTheGlassResult(
                 teiUid,
-                enrollmentUid
+                enrollmentUid,
             )
             else -> TeiDownloadResult.ErrorResult(resources.parseD2Error(d2Error) ?: "")
         }
@@ -66,7 +66,7 @@ class TeiDownloader(
                 downloadRepository!!,
                 teiUid,
                 currentProgram!!,
-                reason
+                reason,
             )
             fileConfiguration.download()
             downloadRepository = null
@@ -85,8 +85,8 @@ class TeiDownloader(
                         programUid = currentProgram,
                         enrollmentUid = enrollmentUid ?: teiConfiguration.enrollmentUid(
                             teiUid,
-                            currentProgram!!
-                        )
+                            currentProgram!!,
+                        ),
                     )
                 canEnrollInCurrentProgram() ->
                     TeiDownloadResult.TeiToEnroll(teiUid)
@@ -94,7 +94,7 @@ class TeiDownloader(
                     TeiDownloadResult.DownloadedResult(
                         teiUid = teiUid,
                         programUid = currentProgram,
-                        enrollmentUid = null
+                        enrollmentUid = null,
                     )
             }
         } else {

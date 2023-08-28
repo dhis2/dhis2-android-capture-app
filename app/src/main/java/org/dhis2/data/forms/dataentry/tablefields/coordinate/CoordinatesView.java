@@ -26,8 +26,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.StringExtensionsKt;
 import org.dhis2.commons.ActivityResultObservable;
 import org.dhis2.commons.ActivityResultObserver;
 import org.dhis2.commons.Constants;

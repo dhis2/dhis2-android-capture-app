@@ -6,8 +6,6 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
-import java.io.File
-import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,6 +45,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainPresenterTest {
@@ -94,7 +94,7 @@ class MainPresenterTest {
                 syncIsPerfomedInteractor,
                 syncStatusController,
                 versionRepository,
-                dispatcherProvider
+                dispatcherProvider,
             )
     }
 
@@ -253,7 +253,7 @@ class MainPresenterTest {
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager().getAccounts()) doReturn listOf(
             firstRandomUserAccount,
-            secondRandomUserAccount
+            secondRandomUserAccount,
         )
         whenever(repository.accountsCount()) doReturn 2
 

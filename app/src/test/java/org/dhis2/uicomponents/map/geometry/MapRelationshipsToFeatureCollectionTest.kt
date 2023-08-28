@@ -37,7 +37,7 @@ class MapRelationshipsToFeatureCollectionTest {
                 mapLineToFeature,
                 mapPointToFeature,
                 mapPolygonToFeature,
-                bounds
+                bounds,
             )
     }
 
@@ -50,25 +50,25 @@ class MapRelationshipsToFeatureCollectionTest {
 
         whenever(mapLineToFeature.map(firstRelationship)) doReturn getLineFeature(firstRelationship)
         whenever(
-            mapLineToFeature.map(secondRelationship)
+            mapLineToFeature.map(secondRelationship),
         ) doReturn getLineFeature(secondRelationship)
         whenever(
-            mapPointToFeature.map(firstRelationship.from.geometry!!)
+            mapPointToFeature.map(firstRelationship.from.geometry!!),
         ) doReturn getPointFromFeature(firstRelationship)
         whenever(
-            mapPointToFeature.map(secondRelationship.from.geometry!!)
+            mapPointToFeature.map(secondRelationship.from.geometry!!),
         ) doReturn getPointFromFeature(secondRelationship)
         whenever(
-            mapPointToFeature.map(firstRelationship.to.geometry!!)
+            mapPointToFeature.map(firstRelationship.to.geometry!!),
         ) doReturn getPointToFeature(firstRelationship)
         whenever(
-            mapPointToFeature.map(secondRelationship.to.geometry!!)
+            mapPointToFeature.map(secondRelationship.to.geometry!!),
         ) doReturn getPointToFeature(secondRelationship)
         whenever(bounds.getEnclosingBoundingBox(any())) doReturn BoundingBox.fromLngLats(
             0.0,
             0.0,
             0.0,
-            0.0
+            0.0,
         )
 
         val result = mapRelationshipsToFeatureCollection.map(relationshipsModel)
@@ -117,14 +117,14 @@ class MapRelationshipsToFeatureCollectionTest {
                 listOf(
                     Point.fromLngLat(
                         coordinates1[0],
-                        coordinates1[1]
+                        coordinates1[1],
                     ),
                     Point.fromLngLat(
                         coordinates2[0],
-                        coordinates2[1]
-                    )
-                )
-            )
+                        coordinates2[1],
+                    ),
+                ),
+            ),
         )
     }
 

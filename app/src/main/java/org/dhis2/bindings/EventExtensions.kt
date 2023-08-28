@@ -1,6 +1,5 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
-import java.util.Date
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
@@ -8,6 +7,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.DatePeriod
+import java.util.Date
 
 fun Event.primaryDate(): Date {
     return when (status()) {
@@ -27,7 +27,7 @@ fun EventCollectionRepository.applyFilters(
     stateFilters: MutableList<State>,
     assignedUser: String?,
     eventStatusFilters: MutableList<EventStatus>,
-    catOptComboFilters: MutableList<CategoryOptionCombo>
+    catOptComboFilters: MutableList<CategoryOptionCombo>,
 ): EventCollectionRepository {
     var eventRepo = this
 

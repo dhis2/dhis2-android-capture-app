@@ -9,15 +9,15 @@ import android.view.View
 import android.widget.DatePicker
 import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.commons.R
 import org.dhis2.commons.databinding.CalendarPickerViewBinding
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 
 class CalendarPicker(
-    context: Context
+    context: Context,
 ) : Dialog(context) {
 
     @Inject
@@ -104,7 +104,7 @@ class CalendarPicker(
                     datePicker
                 } else {
                     calendarPicker
-                }
+                },
             )
             dialog.dismiss()
         }
@@ -133,13 +133,13 @@ class CalendarPicker(
         datePicker.updateDate(
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.get(Calendar.DAY_OF_MONTH),
         )
 
         calendarPicker.updateDate(
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.get(Calendar.DAY_OF_MONTH),
         )
     }
 

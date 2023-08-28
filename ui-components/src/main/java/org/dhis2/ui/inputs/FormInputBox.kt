@@ -44,45 +44,45 @@ fun FormInputBox(
     labelTextColor: Color,
     helperTextColor: Color = Color.Black.copy(alpha = 0.38f),
     content: @Composable
-    () -> Unit
+    () -> Unit,
 ) {
     val openDescriptionDialog = remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .wrapContentHeight()
-            .alpha(1.0f.takeIf { enabled } ?: 0.5f)
+            .alpha(1.0f.takeIf { enabled } ?: 0.5f),
     ) {
         Column(
             modifier = Modifier
                 .wrapContentHeight()
                 .padding(
                     top = 9.dp,
-                    bottom = 16.dp
+                    bottom = 16.dp,
                 )
                 .drawInputSelector(
                     selected = selected,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 .padding(
                     start = 16.dp,
-                    end = 16.dp
+                    end = 16.dp,
                 )
                 .graphicsLayer { clip = false },
-            verticalArrangement = spacedBy(9.dp)
+            verticalArrangement = spacedBy(9.dp),
         ) {
             labelText?.let {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = spacedBy(8.dp)
+                    horizontalArrangement = spacedBy(8.dp),
                 ) {
                     HelperText(
                         helperText = labelText,
                         textStyle = TextStyle(
                             color = labelTextColor,
                             fontSize = 10.sp,
-                            lineHeight = 10.sp
-                        )
+                            lineHeight = 10.sp,
+                        ),
                     )
                     descriptionText?.let {
                         Icon(
@@ -91,7 +91,7 @@ fun FormInputBox(
                                 .clickable { openDescriptionDialog.value = true },
                             imageVector = ImageVector.vectorResource(id = R.drawable.ic_input_info),
                             contentDescription = "",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -103,8 +103,8 @@ fun FormInputBox(
                     textStyle = TextStyle(
                         color = helperTextColor,
                         fontSize = 10.sp,
-                        lineHeight = 12.sp
-                    )
+                        lineHeight = 12.sp,
+                    ),
                 )
             }
         }
@@ -121,7 +121,7 @@ fun FormInputBox(
 fun HelperText(helperText: String, textStyle: TextStyle) {
     Text(
         text = helperText,
-        style = textStyle
+        style = textStyle,
     )
 }
 
@@ -134,18 +134,18 @@ fun Modifier.drawInputSelector(selected: Boolean, color: Color) = when (selected
                         RoundRect(
                             rect = Rect(
                                 offset = Offset(8.dp.toPx(), 0f),
-                                size = Size(2.dp.toPx(), size.height)
+                                size = Size(2.dp.toPx(), size.height),
                             ),
                             topLeft = CornerRadius(10f, 10f),
                             topRight = CornerRadius(10f, 10f),
                             bottomLeft = CornerRadius(10f, 10f),
-                            bottomRight = CornerRadius(10f, 10f)
-                        )
+                            bottomRight = CornerRadius(10f, 10f),
+                        ),
                     )
                 },
-                color = color
+                color = color,
             )
-        }
+        },
     )
     else -> this
 }

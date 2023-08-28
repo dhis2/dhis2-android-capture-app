@@ -78,18 +78,18 @@ class ManageStockViewModelTest {
         resourceManager,
         tableModelMapper,
         dispatcherProvider,
-        stockTableDimensionStore
+        stockTableDimensionStore,
     )
 
     private fun createStockEntry(
         uid: String,
         viewModel: ManageStockViewModel,
-        qty: String?
+        qty: String?,
     ): StockItem {
         val stockItem = StockItem(
             uid,
             faker.name().name(),
-            faker.number().numberBetween(1, 800).toString()
+            faker.number().numberBetween(1, 800).toString(),
         )
 
         viewModel.addItem(stockItem, qty, stockItem.stockOnHand, null)
@@ -107,14 +107,14 @@ class ManageStockViewModelTest {
             "yfsEseIcEXr",
             "lpGYJoVUudr",
             "ej1YwWaYGmm",
-            "I7cmT3iXT0y"
+            "I7cmT3iXT0y",
         )
 
         facility = ParcelUtils.facilityToIdentifiableModelParcel(
-            FacilityFactory.create(57L)
+            FacilityFactory.create(57L),
         )
         distributedTo = ParcelUtils.distributedTo_ToIdentifiableModelParcel(
-            DestinationFactory.create(23L)
+            DestinationFactory.create(23L),
         )
         transactionDate = "2021-08-05"
 
@@ -127,7 +127,7 @@ class ManageStockViewModelTest {
             transactionType = TransactionType.DISTRIBUTION,
             facility = facility,
             transactionDate = transactionDate,
-            distributedTo = distributedTo
+            distributedTo = distributedTo,
         )
         val viewModel = getModel()
         viewModel.setup(transaction)
@@ -146,7 +146,7 @@ class ManageStockViewModelTest {
             transactionType = TransactionType.DISCARD,
             facility = facility,
             transactionDate = transactionDate,
-            distributedTo = null
+            distributedTo = null,
         )
         val viewModel = getModel()
         viewModel.setup(transaction)
@@ -165,7 +165,7 @@ class ManageStockViewModelTest {
             transactionType = TransactionType.CORRECTION,
             facility = facility,
             transactionDate = transactionDate,
-            distributedTo = null
+            distributedTo = null,
         )
         val viewModel = getModel()
         viewModel.setup(transaction)
@@ -193,7 +193,7 @@ class ManageStockViewModelTest {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     Timber.tag("ruleEffects2").d("$ruleEffects")
                 }
-            }
+            },
         )
 
         assertEquals(viewModel.getItemQuantity(item)?.toLong(), qty)
@@ -216,7 +216,7 @@ class ManageStockViewModelTest {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     println("$ruleEffects")
                 }
-            }
+            },
         )
 
         assertEquals(viewModel.getItemQuantity(item), qty2.toString())

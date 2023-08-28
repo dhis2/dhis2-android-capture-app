@@ -10,8 +10,8 @@ class SearchRelationshipViewHolder(
     private val onAddRelationship: (
         teiUid: String,
         relationshipTypeUid: String?,
-        isOnline: Boolean
-    ) -> Unit
+        isOnline: Boolean,
+    ) -> Unit,
 ) : BaseTeiViewHolder(binding, colorUtils) {
 
     override fun itemConfiguration() {

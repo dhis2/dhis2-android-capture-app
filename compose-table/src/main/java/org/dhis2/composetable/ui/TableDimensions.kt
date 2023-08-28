@@ -32,7 +32,7 @@ data class TableDimensions(
     val minColumnWidth: Int = 130,
     val maxRowHeaderWidth: Int = Int.MAX_VALUE,
     val maxColumnWidth: Int = Int.MAX_VALUE,
-    val tableEndExtraScroll: Dp = 6.dp
+    val tableEndExtraScroll: Dp = 6.dp,
 ) {
 
     private fun extraWidthInTable(tableId: String): Int = extraWidths[tableId] ?: 0
@@ -44,7 +44,7 @@ data class TableDimensions(
     fun defaultCellWidthWithExtraSize(
         tableId: String,
         totalColumns: Int,
-        hasExtra: Boolean = false
+        hasExtra: Boolean = false,
     ): Int = defaultCellWidth + extraSize(totalColumns, hasExtra) + extraWidthInTable(tableId)
     fun columnWidthWithTableExtra(tableId: String, column: Int? = null): Int =
         (columnWidth[tableId]?.get(column) ?: defaultCellWidth) + extraWidthInTable(tableId)
@@ -54,7 +54,7 @@ data class TableDimensions(
         column: Int,
         headerRowColumns: Int,
         totalColumns: Int,
-        hasTotal: Boolean = false
+        hasTotal: Boolean = false,
     ): Int {
         val rowHeaderRatio = totalColumns / headerRowColumns
 
@@ -136,7 +136,7 @@ data class TableDimensions(
         return this.copy(
             extraWidths = newExtraWidths,
             rowHeaderWidths = newRowHeaderMap,
-            columnWidth = newColumnMap
+            columnWidth = newColumnMap,
         )
     }
 
@@ -150,16 +150,16 @@ data class TableDimensions(
         currentOffsetX: Float,
         columnIndex: Int,
         totalColumns: Int,
-        hasTotal: Boolean
+        hasTotal: Boolean,
     ): Boolean {
         val desiredDimension = updateColumnWidth(
             tableId = tableId,
             widthOffset = currentOffsetX,
-            column = columnIndex
+            column = columnIndex,
         )
         return desiredDimension.columnWidthWithTableExtra(
             tableId,
-            columnIndex
+            columnIndex,
         ) + extraSize(totalColumns, hasTotal) in minColumnWidth..maxColumnWidth
     }
 
@@ -170,7 +170,7 @@ data class TableDimensions(
             desiredDimension.columnWidth[tableId]?.all { (column, _) ->
                 desiredDimension.columnWidthWithTableExtra(
                     tableId,
-                    column
+                    column,
                 ) in minColumnWidth..maxColumnWidth
             } ?: true
     }

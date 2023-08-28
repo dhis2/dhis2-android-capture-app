@@ -12,20 +12,20 @@ fun Feature?.addTeiInfo(searchTeiModel: SearchTeiModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
-            org.dhis2.maps.extensions.FeatureSource.TEI.name
+            org.dhis2.maps.extensions.FeatureSource.TEI.name,
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            searchTeiModel.tei.uid()
+            searchTeiModel.tei.uid(),
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,
-            searchTeiModel.profilePicturePath
+            searchTeiModel.profilePicturePath,
         )
         if (searchTeiModel.selectedEnrollment != null) {
             addStringProperty(
                 MapTeisToFeatureCollection.ENROLLMENT_UID,
-                searchTeiModel.selectedEnrollment.uid()
+                searchTeiModel.selectedEnrollment.uid(),
             )
         }
     }
@@ -36,95 +36,95 @@ fun Feature?.addTeiEnrollmentInfo(searchTeiModel: SearchTeiModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
-            org.dhis2.maps.extensions.FeatureSource.ENROLLMENT.name
+            org.dhis2.maps.extensions.FeatureSource.ENROLLMENT.name,
         )
         addStringProperty(
             MapTeisToFeatureCollection.ENROLLMENT_UID,
-            searchTeiModel.selectedEnrollment.uid()
+            searchTeiModel.selectedEnrollment.uid(),
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            searchTeiModel.tei.uid()
+            searchTeiModel.tei.uid(),
         )
     }
     return this
 }
 
 fun Feature?.addRelationshipInfo(
-    relationshipUiComponentModel: RelationshipUiComponentModel
+    relationshipUiComponentModel: RelationshipUiComponentModel,
 ): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
-            org.dhis2.maps.extensions.FeatureSource.RELATIONSHIP.name
+            org.dhis2.maps.extensions.FeatureSource.RELATIONSHIP.name,
         )
         addStringProperty(
             MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            relationshipUiComponentModel.relationshipUid
+            relationshipUiComponentModel.relationshipUid,
         )
         addStringProperty(
             MapRelationshipsToFeatureCollection.RELATIONSHIP,
-            relationshipUiComponentModel.relationshipTypeUid
+            relationshipUiComponentModel.relationshipTypeUid,
         )
         addBooleanProperty(
             MapRelationshipsToFeatureCollection.BIDIRECTIONAL,
-            relationshipUiComponentModel.bidirectional
+            relationshipUiComponentModel.bidirectional,
         )
         addStringProperty(
             MapRelationshipsToFeatureCollection.FROM_TEI,
-            relationshipUiComponentModel.from.teiUid
+            relationshipUiComponentModel.from.teiUid,
         )
         addStringProperty(
             MapRelationshipsToFeatureCollection.TO_TEI,
-            relationshipUiComponentModel.to.teiUid
+            relationshipUiComponentModel.to.teiUid,
         )
     }
     return this
 }
 
 fun Feature?.addRelationFromInfo(
-    relationshipUiComponentModel: RelationshipUiComponentModel
+    relationshipUiComponentModel: RelationshipUiComponentModel,
 ): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
-            org.dhis2.maps.extensions.FeatureSource.RELATIONSHIP.name
+            org.dhis2.maps.extensions.FeatureSource.RELATIONSHIP.name,
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            relationshipUiComponentModel.from.teiUid
+            relationshipUiComponentModel.from.teiUid,
         )
         addStringProperty(
             MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            relationshipUiComponentModel.relationshipUid
+            relationshipUiComponentModel.relationshipUid,
         )
         addNumberProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,
-            relationshipUiComponentModel.from.defaultImage
+            relationshipUiComponentModel.from.defaultImage,
         )
     }
     return this
 }
 
 fun Feature?.addRelationToInfo(
-    relationshipUiComponentModel: RelationshipUiComponentModel
+    relationshipUiComponentModel: RelationshipUiComponentModel,
 ): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
-            org.dhis2.maps.extensions.FeatureSource.RELATIONSHIP.name
+            org.dhis2.maps.extensions.FeatureSource.RELATIONSHIP.name,
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            relationshipUiComponentModel.to.teiUid
+            relationshipUiComponentModel.to.teiUid,
         )
         addStringProperty(
             MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            relationshipUiComponentModel.relationshipUid
+            relationshipUiComponentModel.relationshipUid,
         )
         addNumberProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,
-            relationshipUiComponentModel.to.defaultImage
+            relationshipUiComponentModel.to.defaultImage,
         )
     }
     return this
@@ -134,23 +134,23 @@ fun Feature?.addTeiEventInfo(eventUiComponentModel: EventUiComponentModel): Feat
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
-            org.dhis2.maps.extensions.FeatureSource.TRACKER_EVENT.name
+            org.dhis2.maps.extensions.FeatureSource.TRACKER_EVENT.name,
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            eventUiComponentModel.enrollment.trackedEntityInstance()
+            eventUiComponentModel.enrollment.trackedEntityInstance(),
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,
-            eventUiComponentModel.teiImage
+            eventUiComponentModel.teiImage,
         )
         addStringProperty(
             MapTeiEventsToFeatureCollection.EVENT_UID,
-            eventUiComponentModel.event.uid()
+            eventUiComponentModel.event.uid(),
         )
         addStringProperty(
             MapTeiEventsToFeatureCollection.STAGE_UID,
-            eventUiComponentModel.programStage?.uid()
+            eventUiComponentModel.programStage?.uid(),
         )
     }
     return this

@@ -16,7 +16,7 @@ fun Dhis2ProgressIndicator(message: String? = null) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         CircularProgressIndicator(
             modifier = Modifier.padding(16.dp),
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
         message?.let { Text(it, color = textSecondary) }
     }

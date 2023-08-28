@@ -13,7 +13,7 @@ class GraphToPieData {
         return PieData(
             PieDataSet(
                 coordinateToPieEntryMapper.map(graph.series.map { it.coordinates }.flatten()),
-                null
+                null,
             ).also {
                 it.colors = it.values.mapIndexed { index, pieEntry ->
                     val isHighlighted =
@@ -26,7 +26,7 @@ class GraphToPieData {
                 it.valueLinePart1OffsetPercentage = 90f
                 it.valueTypeface = Typeface.DEFAULT_BOLD
                 it.sliceSpace = 1f
-            }
+            },
         )
     }
 }

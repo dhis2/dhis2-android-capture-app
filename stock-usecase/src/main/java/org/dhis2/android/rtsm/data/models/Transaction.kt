@@ -8,7 +8,7 @@ class Transaction(
     val transactionType: TransactionType,
     val facility: IdentifiableModel,
     val transactionDate: String,
-    val distributedTo: IdentifiableModel?
+    val distributedTo: IdentifiableModel?,
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -16,12 +16,12 @@ class Transaction(
         // TODO: Find a way to get the OrganisationUnit given the UID,
         //  and include it in the constructor call
         parcel.readParcelable<IdentifiableModel>(
-            IdentifiableModel::class.java.classLoader
+            IdentifiableModel::class.java.classLoader,
         )!!,
         parcel.readString()!!,
         parcel.readParcelable<IdentifiableModel>(
-            IdentifiableModel::class.java.classLoader
-        )
+            IdentifiableModel::class.java.classLoader,
+        ),
     )
 
     override fun writeToParcel(out: Parcel, flags: Int) {
@@ -45,13 +45,13 @@ class Transaction(
                 transactionType.name,
                 facility.displayName,
                 transactionDate,
-                distributedTo.displayName
+                distributedTo.displayName,
             )
         } else {
             "Transaction[Type: %s, Facility: %s, Date: %s]".format(
                 transactionType.name,
                 facility.displayName,
-                transactionDate
+                transactionDate,
             )
         }
     }

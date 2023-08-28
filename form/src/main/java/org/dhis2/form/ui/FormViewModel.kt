@@ -38,7 +38,7 @@ class FormViewModel(
     private val repository: FormRepository,
     private val dispatcher: DispatcherProvider,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
-    private val openErrorLocation: Boolean = false
+    private val openErrorLocation: Boolean = false,
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
@@ -109,7 +109,7 @@ class FormViewModel(
                 ValueStoreResult.VALUE_NOT_UNIQUE -> {
                     showInfo.value = InfoUiModel(
                         R.string.error,
-                        R.string.unique_warning
+                        R.string.unique_warning,
                     )
                     processCalculatedItems()
                 }
@@ -165,7 +165,7 @@ class FormViewModel(
                 if (action.error != null) {
                     StoreResult(
                         action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
                     )
                 } else {
                     val saveResult = repository.save(action.id, action.value, action.extraData)
@@ -174,13 +174,13 @@ class FormViewModel(
                     } else {
                         repository.updateErrorList(
                             action.copy(
-                                error = Throwable(saveResult.valueStoreResultMessage)
-                            )
+                                error = Throwable(saveResult.valueStoreResultMessage),
+                            ),
                         )
                     }
                     saveResult ?: StoreResult(
                         action.id,
-                        ValueStoreResult.VALUE_CHANGED
+                        ValueStoreResult.VALUE_CHANGED,
                     )
                 }
             }
@@ -195,7 +195,7 @@ class FormViewModel(
                 repository.updateValueOnList(action.id, action.value, action.valueType)
                 StoreResult(
                     action.id,
-                    ValueStoreResult.TEXT_CHANGING
+                    ValueStoreResult.TEXT_CHANGING,
                 )
             }
 
@@ -203,7 +203,7 @@ class FormViewModel(
                 repository.updateSectionOpened(action)
                 StoreResult(
                     action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
                 )
             }
 
@@ -211,7 +211,7 @@ class FormViewModel(
                 repository.removeAllValues()
                 StoreResult(
                     action.id,
-                    ValueStoreResult.VALUE_CHANGED
+                    ValueStoreResult.VALUE_CHANGED,
                 )
             }
 
@@ -219,7 +219,7 @@ class FormViewModel(
                 repository.setFocusedItem(action)
                 StoreResult(
                     "",
-                    ValueStoreResult.FINISH
+                    ValueStoreResult.FINISH,
                 )
             }
 
@@ -227,7 +227,7 @@ class FormViewModel(
                 repository.setFieldRequestingCoordinates(action.id, true)
                 StoreResult(
                     action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
                 )
             }
 
@@ -235,7 +235,7 @@ class FormViewModel(
                 repository.setFieldRequestingCoordinates(action.id, false)
                 StoreResult(
                     action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
                 )
             }
 
@@ -248,15 +248,15 @@ class FormViewModel(
                                 FormIntent.OnSave(
                                     uid = action.id,
                                     value = saveResult.uid,
-                                    valueType = action.valueType
-                                )
-                            )
+                                    valueType = action.valueType,
+                                ),
+                            ),
                         )
                     }
 
                     null -> StoreResult(
                         action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
                     )
 
                     else -> saveResult
@@ -269,12 +269,12 @@ class FormViewModel(
         val error = checkFieldError(it.valueType, it.value, it.fieldMask)
         if (error != null) {
             val action = rowActionFromIntent(
-                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
+                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
             )
             repository.updateErrorList(action)
             StoreResult(
                 rowAction.id,
-                ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
             )
         } else {
             val intent = getSaveIntent(it)
@@ -286,7 +286,7 @@ class FormViewModel(
         }
     } ?: StoreResult(
         rowAction.id,
-        ValueStoreResult.VALUE_HAS_NOT_CHANGED
+        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
     )
 
     fun valueTypeIsTextField(valueType: ValueType?, renderType: UiRenderType? = null): Boolean {
@@ -309,7 +309,7 @@ class FormViewModel(
         ValueType.COORDINATE -> FormIntent.SaveCurrentLocation(
             field.uid,
             field.value,
-            getFeatureType(field.renderingType).name
+            getFeatureType(field.renderingType).name,
         )
 
         else -> FormIntent.OnSave(field.uid, field.value, field.valueType, field.fieldMask)
@@ -320,7 +320,7 @@ class FormViewModel(
             is FormIntent.OnClear -> createRowAction(
                 uid = "",
                 value = null,
-                actionType = ActionType.ON_CLEAR
+                actionType = ActionType.ON_CLEAR,
             )
 
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
@@ -328,96 +328,96 @@ class FormViewModel(
                 val error = checkFieldError(
                     ValueType.COORDINATE,
                     intent.coordinates,
-                    null
+                    null,
                 )
                 createRowAction(
                     uid = intent.uid,
                     value = intent.coordinates,
                     extraData = intent.extraData,
                     error = error,
-                    valueType = ValueType.COORDINATE
+                    valueType = ValueType.COORDINATE,
                 )
             }
 
             is FormIntent.SelectLocationFromMap -> setCoordinateFieldValue(
                 fieldUid = intent.uid,
                 featureType = intent.featureType,
-                coordinates = intent.coordinates
+                coordinates = intent.coordinates,
             )
 
             is FormIntent.SaveCurrentLocation -> {
                 val error = checkFieldError(
                     ValueType.COORDINATE,
                     intent.value,
-                    null
+                    null,
                 )
                 createRowAction(
                     uid = intent.uid,
                     value = intent.value,
                     extraData = intent.featureType,
                     error = error,
-                    valueType = ValueType.COORDINATE
+                    valueType = ValueType.COORDINATE,
                 )
             }
 
             is FormIntent.OnNext -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
-                actionType = ActionType.ON_NEXT
+                actionType = ActionType.ON_NEXT,
             )
 
             is FormIntent.OnSave -> {
                 val error = checkFieldError(
                     intent.valueType,
                     intent.value,
-                    intent.fieldMask
+                    intent.fieldMask,
                 )
 
                 createRowAction(
                     uid = intent.uid,
                     value = intent.value,
                     error = error,
-                    valueType = intent.valueType
+                    valueType = intent.valueType,
                 )
             }
 
             is FormIntent.OnFocus -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
-                actionType = ActionType.ON_FOCUS
+                actionType = ActionType.ON_FOCUS,
             )
 
             is FormIntent.OnTextChange -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
                 actionType = ActionType.ON_TEXT_CHANGE,
-                valueType = intent.valueType
+                valueType = intent.valueType,
             )
 
             is FormIntent.OnSection -> createRowAction(
                 uid = intent.sectionUid,
                 value = null,
-                actionType = ActionType.ON_SECTION_CHANGE
+                actionType = ActionType.ON_SECTION_CHANGE,
             )
 
             is FormIntent.OnFinish -> createRowAction(
                 uid = "",
                 value = null,
-                actionType = ActionType.ON_FINISH
+                actionType = ActionType.ON_FINISH,
             )
 
             is FormIntent.OnRequestCoordinates ->
                 createRowAction(
                     uid = intent.uid,
                     value = null,
-                    actionType = ActionType.ON_REQUEST_COORDINATES
+                    actionType = ActionType.ON_REQUEST_COORDINATES,
                 )
 
             is FormIntent.OnCancelRequestCoordinates ->
                 createRowAction(
                     uid = intent.uid,
                     value = null,
-                    actionType = ActionType.ON_CANCELL_REQUEST_COORDINATES
+                    actionType = ActionType.ON_CANCELL_REQUEST_COORDINATES,
                 )
 
             is FormIntent.OnStoreFile ->
@@ -425,7 +425,7 @@ class FormViewModel(
                     uid = intent.uid,
                     value = intent.filePath,
                     actionType = ActionType.ON_STORE_FILE,
-                    valueType = intent.valueType
+                    valueType = intent.valueType,
                 )
         }
     }
@@ -433,7 +433,7 @@ class FormViewModel(
     private fun checkFieldError(
         valueType: ValueType?,
         fieldValue: String?,
-        fieldMask: String?
+        fieldMask: String?,
     ): Throwable? {
         if (fieldValue.isNullOrEmpty()) {
             return null
@@ -464,14 +464,14 @@ class FormViewModel(
         extraData: String? = null,
         error: Throwable? = null,
         actionType: ActionType = ActionType.ON_SAVE,
-        valueType: ValueType? = null
+        valueType: ValueType? = null,
     ) = RowAction(
         id = uid,
         value = value,
         extraData = extraData,
         error = error,
         type = actionType,
-        valueType = valueType
+        valueType = valueType,
     )
 
     fun onItemsRendered() {
@@ -481,13 +481,13 @@ class FormViewModel(
     private fun setCoordinateFieldValue(
         fieldUid: String,
         featureType: String,
-        coordinates: String?
+        coordinates: String?,
     ): RowAction {
         val type = FeatureType.valueOf(featureType)
         val geometryCoordinates = coordinates?.let {
             geometryController.generateLocationFromCoordinates(
                 type,
-                coordinates
+                coordinates,
             )?.coordinates()
         }
 
@@ -502,7 +502,7 @@ class FormViewModel(
             value = geometryCoordinates,
             extraData = featureType,
             error = error,
-            valueType = ValueType.COORDINATE
+            valueType = ValueType.COORDINATE,
         )
     }
 
@@ -608,13 +608,13 @@ class FormViewModel(
                 error = checkFieldError(
                     currentField.valueType,
                     currentField.value,
-                    null
-                )
+                    null,
+                ),
             )
             else -> RowAction(
                 id = uiEvent.uid,
                 value = uiEvent.value,
-                type = ActionType.ON_SAVE
+                type = ActionType.ON_SAVE,
             )
         }
     }

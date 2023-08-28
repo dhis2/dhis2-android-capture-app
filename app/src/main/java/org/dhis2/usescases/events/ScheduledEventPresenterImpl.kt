@@ -3,7 +3,6 @@ package org.dhis2.usescases.events
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import java.util.Date
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
@@ -11,12 +10,13 @@ import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
+import java.util.Date
 
 class ScheduledEventPresenterImpl(
     val view: ScheduledEventContract.View,
     val d2: D2,
     val eventUid: String,
-    val eventUtils: DhisEventUtils
+    val eventUtils: DhisEventUtils,
 ) : ScheduledEventContract.Presenter {
 
     private lateinit var disposable: CompositeDisposable
@@ -29,7 +29,7 @@ class ScheduledEventPresenterImpl(
                 .flatMap {
                     Single.zip(
                         d2.programModule().programStages().uid(it.programStage()).get(),
-                        d2.programModule().programs().uid(it.program()).get()
+                        d2.programModule().programs().uid(it.program()).get(),
                     ) { stage, program ->
                         Triple(stage, program, it)
                     }
@@ -42,8 +42,8 @@ class ScheduledEventPresenterImpl(
                         view.setStage(stage)
                         view.setEvent(event)
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 

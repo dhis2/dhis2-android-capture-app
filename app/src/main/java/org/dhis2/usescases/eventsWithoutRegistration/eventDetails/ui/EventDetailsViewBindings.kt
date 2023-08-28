@@ -16,7 +16,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 fun LinearLayout.setCatCombo(
     viewModel: EventDetailsViewModel,
     eventCatCombo: EventCatCombo,
-    enabled: Boolean?
+    enabled: Boolean?,
 ) {
     if (!eventCatCombo.isDefault) {
         this@setCatCombo.removeAllViews()
@@ -45,7 +45,7 @@ fun LinearLayout.setCatCombo(
 fun ComposeView.setReopenButton(viewModel: EventDetailsViewModel) {
     setContent {
         setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
         MdcTheme {
             val eventDetail by viewModel.eventDetails.collectAsState()

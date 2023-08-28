@@ -48,19 +48,19 @@ class SearchTEPresenterTest {
     @Before
     fun setUp() {
         whenever(
-            d2.programModule().programs().uid(initialProgram).blockingGet()
+            d2.programModule().programs().uid(initialProgram).blockingGet(),
         ) doReturn
             Program.builder().uid(initialProgram)
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0).build()
 
         whenever(
-            repository.getTrackedEntityType(teType)
+            repository.getTrackedEntityType(teType),
         ) doReturn Observable.just(
             TrackedEntityType.builder()
                 .uid(teType)
                 .displayName("teTypeName")
-                .build()
+                .build(),
         )
 
         presenter = SearchTEPresenter(
@@ -77,7 +77,7 @@ class SearchTEPresenterTest {
             matomoAnalyticsController,
             syncStatusController,
             resourceManager,
-            colorUtils
+            colorUtils,
         )
     }
 
@@ -112,26 +112,26 @@ class SearchTEPresenterTest {
 
         whenever(
             d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid())
+                .byProgramUid().eq(newSelectedProgram.uid()),
         ) doReturn mock()
 
         whenever(
             d2.programModule().programStages()
                 .byProgramUid().eq(newSelectedProgram.uid())
-                .byEnableUserAssignment()
+                .byEnableUserAssignment(),
+        ) doReturn mock()
+
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(newSelectedProgram.uid())
+                .byEnableUserAssignment().isTrue,
         ) doReturn mock()
 
         whenever(
             d2.programModule().programStages()
                 .byProgramUid().eq(newSelectedProgram.uid())
                 .byEnableUserAssignment().isTrue
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid())
-                .byEnableUserAssignment().isTrue
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         presenter.setProgramForTesting(program)

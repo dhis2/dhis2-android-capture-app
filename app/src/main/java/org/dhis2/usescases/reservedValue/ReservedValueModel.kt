@@ -9,7 +9,7 @@ data class ReservedValueModel(
     val orgUnitName: String?,
     val count: Int,
     val leftValuesLabel: String,
-    val refillProcessor: FlowableProcessor<String>
+    val refillProcessor: FlowableProcessor<String>,
 ) {
     fun hasOrgUnit(): Boolean {
         return orgUnitUid != null

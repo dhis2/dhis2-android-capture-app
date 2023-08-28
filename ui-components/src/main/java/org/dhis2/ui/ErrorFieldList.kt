@@ -13,11 +13,11 @@ import org.dhis2.ui.dialogs.bottomsheet.IssueItem
 @Composable
 fun ErrorFieldList(
     fieldsWithIssues: List<FieldWithIssue> = emptyList(),
-    onItemClick: (fieldUid: String) -> Unit = {}
+    onItemClick: (fieldUid: String) -> Unit = {},
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         items(fieldsWithIssues) {
             IssueItem(it, onClick = { onItemClick(it.fieldUid) })

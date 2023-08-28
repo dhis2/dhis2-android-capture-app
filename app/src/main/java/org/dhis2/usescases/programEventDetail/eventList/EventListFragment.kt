@@ -9,10 +9,6 @@ import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
-import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.resources.ColorUtils
@@ -21,6 +17,10 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailLiveAdapter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
@@ -37,7 +37,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         (activity as ProgramEventDetailActivity).component
             ?.plus(EventListModule(this))
@@ -51,7 +51,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
             0L,
             TimeUnit.MILLISECONDS,
             LinkedBlockingQueue(),
-            Executors.defaultThreadFactory()
+            Executors.defaultThreadFactory(),
         )
 
         val config = AsyncDifferConfig.Builder(ProgramEventDetailLiveAdapter.diffCallback)
@@ -64,7 +64,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
                 program,
                 programEventsViewModel,
                 colorUtils,
-                config
+                config,
             )
         return FragmentProgramEventDetailListBinding.inflate(inflater, container, false)
             .apply {
@@ -81,7 +81,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
     override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
         pagedListLiveData.observe(
-            this
+            this,
         ) { pagedList: PagedList<EventViewModel> ->
             programEventsViewModel.setProgress(false)
             liveAdapter?.submitList(pagedList) {

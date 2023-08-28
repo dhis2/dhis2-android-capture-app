@@ -5,6 +5,6 @@ interface SearchTEIRepository {
         uid: String,
         value: String?,
         teiUid: String,
-        programUid: String?
+        programUid: String?,
     ): Boolean
 }

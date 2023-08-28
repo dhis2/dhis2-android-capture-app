@@ -1,10 +1,10 @@
 package dhis2.org.analytics.charts.bindings
 
-import java.time.YearMonth
-import java.util.GregorianCalendar
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
+import java.time.YearMonth
+import java.util.GregorianCalendar
 
 class DateToPositionTest {
     val dateToPosition = DateToPosition()
@@ -16,7 +16,7 @@ class DateToPositionTest {
             GregorianCalendar(2021, 2, 5).time,
             GregorianCalendar(2021, 3, 2).time,
             GregorianCalendar(2021, 4, 1).time,
-            GregorianCalendar(2022, 4, 8).time
+            GregorianCalendar(2022, 4, 8).time,
         )
 
         val expectedPositions = listOf(
@@ -24,7 +24,7 @@ class DateToPositionTest {
             1.1290323f,
             2.0333333f,
             3f,
-            15.225806f
+            15.225806f,
         )
 
         listOf(
@@ -40,7 +40,7 @@ class DateToPositionTest {
             PeriodType.Quarterly,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
-            PeriodType.SixMonthlyNov
+            PeriodType.SixMonthlyNov,
         ).forEach { period ->
             val positions = mutableListOf<Float>()
             var minYearMonth: YearMonth? = null
@@ -50,10 +50,10 @@ class DateToPositionTest {
                     dateToPosition(
                         date,
                         period,
-                        minYearMonth
+                        minYearMonth,
                     ) {
                         minYearMonth = it
-                    }
+                    },
                 )
             }
 
@@ -68,7 +68,7 @@ class DateToPositionTest {
             GregorianCalendar(2022, 2, 5).time,
             GregorianCalendar(2023, 3, 2).time,
             GregorianCalendar(2024, 1, 1).time,
-            GregorianCalendar(2025, 4, 8).time
+            GregorianCalendar(2025, 4, 8).time,
         )
 
         val expectedPositions = listOf(
@@ -76,7 +76,7 @@ class DateToPositionTest {
             1f,
             2f,
             3f,
-            4f
+            4f,
         )
 
         listOf(
@@ -84,7 +84,7 @@ class DateToPositionTest {
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
-            PeriodType.FinancialNov
+            PeriodType.FinancialNov,
         ).forEach { period ->
             val positions = mutableListOf<Float>()
             var minYearMonth: YearMonth? = null
@@ -94,10 +94,10 @@ class DateToPositionTest {
                     dateToPosition(
                         date,
                         period,
-                        minYearMonth
+                        minYearMonth,
                     ) {
                         minYearMonth = it
-                    }
+                    },
                 )
             }
 

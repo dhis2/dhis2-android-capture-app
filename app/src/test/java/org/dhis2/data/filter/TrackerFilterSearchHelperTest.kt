@@ -3,7 +3,6 @@ package org.dhis2.data.filter
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.FilterRepository
@@ -28,6 +27,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class TrackerFilterSearchHelperTest {
 
@@ -46,16 +46,16 @@ class TrackerFilterSearchHelperTest {
 
         trackerFilterSearchHelper = TrackerFilterSearchHelper(
             filterRepository,
-            filterManager
+            filterManager,
         )
         whenever(
-            filterRepository.trackedEntityInstanceQueryByProgram(any())
+            filterRepository.trackedEntityInstanceQueryByProgram(any()),
         ) doReturn mock()
         whenever(
-            filterRepository.trackedEntityInstanceQueryByType(any())
+            filterRepository.trackedEntityInstanceQueryByType(any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyOrgUnitFilter(any(), any(), any())
+            filterRepository.applyOrgUnitFilter(any(), any(), any()),
         ) doReturn mock()
     }
 
@@ -86,21 +86,21 @@ class TrackerFilterSearchHelperTest {
         verify(filterRepository, times(0)).applyEnrollmentStatusFilter(any(), any())
         verify(filterRepository, times(0)).applyEventStatusFilter(
             any<TrackedEntityInstanceQueryCollectionRepository>(),
-            any()
+            any(),
         )
         verify(filterRepository, times(1)).rootOrganisationUnitUids()
         verify(
             filterRepository,
-            times(0)
+            times(0),
         ).applyStateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
         verify(
             filterRepository,
-            times(0)
+            times(0),
         ).applyDateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
         verify(filterRepository, times(0)).applyEnrollmentDateFilter(any(), any())
         verify(
             filterRepository,
-            times(0)
+            times(0),
         ).applyAssignToMe(any<TrackedEntityInstanceQueryCollectionRepository>())
     }
 
@@ -112,7 +112,7 @@ class TrackerFilterSearchHelperTest {
             addEventStatus(false, EventStatus.SCHEDULE)
             addOrgUnit(
                 OrganisationUnit.builder()
-                    .uid("ouUid").build()
+                    .uid("ouUid").build(),
             )
             addState(false, State.ERROR)
             addPeriod(arrayListOf(DatePeriod.create(Date(), Date())))
@@ -124,52 +124,52 @@ class TrackerFilterSearchHelperTest {
         whenever(
             filterRepository.applyEventStatusFilter(
                 any<TrackedEntityInstanceQueryCollectionRepository>(),
-                any()
-            )
+                any(),
+            ),
         ) doReturn mock()
         whenever(filterRepository.applyOrgUnitFilter(any(), any(), any())) doReturn mock()
         whenever(
             filterRepository.applyStateFilter(
                 any<TrackedEntityInstanceQueryCollectionRepository>(),
-                any()
-            )
+                any(),
+            ),
         ) doReturn mock()
         whenever(
             filterRepository.applyDateFilter(
                 any<TrackedEntityInstanceQueryCollectionRepository>(),
-                any()
-            )
+                any(),
+            ),
         ) doReturn mock()
         whenever(
-            filterRepository.applyEnrollmentDateFilter(any(), any())
+            filterRepository.applyEnrollmentDateFilter(any(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyAssignToMe(any<TrackedEntityInstanceQueryCollectionRepository>())
+            filterRepository.applyAssignToMe(any<TrackedEntityInstanceQueryCollectionRepository>()),
         ) doReturn mock()
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
 
         verify(filterRepository, times(1)).applyEnrollmentStatusFilter(any(), any())
         verify(
             filterRepository,
-            times(1)
+            times(1),
         ).applyEventStatusFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
         verify(filterRepository, times(1)).applyOrgUnitFilter(
             any(),
             any(),
-            any()
+            any(),
         )
         verify(
             filterRepository,
-            times(1)
+            times(1),
         ).applyStateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
         verify(
             filterRepository,
-            times(1)
+            times(1),
         ).applyDateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
         verify(filterRepository, times(1)).applyEnrollmentDateFilter(any(), any())
         verify(
             filterRepository,
-            times(1)
+            times(1),
         ).applyAssignToMe(any<TrackedEntityInstanceQueryCollectionRepository>())
     }
 

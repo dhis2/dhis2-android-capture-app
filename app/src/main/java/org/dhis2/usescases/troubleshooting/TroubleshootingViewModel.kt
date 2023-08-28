@@ -4,17 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.usescases.development.ProgramRuleValidation
+import java.util.Locale
 
 class TroubleshootingViewModel(
     private val localeSelector: LocaleSelector,
     private val repository: TroubleshootingRepository,
-    val openLanguageSection: Boolean
+    val openLanguageSection: Boolean,
 ) : ViewModel() {
     private val _currentLocale = MutableLiveData<Locale>()
     val currentLocale: LiveData<Locale> = _currentLocale
@@ -50,7 +50,7 @@ class TroubleshootingViewModel(
         Locale("uz"),
         Locale("vi"),
         Locale("zh"),
-        Locale("zh", "rCN")
+        Locale("zh", "rCN"),
     )
 
     init {
@@ -58,7 +58,7 @@ class TroubleshootingViewModel(
             localeSelector.getUserLanguage()?.let { Locale(it) } ?: Locale.getDefault()
         _currentLocale.postValue(initialLocale)
         _localesToDisplay.postValue(
-            supportedLocales.filter { it.language != initialLocale.language }
+            supportedLocales.filter { it.language != initialLocale.language },
         )
     }
 

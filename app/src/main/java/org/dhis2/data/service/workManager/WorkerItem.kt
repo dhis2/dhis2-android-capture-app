@@ -38,5 +38,5 @@ data class WorkerItem(
     val delayInSeconds: Long? = null,
     val data: Data? = null,
     val policy: ExistingWorkPolicy? = null,
-    val periodicPolicy: ExistingPeriodicWorkPolicy? = null
+    val periodicPolicy: ExistingPeriodicWorkPolicy? = null,
 )

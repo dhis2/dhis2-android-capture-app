@@ -28,8 +28,8 @@
 package org.dhis2.usescases.notes
 
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.initials
-import org.dhis2.Bindings.setDateInterval
+import org.dhis2.bindings.initials
+import org.dhis2.bindings.setDateInterval
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
 

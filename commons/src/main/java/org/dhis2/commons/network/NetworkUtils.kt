@@ -11,7 +11,7 @@ class NetworkUtils(val context: Context) {
         var isOnline = false
         try {
             val manager = context.getSystemService(
-                Context.CONNECTIVITY_SERVICE
+                Context.CONNECTIVITY_SERVICE,
             ) as ConnectivityManager
             if (manager != null) {
                 val netInfo = manager.activeNetworkInfo
@@ -27,7 +27,7 @@ class NetworkUtils(val context: Context) {
         context: Context,
         action: () -> Unit,
         onDialogDismissed: () -> Unit = {},
-        noNetworkMessage: String
+        noNetworkMessage: String,
     ) {
         if (isOnline()) {
             action()
@@ -39,7 +39,7 @@ class NetworkUtils(val context: Context) {
     private fun displayNetworkConnectionUnavailable(
         context: Context,
         noNetworkMessage: String,
-        onDialogDismissed: () -> Unit = {}
+        onDialogDismissed: () -> Unit = {},
     ) {
         MaterialAlertDialogBuilder(context, R.style.DhisMaterialDialog)
             .setTitle(context.getString(R.string.title_network_connection_unavailable))

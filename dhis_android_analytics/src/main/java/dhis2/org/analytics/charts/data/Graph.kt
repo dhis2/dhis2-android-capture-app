@@ -1,12 +1,12 @@
 package dhis2.org.analytics.charts.data
 
+import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.period.PeriodType
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.Date
-import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.period.PeriodType
 
 data class Graph(
     val title: String,
@@ -21,7 +21,7 @@ data class Graph(
     val periodToDisplaySelected: RelativePeriod? = null,
     val visualizationUid: String? = null,
     val hasError: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 ) {
 
     private fun minDate() = series.minOf { serie ->
@@ -55,7 +55,8 @@ data class Graph(
                 PeriodType.Quarterly,
                 PeriodType.SixMonthly,
                 PeriodType.SixMonthlyApril,
-                PeriodType.SixMonthlyNov -> {
+                PeriodType.SixMonthlyNov,
+                -> {
                     ChronoUnit.MONTHS.between(YearMonth.from(min), YearMonth.from(max)).toFloat()
                 }
 
@@ -63,7 +64,8 @@ data class Graph(
                 PeriodType.FinancialApril,
                 PeriodType.FinancialJuly,
                 PeriodType.FinancialOct,
-                PeriodType.FinancialNov -> {
+                PeriodType.FinancialNov,
+                -> {
                     ChronoUnit.YEARS.between(YearMonth.from(min), YearMonth.from(max)).toFloat()
                 }
             }
@@ -97,7 +99,7 @@ data class Graph(
         } else {
             Date(
                 baseSeries().first().coordinates.first().eventDate.time +
-                    numberOfSteps * periodStep
+                    numberOfSteps * periodStep,
             )
         }
     }
@@ -116,7 +118,8 @@ data class Graph(
             PeriodType.Quarterly,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
-            PeriodType.SixMonthlyNov -> {
+            PeriodType.SixMonthlyNov,
+            -> {
                 val date = minDate().plusMonths(numberOfSteps)
                 YearMonth.from(date).atDay(1)
             }
@@ -125,7 +128,8 @@ data class Graph(
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
-            PeriodType.FinancialNov -> {
+            PeriodType.FinancialNov,
+            -> {
                 val date = minDate().plusYears(numberOfSteps)
                 YearMonth.from(date).atDay(1)
             }
@@ -166,7 +170,7 @@ data class Graph(
 
 data class SerieData(
     val fieldName: String,
-    val coordinates: List<GraphPoint>
+    val coordinates: List<GraphPoint>,
 )
 
 data class LegendValue(val color: Int, val label: String?)
@@ -176,7 +180,7 @@ data class GraphPoint(
     val position: Float? = -1f,
     val fieldValue: Float,
     val legend: String? = null,
-    val legendValue: LegendValue? = null
+    val legendValue: LegendValue? = null,
 )
 
 fun Graph.toChartBuilder(): Chart.ChartBuilder {

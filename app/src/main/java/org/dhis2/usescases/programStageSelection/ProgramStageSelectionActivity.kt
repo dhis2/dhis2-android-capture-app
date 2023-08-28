@@ -6,7 +6,6 @@ import android.content.res.Resources
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -16,6 +15,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
+import javax.inject.Inject
 
 class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSelectionView {
     private lateinit var binding: ActivityProgramStageSelectionBinding
@@ -68,33 +68,33 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
             putString(
                 Constants.PROGRAM_UID,
                 getIntent().getStringExtra(
-                    Constants.PROGRAM_UID
-                )
+                    Constants.PROGRAM_UID,
+                ),
             )
             putString(
                 Constants.TRACKED_ENTITY_INSTANCE,
-                getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE)
+                getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE),
             )
             putString(
                 Constants.ORG_UNIT,
                 getIntent().getStringExtra(
-                    Constants.ORG_UNIT
-                )
+                    Constants.ORG_UNIT,
+                ),
             )
             putString(
                 Constants.ENROLLMENT_UID,
-                getIntent().getStringExtra(Constants.ENROLLMENT_UID)
+                getIntent().getStringExtra(Constants.ENROLLMENT_UID),
             )
             putString(
                 Constants.EVENT_CREATION_TYPE,
-                getIntent().getStringExtra(Constants.EVENT_CREATION_TYPE)
+                getIntent().getStringExtra(Constants.EVENT_CREATION_TYPE),
             )
             putBoolean(Constants.EVENT_REPEATABLE, repeatable)
             putSerializable(Constants.EVENT_PERIOD_TYPE, periodType)
             putString(Constants.PROGRAM_STAGE_UID, programStageUid)
             putInt(
                 Constants.EVENT_SCHEDULE_INTERVAL,
-                presenter.getStandardInterval(programStageUid)
+                presenter.getStandardInterval(programStageUid),
             )
         }
 
@@ -117,8 +117,8 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
                     this,
                     programId!!,
                     enrollmentId!!,
-                    eventCreationType!!
-                )
+                    eventCreationType!!,
+                ),
             )
             .inject(this)
     }

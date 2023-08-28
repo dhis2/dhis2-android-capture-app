@@ -31,7 +31,7 @@ class AlertDialog(
     val spanText: String? = null,
     val iconResource: Int,
     val dismissButton: ButtonUiModel,
-    val confirmButton: ButtonUiModel
+    val confirmButton: ButtonUiModel,
 ) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -44,11 +44,11 @@ class AlertDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnDetachedFromWindow
+                ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
             setContent {
                 Dhis2Theme {
@@ -61,14 +61,14 @@ class AlertDialog(
                             onClick = {
                                 confirmButton.onClick()
                                 dismiss()
-                            }
+                            },
                         ),
                         dismissButton = dismissButton.copy(
                             onClick = {
                                 dismissButton.onClick()
                                 dismiss()
-                            }
-                        )
+                            },
+                        ),
                     )
                 }
             }
@@ -87,7 +87,7 @@ fun Dhis2AlertDialogUi(
     iconResource: Int,
     spanText: String? = null,
     dismissButton: ButtonUiModel,
-    confirmButton: ButtonUiModel
+    confirmButton: ButtonUiModel,
 ) {
     AlertDialog(
         onDismissRequest = dismissButton.onClick,
@@ -100,17 +100,17 @@ fun Dhis2AlertDialogUi(
                         addStyle(
                             style = SpanStyle(MaterialTheme.colorScheme.primary),
                             start = descriptionText.indexOf(spanText),
-                            end = descriptionText.indexOf(spanText) + spanText.length
+                            end = descriptionText.indexOf(spanText) + spanText.length,
                         )
                     }
-                }
+                },
             )
         },
         icon = {
             Icon(
                 painter = painterResource(id = iconResource),
                 tint = MaterialTheme.colorScheme.primary,
-                contentDescription = "notification alert"
+                contentDescription = "notification alert",
             )
         },
         confirmButton = {
@@ -122,6 +122,6 @@ fun Dhis2AlertDialogUi(
             TextButton(onClick = dismissButton.onClick) {
                 Text(text = dismissButton.text)
             }
-        }
+        },
     )
 }

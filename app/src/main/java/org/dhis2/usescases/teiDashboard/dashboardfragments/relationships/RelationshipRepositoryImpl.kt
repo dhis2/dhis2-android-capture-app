@@ -1,9 +1,9 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
 import io.reactivex.Single
-import org.dhis2.Bindings.profilePicturePath
-import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.R
+import org.dhis2.bindings.profilePicturePath
+import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
@@ -26,7 +26,7 @@ class RelationshipRepositoryImpl(
     private val d2: D2,
     private val config: RelationshipConfiguration,
     private val resources: ResourceManager,
-    private val teiAttributesProvider: TeiAttributesProvider
+    private val teiAttributesProvider: TeiAttributesProvider,
 ) : RelationshipRepository {
 
     override fun relationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
@@ -73,7 +73,7 @@ class RelationshipRepositoryImpl(
     private fun stageRelationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
         // TODO: Limit links to TEI
         val event = d2.eventModule().events().uid(
-            (config as EventRelationshipConfiguration).eventUid
+            (config as EventRelationshipConfiguration).eventUid,
         ).blockingGet()
         val programStageUid = event?.programStage() ?: ""
         val programUid = event?.program() ?: ""
@@ -106,8 +106,8 @@ class RelationshipRepositoryImpl(
         return Single.fromCallable {
             d2.relationshipModule().relationships().getByItem(
                 RelationshipItem.builder().event(
-                    RelationshipItemEvent.builder().event(eventUid).build()
-                ).build()
+                    RelationshipItemEvent.builder().event(eventUid).build(),
+                ).build(),
             ).mapNotNull { relationship ->
                 val relationshipType =
                     d2.relationshipModule().relationshipTypes()
@@ -136,24 +136,24 @@ class RelationshipRepositoryImpl(
                     if (direction == RelationshipDirection.FROM) {
                         Pair(
                             tei?.geometry(),
-                            event?.geometry()
+                            event?.geometry(),
                         )
                     } else {
                         Pair(
                             event?.geometry(),
-                            tei?.geometry()
+                            tei?.geometry(),
                         )
                     }
                 val (fromValues, toValues) =
                     if (direction == RelationshipDirection.FROM) {
                         Pair(
                             getTeiAttributesForRelationship(relationshipOwnerUid),
-                            getEventValuesForRelationship(eventUid)
+                            getEventValuesForRelationship(eventUid),
                         )
                     } else {
                         Pair(
                             getEventValuesForRelationship(eventUid),
-                            getTeiAttributesForRelationship(relationshipOwnerUid)
+                            getTeiAttributesForRelationship(relationshipOwnerUid),
                         )
                     }
 
@@ -161,12 +161,12 @@ class RelationshipRepositoryImpl(
                     if (direction == RelationshipDirection.FROM) {
                         Pair(
                             tei?.profilePicturePath(d2, null),
-                            null
+                            null,
                         )
                     } else {
                         Pair(
                             null,
-                            tei?.profilePicturePath(d2, null)
+                            tei?.profilePicturePath(d2, null),
                         )
                     }
 
@@ -174,12 +174,12 @@ class RelationshipRepositoryImpl(
                     if (direction == RelationshipDirection.FROM) {
                         Pair(
                             getTeiDefaultRes(tei),
-                            getEventDefaultRes(event)
+                            getEventDefaultRes(event),
                         )
                     } else {
                         Pair(
                             getEventDefaultRes(event),
-                            getTeiDefaultRes(tei)
+                            getTeiDefaultRes(tei),
                         )
                     }
 
@@ -206,7 +206,7 @@ class RelationshipRepositoryImpl(
                     fromDefaultPic,
                     toDefaultPic,
                     getOwnerColor(relationshipOwnerUid, RelationshipOwnerType.TEI),
-                    canBeOpened
+                    canBeOpened,
                 )
             }
         }
@@ -222,8 +222,8 @@ class RelationshipRepositoryImpl(
             d2.relationshipModule().relationships().getByItem(
                 RelationshipItem.builder().trackedEntityInstance(
                     RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid)
-                        .build()
-                ).build()
+                        .build(),
+                ).build(),
             ).mapNotNull { relationship ->
                 val relationshipType =
                     d2.relationshipModule().relationshipTypes()
@@ -328,7 +328,7 @@ class RelationshipRepositoryImpl(
                     fromDefaultPicRes,
                     toDefaultPicRes,
                     getOwnerColor(relationshipOwnerUid, relationshipOwnerType),
-                    canBoOpened
+                    canBoOpened,
                 )
             }
         }
@@ -359,7 +359,7 @@ class RelationshipRepositoryImpl(
                     val programStage =
                         d2.programModule().programStages().uid(event?.programStage()).blockingGet()
                     resources.getColorFrom(
-                        programStage?.style()?.color() ?: program?.style()?.color()
+                        programStage?.style()?.color() ?: program?.style()?.color(),
                     )
                 }
             }
@@ -467,7 +467,7 @@ class RelationshipRepositoryImpl(
             d2.trackedEntityModule().trackedEntityTypes().uid(teiTypeUid).blockingGet()
         return resources.getObjectStyleDrawableResource(
             teiType?.style()?.icon(),
-            R.drawable.photo_temp_gray
+            R.drawable.photo_temp_gray,
         )
     }
 
@@ -480,7 +480,7 @@ class RelationshipRepositoryImpl(
         val program = d2.programModule().programs().uid(event?.program()).blockingGet()
         return resources.getObjectStyleDrawableResource(
             stage?.style()?.icon() ?: program?.style()?.icon(),
-            R.drawable.photo_temp_gray
+            R.drawable.photo_temp_gray,
         )
     }
 }
@@ -488,9 +488,9 @@ class RelationshipRepositoryImpl(
 sealed class RelationshipConfiguration
 data class TrackerRelationshipConfiguration(
     val enrollmentUid: String,
-    val teiUid: String
+    val teiUid: String,
 ) : RelationshipConfiguration()
 
 data class EventRelationshipConfiguration(
-    val eventUid: String
+    val eventUid: String,
 ) : RelationshipConfiguration()

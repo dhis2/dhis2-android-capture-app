@@ -45,7 +45,7 @@ class BoundGeometryTest {
             latitude,
             latitude,
             longitude,
-            longitude
+            longitude,
         )
         boundsGeometry.update(newLatitude, newLongitude)
 

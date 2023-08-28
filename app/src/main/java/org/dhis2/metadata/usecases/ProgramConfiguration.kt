@@ -17,7 +17,7 @@ class ProgramConfiguration(private val d2: D2) {
             d2.programModule().programs().uid(programUid).blockingGet()
         val programAccess = selectedProgram?.access()?.data()?.write() == true
         val teTypeAccess: Boolean = d2.trackedEntityModule().trackedEntityTypes().uid(
-            selectedProgram?.trackedEntityType()?.uid()
+            selectedProgram?.trackedEntityType()?.uid(),
         ).blockingGet()?.access()?.data()?.write() == true
         return programAccess && teTypeAccess
     }

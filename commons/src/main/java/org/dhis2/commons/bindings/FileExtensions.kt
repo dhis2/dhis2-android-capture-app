@@ -11,9 +11,9 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import java.io.File
 import org.apache.commons.io.FileUtils
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
+import java.io.File
 
 fun File.widthAndHeight(minimum: Int? = null): Pair<Int, Int> {
     BitmapFactory.decodeFile(this.absolutePath).apply {
@@ -39,7 +39,7 @@ fun File.rotateImage(context: Context): File {
         ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
     var bitmap = BitmapFactory.decodeFile(
         this.path,
-        BitmapFactory.Options().apply { inSampleSize = 4 }
+        BitmapFactory.Options().apply { inSampleSize = 4 },
     )
 
     bitmap = when (orientation) {
@@ -51,7 +51,7 @@ fun File.rotateImage(context: Context): File {
 
     return File(
         FileResourceDirectoryHelper.getFileResourceDirectory(context),
-        "tempFile.png"
+        "tempFile.png",
     ).apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
 }
 
@@ -83,7 +83,7 @@ fun getFileFrom(context: Context, fileUri: Uri): File? {
     val file = getFilePath(context, fileUri)?.let { File(it) }
     val tempFile = File(
         FileResourceDirectoryHelper.getFileResourceDirectory(context),
-        file?.name ?: "temp"
+        file?.name ?: "temp",
     )
     context.contentResolver.openInputStream(fileUri)?.let { inputStream ->
         FileUtils.copyToFile(inputStream, tempFile)
@@ -101,7 +101,7 @@ private fun getFilePath(context: Context, uri: Uri): String? {
                 val id = DocumentsContract.getDocumentId(copy)
                 copy = ContentUris.withAppendedId(
                     Uri.parse("content://downloads/public_downloads"),
-                    id.toLong()
+                    id.toLong(),
                 )
             }
             isExternalStorageDocument(copy) -> {
@@ -143,7 +143,7 @@ private fun getFilePath(context: Context, uri: Uri): String? {
                 projection,
                 selection,
                 selectionArgs,
-                null
+                null,
             )
             if (cursor != null && cursor.moveToFirst()) {
                 return cursor.getString(0)

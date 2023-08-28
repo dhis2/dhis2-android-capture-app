@@ -42,7 +42,7 @@ class JiraViewModelTest {
     fun `Should get jira tickets if user is set`() {
         whenever(jiraRepository.hasJiraSessionSaved()) doReturn true
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
         jiraViewModel.init()
         verify(jiraRepository, times(1)).getJiraIssues(anyOrNull())
@@ -67,7 +67,7 @@ class JiraViewModelTest {
         jiraViewModel.onJiraPassChanged("pass", 0, 0, 0)
         jiraViewModel.onJiraUserChanged("userName", 0, 0, 0)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
         jiraViewModel.openSession()
         verify(jiraRepository, times(1)).setAuth("userName", "pass")
@@ -88,7 +88,7 @@ class JiraViewModelTest {
         val observer: Observer<String> = mock()
         jiraViewModel.issueMessage.observeForever(observer)
         whenever(
-            jiraRepository.sendJiraIssue(any(), any())
+            jiraRepository.sendJiraIssue(any(), any()),
         ) doReturn Single.error(Throwable("This is an error"))
         jiraViewModel.sendIssue()
         val captor = argumentCaptor<String>()
@@ -103,16 +103,16 @@ class JiraViewModelTest {
         val observer: Observer<String> = mock()
         jiraViewModel.issueMessage.observeForever(observer)
         val mockedResponse = "{}".toResponseBody(
-            "*/*".toMediaTypeOrNull()
+            "*/*".toMediaTypeOrNull(),
         )
         whenever(
-            jiraRepository.sendJiraIssue(any(), any())
+            jiraRepository.sendJiraIssue(any(), any()),
         ) doReturn Single.just(mockedResponse)
         whenever(
-            resourceManager.jiraIssueSentMessage()
+            resourceManager.jiraIssueSentMessage(),
         ) doReturn "Sent"
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
         jiraViewModel.sendIssue()
 
@@ -130,10 +130,10 @@ class JiraViewModelTest {
         jiraViewModel.onCheckedChanged(true)
         jiraViewModel.issueListResponse.observeForever(observer)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(jiraIssuesResult)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
 
         jiraViewModel.getJiraTickets()
@@ -151,7 +151,7 @@ class JiraViewModelTest {
         val observer: Observer<JiraIssuesResult> = mock()
         jiraViewModel.issueListResponse.observeForever(observer)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.error(Throwable("Error"))
         whenever(jiraRepository.hasJiraSessionSaved()) doReturn true
 

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
 
 class ProgramEventDetailViewModelFactory(
-    private val mapStyleConfiguration: MapStyleConfiguration
+    private val mapStyleConfiguration: MapStyleConfiguration,
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

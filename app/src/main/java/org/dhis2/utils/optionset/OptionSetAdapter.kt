@@ -27,7 +27,7 @@ class OptionSetAdapter internal constructor(private val listener: OptionSetOnCli
                 LayoutInflater.from(viewGroup.context),
                 R.layout.item_option,
                 viewGroup,
-                false
+                false,
             )
         return OptionSetViewHolder(binding)
     }

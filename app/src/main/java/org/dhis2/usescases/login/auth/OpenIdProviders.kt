@@ -2,9 +2,9 @@ package org.dhis2.usescases.login.auth
 
 import android.content.Context
 import com.google.gson.Gson
+import org.dhis2.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import org.dhis2.R
 
 class OpenIdProviders(private val context: Context) {
 

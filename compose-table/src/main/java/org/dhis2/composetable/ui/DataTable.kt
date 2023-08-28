@@ -36,10 +36,10 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
                     onTableResize = {
                         tableResizeActions.onTableDimensionResize(
                             tableModel.id ?: "",
-                            it
+                            it,
                         )
                     },
-                    onResizing = { resizingCell = it }
+                    onResizing = { resizingCell = it },
                 ),
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollStates[index],
@@ -48,19 +48,19 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
                         isSelected = tableSelection.isHeaderSelected(
                             selectedTableId = tableModel.id ?: "",
                             columnIndex = columnIndex,
-                            columnHeaderRowIndex = rowIndex
+                            columnHeaderRowIndex = rowIndex,
                         ),
                         isParentSelected = tableSelection.isParentHeaderSelected(
                             selectedTableId = tableModel.id ?: "",
                             columnIndex = columnIndex,
-                            columnHeaderRowIndex = rowIndex
+                            columnHeaderRowIndex = rowIndex,
                         ),
-                        columnIndex = columnIndex
+                        columnIndex = columnIndex,
                     )
                 },
                 onTableCornerClick = {
                     tableInteractions.onSelectionChange(
-                        TableSelection.AllCellSelection(tableModel.id ?: "")
+                        TableSelection.AllCellSelection(tableModel.id ?: ""),
                     )
                 },
                 onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
@@ -72,22 +72,22 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
                             childrenOfSelectedHeader =
                             tableModel.countChildrenOfSelectedHeader(
                                 headerRowIndex,
-                                headerColumnIndex
-                            )
-                        )
+                                headerColumnIndex,
+                            ),
+                        ),
                     )
                 },
                 onHeaderResize = { column, width ->
                     tableResizeActions.onColumnHeaderResize(
                         tableModel.id ?: "",
                         column,
-                        width
+                        width,
                     )
                 },
                 onResizing = { resizingCell = it },
                 onResetResize = {
                     tableResizeActions.onTableDimensionReset(tableModel.id ?: "")
-                }
+                },
             )
         },
         tableItemRow = { index, tableModel, tableRowModel ->
@@ -99,30 +99,30 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
                     styleForRowHeader(
                         isSelected = tableSelection.isRowSelected(
                             selectedTableId = tableModel.id ?: "",
-                            rowHeaderIndex = rowHeaderIndex ?: -1
+                            rowHeaderIndex = rowHeaderIndex ?: -1,
                         ),
                         isOtherRowSelected = tableSelection.isOtherRowSelected(
                             selectedTableId = tableModel.id ?: "",
-                            rowHeaderIndex = rowHeaderIndex ?: -1
-                        )
+                            rowHeaderIndex = rowHeaderIndex ?: -1,
+                        ),
                     )
                 },
                 onRowHeaderClick = { rowHeaderIndex ->
                     tableInteractions.onSelectionChange(
                         TableSelection.RowSelection(
                             tableId = tableModel.id ?: "",
-                            rowIndex = rowHeaderIndex ?: -1
-                        )
+                            rowIndex = rowHeaderIndex ?: -1,
+                        ),
                     )
                 },
                 onDecorationClick = { tableInteractions.onDecorationClick(it) },
                 onHeaderResize = { width ->
                     tableResizeActions.onRowHeaderResize(
                         tableModel.id ?: "",
-                        width
+                        width,
                     )
                 },
-                onResizing = { resizingCell = it }
+                onResizing = { resizingCell = it },
             )
         },
         verticalResizingView = { tableHeight ->
@@ -132,12 +132,12 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
                         .height(
                             with(LocalDensity.current) {
                                 it.toDp()
-                            }
+                            },
                         )
                 } ?: Modifier,
-                provideResizingCell = { resizingCell }
+                provideResizingCell = { resizingCell },
             )
         },
-        bottomContent = bottomContent
+        bottomContent = bottomContent,
     )
 }

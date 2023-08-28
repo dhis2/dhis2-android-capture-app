@@ -3,18 +3,18 @@ package org.dhis2.utils.optionset
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import io.reactivex.disposables.CompositeDisposable
-import java.util.concurrent.TimeUnit
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 
 class OptionSetPresenter(
     val view: OptionSetView,
     val d2: D2,
-    val schedulerProvider: SchedulerProvider
+    val schedulerProvider: SchedulerProvider,
 ) {
 
     private lateinit var optionSetOptionHandler: OptionSetOptionsHandler
@@ -26,7 +26,7 @@ class OptionSetPresenter(
         this.optionSetOptionHandler = OptionSetOptionsHandler(
             optionSet.optionSetConfiguration?.optionsToHide,
             optionSet.optionSetConfiguration?.optionsToShow,
-            null
+            null,
         )
         getOptions()
     }
@@ -36,7 +36,7 @@ class OptionSetPresenter(
         this.optionSetOptionHandler = OptionSetOptionsHandler(
             optionSetTable.optionsToHide,
             null,
-            optionSetTable.optionGroupsToHide
+            optionSetTable.optionGroupsToHide,
         )
         getOptions()
     }
@@ -75,15 +75,15 @@ class OptionSetPresenter(
                                 return dataSource
                             }
                         },
-                        20
+                        20,
                     ).build()
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.setLiveData(it) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 

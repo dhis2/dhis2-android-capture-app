@@ -47,7 +47,7 @@ class FieldViewModelFactoryImplTest {
             displayNameProvider,
             uiEventTypesProvider,
             keyboardActionProvider,
-            legendValueProvider
+            legendValueProvider,
         )
     }
 
@@ -58,7 +58,7 @@ class FieldViewModelFactoryImplTest {
             programTrackedEntityAttribute,
             "Peter",
             true,
-            null
+            null,
         )
         verify(trackedEntityAttribute).displayFormName()
         verify(programTrackedEntityAttribute, never()).displayName()

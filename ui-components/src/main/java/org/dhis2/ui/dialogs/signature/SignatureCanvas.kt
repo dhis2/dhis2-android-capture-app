@@ -36,14 +36,14 @@ fun SignatureCanvas(modifier: Modifier = Modifier, drawing: MutableState<Offset?
                     }
                 }
                 true
-            }.graphicsLayer { clip = true }
+            }.graphicsLayer { clip = true },
     ) {
         drawing.value?.let {
             drawPath(
                 path = path,
                 color = Color.Black,
                 alpha = 1f,
-                style = Stroke(7f)
+                style = Stroke(7f),
             )
         } ?: path.reset()
     }

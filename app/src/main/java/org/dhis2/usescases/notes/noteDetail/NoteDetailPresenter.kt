@@ -8,7 +8,7 @@ class NoteDetailPresenter(
     private val view: NoteDetailView,
     private val scheduler: SchedulerProvider,
     private val noteId: String?,
-    private val repository: NoteDetailRepository
+    private val repository: NoteDetailRepository,
 ) {
 
     val disposable = CompositeDisposable()
@@ -20,8 +20,8 @@ class NoteDetailPresenter(
                 .observeOn(scheduler.ui())
                 .subscribe(
                     { note -> note?.let { view.setNote(note) } },
-                    Timber::d
-                )
+                    Timber::d,
+                ),
         )
     }
 
@@ -36,8 +36,8 @@ class NoteDetailPresenter(
                 .observeOn(scheduler.ui())
                 .subscribe(
                     { view.noteSaved() },
-                    Timber::d
-                )
+                    Timber::d,
+                ),
         )
     }
 

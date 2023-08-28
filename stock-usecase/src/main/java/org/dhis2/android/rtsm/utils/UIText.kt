@@ -7,7 +7,7 @@ sealed class UIText {
     data class DynamicString(val value: String) : UIText()
     class StringRes(
         @androidx.annotation.StringRes val resId: Int,
-        vararg val args: Any
+        vararg val args: Any,
     ) : UIText()
 
     @Composable

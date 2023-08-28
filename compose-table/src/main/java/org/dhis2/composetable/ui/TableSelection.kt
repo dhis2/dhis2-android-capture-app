@@ -4,23 +4,23 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 sealed class TableSelection(open val tableId: String) {
     data class Unselected(
-        val previousSelectedTableId: String? = null
+        val previousSelectedTableId: String? = null,
     ) : TableSelection(previousSelectedTableId ?: "")
 
     data class AllCellSelection(
-        override val tableId: String
+        override val tableId: String,
     ) : TableSelection(tableId)
 
     data class RowSelection(
         override val tableId: String,
-        val rowIndex: Int
+        val rowIndex: Int,
     ) : TableSelection(tableId)
 
     data class ColumnSelection(
         override val tableId: String,
         val columnIndex: Int,
         val columnHeaderRow: Int,
-        val childrenOfSelectedHeader: Map<Int, HeaderCellRange>
+        val childrenOfSelectedHeader: Map<Int, HeaderCellRange>,
     ) : TableSelection(tableId)
 
     data class HeaderCellRange(val size: Int, val firstIndex: Int, val lastIndex: Int) {
@@ -33,7 +33,7 @@ sealed class TableSelection(open val tableId: String) {
         override val tableId: String,
         val columnIndex: Int,
         val rowIndex: Int,
-        val globalIndex: Int
+        val globalIndex: Int,
     ) : TableSelection(tableId)
 
     fun getSelectedCellRowIndex(selectedTableId: String): Int =
@@ -55,14 +55,14 @@ sealed class TableSelection(open val tableId: String) {
     fun isParentHeaderSelected(
         selectedTableId: String,
         columnIndex: Int,
-        columnHeaderRowIndex: Int
+        columnHeaderRowIndex: Int,
     ) = selectedTableId == tableId && (this is ColumnSelection) &&
         (
             when {
                 columnHeaderRowIndex < this.columnHeaderRow -> false
                 columnHeaderRowIndex == this.columnHeaderRow -> this.columnIndex != columnIndex
                 else -> this.childrenOfSelectedHeader[columnHeaderRowIndex]?.isInRange(
-                    columnIndex
+                    columnIndex,
                 ) ?: false
             }
             )

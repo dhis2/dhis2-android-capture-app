@@ -24,13 +24,13 @@ const val DEFAULT_ATTRIBUTION = "© OpenStreetMap contributors, © Carto"
 
 class BaseMapManager(
     private val context: Context,
-    val baseMapStyles: List<BaseMapStyle>
+    val baseMapStyles: List<BaseMapStyle>,
 ) {
     fun getBaseMaps() = baseMapStyles.map {
         BaseMap(
             baseMapStyle = it,
             basemapName = baseMapName(it.id),
-            basemapImage = baseMapImage(it.id)
+            basemapImage = baseMapImage(it.id),
         )
     }
 

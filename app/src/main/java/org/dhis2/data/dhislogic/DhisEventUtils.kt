@@ -1,8 +1,8 @@
 package org.dhis2.data.dhislogic
 
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
+import javax.inject.Inject
 
 class DhisEventUtils @Inject constructor(val d2: D2) {
     fun newEventNeedsExtraInfo(eventUid: String): Boolean {

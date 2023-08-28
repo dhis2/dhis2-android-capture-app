@@ -23,7 +23,7 @@ class FormRepositoryImpl(
     private val dataEntryRepository: DataEntryRepository?,
     private val ruleEngineRepository: RuleEngineRepository?,
     private val rulesUtilsProvider: RulesUtilsProvider?,
-    private val legendValueProvider: LegendValueProvider?
+    private val legendValueProvider: LegendValueProvider?,
 ) : FormRepository {
 
     private var completionPercentage: Float = 0f
@@ -105,7 +105,7 @@ class FormRepositoryImpl(
     private fun calculateCompletionPercentage(list: List<FieldUiModel>) {
         val unsupportedValueTypes = listOf(
             ValueType.TRACKER_ASSOCIATE,
-            ValueType.USERNAME
+            ValueType.USERNAME,
         )
         val fields = list.filter {
             it.valueType != null &&
@@ -132,7 +132,7 @@ class FormRepositoryImpl(
                 fieldUid = warningField.fieldUid,
                 fieldName = itemList.find { it.uid == warningField.fieldUid }?.label ?: "",
                 IssueType.WARNING,
-                warningField.errorMessage
+                warningField.errorMessage,
             )
         } ?: emptyList()
         val result = when {
@@ -143,7 +143,7 @@ class FormRepositoryImpl(
                     warningFields = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    allowDiscard = allowDiscard
+                    allowDiscard = allowDiscard,
                 )
             }
             mandatoryItemsWithoutValue.isNotEmpty() -> {
@@ -153,21 +153,21 @@ class FormRepositoryImpl(
                     warningFields = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    allowDiscard = allowDiscard
+                    allowDiscard = allowDiscard,
                 )
             }
             itemsWithWarning.isNotEmpty() -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                 )
             }
             backupOfChangedItems().isNotEmpty() && allowDiscard -> NotSavedResult
             else -> {
                 SuccessfulResult(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                 )
             }
         }
@@ -194,7 +194,7 @@ class FormRepositoryImpl(
                 issueType = IssueType.ERROR,
                 message = errorItem.error?.let {
                     fieldErrorMessageProvider.getFriendlyErrorMessage(it)
-                } ?: ""
+                } ?: "",
             )
         }
     }.plus(
@@ -203,13 +203,13 @@ class FormRepositoryImpl(
                 fieldUid = errorField.fieldUid,
                 fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
                 issueType = IssueType.ERROR,
-                message = errorField.errorMessage
+                message = errorField.errorMessage,
             )
-        } ?: emptyList()
+        } ?: emptyList(),
     )
 
     private fun List<FieldUiModel>.applyRuleEffects(
-        skipProgramRules: Boolean = false
+        skipProgramRules: Boolean = false,
     ): List<FieldUiModel> {
         ruleEffects = if (skipProgramRules) {
             ruleEffects
@@ -221,7 +221,7 @@ class FormRepositoryImpl(
             applyForEvent = dataEntryRepository?.isEvent == true,
             fieldViewModels = fieldMap,
             ruleEffects,
-            valueStore = formValueStore
+            valueStore = formValueStore,
         )
         ruleEffectsResult?.fieldsToUpdate?.takeIf { it.isNotEmpty() }
             ?.forEach { fieldWithNewValue ->
@@ -265,7 +265,7 @@ class FormRepositoryImpl(
 
     private fun updateSection(
         sectionFieldUiModel: FieldUiModel,
-        fields: List<FieldUiModel>
+        fields: List<FieldUiModel>,
     ): FieldUiModel {
         var total = 0
         var values = 0
@@ -307,7 +307,7 @@ class FormRepositoryImpl(
             total,
             values,
             errorCount + mandatoryCount + errorFields,
-            warningCount
+            warningCount,
         ) ?: sectionFieldUiModel
     }
 
@@ -326,7 +326,7 @@ class FormRepositoryImpl(
             },
             ruleEffectsResult?.optionsToHide(fieldUiModel.uid) ?: emptyList(),
             ruleEffectsResult?.optionGroupsToHide(fieldUiModel.uid) ?: emptyList(),
-            ruleEffectsResult?.optionGroupsToShow(fieldUiModel.uid) ?: emptyList()
+            ruleEffectsResult?.optionGroupsToShow(fieldUiModel.uid) ?: emptyList(),
         ) ?: fieldUiModel
     }
 
@@ -353,15 +353,15 @@ class FormRepositoryImpl(
                             displayNameProvider.provideDisplayName(
                                 valueType,
                                 value,
-                                item.optionSet
-                            )
+                                item.optionSet,
+                            ),
                         )
                         .setLegend(
                             legendValueProvider?.provideLegendValue(
                                 item.uid,
-                                value
-                            )
-                        )
+                                value,
+                            ),
+                        ),
                 )
             }
         }
@@ -380,14 +380,14 @@ class FormRepositoryImpl(
             }?.let { item ->
                 itemList = list.updated(
                     list.indexOf(item),
-                    item.setIsLoadingData(requestInProcess)
+                    item.setIsLoadingData(requestInProcess),
                 )
             }
         }
     }
 
     private fun List<FieldUiModel>.mergeListWithErrorFields(
-        fieldsWithError: MutableList<RowAction>
+        fieldsWithError: MutableList<RowAction>,
     ): List<FieldUiModel> {
         mandatoryItemsWithoutValue.clear()
         val mergedList = this.map { item ->
@@ -402,8 +402,8 @@ class FormRepositoryImpl(
                     .setDisplayName(
                         displayNameProvider.provideDisplayName(
                             action.valueType,
-                            action.value
-                        )
+                            action.value,
+                        ),
                     )
             } ?: item
         }

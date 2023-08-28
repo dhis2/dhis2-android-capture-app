@@ -15,12 +15,12 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 
 class ChartViewHolder(
     val binding: ItemChartBinding,
-    val onChartTypeChanged: () -> Unit
+    val onChartTypeChanged: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeChart.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -41,7 +41,7 @@ class ChartViewHolder(
                     onChartTypeChanged()
                     loadChart(chart)
                 }
-            }
+            },
         )
         loadChart(chart)
     }
@@ -49,7 +49,7 @@ class ChartViewHolder(
     private fun loadChart(chart: ChartModel) {
         loadComposeChart(
             chart = chart,
-            visible = chart.observableChartType.get() == ChartType.TABLE && !chart.hideChart()
+            visible = chart.observableChartType.get() == ChartType.TABLE && !chart.hideChart(),
         )
         if (chart.observableChartType.get() != ChartType.TABLE) {
             binding.resetDimensions.visibility = GONE

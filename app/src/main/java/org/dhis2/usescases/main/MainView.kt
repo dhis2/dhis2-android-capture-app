@@ -26,10 +26,10 @@
 package org.dhis2.usescases.main
 
 import androidx.annotation.UiThread
-import java.io.File
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.general.AbstractActivityContracts
+import java.io.File
 
 interface MainView : AbstractActivityContracts.View {
 

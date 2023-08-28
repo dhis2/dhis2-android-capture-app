@@ -17,7 +17,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
-import java.util.HashMap
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.TeiMarkers
@@ -31,6 +30,7 @@ import org.dhis2.maps.layer.LayerType
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
+import java.util.HashMap
 
 class TeiMapManager(mapView: MapView) : MapManager(mapView) {
 
@@ -56,7 +56,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         teiFeatureCollections: HashMap<String, FeatureCollection>,
         eventsFeatureCollection: EventsByProgramStage,
         fieldFeatures: MutableMap<String, FeatureCollection>,
-        boundingBox: BoundingBox
+        boundingBox: BoundingBox,
     ) {
         this.teiFeatureCollections = teiFeatureCollections
         this.eventsFeatureCollection = eventsFeatureCollection.featureCollectionMap
@@ -79,7 +79,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         style?.apply {
             style?.addImage(
                 MapLayerManager.TEI_ICON_ID,
-                getTintedDrawable(TEIS_SOURCE_ID)
+                getTintedDrawable(TEIS_SOURCE_ID),
             )
             mapStyle?.teiSymbolIcon?.let {
                 addImage(
@@ -87,20 +87,20 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
-                        mapStyle!!.teiColor
-                    )
+                        mapStyle!!.teiColor,
+                    ),
                 )
             }
             mapStyle?.enrollmentSymbolIcon?.let {
                 addImage(
                     MapLayerManager.ENROLLMENT_ICON_ID,
-                    getTintedDrawable(ENROLLMENT_SOURCE_ID)
+                    getTintedDrawable(ENROLLMENT_SOURCE_ID),
                 )
             }
             mapStyle?.stagesStyle?.keys?.forEach { key ->
                 addImage(
                     "${MapLayerManager.STAGE_ICON_ID}_$key",
-                    getTintedDrawable(key)
+                    getTintedDrawable(key),
                 )
             }
         }
@@ -109,30 +109,30 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             BitmapUtils.getBitmapFromDrawable(
                 AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.ic_arrowhead
-                )
+                    R.drawable.ic_arrowhead,
+                ),
             )!!,
-            true
+            true,
         )
         style?.addImage(
             RelationshipMapManager.RELATIONSHIP_ICON,
             BitmapUtils.getBitmapFromDrawable(
                 AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.map_marker
-                )
+                    R.drawable.map_marker,
+                ),
             )!!,
-            true
+            true,
         )
         style?.addImage(
             RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL,
             BitmapUtils.getBitmapFromDrawable(
                 AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.ic_arrowhead_bidirectional
-                )
+                    R.drawable.ic_arrowhead_bidirectional,
+                ),
             )!!,
-            true
+            true,
         )
 
         mapView.addOnStyleImageMissingListener { id ->
@@ -146,8 +146,8 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
-                        mapStyle!!.teiColor
-                    )
+                        mapStyle!!.teiColor,
+                    ),
                 )
             }
         }
@@ -205,11 +205,11 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 .into(object : CustomTarget<Bitmap>(30.dp, 30.dp) {
                     override fun onResourceReady(
                         resource: Bitmap,
-                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?,
                     ) {
                         teiImages[feature.getStringProperty(TEI_UID)] = TeiMarkers.getMarker(
                             mapView.context,
-                            resource
+                            resource,
                         )
                         if (index == featuresWithImages.size - 1) {
                             setSource()
@@ -228,13 +228,13 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 teiFeatureCollections?.keys?.filter {
                     it != TEIS_SOURCE_ID && it != ENROLLMENT_SOURCE_ID &&
                         !eventsFeatureCollection?.containsKey(it)!!
-                }?.toList() ?: emptyList()
+                }?.toList() ?: emptyList(),
             ).updateLayers(
                 LayerType.TEI_EVENT_LAYER,
-                eventsFeatureCollection?.keys?.toList() ?: emptyList()
+                eventsFeatureCollection?.keys?.toList() ?: emptyList(),
             ).updateLayers(
                 LayerType.FIELD_COORDINATE_LAYER,
-                fieldFeatureCollections.keys.toList() ?: emptyList()
+                fieldFeatureCollections.keys.toList() ?: emptyList(),
             )
     }
 
@@ -242,7 +242,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         fieldFeatureCollections.entries.forEach {
             style?.addImage(
                 "${EventMapManager.DE_ICON_ID}_${it.key}",
-                getTintedDrawable(it.key)
+                getTintedDrawable(it.key),
             )
         }
         teiFeatureCollections?.entries?.filter {
@@ -251,7 +251,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }?.forEach {
             style?.addImage(
                 "${RelationshipMapManager.RELATIONSHIP_ICON}_${it.key}",
-                getTintedDrawable(it.key)
+                getTintedDrawable(it.key),
             )
         }
     }
@@ -259,12 +259,12 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     private fun getTintedDrawable(sourceId: String): Drawable {
         val (drawable, color) = mapLayerManager.getNextAvailableDrawable(sourceId) ?: Pair(
             R.drawable.map_marker,
-            Color.parseColor("#E71409")
+            Color.parseColor("#E71409"),
         )
 
         val initialDrawable = AppCompatResources.getDrawable(
             mapView.context,
-            drawable
+            drawable,
         )?.mutate()
         val wrappedDrawable = DrawableCompat.wrap(initialDrawable!!)
         DrawableCompat.setTint(wrappedDrawable, color)
@@ -275,7 +275,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     override fun findFeature(
         source: String,
         propertyName: String,
-        propertyValue: String
+        propertyValue: String,
     ): Feature? {
         return teiFeatureCollections?.get(source)?.features()?.firstOrNull {
             it.getStringProperty(propertyName) == propertyValue
@@ -288,7 +288,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         val mainProperties = arrayListOf(
             TEI_UID,
             RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT
+            MapEventToFeatureCollection.EVENT,
         )
         var featureToReturn: Feature? = null
         mainLoop@ for (
@@ -327,7 +327,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     override fun findFeatures(
         source: String,
         propertyName: String,
-        propertyValue: String
+        propertyValue: String,
     ): List<Feature> {
         return mutableListOf<Feature>().apply {
             teiFeatureCollections?.filterKeys { it != ENROLLMENT_SOURCE_ID }
@@ -346,7 +346,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
 
             teiFeatureCollections?.filterKeys {
                 it == ENROLLMENT_SOURCE_ID && mapLayerManager.getLayer(
-                    ENROLLMENT_SOURCE_ID
+                    ENROLLMENT_SOURCE_ID,
                 )?.visible == true
             }
                 ?.map { (key, collection) ->
@@ -361,12 +361,12 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             fieldFeatureCollections.values.map { collection ->
                 collection.features()?.filter {
                     mapLayerManager.getLayer(
-                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME)
+                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME),
                     )?.visible == true &&
                         it.getStringProperty(propertyName) == propertyValue
                 }?.map {
                     mapLayerManager.getLayer(
-                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME)
+                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME),
                     )?.setSelectedItem(it)
                     it
                 }?.let { addAll(it) }
@@ -378,7 +378,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         val mainProperties = arrayListOf(
             TEI_UID,
             RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT
+            MapEventToFeatureCollection.EVENT,
         )
 
         return mainProperties.map { property ->
@@ -391,13 +391,13 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             fieldFeatureCollections[source]?.features()?.get(0)?.let {
                 if (it.hasProperty(MapCoordinateFieldToFeatureCollection.STAGE)) {
                     "${
-                    it.getStringProperty(
-                        MapCoordinateFieldToFeatureCollection.STAGE
-                    )
+                        it.getStringProperty(
+                            MapCoordinateFieldToFeatureCollection.STAGE,
+                        )
                     } - ${
-                    it.getStringProperty(
-                        MapCoordinateFieldToFeatureCollection.FIELD_NAME
-                    )
+                        it.getStringProperty(
+                            MapCoordinateFieldToFeatureCollection.FIELD_NAME,
+                        )
                     }"
                 } else {
                     it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME)
@@ -429,7 +429,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                         layer.any { it.contains("RELATIONSHIP") } -> findFeature(
                             source,
                             RELATIONSHIP_UID,
-                            features.first().getStringProperty(RELATIONSHIP_UID)
+                            features.first().getStringProperty(RELATIONSHIP_UID),
                         )
                         else -> features.first()
                     }

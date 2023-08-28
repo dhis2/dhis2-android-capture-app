@@ -8,8 +8,8 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import androidx.core.graphics.ColorUtils
-import java.util.Objects
 import org.dhis2.commons.R
+import java.util.Objects
 
 class ColorUtils {
     companion object {

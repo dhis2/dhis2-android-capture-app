@@ -5,7 +5,7 @@ data class FingerPrintResult(val type: Type, val message: String?)
 enum class Type {
     SUCCESS,
     INFO,
-    ERROR
+    ERROR,
 }
 
 enum class Reason {
@@ -27,5 +27,5 @@ enum class Reason {
     AUTHENTICATION_START,
     AUTHENTICATION_SUCCESS,
     AUTHENTICATION_FAIL,
-    UNKNOWN
+    UNKNOWN,
 }

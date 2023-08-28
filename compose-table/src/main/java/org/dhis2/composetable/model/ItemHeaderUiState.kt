@@ -12,5 +12,5 @@ data class ItemHeaderUiState(
     val onCellSelected: (Int?) -> Unit,
     val onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     val onHeaderResize: (Float) -> Unit,
-    val onResizing: (ResizingCell?) -> Unit
+    val onResizing: (ResizingCell?) -> Unit,
 )

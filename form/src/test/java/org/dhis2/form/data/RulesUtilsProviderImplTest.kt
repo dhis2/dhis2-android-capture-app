@@ -63,7 +63,7 @@ class RulesUtilsProviderImplTest {
             provideDisplayName(
                 valueType = ValueType.TEXT,
                 value = "Old Value",
-                optionSet = "optionSetUid"
+                optionSet = "optionSetUid",
             )
         } doReturn "OldDisplayName"
     }
@@ -85,7 +85,7 @@ class RulesUtilsProviderImplTest {
             displayNameProvider,
             uiEventTypesProvider,
             keyboardActionProvider,
-            legendValueProvider
+            legendValueProvider,
         )
         testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid }.toMutableMap()
     }
@@ -107,15 +107,15 @@ class RulesUtilsProviderImplTest {
                 ValueType.TEXT,
                 "section4",
                 value = null,
-                optionSet = "optionSetUid"
+                optionSet = "optionSetUid",
             ),
             randomFieldViewModel(
                 "uid12",
                 ValueType.TEXT,
                 "section4",
                 value = "Old Value",
-                optionSet = "optionSetUid"
-            )
+                optionSet = "optionSetUid",
+            ),
         )
     }
 
@@ -124,7 +124,7 @@ class RulesUtilsProviderImplTest {
         valueType: ValueType,
         section: String,
         value: String? = "test",
-        optionSet: String? = null
+        optionSet: String? = null,
     ): FieldUiModel {
         return fieldFactory.create(
             uid,
@@ -142,7 +142,7 @@ class RulesUtilsProviderImplTest {
             ObjectStyle.builder().build(),
             "",
             null,
-            null
+            null,
         )
     }
 
@@ -154,15 +154,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionShowWarning.create("content", "action_data", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertNotNull(testFieldViewModels["uid1"]!!.warning)
@@ -177,15 +177,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionShowError.create("content", "action_data", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertNotNull(testFieldViewModels[testingUid]!!.error)
@@ -201,22 +201,22 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionHideField.create("content", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         whenever(valueStore.saveWithTypeCheck(testingUid, null)) doReturn Flowable.just(
             StoreResult(
                 testingUid,
-                ValueStoreResult.VALUE_CHANGED
-            )
+                ValueStoreResult.VALUE_CHANGED,
+            ),
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         Assert.assertFalse(testFieldViewModels.contains(testingUid))
@@ -230,8 +230,8 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionDisplayText.createForFeedback("content", "action data"),
-                "data"
-            )
+                "data",
+            ),
         )
 
         val testFieldViewModelSize = testFieldViewModels.size
@@ -240,7 +240,7 @@ class RulesUtilsProviderImplTest {
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(testFieldViewModels.size == testFieldViewModelSize)
@@ -253,8 +253,8 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionDisplayKeyValuePair.createForIndicators("content", "action data"),
-                "data"
-            )
+                "data",
+            ),
         )
 
         val testFieldViewModelSize = testFieldViewModels.size
@@ -263,7 +263,7 @@ class RulesUtilsProviderImplTest {
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(testFieldViewModels.size == testFieldViewModelSize)
@@ -277,8 +277,8 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionHideSection.create(testingSectionUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         val mandatoryFieldUid = "uid3"
@@ -290,7 +290,7 @@ class RulesUtilsProviderImplTest {
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(testFieldViewModels[mandatoryFieldUid] != null)
@@ -306,15 +306,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionAssign.create("content", "data", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
@@ -331,29 +331,29 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid1",
                 RuleActionAssign.create("content", "data", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid2",
                 RuleActionAssign.create("content", "data", testingUid2),
-                "test"
-            )
+                "test",
+            ),
         )
 
         whenever(valueStore.saveWithTypeCheck(any(), any())) doReturn Flowable.just(
             StoreResult(
                 testingUid,
-                ValueStoreResult.VALUE_CHANGED
-            )
+                ValueStoreResult.VALUE_CHANGED,
+            ),
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
@@ -372,15 +372,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionAssign.create("content", "data", null),
-                "data"
-            )
+                "data",
+            ),
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(result.fieldsToUpdate.isEmpty())
@@ -394,15 +394,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionAssign.create("content", newValue, "uid11"),
-                newValue
-            )
+                newValue,
+            ),
         )
         // And a target field with an empty value
         assertNull(testFieldViewModels["uid11"]!!.value)
 
         // And a target field with option set
         whenever(
-            optionsRepository.getOptionByCode("optionSetUid", newValue)
+            optionsRepository.getOptionByCode("optionSetUid", newValue),
         ) doReturn Option.builder()
             .uid("OptionUid")
             .code(newValue)
@@ -415,7 +415,7 @@ class RulesUtilsProviderImplTest {
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         // Then the field value has been updated
@@ -435,13 +435,13 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionAssign.create("content", newValue, "uid12"),
-                newValue
-            )
+                newValue,
+            ),
         )
         // And a target field with an existing value
         assertEquals(testFieldViewModels["uid12"]!!.value, oldValue)
         whenever(
-            optionsRepository.getOptionByDisplayName(optionSetUid, "OldDisplayName")
+            optionsRepository.getOptionByDisplayName(optionSetUid, "OldDisplayName"),
         ) doReturn Option.builder()
             .uid("OptionUid")
             .displayName("OldDisplayName")
@@ -451,7 +451,7 @@ class RulesUtilsProviderImplTest {
 
         // And a target field with option set
         whenever(
-            optionsRepository.getOptionByCode(optionSetUid, newValue)
+            optionsRepository.getOptionByCode(optionSetUid, newValue),
         ) doReturn Option.builder()
             .uid("OptionUid")
             .code(newValue)
@@ -464,7 +464,7 @@ class RulesUtilsProviderImplTest {
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         // Then the field value has been updated
@@ -482,15 +482,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionSetMandatoryField.create(testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(testFieldViewModels[testingUid]!!.mandatory)
@@ -504,15 +504,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionWarningOnCompletion.create("content", "action_data", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertEquals(testFieldViewModels[testingUid]!!.warning, "content data")
@@ -528,15 +528,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionErrorOnCompletion.create("content", "action_data", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
@@ -551,15 +551,15 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionHideProgramStage.create(testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
     }
 
@@ -573,8 +573,8 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionHideOption.create("content", "optionUid", "field"),
-                "data"
-            )
+                "data",
+            ),
         )
 
         testFieldViewModels["field"] = FieldUiModelImpl(
@@ -601,23 +601,23 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             false,
-            null
+            null,
         )
 
         whenever(valueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
             "field",
-            ValueStoreResult.VALUE_HAS_NOT_CHANGED
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(
-            result.optionsToHide.isNotEmpty()
+            result.optionsToHide.isNotEmpty(),
         )
 
         verify(valueStore).deleteOptionValueIfSelected("field", "optionUid")
@@ -629,8 +629,8 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionHideOptionGroup.create("content", "optionGroupUid", "field"),
-                "data"
-            )
+                "data",
+            ),
         )
 
         testFieldViewModels["field"] = FieldUiModelImpl(
@@ -657,33 +657,33 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             false,
-            null
+            null,
         )
 
         whenever(
             valueStore.deleteOptionValueIfSelectedInGroup(
                 any(),
                 any(),
-                any()
-            )
+                any(),
+            ),
         ) doReturn StoreResult(
             "field",
-            ValueStoreResult.VALUE_HAS_NOT_CHANGED
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(
-            result.optionGroupsToHide.isNotEmpty()
+            result.optionGroupsToHide.isNotEmpty(),
         )
 
         verify(
-            valueStore
+            valueStore,
         ).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", true)
     }
 
@@ -693,8 +693,8 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionShowOptionGroup.create("content", "optionGroupUid", "field"),
-                "data"
-            )
+                "data",
+            ),
         )
 
         testFieldViewModels["field"] = FieldUiModelImpl(
@@ -721,18 +721,18 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             false,
-            null
+            null,
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         assertTrue(
-            result.optionGroupsToShow.isNotEmpty()
+            result.optionGroupsToShow.isNotEmpty(),
         )
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", false)
     }
@@ -744,29 +744,29 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionHideField.create("content", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid2",
                 RuleActionAssign.create("content", "data", testingUid),
-                "data"
-            )
+                "data",
+            ),
         )
 
         whenever(valueStore.saveWithTypeCheck(testingUid, null)) doReturn Flowable.just(
             StoreResult(
                 testingUid,
-                ValueStoreResult.VALUE_CHANGED
-            )
+                ValueStoreResult.VALUE_CHANGED,
+            ),
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
 
         Assert.assertFalse(testFieldViewModels.contains(testingUid))
@@ -784,28 +784,28 @@ class RulesUtilsProviderImplTest {
             RuleEffect.create(
                 "ruleUid",
                 RuleActionAssign.create("content", "5.0", integerUid),
-                "5.0"
-            )
+                "5.0",
+            ),
         )
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
                 RuleActionAssign.create("content", "2.52", numberUid),
-                "2.52"
-            )
+                "2.52",
+            ),
         )
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
                 RuleActionAssign.create("content", "1", booleanUid),
-                "1"
-            )
+                "1",
+            ),
         )
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
             testRuleEffects,
-            valueStore
+            valueStore,
         )
         assertTrue(testFieldViewModels[integerUid]?.value == "5")
         assertTrue(testFieldViewModels[numberUid]?.value == "2.52")

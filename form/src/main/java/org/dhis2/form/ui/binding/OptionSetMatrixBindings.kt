@@ -26,7 +26,7 @@ fun ImageView.setOptionImage(option: Option) {
             context,
             option.style().icon(),
             R.drawable.ic_default_icon,
-            ColorUtils()
+            ColorUtils(),
         )
     val color =
         ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
@@ -94,7 +94,7 @@ fun FrameLayout.addOptions(item: FieldUiModel) {
 private fun configLayoutParams(index: Int, numberOfColumns: Int, parentWidth: Int) =
     FrameLayout.LayoutParams(
         getWidth(numberOfColumns, parentWidth),
-        FrameLayout.LayoutParams.WRAP_CONTENT
+        FrameLayout.LayoutParams.WRAP_CONTENT,
     ).apply {
         topMargin = getTopMargin(index, numberOfColumns)
         marginStart = getStartMargin(index, numberOfColumns, parentWidth)

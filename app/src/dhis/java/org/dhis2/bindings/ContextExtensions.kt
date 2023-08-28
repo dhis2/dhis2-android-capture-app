@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import android.Manifest
 import android.content.Context
@@ -21,7 +21,7 @@ fun Fragment.checkSMSPermission(requestPermission: Boolean, request: Int): Boole
         Manifest.permission.READ_PHONE_STATE,
         Manifest.permission.SEND_SMS,
         Manifest.permission.RECEIVE_SMS,
-        Manifest.permission.READ_SMS
+        Manifest.permission.READ_SMS,
     )
 
     if (context?.hasPermissions(smsPermissions) != true) {
@@ -45,5 +45,5 @@ fun Context.hasPermissions(permissions: Array<String>): Boolean {
 }
 
 fun Context.showSMS(): Boolean {
-    return BuildConfig.FLAVOR == "dhis" || BuildConfig.FLAVOR == "dhisUITesting"
+    return BuildConfig.FLAVOR == "dhis"
 }

@@ -1,6 +1,5 @@
 package org.dhis2.android.rtsm.ui.managestock
 
-import javax.inject.Inject
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.commons.resources.ResourceManager
@@ -14,10 +13,11 @@ import org.dhis2.composetable.model.TableRowModel
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerZeroOrPositiveFailure
+import javax.inject.Inject
 
 const val STOCK_TABLE_ID = "STOCK"
 class TableModelMapper @Inject constructor(
-    private val resources: ResourceManager
+    private val resources: ResourceManager,
 ) {
     fun map(entries: List<StockEntry>, stockLabel: String, qtdLabel: String): List<TableModel> {
         val tableRowModels = mutableListOf<TableRowModel>()
@@ -28,7 +28,7 @@ class TableModelMapper @Inject constructor(
                 rowHeader = RowHeader(
                     id = item.id,
                     title = item.name,
-                    row = index
+                    row = index,
                 ),
                 values = mapOf(
                     Pair(
@@ -38,8 +38,8 @@ class TableModelMapper @Inject constructor(
                             row = index,
                             column = 0,
                             editable = false,
-                            value = entry.stockOnHand ?: item.stockOnHand
-                        )
+                            value = entry.stockOnHand ?: item.stockOnHand,
+                        ),
                     ),
                     Pair(
                         1,
@@ -49,12 +49,12 @@ class TableModelMapper @Inject constructor(
                             column = 1,
                             value = entry.qty,
                             editable = true,
-                            error = entry.errorMessage
-                        )
-                    )
+                            error = entry.errorMessage,
+                        ),
+                    ),
                 ),
                 isLastRow = index == entries.lastIndex,
-                maxLines = 3
+                maxLines = 3,
             )
 
             tableRowModels.add(tableRowModel)
@@ -68,13 +68,13 @@ class TableModelMapper @Inject constructor(
                         TableHeaderRow(
                             mutableListOf(
                                 TableHeaderCell(stockLabel),
-                                TableHeaderCell(qtdLabel)
-                            )
-                        )
-                    )
+                                TableHeaderCell(qtdLabel),
+                            ),
+                        ),
+                    ),
                 ),
-                tableRows = tableRowModels
-            )
+                tableRows = tableRowModels,
+            ),
         )
     }
 
@@ -82,7 +82,7 @@ class TableModelMapper @Inject constructor(
         val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value ?: "0")
     ) {
         is Result.Failure -> getIntegerZeroOrPositiveErrorMessage(
-            result.failure as IntegerZeroOrPositiveFailure
+            result.failure as IntegerZeroOrPositiveFailure,
         )
         else -> null
     }

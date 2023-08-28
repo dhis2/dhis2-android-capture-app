@@ -13,7 +13,7 @@ import org.dhis2.usescases.searchTrackEntity.ui.WrappedSearchButton
 @ExperimentalAnimationApi
 fun ComposeView?.setLandscapeOpenSearchButton(
     searchTEIViewModel: SearchTEIViewModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     this?.setContent {
         MdcTheme {

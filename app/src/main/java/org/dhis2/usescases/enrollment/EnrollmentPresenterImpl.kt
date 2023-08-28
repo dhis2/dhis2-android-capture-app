@@ -3,7 +3,7 @@ package org.dhis2.usescases.enrollment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.Bindings.profilePicturePath
+import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.bindings.trackedEntityTypeForTei
 import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_TEI
@@ -48,7 +48,7 @@ class EnrollmentPresenterImpl(
     private val analyticsHelper: AnalyticsHelper,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val eventCollectionRepository: EventCollectionRepository,
-    private val teiAttributesProvider: TeiAttributesProvider
+    private val teiAttributesProvider: TeiAttributesProvider,
 ) {
     private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
@@ -67,15 +67,15 @@ class EnrollmentPresenterImpl(
                         teiAttributesProvider
                             .getListOfValuesFromProgramTrackedEntityAttributesByProgram(
                                 programRepository.blockingGet()?.uid() ?: "",
-                                tei.uid()
+                                tei.uid(),
                             )
                     val teiTypeAttributeValue = mutableListOf<TrackedEntityAttributeValue>()
                     if (attributesValues.isEmpty()) {
                         teiTypeAttributeValue.addAll(
                             teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(
                                 tei.trackedEntityType(),
-                                tei.uid()
-                            )
+                                tei.uid(),
+                            ),
                         )
                         attrList.addAll(teiTypeAttributeValue.map { it.value() ?: "" })
                     } else {
@@ -86,17 +86,17 @@ class EnrollmentPresenterImpl(
                         attributes = attrList,
                         profileImage = tei.profilePicturePath(
                             d2,
-                            programRepository.blockingGet()?.uid()
+                            programRepository.blockingGet()?.uid(),
                         ),
-                        teTypeName = d2.trackedEntityTypeForTei(tei.uid())?.displayName()!!
+                        teTypeName = d2.trackedEntityTypeForTei(tei.uid())?.displayName()!!,
                     )
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     view::displayTeiInfo,
-                    Timber.tag(TAG)::e
-                )
+                    Timber.tag(TAG)::e,
+                ),
         )
 
         disposable.add(
@@ -106,8 +106,8 @@ class EnrollmentPresenterImpl(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.setAccess(it) },
-                    { Timber.tag(TAG).e(it) }
-                )
+                    { Timber.tag(TAG).e(it) },
+                ),
         )
 
         disposable.add(
@@ -117,8 +117,8 @@ class EnrollmentPresenterImpl(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.renderStatus(it!!) },
-                    { Timber.tag(TAG).e(it) }
-                )
+                    { Timber.tag(TAG).e(it) },
+                ),
         )
     }
 
@@ -146,8 +146,8 @@ class EnrollmentPresenterImpl(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.performSaveClick() },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
     }
 
@@ -164,8 +164,8 @@ class EnrollmentPresenterImpl(
                                     view.openEvent(eventUid)
                                 } ?: view.openDashboard(it.first)
                             },
-                            { Timber.tag(TAG).e(it) }
-                        )
+                            { Timber.tag(TAG).e(it) },
+                        ),
                 )
             }
             EnrollmentActivity.EnrollmentMode.CHECK -> view.setResultAndFinish()
@@ -194,7 +194,7 @@ class EnrollmentPresenterImpl(
         val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet()?.categoryComboUid() != null &&
             d2.categoryModule().categoryCombos().uid(catComboUid)
-            .blockingGet()?.isDefault == false
+                .blockingGet()?.isDefault == false
         val needsCoordinates =
             stage?.featureType() != null && stage.featureType() != FeatureType.NONE
 

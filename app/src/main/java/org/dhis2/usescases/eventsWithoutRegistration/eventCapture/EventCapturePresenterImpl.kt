@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
-import java.util.Date
 import org.dhis2.R
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -20,6 +19,7 @@ import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
+import java.util.Date
 
 class EventCapturePresenterImpl(
     private val view: EventCaptureContract.View,
@@ -27,7 +27,7 @@ class EventCapturePresenterImpl(
     private val eventCaptureRepository: EventCaptureRepository,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
-    private val configureEventCompletionDialog: ConfigureEventCompletionDialog
+    private val configureEventCompletionDialog: ConfigureEventCompletionDialog,
 ) : ViewModel(), EventCaptureContract.Presenter {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -49,8 +49,8 @@ class EventCapturePresenterImpl(
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.showEventIntegrityAlert() },
-                    Timber::e
-                )
+                    Timber::e,
+                ),
         )
         compositeDisposable.add(
             Flowable.zip(
@@ -58,23 +58,23 @@ class EventCapturePresenterImpl(
                 eventCaptureRepository.eventDate(),
                 eventCaptureRepository.orgUnit(),
                 eventCaptureRepository.catOption(),
-                ::EventCaptureInitialInfo
+                ::EventCaptureInitialInfo,
             ).defaultSubscribe(
                 schedulerProvider,
                 { initialInfo ->
                     preferences.setValue(
                         Preference.CURRENT_ORG_UNIT,
-                        initialInfo.organisationUnit.uid()
+                        initialInfo.organisationUnit.uid(),
                     )
                     view.renderInitialInfo(
                         initialInfo.programStageName,
                         initialInfo.eventDate,
                         initialInfo.organisationUnit.displayName(),
-                        initialInfo.categoryOption
+                        initialInfo.categoryOption,
                     )
                 },
-                Timber::e
-            )
+                Timber::e,
+            ),
         )
         checkExpiration()
     }
@@ -91,8 +91,8 @@ class EventCapturePresenterImpl(
                     .defaultSubscribe(
                         schedulerProvider,
                         this::setHasExpired,
-                        Timber::e
-                    )
+                        Timber::e,
+                    ),
             )
         } else {
             setHasExpired(!eventCaptureRepository.isEventEditable(eventUid))
@@ -112,7 +112,7 @@ class EventCapturePresenterImpl(
         onCompleteMessage: String?,
         errorFields: List<FieldWithIssue>,
         emptyMandatoryFields: Map<String, String>,
-        warningFields: List<FieldWithIssue>
+        warningFields: List<FieldWithIssue>,
     ) {
         val eventStatus = eventStatus
         if (eventStatus != EventStatus.ACTIVE) {
@@ -127,12 +127,12 @@ class EventCapturePresenterImpl(
                 warningFields,
                 canComplete,
                 onCompleteMessage,
-                canSkipErrorFix
+                canSkipErrorFix,
             )
             view.showCompleteActions(
                 canComplete && eventCaptureRepository.isEnrollmentOpen,
                 emptyMandatoryFields,
-                eventCompletionDialog
+                eventCompletionDialog,
             )
         }
         view.showNavigationBar()
@@ -170,8 +170,8 @@ class EventCapturePresenterImpl(
                             view.finishDataEntry()
                         }
                     },
-                    Timber::e
-                )
+                    Timber::e,
+                ),
         )
     }
 
@@ -186,8 +186,8 @@ class EventCapturePresenterImpl(
                         }
                     },
                     Timber::e,
-                    view::finishDataEntry
-                )
+                    view::finishDataEntry,
+                ),
         )
     }
 
@@ -198,8 +198,8 @@ class EventCapturePresenterImpl(
                     schedulerProvider,
                     { view.showSnackBar(R.string.event_was_skipped) },
                     Timber::e,
-                    view::finishDataEntry
-                )
+                    view::finishDataEntry,
+                ),
         )
     }
 
@@ -209,8 +209,8 @@ class EventCapturePresenterImpl(
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.finishDataEntry() },
-                    Timber::e
-                )
+                    Timber::e,
+                ),
         )
     }
 
@@ -238,8 +238,8 @@ class EventCapturePresenterImpl(
                     .defaultSubscribe(
                         schedulerProvider,
                         view::updateNoteBadge,
-                        Timber::e
-                    )
+                        Timber::e,
+                    ),
             )
         } else {
             notesCounterProcessor.onNext(Unit())

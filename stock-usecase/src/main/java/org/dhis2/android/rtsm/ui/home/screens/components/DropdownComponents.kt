@@ -64,7 +64,7 @@ fun DropdownComponentTransactions(
     hasUnsavedData: Boolean,
     themeColor: Color = colorResource(R.color.colorPrimary),
     data: MutableList<TransactionItem>,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -105,7 +105,7 @@ fun DropdownComponentTransactions(
                     elevation = 8.dp,
                     ambientColor = Color.Black.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(30.dp),
-                    clip = false
+                    clip = false,
                 )
                 .offset(0.dp, 0.dp)
                 .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
@@ -118,14 +118,14 @@ fun DropdownComponentTransactions(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor
+                    tint = themeColor,
                 )
             },
             trailingIcon = {
                 IconButton(
                     onClick = {
                         isExpanded = !isExpanded
-                    }
+                    },
                 ) {
                     Icon(icon, contentDescription = null, tint = themeColor)
                 }
@@ -136,10 +136,10 @@ fun DropdownComponentTransactions(
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.White
+                unfocusedBorderColor = Color.White,
             ),
             interactionSource = interactionSource,
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black)
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black),
         )
 
         MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
@@ -149,7 +149,7 @@ fun DropdownComponentTransactions(
                 modifier = Modifier
                     .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                     .background(shape = RoundedCornerShape(16.dp), color = Color.White),
-                offset = DpOffset(x = 0.dp, y = 2.dp)
+                offset = DpOffset(x = 0.dp, y = 2.dp),
             ) {
                 data.forEachIndexed { index, item ->
                     DropdownMenuItem(
@@ -174,7 +174,7 @@ fun DropdownComponentTransactions(
                                 selectedIndex = index
                                 isExpanded = false
                             }
-                        }
+                        },
                     ) {
                         Row(
                             modifier = Modifier
@@ -185,17 +185,17 @@ fun DropdownComponentTransactions(
                                     } else {
                                         Color.White
                                     },
-                                    shape = RoundedCornerShape(16.dp)
+                                    shape = RoundedCornerShape(16.dp),
                                 )
                                 .padding(paddingValue),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
+                            horizontalArrangement = Arrangement.Start,
                         ) {
                             Icon(
                                 painter = painterResource(item.icon),
                                 contentDescription = null,
                                 Modifier.padding(6.dp),
-                                tint = themeColor
+                                tint = themeColor,
                             )
                             Text(text = capitalizeText(item.transactionType.name))
                         }
@@ -214,7 +214,7 @@ fun DropdownComponentFacilities(
     themeColor: Color = colorResource(R.color.colorPrimary),
     supportFragmentManager: FragmentManager,
     data: List<OrganisationUnit>,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var selectedText by remember { mutableStateOf("") }
 
@@ -231,7 +231,7 @@ fun DropdownComponentFacilities(
             settingsUiState,
             hasUnsavedData,
             onFacilitySelected,
-            launchDialog
+            launchDialog,
         )
     }
 
@@ -248,7 +248,7 @@ fun DropdownComponentFacilities(
                     elevation = 8.dp,
                     ambientColor = Color.Black.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(30.dp),
-                    clip = false
+                    clip = false,
                 )
                 .offset(0.dp, 0.dp)
                 .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
@@ -261,7 +261,7 @@ fun DropdownComponentFacilities(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor
+                    tint = themeColor,
                 )
             },
             trailingIcon = {
@@ -272,14 +272,14 @@ fun DropdownComponentFacilities(
                             settingsUiState,
                             hasUnsavedData,
                             onFacilitySelected,
-                            launchDialog
+                            launchDialog,
                         )
-                    }
+                    },
                 ) {
                     Icon(
                         painterResource(id = R.drawable.ic_arrow_drop_down),
                         contentDescription = null,
-                        tint = themeColor
+                        tint = themeColor,
                     )
                 }
             },
@@ -289,10 +289,10 @@ fun DropdownComponentFacilities(
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.White
+                unfocusedBorderColor = Color.White,
             ),
             interactionSource = interactionSource,
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black)
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black),
         )
     }
 }
@@ -304,7 +304,7 @@ fun DropdownComponentDistributedTo(
     themeColor: Color = colorResource(R.color.colorPrimary),
     data: List<Option>,
     isDestinationSelected: (value: String) -> Unit = { },
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -355,7 +355,7 @@ fun DropdownComponentDistributedTo(
                     elevation = 8.dp,
                     ambientColor = Color.Black.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(30.dp),
-                    clip = false
+                    clip = false,
                 )
                 .offset(0.dp, 1.dp)
                 .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
@@ -368,14 +368,14 @@ fun DropdownComponentDistributedTo(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor
+                    tint = themeColor,
                 )
             },
             trailingIcon = {
                 IconButton(
                     onClick = {
                         isExpanded = !isExpanded
-                    }
+                    },
                 ) {
                     Icon(icon, contentDescription = null, tint = themeColor)
                 }
@@ -386,10 +386,10 @@ fun DropdownComponentDistributedTo(
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.White
+                unfocusedBorderColor = Color.White,
             ),
             interactionSource = interactionSource,
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black)
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black),
         )
 
         MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
@@ -399,7 +399,7 @@ fun DropdownComponentDistributedTo(
                 modifier = Modifier
                     .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                     .background(Color.White, RoundedCornerShape(30.dp)),
-                offset = DpOffset(x = 0.dp, y = 2.dp)
+                offset = DpOffset(x = 0.dp, y = 2.dp),
             ) {
                 data.forEachIndexed { index, item ->
                     DropdownMenuItem(
@@ -427,7 +427,7 @@ fun DropdownComponentDistributedTo(
                                 selectedIndex = index
                                 onDestinationSelected.invoke(item)
                             }
-                        }
+                        },
                     ) {
                         Row(
                             modifier = Modifier
@@ -438,16 +438,16 @@ fun DropdownComponentDistributedTo(
                                     } else {
                                         Color.White
                                     },
-                                    shape = RoundedCornerShape(16.dp)
+                                    shape = RoundedCornerShape(16.dp),
                                 )
                                 .padding(
                                     start = 8.dp,
                                     top = paddingValue,
                                     end = 8.dp,
-                                    bottom = paddingValue
+                                    bottom = paddingValue,
                                 ),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
+                            horizontalArrangement = Arrangement.Start,
                         ) {
                             Text(text = capitalizeText(item.displayName().toString()))
                         }
@@ -463,14 +463,14 @@ fun openOrgUnitTreeSelector(
     settingsUiState: SettingsUiState,
     hasUnsavedData: Boolean,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     OUTreeFragment.Builder()
         .showAsDialog()
         .singleSelection()
         .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
         .withPreselectedOrgUnits(
-            settingsUiState.facility?.let { listOf(it.uid()) } ?: emptyList()
+            settingsUiState.facility?.let { listOf(it.uid()) } ?: emptyList(),
         )
         .onSelection { selectedOrgUnits ->
             val selectedOrgUnit = selectedOrgUnits.firstOrNull()

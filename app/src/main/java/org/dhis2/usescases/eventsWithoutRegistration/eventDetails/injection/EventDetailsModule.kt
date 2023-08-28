@@ -51,13 +51,13 @@ class EventDetailsModule(
     val enrollmentId: String?,
     val scheduleInterval: Int,
     val initialOrgUnitUid: String?,
-    val enrollmentStatus: EnrollmentStatus?
+    val enrollmentStatus: EnrollmentStatus?,
 ) {
 
     @Provides
     @PerFragment
     fun provideEventDetailResourceProvider(
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): EventDetailResourcesProvider {
         return EventDetailResourcesProvider(resourceManager)
     }
@@ -74,7 +74,7 @@ class EventDetailsModule(
         d2: D2,
         resourceManager: ResourceManager,
         networkUtils: NetworkUtils,
-        colorUtils: ColorUtils
+        colorUtils: ColorUtils,
     ): EventDetailsRepository {
         return EventDetailsRepository(
             d2 = d2,
@@ -86,20 +86,20 @@ class EventDetailsModule(
                 UiStyleProviderImpl(
                     FormUiModelColorFactoryImpl(context, true, colorUtils),
                     LongTextUiColorFactoryImpl(context, true, colorUtils),
-                    true
+                    true,
                 ),
                 LayoutProviderImpl(),
                 HintProviderImpl(context),
                 DisplayNameProviderImpl(
                     OptionSetConfiguration(d2),
                     OrgUnitConfiguration(d2),
-                    FileResourceConfiguration(d2)
+                    FileResourceConfiguration(d2),
                 ),
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),
-                LegendValueProviderImpl(d2, resourceManager)
+                LegendValueProviderImpl(d2, resourceManager),
             ),
-            onError = resourceManager::parseD2Error
+            onError = resourceManager::parseD2Error,
         )
     }
 
@@ -112,14 +112,14 @@ class EventDetailsModule(
         preferencesProvider: PreferenceProvider,
         geometryController: GeometryController,
         locationProvider: LocationProvider,
-        eventDetailResourcesProvider: EventDetailResourcesProvider
+        eventDetailResourcesProvider: EventDetailResourcesProvider,
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
                 repository = eventDetailsRepository,
                 resourcesProvider = resourcesProvider,
                 creationType = eventCreationType,
-                enrollmentStatus = enrollmentStatus
+                enrollmentStatus = enrollmentStatus,
             ),
             ConfigureEventReportDate(
                 creationType = eventCreationType,
@@ -128,23 +128,23 @@ class EventDetailsModule(
                 periodType = periodType,
                 periodUtils = periodUtils,
                 enrollmentId = enrollmentId,
-                scheduleInterval = scheduleInterval
+                scheduleInterval = scheduleInterval,
             ),
             ConfigureOrgUnit(
                 creationType = eventCreationType,
                 repository = eventDetailsRepository,
                 preferencesProvider = preferencesProvider,
                 programUid = programUid,
-                initialOrgUnitUid = initialOrgUnitUid
+                initialOrgUnitUid = initialOrgUnitUid,
             ),
             ConfigureEventCoordinates(
-                repository = eventDetailsRepository
+                repository = eventDetailsRepository,
             ),
             ConfigureEventCatCombo(
-                repository = eventDetailsRepository
+                repository = eventDetailsRepository,
             ),
             ConfigureEventTemp(
-                creationType = eventCreationType
+                creationType = eventCreationType,
             ),
             periodType = periodType,
             eventUid = eventUid,
@@ -152,9 +152,9 @@ class EventDetailsModule(
             locationProvider = locationProvider,
             createOrUpdateEventDetails = CreateOrUpdateEventDetails(
                 repository = eventDetailsRepository,
-                resourcesProvider = resourcesProvider
+                resourcesProvider = resourcesProvider,
             ),
-            eventDetailResourcesProvider = eventDetailResourcesProvider
+            eventDetailResourcesProvider = eventDetailResourcesProvider,
         )
     }
 }

@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import android.content.Context
 import android.content.res.Resources
@@ -10,13 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import java.text.DecimalFormat
 import org.dhis2.App
 import org.dhis2.data.user.UserComponent
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import java.text.DecimalFormat
 
 fun <T : Any?> MutableLiveData<T>.default(initialValue: T) = this.apply { setValue(initialValue) }
 

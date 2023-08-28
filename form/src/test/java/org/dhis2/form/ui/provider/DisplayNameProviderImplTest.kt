@@ -22,7 +22,7 @@ class DisplayNameProviderImplTest {
         DisplayNameProviderImpl(
             optionSetConfiguration,
             orgUnitConfiguration,
-            fileResourceConfiguration
+            fileResourceConfiguration,
         )
 
     @Test
@@ -43,7 +43,7 @@ class DisplayNameProviderImplTest {
         val result = displayNameProvider.provideDisplayName(
             ValueType.INTEGER,
             testingValue,
-            testingOptionSetUid
+            testingOptionSetUid,
         )
 
         assertTrue(result == testingOptionName)
@@ -60,7 +60,7 @@ class DisplayNameProviderImplTest {
         val result = displayNameProvider.provideDisplayName(
             ValueType.INTEGER,
             testingValue,
-            testingOptionSetUid
+            testingOptionSetUid,
         )
 
         assertTrue(result == testingOptionName)
@@ -77,7 +77,7 @@ class DisplayNameProviderImplTest {
         val result = displayNameProvider.provideDisplayName(
             ValueType.INTEGER,
             testingValue,
-            testingOptionSetUid
+            testingOptionSetUid,
         )
 
         assertTrue(result == "value")
@@ -88,7 +88,7 @@ class DisplayNameProviderImplTest {
         val testingOrgUnitUid = "orgUnitUid"
         val testingOrgUnitName = "orgUnitName"
         whenever(
-            orgUnitConfiguration.orgUnitByUid(testingOrgUnitUid)
+            orgUnitConfiguration.orgUnitByUid(testingOrgUnitUid),
         ) doReturn OrganisationUnit.builder()
             .uid(testingOrgUnitUid)
             .displayName(testingOrgUnitName)
@@ -103,7 +103,7 @@ class DisplayNameProviderImplTest {
         val testingOrgUnitUid = "orgUnitUid"
 
         whenever(
-            orgUnitConfiguration.orgUnitByUid(testingOrgUnitUid)
+            orgUnitConfiguration.orgUnitByUid(testingOrgUnitUid),
         ) doReturn null
         val result =
             displayNameProvider.provideDisplayName(ValueType.ORGANISATION_UNIT, testingOrgUnitUid)
@@ -117,7 +117,7 @@ class DisplayNameProviderImplTest {
         val result = displayNameProvider.provideDisplayName(
             valueType = ValueType.IMAGE,
             value = value,
-            optionSet = null
+            optionSet = null,
         )
         assertEquals(value, result)
     }
@@ -130,7 +130,7 @@ class DisplayNameProviderImplTest {
         val result = displayNameProvider.provideDisplayName(
             valueType = ValueType.IMAGE,
             value = value,
-            optionSet = null
+            optionSet = null,
         )
         assertEquals(filePath, result)
     }
@@ -139,10 +139,10 @@ class DisplayNameProviderImplTest {
         value: String,
         optionSetUid: String,
         optionName: String,
-        exists: Boolean
+        exists: Boolean,
     ) {
         whenever(
-            optionSetConfiguration.optionInDataSetByCode(optionSetUid, value)
+            optionSetConfiguration.optionInDataSetByCode(optionSetUid, value),
         ) doReturn if (exists) {
             Option.builder()
                 .uid("optionUid")
@@ -157,10 +157,10 @@ class DisplayNameProviderImplTest {
         value: String,
         optionSetUid: String,
         optionName: String,
-        exists: Boolean
+        exists: Boolean,
     ) {
         whenever(
-            optionSetConfiguration.optionInDataSetByName(optionSetUid, value)
+            optionSetConfiguration.optionInDataSetByName(optionSetUid, value),
         ) doReturn if (exists) {
             Option.builder()
                 .uid("optionUid")

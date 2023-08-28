@@ -42,7 +42,7 @@ class UIComponentsView : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = SurfaceColor.Container
+                    color = SurfaceColor.Container,
                 ) {
                     Components()
                 }
@@ -58,7 +58,7 @@ fun Components() {
             .background(Color.White)
             .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
 
@@ -67,49 +67,49 @@ fun Components() {
             icon = {
                 Icon(
                     painter = provideDHIS2Icon(resourceName = "dhis2_blood_a_n_positive"),
-                    contentDescription = ""
+                    contentDescription = "",
                 )
             },
-            style = ButtonStyle.KEYBOARDKEY
+            style = ButtonStyle.KEYBOARDKEY,
         ) {}
         Button(
             text = "Button app icon",
             icon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_file),
-                    contentDescription = ""
+                    contentDescription = "",
                 )
             },
-            style = ButtonStyle.ELEVATED
+            style = ButtonStyle.ELEVATED,
         ) {}
         Button(
             text = "Button material icon",
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.AccountCircle,
-                    contentDescription = ""
+                    contentDescription = "",
                 )
             },
-            style = ButtonStyle.FILLED
+            style = ButtonStyle.FILLED,
         ) {}
 
         IconButton(icon = {
             Icon(
                 imageVector = Icons.Outlined.AccountBox,
-                contentDescription = ""
+                contentDescription = "",
             )
         }) {}
         SquareIconButton(icon = {
             Icon(
                 imageVector = Icons.Outlined.AccountBox,
-                contentDescription = ""
+                contentDescription = "",
             )
         }) {}
 
         RadioButton(
             selected = true,
             enabled = true,
-            textInput = "hola"
+            textInput = "hola",
         ) {}
     }
 }

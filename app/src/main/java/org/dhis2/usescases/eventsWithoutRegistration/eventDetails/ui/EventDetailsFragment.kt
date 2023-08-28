@@ -11,8 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.Constants.ENROLLMENT_STATUS
 import org.dhis2.commons.Constants.ENROLLMENT_UID
@@ -43,6 +41,8 @@ import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Date
+import javax.inject.Inject
 
 class EventDetailsFragment : FragmentGlobalAbstract() {
 
@@ -51,7 +51,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private val requestLocationPermissions =
         registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
+            ActivityResultContracts.RequestMultiplePermissions(),
         ) { result ->
             if (result.values.all { isGranted -> isGranted }) {
                 viewModel.requestCurrentLocation()
@@ -91,14 +91,14 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         (requireActivity() as EventDetailsComponentProvider).provideEventDetailsComponent(
             EventDetailsModule(
                 eventUid = requireArguments().getString(EVENT_UID),
                 context = requireContext(),
                 eventCreationType = getEventCreationType(
-                    requireArguments().getString(EVENT_CREATION_TYPE)
+                    requireArguments().getString(EVENT_CREATION_TYPE),
                 ),
                 programStageUid = requireArguments().getString(PROGRAM_STAGE_UID),
                 programUid = requireArguments().getString(PROGRAM_UID)!!,
@@ -108,14 +108,14 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 scheduleInterval = requireArguments().getInt(EVENT_SCHEDULE_INTERVAL),
                 initialOrgUnitUid = requireArguments().getString(ORG_UNIT),
                 enrollmentStatus = requireArguments()
-                    .getSerializable(ENROLLMENT_STATUS) as EnrollmentStatus?
-            )
+                    .getSerializable(ENROLLMENT_STATUS) as EnrollmentStatus?,
+            ),
         )?.inject(this)
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.event_details_fragment,
             container,
-            false
+            false,
         )
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
@@ -157,7 +157,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
         viewModel.requestLocationPermissions = {
             requestLocationPermissions.launch(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             )
         }
 
@@ -166,8 +166,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 MapSelectorActivity.create(
                     requireActivity(),
                     FeatureType.valueOfFeatureType(featureType),
-                    initCoordinate
-                )
+                    initCoordinate,
+                ),
             )
         }
 
@@ -176,12 +176,12 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 requireContext(),
                 {
                     locationDisabledSettings.launch(
-                        LocationSettingLauncher.locationSourceSettingIntent()
+                        LocationSettingLauncher.locationSourceSettingIntent(),
                     )
                 },
                 {
                     viewModel.cancelCoordinateRequest()
-                }
+                },
             )
         }
 
@@ -215,10 +215,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     viewModel.onDateSet(
                         datePicker.year,
                         datePicker.month,
-                        datePicker.dayOfMonth
+                        datePicker.dayOfMonth,
                     )
                 }
-            }
+            },
         )
         dialog.show()
     }
@@ -240,11 +240,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             .withPreselectedOrgUnits(
                 viewModel.eventOrgUnit.value.selectedOrgUnit
                     ?.let { listOf(it.uid()) }
-                    ?: emptyList()
+                    ?: emptyList(),
             )
             .singleSelection()
             .orgUnitScope(
-                OrgUnitSelectorScope.ProgramCaptureScope(viewModel.eventOrgUnit.value.programUid!!)
+                OrgUnitSelectorScope.ProgramCaptureScope(viewModel.eventOrgUnit.value.programUid!!),
             )
             .onSelection { selectedOrgUnits ->
                 viewModel.setUpOrgUnit(selectedOrgUnit = selectedOrgUnits.first().uid())
@@ -263,7 +263,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             anchor = binding.catComboLayout,
             options = category.options,
             date = viewModel.eventDate.value.currentDate,
-            orgUnitUid = viewModel.eventDetails.value.selectedOrgUnit
+            orgUnitUid = viewModel.eventDetails.value.selectedOrgUnit,
         ) { categoryOption ->
             val selectedOption = Pair(category.uid, categoryOption?.uid())
             viewModel.setUpCategoryCombo(selectedOption)
@@ -275,7 +275,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             CategoryDialog.Type.CATEGORY_OPTIONS,
             category.uid,
             true,
-            viewModel.eventDate.value.currentDate
+            viewModel.eventDate.value.currentDate,
         ) { categoryOption ->
             val selectedOption = Pair(category.uid, categoryOption)
             viewModel.setUpCategoryCombo(selectedOption)

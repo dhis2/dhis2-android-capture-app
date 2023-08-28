@@ -6,5 +6,5 @@ import org.dhis2.android.rtsm.ui.base.OnQuantityValidated
 data class RowAction(
     val entry: StockEntry,
     val position: Int,
-    val callback: OnQuantityValidated?
+    val callback: OnQuantityValidated?,
 )

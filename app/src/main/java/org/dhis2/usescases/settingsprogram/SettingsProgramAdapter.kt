@@ -10,30 +10,30 @@ import org.dhis2.databinding.ItemSettingProgramBinding
 
 class SettingsProgramAdapter(
     private val resourceManager: ResourceManager,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) :
     ListAdapter<ProgramSettingsViewModel, ProgramSettingsHolder>(
         object : DiffUtil.ItemCallback<ProgramSettingsViewModel>() {
             override fun areItemsTheSame(
                 oldItem: ProgramSettingsViewModel,
-                newItem: ProgramSettingsViewModel
+                newItem: ProgramSettingsViewModel,
             ): Boolean {
                 return oldItem == newItem
             }
 
             override fun areContentsTheSame(
                 oldItem: ProgramSettingsViewModel,
-                newItem: ProgramSettingsViewModel
+                newItem: ProgramSettingsViewModel,
             ): Boolean {
                 return oldItem == newItem
             }
-        }
+        },
     ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProgramSettingsHolder {
         return ProgramSettingsHolder(
             ItemSettingProgramBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             resourceManager,
-            colorUtils
+            colorUtils,
         )
     }
 

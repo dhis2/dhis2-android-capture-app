@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
 import io.reactivex.Single
-import java.util.Date
 import org.dhis2.usescases.main.program.ProgramViewModelMapper
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -16,6 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class TeiProgramListRepositoryImplTest {
 
@@ -38,23 +38,23 @@ class TeiProgramListRepositoryImplTest {
 
         whenever(
             d2.enrollmentModule().enrollments().add(
-                testEnrollment
-            )
+                testEnrollment,
+            ),
         ) doReturn Single.just("enrollmentUid")
 
         whenever(
-            d2.enrollmentModule().enrollments().uid("enrollmentUid")
+            d2.enrollmentModule().enrollments().uid("enrollmentUid"),
         ) doReturn mock()
 
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet()
+            d2.programModule().programs().uid("programUid").blockingGet(),
         ) doReturn Program.builder()
             .uid("programUid")
             .displayIncidentDate(true)
             .build()
 
         whenever(
-            d2.enrollmentModule().enrollments().uid("enrollmentUid").blockingGet()
+            d2.enrollmentModule().enrollments().uid("enrollmentUid").blockingGet(),
         ) doReturn Enrollment.builder()
             .uid("enrollmentUid")
             .build()
@@ -63,7 +63,7 @@ class TeiProgramListRepositoryImplTest {
             "orgUnitUid",
             "programUid",
             "teiUid",
-            Date()
+            Date(),
         ).test()
 
         testObservable
@@ -72,7 +72,7 @@ class TeiProgramListRepositoryImplTest {
             .assertValue { it == "enrollmentUid" }
 
         verify(d2.enrollmentModule().enrollments().uid("enrollmentUid"), times(1)).setIncidentDate(
-            DateUtils.getInstance().today
+            DateUtils.getInstance().today,
         )
     }
 
@@ -86,23 +86,23 @@ class TeiProgramListRepositoryImplTest {
 
         whenever(
             d2.enrollmentModule().enrollments().add(
-                testEnrollment
-            )
+                testEnrollment,
+            ),
         ) doReturn Single.just("enrollmentUid")
 
         whenever(
-            d2.enrollmentModule().enrollments().uid("enrollmentUid")
+            d2.enrollmentModule().enrollments().uid("enrollmentUid"),
         ) doReturn mock()
 
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet()
+            d2.programModule().programs().uid("programUid").blockingGet(),
         ) doReturn Program.builder()
             .uid("programUid")
             .displayIncidentDate(false)
             .build()
 
         whenever(
-            d2.enrollmentModule().enrollments().uid("enrollmentUid").blockingGet()
+            d2.enrollmentModule().enrollments().uid("enrollmentUid").blockingGet(),
         ) doReturn Enrollment.builder()
             .uid("enrollmentUid")
             .build()
@@ -111,7 +111,7 @@ class TeiProgramListRepositoryImplTest {
             "orgUnitUid",
             "programUid",
             "teiUid",
-            Date()
+            Date(),
         ).test()
 
         testObservable
@@ -120,7 +120,7 @@ class TeiProgramListRepositoryImplTest {
             .assertValue { it == "enrollmentUid" }
 
         verify(d2.enrollmentModule().enrollments().uid("enrollmentUid"), times(0)).setIncidentDate(
-            DateUtils.getInstance().today
+            DateUtils.getInstance().today,
         )
     }
 }

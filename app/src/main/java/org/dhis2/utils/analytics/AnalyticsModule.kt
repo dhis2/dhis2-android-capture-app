@@ -2,8 +2,8 @@ package org.dhis2.utils.analytics
 
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import javax.inject.Singleton
 
 @Module
 class AnalyticsModule internal constructor() {
@@ -11,7 +11,7 @@ class AnalyticsModule internal constructor() {
     @Provides
     @Singleton
     fun providesAnalyticsHelper(
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
     ): AnalyticsHelper {
         return AnalyticsHelper(matomoAnalyticsController)
     }

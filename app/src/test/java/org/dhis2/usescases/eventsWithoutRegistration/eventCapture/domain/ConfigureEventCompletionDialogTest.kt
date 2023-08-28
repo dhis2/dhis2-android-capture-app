@@ -55,7 +55,7 @@ class ConfigureEventCompletionDialogTest {
             warningFields = warningFields,
             canComplete = true,
             onCompleteMessage = null,
-            canSkipErrorFix = true
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
@@ -78,7 +78,7 @@ class ConfigureEventCompletionDialogTest {
             warningFields = warningFields,
             canComplete = true,
             onCompleteMessage = null,
-            canSkipErrorFix = true
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
@@ -100,7 +100,7 @@ class ConfigureEventCompletionDialogTest {
             warningFields = warningFields,
             canComplete = true,
             onCompleteMessage = null,
-            canSkipErrorFix = true
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
@@ -120,7 +120,7 @@ class ConfigureEventCompletionDialogTest {
             warningFields = emptyList(),
             canComplete = true,
             onCompleteMessage = null,
-            canSkipErrorFix = true
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
@@ -140,7 +140,7 @@ class ConfigureEventCompletionDialogTest {
             warningFields = emptyList(),
             canComplete = true,
             onCompleteMessage = WARNING_MESSAGE,
-            canSkipErrorFix = true
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
@@ -160,7 +160,7 @@ class ConfigureEventCompletionDialogTest {
             warningFields = emptyList(),
             canComplete = false,
             onCompleteMessage = ERROR_INFO,
-            canSkipErrorFix = true
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info

@@ -29,7 +29,7 @@ class TEIDataModule(
     private val view: TEIDataContracts.View,
     private val programUid: String?,
     private val teiUid: String,
-    private val enrollmentUid: String?
+    private val enrollmentUid: String?,
 ) {
     @Provides
     @PerFragment
@@ -45,7 +45,7 @@ class TEIDataModule(
         filterRepository: FilterRepository?,
         valueStore: FormValueStore?,
         resources: ResourceManager,
-        optionsRepository: OptionsRepository
+        optionsRepository: OptionsRepository,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -63,7 +63,7 @@ class TEIDataModule(
             filterRepository,
             valueStore,
             resources,
-            optionsRepository
+            optionsRepository,
         )
     }
 
@@ -81,7 +81,7 @@ class TEIDataModule(
             programUid,
             teiUid,
             enrollmentUid,
-            periodUtils
+            periodUtils,
         )
     }
 
@@ -97,7 +97,7 @@ class TEIDataModule(
         d2: D2,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): FormValueStore {
         return FormValueStore(
             d2,
@@ -106,7 +106,7 @@ class TEIDataModule(
             null,
             crashReportController,
             networkUtils,
-            resourceManager
+            resourceManager,
         )
     }
 }

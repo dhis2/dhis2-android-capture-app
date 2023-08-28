@@ -14,7 +14,7 @@ class EnrollmentContract : ActivityResultContract<EnrollmentInput, EnrollmentRes
             input.enrollmentUid,
             input.programUid,
             input.enrollmentMode,
-            input.forRelationship
+            input.forRelationship,
         )
     }
 
@@ -29,7 +29,7 @@ data class EnrollmentInput(
     val enrollmentUid: String,
     val programUid: String,
     val enrollmentMode: EnrollmentActivity.EnrollmentMode,
-    val forRelationship: Boolean
+    val forRelationship: Boolean,
 )
 
 sealed class EnrollmentResult {

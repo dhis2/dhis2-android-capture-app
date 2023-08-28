@@ -8,7 +8,7 @@ class DimensionRowCombinator {
         currentList: MutableList<String>,
         currentValueIndex: Int = -1,
         currentValue: String? = null,
-        hasMoreRows: Boolean = true
+        hasMoreRows: Boolean = true,
     ) {
         if (hasMoreRows) {
             val nextValueIndex = currentValueIndex + 1
@@ -25,7 +25,7 @@ class DimensionRowCombinator {
                     currentList,
                     nextValueIndex,
                     nextValue,
-                    !isFinalRow
+                    !isFinalRow,
                 )
             }
         } else {

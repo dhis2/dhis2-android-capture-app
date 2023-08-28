@@ -1,10 +1,10 @@
 package org.dhis2.utils.analytics
 
-import javax.inject.Inject
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import javax.inject.Inject
 
 class AnalyticsHelper @Inject constructor(
-    private val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController,
 ) {
 
     fun setEvent(param: String, value: String, event: String) {
@@ -19,7 +19,7 @@ class AnalyticsHelper @Inject constructor(
         matomoAnalyticsController.updateDhisImplementationTracker(
             matomoUrl,
             matomoID,
-            trackerName
+            trackerName,
         )
     }
 

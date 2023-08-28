@@ -30,7 +30,7 @@ class WebViewActivity : Activity() {
             binding.webView.webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
-                    request: WebResourceRequest
+                    request: WebResourceRequest,
                 ): Boolean {
                     return super.shouldOverrideUrlLoading(view, request)
                 }

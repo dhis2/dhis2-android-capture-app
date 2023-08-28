@@ -7,7 +7,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 data class TableConfiguration(
     val headerActionsEnabled: Boolean = true,
     val editable: Boolean = true,
-    val textInputViewMode: Boolean = true
+    val textInputViewMode: Boolean = true,
 )
 
 val LocalTableConfiguration = staticCompositionLocalOf { TableConfiguration() }

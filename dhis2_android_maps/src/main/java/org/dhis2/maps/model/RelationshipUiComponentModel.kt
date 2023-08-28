@@ -14,7 +14,7 @@ data class RelationshipUiComponentModel(
     val from: TeiMap,
     val to: TeiMap,
     val relationshipOwner: RelationshipOwnerType,
-    val canBeDeleted: Boolean? = true
+    val canBeDeleted: Boolean? = true,
 ) : CarouselItemModel {
     override fun uid(): String = relationshipUid
     fun shouldShowNavigationButton(): Boolean {
@@ -27,7 +27,7 @@ data class TeiMap(
     val geometry: Geometry?,
     val image: String?,
     val defaultImage: Int,
-    val mainAttribute: String?
+    val mainAttribute: String?,
 )
 
 enum class RelationshipDirection { FROM, TO }

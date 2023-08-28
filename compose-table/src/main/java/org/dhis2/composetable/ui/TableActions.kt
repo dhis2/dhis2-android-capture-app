@@ -21,12 +21,12 @@ fun TableActions(modifier: Modifier, title: String, actionIcons: @Composable () 
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Absolute.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_table),
             contentDescription = "",
-            tint = TableTheme.colors.primary
+            tint = TableTheme.colors.primary,
         )
         Text(
             modifier = Modifier.weight(1f),
@@ -35,8 +35,8 @@ fun TableActions(modifier: Modifier, title: String, actionIcons: @Composable () 
                 color = Color.Black,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
-                lineHeight = 10.sp
-            )
+                lineHeight = 10.sp,
+            ),
         )
         actionIcons()
     }

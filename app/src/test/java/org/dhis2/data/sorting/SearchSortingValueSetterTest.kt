@@ -1,7 +1,5 @@
 package org.dhis2.data.sorting
 
-import java.time.Instant
-import java.util.Date
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.sorting.SortingItem
@@ -23,6 +21,8 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.time.Instant
+import java.util.Date
 
 class SearchSortingValueSetterTest {
 
@@ -39,7 +39,7 @@ class SearchSortingValueSetterTest {
             "enrollmentStatusLabel",
             "enrollmentDefaultLabel",
             "d/M/yyyy",
-            enrollmentUiDataHelper
+            enrollmentUiDataHelper,
         )
     }
 
@@ -47,35 +47,35 @@ class SearchSortingValueSetterTest {
     fun `Sorting by event date should return correct key value for online result`() {
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().eq("")
+                .byEnrollmentUid().eq(""),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("")
-                .byDeleted()
+                .byDeleted(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+                .byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("")
                 .byDeleted().isFalse
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("")
                 .byDeleted().isFalse
                 .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("")
-                .byDeleted().isFalse
-                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
+                .blockingGet(),
         ) doReturn emptyList()
 
         val result = searchSortingValueSetter.setSortingItem(
             onlineSearchTeiModel(),
-            SortingItem(Filters.PERIOD, SortingStatus.ASC)
+            SortingItem(Filters.PERIOD, SortingStatus.ASC),
         )
 
         result.apply {
@@ -89,35 +89,35 @@ class SearchSortingValueSetterTest {
     fun `Sorting by event date should return correct key value`() {
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
+                .byEnrollmentUid().eq("enrollmentUid"),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted()
+                .byDeleted(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("enrollmentUid")
+                .byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
                 .byDeleted().isFalse
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
                 .byDeleted().isFalse
                 .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted().isFalse
-                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
+                .blockingGet(),
         ) doReturn getEventLists()
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.PERIOD, SortingStatus.ASC)
+            SortingItem(Filters.PERIOD, SortingStatus.ASC),
         )
 
         result.apply {
@@ -131,35 +131,35 @@ class SearchSortingValueSetterTest {
     fun `Sorting by event date should return correct key value with schedule event`() {
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
+                .byEnrollmentUid().eq("enrollmentUid"),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted()
+                .byDeleted(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("enrollmentUid")
+                .byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
                 .byDeleted().isFalse
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
                 .byDeleted().isFalse
                 .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted().isFalse
-                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
+                .blockingGet(),
         ) doReturn getScheduleEventLists()
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.PERIOD, SortingStatus.ASC)
+            SortingItem(Filters.PERIOD, SortingStatus.ASC),
         )
 
         result.apply {
@@ -173,35 +173,35 @@ class SearchSortingValueSetterTest {
     fun `Sorting by event date should return unknown value`() {
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
+                .byEnrollmentUid().eq("enrollmentUid"),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted()
+                .byDeleted(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("enrollmentUid")
+                .byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
                 .byDeleted().isFalse
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
                 .byDeleted().isFalse
                 .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted().isFalse
-                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
+                .blockingGet(),
         ) doReturn emptyList()
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.PERIOD, SortingStatus.ASC)
+            SortingItem(Filters.PERIOD, SortingStatus.ASC),
         )
 
         result.apply {
@@ -216,7 +216,7 @@ class SearchSortingValueSetterTest {
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .uid("enrollmentOrgUnit")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn OrganisationUnit.builder()
             .uid("enrollmentOrgUnit")
             .displayName("EnrollmentOrgUnit")
@@ -224,7 +224,7 @@ class SearchSortingValueSetterTest {
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC)
+            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC),
         )
 
         result.apply {
@@ -237,14 +237,14 @@ class SearchSortingValueSetterTest {
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .uid("enrollmentOrgUnit")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn OrganisationUnit.builder()
             .uid("enrollmentOrgUnit")
             .build()
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC)
+            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC),
         )
 
         result.apply {
@@ -256,12 +256,12 @@ class SearchSortingValueSetterTest {
     fun `Sorting by org unit should return correct key value for tei`() {
         whenever(
             d2.organisationUnitModule().organisationUnits()
-                .uid("teiOrgUnit")
+                .uid("teiOrgUnit"),
         ) doReturn mock()
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .uid("teiOrgUnit")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn OrganisationUnit.builder()
             .uid("teiOrgUnit")
             .displayName("teiOrgUnit")
@@ -269,7 +269,7 @@ class SearchSortingValueSetterTest {
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModelWithoutEnrollment(),
-            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC)
+            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC),
         )
 
         result.apply {
@@ -281,19 +281,19 @@ class SearchSortingValueSetterTest {
     fun `Sorting by org unit should return correct key and unknown value for tei`() {
         whenever(
             d2.organisationUnitModule().organisationUnits()
-                .uid("teiOrgUnit")
+                .uid("teiOrgUnit"),
         ) doReturn mock()
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .uid("teiOrgUnit")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn OrganisationUnit.builder()
             .uid("teiOrgUnit")
             .build()
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModelWithoutEnrollment(),
-            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC)
+            SortingItem(Filters.ORG_UNIT, SortingStatus.ASC),
         )
 
         result.apply {
@@ -304,12 +304,12 @@ class SearchSortingValueSetterTest {
     @Test
     fun `Sorting by status should return correct key value`() {
         whenever(
-            enrollmentUiDataHelper.getEnrollmentStatusClientName(EnrollmentStatus.ACTIVE)
+            enrollmentUiDataHelper.getEnrollmentStatusClientName(EnrollmentStatus.ACTIVE),
         ) doReturn "clientStatus"
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.ENROLLMENT_STATUS, SortingStatus.ASC)
+            SortingItem(Filters.ENROLLMENT_STATUS, SortingStatus.ASC),
         )
 
         result.apply {
@@ -323,7 +323,7 @@ class SearchSortingValueSetterTest {
     fun `Sorting by status should return correct key and unknown value`() {
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModelWithoutEnrollment(),
-            SortingItem(Filters.ENROLLMENT_STATUS, SortingStatus.ASC)
+            SortingItem(Filters.ENROLLMENT_STATUS, SortingStatus.ASC),
         )
 
         result.apply {
@@ -338,7 +338,7 @@ class SearchSortingValueSetterTest {
         whenever(
             d2.programModule().programs()
                 .uid("programUid")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn Program.builder()
             .uid("programUid")
             .enrollmentDateLabel("programEnrollmentDateLabel")
@@ -346,7 +346,7 @@ class SearchSortingValueSetterTest {
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC)
+            SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC),
         )
 
         result.apply {
@@ -360,19 +360,19 @@ class SearchSortingValueSetterTest {
     fun `Sorting by enrollment date should return default program key and value`() {
         whenever(
             d2.programModule().programs()
-                .uid("programUid")
+                .uid("programUid"),
         ) doReturn mock()
         whenever(
             d2.programModule().programs()
                 .uid("programUid")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn Program.builder()
             .uid("programUid")
             .build()
 
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModel(),
-            SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC)
+            SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC),
         )
 
         result.apply {
@@ -386,7 +386,7 @@ class SearchSortingValueSetterTest {
     fun `Sorting by enrollment date should return correct default key and unknown value`() {
         val result = searchSortingValueSetter.setSortingItem(
             searchTeiModelWithoutEnrollment(),
-            SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC)
+            SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC),
         )
 
         result.apply {
@@ -403,7 +403,7 @@ class SearchSortingValueSetterTest {
                 .status(EventStatus.ACTIVE)
                 .eventDate(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
                 .dueDate(Date.from(Instant.parse("2020-01-10T00:00:00.00Z")))
-                .build()
+                .build(),
         )
     }
 
@@ -413,7 +413,7 @@ class SearchSortingValueSetterTest {
                 .uid("eventUid1")
                 .status(EventStatus.OVERDUE)
                 .dueDate(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
-                .build()
+                .build(),
         )
     }
 
@@ -426,7 +426,7 @@ class SearchSortingValueSetterTest {
                     .status(EnrollmentStatus.ACTIVE)
                     .program("programUid")
                     .enrollmentDate(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
-                    .build()
+                    .build(),
             )
             tei = TrackedEntityInstance.builder()
                 .uid("teiUid")

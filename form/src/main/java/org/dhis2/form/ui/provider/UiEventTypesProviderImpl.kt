@@ -10,7 +10,7 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
     override fun provideUiRenderType(
         featureType: FeatureType?,
         valueTypeRenderingType: ValueTypeRenderingType?,
-        sectionRenderingType: SectionRenderingType?
+        sectionRenderingType: SectionRenderingType?,
     ): UiRenderType {
         return when (sectionRenderingType) {
             SectionRenderingType.SEQUENTIAL -> UiRenderType.SEQUENCIAL

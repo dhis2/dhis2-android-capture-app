@@ -64,7 +64,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return FormBottomDialogBinding.inflate(inflater, container, false).apply {
             canWrite = mAccessDataWrite
@@ -84,7 +84,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
             txtMandatoryFields.text = presenter.appendMandatoryFieldList(
                 mMandatoryFields,
                 mEmptyMandatoryFields,
-                txtMandatoryFields.text.toString()
+                txtMandatoryFields.text.toString(),
             )
         }.root
     }
@@ -97,7 +97,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
                 val dialog = dialog as BottomSheetDialog?
                 val bottomSheet =
                     dialog!!.findViewById<FrameLayout>(
-                        com.google.android.material.R.id.design_bottom_sheet
+                        com.google.android.material.R.id.design_bottom_sheet,
                     )
                 val behavior: BottomSheetBehavior<*> =
                     BottomSheetBehavior.from<FrameLayout?>(bottomSheet!!)

@@ -9,7 +9,7 @@ import org.dhis2.form.R
 class LongTextUiColorFactoryImpl(
     val context: Context,
     val isBackgroundTransparent: Boolean,
-    val colorUtils: ColorUtils
+    val colorUtils: ColorUtils,
 ) :
     FormUiColorFactory {
     override fun getBasicColors(): Map<FormUiColorType, Int> {
@@ -26,7 +26,7 @@ class LongTextUiColorFactoryImpl(
                 FormUiColorType.ERROR to
                     ContextCompat.getColor(context, R.color.error_color),
                 FormUiColorType.ACTION_ICON to
-                    ContextCompat.getColor(context, R.color.colorGreyDefault)
+                    ContextCompat.getColor(context, R.color.colorGreyDefault),
             )
         }
         return mapOf(
@@ -41,7 +41,7 @@ class LongTextUiColorFactoryImpl(
             FormUiColorType.ERROR to
                 ContextCompat.getColor(context, R.color.error_color),
             FormUiColorType.ACTION_ICON to
-                colorUtils.getPrimaryColor(context, ColorType.ACCENT)
+                colorUtils.getPrimaryColor(context, ColorType.ACCENT),
         )
     }
 }
