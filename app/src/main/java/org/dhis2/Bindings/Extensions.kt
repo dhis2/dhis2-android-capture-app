@@ -68,7 +68,7 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
     } else if (attributes.isEmpty() && programUid == null) {
         val enrollmentProgramUids = d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq(uid())
-            .blockingGet().map { it.program() }.distinct()
+            .blockingGet().mapNotNull { it.program() }.distinct()
         attributes = d2.programModule().programTrackedEntityAttributes()
             .byDisplayInList().isTrue
             .byProgram().`in`(enrollmentProgramUids)
