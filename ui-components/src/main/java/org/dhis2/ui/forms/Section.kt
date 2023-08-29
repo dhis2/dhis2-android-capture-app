@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -27,16 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.ui.R
+import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 val colorGray = Color(0xFFF0F6FA)
 val textColor = Color(0xFF212121)
 val dividerColor = Color(0xFFEAEAEA)
-val errorTextColor = Color(0xFFFF4D4F)
-val errotTextColorContainer = Color(0xFFFFF1F0)
-val warningTextColor = Color(0xFFFFA800)
-val warningTextColorContainer = Color(0xFFFFF8E0)
 
 @Composable
 fun FormSection(
@@ -118,7 +114,7 @@ internal fun SectionNumber(sectionNumber: Int) {
     Box(
         modifier = Modifier
             .size(18.dp)
-            .background(color = colorGray, shape = CircleShape),
+            .background(color = colorGray, shape = Shape.Full),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -170,7 +166,7 @@ internal fun ErrorCounter(errorCount: Int) {
         modifier = Modifier
             .background(
                 color = SurfaceColor.ErrorContainer,
-                shape = CircleShape
+                shape = Shape.Small
             )
             .padding(horizontal = 4.dp),
         text = pluralStringResource(
@@ -180,7 +176,7 @@ internal fun ErrorCounter(errorCount: Int) {
         ),
         style = TextStyle.Default.copy(
             fontSize = 14.sp,
-            color = TextColor.OnError
+            color = TextColor.OnErrorContainer
         )
     )
 }
@@ -190,8 +186,8 @@ internal fun WarningCounter(warningCount: Int) {
     Text(
         modifier = Modifier
             .background(
-                color = warningTextColorContainer,
-                shape = CircleShape
+                color = SurfaceColor.WarningContainer,
+                shape = Shape.Small
             )
             .padding(horizontal = 4.dp),
         text = pluralStringResource(
@@ -201,7 +197,7 @@ internal fun WarningCounter(warningCount: Int) {
         ),
         style = TextStyle.Default.copy(
             fontSize = 14.sp,
-            color = TextColor.OnWarning
+            color = TextColor.OnWarningContainer
         )
     )
 }
@@ -256,7 +252,7 @@ fun SectionPreview() {
             fieldCount = 8,
             completedFieldCount = 3,
             errorCount = 1,
-            warningCount = 1,
+            warningCount = 2,
             collapsableState = CollapsableState.FIXED
         ) {
         }
