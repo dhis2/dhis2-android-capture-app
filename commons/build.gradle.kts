@@ -64,6 +64,7 @@ dependencies {
     api(libs.dhis2.android.sdk) {
         exclude("org.hisp.dhis", "core-rules")
         exclude("com.facebook.flipper")
+        this.isChanging = true
     }
 
     api(libs.dhis2.ruleengine) {

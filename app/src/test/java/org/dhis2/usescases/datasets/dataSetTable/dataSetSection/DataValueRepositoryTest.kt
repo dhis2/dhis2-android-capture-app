@@ -152,7 +152,7 @@ class DataValueRepositoryTest {
                 ?.dataElements()
         ) doReturn dataElements
 
-        val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
+        val categoryCombosUids = dataSetElements.mapNotNull { it.categoryCombo()?.uid() }
         val categoryCombos = dataSetElements.map {
             CategoryCombo.builder().uid(it.categoryCombo()?.uid()).build()
         }
@@ -322,7 +322,7 @@ class DataValueRepositoryTest {
                 ?.dataElements()
         ) doReturn dataElements
 
-        val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
+        val categoryCombosUids = dataSetElements.mapNotNull { it.categoryCombo()?.uid() }
         val categoryCombos = dataSetElements.map {
             CategoryCombo.builder().uid(it.categoryCombo()?.uid()).build()
         }
