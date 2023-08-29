@@ -42,6 +42,7 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
             hasOverdueEvent = hasOverdue,
             filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
+            stockConfig = null
         )
     }
 
@@ -73,6 +74,7 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
             hasOverdueEvent = false,
             filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
+            stockConfig = null
         )
     }
 

@@ -5,10 +5,13 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import org.dhis2.commons.bindings.dataSet
 import org.dhis2.commons.bindings.dataSetInstanceSummaries
+import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.programs
+import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.prefs.Preference.Companion.PIN
+import org.dhis2.usescases.main.program.toAppConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -63,6 +66,7 @@ class HomeRepositoryImpl(
         val isSingleItemFeatureEnable =
             featureConfig.isFeatureEnable(Feature.SINGLE_DATASET_HOME_ITEM) ||
                 featureConfig.isFeatureEnable(Feature.SINGLE_EVENT_HOME_ITEM) ||
+                featureConfig.isFeatureEnable(Feature.SINGLE_LMIS_HOME_ITEM) ||
                 featureConfig.isFeatureEnable(Feature.SINGLE_TRACKER_HOME_ITEM)
         if (isSingleItemFeatureEnable) {
             return 1
@@ -77,7 +81,11 @@ class HomeRepositoryImpl(
                     program.programType() == ProgramType.WITHOUT_REGISTRATION
 
                 featureConfig.isFeatureEnable(Feature.SINGLE_TRACKER_HOME_ITEM) ->
-                    program.programType() == ProgramType.WITH_REGISTRATION
+                    program.programType() == ProgramType.WITH_REGISTRATION &&
+                        !d2.isStockProgram(program.uid())
+                featureConfig.isFeatureEnable(Feature.SINGLE_LMIS_HOME_ITEM) ->
+                    program.programType() == ProgramType.WITH_REGISTRATION &&
+                        d2.isStockProgram(program.uid())
 
                 featureConfig.isFeatureEnable(Feature.SINGLE_DATASET_HOME_ITEM) ->
                     false
@@ -93,7 +101,12 @@ class HomeRepositoryImpl(
                     program.uid(),
                     program.displayName() ?: program.uid(),
                     program.access().data().write() == true,
-                    program.trackedEntityType()?.uid() ?: ""
+                    program.trackedEntityType()?.uid() ?: "",
+                    stockConfig = if (d2.isStockProgram(program.uid())) {
+                        d2.stockUseCase(program.uid()).toAppConfig()
+                    } else {
+                        null
+                    }
                 )
 
             program?.programType() == ProgramType.WITHOUT_REGISTRATION ->

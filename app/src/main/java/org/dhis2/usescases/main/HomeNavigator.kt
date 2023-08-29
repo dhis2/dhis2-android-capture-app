@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.main.program.ProgramViewModel
@@ -20,7 +22,8 @@ sealed class HomeItemData(
         override val uid: String,
         override val label: String,
         override val accessDataWrite: Boolean,
-        val trackedEntityType: String
+        val trackedEntityType: String,
+        val stockConfig: AppConfig?
     ) : HomeItemData(uid, label, accessDataWrite)
 
     data class EventProgram(
@@ -50,7 +53,8 @@ fun ProgramViewModel.toHomeItemData(): HomeItemData {
                 uid,
                 title,
                 accessDataWrite,
-                type!!
+                type!!,
+                stockConfig
             )
 
         else -> HomeItemData.DataSet(
@@ -90,10 +94,20 @@ fun ActivityResultLauncher<Intent>.navigateTo(context: Context, homeItemData: Ho
             }
 
         is HomeItemData.TrackerProgram -> {
-            bundle.putString(Constants.TRACKED_ENTITY_UID, homeItemData.trackedEntityType)
-            Intent(context, SearchTEActivity::class.java).apply {
-                putExtras(bundle)
-                launch(this)
+            if (homeItemData.stockConfig != null) {
+                Intent(context, HomeActivity::class.java).apply {
+                    putExtra(
+                        org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG,
+                        homeItemData.stockConfig
+                    )
+                    launch(this)
+                }
+            } else {
+                bundle.putString(Constants.TRACKED_ENTITY_UID, homeItemData.trackedEntityType)
+                Intent(context, SearchTEActivity::class.java).apply {
+                    putExtras(bundle)
+                    launch(this)
+                }
             }
         }
     }
