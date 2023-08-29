@@ -240,7 +240,7 @@ class GranularSyncPresenter(
                     { message ->
                         view.openSmsApp(message, smsSyncProvider.getGatewayNumber())
                     },
-                    { error -> Timber.e(error) }
+                    Timber.Forest::e
                 )
         )
     }
