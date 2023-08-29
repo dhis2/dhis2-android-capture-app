@@ -51,11 +51,13 @@ object Injector {
         context: Context,
         repositoryRecords: FormRepositoryRecords,
         openErrorLocation: Boolean,
+        forceDisableCollapsibleSections: Boolean
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
                 repositoryRecords,
+                forceDisableCollapsibleSections
             ),
             provideDispatchers(),
             openErrorLocation,
@@ -77,6 +79,7 @@ object Injector {
     private fun provideFormRepository(
         context: Context,
         repositoryRecords: FormRepositoryRecords,
+        forceDisableCollapsibleSections: Boolean
     ): FormRepository {
         return FormRepositoryImpl(
             formValueStore = provideFormValueStore(
@@ -97,6 +100,7 @@ object Injector {
             ),
             rulesUtilsProvider = provideRulesUtilsProvider(),
             legendValueProvider = provideLegendValueProvider(context),
+            forceDisableCollapsibleSections = forceDisableCollapsibleSections
         )
     }
 

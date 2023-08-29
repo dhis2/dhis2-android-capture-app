@@ -23,6 +23,8 @@ import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
+import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -83,6 +85,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Inject
     ThemeManager themeManager;
+
+    @Inject
+    FeatureConfigRepository featureConfig;
 
     private static final String INITIAL_PAGE = "initialPage";
 
@@ -365,6 +370,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         tEType,
                         initialQuery
                 ))
+                .useComposeForm(
+                        featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
+                        featureConfig.isFeatureEnable(Feature.DISABLE_COLLAPSIBLE_SECTIONS)
+                )
                 .build();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();

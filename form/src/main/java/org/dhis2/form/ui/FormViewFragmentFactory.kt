@@ -21,6 +21,8 @@ class FormViewFragmentFactory(
     private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
     private val actionIconsActivate: Boolean = true,
     private val openErrorLocation: Boolean = false,
+    private val useComposeForms: Boolean = false,
+    private val forceDisableCollapsibleSections: Boolean = false
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -41,6 +43,8 @@ class FormViewFragmentFactory(
                     resultDialogUiProvider = resultDialogUiProvider,
                     actionIconsActivate = actionIconsActivate,
                     openErrorLocation = openErrorLocation,
+                    useCompose = useComposeForms,
+                    forceDisableCollapsibleSections = forceDisableCollapsibleSections
                 )
             }
 

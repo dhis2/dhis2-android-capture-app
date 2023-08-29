@@ -46,7 +46,7 @@ class DataEntryHeaderHelper(
 
         if (visiblePos != NO_POSITION && dataEntryAdapter.getSectionSize() > 1) {
             dataEntryAdapter.getSectionForPosition(visiblePos)?.let { headerSection ->
-                if (headerSection.isOpen && !dataEntryAdapter.isSection(visiblePos + 1)) {
+                if (headerSection.isOpen == true && !dataEntryAdapter.isSection(visiblePos + 1)) {
                     if (currentSection.value == null ||
                         currentSection.value!!.uid != headerSection.uid
                     ) {
@@ -61,7 +61,7 @@ class DataEntryHeaderHelper(
 
     private fun loadHeader(section: SectionUiModelImpl?) {
         val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
-        if (section != null && section.isOpen) {
+        if (section != null && section.isOpen == true) {
             val layoutInflater = LayoutInflater.from(headerContainer.context)
             val binding =
                 DataBindingUtil.inflate<ViewDataBinding>(

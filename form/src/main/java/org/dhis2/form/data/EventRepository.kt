@@ -29,6 +29,10 @@ class EventRepository(
             .blockingGet()
     }
 
+    override val programUid by lazy {
+        event?.program()
+    }
+
     private val sectionMap by lazy {
         d2.programModule().programStageSections()
             .byProgramStageUid().eq(event?.programStage())
@@ -38,11 +42,11 @@ class EventRepository(
             .toMap()
     }
 
-    override fun sectionUids(): Flowable<MutableList<String>> {
-        return Flowable.just(sectionMap.keys.toMutableList())
+    override fun sectionUids(): Flowable<List<String>> {
+        return Flowable.just(sectionMap.keys.toList())
     }
 
-    override fun list(): Flowable<MutableList<FieldUiModel>> {
+    override fun list(): Flowable<List<FieldUiModel>> {
         return d2.programModule().programStageSections()
             .byProgramStageUid().eq(event?.programStage())
             .withDataElements()
@@ -56,7 +60,7 @@ class EventRepository(
             }.map { list ->
                 val fields = list.toMutableList()
                 fields.add(fieldFactory.createClosingSection())
-                fields
+                fields.toList()
             }.toFlowable()
     }
 

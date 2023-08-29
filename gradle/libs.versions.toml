@@ -254,7 +254,7 @@ deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose",
     "androidx-material3", "google-material"]
-uicomponents-api = ["androidx-compose-constraintlayout", "androidx-compose-preview",
+uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview",
     "androidx-compose-ui", "androidx-compose-viewbinding", "androidx-compose-livedata", "google-material-themeadapter", "google-material3-themeadapter"]
 uicomponents-debugapi = ["androidx-compose-uitooling"]
 uicomponents-test = ["test-junit"]

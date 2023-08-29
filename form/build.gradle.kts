@@ -63,4 +63,10 @@ dependencies {
     implementation(project(":dhis2_android_maps"))
     testImplementation(libs.bundles.form.test)
     androidTestImplementation(libs.bundles.form.androidTest)
+    implementation(libs.androidx.activity.compose)
+
+    debugImplementation(libs.androidx.compose.uitooling)
+    implementation(libs.androidx.compose.preview)
+
+    coreLibraryDesugaring(libs.desugar)
 }
