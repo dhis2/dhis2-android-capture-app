@@ -63,7 +63,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuMoreOptions() {
-        onView(withId(R.id.moreOptions)).perform(click())
+        waitForView(withId(R.id.moreOptions)).perform(click())
     }
 
     fun clickOnMenuReOpen() {
