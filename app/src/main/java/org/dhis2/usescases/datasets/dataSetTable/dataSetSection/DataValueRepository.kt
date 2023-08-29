@@ -53,7 +53,7 @@ class DataValueRepository(
                 ?.dataSetElements()
         val categoryCombos = when (sectionUid) {
             "NO_SECTION" -> {
-                dataSetElements?.map {
+                dataSetElements?.mapNotNull {
                     it.categoryCombo()?.uid()
                         ?: d2.dataElementModule().dataElements()
                             .uid(it.dataElement().uid())
@@ -67,10 +67,10 @@ class DataValueRepository(
                     .uid(sectionUid)
                     .blockingGet()
                     ?.dataElements()
-                    ?.map { it.uid() }
+                    ?.mapNotNull { it.uid() }
                 dataSetElements
                     ?.filter { dataElementsSectionUid?.contains(it.dataElement().uid()) == true }
-                    ?.map {
+                    ?.mapNotNull {
                         it.categoryCombo()?.uid()
                             ?: d2.dataElementModule().dataElements()
                                 .uid(it.dataElement().uid())

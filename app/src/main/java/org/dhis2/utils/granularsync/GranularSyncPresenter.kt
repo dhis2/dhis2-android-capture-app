@@ -369,7 +369,7 @@ class GranularSyncPresenter(
         return d2.dataSetModule().dataSets().withDataSetElements().uid(syncContext.recordUid())
             .get()
             .map {
-                it.dataSetElements()?.map { dataSetElement ->
+                it.dataSetElements()?.mapNotNull { dataSetElement ->
                     if (dataSetElement.categoryCombo() != null) {
                         dataSetElement.categoryCombo()?.uid()
                     } else {

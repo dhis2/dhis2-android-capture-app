@@ -89,11 +89,11 @@ class GranularSyncModule(
     )
 
     @Provides
-    fun smsSyncProvider(d2: D2): SMSSyncProvider {
+    fun smsSyncProvider(d2: D2, colorUtils: ColorUtils): SMSSyncProvider {
         return SMSPlayServicesSyncProviderImpl(
             d2,
             syncContext,
-            ResourceManager(context)
+            ResourceManager(context, colorUtils)
         )
     }
 }
