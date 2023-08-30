@@ -19,7 +19,7 @@ with open(RELEASE_INFO_PATH, 'r') as file:
 print("Getting issues from filter version...")
 print(JIRA_FILTER)
 filtered_issues = requests.get(
-    "https://dhis2.atlassian.net/issues/?filter=" + JIRA_FILTER,
+    "https://dhis2.atlassian.net/rest/api/latest/search?jql=filter=" + JIRA_FILTER,
     headers={'Authorization': JIRA_AUTH}).json()
 
 print("Writing files in RELEASE.md...")
