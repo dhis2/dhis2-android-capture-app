@@ -26,7 +26,14 @@ jobs:
         working-directory: ./scripts
         run: python3 generateReleaseNotes.py
 
+      - name: setup git config
+        run: |
+          # setup the username and email.
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<android@dhis2.org>"
+
       - name: Commit changes
-        run: git commit -am "Update release notes"
-      - name: Push changes
-        run: git push
+        run: |
+          # Commit and push
+          git commit -am "Update release notes"
+          git push
