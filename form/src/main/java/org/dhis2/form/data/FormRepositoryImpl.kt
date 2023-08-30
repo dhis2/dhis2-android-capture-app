@@ -39,12 +39,10 @@ class FormRepositoryImpl(
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
 
-    private val allowCollapsableSections by lazy {
-        if (forceDisableCollapsibleSections) {
-            false
-        } else {
-            dataEntryRepository?.allowCollapsableSections()
-        }
+    private val allowCollapsableSections: Boolean? = if (forceDisableCollapsibleSections) {
+        false
+    } else {
+        dataEntryRepository?.allowCollapsableSections()
     }
 
     override fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
@@ -274,9 +272,14 @@ class FormRepositoryImpl(
             }
         }
             .filter { field ->
-                field.isSectionWithFields() ||
-                    allowCollapsableSections == false ||
-                    field.programStageSection == openedSectionUid
+                when (field) {
+                    is SectionUiModelImpl ->
+                        field.isSectionWithFields()
+
+                    else ->
+                        allowCollapsableSections == false ||
+                            field.programStageSection == openedSectionUid
+                }
             }
     }
 
