@@ -70,7 +70,7 @@ class MainModule(val view: MainView) {
     fun provideHomeRepository(
         d2: D2,
         charts: Charts?,
-        featureConfigRepositoryImpl: FeatureConfigRepository
+        featureConfigRepositoryImpl: FeatureConfigRepository,
     ): HomeRepository {
         return HomeRepositoryImpl(d2, charts, featureConfigRepositoryImpl)
     }

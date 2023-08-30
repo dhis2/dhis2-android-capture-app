@@ -567,7 +567,7 @@ class MainActivity :
                     presenter.downloadVersion(
                         context = context,
                         onDownloadCompleted = ::installAPK,
-                        onLaunchUrl = ::launchUrl
+                        onLaunchUrl = ::launchUrl,
                     )
                 },
             ),
@@ -612,7 +612,7 @@ class MainActivity :
                 presenter.downloadVersion(
                     context,
                     onDownloadCompleted = { installAPK(it) },
-                    onLaunchUrl = ::launchUrl
+                    onLaunchUrl = ::launchUrl,
                 )
             }
         }
@@ -623,7 +623,7 @@ class MainActivity :
                 presenter.downloadVersion(
                     context,
                     onDownloadCompleted = { installAPK(it) },
-                    onLaunchUrl = ::launchUrl
+                    onLaunchUrl = ::launchUrl,
                 )
             } else {
                 Toast.makeText(

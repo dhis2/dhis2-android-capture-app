@@ -22,7 +22,7 @@ import org.hisp.dhis.android.core.user.User
 class HomeRepositoryImpl(
     private val d2: D2,
     private val charts: Charts?,
-    private val featureConfig: FeatureConfigRepository
+    private val featureConfig: FeatureConfigRepository,
 ) : HomeRepository {
     override fun user(): Single<User?> {
         return d2.userModule().user().get()
@@ -103,17 +103,17 @@ class HomeRepositoryImpl(
                     program.access().data().write() == true,
                     program.trackedEntityType()?.uid() ?: "",
                     stockConfig = if (d2.isStockProgram(program.uid())) {
-                        d2.stockUseCase(program.uid()).toAppConfig()
+                        d2.stockUseCase(program.uid())?.toAppConfig()
                     } else {
                         null
-                    }
+                    },
                 )
 
             program?.programType() == ProgramType.WITHOUT_REGISTRATION ->
                 HomeItemData.EventProgram(
                     program.uid(),
                     program.displayName() ?: program.uid(),
-                    program.access().data().write() == true
+                    program.access().data().write() == true,
                 )
 
             dataSetInstance != null -> {
@@ -121,7 +121,7 @@ class HomeRepositoryImpl(
                 HomeItemData.DataSet(
                     dataSetInstance.dataSetUid(),
                     dataSetInstance.dataSetDisplayName(),
-                    dataSet.access().data().write() == true
+                    dataSet?.access()?.data()?.write() == true,
                 )
             }
 

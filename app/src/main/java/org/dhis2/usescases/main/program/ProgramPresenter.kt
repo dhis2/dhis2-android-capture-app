@@ -20,7 +20,7 @@ class ProgramPresenter internal constructor(
     private val schedulerProvider: SchedulerProvider,
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
-    private val syncStatusController: SyncStatusController
+    private val syncStatusController: SyncStatusController,
 ) {
 
     private val programs = MutableLiveData<List<ProgramViewModel>>(emptyList())

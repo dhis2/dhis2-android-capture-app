@@ -112,13 +112,13 @@ internal class ProgramRepositoryImpl(
                     recordLabel,
                     state,
                     hasOverdue = false,
-                    filtersAreActive = false
+                    filtersAreActive = false,
                 ).copy(
                     stockConfig = if (d2.isStockProgram(program.uid())) {
-                        d2.stockUseCase(program.uid()).toAppConfig()
+                        d2.stockUseCase(program.uid())?.toAppConfig()
                     } else {
                         null
-                    }
+                    },
                 )
             }.toList().toFlowable().blockingFirst()
     }

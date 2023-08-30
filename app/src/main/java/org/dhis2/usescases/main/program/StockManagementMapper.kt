@@ -15,5 +15,5 @@ fun StockUseCase.toAppConfig() = AppConfig(
     distributedTo = this.distributedTo(),
     stockDistribution = this.stockDistribution(),
     stockCount = this.stockCount(),
-    stockDiscarded = this.stockDiscarded()
+    stockDiscarded = this.stockDiscarded(),
 )

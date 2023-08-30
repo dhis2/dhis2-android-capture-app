@@ -24,7 +24,6 @@ import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.bindings.Bindings
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
-import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
@@ -196,7 +195,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
         getActivityContent.navigateTo(
             requireContext(),
-            program.toHomeItemData()
+            program.toHomeItemData(),
         )
     }
 

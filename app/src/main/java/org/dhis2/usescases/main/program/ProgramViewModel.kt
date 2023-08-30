@@ -20,7 +20,7 @@ data class ProgramViewModel(
     val filtersAreActive: Boolean,
     val downloadState: ProgramDownloadState,
     val downloadActive: Boolean = false,
-    val stockConfig: AppConfig?
+    val stockConfig: AppConfig?,
 ) {
     private var hasShownCompleteSyncAnimation = false
 

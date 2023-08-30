@@ -24,7 +24,7 @@ class ProgramModule(private val view: ProgramView) {
         schedulerProvider: SchedulerProvider,
         filterManager: FilterManager,
         matomoAnalyticsController: MatomoAnalyticsController,
-        syncStatusController: SyncStatusController
+        syncStatusController: SyncStatusController,
     ): ProgramPresenter {
         return ProgramPresenter(
             view,
@@ -32,7 +32,7 @@ class ProgramModule(private val view: ProgramView) {
             schedulerProvider,
             filterManager,
             matomoAnalyticsController,
-            syncStatusController
+            syncStatusController,
         )
     }
 

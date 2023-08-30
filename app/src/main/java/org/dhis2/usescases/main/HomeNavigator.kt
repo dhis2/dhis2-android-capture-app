@@ -16,26 +16,26 @@ import org.hisp.dhis.android.core.program.ProgramType
 sealed class HomeItemData(
     open val uid: String,
     open val label: String,
-    open val accessDataWrite: Boolean
+    open val accessDataWrite: Boolean,
 ) {
     data class TrackerProgram(
         override val uid: String,
         override val label: String,
         override val accessDataWrite: Boolean,
         val trackedEntityType: String,
-        val stockConfig: AppConfig?
+        val stockConfig: AppConfig?,
     ) : HomeItemData(uid, label, accessDataWrite)
 
     data class EventProgram(
         override val uid: String,
         override val label: String,
-        override val accessDataWrite: Boolean
+        override val accessDataWrite: Boolean,
     ) : HomeItemData(uid, label, accessDataWrite)
 
     data class DataSet(
         override val uid: String,
         override val label: String,
-        override val accessDataWrite: Boolean
+        override val accessDataWrite: Boolean,
     ) : HomeItemData(uid, label, accessDataWrite)
 }
 
@@ -45,7 +45,7 @@ fun ProgramViewModel.toHomeItemData(): HomeItemData {
             HomeItemData.EventProgram(
                 uid,
                 title,
-                accessDataWrite
+                accessDataWrite,
             )
 
         ProgramType.WITH_REGISTRATION.name ->
@@ -54,13 +54,13 @@ fun ProgramViewModel.toHomeItemData(): HomeItemData {
                 title,
                 accessDataWrite,
                 type!!,
-                stockConfig
+                stockConfig,
             )
 
         else -> HomeItemData.DataSet(
             uid,
             title,
-            accessDataWrite
+            accessDataWrite,
         )
     }
 }
@@ -77,7 +77,7 @@ fun ActivityResultLauncher<Intent>.navigateTo(context: Context, homeItemData: Ho
     bundle.putString(Constants.DATA_SET_NAME, homeItemData.label)
     bundle.putString(
         Constants.ACCESS_DATA,
-        homeItemData.accessDataWrite.toString()
+        homeItemData.accessDataWrite.toString(),
     )
 
     when (homeItemData) {
@@ -98,7 +98,7 @@ fun ActivityResultLauncher<Intent>.navigateTo(context: Context, homeItemData: Ho
                 Intent(context, HomeActivity::class.java).apply {
                     putExtra(
                         org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG,
-                        homeItemData.stockConfig
+                        homeItemData.stockConfig,
                     )
                     launch(this)
                 }

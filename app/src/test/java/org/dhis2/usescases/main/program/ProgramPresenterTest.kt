@@ -42,7 +42,7 @@ class ProgramPresenterTest {
             schedulers,
             filterManager,
             matomoAnalyticsController,
-            syncStatusController
+            syncStatusController,
         )
     }
 
@@ -187,7 +187,7 @@ class ProgramPresenterTest {
             hasOverdueEvent = false,
             filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
-            stockConfig = null
+            stockConfig = null,
         )
     }
 
@@ -210,7 +210,7 @@ class ProgramPresenterTest {
             hasOverdueEvent = false,
             filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
-            stockConfig = null
+            stockConfig = null,
         )
     }
 }
