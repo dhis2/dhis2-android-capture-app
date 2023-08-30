@@ -1,10 +1,10 @@
 package org.dhis2.data.dhislogic
 
-import java.util.Date
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Date
 
 interface EnrollmentEventGeneratorRepository {
     fun enrollment(enrollmentUid: String): Enrollment?
@@ -18,7 +18,7 @@ interface EnrollmentEventGeneratorRepository {
         enrollmentUid: String,
         programUid: String,
         stageUid: String,
-        orgUnitUid: String
+        orgUnitUid: String,
     ): String
 
     fun periodStartingDate(periodType: PeriodType, date: Date): Date

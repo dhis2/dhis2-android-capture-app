@@ -13,13 +13,13 @@ interface JiraIssueService {
     fun createIssue(
         @Header("Authorization")
         auth: String?,
-        @Body issueRequest: RequestBody
+        @Body issueRequest: RequestBody,
     ): Single<ResponseBody>
 
     @POST("rest/api/2/search")
     fun getJiraIssues(
         @Header("Authorization")
         auth: String?,
-        @Body issueRequest: RequestBody
+        @Body issueRequest: RequestBody,
     ): Single<JiraIssueListResponse>
 }

@@ -10,11 +10,11 @@ import androidx.core.widget.doOnTextChanged
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.BreakTheGlassBottomDialogBindingImpl
+import javax.inject.Inject
 
 class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 
@@ -36,7 +36,7 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return BreakTheGlassBottomDialogBindingImpl.inflate(inflater, container, false).apply {
             positive.apply {
@@ -67,7 +67,7 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
                 } else {
                     val unFocusColor = ContextCompat.getColor(
                         requireContext(),
-                        R.color.text_black_A63
+                        R.color.text_black_A63,
                     )
                     label.setTextColor(unFocusColor)
                     selectionView.setBackgroundColor(unFocusColor)
@@ -87,7 +87,7 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED

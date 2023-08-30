@@ -9,27 +9,27 @@ import org.dhis2.databinding.ItemReservedValueBinding
 
 class ReservedValueAdapter :
     ListAdapter<ReservedValueModel, ReservedValueAdapter.ReservedValueViewHolder>(object :
-            DiffUtil.ItemCallback<ReservedValueModel>() {
-            override fun areItemsTheSame(
-                oldItem: ReservedValueModel,
-                newItem: ReservedValueModel
-            ): Boolean {
-                return oldItem == newItem
-            }
+        DiffUtil.ItemCallback<ReservedValueModel>() {
+        override fun areItemsTheSame(
+            oldItem: ReservedValueModel,
+            newItem: ReservedValueModel,
+        ): Boolean {
+            return oldItem == newItem
+        }
 
-            override fun areContentsTheSame(
-                oldItem: ReservedValueModel,
-                newItem: ReservedValueModel
-            ): Boolean {
-                return oldItem == newItem
-            }
-        }) {
+        override fun areContentsTheSame(
+            oldItem: ReservedValueModel,
+            newItem: ReservedValueModel,
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }) {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ReservedValueViewHolder {
         val binding = ItemReservedValueBinding.inflate(
             LayoutInflater.from(viewGroup.context),
             viewGroup,
-            false
+            false,
         )
         return ReservedValueViewHolder(binding)
     }

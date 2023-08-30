@@ -14,7 +14,7 @@ import timber.log.Timber
 class IndicatorsPresenter(
     val schedulerProvider: SchedulerProvider,
     val view: IndicatorsView,
-    val indicatorRepository: IndicatorRepository
+    val indicatorRepository: IndicatorRepository,
 ) {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -24,7 +24,7 @@ class IndicatorsPresenter(
         compositeDisposable.add(
             publishProcessor.startWith(Unit)
                 .flatMap { indicatorRepository.fetchData() }
-                .defaultSubscribe(schedulerProvider, { view.swapAnalytics(it) }, { Timber.d(it) })
+                .defaultSubscribe(schedulerProvider, { view.swapAnalytics(it) }, { Timber.d(it) }),
         )
     }
 
@@ -39,7 +39,7 @@ class IndicatorsPresenter(
     fun filterByOrgUnit(
         chartModel: ChartModel,
         selectedPeriods: List<OrganisationUnit>,
-        filterType: OrgUnitFilterType
+        filterType: OrgUnitFilterType,
     ) {
         indicatorRepository.filterByOrgUnit(chartModel, selectedPeriods, filterType)
         publishProcessor.onNext(Unit)
@@ -50,12 +50,12 @@ class IndicatorsPresenter(
             when (filterType) {
                 ChartFilter.PERIOD -> indicatorRepository.filterByPeriod(
                     chartModel,
-                    emptyList()
+                    emptyList(),
                 )
                 ChartFilter.ORG_UNIT -> indicatorRepository.filterByOrgUnit(
                     chartModel,
                     emptyList(),
-                    OrgUnitFilterType.NONE
+                    OrgUnitFilterType.NONE,
                 )
             }
         }

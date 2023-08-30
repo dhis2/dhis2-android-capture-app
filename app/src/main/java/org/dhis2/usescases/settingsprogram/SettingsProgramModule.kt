@@ -17,7 +17,7 @@ class SettingsProgramModule(val view: ProgramSettingsView) {
     @Provides
     fun provideAdapter(
         resourceManager: ResourceManager,
-        colorUtils: ColorUtils
+        colorUtils: ColorUtils,
     ): SettingsProgramAdapter {
         return SettingsProgramAdapter(resourceManager, colorUtils)
     }

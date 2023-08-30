@@ -67,7 +67,7 @@ class TeiDataPresenterTest {
             filterRepository,
             valueStore,
             resources,
-            optionsRepository
+            optionsRepository,
         )
     }
 
@@ -87,37 +87,37 @@ class TeiDataPresenterTest {
     @Test
     fun `Should return false if orgUnit does not belong to the capture scope`() {
         whenever(
+            d2.organisationUnitModule().organisationUnits(),
+        ) doReturn mock()
+        whenever(
             d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE),
         ) doReturn mock()
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byUid(),
         ) doReturn mock()
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid()
+                .byUid().eq("orgUnitUid"),
         ) doReturn mock()
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byUid().eq("orgUnitUid")
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq("orgUnitUid")
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
         assertTrue(
-            teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid")
+            teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
         )
     }
 
     @Test
     fun `Should show category combo dialog`() {
         whenever(
-            teiDataRepository.eventsWithoutCatCombo()
+            teiDataRepository.eventsWithoutCatCombo(),
         ) doReturn Single.just(mock())
         teiDataPresenter.getEventsWithoutCatCombo()
         verify(view).displayCatComboOptionSelectorForEvents(any())

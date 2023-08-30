@@ -15,7 +15,6 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.table.CellModel
-import kotlin.math.roundToInt
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.model.RowHeader
@@ -32,6 +31,7 @@ import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
+import kotlin.math.roundToInt
 
 class GraphToTable {
 
@@ -46,11 +46,11 @@ class GraphToTable {
                 TableHeaderRow(
                     cells = headerRow.map { headerRowCell ->
                         TableHeaderCell(
-                            value = headerRowCell.text
+                            value = headerRowCell.text,
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
 
         val tableRows = headers.mapIndexed { rowIndex, rowHeaderCell ->
@@ -58,7 +58,7 @@ class GraphToTable {
                 rowHeader = RowHeader(
                     id = rowHeaderCell?.text ?: rowIndex.toString(),
                     title = rowHeaderCell?.text ?: "-",
-                    row = rowIndex
+                    row = rowIndex,
                 ),
                 values = cells[rowIndex].mapIndexed { columnIndex, cellModel ->
                     columnIndex to TableCell(
@@ -69,7 +69,7 @@ class GraphToTable {
                         editable = false,
                         mandatory = false,
                         error = null,
-                        legendColor = cellModel.color
+                        legendColor = cellModel.color,
                     )
                 }.toMap(),
                 isLastRow = headers.lastIndex == rowIndex,
@@ -77,13 +77,13 @@ class GraphToTable {
                     1
                 } else {
                     3
-                }
+                },
             )
         }
 
         val tableModel = TableModel(
             tableHeaderModel = tableHeader,
-            tableRows = tableRows
+            tableRows = tableRows,
         )
 
         val localDensity = LocalDensity.current
@@ -102,8 +102,8 @@ class GraphToTable {
                         tableVerticalPadding = 0.dp,
                         extraWidths = emptyMap(),
                         rowHeaderWidths = emptyMap(),
-                        columnWidth = emptyMap()
-                    )
+                        columnWidth = emptyMap(),
+                    ),
                 )
             }
 
@@ -147,22 +147,22 @@ class GraphToTable {
                     primary = MaterialTheme.colors.primary,
                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
                     disabledCellText = TableTheme.colors.cellText,
-                    disabledCellBackground = TableTheme.colors.tableBackground
+                    disabledCellBackground = TableTheme.colors.tableBackground,
                 ),
                 tableConfiguration = TableConfiguration(
                     headerActionsEnabled = false,
-                    editable = false
+                    editable = false,
                 ),
                 tableDimensions = dimensions,
-                tableResizeActions = tableResizeActions
+                tableResizeActions = tableResizeActions,
             ) {
                 DataSetTableScreen(
                     tableScreenState = TableScreenState(
-                        tables = listOf(tableModel)
+                        tables = listOf(tableModel),
                     ),
                     onCellClick = { _, _, _ -> null },
                     onEdition = {},
-                    onSaveValue = {}
+                    onSaveValue = {},
                 )
             }
         }
@@ -195,7 +195,7 @@ class GraphToTable {
                 headerList.add(
                     values.filterIndexed { index, value ->
                         index == 0 || values[index - 1] != value
-                    }.map { CellModel(it) }
+                    }.map { CellModel(it) },
                 )
             }
             headerList
@@ -207,7 +207,7 @@ class GraphToTable {
     private fun cells(
         graph: Graph,
         series: List<SerieData>,
-        headers: List<CellModel?>
+        headers: List<CellModel?>,
     ): List<List<CellModel>> {
         return headers.mapIndexed { index, header ->
             series.map { serie ->
@@ -224,7 +224,7 @@ class GraphToTable {
                 }
                 CellModel(
                     point?.fieldValue?.toString() ?: "",
-                    point?.legendValue?.color
+                    point?.legendValue?.color,
                 )
             }
         }

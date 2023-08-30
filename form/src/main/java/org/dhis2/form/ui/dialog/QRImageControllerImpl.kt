@@ -13,14 +13,14 @@ import org.hisp.dhis.lib.expression.math.GS1Elements
 class QRImageControllerImpl(
     private val qrImageSize: Int = 500,
     private val darkColor: Int = Color.BLACK,
-    private val lightColor: Int = Color.WHITE
+    private val lightColor: Int = Color.WHITE,
 ) : QRImageController {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun getWriterFromRendering(value: String, renderingType: UiRenderType) = when {
         value.startsWith(GS1Elements.GS1_d2_IDENTIFIER.element) -> Pair(
             DataMatrixWriter(),
-            BarcodeFormat.DATA_MATRIX
+            BarcodeFormat.DATA_MATRIX,
         )
         renderingType == UiRenderType.QR_CODE -> Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
         renderingType == UiRenderType.BAR_CODE -> Pair(Code128Writer(), BarcodeFormat.CODE_128)
@@ -47,7 +47,7 @@ class QRImageControllerImpl(
                 bitMap.setPixel(
                     i,
                     j,
-                    if (bitMatrix.get(i, j)) darkColor else lightColor
+                    if (bitMatrix.get(i, j)) darkColor else lightColor,
                 )
             }
         }

@@ -17,7 +17,7 @@ fun List<List<List<Double>>>.closestPointTo(point: List<Double>): List<Double> {
 }
 
 fun List<List<List<Double>>>.closestPointTo(
-    polPoints: List<List<List<Double>>>
+    polPoints: List<List<List<Double>>>,
 ): Pair<List<Double>, List<Double>> {
     return this[0].map { fromPoint ->
         val toPoint = polPoints.closestPointTo(fromPoint)

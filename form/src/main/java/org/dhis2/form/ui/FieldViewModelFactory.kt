@@ -27,7 +27,7 @@ interface FieldViewModelFactory {
         objectStyle: ObjectStyle = ObjectStyle.builder().build(),
         fieldMask: String? = null,
         optionSetConfiguration: OptionSetConfiguration? = null,
-        featureType: FeatureType? = null
+        featureType: FeatureType? = null,
     ): FieldUiModel
 
     fun createForAttribute(
@@ -35,7 +35,7 @@ interface FieldViewModelFactory {
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
         value: String?,
         editable: Boolean,
-        optionSetConfiguration: OptionSetConfiguration?
+        optionSetConfiguration: OptionSetConfiguration?,
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel
@@ -47,7 +47,7 @@ interface FieldViewModelFactory {
         isOpen: Boolean,
         totalFields: Int,
         completedFields: Int,
-        rendering: String?
+        rendering: String?,
     ): FieldUiModel
 
     fun createClosingSection(): FieldUiModel

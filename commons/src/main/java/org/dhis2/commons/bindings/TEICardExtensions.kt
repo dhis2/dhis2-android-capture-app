@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import android.content.Context
 import android.graphics.Color
@@ -24,9 +24,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.composethemeadapter.MdcTheme
-import java.io.File
-import java.util.ArrayList
-import java.util.Date
 import org.dhis2.commons.R
 import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
@@ -43,6 +40,9 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
+import java.io.File
+import java.util.ArrayList
+import java.util.Date
 
 const val ENROLLMENT_ICONS_TO_SHOW = 3
 const val MAX_NUMBER_REMAINING_ENROLLMENTS = 99
@@ -58,7 +58,7 @@ fun List<Enrollment>.hasFollowUp(): Boolean {
 fun List<Program>.getEnrollmentIconsData(
     context: Context,
     currentProgram: String?,
-    colorUtils: ColorUtils
+    colorUtils: ColorUtils,
 ): List<EnrollmentIconData> {
     val enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
 
@@ -69,14 +69,14 @@ fun List<Program>.getEnrollmentIconsData(
                 program.style().color(),
                 colorUtils.getPrimaryColor(
                     context,
-                    ColorType.PRIMARY
-                )
+                    ColorType.PRIMARY,
+                ),
             )
             val imageResource =
                 ResourceManager(context, colorUtils)
                     .getObjectStyleDrawableResource(
                         program.style().icon(),
-                        R.drawable.ic_default_icon
+                        R.drawable.ic_default_icon,
                     )
 
             if (filteredList.size <= 4) {
@@ -91,8 +91,8 @@ fun List<Program>.getEnrollmentIconsData(
                             0,
                             0,
                             false,
-                            getRemainingEnrollmentsForTei(filteredList.size)
-                        )
+                            getRemainingEnrollmentsForTei(filteredList.size),
+                        ),
                     )
                 }
             }
@@ -106,7 +106,7 @@ fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
             MdcTheme {
                 Row(
                     horizontalArrangement = spacedBy(Dp(4f)),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     forEach { enrollmentIcon ->
                         if (enrollmentIcon.isIcon) {
@@ -114,8 +114,8 @@ fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
                                 metadataIconData = MetadataIconData(
                                     programColor = enrollmentIcon.color,
                                     iconResource = enrollmentIcon.imageResource,
-                                    sizeInDp = 24
-                                )
+                                    sizeInDp = 24,
+                                ),
                             )
                         } else {
                             SquareWithNumber(enrollmentIcon.remainingEnrollments)
@@ -139,26 +139,26 @@ private fun getProgramDrawable(
     context: Context,
     color: Int,
     icon: Int,
-    colorUtils: ColorUtils
+    colorUtils: ColorUtils,
 ): Drawable? {
     var iconImage: Drawable?
     try {
         iconImage = AppCompatResources.getDrawable(
             context,
-            icon
+            icon,
         )
         iconImage!!.mutate()
     } catch (e: Exception) {
         Timber.log(1, e)
         iconImage = AppCompatResources.getDrawable(
             context,
-            R.drawable.ic_default_outline
+            R.drawable.ic_default_outline,
         )
         iconImage!!.mutate()
     }
     val bgDrawable = AppCompatResources.getDrawable(
         context,
-        R.drawable.rounded_square_r2_24
+        R.drawable.rounded_square_r2_24,
     )
     val wrappedIcon = DrawableCompat.wrap(iconImage!!)
     val wrappedBg = DrawableCompat.wrap(bgDrawable!!)
@@ -166,7 +166,7 @@ private fun getProgramDrawable(
     finalDrawable.mutate()
     finalDrawable.getDrawable(1).colorFilter = PorterDuffColorFilter(
         colorUtils.getContrastColor(color),
-        PorterDuff.Mode.SRC_IN
+        PorterDuff.Mode.SRC_IN,
     )
     finalDrawable.getDrawable(0).colorFilter =
         PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
@@ -177,7 +177,7 @@ fun Enrollment.setStatusText(
     context: Context,
     statusTextView: TextView,
     isOverdue: Boolean,
-    dueDate: Date?
+    dueDate: Date?,
 ) {
     var textToShow: String? = null
     var color = -1
@@ -201,7 +201,7 @@ fun Enrollment.setStatusText(
     val bgDrawable =
         AppCompatResources.getDrawable(
             context,
-            R.drawable.round_border_box_2
+            R.drawable.round_border_box_2,
         ) as GradientDrawable?
     bgDrawable!!.setStroke(2, color)
     statusTextView.background = bgDrawable
@@ -212,18 +212,18 @@ fun SearchTeiModel.setTeiImage(
     teiImageView: ImageView,
     teiTextImageView: TextView,
     colorUtils: ColorUtils,
-    pictureListener: (String) -> Unit
+    pictureListener: (String) -> Unit,
 ) {
     val imageBg = AppCompatResources.getDrawable(
         context,
-        R.drawable.photo_temp_gray
+        R.drawable.photo_temp_gray,
     )
     imageBg!!.colorFilter = PorterDuffColorFilter(
         colorUtils.getPrimaryColor(
             context,
-            ColorType.PRIMARY
+            ColorType.PRIMARY,
         ),
-        PorterDuff.Mode.SRC_IN
+        PorterDuff.Mode.SRC_IN,
     )
     teiImageView.background = imageBg
     val file = File(profilePicturePath)
@@ -255,9 +255,9 @@ fun SearchTeiModel.setTeiImage(
             colorUtils.getContrastColor(
                 colorUtils.getPrimaryColor(
                     context,
-                    ColorType.PRIMARY
-                )
-            )
+                    ColorType.PRIMARY,
+                ),
+            ),
         )
     } else if (isOnline && attributeValues.isNotEmpty() &&
         !ArrayList(attributeValues.values).first().value().isNullOrEmpty()
@@ -274,24 +274,24 @@ fun SearchTeiModel.setTeiImage(
             colorUtils.getContrastColor(
                 colorUtils.getPrimaryColor(
                     context,
-                    ColorType.PRIMARY
-                )
-            )
+                    ColorType.PRIMARY,
+                ),
+            ),
         )
     } else if (placeHolderId != -1) {
         teiTextImageView.visibility = View.GONE
         val icon = AppCompatResources.getDrawable(
             context,
-            placeHolderId
+            placeHolderId,
         )
         icon!!.colorFilter = PorterDuffColorFilter(
             colorUtils.getContrastColor(
                 colorUtils.getPrimaryColor(
                     context,
-                    ColorType.PRIMARY
-                )
+                    ColorType.PRIMARY,
+                ),
             ),
-            PorterDuff.Mode.SRC_IN
+            PorterDuff.Mode.SRC_IN,
         )
         teiImageView.setImageDrawable(icon)
     } else {
@@ -302,9 +302,9 @@ fun SearchTeiModel.setTeiImage(
             colorUtils.getContrastColor(
                 colorUtils.getPrimaryColor(
                     context,
-                    ColorType.PRIMARY
-                )
-            )
+                    ColorType.PRIMARY,
+                ),
+            ),
         )
     }
 }
@@ -317,7 +317,7 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
     sortingKey: String?,
     sortingValue: String?,
     orgUnit: String,
-    showList: () -> Unit
+    showList: () -> Unit,
 ) {
     parentLayout.removeAllViews()
     if (size > 3) {
@@ -347,16 +347,16 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
                 ResourcesCompat.getColor(
                     binding.fieldName.context.resources,
                     R.color.sorting_attribute_key_color,
-                    null
-                )
+                    null,
+                ),
             )
             binding.value = sortingValue
             binding.fieldValue.setTextColor(
                 ResourcesCompat.getColor(
                     binding.fieldValue.context.resources,
                     R.color.sorting_attribute_value_color,
-                    null
-                )
+                    null,
+                ),
             )
             binding.root.tag = adapterPosition.toString() + "_" + sortingValue
             parentLayout.addView(binding.root)

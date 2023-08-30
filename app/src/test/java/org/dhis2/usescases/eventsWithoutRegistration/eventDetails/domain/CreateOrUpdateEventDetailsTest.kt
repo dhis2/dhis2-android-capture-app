@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
-import java.util.Date
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
@@ -15,6 +14,7 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class CreateOrUpdateEventDetailsTest {
 
@@ -44,7 +44,7 @@ class CreateOrUpdateEventDetailsTest {
             selectedDate,
             ORG_UNIT_UID,
             null,
-            null
+            null,
         ).first()
 
         // Then event should have been updated
@@ -60,7 +60,7 @@ class CreateOrUpdateEventDetailsTest {
             selectedDate,
             ORG_UNIT_UID,
             null,
-            null
+            null,
         ).first()
 
         // Then event should have been updated

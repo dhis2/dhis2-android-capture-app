@@ -13,7 +13,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
     fun addOrgUnitFilter(
         visualizationUid: String,
         filterType: OrgUnitFilterType,
-        orgUnits: List<OrganisationUnit>
+        orgUnits: List<OrganisationUnit>,
     ) {
         when (filterType) {
             OrgUnitFilterType.NONE -> return
@@ -26,7 +26,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
                 setValue("${visualizationUid}_ou_type", filterType.name)
                 setValue(
                     "${visualizationUid}_ou",
-                    Gson().toJson(orgUnits.map { it.uid() })
+                    Gson().toJson(orgUnits.map { it.uid() }),
                 )
             }
         }
@@ -40,7 +40,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
     fun addPeriodFilter(visualizationUid: String, periods: List<RelativePeriod>) {
         setValue(
             "${visualizationUid}_p",
-            Gson().toJson(periods)
+            Gson().toJson(periods),
         )
     }
 

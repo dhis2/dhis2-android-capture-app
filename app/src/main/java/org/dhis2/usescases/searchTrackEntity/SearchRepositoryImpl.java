@@ -9,9 +9,9 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ValueExtensionsKt;
+import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.data.EventViewModel;

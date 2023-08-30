@@ -9,7 +9,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract
 @BindingAdapter(value = ["setProgramModel", "setPresenter"])
 fun ComposeView.setProgramModel(
     program: ProgramViewModel,
-    presenter: TeiProgramListContract.Presenter
+    presenter: TeiProgramListContract.Presenter,
 ) {
     setContent {
         Mdc3Theme {

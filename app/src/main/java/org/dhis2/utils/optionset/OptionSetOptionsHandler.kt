@@ -3,7 +3,7 @@ package org.dhis2.utils.optionset
 class OptionSetOptionsHandler(
     private val optionsToHide: List<String>?,
     private val optionGroupsToShow: List<String>?,
-    private val optionGroupsToHide: List<String>?
+    private val optionGroupsToHide: List<String>?,
 ) {
     fun handleOptions(): Pair<List<String>, List<String>> {
         val finalOptionsToHide: MutableList<String> = mutableListOf()

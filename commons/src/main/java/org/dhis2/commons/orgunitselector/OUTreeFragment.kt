@@ -17,10 +17,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
-import javax.inject.Inject
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import javax.inject.Inject
 
 const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
 const val ARG_SINGLE_SELECTION = "OUTreeFragment.ARG_SINGLE_SELECTION"
@@ -42,7 +42,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) = apply {
             if (singleSelection && preselectedOrgUnits.size > 1) {
                 throw IllegalArgumentException(
-                    "Single selection only admits one pre-selected org. unit"
+                    "Single selection only admits one pre-selected org. unit",
                 )
             }
             this.preselectedOrgUnits = preselectedOrgUnits
@@ -51,7 +51,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         fun singleSelection() = apply {
             if (preselectedOrgUnits.size > 1) {
                 throw IllegalArgumentException(
-                    "Single selection only admits one pre-selected org. unit"
+                    "Single selection only admits one pre-selected org. unit",
                 )
             }
             singleSelection = true
@@ -97,14 +97,14 @@ class OUTreeFragment private constructor() : DialogFragment() {
                 orgUnitSelectorScope = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     requireArguments().getParcelable(
                         ARG_SCOPE,
-                        OrgUnitSelectorScope::class.java
+                        OrgUnitSelectorScope::class.java,
                     )!!
                 } else {
                     requireArguments().getParcelable(
-                        ARG_SCOPE
+                        ARG_SCOPE,
                     )!!
-                }
-            )
+                },
+            ),
         )?.inject(this)
     }
 
@@ -124,7 +124,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -148,7 +148,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
                                 get() = this@OUTreeFragment::dismiss
                             override val onClearClick: () -> Unit
                                 get() = presenter::clearAll
-                        }
+                        },
                     )
                 }
             }

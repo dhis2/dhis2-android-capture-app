@@ -1,9 +1,8 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
-import java.io.File
-import org.dhis2.Bindings.blockingSetCheck
-import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.bindings.blockingSetCheck
+import org.dhis2.bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
@@ -19,6 +18,7 @@ import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import java.io.File
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -29,7 +29,7 @@ class ValueStoreImpl(
     private val networkUtils: NetworkUtils,
     private val searchTEIRepository: SearchTEIRepository,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
 ) : ValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
@@ -53,7 +53,7 @@ class ValueStoreImpl(
             EntryMode.ATTR -> saveAttribute(uid, value)
             EntryMode.DV ->
                 throw IllegalArgumentException(
-                    resourceManager.getString(R.string.data_values_save_error)
+                    resourceManager.getString(R.string.data_values_save_error),
                 )
         }
     }
@@ -64,14 +64,14 @@ class ValueStoreImpl(
         attributeOptionComboUid: String,
         dataElementUid: String,
         categoryOptionComboUid: String,
-        value: String?
+        value: String?,
     ): Flowable<StoreResult> {
         val dataValueObject = d2.dataValueModule().dataValues().value(
             periodId,
             orgUnitUid,
             dataElementUid,
             categoryOptionComboUid,
-            attributeOptionComboUid
+            attributeOptionComboUid,
         )
 
         val validator = d2.dataElementModule().dataElements()
@@ -89,8 +89,8 @@ class ValueStoreImpl(
                             uid = "",
                             valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
                             valueStoreResultMessage = fieldErrorMessageProvider
-                                .getFriendlyErrorMessage(validation.failure)
-                        )
+                                .getFriendlyErrorMessage(validation.failure),
+                        ),
                     )
                     is Result.Success ->
                         dataValueObject.set(value)
@@ -100,8 +100,8 @@ class ValueStoreImpl(
                             uid = "",
                             valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
                             valueStoreResultMessage = fieldErrorMessageProvider
-                                .defaultValidationErrorMessage()
-                        )
+                                .defaultValidationErrorMessage(),
+                        ),
                     )
                 }
             }
@@ -157,8 +157,8 @@ class ValueStoreImpl(
                     StoreResult(
                         uid = uid,
                         valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                        valueStoreResultMessage = e.localizedMessage
-                    )
+                        valueStoreResultMessage = e.localizedMessage,
+                    ),
                 )
             }
         }
@@ -174,7 +174,7 @@ class ValueStoreImpl(
                     crashReportController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
-                            "" + " value: $_value"
+                            "" + " value: $_value",
                     )
                 }
             } else {
@@ -201,8 +201,8 @@ class ValueStoreImpl(
                     StoreResult(
                         uid = uid,
                         valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                        valueStoreResultMessage = e.localizedMessage
-                    )
+                        valueStoreResultMessage = e.localizedMessage,
+                    ),
                 )
             }
         }
@@ -251,9 +251,9 @@ class ValueStoreImpl(
         return when (entryMode) {
             EntryMode.DE -> deleteDataElementValue(field, optionUid)
             EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
-            EntryMode.DV
+            EntryMode.DV,
             -> throw IllegalArgumentException(
-                resourceManager.getString(R.string.data_values_save_error)
+                resourceManager.getString(R.string.data_values_save_error),
             )
         }
     }
@@ -261,7 +261,7 @@ class ValueStoreImpl(
     override fun deleteOptionValueIfSelectedInGroup(
         field: String,
         optionGroupUid: String,
-        isInGroup: Boolean
+        isInGroup: Boolean,
     ): StoreResult {
         val optionsInGroup =
             d2.optionModule().optionGroups()
@@ -275,16 +275,16 @@ class ValueStoreImpl(
             EntryMode.DE -> deleteDataElementValueIfNotInGroup(
                 field,
                 optionsInGroup,
-                isInGroup
+                isInGroup,
             )
             EntryMode.ATTR -> deleteAttributeValueIfNotInGroup(
                 field,
                 optionsInGroup,
-                isInGroup
+                isInGroup,
             )
-            EntryMode.DV
+            EntryMode.DV,
             -> throw IllegalArgumentException(
-                "DataValues can't be saved using these arguments. Use the other one."
+                "DataValues can't be saved using these arguments. Use the other one.",
             )
         }
     }
@@ -320,7 +320,7 @@ class ValueStoreImpl(
     private fun deleteDataElementValueIfNotInGroup(
         field: String,
         optionCodesToShow: List<String>,
-        isInGroup: Boolean
+        isInGroup: Boolean,
     ): StoreResult {
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(recordUid, field)
@@ -336,7 +336,7 @@ class ValueStoreImpl(
     private fun deleteAttributeValueIfNotInGroup(
         field: String,
         optionCodesToShow: List<String>,
-        isInGroup: Boolean
+        isInGroup: Boolean,
     ): StoreResult {
         val valueRepository =
             d2.trackedEntityModule().trackedEntityAttributeValues().value(field, recordUid)
@@ -353,11 +353,11 @@ class ValueStoreImpl(
         when (entryMode) {
             EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
             EntryMode.ATTR -> deleteOptionValuesForEnrollment(
-                optionCodeValuesToDelete
+                optionCodeValuesToDelete,
             )
-            EntryMode.DV
+            EntryMode.DV,
             -> throw IllegalArgumentException(
-                "DataValues can't be saved using these arguments. Use the other one."
+                "DataValues can't be saved using these arguments. Use the other one.",
             )
         }
     }

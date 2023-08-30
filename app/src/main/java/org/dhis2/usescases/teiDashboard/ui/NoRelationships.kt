@@ -32,7 +32,7 @@ fun NoRelationships() {
             .background(Color.White)
             .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             modifier = Modifier
@@ -40,12 +40,12 @@ fun NoRelationships() {
                 .width(139.dp)
                 .height(125.dp),
             painter = painterResource(id = R.drawable.no_relationships),
-            contentDescription = stringResource(id = org.dhis2.R.string.empty_relationships)
+            contentDescription = stringResource(id = org.dhis2.R.string.empty_relationships),
         )
         Spacer(
             modifier = Modifier
                 .height(17.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         )
         Text(
             text = stringResource(id = org.dhis2.R.string.empty_relationships),
@@ -54,8 +54,8 @@ fun NoRelationships() {
                 lineHeight = 24.sp,
                 fontWeight = FontWeight.Normal,
                 color = colorResource(id = R.color.gray_990),
-                textAlign = TextAlign.Center
-            )
+                textAlign = TextAlign.Center,
+            ),
         )
     }
 }

@@ -6,9 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.DatePicker
 import androidx.databinding.DataBindingUtil
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
@@ -26,6 +23,9 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 
 const val EXTRA_EVENT_UID = "EVENT_UID"
 
@@ -52,10 +52,10 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             (applicationContext as App).userComponent()!!.plus(
                 ScheduledEventModule(
                     intent.extras!!.getString(
-                        EXTRA_EVENT_UID
+                        EXTRA_EVENT_UID,
                     )!!,
-                    this
-                )
+                    this,
+                ),
             )
             ).inject(this)
         super.onCreate(savedInstanceState)
@@ -122,10 +122,10 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
 
                 if (lastPeriodDate.after(
                         DateUtils.getInstance().getNextPeriod(
-                                program.expiryPeriodType(),
-                                minDate,
-                                0
-                            )
+                            program.expiryPeriodType(),
+                            minDate,
+                            0,
+                        ),
                     )
                 ) {
                     minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
@@ -151,10 +151,10 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
 
                 if (lastPeriodDate.after(
                         DateUtils.getInstance().getNextPeriod(
-                                program.expiryPeriodType(),
-                                minDate,
-                                0
-                            )
+                            program.expiryPeriodType(),
+                            minDate,
+                            0,
+                        ),
                     )
                 ) {
                     minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
@@ -182,7 +182,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             val minDate = DateUtils.getInstance().expDate(
                 null,
                 program.expiryDays() ?: 0,
-                program.expiryPeriodType()
+                program.expiryPeriodType(),
             )
             dialog.setMinDate(minDate)
         }
@@ -226,7 +226,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             stage.uid(),
             event.enrollment(),
             stage.standardInterval() ?: 0,
-            presenter.getEnrollment()?.status()
+            presenter.getEnrollment()?.status(),
         )
         startActivity(Intent(this, EventInitialActivity::class.java).apply { putExtras(bundle) })
         finish()
@@ -236,7 +236,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         val bundle = EventCaptureActivity.getActivityBundle(
             event.uid(),
             program.uid(),
-            EventMode.CHECK
+            EventMode.CHECK,
         )
         Intent(activity, EventCaptureActivity::class.java).apply {
             putExtras(bundle)

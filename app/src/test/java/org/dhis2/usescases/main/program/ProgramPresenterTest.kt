@@ -4,7 +4,6 @@ import android.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
-import java.util.concurrent.TimeUnit
 import org.dhis2.commons.R
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
@@ -22,6 +21,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.util.concurrent.TimeUnit
 
 class ProgramPresenterTest {
 
@@ -46,7 +46,7 @@ class ProgramPresenterTest {
             matomoAnalyticsController,
             syncStatusController,
             identifyProgramType,
-            stockManagementMapper
+            stockManagementMapper,
         )
     }
 
@@ -61,7 +61,7 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
         whenever(
-            syncStatusController.observeDownloadProcess()
+            syncStatusController.observeDownloadProcess(),
         ) doReturn MutableLiveData(syncStatusData)
         whenever(programRepository.homeItems(any())) doReturn programsFlowable
 
@@ -80,11 +80,11 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(
-            syncStatusController.observeDownloadProcess()
+            syncStatusController.observeDownloadProcess(),
         ) doReturn MutableLiveData(syncStatusData)
 
         whenever(
-            programRepository.homeItems(syncStatusData)
+            programRepository.homeItems(syncStatusData),
         ) doReturn Flowable.error(Exception(""))
 
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
@@ -178,7 +178,7 @@ class ProgramPresenterTest {
             "displayName",
             MetadataIconData(
                 programColor = Color.parseColor("#84FFFF"),
-                iconResource = R.drawable.ic_home_positive
+                iconResource = R.drawable.ic_home_positive,
             ),
             1,
             "type",
@@ -190,7 +190,7 @@ class ProgramPresenterTest {
             state = State.SYNCED,
             hasOverdueEvent = false,
             filtersAreActive = false,
-            downloadState = ProgramDownloadState.NONE
+            downloadState = ProgramDownloadState.NONE,
         )
     }
 
@@ -200,7 +200,7 @@ class ProgramPresenterTest {
             "displayName",
             MetadataIconData(
                 programColor = Color.parseColor("#84FFFF"),
-                iconResource = R.drawable.ic_home_positive
+                iconResource = R.drawable.ic_home_positive,
             ),
             1,
             "type",
@@ -212,7 +212,7 @@ class ProgramPresenterTest {
             state = State.SYNCED,
             hasOverdueEvent = false,
             filtersAreActive = false,
-            downloadState = ProgramDownloadState.NONE
+            downloadState = ProgramDownloadState.NONE,
         )
     }
 }

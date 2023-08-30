@@ -35,7 +35,7 @@ import org.hisp.dhis.rules.utils.RuleEngineUtils
 
 class TroubleshootingRepository(
     val d2: D2,
-    val resourceManager: ResourceManager
+    val resourceManager: ResourceManager,
 ) {
 
     fun validateProgramRules(): List<ProgramRuleValidation> {
@@ -49,7 +49,7 @@ class TroubleshootingRepository(
                 rule.condition(),
                 valueMap,
                 null,
-                Expression.Mode.RULE_ENGINE_CONDITION
+                Expression.Mode.RULE_ENGINE_CONDITION,
             )
             if (ruleConditionResult.isNotEmpty()) {
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
@@ -92,11 +92,11 @@ class TroubleshootingRepository(
                     programColor = resourceManager.getColorOrDefaultFrom(program.style().color()),
                     iconResource = resourceManager.getObjectStyleDrawableResource(
                         program.style().icon(),
-                        R.drawable.ic_default_outline
+                        R.drawable.ic_default_outline,
                     ),
-                    sizeInDp = 24
+                    sizeInDp = 24,
                 ),
-                validations = validationList
+                validations = validationList,
             )
         }.sortedBy { it.programName }
     }
@@ -112,7 +112,7 @@ class TroubleshootingRepository(
     private fun ruleExternalLink(uid: String) =
         "%s/api/programRules/%s?fields=*,programRuleActions[*]".format(
             d2.systemInfoModule().systemInfo().blockingGet()?.contextPath(),
-            uid
+            uid,
         )
 
     private fun ruleVariableMap(programUid: String?, values: Map<String, String>? = null) =
@@ -121,7 +121,7 @@ class TroubleshootingRepository(
             .blockingGet().toRuleVariableList(
                 d2.trackedEntityModule().trackedEntityAttributes(),
                 d2.dataElementModule().dataElements(),
-                d2.optionModule().options()
+                d2.optionModule().options(),
             ).map {
                 val ruleValueType = when (it) {
                     is RuleVariableCalculatedValue -> it.calculatedValueType()
@@ -156,7 +156,7 @@ class TroubleshootingRepository(
                     }
                     this[envLabelKey] = RuleVariableValue.create(
                         value ?: ruleValueType.defaultValue().toString(),
-                        ruleValueType
+                        ruleValueType,
                     )
                 }
             }
@@ -164,7 +164,7 @@ class TroubleshootingRepository(
     private fun ruleVariableValue(
         value: String?,
         ruleValueType: RuleValueType?,
-        addDefaultValue: Boolean = false
+        addDefaultValue: Boolean = false,
     ): RuleVariableValue? {
         val valueToUse = if (addDefaultValue) {
             ruleValueType?.defaultValue().toString()
@@ -178,7 +178,7 @@ class TroubleshootingRepository(
         condition: String,
         valueMap: Map<String, RuleVariableValue?>,
         ruleActionType: String? = null,
-        mode: Expression.Mode
+        mode: Expression.Mode,
     ): String {
         if (condition.isEmpty()) {
             return if (ruleActionType != null) {
@@ -197,7 +197,7 @@ class TroubleshootingRepository(
                 { name ->
                     throw UnsupportedOperationException(name)
                 },
-                expressionData
+                expressionData,
             )
             convertInteger(result).toString()
             ""
@@ -222,13 +222,14 @@ class TroubleshootingRepository(
         is RuleActionHideField, is RuleActionHideOption,
         is RuleActionHideOptionGroup, is RuleActionHideProgramStage,
         is RuleActionHideSection, is RuleActionSetMandatoryField,
-        is RuleActionShowOptionGroup -> false
+        is RuleActionShowOptionGroup,
+        -> false
         else -> true
     }
 
     private fun evaluateAction(
         ruleAction: RuleAction,
-        valueMap: Map<String, RuleVariableValue?>
+        valueMap: Map<String, RuleVariableValue?>,
     ): String? {
         return if (ruleAction.needsContent()) {
             val actionConditionResult =
@@ -236,7 +237,7 @@ class TroubleshootingRepository(
                     ruleAction.data(),
                     valueMap,
                     ruleAction.ruleActionType(),
-                    Expression.Mode.RULE_ENGINE_ACTION
+                    Expression.Mode.RULE_ENGINE_ACTION,
                 )
             if (actionConditionResult.isNotEmpty()) {
                 actionConditionResult

@@ -19,16 +19,16 @@ const val NO_POSITION = -1
 
 class DataEntryHeaderHelper(
     private val headerContainer: ViewGroup,
-    private val recyclerView: RecyclerView
+    private val recyclerView: RecyclerView,
 ) {
     private val currentSection = MutableLiveData<SectionUiModelImpl>()
 
     fun observeHeaderChanges(owner: LifecycleOwner) {
         currentSection.observe(
-            owner
+            owner,
         ) { section: SectionUiModelImpl? ->
             this.loadHeader(
-                section
+                section,
             )
         }
     }
@@ -68,7 +68,7 @@ class DataEntryHeaderHelper(
                     layoutInflater,
                     section.layoutId,
                     headerContainer,
-                    false
+                    false,
                 )
             val sectionHolder = FormViewHolder(binding)
             val sectionPosition: Int? = dataEntryAdapter.getSectionPosition(section.uid)
@@ -86,7 +86,7 @@ class DataEntryHeaderHelper(
                     override fun intent(intent: FormIntent) {
                         dataEntryAdapter.intent(intent)
                     }
-                }
+                },
             )
             binding.setVariable(BR.item, section)
         } else {

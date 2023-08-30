@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import javax.inject.Inject
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
@@ -30,9 +29,10 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICON
+import javax.inject.Inject
 
 class MapLayerDialog(
-    private val mapManager: MapManager
+    private val mapManager: MapManager,
 ) : BottomSheetDialogFragment() {
 
     private val layerVisibility: HashMap<String, Boolean> = hashMapOf()
@@ -49,7 +49,7 @@ class MapLayerDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_map_layer, container, false)
         binding.baseMapCarousel.adapter = BasemapAdapter(mapManager.mapLayerManager)
@@ -57,9 +57,9 @@ class MapLayerDialog(
             ColorStateList.valueOf(
                 colorUtils.getPrimaryColor(
                     requireContext(),
-                    ColorType.PRIMARY
-                )
-            )
+                    ColorType.PRIMARY,
+                ),
+            ),
         )
         initProgramData()
         initListeners()
@@ -75,7 +75,7 @@ class MapLayerDialog(
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -89,7 +89,7 @@ class MapLayerDialog(
         dialog.setOnShowListener {
             val bottomSheet =
                 (it as BottomSheetDialog).findViewById<View>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 ) as FrameLayout?
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -115,7 +115,7 @@ class MapLayerDialog(
             Pair("RELATIONSHIP", mutableListOf()),
             Pair("EVENT", mutableListOf()),
             Pair("DE", mutableListOf()),
-            Pair("HEATMAP", mutableListOf())
+            Pair("HEATMAP", mutableListOf()),
         )
         mapManager.mapLayerManager.mapLayers.toSortedMap().forEach { (source, layer) ->
             layerVisibility[source] ?: run { layerVisibility[source] = layer.visible }
@@ -124,49 +124,49 @@ class MapLayerDialog(
                     addCheckBox(
                         source,
                         requireContext().getString(R.string.dialog_layer_tei_coordinates),
-                        MapLayerManager.TEI_ICON_ID
-                    )
+                        MapLayerManager.TEI_ICON_ID,
+                    ),
                 )
                 is EnrollmentMapLayer -> layerMap["ENROLLMENT"]?.add(
                     addCheckBox(
                         source,
                         requireContext().getString(R.string.dialog_layer_enrollment_coordinates),
-                        MapLayerManager.ENROLLMENT_ICON_ID
-                    )
+                        MapLayerManager.ENROLLMENT_ICON_ID,
+                    ),
                 )
                 is TeiEventMapLayer -> layerMap["TRACKER_EVENT"]?.add(
                     addCheckBox(
                         source,
-                        image = "${MapLayerManager.STAGE_ICON_ID}_$source"
-                    )
+                        image = "${MapLayerManager.STAGE_ICON_ID}_$source",
+                    ),
                 )
                 is HeatmapMapLayer -> layerMap["HEATMAP"]?.add(
                     addCheckBox(
                         source,
                         requireContext().getString(R.string.dialog_layer_heatmap),
-                        HEATMAP_ICON
-                    )
+                        HEATMAP_ICON,
+                    ),
                 )
                 is RelationshipMapLayer -> layerMap["RELATIONSHIP"]?.add(
                     addCheckBox(
                         source,
                         null,
-                        "${RELATIONSHIP_ICON}_$source"
-                    )
+                        "${RELATIONSHIP_ICON}_$source",
+                    ),
                 )
                 is EventMapLayer -> layerMap["EVENT"]?.add(
                     addCheckBox(
                         source,
                         requireContext().getString(R.string.dialog_layer_event),
-                        EventMapManager.ICON_ID
-                    )
+                        EventMapManager.ICON_ID,
+                    ),
                 )
                 is FieldMapLayer -> layerMap["DE"]?.add(
                     addCheckBox(
                         source,
                         mapManager.getLayerName(source),
-                        "${EventMapManager.DE_ICON_ID}_$source"
-                    )
+                        "${EventMapManager.DE_ICON_ID}_$source",
+                    ),
                 )
             }
         }
@@ -192,7 +192,7 @@ class MapLayerDialog(
     private fun addCheckBox(
         source: String,
         layerText: String? = null,
-        image: String? = null
+        image: String? = null,
     ): View {
         return ItemLayerBinding.inflate(LayoutInflater.from(context)).apply {
             root.tag = "tag_$source"
@@ -204,9 +204,9 @@ class MapLayerDialog(
                     ColorStateList.valueOf(
                         colorUtils.getPrimaryColor(
                             context,
-                            ColorType.PRIMARY
-                        )
-                    )
+                            ColorType.PRIMARY,
+                        ),
+                    ),
                 )
                 setOnCheckedChangeListener { _, isChecked ->
                     layerVisibility[source] = isChecked
@@ -218,8 +218,8 @@ class MapLayerDialog(
                 } else {
                     layerIcon.setImageBitmap(
                         mapManager.mapLayerManager.mapboxMap.style?.getImage(
-                            image
-                        )
+                            image,
+                        ),
                     )
                 }
             }

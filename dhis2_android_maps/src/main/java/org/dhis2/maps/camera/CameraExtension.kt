@@ -29,9 +29,9 @@ fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBound
         this.easeCamera(
             CameraUpdateFactory.newLatLngBounds(
                 bounds,
-                org.dhis2.maps.camera.DEFAULT_BOUND_PADDING
+                org.dhis2.maps.camera.DEFAULT_BOUND_PADDING,
             ),
-            org.dhis2.maps.camera.DEFAULT_EASE_CAMERA_ANIM_DURATION
+            org.dhis2.maps.camera.DEFAULT_EASE_CAMERA_ANIM_DURATION,
         )
     }
 }
@@ -41,17 +41,17 @@ fun MapboxMap.moveCameraToPosition(latLng: LatLng) {
         CameraUpdateFactory.newLatLngZoom(
             LatLng(
                 latLng.latitude,
-                latLng.longitude
+                latLng.longitude,
             ),
-            13.0
-        )
+            13.0,
+        ),
     )
     val cameraPosition = CameraPosition.Builder()
         .target(
             LatLng(
                 latLng.latitude,
-                latLng.longitude
-            )
+                latLng.longitude,
+            ),
         )
         .zoom(15.0)
         .build()
@@ -63,16 +63,16 @@ fun MapboxMap.moveCameraToDevicePosition(latLng: LatLng) {
         CameraUpdateFactory.newLatLng(
             LatLng(
                 latLng.latitude,
-                latLng.longitude
-            )
-        )
+                latLng.longitude,
+            ),
+        ),
     )
     val cameraPosition = CameraPosition.Builder()
         .target(
             LatLng(
                 latLng.latitude,
-                latLng.longitude
-            )
+                latLng.longitude,
+            ),
         )
         .build()
     this.easeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
@@ -85,9 +85,9 @@ fun MapboxMap.centerCameraOnFeature(feature: Feature) {
                 CameraUpdateFactory.newLatLng(
                     LatLng(
                         geometry.latitude(),
-                        geometry.longitude()
-                    )
-                )
+                        geometry.longitude(),
+                    ),
+                ),
             )
         }
         is Polygon -> {
@@ -116,17 +116,17 @@ fun MapboxMap.centerCameraOnFeatures(features: List<Feature>) {
                     is Polygon -> geometry.coordinates()[0].map { point ->
                         LatLng(
                             point.latitude(),
-                            point.longitude()
+                            point.longitude(),
                         )
                     }
                     is LineString -> geometry.coordinates().map { point ->
                         LatLng(
                             point.latitude(),
-                            point.longitude()
+                            point.longitude(),
                         )
                     }
                     else -> emptyList<LatLng>()
-                }
+                },
             )
         }
     }

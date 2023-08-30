@@ -38,7 +38,6 @@ import android.widget.TextView
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -46,6 +45,7 @@ import org.dhis2.databinding.FragmentNotesBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.notes.noteDetail.NoteDetailActivity
 import org.hisp.dhis.android.core.note.Note
+import javax.inject.Inject
 
 class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener {
 
@@ -97,7 +97,7 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false)
 
@@ -124,26 +124,26 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         }
         val pairStoredBy = Pair.create<View, String>(
             view.findViewById<TextView>(R.id.storeBy),
-            getString(R.string.transitionElement_storeBy)
+            getString(R.string.transitionElement_storeBy),
         )
         val pairNoteText =
             Pair.create<View, String>(
                 view.findViewById<TextView>(R.id.note_text),
-                getString(R.string.transitionElement_note_text)
+                getString(R.string.transitionElement_note_text),
             )
         val pairUserImage =
             Pair.create<View, String>(
                 view.findViewById<ImageView>(R.id.userImage),
-                getString(R.string.transitionElement_userImage)
+                getString(R.string.transitionElement_userImage),
             )
         val pairUserInit =
             Pair.create<View, String>(
                 view.findViewById<ImageView>(R.id.userInit),
-                getString(R.string.transitionElement_userInit)
+                getString(R.string.transitionElement_userInit),
             )
         val pairDate = Pair.create<View, String>(
             view.findViewById<ImageView>(R.id.date),
-            getString(R.string.transitionElement_date)
+            getString(R.string.transitionElement_date),
         )
         val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
             abstractActivity,
@@ -151,7 +151,7 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
             pairStoredBy,
             pairUserImage,
             pairUserInit,
-            pairDate
+            pairDate,
         )
         startActivity(intent, options.toBundle())
     }

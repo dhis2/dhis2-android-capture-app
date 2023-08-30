@@ -12,26 +12,26 @@ import org.hisp.dhis.android.core.program.ProgramStage
 
 class ProgramStageSelectionAdapter(
     val colorUtils: ColorUtils,
-    val onItemClick: (ProgramStage) -> Unit
+    val onItemClick: (ProgramStage) -> Unit,
 ) : ListAdapter<ProgramStage, ProgramStageSelectionViewHolder>(object :
-        DiffUtil.ItemCallback<ProgramStage>() {
-        override fun areItemsTheSame(oldItem: ProgramStage, newItem: ProgramStage): Boolean {
-            return oldItem.uid() == newItem.uid()
-        }
+    DiffUtil.ItemCallback<ProgramStage>() {
+    override fun areItemsTheSame(oldItem: ProgramStage, newItem: ProgramStage): Boolean {
+        return oldItem.uid() == newItem.uid()
+    }
 
-        override fun areContentsTheSame(oldItem: ProgramStage, newItem: ProgramStage): Boolean {
-            return oldItem.equals(newItem)
-        }
-    }) {
+    override fun areContentsTheSame(oldItem: ProgramStage, newItem: ProgramStage): Boolean {
+        return oldItem.equals(newItem)
+    }
+}) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
+        viewType: Int,
     ): ProgramStageSelectionViewHolder {
         val binding: ItemProgramStageBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
             R.layout.item_program_stage,
             parent,
-            false
+            false,
         )
         return ProgramStageSelectionViewHolder(binding, colorUtils, onItemClick)
     }

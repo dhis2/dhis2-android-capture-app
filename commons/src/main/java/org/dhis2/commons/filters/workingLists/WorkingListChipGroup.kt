@@ -15,7 +15,7 @@ import org.dhis2.commons.filters.data.EmptyWorkingList
 class WorkingListChipGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : ChipGroup(context, attrs, defStyleAttr) {
 
     private var scrollContainer: HorizontalScrollView? = null
@@ -27,7 +27,7 @@ class WorkingListChipGroup @JvmOverloads constructor(
                 ItemFilterWorkingListChipBinding.inflate(
                     LayoutInflater.from(context),
                     this,
-                    false
+                    false,
                 ).apply {
                     workingList = workingListItem
                     chip.id = workingListItem.id()
@@ -38,7 +38,7 @@ class WorkingListChipGroup @JvmOverloads constructor(
                             scrollContainer?.scrollToPosition(chip.tag as String)
                         }
                     }
-                }.root
+                }.root,
             )
         }
     }
@@ -48,7 +48,7 @@ class WorkingListChipGroup @JvmOverloads constructor(
             .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
                 override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
                     if (FilterManager.getInstance().observeWorkingListScope()
-                        .get() is EmptyWorkingList && checkedChipId != -1
+                            .get() is EmptyWorkingList && checkedChipId != -1
                     ) {
                         clearCheck()
                     }

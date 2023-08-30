@@ -14,5 +14,5 @@ data class RuleEffectResult(
     val optionsToHide: ArrayList<String> = ArrayList(),
     val optionGroupsToHide: ArrayList<String> = ArrayList(),
     val showOptionGroup: ArrayList<String> = ArrayList(),
-    val unsupportedRules: ArrayList<String> = ArrayList()
+    val unsupportedRules: ArrayList<String> = ArrayList(),
 )

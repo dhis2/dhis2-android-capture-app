@@ -1,9 +1,8 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
-import java.io.File
-import org.dhis2.Bindings.blockingSetCheck
-import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.bindings.blockingSetCheck
+import org.dhis2.bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.network.NetworkUtils
@@ -19,6 +18,7 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
+import java.io.File
 
 class FormValueStore(
     private val d2: D2,
@@ -31,8 +31,8 @@ class FormValueStore(
     private val fileController: FileController = FileController(),
     private val uniqueAttributeController: UniqueAttributeController = UniqueAttributeController(
         d2,
-        crashReportController
-    )
+        crashReportController,
+    ),
 ) {
 
     fun save(uid: String, value: String?, extraData: String?): StoreResult {
@@ -45,7 +45,7 @@ class FormValueStore(
 
             EntryMode.DV ->
                 throw IllegalArgumentException(
-                    resourceManager.getString(R.string.data_values_save_error)
+                    resourceManager.getString(R.string.data_values_save_error),
                 )
         }
     }
@@ -66,7 +66,7 @@ class FormValueStore(
 
             EntryMode.DV ->
                 throw IllegalArgumentException(
-                    resourceManager.getString(R.string.data_values_save_error)
+                    resourceManager.getString(R.string.data_values_save_error),
                 )
         }
         return filePath?.let {
@@ -76,49 +76,49 @@ class FormValueStore(
                 return StoreResult(
                     uid = uid,
                     valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                    valueStoreResultMessage = e.localizedMessage
+                    valueStoreResultMessage = e.localizedMessage,
                 )
             }
         }?.let { fileResourceUid ->
             StoreResult(
                 uid = fileResourceUid,
-                valueStoreResult = ValueStoreResult.FILE_SAVED
+                valueStoreResult = ValueStoreResult.FILE_SAVED,
             )
         } ?: StoreResult(
             uid = uid,
-            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE
+            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
         )
     }
 
     private fun checkStoreEnrollmentDetail(
         uid: String,
         value: String?,
-        extraData: String?
+        extraData: String?,
     ): Flowable<StoreResult> {
         return when (uid) {
             EnrollmentDetail.ENROLLMENT_DATE_UID.name -> {
                 enrollmentRepository?.setEnrollmentDate(
-                    value?.toDate()
+                    value?.toDate(),
                 )
 
                 Flowable.just(
                     StoreResult(
                         EnrollmentDetail.ENROLLMENT_DATE_UID.name,
-                        ValueStoreResult.VALUE_CHANGED
-                    )
+                        ValueStoreResult.VALUE_CHANGED,
+                    ),
                 )
             }
 
             EnrollmentDetail.INCIDENT_DATE_UID.name -> {
                 enrollmentRepository?.setIncidentDate(
-                    value?.toDate()
+                    value?.toDate(),
                 )
 
                 Flowable.just(
                     StoreResult(
                         EnrollmentDetail.INCIDENT_DATE_UID.name,
-                        ValueStoreResult.VALUE_CHANGED
-                    )
+                        ValueStoreResult.VALUE_CHANGED,
+                    ),
                 )
             }
 
@@ -126,8 +126,8 @@ class FormValueStore(
                 Flowable.just(
                     StoreResult(
                         "",
-                        ValueStoreResult.VALUE_CHANGED
-                    )
+                        ValueStoreResult.VALUE_CHANGED,
+                    ),
                 )
             }
 
@@ -144,8 +144,8 @@ class FormValueStore(
                 Flowable.just(
                     StoreResult(
                         "",
-                        ValueStoreResult.VALUE_CHANGED
-                    )
+                        ValueStoreResult.VALUE_CHANGED,
+                    ),
                 )
             }
 
@@ -163,8 +163,8 @@ class FormValueStore(
                     return Flowable.just(
                         StoreResult(
                             "",
-                            ValueStoreResult.VALUE_CHANGED
-                        )
+                            ValueStoreResult.VALUE_CHANGED,
+                        ),
                     )
                 } catch (d2Error: D2Error) {
                     val errorMessage = d2Error.errorDescription() + ": $geometry"
@@ -172,8 +172,8 @@ class FormValueStore(
                     Flowable.just(
                         StoreResult(
                             "",
-                            ValueStoreResult.ERROR_UPDATING_VALUE
-                        )
+                            ValueStoreResult.ERROR_UPDATING_VALUE,
+                        ),
                     )
                 }
             }
@@ -228,7 +228,7 @@ class FormValueStore(
                     crashReportController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
-                            "" + " value: $_value"
+                            "" + " value: $_value",
                     )
                 }
             } else {
@@ -253,7 +253,7 @@ class FormValueStore(
         uid: String,
         value: String?,
         teiUid: String,
-        programUid: String?
+        programUid: String?,
     ): Boolean {
         if (value == null || programUid == null) {
             return true
@@ -270,7 +270,7 @@ class FormValueStore(
                 programUid,
                 teiUid,
                 attribute.uid(),
-                value
+                value,
             )
         }
 
@@ -280,7 +280,7 @@ class FormValueStore(
     private fun isTrackedEntityAttributeValueUnique(
         uid: String,
         value: String?,
-        teiUid: String
+        teiUid: String,
     ): Boolean {
         if (value == null) {
             return true
@@ -352,9 +352,9 @@ class FormValueStore(
         return when (entryMode) {
             EntryMode.DE -> deleteDataElementValue(field, optionUid)
             EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
-            EntryMode.DV
+            EntryMode.DV,
             -> throw IllegalArgumentException(
-                resourceManager.getString(R.string.data_values_save_error)
+                resourceManager.getString(R.string.data_values_save_error),
             )
         }
     }
@@ -390,7 +390,7 @@ class FormValueStore(
     fun deleteOptionValueIfSelectedInGroup(
         field: String,
         optionGroupUid: String,
-        isInGroup: Boolean
+        isInGroup: Boolean,
     ): StoreResult {
         val optionsInGroup =
             d2.optionModule().optionGroups()
@@ -404,18 +404,18 @@ class FormValueStore(
             EntryMode.DE -> deleteDataElementValueIfNotInGroup(
                 field,
                 optionsInGroup,
-                isInGroup
+                isInGroup,
             )
 
             EntryMode.ATTR -> deleteAttributeValueIfNotInGroup(
                 field,
                 optionsInGroup,
-                isInGroup
+                isInGroup,
             )
 
-            EntryMode.DV
+            EntryMode.DV,
             -> throw IllegalArgumentException(
-                "DataValues can't be saved using these arguments. Use the other one."
+                "DataValues can't be saved using these arguments. Use the other one.",
             )
         }
     }
@@ -423,7 +423,7 @@ class FormValueStore(
     private fun deleteAttributeValueIfNotInGroup(
         field: String,
         optionCodesToShow: List<String>,
-        isInGroup: Boolean
+        isInGroup: Boolean,
     ): StoreResult {
         val valueRepository =
             d2.trackedEntityModule().trackedEntityAttributeValues().value(field, recordUid)
@@ -439,7 +439,7 @@ class FormValueStore(
     private fun deleteDataElementValueIfNotInGroup(
         field: String,
         optionCodesToShow: List<String>,
-        isInGroup: Boolean
+        isInGroup: Boolean,
     ): StoreResult {
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(recordUid, field)

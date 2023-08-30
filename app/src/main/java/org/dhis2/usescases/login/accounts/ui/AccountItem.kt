@@ -29,43 +29,43 @@ import org.dhis2.usescases.login.accounts.AccountModel
 fun AccountItem(
     modifier: Modifier = Modifier,
     account: AccountModel,
-    onItemClicked: (AccountModel) -> Unit
+    onItemClicked: (AccountModel) -> Unit,
 ) {
     Card(
         elevation = 4.dp,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
             .fillMaxWidth(),
-        onClick = { onItemClicked(account) }
+        onClick = { onItemClicked(account) },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(colorResource(id = R.color.colorPrimary))
+                    .background(colorResource(id = R.color.colorPrimary)),
             ) {
                 Text(
                     text = account.name.first().uppercaseChar().toString(),
                     color = Color.White,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
                 )
             }
             Column(
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 8.dp),
             ) {
                 Text(
                     text = account.name,
-                    color = colorResource(id = R.color.colorPrimary)
+                    color = colorResource(id = R.color.colorPrimary),
                 )
                 Text(
                     text = account.serverUrl,
                     color = colorResource(id = R.color.textSecondary),
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
                 )
             }
         }
@@ -78,6 +78,6 @@ fun AccountItem(
 fun AccountPreview() {
     AccountItem(
         account = AccountModel("android", "https://play.dhis2.com/android-dev"),
-        onItemClicked = {}
+        onItemClicked = {},
     )
 }

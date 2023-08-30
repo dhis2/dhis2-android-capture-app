@@ -3,7 +3,7 @@ package org.dhis2.usescases.searchTrackEntity
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class SearchPageConfigurator(
-    val searchRepository: SearchRepository
+    val searchRepository: SearchRepository,
 ) : NavigationPageConfigurator {
 
     private var canDisplayMap: Boolean = false

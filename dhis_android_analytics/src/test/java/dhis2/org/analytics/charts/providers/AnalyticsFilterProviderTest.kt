@@ -110,15 +110,15 @@ class AnalyticsFilterProviderTest {
 
     private fun mockValueSaved(
         saved: Boolean,
-        value: KeyValuePair? = null
+        value: KeyValuePair? = null,
     ): LocalDataStoreObjectRepository {
         val repo: LocalDataStoreObjectRepository = mock()
         whenever(d2.dataStoreModule().localDataStore().value(any())) doReturn repo
         whenever(
-            repo.blockingExists()
+            repo.blockingExists(),
         ) doReturn saved
         whenever(
-            repo.blockingGet()
+            repo.blockingGet(),
         ) doReturn value
         return repo
     }

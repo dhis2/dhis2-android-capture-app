@@ -20,15 +20,15 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
                 FIELD_NAME to coordinateDataElementInfo.dataElement.displayFormName()!!,
                 EVENT to coordinateDataElementInfo.event.uid()!!,
-                STAGE to coordinateDataElementInfo.stage.displayName()!!
+                STAGE to coordinateDataElementInfo.stage.displayName()!!,
             ).apply {
                 coordinateDataElementInfo.enrollment?.let { enrollment ->
                     put(
                         TEI,
-                        enrollment.trackedEntityInstance()!!
+                        enrollment.trackedEntityInstance()!!,
                     )
                 }
-            }
+            },
         )
     }
 
@@ -38,8 +38,8 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
             hashMapOf(
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
                 FIELD_NAME to coordinateAttributeInfo.attribute.displayFormName()!!,
-                TEI to coordinateAttributeInfo.tei.uid()!!
-            )
+                TEI to coordinateAttributeInfo.tei.uid()!!,
+            ),
         )
     }
 }

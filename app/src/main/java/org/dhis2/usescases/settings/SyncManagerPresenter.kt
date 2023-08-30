@@ -11,9 +11,6 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.Locale
-import kotlin.collections.ArrayList
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -50,6 +47,9 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.settings.LimitScope
 import timber.log.Timber
+import java.util.Locale
+import kotlin.collections.ArrayList
+import kotlin.coroutines.CoroutineContext
 
 class SyncManagerPresenter internal constructor(
     private val d2: D2,
@@ -65,7 +65,7 @@ class SyncManagerPresenter internal constructor(
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val resourceManager: ResourceManager,
     private val versionRepository: VersionRepository,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
 ) : CoroutineScope {
 
     private var job = Job()
@@ -105,18 +105,19 @@ class SyncManagerPresenter internal constructor(
                         settingsRepository.dataSync(),
                         settingsRepository.syncParameters(),
                         settingsRepository.reservedValues(),
-                        settingsRepository.sms()
+                        settingsRepository.sms(),
                     ) { metadataSettingsViewModel: MetadataSettingsViewModel?,
                         dataSettingsViewModel: DataSettingsViewModel?,
                         syncParametersViewModel: SyncParametersViewModel?,
                         reservedValueSettingsViewModel: ReservedValueSettingsViewModel?,
-                        smsSettingsViewModel: SMSSettingsViewModel? ->
+                        smsSettingsViewModel: SMSSettingsViewModel?,
+                        ->
                         SettingsViewModel(
                             metadataSettingsViewModel!!,
                             dataSettingsViewModel!!,
                             syncParametersViewModel!!,
                             reservedValueSettingsViewModel!!,
-                            smsSettingsViewModel!!
+                            smsSettingsViewModel!!,
                         )
                     }
                 }
@@ -128,44 +129,45 @@ class SyncManagerPresenter internal constructor(
                         dataSettingsViewModel,
                         syncParametersViewModel,
                         reservedValueSettingsViewModel,
-                        smsSettingsViewModel1
-                    ): SettingsViewModel ->
+                        smsSettingsViewModel1,
+                    ): SettingsViewModel,
+                        ->
                         view.setMetadataSettings(
-                            metadataSettingsViewModel
+                            metadataSettingsViewModel,
                         )
                         view.setDataSettings(dataSettingsViewModel)
                         view.setParameterSettings(syncParametersViewModel)
                         view.setReservedValuesSettings(reservedValueSettingsViewModel)
                         view.setSMSSettings(smsSettingsViewModel1)
                         smsSettingsViewModel = smsSettingsViewModel1
-                    }
-                ) { t: Throwable? -> Timber.e(t) }
+                    },
+                ) { t: Throwable? -> Timber.e(t) },
         )
 
         _syncDataButton.postValue(
             ButtonUiModel(
                 resourceManager.getString(R.string.SYNC_DATA).uppercase(Locale.getDefault()),
-                true
+                true,
             ) {
                 syncData()
-            }
+            },
         )
         _syncMetaDataButton.postValue(
             ButtonUiModel(
                 resourceManager.getString(R.string.SYNC_META).uppercase(Locale.getDefault()),
-                true
-            ) { syncMeta() }
+                true,
+            ) { syncMeta() },
         )
         _checkVersionsButton.postValue(
             ButtonUiModel(
                 resourceManager.getString(R.string.check_for_updates),
-                true
+                true,
             ) {
                 _updatesLoading.value = true
                 launch {
                     versionRepository.downloadLatestVersionInfo()
                 }
-            }
+            },
         )
     }
 
@@ -262,11 +264,11 @@ class SyncManagerPresenter internal constructor(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.displaySMSEnabled(enableSms) }
+                    { view.displaySMSEnabled(enableSms) },
                 ) { error: Throwable? ->
                     Timber.e(error)
                     view.displaySmsEnableError()
-                }
+                },
         )
     }
 
@@ -275,7 +277,8 @@ class SyncManagerPresenter internal constructor(
             when (workState) {
                 WorkInfo.State.ENQUEUED,
                 WorkInfo.State.RUNNING,
-                WorkInfo.State.BLOCKED -> when (workerTag) {
+                WorkInfo.State.BLOCKED,
+                -> when (workerTag) {
                     Constants.META_NOW -> view.onMetadataSyncInProgress()
                     Constants.DATA_NOW -> view.onDataSyncInProgress()
                 }
@@ -301,7 +304,7 @@ class SyncManagerPresenter internal constructor(
             seconds.toLong(),
             null,
             null,
-            ExistingPeriodicWorkPolicy.REPLACE
+            ExistingPeriodicWorkPolicy.REPLACE,
         )
         workManagerController.enqueuePeriodicWork(workerItem)
         checkData()
@@ -317,7 +320,7 @@ class SyncManagerPresenter internal constructor(
             seconds.toLong(),
             null,
             null,
-            ExistingPeriodicWorkPolicy.REPLACE
+            ExistingPeriodicWorkPolicy.REPLACE,
         )
         workManagerController.enqueuePeriodicWork(workerItem)
         checkData()
@@ -333,7 +336,7 @@ class SyncManagerPresenter internal constructor(
             null,
             null,
             ExistingWorkPolicy.KEEP,
-            null
+            null,
         )
         workManagerController.syncDataForWorker(workerItem)
         checkData()
@@ -348,7 +351,7 @@ class SyncManagerPresenter internal constructor(
             null,
             null,
             ExistingWorkPolicy.KEEP,
-            null
+            null,
         )
         workManagerController.syncDataForWorker(workerItem)
     }
@@ -359,7 +362,7 @@ class SyncManagerPresenter internal constructor(
                 Constants.DATA -> Constants.TIME_DATA
                 else -> Constants.TIME_META
             },
-            0
+            0,
         )
         workManagerController.cancelUniqueWork(tag)
         checkData()
@@ -401,17 +404,17 @@ class SyncManagerPresenter internal constructor(
             Single.fromCallable<List<ErrorViewModel>> {
                 val errors: MutableList<ErrorViewModel> = ArrayList()
                 errors.addAll(
-                    errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet())
+                    errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet()),
                 )
                 errors.addAll(
                     errorMapper.mapConflict(
-                        d2.importModule().trackerImportConflicts().blockingGet()
-                    )
+                        d2.importModule().trackerImportConflicts().blockingGet(),
+                    ),
                 )
                 errors.addAll(
                     errorMapper.mapFKViolation(
-                        d2.maintenanceModule().foreignKeyViolations().blockingGet()
-                    )
+                        d2.maintenanceModule().foreignKeyViolations().blockingGet(),
+                    ),
                 )
                 errors
             }
@@ -421,8 +424,8 @@ class SyncManagerPresenter internal constructor(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { data: List<ErrorViewModel> -> view.showSyncErrors(data) }
-                ) { t: Throwable? -> Timber.e(t) }
+                    { data: List<ErrorViewModel> -> view.showSyncErrors(data) },
+                ) { t: Throwable? -> Timber.e(t) },
         )
     }
 
@@ -445,10 +448,10 @@ class SyncManagerPresenter internal constructor(
         _syncDataButton.postValue(
             ButtonUiModel(
                 resourceManager.getString(R.string.SYNC_DATA).uppercase(Locale.getDefault()),
-                canBeClicked
+                canBeClicked,
             ) {
                 syncData()
-            }
+            },
         )
     }
 
@@ -456,10 +459,10 @@ class SyncManagerPresenter internal constructor(
         _syncMetaDataButton.postValue(
             ButtonUiModel(
                 resourceManager.getString(R.string.SYNC_META).uppercase(Locale.getDefault()),
-                canBeClicked
+                canBeClicked,
             ) {
                 syncMeta()
-            }
+            },
         )
     }
 }

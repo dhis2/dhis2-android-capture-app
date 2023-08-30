@@ -14,7 +14,7 @@ class ReservedValuePresenter(
     private val repository: ReservedValueRepository,
     private val schedulerProvider: SchedulerProvider,
     private val view: ReservedValueView,
-    private val refillFlowable: Flowable<String>
+    private val refillFlowable: Flowable<String>,
 ) {
     private val disposable: CompositeDisposable = CompositeDisposable()
     private val updateProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
@@ -26,8 +26,8 @@ class ReservedValuePresenter(
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.setReservedValues(it) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
 
         disposable.add(
@@ -47,8 +47,8 @@ class ReservedValuePresenter(
                     },
                     {
                         onReservedValuesError(it)
-                    }
-                )
+                    },
+                ),
         )
     }
 

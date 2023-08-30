@@ -20,12 +20,12 @@ internal class StageViewHolder(
     private val binding: ItemStageSectionBinding,
     private val stageSelector: FlowableProcessor<StageSection>,
     private val presenter: TEIDataPresenter,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeProgramStageIcon.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -41,23 +41,23 @@ internal class StageViewHolder(
             stage.style().color(),
             colorUtils.getPrimaryColor(
                 itemView.context,
-                ColorType.PRIMARY_LIGHT
-            )
+                ColorType.PRIMARY_LIGHT,
+            ),
         )
 
         val iconResource = ResourceManager(itemView.context, colorUtils)
             .getObjectStyleDrawableResource(
                 stage.style().icon(),
-                R.drawable.ic_default_outline
+                R.drawable.ic_default_outline,
             )
 
         binding.composeProgramStageIcon.setUpMetadataIcon(
             MetadataIconData(
                 programColor = color,
                 iconResource = iconResource,
-                sizeInDp = 40
+                sizeInDp = 40,
             ),
-            false
+            false,
         )
 
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)

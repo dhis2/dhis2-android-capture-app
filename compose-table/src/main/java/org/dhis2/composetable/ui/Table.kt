@@ -45,16 +45,16 @@ fun Table(
         (
             index: Int,
             tableModel: TableModel,
-            tableRowModel: TableRowModel
+            tableRowModel: TableRowModel,
         ) -> Unit
     )? = null,
     verticalResizingView: @Composable ((tableHeight: Int?) -> Unit)? = null,
-    bottomContent: @Composable (() -> Unit)? = null
+    bottomContent: @Composable (() -> Unit)? = null,
 ) {
     Box(
         modifier = Modifier
             .background(Color.White)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp)),
     ) {
         val resizeActions = LocalTableResizeActions.current
         var tableHeight: Int? by remember { mutableStateOf(null) }
@@ -65,12 +65,12 @@ fun Table(
                     .fillMaxWidth()
                     .padding(
                         vertical = LocalTableDimensions.current.tableVerticalPadding,
-                        horizontal = LocalTableDimensions.current.tableHorizontalPadding
+                        horizontal = LocalTableDimensions.current.tableHorizontalPadding,
                     )
                     .onSizeChanged {
                         resizeActions.onTableWidthChanged(it.width)
                         tableHeight = it.height
-                    }
+                    },
             ) {
                 tableList.forEachIndexed { index, tableModel ->
                     tableHeaderRow?.invoke(index, tableModel)
@@ -78,7 +78,7 @@ fun Table(
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
                         LastRowDivider(
                             tableId = tableModel.id ?: "",
-                            isLastRow = tableRowModel.isLastRow
+                            isLastRow = tableRowModel.isLastRow,
                         )
                     }
                 }
@@ -93,7 +93,7 @@ fun Table(
                 val isKeyboardOpen = keyboardState == Keyboard.Opened
                 verticalScrollState.animateToIf(
                     tableSelection.getSelectedCellRowIndex(tableSelection.tableId),
-                    isCellSelection && isKeyboardOpen
+                    isCellSelection && isKeyboardOpen,
                 )
             }
 
@@ -103,24 +103,24 @@ fun Table(
                     .fillMaxWidth()
                     .padding(
                         horizontal = TableTheme.dimensions.tableHorizontalPadding,
-                        vertical = TableTheme.dimensions.tableVerticalPadding
+                        vertical = TableTheme.dimensions.tableVerticalPadding,
                     )
                     .onSizeChanged {
                         resizeActions.onTableWidthChanged(it.width)
                     },
                 contentPadding = PaddingValues(bottom = TableTheme.dimensions.tableBottomPadding),
-                state = verticalScrollState
+                state = verticalScrollState,
             ) {
                 tableList.forEachIndexed { index, tableModel ->
                     fixedStickyHeader(
                         fixHeader = keyboardState == Keyboard.Closed,
-                        key = tableModel.id
+                        key = tableModel.id,
                     ) {
                         tableHeaderRow?.invoke(index, tableModel)
                     }
                     itemsIndexed(
                         items = tableModel.tableRows,
-                        key = { _, item -> item.rowHeader.id!! }
+                        key = { _, item -> item.rowHeader.id!! },
                     ) { _, tableRowModel ->
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
                         LastRowDivider(tableModel.id ?: "", tableRowModel.isLastRow)
@@ -139,7 +139,7 @@ private fun LastRowDivider(tableId: String, isLastRow: Boolean) {
     if (isLastRow) {
         ExtendDivider(
             tableId = tableId,
-            selected = tableSelection.isCornerSelected(tableId)
+            selected = tableSelection.isCornerSelected(tableId),
         )
     }
 }
@@ -161,7 +161,7 @@ private fun LazyListScope.stickyFooter(showFooter: Boolean = true) {
             Spacer(
                 modifier = Modifier
                     .height(16.dp)
-                    .background(color = Color.White)
+                    .background(color = Color.White),
             )
         }
     }
@@ -176,23 +176,23 @@ fun TablePreview() {
                 cells = listOf(
                     TableHeaderCell("<18"),
                     TableHeaderCell(">18 <65"),
-                    TableHeaderCell(">65")
-                )
+                    TableHeaderCell(">65"),
+                ),
             ),
             org.dhis2.composetable.model.TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell("Male"),
-                    TableHeaderCell("Female")
-                )
+                    TableHeaderCell("Female"),
+                ),
             ),
             org.dhis2.composetable.model.TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell("Fixed"),
-                    TableHeaderCell("Outreach")
-                )
-            )
+                    TableHeaderCell("Outreach"),
+                ),
+            ),
         ),
-        hasTotals = true
+        hasTotals = true,
     )
 
     val tableRows = TableRowModel(
@@ -205,8 +205,8 @@ fun TablePreview() {
                     value = "12.123523452341232131312",
                     mandatory = true,
                     row = 0,
-                    column = 0
-                )
+                    column = 0,
+                ),
             ),
             Pair(
                 1,
@@ -215,8 +215,8 @@ fun TablePreview() {
                     value = "1",
                     editable = false,
                     row = 0,
-                    column = 1
-                )
+                    column = 1,
+                ),
             ),
             Pair(
                 2,
@@ -225,8 +225,8 @@ fun TablePreview() {
                     value = "",
                     mandatory = true,
                     row = 0,
-                    column = 2
-                )
+                    column = 2,
+                ),
             ),
             Pair(
                 3,
@@ -236,8 +236,8 @@ fun TablePreview() {
                     mandatory = true,
                     error = "Error",
                     row = 0,
-                    column = 3
-                )
+                    column = 3,
+                ),
             ),
             Pair(
                 4,
@@ -246,28 +246,28 @@ fun TablePreview() {
                     value = "1",
                     error = "Error",
                     row = 0,
-                    column = 4
-                )
+                    column = 4,
+                ),
             ),
             Pair(
                 5,
-                org.dhis2.composetable.model.TableCell(id = "5", value = "12", row = 0, column = 5)
+                org.dhis2.composetable.model.TableCell(id = "5", value = "12", row = 0, column = 5),
             ),
             Pair(
                 6,
-                org.dhis2.composetable.model.TableCell(id = "6", value = "55", row = 0, column = 6)
+                org.dhis2.composetable.model.TableCell(id = "6", value = "55", row = 0, column = 6),
             ),
             Pair(
                 7,
-                org.dhis2.composetable.model.TableCell(id = "7", value = "12", row = 0, column = 7)
+                org.dhis2.composetable.model.TableCell(id = "7", value = "12", row = 0, column = 7),
             ),
             Pair(
                 8,
-                org.dhis2.composetable.model.TableCell(id = "8", value = "12", row = 0, column = 8)
+                org.dhis2.composetable.model.TableCell(id = "8", value = "12", row = 0, column = 8),
             ),
             Pair(
                 9,
-                org.dhis2.composetable.model.TableCell(id = "9", value = "12", row = 0, column = 9)
+                org.dhis2.composetable.model.TableCell(id = "9", value = "12", row = 0, column = 9),
             ),
             Pair(
                 10,
@@ -275,8 +275,8 @@ fun TablePreview() {
                     id = "10",
                     value = "12",
                     row = 0,
-                    column = 10
-                )
+                    column = 10,
+                ),
             ),
             Pair(
                 11,
@@ -284,21 +284,21 @@ fun TablePreview() {
                     id = "11",
                     value = "12",
                     row = 0,
-                    column = 11
-                )
-            )
+                    column = 11,
+                ),
+            ),
         ),
-        maxLines = 1
+        maxLines = 1,
     )
 
     val tableModel = TableModel(
         "tableId",
         "table title",
         tableHeaderModel,
-        listOf(tableRows)
+        listOf(tableRows),
     )
     val tableList = listOf(tableModel)
     Table(
-        tableList = tableList
+        tableList = tableList,
     )
 }

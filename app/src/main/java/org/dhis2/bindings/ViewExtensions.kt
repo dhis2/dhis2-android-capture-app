@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import android.graphics.Outline
 import android.os.Build
@@ -12,8 +12,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tbuonomo.viewpagerdotsindicator.R
-import java.lang.Exception
 import org.dhis2.commons.extensions.closeKeyboard
+import java.lang.Exception
 
 fun View.getThemePrimaryColor(): Int {
     val value = TypedValue()
@@ -50,7 +50,7 @@ fun View.clipWithRoundedCorners(curvedRadio: Int = 16.dp) {
                     0,
                     view.width,
                     view.height + curvedRadio,
-                    curvedRadio.toFloat()
+                    curvedRadio.toFloat(),
                 )
             }
         }
@@ -67,7 +67,7 @@ fun View.clipWithAllRoundedCorners(curvedRadio: Int = 16.dp) {
                     0,
                     view.width,
                     view.height,
-                    curvedRadio.toFloat()
+                    curvedRadio.toFloat(),
                 )
             }
         }
@@ -96,7 +96,7 @@ fun Spinner.doOnItemSelected(onItemSelected: (selectedIndex: Int) -> Unit) {
             adapterView: AdapterView<*>?,
             view: View?,
             selectedIndex: Int,
-            id: Long
+            id: Long,
         ) {
             onItemSelected(selectedIndex)
         }

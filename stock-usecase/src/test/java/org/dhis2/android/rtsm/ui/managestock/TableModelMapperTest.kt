@@ -17,10 +17,10 @@ class TableModelMapperTest {
     @Before
     fun setUp() {
         whenever(
-            resources.getString(R.string.invalid_possitive_zero)
+            resources.getString(R.string.invalid_possitive_zero),
         ) doReturn ONLY_POSITIVE_NUMBERS
         whenever(
-            resources.getString(R.string.formatting_error)
+            resources.getString(R.string.formatting_error),
         ) doReturn FORMATTING_ERROR
 
         mapper = TableModelMapper(resources = resources)

@@ -82,7 +82,7 @@ class SyncManagerPresenterTest {
             matomoAnalyticsController,
             resourcesManager,
             versionRepository,
-            dispatcherProvider
+            dispatcherProvider,
         )
     }
 
@@ -91,12 +91,12 @@ class SyncManagerPresenterTest {
         whenever(resourcesManager.getString(any())) doReturn ""
         presenter.init()
         whenever(
-            settingsRepository.metaSync(userManager)
+            settingsRepository.metaSync(userManager),
         ) doReturn Single.just(mockedMetaViewModel())
         whenever(settingsRepository.dataSync()) doReturn Single.just(mockedDataViewModel())
         whenever(settingsRepository.syncParameters()) doReturn Single.just(mockedParamsViewModel())
         whenever(settingsRepository.reservedValues()) doReturn Single.just(
-            mockedReservecValuesViewModel()
+            mockedReservecValuesViewModel(),
         )
         whenever(settingsRepository.sms()) doReturn Single.just(mockedSMSViewModel())
 
@@ -144,7 +144,7 @@ class SyncManagerPresenterTest {
             100,
             "test",
             false,
-            canEdit = false
+            canEdit = false,
         )
     }
 
@@ -155,7 +155,7 @@ class SyncManagerPresenterTest {
             false,
             false,
             false,
-            false
+            false,
         )
     }
 
@@ -169,7 +169,7 @@ class SyncManagerPresenterTest {
             false,
             false,
             false,
-            5
+            5,
         )
     }
 
@@ -185,7 +185,7 @@ class SyncManagerPresenterTest {
             10,
             false,
             false,
-            false
+            false,
         )
     }
 
@@ -196,8 +196,8 @@ class SyncManagerPresenterTest {
                 100,
                 "last date",
                 hasErrors = false,
-                canEdit = true
-            )
+                canEdit = true,
+            ),
         )
         val period = presenter.metadataPeriodSetting
         assert(period == 100)
@@ -212,8 +212,8 @@ class SyncManagerPresenterTest {
                 false,
                 dataHasErrors = true,
                 dataHasWarnings = true,
-                canEdit = true
-            )
+                canEdit = true,
+            ),
         )
         val period = presenter.dataPeriodSetting
         assert(period == 100)
@@ -287,8 +287,8 @@ class SyncManagerPresenterTest {
                 10,
                 null,
                 null,
-                ExistingPeriodicWorkPolicy.REPLACE
-            )
+                ExistingPeriodicWorkPolicy.REPLACE,
+            ),
         )
     }
 
@@ -303,8 +303,8 @@ class SyncManagerPresenterTest {
                 10,
                 null,
                 null,
-                ExistingPeriodicWorkPolicy.REPLACE
-            )
+                ExistingPeriodicWorkPolicy.REPLACE,
+            ),
         )
     }
 

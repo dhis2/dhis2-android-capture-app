@@ -12,7 +12,7 @@ class SyncStatusDialogProvider : SyncComponentProvider {
         activity: FragmentActivity,
         syncContext: SyncContext,
         dismissListener: OnDismissListener?,
-        onSyncNavigationListener: OnSyncNavigationListener?
+        onSyncNavigationListener: OnSyncNavigationListener?,
     ) {
         val syncBuilder = SyncStatusDialog.Builder()
             .withContext(activity, onSyncNavigationListener)

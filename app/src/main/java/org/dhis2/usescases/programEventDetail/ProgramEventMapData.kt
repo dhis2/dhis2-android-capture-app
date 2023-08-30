@@ -7,5 +7,5 @@ import org.dhis2.commons.data.ProgramEventViewModel
 data class ProgramEventMapData(
     val events: List<ProgramEventViewModel>,
     val featureCollectionMap: MutableMap<String, FeatureCollection>,
-    val boundingBox: BoundingBox
+    val boundingBox: BoundingBox,
 )

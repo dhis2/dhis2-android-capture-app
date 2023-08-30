@@ -32,7 +32,7 @@ class TeiDownloaderTest {
         teiConfiguration,
         fileConfiguration,
         programUid,
-        resources
+        resources,
     )
 
     @Before
@@ -85,7 +85,7 @@ class TeiDownloaderTest {
         given(teiConfiguration.downloadAndOverwrite(trackedEntityDownloader)).willAnswer {
             throw D2Error.builder()
                 .errorCode(
-                    D2ErrorCode.OWNERSHIP_ACCESS_DENIED
+                    D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
                 )
                 .errorComponent(D2ErrorComponent.Server)
                 .errorDescription("description")
@@ -100,11 +100,11 @@ class TeiDownloaderTest {
         given(teiConfiguration.downloadAndOverwrite(trackedEntityDownloader)).willAnswer {
             throw Exception(
                 D2Error.builder().errorCode(
-                    D2ErrorCode.OWNERSHIP_ACCESS_DENIED
+                    D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
                 )
                     .errorComponent(D2ErrorComponent.Server)
                     .errorDescription("description")
-                    .build()
+                    .build(),
             )
         }
         val result = teiDownloader("programUid").download("teiUid", null, null)
@@ -125,7 +125,7 @@ class TeiDownloaderTest {
         given(teiConfiguration.downloadAndOverwrite(trackedEntityDownloader)).willAnswer {
             throw D2Error.builder()
                 .errorCode(
-                    D2ErrorCode.OWNERSHIP_ACCESS_DENIED
+                    D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
                 )
                 .errorComponent(D2ErrorComponent.Server)
                 .errorDescription("description")
@@ -139,7 +139,7 @@ class TeiDownloaderTest {
             trackedEntityDownloader,
             "teiUid",
             "programUid",
-            "because"
+            "because",
         )
         verify(fileConfiguration).download()
     }

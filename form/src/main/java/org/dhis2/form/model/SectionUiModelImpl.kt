@@ -41,7 +41,7 @@ data class SectionUiModelImpl(
     var rendering: String? = null,
     var selectedField: ObservableField<String?> = ObservableField(null),
     override val isLoadingData: Boolean = false,
-    override var optionSetConfiguration: OptionSetConfiguration? = null
+    override var optionSetConfiguration: OptionSetConfiguration? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0
@@ -116,8 +116,8 @@ data class SectionUiModelImpl(
         callback!!.intent(
             OnFocus(
                 uid,
-                value
-            )
+                value,
+            ),
         )
     }
 
@@ -125,8 +125,8 @@ data class SectionUiModelImpl(
         callback?.recyclerViewUiEvents(
             RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                 label,
-                description
-            )
+                description,
+            ),
         )
     }
 

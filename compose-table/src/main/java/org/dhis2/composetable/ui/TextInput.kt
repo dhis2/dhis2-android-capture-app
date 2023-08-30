@@ -61,7 +61,7 @@ import org.dhis2.composetable.model.extensions.toKeyboardType
 fun TextInput(
     textInputModel: TextInputModel,
     textInputInteractions: TextInputInteractions,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
 ) {
     Column(
         modifier = Modifier
@@ -69,9 +69,9 @@ fun TextInput(
             .fillMaxWidth()
             .background(
                 color = Color.White,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             )
-            .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp)
+            .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp),
     ) {
         InputTitle(textInputModel.mainLabel, textInputModel.secondaryLabels)
         TextInputContent(
@@ -79,7 +79,7 @@ fun TextInput(
             onTextChanged = textInputInteractions::onTextChanged,
             onSave = textInputInteractions::onSave,
             onNextSelected = textInputInteractions::onNextSelected,
-            focusRequester = focusRequester
+            focusRequester = focusRequester,
         )
     }
 }
@@ -123,12 +123,12 @@ private fun InputTitle(mainTitle: String, secondaryTitle: List<String>) {
             .semantics {
                 mainLabel = mainTitle
                 secondaryLabel = secondaryTitle.joinToString(separator = ",")
-            }
+            },
     ) {
         Text(
             text = displayName(mainTitle, secondaryTitle),
             fontSize = 10.sp,
-            maxLines = 1
+            maxLines = 1,
         )
     }
 }
@@ -139,7 +139,7 @@ private fun TextInputContent(
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -148,7 +148,7 @@ private fun TextInputContent(
     val dividerColor = dividerColor(
         hasError = textInputModel.error != null,
         hasWarning = textInputModel.warning != null,
-        hasFocus = hasFocus
+        hasFocus = hasFocus,
     )
 
     val keyboardOptions by remember(textInputModel.keyboardInputType) {
@@ -156,8 +156,8 @@ private fun TextInputContent(
             KeyboardOptions(
                 capitalization = textInputModel.keyboardInputType.keyboardCapitalization(),
                 imeAction = ImeAction.Next,
-                keyboardType = textInputModel.keyboardInputType.toKeyboardType()
-            )
+                keyboardType = textInputModel.keyboardInputType.toKeyboardType(),
+            ),
         )
     }
 
@@ -176,19 +176,19 @@ private fun TextInputContent(
         mutableStateOf(
             TextFieldValue(
                 text = textInputModel.currentValue ?: "",
-                selection = TextRange(textInputModel.currentValue?.length ?: 0)
-            )
+                selection = TextRange(textInputModel.currentValue?.length ?: 0),
+            ),
         )
     }
 
     Column {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
             ) {
                 BasicTextField(
                     modifier = Modifier
@@ -209,25 +209,25 @@ private fun TextInputContent(
                             textInputModel.copy(
                                 currentValue = it.text,
                                 selection = it.selection,
-                                error = null
-                            )
+                                error = null,
+                            ),
                         )
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,
-                        textAlign = TextAlign.Start
+                        textAlign = TextAlign.Start,
                     ),
                     keyboardOptions = keyboardOptions,
                     keyboardActions = KeyboardActions(
                         onNext = {
                             onNextSelected()
-                        }
-                    )
+                        },
+                    ),
                 )
                 Spacer(modifier = Modifier.size(3.dp))
                 Divider(
                     color = dividerColor,
-                    thickness = 1.dp
+                    thickness = 1.dp,
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
@@ -235,7 +235,7 @@ private fun TextInputContent(
                 modifier = Modifier
                     .testTag(INPUT_ICON_TEST_TAG),
                 hasFocus = hasFocus,
-                onActionIconClick = onActionIconClick
+                onActionIconClick = onActionIconClick,
             )
         }
         if (textInputModel.hasErrorOrWarning()) {
@@ -246,10 +246,10 @@ private fun TextInputContent(
                     color = LocalTableColors.current.cellTextColor(
                         textInputModel.error != null,
                         textInputModel.warning != null,
-                        true
+                        true,
                     ),
-                    fontSize = 10.sp
-                )
+                    fontSize = 10.sp,
+                ),
             )
         }
     }
@@ -267,7 +267,7 @@ private fun dividerColor(hasError: Boolean, hasWarning: Boolean, hasFocus: Boole
 private fun TextInputContentActionIcon(
     modifier: Modifier = Modifier,
     hasFocus: Boolean,
-    onActionIconClick: () -> Unit
+    onActionIconClick: () -> Unit,
 ) {
     val icon = if (hasFocus) {
         R.drawable.ic_finish_edit_input
@@ -277,19 +277,19 @@ private fun TextInputContentActionIcon(
 
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             modifier = modifier
                 .semantics {
                     drawableId = icon
                 },
-            onClick = onActionIconClick
+            onClick = onActionIconClick,
         ) {
             Icon(
                 painter = painterResource(id = icon),
                 tint = LocalTableColors.current.primary,
-                contentDescription = ""
+                contentDescription = "",
             )
         }
     }
@@ -298,13 +298,13 @@ private fun TextInputContentActionIcon(
 @Composable
 fun displayName(
     dataElementName: String,
-    categoryOptionComboOptionNames: List<String>
+    categoryOptionComboOptionNames: List<String>,
 ): AnnotatedString {
     return buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                color = LocalTableColors.current.headerText
-            )
+                color = LocalTableColors.current.headerText,
+            ),
         ) {
             append(dataElementName)
         }
@@ -312,15 +312,15 @@ fun displayName(
         categoryOptionComboOptionNames.forEach { catOptionName ->
             withStyle(
                 style = SpanStyle(
-                    color = LocalTableColors.current.primary
-                )
+                    color = LocalTableColors.current.primary,
+                ),
             ) {
                 append(" / ")
             }
             withStyle(
                 style = SpanStyle(
-                    color = LocalTableColors.current.disabledCellText
-                )
+                    color = LocalTableColors.current.disabledCellText,
+                ),
             ) {
                 append(catOptionName)
             }
@@ -335,13 +335,13 @@ fun DefaultTextInputStatusPreview() {
         id = "",
         mainLabel = "Row",
         secondaryLabels = listOf("header 1", "header 2"),
-        currentValue = "Test"
+        currentValue = "Test",
     )
 
     TextInput(
         textInputModel = previewTextInput,
         textInputInteractions = object : TextInputInteractions {},
-        focusRequester = FocusRequester()
+        focusRequester = FocusRequester(),
     )
 }
 

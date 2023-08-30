@@ -1,8 +1,8 @@
 package org.dhis2.data.dhislogic
 
-import java.util.Date
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
+import java.util.Date
 
 fun CategoryOption.inDateRange(date: Date?): Boolean {
     return date?.let {

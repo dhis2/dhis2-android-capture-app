@@ -14,7 +14,7 @@ enum class StateFilter(@StringRes val stateName: Int) {
     UPLOADING(R.string.state_uploading),
     RELATIONSHIP(R.string.state_relationship),
     SENT_VIA_SMS(R.string.sent_by_sms),
-    SYNCED_VIA_SMS(R.string.sync_by_sms)
+    SYNCED_VIA_SMS(R.string.sync_by_sms),
 }
 
 fun State.toStringResource(): Int {

@@ -6,5 +6,5 @@ data class EventCategory(
     val uid: String,
     val name: String,
     val optionsSize: Int,
-    val options: List<CategoryOption>
+    val options: List<CategoryOption>,
 )

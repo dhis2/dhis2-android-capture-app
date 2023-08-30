@@ -57,7 +57,7 @@ class PolygonViewModel : ViewModel() {
         var point: Point? = null,
         var source: GeoJsonSource? = null,
         var layer: SymbolLayer? = null,
-        var selected: Boolean = true
+        var selected: Boolean = true,
     ) {
         val uuid = UUID.randomUUID().toString()
         override fun toString(): String {

@@ -14,7 +14,7 @@ object ObjectStyleUtils {
         context: Context,
         resourceName: String?,
         defaultResource: Int,
-        colorUtils: ColorUtils
+        colorUtils: ColorUtils,
     ): Drawable? {
         if (defaultResource == -1) {
             return null
@@ -34,7 +34,7 @@ object ObjectStyleUtils {
     fun getColorResource(
         context: Context,
         styleColor: String?,
-        @ColorRes defaultColorResource: Int
+        @ColorRes defaultColorResource: Int,
     ): Int {
         return styleColor?.let {
             val color: String = when {

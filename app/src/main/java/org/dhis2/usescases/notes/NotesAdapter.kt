@@ -35,11 +35,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.ArrayList
 import org.dhis2.R
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
+import java.util.ArrayList
 
 class NotesAdapter(private val listener: NoteItemClickListener) :
     RecyclerView.Adapter<NotesViewHolder>() {
@@ -57,7 +57,7 @@ class NotesAdapter(private val listener: NoteItemClickListener) :
             LayoutInflater.from(parent.context),
             R.layout.item_note,
             parent,
-            false
+            false,
         )
         return NotesViewHolder(itemNotesBinding)
     }

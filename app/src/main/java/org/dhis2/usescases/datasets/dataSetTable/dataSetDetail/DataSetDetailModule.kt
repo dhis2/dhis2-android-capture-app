@@ -11,7 +11,7 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 @Module
 class DataSetDetailModule(
     private val dataSetDetailView: DataSetDetailView,
-    private val dataSetUid: String
+    private val dataSetUid: String,
 ) {
     @Provides
     @PerFragment
@@ -19,14 +19,14 @@ class DataSetDetailModule(
         dataSetTableRepository: DataSetTableRepositoryImpl,
         schedulers: SchedulerProvider,
         matomoAnalyticsController: MatomoAnalyticsController,
-        updateProcessor: FlowableProcessor<Unit>
+        updateProcessor: FlowableProcessor<Unit>,
     ): DataSetDetailPresenter {
         return DataSetDetailPresenter(
             dataSetDetailView,
             dataSetTableRepository,
             schedulers,
             matomoAnalyticsController,
-            updateProcessor
+            updateProcessor,
         )
     }
 }

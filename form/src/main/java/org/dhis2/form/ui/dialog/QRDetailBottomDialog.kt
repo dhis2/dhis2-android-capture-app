@@ -18,10 +18,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
@@ -31,6 +27,10 @@ import org.dhis2.form.databinding.QrDetailDialogBinding
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import javax.inject.Inject
 
 class
 QRDetailBottomDialog(
@@ -38,7 +38,7 @@ QRDetailBottomDialog(
     private val renderingType: UiRenderType?,
     private val editable: Boolean,
     private val onClear: () -> Unit,
-    private val onScan: () -> Unit
+    private val onScan: () -> Unit,
 ) : BottomSheetDialogFragment() {
     companion object {
         const val TAG: String = "QR_DETAIL_DIALOG"
@@ -67,7 +67,7 @@ QRDetailBottomDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
@@ -82,8 +82,8 @@ QRDetailBottomDialog(
             setImageDrawable(
                 colorUtils.tintDrawableWithColor(
                     drawable,
-                    primaryColor!!
-                )
+                    primaryColor!!,
+                ),
             )
             setOnClickListener {
                 onClear()
@@ -95,8 +95,8 @@ QRDetailBottomDialog(
             setImageDrawable(
                 colorUtils.tintDrawableWithColor(
                     drawable,
-                    primaryColor!!
-                )
+                    primaryColor!!,
+                ),
             )
             setOnClickListener {
                 qrContentUri?.let { uri ->
@@ -121,8 +121,8 @@ QRDetailBottomDialog(
             setImageDrawable(
                 colorUtils.tintDrawableWithColor(
                     drawable,
-                    primaryColor!!
-                )
+                    primaryColor!!,
+                ),
             )
             setOnClickListener {
                 onScan()
@@ -135,7 +135,7 @@ QRDetailBottomDialog(
         viewModel.qrBitmap.observe(this) { result ->
             result.fold(
                 onSuccess = { renderBitmap(it) },
-                onFailure = { dismiss() }
+                onFailure = { dismiss() },
             )
         }
 
@@ -150,7 +150,7 @@ QRDetailBottomDialog(
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -185,7 +185,7 @@ QRDetailBottomDialog(
             qrContentUri = FileProvider.getUriForFile(
                 requireContext(),
                 FormFileProvider.fileProviderAuthority,
-                File(cachePath, "qrImage.png")
+                File(cachePath, "qrImage.png"),
             )
         } catch (e: IOException) {
             Timber.e(e)

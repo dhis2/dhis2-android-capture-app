@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 
 abstract class DataEntryBaseRepository(
     private val d2: D2,
-    private val fieldFactory: FieldViewModelFactory
+    private val fieldFactory: FieldViewModelFactory,
 ) : DataEntryRepository {
     override fun updateSection(
         sectionToUpdate: FieldUiModel,
@@ -17,14 +17,14 @@ abstract class DataEntryBaseRepository(
         totalFields: Int,
         fieldsWithValue: Int,
         errorCount: Int,
-        warningCount: Int
+        warningCount: Int,
     ): FieldUiModel {
         return (sectionToUpdate as SectionUiModelImpl).copy(
             isOpen = isSectionOpen,
             totalFields = totalFields,
             completedFields = fieldsWithValue,
             errors = errorCount,
-            warnings = warningCount
+            warnings = warningCount,
         )
     }
 
@@ -33,7 +33,7 @@ abstract class DataEntryBaseRepository(
         warningMessage: String?,
         optionsToHide: MutableList<String>,
         optionGroupsToHide: MutableList<String>,
-        optionGroupsToShow: MutableList<String>
+        optionGroupsToShow: MutableList<String>,
     ): FieldUiModel {
         val optionsInGroupsToHide = optionsFromGroups(optionGroupsToHide)
         val optionsInGroupsToShow = optionsFromGroups(optionGroupsToShow)
@@ -44,7 +44,7 @@ abstract class DataEntryBaseRepository(
                     this.optionSetConfiguration =
                         optionSetConfiguration?.updateOptionsToHideAndShow(
                             optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten(),
-                            optionsToShow = optionsInGroupsToShow
+                            optionsToShow = optionsInGroupsToShow,
                         )
                 }
             }
@@ -79,7 +79,7 @@ abstract class DataEntryBaseRepository(
         sectionDescription: String? = null,
         isOpen: Boolean = false,
         totalFields: Int = 0,
-        completedFields: Int = 0
+        completedFields: Int = 0,
     ): FieldUiModel {
         return fieldFactory.createSection(
             sectionUid,
@@ -88,7 +88,7 @@ abstract class DataEntryBaseRepository(
             isOpen,
             totalFields,
             completedFields,
-            SectionRenderingType.LISTING.name
+            SectionRenderingType.LISTING.name,
         )
     }
 

@@ -12,7 +12,7 @@ import org.hisp.dhis.android.core.user.User
 
 class HomeRepositoryImpl(
     private val d2: D2,
-    private val charts: Charts?
+    private val charts: Charts?,
 ) : HomeRepository {
     override fun user(): Single<User?> {
         return d2.userModule().user().get()

@@ -13,8 +13,8 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.EventViewModelType;

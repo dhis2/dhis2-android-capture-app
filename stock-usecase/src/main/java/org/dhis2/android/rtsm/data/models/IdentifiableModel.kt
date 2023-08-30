@@ -9,13 +9,13 @@ import android.os.Parcelable
 class IdentifiableModel(
     val uid: String,
     val name: String,
-    val displayName: String
+    val displayName: String,
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
         source.readString()!!,
         source.readString()!!,
-        source.readString()!!
+        source.readString()!!,
     )
 
     override fun describeContents() = 0

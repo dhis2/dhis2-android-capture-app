@@ -6,7 +6,7 @@ object AttributeHelper {
 
     fun teiAttributeValueByAttributeUid(
         trackedEntityInstance: TrackedEntityInstance,
-        attributeUid: String
+        attributeUid: String,
     ): String? {
         val attrValues = trackedEntityInstance.trackedEntityAttributeValues()
 

@@ -25,7 +25,7 @@ import org.hisp.dhis.android.core.program.Program
 class EventAdapter(
     val presenter: TEIDataPresenter,
     val program: Program,
-    val colorUtils: ColorUtils
+    val colorUtils: ColorUtils,
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
@@ -45,7 +45,7 @@ class EventAdapter(
         override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
             return oldItem == newItem
         }
-    }
+    },
 ) {
 
     private lateinit var enrollment: Enrollment
@@ -62,13 +62,13 @@ class EventAdapter(
                 val binding = ItemStageSectionBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
-                    false
+                    false,
                 )
                 StageViewHolder(
                     binding,
                     stageSelector,
                     presenter,
-                    colorUtils
+                    colorUtils,
                 )
             }
             EVENT -> {
@@ -76,7 +76,7 @@ class EventAdapter(
                     LayoutInflater.from(parent.context),
                     R.layout.item_event,
                     parent,
-                    false
+                    false,
                 )
                 EventViewHolder(
                     binding,
@@ -87,9 +87,9 @@ class EventAdapter(
                     { eventUid, _, eventStatus, _ ->
                         presenter.onEventSelected(
                             eventUid,
-                            eventStatus
+                            eventStatus,
                         )
-                    }
+                    },
                 )
             }
         }
@@ -104,7 +104,7 @@ class EventAdapter(
             is EventViewHolder -> {
                 holder.bind(
                     getItem(position),
-                    enrollment
+                    enrollment,
                 ) {
                     getItem(holder.getAdapterPosition()).toggleValueList()
                     notifyItemChanged(holder.getAdapterPosition())

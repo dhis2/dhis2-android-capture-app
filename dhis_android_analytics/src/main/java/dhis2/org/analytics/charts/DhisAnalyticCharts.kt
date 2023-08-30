@@ -3,13 +3,13 @@ package dhis2.org.analytics.charts
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.di.DaggerChartsComponent
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
-import javax.inject.Inject
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
+import javax.inject.Inject
 
 class DhisAnalyticCharts @Inject constructor(
-    private val chartsRepository: ChartsRepository
+    private val chartsRepository: ChartsRepository,
 ) : Charts {
     override fun hasCharts(): Boolean {
         return true
@@ -42,7 +42,7 @@ class DhisAnalyticCharts @Inject constructor(
     override fun setVisualizationOrgUnits(
         visualizationUid: String,
         orgUnits: List<OrganisationUnit>,
-        orgUnitFilterType: OrgUnitFilterType
+        orgUnitFilterType: OrgUnitFilterType,
     ) {
         chartsRepository.setVisualizationOrgUnits(visualizationUid, orgUnits, orgUnitFilterType)
     }

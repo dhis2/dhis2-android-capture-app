@@ -66,7 +66,7 @@ fun D2.observeTei(teiUid: String) = trackedEntityModule().trackedEntityInstances
 
 fun D2.teisBy(
     programs: List<String>? = null,
-    aggregatedSynStates: List<State>? = null
+    aggregatedSynStates: List<State>? = null,
 ): List<TrackedEntityInstance> {
     var repository = trackedEntityModule().trackedEntityInstances()
     repository = programs.let { repository.byProgramUids(programs) } ?: repository
@@ -84,7 +84,7 @@ fun D2.teiImportConflicts(teiUid: String): List<TrackerImportConflict> =
 fun D2.teiImportConflictsBy(
     teiUid: String? = null,
     enrollmentUid: String? = null,
-    byNullEnrollment: Boolean = false
+    byNullEnrollment: Boolean = false,
 ): List<TrackerImportConflict> {
     var repository = importModule().trackerImportConflicts()
     repository = teiUid?.let { repository.byTrackedEntityInstanceUid().eq(teiUid) } ?: repository
@@ -160,7 +160,7 @@ fun D2.observeEvent(uid: String) = eventModule().events()
 fun D2.eventsBy(
     programUid: String? = null,
     enrollmentUid: String? = null,
-    aggregatedSynStates: List<State>? = null
+    aggregatedSynStates: List<State>? = null,
 ): List<Event> {
     var repository = eventModule().events()
     repository = programUid?.let { repository.byProgramUid().eq(programUid) } ?: repository
@@ -186,7 +186,7 @@ fun D2.organisationUnit(uid: String) = organisationUnitModule().organisationUnit
 
 fun D2.dataSetInstancesBy(
     dataSetUid: String? = null,
-    states: List<State>? = null
+    states: List<State>? = null,
 ): List<DataSetInstance> {
     var repository = dataSetModule().dataSetInstances()
     repository = dataSetUid?.let { repository.byDataSetUid().eq(dataSetUid) } ?: repository
@@ -201,7 +201,7 @@ fun D2.observeDataSetInstancesBy(
     orgUnitUid: String? = null,
     periodId: String? = null,
     attrOptionComboUid: String? = null,
-    states: List<State>? = null
+    states: List<State>? = null,
 ): Single<List<DataSetInstance>> {
     var repository = dataSetModule().dataSetInstances()
     repository = dataSetUid?.let { repository.byDataSetUid().eq(dataSetUid) } ?: repository
@@ -226,7 +226,7 @@ fun D2.dataValueConflicts(
     dataSetUid: String,
     periodId: String,
     orgUnitUid: String,
-    attrOptionComboUid: String
+    attrOptionComboUid: String,
 ): List<DataValueConflict> = dataValueModule().dataValueConflicts()
     .byDataSet(dataSetUid)
     .byPeriod().eq(periodId)
@@ -238,7 +238,7 @@ fun D2.countDataValueConflicts(
     dataSetUid: String,
     periodId: String,
     orgUnitUid: String,
-    attrOptionComboUid: String
+    attrOptionComboUid: String,
 ): Int = dataValueModule().dataValueConflicts()
     .byDataSet(dataSetUid)
     .byPeriod().eq(periodId)

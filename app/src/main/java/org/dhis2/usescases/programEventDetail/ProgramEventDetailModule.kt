@@ -30,7 +30,7 @@ import org.hisp.dhis.android.core.D2
 @Module
 class ProgramEventDetailModule(
     private val view: ProgramEventDetailView,
-    private val programUid: String
+    private val programUid: String,
 ) {
     @Provides
     @PerActivity
@@ -46,7 +46,7 @@ class ProgramEventDetailModule(
         filterManager: FilterManager,
         eventWorkingListMapper: EventFilterToWorkingListItemMapper,
         filterRepository: FilterRepository,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
     ): ProgramEventDetailPresenter {
         return ProgramEventDetailPresenter(
             view,
@@ -56,7 +56,7 @@ class ProgramEventDetailModule(
             eventWorkingListMapper,
             filterRepository,
             DisableHomeFiltersFromSettingsApp(),
-            matomoAnalyticsController
+            matomoAnalyticsController,
         )
     }
 
@@ -75,11 +75,11 @@ class ProgramEventDetailModule(
     @Provides
     @PerActivity
     fun provideMapEventToFeatureCollection(
-        mapGeometryToFeature: MapGeometryToFeature
+        mapGeometryToFeature: MapGeometryToFeature,
     ): MapEventToFeatureCollection {
         return MapEventToFeatureCollection(
             mapGeometryToFeature,
-            GetBoundingBox()
+            GetBoundingBox(),
         )
     }
 
@@ -87,18 +87,18 @@ class ProgramEventDetailModule(
     @PerActivity
     fun provideMapDataElementToFeatureCollection(
         attributeToFeatureMapper: MapAttributeToFeature,
-        dataElementToFeatureMapper: MapDataElementToFeature
+        dataElementToFeatureMapper: MapDataElementToFeature,
     ): MapCoordinateFieldToFeatureCollection {
         return MapCoordinateFieldToFeatureCollection(
             dataElementToFeatureMapper,
-            attributeToFeatureMapper
+            attributeToFeatureMapper,
         )
     }
 
     @Provides
     @PerActivity
     fun provideMapCoordinateFieldToFeature(
-        mapGeometryToFeature: MapGeometryToFeature
+        mapGeometryToFeature: MapGeometryToFeature,
     ): MapCoordinateFieldToFeature {
         return MapCoordinateFieldToFeature(mapGeometryToFeature)
     }
@@ -112,7 +112,7 @@ class ProgramEventDetailModule(
         mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
         dhisMapUtils: DhisMapUtils,
         filterPresenter: FilterPresenter,
-        charts: Charts
+        charts: Charts,
     ): ProgramEventDetailRepository {
         return ProgramEventDetailRepositoryImpl(
             programUid,
@@ -122,7 +122,7 @@ class ProgramEventDetailModule(
             mapCoordinateFieldToFeatureCollection,
             dhisMapUtils,
             filterPresenter,
-            charts
+            charts,
         )
     }
 
@@ -141,7 +141,7 @@ class ProgramEventDetailModule(
     @Provides
     @PerActivity
     fun providesPageConfigurator(
-        repository: ProgramEventDetailRepository
+        repository: ProgramEventDetailRepository,
     ): NavigationPageConfigurator {
         return ProgramEventPageConfigurator(repository)
     }

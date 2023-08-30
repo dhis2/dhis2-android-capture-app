@@ -1,6 +1,5 @@
 package org.dhis2.usescases.development
 
-import kotlin.random.Random
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.tei
@@ -18,6 +17,7 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflictTableInfo
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo
 import timber.log.Timber
+import kotlin.random.Random
 
 class ConflictGenerator(private val d2: D2) {
     fun generate() {
@@ -33,7 +33,7 @@ class ConflictGenerator(private val d2: D2) {
         val enrollmentUid = generateConflictInAttribute(importStatus)
         generateConflictInDataElementForEnrollment(
             enrollmentUid,
-            importStatus
+            importStatus,
         )?.let { enrollmentEventUid ->
             generateConflictInEventForEnrollment(enrollmentEventUid, importStatus)
         }
@@ -58,7 +58,7 @@ class ConflictGenerator(private val d2: D2) {
                             TrackedEntityInstanceTableInfo.TABLE_INFO.name(),
                             cv,
                             "uid = '$teiUid'",
-                            emptyArray()
+                            emptyArray(),
                         )
                     }
                     enrollment()?.let { enrollmentUid ->
@@ -68,7 +68,7 @@ class ConflictGenerator(private val d2: D2) {
                             EnrollmentTableInfo.TABLE_INFO.name(),
                             cv,
                             "uid = '$enrollmentUid'",
-                            emptyArray()
+                            emptyArray(),
                         )
                     }
                     event()?.let { eventUid ->
@@ -78,7 +78,7 @@ class ConflictGenerator(private val d2: D2) {
                             EventTableInfo.TABLE_INFO.name(),
                             cv,
                             "uid = '$eventUid'",
-                            emptyArray()
+                            emptyArray(),
                         )
                     }
                 }
@@ -86,7 +86,7 @@ class ConflictGenerator(private val d2: D2) {
                 d2.databaseAdapter().delete(
                     TrackerImportConflictTableInfo.TABLE_INFO.name(),
                     "conflict LIKE 'Generated%'",
-                    emptyArray()
+                    emptyArray(),
                 )
             }
 
@@ -104,7 +104,7 @@ class ConflictGenerator(private val d2: D2) {
                         dataValueConflict.orgUnit()!!,
                         dataValueConflict.dataElement()!!,
                         dataValueConflict.categoryOptionCombo()!!,
-                        dataValueConflict.attributeOptionCombo()!!
+                        dataValueConflict.attributeOptionCombo()!!,
                     ).blockingGet()
                     val cv = dataValue?.toBuilder()
                         ?.syncState(State.SYNCED)
@@ -114,14 +114,14 @@ class ConflictGenerator(private val d2: D2) {
                         DataValueTableInfo.TABLE_INFO.name(),
                         cv,
                         "_id = ${dataValue?.id()}",
-                        emptyArray()
+                        emptyArray(),
                     )
                 }
             }.also {
                 d2.databaseAdapter().delete(
                     DataValueConflictTableInfo.TABLE_INFO.name(),
                     "conflict LIKE 'Generated%'",
-                    emptyArray()
+                    emptyArray(),
                 )
             }
     }
@@ -171,7 +171,7 @@ class ConflictGenerator(private val d2: D2) {
 
     private fun generateConflictInDataElementForEnrollment(
         enrollmentUid: String,
-        importStatus: ImportStatus
+        importStatus: ImportStatus,
     ): String? {
         val event = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).blockingGetUids()
 
@@ -238,7 +238,7 @@ class ConflictGenerator(private val d2: D2) {
         val build =
             TrackerImportConflict.builder().conflict("Generated error conflict in enrollment")
                 .trackedEntityInstance(enrollment?.trackedEntityInstance()).enrollment(
-                    enrollmentUid
+                    enrollmentUid,
                 )
                 .displayDescription("Generated error description in enrollment")
                 .status(importStatus).build()
@@ -257,7 +257,7 @@ class ConflictGenerator(private val d2: D2) {
 
     private fun generateConflictInTeiForEnrollment(
         enrollmentUid: String,
-        importStatus: ImportStatus
+        importStatus: ImportStatus,
     ) {
         val enrollment = d2.enrollment(enrollmentUid)
         val build =
@@ -340,7 +340,7 @@ class ConflictGenerator(private val d2: D2) {
                 DataValueTableInfo.TABLE_INFO.name(),
                 updatedDataValueCV,
                 "_id = ${attributeValue.id()}",
-                emptyArray()
+                emptyArray(),
             )
         } catch (e: Exception) {
             Timber.e(e)

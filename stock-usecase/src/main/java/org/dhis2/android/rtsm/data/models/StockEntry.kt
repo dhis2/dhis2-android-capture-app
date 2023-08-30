@@ -1,9 +1,9 @@
 package org.dhis2.android.rtsm.data.models
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.Calendar
 import java.util.Date
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class StockEntry(
@@ -11,5 +11,5 @@ data class StockEntry(
     var qty: String? = null,
     var stockOnHand: String? = null,
     var errorMessage: String? = null,
-    val date: Date = Calendar.getInstance().time
+    val date: Date = Calendar.getInstance().time,
 ) : Parcelable

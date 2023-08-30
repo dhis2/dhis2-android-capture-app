@@ -8,13 +8,13 @@ import org.dhis2.commons.bindings.stockDiscarded
 import org.dhis2.commons.bindings.stockDistribution
 
 internal class StockManagementMapper(
-    val repository: ProgramThemeRepository
+    val repository: ProgramThemeRepository,
 ) {
 
     fun map(program: ProgramViewModel): AppConfig {
         val stockTheme = repository.getStockTheme(program.uid)
             ?: throw InitializationException(
-                "Not possible to retrieve the Stock info from the server for uid:${program.uid}"
+                "Not possible to retrieve the Stock info from the server for uid:${program.uid}",
             )
 
         return AppConfig(
@@ -25,7 +25,7 @@ internal class StockManagementMapper(
             distributedTo = stockTheme.distributedTo(),
             stockDistribution = stockTheme.stockDistribution(),
             stockCount = stockTheme.stockCount(),
-            stockDiscarded = stockTheme.stockDiscarded()
+            stockDiscarded = stockTheme.stockDiscarded(),
         )
     }
 }

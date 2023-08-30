@@ -26,7 +26,7 @@ fun ExtendDivider(tableId: String, selected: Boolean) {
                         TableTheme.dimensions
                             .rowHeaderWidth(tableId)
                             .toDp()
-                    }
+                    },
                 )
                 .height(8.dp)
                 .background(
@@ -34,15 +34,15 @@ fun ExtendDivider(tableId: String, selected: Boolean) {
                         TableTheme.colors.primary
                     } else {
                         Color.White
-                    }
+                    },
                 )
                 .drawBehind {
                     drawRect(
                         color = background,
                         topLeft = Offset(size.width - 1.dp.toPx(), 0f),
-                        size = Size(1.dp.toPx(), size.height)
+                        size = Size(1.dp.toPx(), size.height),
                     )
-                }
+                },
         )
         Box(
             modifier = Modifier
@@ -53,8 +53,8 @@ fun ExtendDivider(tableId: String, selected: Boolean) {
                         TableTheme.colors.primaryLight
                     } else {
                         Color.White
-                    }
-                )
+                    },
+                ),
         )
     }
 }

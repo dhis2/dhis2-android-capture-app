@@ -1,4 +1,4 @@
-package org.dhis2.Bindings;
+package org.dhis2.bindings;
 
 import android.content.Context;
 import android.content.res.Resources;

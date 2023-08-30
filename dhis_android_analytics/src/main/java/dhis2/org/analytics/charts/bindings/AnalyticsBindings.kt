@@ -43,7 +43,8 @@ fun PeriodType.datePattern(): String = when (this) {
     PeriodType.Quarterly,
     PeriodType.SixMonthly,
     PeriodType.SixMonthlyApril,
-    PeriodType.SixMonthlyNov -> {
+    PeriodType.SixMonthlyNov,
+    -> {
         "MMM YYYY"
     }
 
@@ -51,7 +52,8 @@ fun PeriodType.datePattern(): String = when (this) {
     PeriodType.FinancialApril,
     PeriodType.FinancialJuly,
     PeriodType.FinancialOct,
-    PeriodType.FinancialNov -> {
+    PeriodType.FinancialNov,
+    -> {
         "YYYY"
     }
 }

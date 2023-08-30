@@ -12,7 +12,7 @@ class DataSetListViewModelFactory(
     val dataSetDetailRepository: DataSetDetailRepository,
     val schedulerProvider: SchedulerProvider,
     val filterManager: FilterManager,
-    val matomoAnalyticsController: MatomoAnalyticsController
+    val matomoAnalyticsController: MatomoAnalyticsController,
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -20,7 +20,7 @@ class DataSetListViewModelFactory(
             dataSetDetailRepository,
             schedulerProvider,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
         ) as T
     }
 }

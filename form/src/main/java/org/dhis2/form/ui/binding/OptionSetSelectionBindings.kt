@@ -16,7 +16,8 @@ fun ImageView.setOptionSetDeleteVisibility(item: FieldUiModel) {
     visibility = when {
         item.value != null && item.editable -> when (item.renderingType) {
             UiRenderType.HORIZONTAL_RADIOBUTTONS,
-            UiRenderType.VERTICAL_RADIOBUTTONS -> View.VISIBLE
+            UiRenderType.VERTICAL_RADIOBUTTONS,
+            -> View.VISIBLE
             else -> View.GONE
         }
         else -> View.GONE

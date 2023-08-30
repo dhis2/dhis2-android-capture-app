@@ -23,6 +23,6 @@ interface StockManager {
     fun saveTransaction(
         items: List<StockEntry>,
         transaction: Transaction,
-        appConfig: AppConfig
+        appConfig: AppConfig,
     ): Single<Unit>
 }

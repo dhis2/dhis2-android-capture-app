@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryOption
 
 class ConfigureEventCatCombo(
-    val repository: EventDetailsRepository
+    val repository: EventDetailsRepository,
 ) {
 
     private var selectedCategoryOptions = mapOf<String, CategoryOption?>()
@@ -30,9 +30,9 @@ class ConfigureEventCatCombo(
                     isCompleted = isCompleted(
                         isDefault = this?.isDefault ?: true,
                         categories = this?.categories(),
-                        selectedCategoryOptions = selectedCategoryOptions
-                    )
-                )
+                        selectedCategoryOptions = selectedCategoryOptions,
+                    ),
+                ),
             )
         }
     }
@@ -40,7 +40,7 @@ class ConfigureEventCatCombo(
     private fun isCompleted(
         isDefault: Boolean,
         categories: List<Category>?,
-        selectedCategoryOptions: Map<String, CategoryOption?>?
+        selectedCategoryOptions: Map<String, CategoryOption?>?,
     ): Boolean {
         return if (isDefault) {
             true
@@ -52,7 +52,7 @@ class ConfigureEventCatCombo(
     private fun getCatComboUid(categoryComboUid: String, isDefault: Boolean): String? {
         if (isDefault) {
             return repository.getCatOptionCombos(
-                categoryComboUid
+                categoryComboUid,
             ).first().uid()
         }
 
@@ -60,7 +60,7 @@ class ConfigureEventCatCombo(
         if (valuesList.isNotEmpty()) {
             return repository.getCategoryOptionCombo(
                 categoryComboUid,
-                valuesList
+                valuesList,
             )
         }
 
@@ -72,7 +72,7 @@ class ConfigureEventCatCombo(
     }
 
     private fun updateSelectedOptions(
-        categoryOption: Pair<String, String?>?
+        categoryOption: Pair<String, String?>?,
     ): Map<String, CategoryOption?> {
         categoryOption?.let { pair ->
             val copy = selectedCategoryOptions.toMutableMap()
@@ -90,7 +90,7 @@ class ConfigureEventCatCombo(
                 uid = category.uid(),
                 name = category.displayName() ?: category.uid(),
                 optionsSize = repository.getCatOptionSize(category.uid()),
-                options = repository.getCategoryOptions(category.uid())
+                options = repository.getCategoryOptions(category.uid()),
             )
         } ?: emptyList()
     }

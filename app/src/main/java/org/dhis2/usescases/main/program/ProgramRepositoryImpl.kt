@@ -21,7 +21,7 @@ internal class ProgramRepositoryImpl(
     private val dhisProgramUtils: DhisProgramUtils,
     private val dhisTeiUtils: DhisTrackedEntityInstanceUtils,
     private val resourceManager: ResourceManager,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: SchedulerProvider,
 ) : ProgramRepository {
 
     private val programViewModelMapper = ProgramViewModelMapper(resourceManager)
@@ -42,7 +42,7 @@ internal class ProgramRepositoryImpl(
     }
 
     override fun aggregatesModels(
-        syncStatusData: SyncStatusData
+        syncStatusData: SyncStatusData,
     ): Flowable<List<ProgramViewModel>> {
         return Flowable.fromCallable {
             aggregatesModels().blockingFirst()
@@ -71,7 +71,7 @@ internal class ProgramRepositoryImpl(
                                     it.dataSetInstanceCount()
                                 },
                                 resourceManager.defaultDataSetLabel(),
-                                filterPresenter.areFiltersActive()
+                                filterPresenter.areFiltersActive(),
                             )
                         }
                 }
@@ -100,7 +100,7 @@ internal class ProgramRepositoryImpl(
                     dhisProgramUtils.getProgramRecordLabel(
                         program,
                         resourceManager.defaultTeiLabel(),
-                        resourceManager.defaultEventLabel()
+                        resourceManager.defaultEventLabel(),
                     )
                 val state = dhisProgramUtils.getProgramState(program)
 
@@ -110,7 +110,7 @@ internal class ProgramRepositoryImpl(
                     recordLabel,
                     state,
                     hasOverdue = false,
-                    filtersAreActive = false
+                    filtersAreActive = false,
                 )
             }.toList().toFlowable().blockingFirst()
     }
@@ -129,13 +129,13 @@ internal class ProgramRepositoryImpl(
             programModel.copy(
                 count = count,
                 hasOverdueEvent = hasOverdue,
-                filtersAreActive = filterPresenter.areFiltersActive()
+                filtersAreActive = filterPresenter.areFiltersActive(),
             )
         }
     }
 
     private fun List<ProgramViewModel>.applySync(
-        syncStatusData: SyncStatusData
+        syncStatusData: SyncStatusData,
     ): List<ProgramViewModel> {
         return map { programModel ->
             programModel.copy(
@@ -150,7 +150,8 @@ internal class ProgramRepositoryImpl(
                         when (syncStatusData.programSyncStatusMap[programModel.uid]?.syncStatus) {
                             D2ProgressSyncStatus.SUCCESS -> ProgramDownloadState.DOWNLOADED
                             D2ProgressSyncStatus.ERROR,
-                            D2ProgressSyncStatus.PARTIAL_ERROR -> ProgramDownloadState.ERROR
+                            D2ProgressSyncStatus.PARTIAL_ERROR,
+                            -> ProgramDownloadState.ERROR
 
                             null -> ProgramDownloadState.DOWNLOADED
                         }
@@ -158,7 +159,7 @@ internal class ProgramRepositoryImpl(
                     else ->
                         ProgramDownloadState.NONE
                 },
-                downloadActive = syncStatusData.running
+                downloadActive = syncStatusData.running,
             )
         }
     }
@@ -167,7 +168,7 @@ internal class ProgramRepositoryImpl(
         return Pair(
             filterPresenter.filteredEventProgram(program)
                 .blockingGet().filter { event -> event.syncState() != State.RELATIONSHIP }.size,
-            false
+            false,
         )
     }
 

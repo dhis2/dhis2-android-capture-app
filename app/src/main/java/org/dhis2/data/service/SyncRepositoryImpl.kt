@@ -9,7 +9,7 @@ class SyncRepositoryImpl(private val d2: D2) : SyncRepository {
 
     override fun getTeiByNotInStates(
         uid: String,
-        states: List<State>
+        states: List<State>,
     ): List<TrackedEntityInstance> {
         return d2.trackedEntityModule().trackedEntityInstances()
             .byUid().eq(uid)
@@ -26,7 +26,7 @@ class SyncRepositoryImpl(private val d2: D2) : SyncRepository {
 
     override fun getEventsFromEnrollmentByNotInSyncState(
         uid: String,
-        states: List<State>
+        states: List<State>,
     ): List<Event> {
         return d2.eventModule().events()
             .byEnrollmentUid().eq(uid)

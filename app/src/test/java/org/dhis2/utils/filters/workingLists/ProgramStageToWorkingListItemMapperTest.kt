@@ -29,9 +29,9 @@ class ProgramStageToWorkingListItemMapperTest {
                 .programStageQueryCriteria(
                     ProgramStageQueryCriteria.builder()
                         .assignedUserMode(AssignedUserMode.CURRENT)
-                        .build()
+                        .build(),
                 )
-                .build()
+                .build(),
         )
 
         assertTrue(result.uid == "filterUid")
@@ -45,7 +45,7 @@ class ProgramStageToWorkingListItemMapperTest {
                 .uid("filterUid")
                 .program(ObjectWithUid.create("programUid"))
                 .programStage(ObjectWithUid.create("stageUid"))
-                .build()
+                .build(),
         )
 
         assertTrue(result.uid == "filterUid")

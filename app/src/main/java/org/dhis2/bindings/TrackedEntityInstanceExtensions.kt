@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 fun MutableList<TrackedEntityInstance>.filterDeletedEnrollment(
     d2: D2,
-    program: String?
+    program: String?,
 ): List<TrackedEntityInstance> {
     val iterator = this.iterator()
     if (program != null) {

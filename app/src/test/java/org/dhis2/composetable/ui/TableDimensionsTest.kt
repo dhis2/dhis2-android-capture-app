@@ -11,32 +11,32 @@ class TableDimensionsTest {
             100,
             210 / 2,
             60 / 3,
-            60 / 4
+            60 / 4,
         )
         listOf(
             TestScenario(extraSpacing = 100, totalColumns = 1, hasTotal = false),
             TestScenario(extraSpacing = 210, totalColumns = 1, hasTotal = true),
             TestScenario(extraSpacing = 60, totalColumns = 3, hasTotal = false),
-            TestScenario(extraSpacing = 60, totalColumns = 3, hasTotal = true)
+            TestScenario(extraSpacing = 60, totalColumns = 3, hasTotal = true),
         ).forEachIndexed { index, testScenario ->
             val tableDimensions = TableDimensions()
 
             val tableWidth = tableDimensions.tableWidth(
                 totalColumns = testScenario.totalColumns,
-                hasTotal = testScenario.hasTotal
+                hasTotal = testScenario.hasTotal,
             )
 
             val updatedTableDimensions = tableDimensions.copy(
-                totalWidth = tableWidth + testScenario.extraSpacing
+                totalWidth = tableWidth + testScenario.extraSpacing,
             )
 
             val cellWidth = updatedTableDimensions.defaultCellWidthWithExtraSize(
                 tableId = "tableId",
                 totalColumns = testScenario.totalColumns,
-                hasExtra = testScenario.hasTotal
+                hasExtra = testScenario.hasTotal,
             )
             assertTrue(
-                expectedExtraWidth[index] == cellWidth - updatedTableDimensions.defaultCellWidth
+                expectedExtraWidth[index] == cellWidth - updatedTableDimensions.defaultCellWidth,
             )
         }
     }
@@ -56,7 +56,7 @@ class TableDimensionsTest {
             tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
-            headerRowColumns = headerRowColumns
+            headerRowColumns = headerRowColumns,
         ).let { result ->
             assertTrue(result.cellWidth > updatedTableDimensions.defaultCellWidth)
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
@@ -81,7 +81,7 @@ class TableDimensionsTest {
             tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
-            headerRowColumns = headerRowColumns
+            headerRowColumns = headerRowColumns,
         ).let { result ->
             assertTrue(result.cellWidth > updatedTableDimensions.defaultCellWidth)
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
@@ -106,7 +106,7 @@ class TableDimensionsTest {
             tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
-            headerRowColumns = headerRowColumns
+            headerRowColumns = headerRowColumns,
         ).let { result ->
             assertTrue(result.cellWidth == updatedTableDimensions.defaultCellWidth)
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
@@ -114,8 +114,8 @@ class TableDimensionsTest {
                 assertTrue(
                     calculatedHeaderCellWidth == updatedTableDimensions.headerCellWidth(
                         headerRowColumns[index],
-                        totalColumns
-                    )
+                        totalColumns,
+                    ),
                 )
             }
         }
@@ -136,7 +136,7 @@ class TableDimensionsTest {
             tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
-            headerRowColumns = headerRowColumns
+            headerRowColumns = headerRowColumns,
         ).let { result ->
             assertTrue(result.cellWidth == updatedTableDimensions.defaultCellWidth)
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
@@ -144,8 +144,8 @@ class TableDimensionsTest {
                 assertTrue(
                     calculatedHeaderCellWidth == updatedTableDimensions.headerCellWidth(
                         headerRowColumns[index],
-                        totalColumns
-                    )
+                        totalColumns,
+                    ),
                 )
             }
         }
@@ -155,25 +155,25 @@ class TableDimensionsTest {
         tableDimensions: TableDimensions,
         totalColumns: Int,
         hasTotal: Boolean,
-        vararg headerRowColumns: Int
+        vararg headerRowColumns: Int,
     ): WidthCalculationResult {
         val cellWidth = tableDimensions.defaultCellWidthWithExtraSize(
             tableId = "tableId",
             totalColumns = totalColumns,
-            hasExtra = hasTotal
+            hasExtra = hasTotal,
         )
         val rowHeaderWidth = tableDimensions.defaultRowHeaderWidth
         val headerCellWidthList = headerRowColumns.map { headerParentRowColumns ->
             tableDimensions.headerCellWidth(
                 headerRowColumns = headerParentRowColumns,
-                totalColumns = totalColumns
+                totalColumns = totalColumns,
             )
         }
 
         return WidthCalculationResult(
             cellWidth,
             rowHeaderWidth,
-            headerCellWidthList
+            headerCellWidthList,
         )
     }
 }
@@ -181,11 +181,11 @@ class TableDimensionsTest {
 private data class TestScenario(
     val extraSpacing: Int,
     val totalColumns: Int,
-    val hasTotal: Boolean
+    val hasTotal: Boolean,
 )
 
 private data class WidthCalculationResult(
     val cellWidth: Int,
     val rowHeaderCellWidth: Int,
-    val headerCellWidth: List<Int>
+    val headerCellWidth: List<Int>,
 )

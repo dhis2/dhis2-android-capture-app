@@ -51,11 +51,11 @@ class RelationshipPresenterTest {
             d2.trackedEntityModule().trackedEntityInstances()
                 .withTrackedEntityAttributeValues()
                 .uid("teiUid")
-                .blockingGet()?.trackedEntityType()
+                .blockingGet()?.trackedEntityType(),
         ) doReturn "teiType"
         whenever(
             d2.eventModule().events()
-                .uid("eventUid").blockingGet()?.programStage()
+                .uid("eventUid").blockingGet()?.programStage(),
         ) doReturn "programStageUid"
         presenter = RelationshipPresenter(
             view,
@@ -68,7 +68,7 @@ class RelationshipPresenterTest {
             analyticsHelper,
             mapRelationshipToRelationshipMapModel,
             mapRelationshipsToFeatureCollection,
-            mapStyleConfiguration
+            mapStyleConfiguration,
         )
     }
 
@@ -78,7 +78,7 @@ class RelationshipPresenterTest {
         val relationships = arrayListOf(relationship)
         whenever(repository.relationships()) doReturn Single.just(relationships)
         whenever(repository.relationshipTypes()) doReturn Single.just(
-            arrayListOf()
+            arrayListOf(),
         )
         whenever(repository.getTeiTypeDefaultRes(any())) doReturn -1
 
@@ -93,7 +93,7 @@ class RelationshipPresenterTest {
         val relationships = emptyList<RelationshipViewModel>()
         whenever(repository.relationships()) doReturn Single.just(relationships)
         whenever(repository.relationshipTypes()) doReturn Single.just(
-            arrayListOf()
+            arrayListOf(),
         )
         whenever(repository.getTeiTypeDefaultRes(any())) doReturn -1
 
@@ -106,7 +106,7 @@ class RelationshipPresenterTest {
     @Test
     fun `If user has permission should create a new relationship`() {
         whenever(
-            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
+            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType),
         ) doReturn true
 
         presenter.goToAddRelationship("teiType", relationshipType)
@@ -118,7 +118,7 @@ class RelationshipPresenterTest {
     @Test
     fun `If user don't have permission should show an error`() {
         whenever(
-            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
+            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType),
         ) doReturn false
 
         presenter.goToAddRelationship("teiType", relationshipType)
@@ -136,7 +136,7 @@ class RelationshipPresenterTest {
     fun `Should create a relationship`() {
         whenever(
             d2.relationshipModule().relationshipTypes().withConstraints().uid("relationshipTypeUid")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn getMockedRelationshipType(true)
         presenter.addRelationship("selectedTei", "relationshipTypeUid")
 
@@ -147,22 +147,22 @@ class RelationshipPresenterTest {
     fun `Should open dashboard`() {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .uid("teiUid").blockingGet()
+                .uid("teiUid").blockingGet(),
         ) doReturn getMockedTei(State.SYNCED)
         whenever(
-            d2.enrollmentModule().enrollments()
+            d2.enrollmentModule().enrollments(),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq("teiUid")
+                .byTrackedEntityInstance().eq("teiUid"),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq("teiUid").blockingGet()
+                .byTrackedEntityInstance().eq("teiUid").blockingGet(),
         ) doReturn getMockedEntollmentList()
         presenter.openDashboard("teiUid")
 
@@ -173,25 +173,25 @@ class RelationshipPresenterTest {
     fun `Should show enrollment error`() {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .uid("teiUid").blockingGet()
+                .uid("teiUid").blockingGet(),
         ) doReturn getMockedTei(State.SYNCED)
         whenever(
-            d2.enrollmentModule().enrollments()
+            d2.enrollmentModule().enrollments(),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq("teiUid")
+                .byTrackedEntityInstance().eq("teiUid"),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq("teiUid").blockingGet()
+                .byTrackedEntityInstance().eq("teiUid").blockingGet(),
         ) doReturn emptyList()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid("teiType").blockingGet()
+            d2.trackedEntityModule().trackedEntityTypes().uid("teiType").blockingGet(),
         ) doReturn getMockedTeiType()
         presenter.openDashboard("teiUid")
 
@@ -202,10 +202,10 @@ class RelationshipPresenterTest {
     fun `Should show relationship error`() {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .uid("teiUid").blockingGet()
+                .uid("teiUid").blockingGet(),
         ) doReturn getMockedTei(State.RELATIONSHIP)
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid("teiType").blockingGet()
+            d2.trackedEntityModule().trackedEntityTypes().uid("teiType").blockingGet(),
         ) doReturn getMockedTeiType()
         presenter.openDashboard("teiUid")
 
@@ -225,7 +225,7 @@ class RelationshipPresenterTest {
             .toConstraint(
                 RelationshipConstraint.builder()
                     .trackedEntityType(ObjectWithUid.create("teiType"))
-                    .build()
+                    .build(),
             )
             .build()
     }
@@ -241,7 +241,7 @@ class RelationshipPresenterTest {
         return arrayListOf(
             Enrollment.builder()
                 .uid("enrollmentUid")
-                .build()
+                .build(),
         )
     }
 

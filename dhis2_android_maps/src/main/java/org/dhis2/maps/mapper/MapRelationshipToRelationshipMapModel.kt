@@ -8,7 +8,7 @@ import org.dhis2.maps.model.TeiMap
 class MapRelationshipToRelationshipMapModel {
 
     fun mapList(
-        relationshipViewModels: List<RelationshipViewModel>
+        relationshipViewModels: List<RelationshipViewModel>,
     ): List<RelationshipUiComponentModel> {
         return relationshipViewModels
             .filter { it.toGeometry != null && it.fromGeometry != null }.mapNotNull { map(it) }
@@ -64,14 +64,14 @@ class MapRelationshipToRelationshipMapModel {
             relationshipViewModel.fromGeometry,
             relationshipViewModel.fromImage,
             relationshipViewModel.fromDefaultImageResource,
-            fromAttr
+            fromAttr,
         )
         val teiTo = TeiMap(
             toUid,
             relationshipViewModel.toGeometry,
             relationshipViewModel.toImage,
             relationshipViewModel.toDefaultImageResource,
-            toAttr
+            toAttr,
         )
 
         val ownerType = relationshipViewModel.ownerType
@@ -84,7 +84,7 @@ class MapRelationshipToRelationshipMapModel {
             bidirectional,
             teiFrom,
             teiTo,
-            ownerType
+            ownerType,
         )
     }
 }

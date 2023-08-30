@@ -6,7 +6,7 @@ import org.dhis2.databinding.JiraIssueItemBinding
 
 class JiraIssueHolder(
     private val binding: JiraIssueItemBinding,
-    private val onJiraIssueClick: (String) -> Unit
+    private val onJiraIssueClick: (String) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(jiraIssue: JiraIssue) {
         binding.apply {

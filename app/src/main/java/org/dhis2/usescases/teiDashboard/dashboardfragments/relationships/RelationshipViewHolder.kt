@@ -12,13 +12,13 @@ import org.dhis2.ui.setUpMetadataIcon
 
 class RelationshipViewHolder(
     private val binding: ItemRelationshipBinding,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeToImage.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -28,7 +28,7 @@ class RelationshipViewHolder(
                 if (relationships.canBeOpened) {
                     presenter.onRelationshipClicked(
                         relationships.ownerType,
-                        relationships.ownerUid
+                        relationships.ownerUid,
                     )
                 }
             }
@@ -50,9 +50,9 @@ class RelationshipViewHolder(
                         MetadataIconData(
                             programColor = relationships.ownerDefaultColorResource,
                             iconResource = defaultRes,
-                            sizeInDp = 40
+                            sizeInDp = 40,
                         ),
-                        false
+                        false,
                     )
                 } else {
                     toTeiImage.setItemPic(
@@ -62,7 +62,7 @@ class RelationshipViewHolder(
                         relationships.displayRelationshipName(),
                         relationships.isEvent(),
                         binding.imageText,
-                        colorUtils
+                        colorUtils,
                     )
                 }
             }

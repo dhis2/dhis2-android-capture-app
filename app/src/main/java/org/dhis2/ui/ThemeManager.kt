@@ -15,7 +15,7 @@ class ThemeManager(
     private val dataSetConfiguration: DataSetConfiguration,
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration,
     private val preferenceProvider: PreferenceProvider,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) {
 
     fun setProgramTheme(programUid: String) {
@@ -60,7 +60,7 @@ class ThemeManager(
     fun getThemePrimaryColor(
         programUid: String?,
         onProgramThemeColor: (programColor: Int) -> Unit,
-        onAppThemeColor: (themeColorRes: Int) -> Unit
+        onAppThemeColor: (themeColorRes: Int) -> Unit,
     ) {
         if (programUid != null) {
             primaryColorForProgramTheme(programUid)?.let {

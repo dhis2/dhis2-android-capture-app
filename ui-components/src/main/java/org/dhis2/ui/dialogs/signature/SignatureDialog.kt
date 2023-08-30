@@ -18,7 +18,7 @@ const val TAG = "SignatureDialog"
 
 class SignatureDialog(
     private val title: String,
-    private val onSaveSignature: ((Bitmap) -> Unit)? = null
+    private val onSaveSignature: ((Bitmap) -> Unit)? = null,
 ) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -32,11 +32,11 @@ class SignatureDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnDetachedFromWindow
+                ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
             setContent {
                 Dhis2Theme {
@@ -46,7 +46,7 @@ class SignatureDialog(
                             onSaveSignature?.invoke(it)
                             dismiss()
                         },
-                        onCancel = { dismiss() }
+                        onCancel = { dismiss() },
                     )
                 }
             }

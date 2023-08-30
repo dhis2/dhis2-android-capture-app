@@ -3,8 +3,8 @@ package org.dhis2.form.data
 import android.text.TextUtils
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.dhis2.Bindings.blockingGetValueCheck
-import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.bindings.blockingGetValueCheck
+import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -21,7 +21,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSection
 class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
-    private val d2: D2
+    private val d2: D2,
 ) : DataEntryBaseRepository(d2, fieldFactory) {
 
     private val event by lazy {
@@ -84,8 +84,8 @@ class EventRepository(
                 fields.add(
                     transformSection(
                         programStageSection.uid(),
-                        programStageSection.displayName()
-                    )
+                        programStageSection.displayName(),
+                    ),
                 )
                 programStageSection.dataElements()?.forEach { dataElement ->
                     d2.programModule().programStageDataElements().withRenderType()
@@ -93,7 +93,7 @@ class EventRepository(
                         .byDataElement().eq(dataElement.uid())
                         .one().blockingGet()?.let {
                             fields.add(
-                                transform(it)
+                                transform(it),
                             )
                         }
                 }
@@ -104,7 +104,7 @@ class EventRepository(
 
     private fun transform(programStageDataElement: ProgramStageDataElement): FieldUiModel {
         val de = d2.dataElementModule().dataElements().uid(
-            programStageDataElement.dataElement()!!.uid()
+            programStageDataElement.dataElement()!!.uid(),
         ).blockingGet()
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de?.uid())
@@ -129,9 +129,9 @@ class EventRepository(
         var optionSetConfig: OptionSetConfiguration? = null
         if (!TextUtils.isEmpty(optionSet)) {
             if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options().byOptionSetUid()
-                .eq(optionSet).byCode()
-                .eq(dataValue)
-                .one().blockingExists()
+                    .eq(optionSet).byCode()
+                    .eq(dataValue)
+                    .one().blockingExists()
             ) {
                 dataValue =
                     d2.optionModule().options().byOptionSetUid().eq(optionSet)
@@ -142,7 +142,7 @@ class EventRepository(
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .blockingCount()
             optionSetConfig = OptionSetConfiguration.config(
-                optionCount
+                optionCount,
             ) {
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
@@ -180,7 +180,7 @@ class EventRepository(
             objectStyle,
             de.fieldMask(),
             optionSetConfig,
-            featureType
+            featureType,
         )
 
         if (!error.isNullOrEmpty()) {
@@ -196,7 +196,7 @@ class EventRepository(
 
     private fun getConflictErrorsAndWarnings(
         dataElementUid: String,
-        dataValue: String?
+        dataValue: String?,
     ): Pair<String?, String?> {
         var error: String? = null
         var warning: String? = null

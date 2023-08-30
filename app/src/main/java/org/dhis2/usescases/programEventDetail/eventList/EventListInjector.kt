@@ -17,7 +17,7 @@ interface EventListComponent {
 
 @Module
 class EventListModule(
-    val view: EventListFragmentView
+    val view: EventListFragmentView,
 ) {
     @Provides
     @PerFragment
@@ -25,14 +25,14 @@ class EventListModule(
         filterManager: FilterManager,
         programEventDetailRepository: ProgramEventDetailRepository,
         preferences: PreferenceProvider,
-        schedulers: SchedulerProvider
+        schedulers: SchedulerProvider,
     ): EventListPresenter {
         return EventListPresenter(
             view,
             filterManager,
             programEventDetailRepository,
             preferences,
-            schedulers
+            schedulers,
         )
     }
 }

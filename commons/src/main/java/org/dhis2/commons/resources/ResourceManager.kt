@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.D2Manager
 
 class ResourceManager(
     val context: Context,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) {
 
     fun getString(@StringRes stringResource: Int) = getWrapperContext().getString(stringResource)
@@ -29,7 +29,7 @@ class ResourceManager(
                 getWrapperContext().resources.getIdentifier(
                     iconName,
                     "drawable",
-                    getWrapperContext().packageName
+                    getWrapperContext().packageName,
                 )
             if (iconResource != 0 && iconResource != -1 && drawableExists(iconResource)
             ) {
@@ -58,7 +58,7 @@ class ResourceManager(
     fun getColorOrDefaultFrom(hexColor: String?): Int {
         return colorUtils.getColorFrom(
             hexColor,
-            colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT)
+            colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
         )
     }
 

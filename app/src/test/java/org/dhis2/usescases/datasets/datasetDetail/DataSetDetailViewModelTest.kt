@@ -39,7 +39,7 @@ class DataSetDetailViewModelTest {
 
         viewModel = DataSetDetailViewModel(
             dispatcher,
-            dataSetPageConfigurator
+            dataSetPageConfigurator,
         )
         viewModel.pageConfiguration.observeForever { result ->
             assertEquals(result, initializedConfigurator)

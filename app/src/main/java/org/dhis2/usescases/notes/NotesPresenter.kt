@@ -40,7 +40,7 @@ class NotesPresenter(
     private val notesRepository: NotesRepository,
     private val uid: String,
     private val noteType: NoteType,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: SchedulerProvider,
 ) {
 
     var compositeDisposable = CompositeDisposable()
@@ -67,8 +67,8 @@ class NotesPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     this::handleNotes,
-                    Timber::e
-                )
+                    Timber::e,
+                ),
         )
 
         compositeDisposable.add(
@@ -79,8 +79,8 @@ class NotesPresenter(
                     {
                         view.setWritePermission(it)
                     },
-                    Timber::e
-                )
+                    Timber::e,
+                ),
         )
     }
 

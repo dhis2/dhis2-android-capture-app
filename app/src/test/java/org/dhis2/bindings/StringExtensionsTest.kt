@@ -1,8 +1,5 @@
 package org.dhis2.bindings
 
-import org.dhis2.Bindings.initials
-import org.dhis2.Bindings.newVersion
-import org.dhis2.Bindings.parseToDouble
 import org.junit.Test
 
 class StringExtensionsTest {

@@ -11,7 +11,7 @@ import androidx.test.uiautomator.Until
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
-import org.dhis2.Bindings.app
+import org.dhis2.bindings.app
 import org.dhis2.R
 import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest

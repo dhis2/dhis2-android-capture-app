@@ -15,18 +15,18 @@ class SearchTeiLiveAdapter(
     private val onAddRelationship: (
         teiUid: String,
         relationshipTypeUid: String?,
-        isOnline: Boolean
+        isOnline: Boolean,
     ) -> Unit,
     private val onSyncIconClick: (teiUid: String) -> Unit,
     private val onDownloadTei: (teiUid: String, enrollmentUid: String?) -> Unit,
     private val onTeiClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Unit,
-    private val onImageClick: (imagePath: String) -> Unit
+    private val onImageClick: (imagePath: String) -> Unit,
 ) : PagedListAdapter<SearchTeiModel, RecyclerView.ViewHolder>(SearchAdapterDiffCallback()) {
 
     private enum class SearchItem {
         TEI,
         RELATIONSHIP_TEI,
-        ONLINE_ERROR
+        ONLINE_ERROR,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -37,15 +37,15 @@ class SearchTeiLiveAdapter(
                 onSyncIconClick,
                 onDownloadTei,
                 colorUtils,
-                onTeiClick
+                onTeiClick,
             )
             SearchItem.RELATIONSHIP_TEI -> SearchRelationshipViewHolder(
                 ItemSearchTrackedEntityBinding.inflate(inflater, parent, false),
                 colorUtils,
-                onAddRelationship
+                onAddRelationship,
             )
             SearchItem.ONLINE_ERROR -> SearchErrorViewHolder(
-                ItemSearchErrorBinding.inflate(inflater, parent, false)
+                ItemSearchErrorBinding.inflate(inflater, parent, false),
             )
         }
     }
@@ -66,7 +66,7 @@ class SearchTeiLiveAdapter(
                     {
                         getItem(holder.absoluteAdapterPosition)?.toggleAttributeList()
                         notifyItemChanged(holder.absoluteAdapterPosition)
-                    }
+                    },
                 ) { path: String? ->
                     path?.let { onImageClick(path) }
                 }

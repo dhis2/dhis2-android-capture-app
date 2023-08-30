@@ -1,7 +1,6 @@
 package org.dhis2.utils.granularsync
 
 import io.reactivex.Single
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.commons.bindings.categoryOptionCombo
 import org.dhis2.commons.bindings.countEventImportConflicts
@@ -49,6 +48,7 @@ import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramType
+import java.util.Locale
 
 class GranularSyncRepository(
     private val d2: D2,
@@ -56,17 +56,17 @@ class GranularSyncRepository(
     private val preferenceProvider: PreferenceProvider,
     private val dhisProgramUtils: DhisProgramUtils,
     private val periodUtils: DhisPeriodUtils,
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
 ) {
 
     fun getUiState(forcedState: State? = null): SyncUiState {
         return Single.zip(
             getState(),
-            getLastSynced()
+            getLastSynced(),
         ) { state, lastSync ->
             buildUiState(
                 forcedState.takeIf { it != null } ?: state,
-                lastSync
+                lastSync,
             )
         }.blockingGet()
     }
@@ -98,7 +98,7 @@ class GranularSyncRepository(
                         dataSetUid = dataSetUid,
                         orgUnitUid = orgUnitUid,
                         periodId = periodId,
-                        attrOptionComboUid = attributeOptionComboUid
+                        attrOptionComboUid = attributeOptionComboUid,
                     ).map { dataSetInstance ->
                         getStateFromCandidates(dataSetInstance.map { it.state() }.toMutableList())
                     }
@@ -136,13 +136,13 @@ class GranularSyncRepository(
                             dataSetUid = dataSetUid,
                             orgUnitUid = orgUnitUid,
                             periodId = periodId,
-                            attrOptionComboUid = attributeOptionComboUid
+                            attrOptionComboUid = attributeOptionComboUid,
                         ).map { dataSetInstance ->
                             dataSetInstance.sortedBy { it.lastUpdated() }
                             SyncDate(
                                 dataSetInstance.apply {
                                     sortedBy { it.lastUpdated() }
-                                }.first().lastUpdated()
+                                }.first().lastUpdated(),
                             )
                         }
                     }
@@ -161,39 +161,45 @@ class GranularSyncRepository(
             message = getMessageForState(state),
             mainActionLabel = getMainActionLabel(state),
             secondaryActionLabel = getSecondaryActionLabel(state),
-            content = getContent(state)
+            content = getContent(state),
         )
     }
 
     private fun getTitleForState(state: State): String {
         return when (state) {
             State.TO_POST,
-            State.TO_UPDATE -> resourceManager.getString(R.string.sync_dialog_title_not_synced)
+            State.TO_UPDATE,
+            -> resourceManager.getString(R.string.sync_dialog_title_not_synced)
 
             State.ERROR -> resourceManager.getString(R.string.sync_dialog_title_error)
             State.RELATIONSHIP,
-            State.SYNCED -> resourceManager.getString(R.string.sync_dialog_title_synced)
+            State.SYNCED,
+            -> resourceManager.getString(R.string.sync_dialog_title_synced)
 
             State.WARNING -> resourceManager.getString(R.string.sync_dialog_title_warning)
             State.UPLOADING -> resourceManager.getString(R.string.sync_dialog_title_syncing)
             State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS -> resourceManager.getString(R.string.sync_dialog_title_sms_syced)
+            State.SYNCED_VIA_SMS,
+            -> resourceManager.getString(R.string.sync_dialog_title_sms_syced)
         }
     }
 
     private fun getMessageForState(state: State): String? {
         return when (state) {
             State.TO_POST,
-            State.TO_UPDATE -> getNotSyncedMessage()
+            State.TO_UPDATE,
+            -> getNotSyncedMessage()
 
             State.SYNCED -> getSyncedMessage()
             State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS -> getSmsSyncedMessage()
+            State.SYNCED_VIA_SMS,
+            -> getSmsSyncedMessage()
 
             State.ERROR,
             State.WARNING,
             State.RELATIONSHIP,
-            State.UPLOADING -> null
+            State.UPLOADING,
+            -> null
         }
     }
 
@@ -204,14 +210,15 @@ class GranularSyncRepository(
 
             ConflictType.DATA_SET,
             ConflictType.DATA_VALUES,
-            ConflictType.PROGRAM -> resourceManager.getString(
+            ConflictType.PROGRAM,
+            -> resourceManager.getString(
                 R.string.sync_dialog_message_not_synced_program,
-                getMessageArgument()
+                getMessageArgument(),
             )
 
             ConflictType.TEI, ConflictType.EVENT -> resourceManager.getString(
                 R.string.sync_dialog_message_not_synced_tei,
-                getMessageArgument()
+                getMessageArgument(),
             )
         }
     }
@@ -221,14 +228,15 @@ class GranularSyncRepository(
             ConflictType.ALL -> resourceManager.getString(R.string.sync_dialog_message_synced_all)
             ConflictType.DATA_SET,
             ConflictType.DATA_VALUES,
-            ConflictType.PROGRAM -> resourceManager.getString(
+            ConflictType.PROGRAM,
+            -> resourceManager.getString(
                 R.string.sync_dialog_message_synced_program,
-                getMessageArgument()
+                getMessageArgument(),
             )
 
             ConflictType.TEI, ConflictType.EVENT -> resourceManager.getString(
                 R.string.sync_dialog_message_synced_tei,
-                getMessageArgument()
+                getMessageArgument(),
             )
         }
     }
@@ -237,11 +245,13 @@ class GranularSyncRepository(
         return when (syncContext.conflictType()) {
             ConflictType.ALL,
             ConflictType.DATA_SET,
-            ConflictType.PROGRAM -> null
+            ConflictType.PROGRAM,
+            -> null
 
             ConflictType.DATA_VALUES,
             ConflictType.TEI,
-            ConflictType.EVENT -> resourceManager.getString(R.string.sync_dialog_message_sms_synced)
+            ConflictType.EVENT,
+            -> resourceManager.getString(R.string.sync_dialog_message_sms_synced)
         }
     }
 
@@ -250,21 +260,25 @@ class GranularSyncRepository(
             State.TO_POST,
             State.SENT_VIA_SMS,
             State.SYNCED_VIA_SMS,
-            State.TO_UPDATE -> resourceManager.getString(R.string.sync_dialog_action_send)
+            State.TO_UPDATE,
+            -> resourceManager.getString(R.string.sync_dialog_action_send)
 
             State.ERROR,
             State.SYNCED,
-            State.WARNING -> resourceManager.getString(R.string.sync_dialog_action_refresh)
+            State.WARNING,
+            -> resourceManager.getString(R.string.sync_dialog_action_refresh)
 
             State.UPLOADING,
-            State.RELATIONSHIP -> null
+            State.RELATIONSHIP,
+            -> null
         }
     }
 
     private fun getSecondaryActionLabel(state: State): String? {
         return when (state) {
             State.UPLOADING,
-            State.RELATIONSHIP -> null
+            State.RELATIONSHIP,
+            -> null
 
             State.TO_POST,
             State.TO_UPDATE,
@@ -272,20 +286,22 @@ class GranularSyncRepository(
             State.SYNCED,
             State.SENT_VIA_SMS,
             State.SYNCED_VIA_SMS,
-            State.WARNING -> resourceManager.getString(R.string.sync_dialog_action_not_now)
+            State.WARNING,
+            -> resourceManager.getString(R.string.sync_dialog_action_not_now)
         }
     }
 
     private fun getContent(state: State): List<SyncStatusItem> {
         return when (state) {
             State.TO_POST,
-            State.TO_UPDATE -> getContentItems(State.TO_POST, State.TO_UPDATE)
+            State.TO_UPDATE,
+            -> getContentItems(State.TO_POST, State.TO_UPDATE)
 
             State.ERROR -> getContentItems(
                 State.ERROR,
                 State.WARNING,
                 State.TO_UPDATE,
-                State.TO_POST
+                State.TO_POST,
             )
 
             State.WARNING -> getContentItems(State.WARNING, State.TO_POST, State.TO_UPDATE)
@@ -293,7 +309,8 @@ class GranularSyncRepository(
             State.RELATIONSHIP,
             State.SYNCED,
             State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS -> emptyList()
+            State.SYNCED_VIA_SMS,
+            -> emptyList()
         }
     }
 
@@ -348,23 +365,23 @@ class GranularSyncRepository(
                         if (d2.isStockProgram(program.uid())) {
                             SyncStatusType.StockProgram(
                                 programUid = program.uid(),
-                                stockUsecase = d2.stockUseCase(program.uid() ?: "")!!
+                                stockUsecase = d2.stockUseCase(program.uid() ?: "")!!,
                             )
                         } else {
                             SyncStatusType.TrackerProgram(
                                 programUid = program.uid(),
-                                trackedEntityTypeUid = program.trackedEntityType()!!.uid()
+                                trackedEntityTypeUid = program.trackedEntityType()!!.uid(),
                             )
                         }
 
                     null ->
                         throw NullPointerException(
-                            "Program ${program.uid()}: program type can't be null"
+                            "Program ${program.uid()}: program type can't be null",
                         )
                 },
                 displayName = program.displayName() ?: program.uid(),
                 description = resourceManager.getString(R.string.tap_to_explore_action),
-                state = dhisProgramUtils.getProgramState(program)
+                state = dhisProgramUtils.getProgramState(program),
             )
         }
         val dataSetList = d2.dataSetInstanceSummaries().filter {
@@ -374,7 +391,7 @@ class GranularSyncRepository(
                 type = SyncStatusType.DataSet(dataSetInstanceSummary.dataSetUid()),
                 displayName = dataSetInstanceSummary.dataSetDisplayName(),
                 description = resourceManager.getString(R.string.tap_to_explore_action),
-                state = dataSetInstanceSummary.state()
+                state = dataSetInstanceSummary.state(),
             )
         }
         return (programList + dataSetList).sortedByState()
@@ -382,7 +399,7 @@ class GranularSyncRepository(
 
     private fun getProgramItemsForGlobalContext(
         programUid: String,
-        vararg state: State
+        vararg state: State,
     ): List<SyncStatusItem> {
         val program = d2.program(programUid)
         val programState = program?.let { dhisProgramUtils.getProgramState(it) } ?: State.SYNCED
@@ -391,7 +408,7 @@ class GranularSyncRepository(
         val syncStatusType = if (program?.programType() == ProgramType.WITH_REGISTRATION) {
             d2.teisBy(
                 programs = listOf(programUid),
-                aggregatedSynStates = state.toList()
+                aggregatedSynStates = state.toList(),
             ).forEach { tei ->
                 if (tei.aggregatedSyncState() == State.ERROR) {
                     errorCount += getNumberOfConflictsForTei(tei.uid())
@@ -402,18 +419,18 @@ class GranularSyncRepository(
             if (d2.isStockProgram(program.uid())) {
                 SyncStatusType.StockProgram(
                     programUid = program.uid(),
-                    stockUsecase = d2.stockUseCase(programUid)!!
+                    stockUsecase = d2.stockUseCase(programUid)!!,
                 )
             } else {
                 SyncStatusType.TrackerProgram(
                     programUid = program.uid(),
-                    trackedEntityTypeUid = program.trackedEntityType()!!.uid()
+                    trackedEntityTypeUid = program.trackedEntityType()!!.uid(),
                 )
             }
         } else {
             d2.eventsBy(
                 programUid = programUid,
-                aggregatedSynStates = state.toList()
+                aggregatedSynStates = state.toList(),
             ).forEach { event ->
                 if (event.aggregatedSyncState() == State.ERROR) {
                     errorCount += getNumberOfConflictsForEvent(event.uid())
@@ -422,7 +439,7 @@ class GranularSyncRepository(
                 }
             }
             SyncStatusType.EventProgram(
-                programUid = programUid
+                programUid = programUid,
             )
         }
         val description = errorWarningDescriptionLabel(errorCount, warningCount)
@@ -431,8 +448,8 @@ class GranularSyncRepository(
                 type = syncStatusType,
                 displayName = program?.displayName()!!,
                 description = description,
-                state = programState
-            )
+                state = programState,
+            ),
         )
     }
 
@@ -474,27 +491,27 @@ class GranularSyncRepository(
                 type = SyncStatusType.DataSet(dataSetUid),
                 displayName = datasetSummary.dataSetDisplayName(),
                 description = description,
-                state = datasetSummary.state()
-            )
+                state = datasetSummary.state(),
+            ),
         )
     }
 
     private fun getProgramItemsWithStates(
         programUid: String,
-        vararg states: State
+        vararg states: State,
     ): List<SyncStatusItem> {
         val program = d2.program(programUid)
         return if (program?.programType() == ProgramType.WITH_REGISTRATION) {
             d2.teisBy(
                 programs = listOf(programUid),
-                aggregatedSynStates = states.toList()
+                aggregatedSynStates = states.toList(),
             ).mapNotNull { tei ->
                 mapTeiToSyncStatusItem(programUid, tei.uid())
             }.sortedByState()
         } else {
             d2.eventsBy(
                 programUid = programUid,
-                aggregatedSynStates = states.toList()
+                aggregatedSynStates = states.toList(),
             ).mapNotNull { event ->
                 mapEventToSyncStatusItem(programUid, event.uid())
             }.sortedByState()
@@ -505,7 +522,7 @@ class GranularSyncRepository(
         val enrollment = d2.enrollment(enrollmentUid)
         return mapTeiToSyncStatusItem(
             enrollment?.program(),
-            enrollment?.trackedEntityInstance()
+            enrollment?.trackedEntityInstance(),
         )?.let { listOf(it) } ?: emptyList()
     }
 
@@ -514,16 +531,18 @@ class GranularSyncRepository(
         val tei = d2.tei(teiUid) ?: return null
         val description = when (tei.aggregatedSyncState()) {
             State.WARNING,
-            State.ERROR -> {
+            State.ERROR,
+            -> {
                 val conflicts = d2.teiImportConflictsBy(teiUid = teiUid)
                 errorWarningDescriptionLabel(
                     errorCount = conflicts.count { it.status() == ImportStatus.ERROR },
-                    warningCount = conflicts.count { it.status() == ImportStatus.WARNING }
+                    warningCount = conflicts.count { it.status() == ImportStatus.WARNING },
                 )
             }
 
             State.TO_POST,
-            State.TO_UPDATE ->
+            State.TO_UPDATE,
+            ->
                 resourceManager.getString(R.string.tap_to_explore_action)
 
             else -> ""
@@ -543,17 +562,17 @@ class GranularSyncRepository(
 
         val activeEnrollmentInProgram = d2.enrollmentInProgram(
             teiUid = tei.uid(),
-            programUid = programUid
+            programUid = programUid,
         )
         return SyncStatusItem(
             type = SyncStatusType.TrackedEntity(
                 teiUid = tei.uid(),
                 programUid = programUid,
-                enrollmentUid = activeEnrollmentInProgram?.uid()
+                enrollmentUid = activeEnrollmentInProgram?.uid(),
             ),
             displayName = label,
             description = description,
-            state = tei.aggregatedSyncState() ?: State.SYNCED
+            state = tei.aggregatedSyncState() ?: State.SYNCED,
         )
     }
 
@@ -563,10 +582,11 @@ class GranularSyncRepository(
         val eventConflicts = d2.eventImportConflictsBy(eventUid)
         val description = when (event.aggregatedSyncState()) {
             State.WARNING,
-            State.ERROR -> {
+            State.ERROR,
+            -> {
                 errorWarningDescriptionLabel(
                     eventConflicts.count { it.status() == ImportStatus.ERROR },
-                    eventConflicts.count { it.status() == ImportStatus.WARNING }
+                    eventConflicts.count { it.status() == ImportStatus.WARNING },
                 )
             }
 
@@ -582,11 +602,11 @@ class GranularSyncRepository(
                 eventUid = event.uid(),
                 programUid = programUid,
                 programStageUid = event.programStage(),
-                hasNullDataElementConflict = hasNullDataElementConflict
+                hasNullDataElementConflict = hasNullDataElementConflict,
             ),
             displayName = getEventLabel(event),
             description = description,
-            state = event.aggregatedSyncState()!!
+            state = event.aggregatedSyncState()!!,
         )
     }
 
@@ -600,7 +620,7 @@ class GranularSyncRepository(
 
     private fun getEnrollmentItemsWithStates(
         enrollmentUid: String,
-        vararg states: State
+        vararg states: State,
     ): List<SyncStatusItem> {
         val enrollment = d2.enrollment(enrollmentUid) ?: return emptyList()
         val enrollmentProgram = enrollment.program() ?: return emptyList()
@@ -615,13 +635,13 @@ class GranularSyncRepository(
                             SyncStatusItem(
                                 type = SyncStatusType.Enrollment(
                                     enrollmentUid = trackerImportConflict.enrollment()!!,
-                                    programUid = enrollmentProgram
+                                    programUid = enrollmentProgram,
                                 ),
                                 displayName =
                                 attribute?.displayFormName() ?: attribute?.uid() ?: "",
                                 description = trackerImportConflict.displayDescription() ?: "",
                                 state = trackerImportConflict.status()?.toState()
-                                    ?: enrollment.aggregatedSyncState() ?: State.SYNCED
+                                    ?: enrollment.aggregatedSyncState() ?: State.SYNCED,
                             )
                         }
 
@@ -630,12 +650,12 @@ class GranularSyncRepository(
                             SyncStatusItem(
                                 type = SyncStatusType.Enrollment(
                                     enrollmentUid = enrollment.uid(),
-                                    programUid = program.uid()
+                                    programUid = program.uid(),
                                 ),
                                 displayName = program.displayName() ?: program.uid(),
                                 description = trackerImportConflict.displayDescription() ?: "",
                                 state = trackerImportConflict.status()?.toState()
-                                    ?: enrollment.aggregatedSyncState()!!
+                                    ?: enrollment.aggregatedSyncState()!!,
                             )
                         }
                     }
@@ -644,7 +664,7 @@ class GranularSyncRepository(
                 allConflicts.filter { it.event() != null }.mapNotNull { trackerImportConflict ->
                     mapEventToSyncStatusItem(
                         enrollment.program(),
-                        trackerImportConflict.event()
+                        trackerImportConflict.event(),
                     )
                 }
             (enrollmentConflicts + eventConflicts)
@@ -655,7 +675,7 @@ class GranularSyncRepository(
         val teiConflicts = if (states.contains(State.ERROR) || states.contains(State.WARNING)) {
             d2.teiImportConflictsBy(
                 teiUid = enrollment.trackedEntityInstance(),
-                byNullEnrollment = true
+                byNullEnrollment = true,
             ).mapNotNull { trackerImportConflict ->
                 val tei = d2.tei(enrollment.trackedEntityInstance()!!)
                 when {
@@ -666,12 +686,12 @@ class GranularSyncRepository(
                             type = SyncStatusType.TrackedEntity(
                                 teiUid = enrollment.trackedEntityInstance()!!,
                                 programUid = enrollment.program(),
-                                enrollmentUid = trackerImportConflict.enrollment()
+                                enrollmentUid = trackerImportConflict.enrollment(),
                             ),
                             displayName = attribute?.displayFormName() ?: attribute?.uid() ?: "",
                             description = trackerImportConflict.displayDescription() ?: "",
                             state = trackerImportConflict.status()?.toState()
-                                ?: enrollment.aggregatedSyncState()!!
+                                ?: enrollment.aggregatedSyncState()!!,
                         )
                     }
 
@@ -680,12 +700,12 @@ class GranularSyncRepository(
                             type = SyncStatusType.TrackedEntity(
                                 enrollment.trackedEntityInstance()!!,
                                 enrollment.program(),
-                                enrollmentUid
+                                enrollmentUid,
                             ),
                             displayName = resourceManager.getString(R.string.conflict),
                             description = trackerImportConflict.displayDescription() ?: "",
                             state = trackerImportConflict.status()?.toState()
-                                ?: tei?.aggregatedSyncState() ?: State.SYNCED
+                                ?: tei?.aggregatedSyncState() ?: State.SYNCED,
                         )
                     }
 
@@ -699,12 +719,12 @@ class GranularSyncRepository(
         val statesWithoutError = states.filter { it != State.ERROR && it != State.WARNING }
         val notSyncedEvents = d2.eventsBy(
             enrollmentUid = enrollmentUid,
-            aggregatedSynStates = statesWithoutError.toList()
+            aggregatedSynStates = statesWithoutError.toList(),
         ).mapNotNull { event ->
             mapEventToSyncStatusItem(
                 eventUid = event.uid(),
                 dataElementUid = null,
-                description = resourceManager.getString(R.string.tap_to_explore_action)
+                description = resourceManager.getString(R.string.tap_to_explore_action),
             )
         }
 
@@ -714,7 +734,7 @@ class GranularSyncRepository(
     private fun mapEventToSyncStatusItem(
         eventUid: String,
         dataElementUid: String?,
-        description: String
+        description: String,
     ): SyncStatusItem? {
         val event = d2.event(eventUid) ?: return null
         val dataElement = dataElementUid?.let { d2.dataElement(dataElementUid) }
@@ -723,11 +743,11 @@ class GranularSyncRepository(
                 eventUid = event.uid(),
                 programUid = event.program()!!,
                 programStageUid = event.programStage(),
-                hasNullDataElementConflict = dataElementUid == null
+                hasNullDataElementConflict = dataElementUid == null,
             ),
             displayName = dataElement?.displayFormName() ?: getEventLabel(event),
             description = description,
-            state = event.aggregatedSyncState()!!
+            state = event.aggregatedSyncState()!!,
         )
     }
 
@@ -754,14 +774,14 @@ class GranularSyncRepository(
 
     private fun getEventItemsWithStates(
         eventUid: String,
-        vararg states: State
+        vararg states: State,
     ): List<SyncStatusItem> {
         return if (states.contains(State.ERROR) || states.contains(State.WARNING)) {
             d2.eventImportConflictsBy(eventUid).mapNotNull { trackerImportConflict ->
                 mapEventToSyncStatusItem(
                     trackerImportConflict.event() ?: "",
                     trackerImportConflict.dataElement(),
-                    trackerImportConflict.displayDescription() ?: ""
+                    trackerImportConflict.displayDescription() ?: "",
                 )
             }
         } else {
@@ -771,11 +791,11 @@ class GranularSyncRepository(
 
     private fun getDataSetItemsWithStates(
         dataSetUid: String,
-        vararg states: State
+        vararg states: State,
     ): List<SyncStatusItem> {
         return d2.dataSetInstancesBy(
             dataSetUid = dataSetUid,
-            states = states.toList()
+            states = states.toList(),
         ).map { dataSetInstance ->
             if (
                 dataSetInstance.state() == State.ERROR ||
@@ -795,11 +815,11 @@ class GranularSyncRepository(
                         dataSetUid,
                         dataSetInstance.organisationUnitUid(),
                         dataSetInstance.period(),
-                        dataSetInstance.attributeOptionComboUid()
+                        dataSetInstance.attributeOptionComboUid(),
                     ),
                     displayName = getDataSetInstanceLabel(dataSetInstance),
                     description = errorWarningDescriptionLabel(errorCount, warningCount),
-                    state = dataSetInstance.state()!!
+                    state = dataSetInstance.state()!!,
                 )
             } else {
                 SyncStatusItem(
@@ -807,11 +827,11 @@ class GranularSyncRepository(
                         dataSetUid,
                         dataSetInstance.organisationUnitUid(),
                         dataSetInstance.period(),
-                        dataSetInstance.attributeOptionComboUid()
+                        dataSetInstance.attributeOptionComboUid(),
                     ),
                     displayName = getDataSetInstanceLabel(dataSetInstance),
                     description = resourceManager.getString(R.string.tap_to_explore_action),
-                    state = dataSetInstance.state()!!
+                    state = dataSetInstance.state()!!,
                 )
             }
         }.sortedByState()
@@ -826,8 +846,8 @@ class GranularSyncRepository(
                     periodUtils.getPeriodUIString(
                         period?.periodType(),
                         period?.startDate()!!,
-                        Locale.getDefault()
-                    )
+                        Locale.getDefault(),
+                    ),
                 )
             }
             dataSetInstance.attributeOptionComboDisplayName().takeIf { it != "default" }?.let {
@@ -843,7 +863,7 @@ class GranularSyncRepository(
                 dataSetUid = dataSetUid,
                 periodId = periodId,
                 orgUnitUid = orgUnitUid,
-                attrOptionComboUid = attributeOptionComboUid
+                attrOptionComboUid = attributeOptionComboUid,
             )
         }
 
@@ -861,11 +881,11 @@ class GranularSyncRepository(
                             dataSetUid = dataSetUid,
                             orgUnitUid = dataValueConflict.orgUnit()!!,
                             periodId = dataValueConflict.period()!!,
-                            attrOptComboUid = dataValueConflict.attributeOptionCombo()!!
+                            attrOptComboUid = dataValueConflict.attributeOptionCombo()!!,
                         ),
                         displayName = "$dataElementLabel | $catOptComboLabel",
                         description = dataValueConflict.displayDescription() ?: "",
-                        state = dataValueConflict.status()?.toState() ?: State.ERROR
+                        state = dataValueConflict.status()?.toState() ?: State.ERROR,
                     )
                 }
 
@@ -878,11 +898,11 @@ class GranularSyncRepository(
                             dataSetUid = dataSetUid,
                             orgUnitUid = dataValueConflict.orgUnit()!!,
                             periodId = dataValueConflict.period()!!,
-                            attrOptComboUid = dataValueConflict.attributeOptionCombo()!!
+                            attrOptComboUid = dataValueConflict.attributeOptionCombo()!!,
                         ),
                         displayName = catOptComboLabel,
                         description = dataValueConflict.displayDescription() ?: "",
-                        state = dataValueConflict.status()?.toState() ?: State.ERROR
+                        state = dataValueConflict.status()?.toState() ?: State.ERROR,
                     )
                 }
 
@@ -896,7 +916,7 @@ class GranularSyncRepository(
             stateCandidates.addAll(
                 d2.dataSetModule().dataSetCompleteRegistrations()
                     .byDataSetUid().eq(syncContext.recordUid())
-                    .blockingGet().map { it.syncState() }
+                    .blockingGet().map { it.syncState() },
             )
         } else {
             with(syncContext as SyncContext.DataSetInstance) {
@@ -906,7 +926,7 @@ class GranularSyncRepository(
                         .byPeriod().eq(periodId)
                         .byAttributeOptionComboUid().eq(attributeOptionComboUid)
                         .byDataSetUid().eq(dataSetUid).get()
-                        .blockingGet().map { it.syncState() }
+                        .blockingGet().map { it.syncState() },
                 )
             }
         }
@@ -944,7 +964,7 @@ class GranularSyncRepository(
                 d2.trackedEntityModule().trackedEntityTypes().uid(
                     d2.trackedEntityModule().trackedEntityInstances()
                         .uid(enrollment?.trackedEntityInstance()!!)
-                        .blockingGet()?.trackedEntityType()
+                        .blockingGet()?.trackedEntityType(),
                 )
                     .get().map { it.displayName() }
             }
@@ -952,7 +972,7 @@ class GranularSyncRepository(
             ConflictType.EVENT ->
                 d2.programModule().programStages().uid(
                     d2.eventModule().events().uid(syncContext.recordUid()).blockingGet()
-                        ?.programStage()
+                        ?.programStage(),
                 ).get().map { it.displayName() }
 
             ConflictType.DATA_SET, ConflictType.DATA_VALUES ->
@@ -965,7 +985,7 @@ class GranularSyncRepository(
 fun List<SyncStatusItem>.sortedByState(): List<SyncStatusItem> {
     return sortedWith(
         compareBy<SyncStatusItem> { it.state.priority() }
-            .thenBy { it.priority() }
+            .thenBy { it.priority() },
     )
 }
 
@@ -974,19 +994,22 @@ fun SyncStatusItem.priority(): Int {
         is SyncStatusType.DataSet,
         is SyncStatusType.EventProgram,
         is SyncStatusType.TrackerProgram,
-        is SyncStatusType.StockProgram -> 1
+        is SyncStatusType.StockProgram,
+        -> 1
 
         is SyncStatusType.Enrollment -> 2
         is SyncStatusType.DataSetInstance,
         is SyncStatusType.Event,
-        is SyncStatusType.TrackedEntity -> 3
+        is SyncStatusType.TrackedEntity,
+        -> 3
     }
 }
 
 fun State.priority(): Int {
     return when (this) {
         State.TO_POST,
-        State.TO_UPDATE -> 3
+        State.TO_UPDATE,
+        -> 3
 
         State.ERROR -> 1
         State.WARNING -> 2
@@ -994,7 +1017,8 @@ fun State.priority(): Int {
         State.UPLOADING,
         State.RELATIONSHIP,
         State.SENT_VIA_SMS,
-        State.SYNCED_VIA_SMS -> 4
+        State.SYNCED_VIA_SMS,
+        -> 4
     }
 }
 

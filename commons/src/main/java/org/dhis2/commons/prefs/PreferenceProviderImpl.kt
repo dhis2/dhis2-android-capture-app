@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.util.Date
 import org.dhis2.commons.date.DateUtils
+import java.util.Date
 
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
@@ -75,7 +75,7 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
     override fun getSet(key: String, default: Set<String>): Set<String>? {
         return sharedPreferences.getStringSet(
             key,
-            default
+            default,
         )
     }
 

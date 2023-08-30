@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import org.dhis2.commons.date.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -73,17 +73,17 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
 
         ValueType.DATE ->
             DateUtils.uiDateFormat().format(
-                DateUtils.oldUiDateFormat().parse(value) ?: ""
+                DateUtils.oldUiDateFormat().parse(value) ?: "",
             )
 
         ValueType.DATETIME ->
             DateUtils.dateTimeFormat().format(
-                DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
+                DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
             )
 
         ValueType.TIME ->
             DateUtils.timeFormat().format(
-                DateUtils.timeFormat().parse(value) ?: ""
+                DateUtils.timeFormat().parse(value) ?: "",
             )
 
         else -> value
@@ -94,7 +94,7 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
     d2: D2,
     attrUid: String,
     value: String,
-    onCrash: (attrUid: String, value: String) -> Unit = { _, _ -> }
+    onCrash: (attrUid: String, value: String) -> Unit = { _, _ -> },
 ): Boolean {
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet()?.let {
         if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
@@ -115,14 +115,14 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
 
 fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
     d2: D2,
-    attrUid: String
+    attrUid: String,
 ): TrackedEntityAttributeValue? {
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet()?.let {
         if (blockingExists() && check(
                 d2,
                 it.valueType(),
                 it.optionSet()?.uid(),
-                blockingGet()?.value()!!
+                blockingGet()?.value()!!,
             )
         ) {
             blockingGet()
@@ -136,7 +136,7 @@ fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
 fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
     d2: D2,
     deUid: String,
-    value: String
+    value: String,
 ): Boolean {
     return d2.dataElementModule().dataElements().uid(deUid).blockingGet()?.let {
         if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
@@ -158,7 +158,8 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
             ValueType.INTEGER,
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> (
+            ValueType.INTEGER_ZERO_OR_POSITIVE,
+            -> (
                 it.toIntOrNull() ?: it.toFloat().toInt()
                 ).toString()
 
@@ -170,14 +171,14 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
 
 fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
     d2: D2,
-    deUid: String
+    deUid: String,
 ): TrackedEntityDataValue? {
     return d2.dataElementModule().dataElements().uid(deUid).blockingGet()?.let {
         if (blockingExists() && check(
                 d2,
                 it.valueType(),
                 it.optionSet()?.uid(),
-                blockingGet()?.value()!!
+                blockingGet()?.value()!!,
             )
         ) {
             blockingGet()
@@ -227,9 +228,9 @@ private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: S
 private fun assureCodeForOptionSet(d2: D2, optionSetUid: String?, value: String): String {
     return optionSetUid?.let {
         if (d2.optionModule().options()
-            .byOptionSetUid().eq(it)
-            .byName().eq(value)
-            .one().blockingExists()
+                .byOptionSetUid().eq(it)
+                .byName().eq(value)
+                .one().blockingExists()
         ) {
             d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
                 .blockingGet()?.code()

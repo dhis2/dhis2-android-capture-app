@@ -1,6 +1,5 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
@@ -16,21 +15,7 @@ fun Context.buildInfo(): String {
 }
 
 fun Fragment.checkSMSPermission(requestPermission: Boolean, request: Int): Boolean {
-    val smsPermissions = arrayOf(
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.SEND_SMS,
-        Manifest.permission.RECEIVE_SMS,
-        Manifest.permission.READ_SMS
-    )
-
-    if (context?.hasPermissions(smsPermissions) != true) {
-        if (requestPermission) {
-            requestPermissions(smsPermissions, request)
-        }
-        return false
-    }
-    return true
+    return false
 }
 
 fun Context.hasPermissions(permissions: Array<String>): Boolean {
@@ -45,5 +30,5 @@ fun Context.hasPermissions(permissions: Array<String>): Boolean {
 }
 
 fun Context.showSMS(): Boolean {
-    return BuildConfig.FLAVOR == "dhis"
+    return BuildConfig.FLAVOR == "dhis" || BuildConfig.FLAVOR == "dhisPlayServices"
 }

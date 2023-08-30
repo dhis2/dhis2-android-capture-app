@@ -26,7 +26,7 @@ class ProgramModule(private val view: ProgramView) {
         matomoAnalyticsController: MatomoAnalyticsController,
         syncStatusController: SyncStatusController,
         identifyProgramType: IdentifyProgramType,
-        stockManagementMapper: StockManagementMapper
+        stockManagementMapper: StockManagementMapper,
     ): ProgramPresenter {
         return ProgramPresenter(
             view,
@@ -36,7 +36,7 @@ class ProgramModule(private val view: ProgramView) {
             matomoAnalyticsController,
             syncStatusController,
             identifyProgramType,
-            stockManagementMapper
+            stockManagementMapper,
         )
     }
 
@@ -48,7 +48,7 @@ class ProgramModule(private val view: ProgramView) {
         dhisProgramUtils: DhisProgramUtils,
         dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
         schedulerProvider: SchedulerProvider,
-        colorUtils: ColorUtils
+        colorUtils: ColorUtils,
     ): ProgramRepository {
         return ProgramRepositoryImpl(
             d2,
@@ -56,7 +56,7 @@ class ProgramModule(private val view: ProgramView) {
             dhisProgramUtils,
             dhisTrackedEntityInstanceUtils,
             ResourceManager(view.context, colorUtils),
-            schedulerProvider
+            schedulerProvider,
         )
     }
 
@@ -69,7 +69,7 @@ class ProgramModule(private val view: ProgramView) {
     @Provides
     @PerFragment
     internal fun provideIdentifyProgramType(
-        repository: ProgramThemeRepository
+        repository: ProgramThemeRepository,
     ): IdentifyProgramType {
         return IdentifyProgramType(repository)
     }
@@ -77,7 +77,7 @@ class ProgramModule(private val view: ProgramView) {
     @Provides
     @PerFragment
     internal fun provideStockManagementMapper(
-        repository: ProgramThemeRepository
+        repository: ProgramThemeRepository,
     ): StockManagementMapper {
         return StockManagementMapper(repository)
     }

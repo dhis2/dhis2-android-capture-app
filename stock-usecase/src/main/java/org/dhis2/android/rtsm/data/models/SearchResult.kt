@@ -5,5 +5,5 @@ import androidx.paging.PagedList
 
 data class SearchResult(
     val items: LiveData<PagedList<StockItem>>,
-    val totalCount: Int
+    val totalCount: Int,
 )

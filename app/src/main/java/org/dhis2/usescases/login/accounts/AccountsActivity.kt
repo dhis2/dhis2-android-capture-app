@@ -5,11 +5,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.livedata.observeAsState
-import javax.inject.Inject
-import org.dhis2.Bindings.app
+import org.dhis2.bindings.app
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.login.accounts.ui.AccountsScreen
+import javax.inject.Inject
 
 class AccountsActivity : ActivityGlobalAbstract() {
 
@@ -28,7 +28,7 @@ class AccountsActivity : ActivityGlobalAbstract() {
             AccountsScreen(
                 accounts = accounts.value,
                 onAccountClicked = { navigateToLogin(it) },
-                onAddAccountClicked = { navigateToLogin() }
+                onAddAccountClicked = { navigateToLogin() },
             )
         }
         viewModel.getAccounts()
@@ -39,7 +39,7 @@ class AccountsActivity : ActivityGlobalAbstract() {
         val intent = LoginActivity.accountIntentResult(
             serverUrl = accountModel?.serverUrl,
             userName = accountModel?.name,
-            wasAccountClicked = wasAccountClicked
+            wasAccountClicked = wasAccountClicked,
         )
         setResult(RESULT_OK, intent)
         finish()

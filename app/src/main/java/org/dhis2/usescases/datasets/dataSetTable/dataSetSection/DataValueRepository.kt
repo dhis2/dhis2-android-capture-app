@@ -5,8 +5,7 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.SortedMap
-import org.dhis2.Bindings.decimalFormat
+import org.dhis2.bindings.decimalFormat
 import org.dhis2.commons.bindings.dataValueConflicts
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.composetable.model.TableCell
@@ -34,6 +33,7 @@ import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
+import java.util.SortedMap
 
 class DataValueRepository(
     private val d2: D2,
@@ -41,7 +41,7 @@ class DataValueRepository(
     private val sectionUid: String,
     private val orgUnitUid: String,
     private val periodId: String,
-    private val attributeOptionComboUid: String
+    private val attributeOptionComboUid: String,
 ) {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun getPeriod(): Flowable<Period?> =
@@ -91,13 +91,13 @@ class DataValueRepository(
         d2.dataSetModule().dataSets().uid(dataSetUid).get().toFlowable()
 
     private fun getCatOptions(
-        catCombo: String
+        catCombo: String,
     ): Flowable<Map<String, List<MutableList<Pair<CategoryOption, Category>>>>> {
         val map: MutableMap<String, List<MutableList<Pair<CategoryOption, Category>>>> =
             HashMap()
         map[catCombo] = getMap(catCombo)
         return Flowable.just(
-            map
+            map,
         )
     }
 
@@ -118,9 +118,9 @@ class DataValueRepository(
                 for (catComboList in finalList) {
                     if (catComboList.contains(
                             Pair.create(
-                                    catOption,
-                                    category
-                                )
+                                catOption,
+                                category,
+                            ),
                         )
                     ) {
                         add = false
@@ -133,8 +133,8 @@ class DataValueRepository(
                         finalList[finalList.size - 1].add(
                             Pair.create(
                                 catOption,
-                                category
-                            )
+                                category,
+                            ),
                         )
                     } else {
                         val list: MutableList<Pair<CategoryOption, Category>> =
@@ -142,8 +142,8 @@ class DataValueRepository(
                         list.add(
                             Pair.create(
                                 catOption,
-                                category
-                            )
+                                category,
+                            ),
                         )
                         finalList.add(list)
                     }
@@ -155,7 +155,7 @@ class DataValueRepository(
 
     private fun transformDataElement(
         dataElement: DataElement,
-        override: List<DataSetElement>?
+        override: List<DataSetElement>?,
     ): DataElement {
         return override
             ?.firstOrNull {
@@ -187,8 +187,8 @@ class DataValueRepository(
             HashMap()
         return Flowable.just(
             d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(
-                dataSetUid
-            ).one().blockingGet()
+                dataSetUid,
+            ).one().blockingGet(),
         )
             .flatMapIterable { dataSet: DataSet ->
                 var dataElements: MutableList<DataSetElement>? =
@@ -205,7 +205,7 @@ class DataValueRepository(
                             .filter { it.dataElement().uid() == dataElement.uid() }
                             .forEach {
                                 dataElements!!.add(
-                                    it
+                                    it,
                                 )
                             }
                     }
@@ -247,8 +247,8 @@ class DataValueRepository(
                 var value = dataValue.value()
                 if (dataElement?.optionSetUid() != null &&
                     dataElement.optionSetUid().isNotEmpty() && !TextUtils.isEmpty(
-                            value
-                        )
+                        value,
+                    )
                 ) {
                     val option =
                         d2.optionModule().options()
@@ -268,7 +268,7 @@ class DataValueRepository(
                     dataValue.storedBy(),
                     "", // no used anywhere, remove this field
                     uidCatOptions,
-                    mapDataElementCatCombo[dataValue.dataElement()]
+                    mapDataElementCatCombo[dataValue.dataElement()],
                 )
             }.toList().toFlowable()
     }
@@ -309,7 +309,7 @@ class DataValueRepository(
                         DataApprovalState.APPROVED_ABOVE,
                         DataApprovalState.APPROVED_HERE,
                         DataApprovalState.ACCEPTED_ELSEWHERE,
-                        DataApprovalState.ACCEPTED_HERE
+                        DataApprovalState.ACCEPTED_HERE,
                     )
                     dataApproval != null && approvalStates.contains(dataApproval.state())
                 }
@@ -333,7 +333,7 @@ class DataValueRepository(
                 ?.forEach { dataElementsOverride.add(it) }
 
             Flowable.just(
-                dataElementsOverride
+                dataElementsOverride,
             )
         } else {
             val dataElementUids: MutableList<String> =
@@ -362,7 +362,7 @@ class DataValueRepository(
     }
 
     private fun getCatOptionFromCatOptionCombo(
-        categoryOptionCombo: CategoryOptionCombo
+        categoryOptionCombo: CategoryOptionCombo,
     ): List<CategoryOption> {
         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
             .uid(categoryOptionCombo.uid()).blockingGet()?.categoryOptions() ?: emptyList()
@@ -394,7 +394,7 @@ class DataValueRepository(
                                         d2.organisationUnitModule().organisationUnits()
                                             .byDataSetUids(listOf(dataSetUid))
                                             .byOrganisationUnitScope(
-                                                OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
+                                                OrganisationUnit.Scope.SCOPE_DATA_CAPTURE,
                                             ).blockingGet()
                                     canWriteOrgUnit = organisationUnits.isNotEmpty()
                                 }
@@ -410,7 +410,7 @@ class DataValueRepository(
 
     private fun getCatOptionComboFrom(
         catComboUid: String?,
-        catOptionsList: List<List<CategoryOption>>?
+        catOptionsList: List<List<CategoryOption>>?,
     ): List<CategoryOptionCombo> {
         val catOptionCombos: MutableList<CategoryOptionCombo> =
             ArrayList()
@@ -419,7 +419,7 @@ class DataValueRepository(
                 d2.categoryModule().categoryOptionCombos()
                     .byCategoryOptions(UidsHelper.getUidsList(catOptions))
                     .byCategoryComboUid().eq(catComboUid)
-                    .blockingGet()
+                    .blockingGet(),
             )
         }
         return catOptionCombos
@@ -439,7 +439,7 @@ class DataValueRepository(
                             dataSetUid,
                             periodId,
                             orgUnitUid,
-                            attributeOptionComboUid
+                            attributeOptionComboUid,
                         ).toInt().toString()
                 }
                 return@map dataSetIndicators
@@ -490,23 +490,35 @@ class DataValueRepository(
     }
 
     fun getDataTableModel(categoryCombo: CategoryCombo): Observable<DataTableModel> {
-        return Flowable.zip<List<DataElement>,
+        return Flowable.zip<
+            List<DataElement>,
             Map<String, List<List<Pair<CategoryOption, Category>>>>,
             List<DataSetTableModel>,
             List<DataElementOperand>,
             List<DataElementOperand>,
-            DataTableModel>(
+            DataTableModel,
+            >(
             getDataElements(categoryCombo),
             getCatOptions(categoryCombo.uid()),
             getDataValues(),
             getGreyFields(),
-            getCompulsoryDataElements()
+            getCompulsoryDataElements(),
         ) { dataElements: List<DataElement>,
-            optionsWithCategory: Map<String, List<List<Pair<CategoryOption,
-                            Category>>>>,
+            optionsWithCategory: Map<
+                String,
+                List<
+                    List<
+                        Pair<
+                            CategoryOption,
+                            Category,
+                            >,
+                        >,
+                    >,
+                >,
             dataValues: List<DataSetTableModel>,
             disabledDataElements: List<DataElementOperand>,
-            compulsoryCells: List<DataElementOperand> ->
+            compulsoryCells: List<DataElementOperand>,
+            ->
             var options: List<List<String>> = ArrayList()
             for ((_, value) in optionsWithCategory) {
                 options = getCatOptionCombos(value, 0, ArrayList(), null)
@@ -526,7 +538,7 @@ class DataValueRepository(
                 compulsoryCells,
                 categoryCombo,
                 transformCategories,
-                getCatOptionOrder(options)
+                getCatOptionOrder(options),
             )
         }.toObservable()
     }
@@ -535,7 +547,7 @@ class DataValueRepository(
         listCategories: List<List<Pair<CategoryOption, Category>>>,
         rowPosition: Int,
         catComboUidList: MutableList<List<String>>,
-        catComboIds: MutableList<String>?
+        catComboIds: MutableList<String>?,
     ): List<List<String>> {
         var currentCatComboIds = catComboIds
         if (rowPosition == listCategories.size) {
@@ -558,7 +570,7 @@ class DataValueRepository(
 
     private fun removeCategoryOptionsBelowRowPosition(
         currentCatComboIds: MutableList<String>,
-        rowPosition: Int
+        rowPosition: Int,
     ) {
         for (currentRowPosition in currentCatComboIds.size downTo 1) {
             if (currentCatComboIds.size == rowPosition + currentRowPosition) {
@@ -569,7 +581,7 @@ class DataValueRepository(
 
     fun setTableData(
         dataTableModel: DataTableModel,
-        errors: MutableMap<String, String>
+        errors: MutableMap<String, String>,
     ): TableData {
         val cells = ArrayList<List<String>>()
         val listFields = mutableListOf<List<FieldViewModel>>()
@@ -581,14 +593,14 @@ class DataValueRepository(
 
         val categorOptionCombos = getCatOptionComboFrom(
             dataTableModel.catCombo?.uid(),
-            dataTableModel.catOptionOrder
+            dataTableModel.catOptionOrder,
         )
 
         val conflicts = d2.dataValueConflicts(
             dataSetUid,
             periodId,
             orgUnitUid,
-            attributeOptionComboUid
+            attributeOptionComboUid,
         )
 
         for (dataElement in dataTableModel.rows ?: emptyList()) {
@@ -614,7 +626,7 @@ class DataValueRepository(
                 val isEditable = validateIfIsEditable(
                     dataTableModel.dataElementDisabled!!,
                     dataElement,
-                    categoryOptionCombo
+                    categoryOptionCombo,
                 )
 
                 val mandatory = dataTableModel.compulsoryCells?.find { compulsoryDataElement ->
@@ -646,7 +658,7 @@ class DataValueRepository(
                     row,
                     column,
                     categoryOptionCombo.uid(),
-                    dataTableModel.catCombo?.uid()
+                    dataTableModel.catCombo?.uid(),
                 )
 
                 val valueStateSyncState = d2.dataValueModule().dataValues()
@@ -664,7 +676,8 @@ class DataValueRepository(
                     conflicts.takeIf {
                         when (valueStateSyncState) {
                             State.ERROR,
-                            State.WARNING -> true
+                            State.WARNING,
+                            -> true
                             else -> false
                         }
                     }?.filter {
@@ -731,7 +744,7 @@ class DataValueRepository(
                     cells,
                     dataTableModel.rows ?: mutableListOf(),
                     row,
-                    column
+                    column,
                 )
             }
             if (showRowTotals()) {
@@ -740,13 +753,13 @@ class DataValueRepository(
                         dataTableModel.header[i].add(
                             CategoryOption.builder().uid("")
                                 .displayName("Total")
-                                .build()
+                                .build(),
                         )
                     } else {
                         dataTableModel.header[i].add(
                             CategoryOption.builder().uid("")
                                 .displayName("")
-                                .build()
+                                .build(),
                         )
                     }
                 }
@@ -759,7 +772,7 @@ class DataValueRepository(
                 getDataInputPeriod() == null || (
                     getDataInputPeriod() != null && DateUtils.getInstance()
                         .isInsideInputPeriod(
-                            getDataInputPeriod()
+                            getDataInputPeriod(),
                         )
                     )
                 ) &&
@@ -774,7 +787,7 @@ class DataValueRepository(
             isEditable,
             showRowTotals(),
             showColumnTotals(),
-            hasDataElementDecoration
+            hasDataElementDecoration,
         )
     }
 
@@ -785,7 +798,7 @@ class DataValueRepository(
             DateUtils.getInstance()
                 .isDataSetExpired(
                     dataSet?.expiryDays()!!,
-                    getPeriod().blockingFirst()!!.endDate()!!
+                    getPeriod().blockingFirst()!!.endDate()!!,
                 )
         }
     }
@@ -805,7 +818,7 @@ class DataValueRepository(
     }
 
     private fun transformCategories(
-        map: Map<String, List<List<Pair<CategoryOption, Category>>>>
+        map: Map<String, List<List<Pair<CategoryOption, Category>>>>,
     ): HashMap<String, MutableList<MutableList<CategoryOption>>> {
         val mapTransform = HashMap<String, MutableList<MutableList<CategoryOption>>>()
         for ((key) in map) {
@@ -833,11 +846,11 @@ class DataValueRepository(
         fields: ArrayList<FieldViewModel>,
         values: ArrayList<String>,
         row: Int,
-        column: Int
+        column: Int,
     ) {
         val fieldFactory = FieldViewModelFactoryImpl(
             "",
-            ""
+            "",
         )
         fields.add(
             fieldFactory.create(
@@ -858,8 +871,8 @@ class DataValueRepository(
                 row,
                 column,
                 "",
-                ""
-            )
+                "",
+            ),
         )
         values.add(totalRow.decimalFormat)
     }
@@ -869,11 +882,11 @@ class DataValueRepository(
         cells: ArrayList<List<String>>,
         dataElements: MutableList<DataElement>,
         row: Int,
-        columnPos: Int
+        columnPos: Int,
     ) {
         val fieldFactory = FieldViewModelFactoryImpl(
             "",
-            ""
+            "",
         )
 
         val fields = ArrayList<FieldViewModel>()
@@ -919,8 +932,8 @@ class DataValueRepository(
                     row,
                     columnPos,
                     "",
-                    ""
-                )
+                    "",
+                ),
             )
 
             values.add(column.decimalFormat)
@@ -935,7 +948,7 @@ class DataValueRepository(
                     .uid("")
                     .displayName("Total")
                     .valueType(ValueType.INTEGER)
-                    .build()
+                    .build(),
             )
         }
     }
@@ -943,7 +956,7 @@ class DataValueRepository(
     private fun validateIfIsEditable(
         dataElementDisabled: List<DataElementOperand>,
         dataElement: DataElement,
-        categoryOptionCombo: CategoryOptionCombo
+        categoryOptionCombo: CategoryOptionCombo,
     ): Boolean {
         var editable = true
         for (disabledDataElement in dataElementDisabled) {
@@ -1003,7 +1016,7 @@ class DataValueRepository(
             0,
             0,
             cell.id!!.split("_")[1],
-            dataElement.categoryComboUid()
+            dataElement.categoryComboUid(),
         )
     }
 

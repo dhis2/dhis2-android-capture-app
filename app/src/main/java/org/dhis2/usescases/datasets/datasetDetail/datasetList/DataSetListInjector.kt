@@ -23,11 +23,11 @@ class DataSetListModule {
         dataSetDetailRepository: DataSetDetailRepository,
         schedulerProvider: SchedulerProvider,
         filterManager: FilterManager,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
     ): DataSetListViewModelFactory = DataSetListViewModelFactory(
         dataSetDetailRepository,
         schedulerProvider,
         filterManager,
-        matomoAnalyticsController
+        matomoAnalyticsController,
     )
 }

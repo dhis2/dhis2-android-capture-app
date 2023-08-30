@@ -28,8 +28,6 @@ package org.dhis2.data.service
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import java.util.Objects
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
@@ -38,10 +36,12 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PERIOD_ID
 import org.dhis2.commons.Constants.UID
 import org.dhis2.commons.sync.ConflictType
+import java.util.Objects
+import javax.inject.Inject
 
 class SyncGranularWorker(
     context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : Worker(context, workerParams) {
 
     @Inject
@@ -66,7 +66,7 @@ class SyncGranularWorker(
             }
             ConflictType.DATA_SET -> {
                 presenter.blockSyncGranularDataSet(
-                    uid
+                    uid,
                 )
             }
             ConflictType.DATA_VALUES ->
@@ -75,7 +75,7 @@ class SyncGranularWorker(
                     inputData.getString(ORG_UNIT) as String,
                     inputData.getString(ATTRIBUTE_OPTION_COMBO) as String,
                     inputData.getString(PERIOD_ID) as String,
-                    inputData.getStringArray(CATEGORY_OPTION_COMBO) as Array<String>
+                    inputData.getStringArray(CATEGORY_OPTION_COMBO) as Array<String>,
                 )
             else -> Result.failure()
         }

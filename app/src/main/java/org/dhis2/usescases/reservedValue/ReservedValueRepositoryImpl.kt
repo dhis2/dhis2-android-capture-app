@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.arch.call.D2Progress
 class ReservedValueRepositoryImpl(
     private val d2: D2,
     private val prefs: PreferenceProvider,
-    private val mapper: ReservedValueMapper
+    private val mapper: ReservedValueMapper,
 ) : ReservedValueRepository {
     override fun reservedValues(): Single<List<ReservedValueModel>> =
         d2.trackedEntityModule().reservedValueManager().getReservedValueSummaries()

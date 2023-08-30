@@ -29,7 +29,7 @@ class ThemeManagerTest {
         dataSetConfiguration,
         trackedEntityTypeConfiguration,
         preferenceProvider,
-        colorUtils
+        colorUtils,
     )
 
     @Test
@@ -57,7 +57,7 @@ class ThemeManagerTest {
         val teTypeColor = "#ffcdd2"
         val themeColor = R.style.colorPrimary_Pink
         whenever(
-            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid")
+            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid"),
         ) doReturn teTypeColor
         whenever(colorUtils.getThemeFromColor(teTypeColor)) doReturn themeColor
         themeManager.setTrackedEntityTypeTheme("uid")
@@ -70,7 +70,7 @@ class ThemeManagerTest {
         val teTypeColor = "#ffcdd2"
         val themeColor = R.style.colorPrimary_Pink
         whenever(
-            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid")
+            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid"),
         ) doReturn teTypeColor
         whenever(colorUtils.getThemeFromColor(teTypeColor)) doReturn themeColor
         themeManager.setTrackedEntityTypeTheme("uid")
@@ -86,7 +86,7 @@ class ThemeManagerTest {
         themeManager.getThemePrimaryColor(
             "uid",
             { result = true },
-            { result = false }
+            { result = false },
         )
         assertTrue(result)
     }
@@ -98,7 +98,7 @@ class ThemeManagerTest {
         themeManager.getThemePrimaryColor(
             null,
             { result = false },
-            { result = true }
+            { result = true },
         )
         assertTrue(result)
     }
@@ -111,7 +111,7 @@ class ThemeManagerTest {
         themeManager.getThemePrimaryColor(
             "uid",
             { result = false },
-            { result = true }
+            { result = true },
         )
         assertTrue(result)
     }

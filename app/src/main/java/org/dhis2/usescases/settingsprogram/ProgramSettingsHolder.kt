@@ -1,8 +1,8 @@
 package org.dhis2.usescases.settingsprogram
 
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.toTrailingText
 import org.dhis2.R
+import org.dhis2.bindings.toTrailingText
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -11,7 +11,7 @@ import org.dhis2.databinding.ItemSettingProgramBinding
 class ProgramSettingsHolder(
     private val binding: ItemSettingProgramBinding,
     private val resourceManager: ResourceManager,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
@@ -20,13 +20,13 @@ class ProgramSettingsHolder(
             settingProgram.color,
             colorUtils.getPrimaryColor(
                 itemView.context,
-                ColorType.PRIMARY_LIGHT
-            )
+                ColorType.PRIMARY_LIGHT,
+            ),
         )
 
         val icon = resourceManager.getObjectStyleDrawableResource(
             settingProgram.icon,
-            R.drawable.ic_default_positive
+            R.drawable.ic_default_positive,
         )
         binding.programIcon.setBackgroundColor(color)
         binding.programIcon.setImageResource(icon)

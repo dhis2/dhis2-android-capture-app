@@ -48,7 +48,7 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
             analyticHelper.trackMatomoEvent(
                 API_CALL,
                 "${request.method}_${request.url}",
-                "${response.code}_${appVersionName}_${getDhis2Version()}"
+                "${response.code}_${appVersionName}_${getDhis2Version()}",
             )
         }
         return response

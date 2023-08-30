@@ -5,5 +5,5 @@ import android.graphics.drawable.Drawable
 data class BaseMap(
     val baseMapStyle: BaseMapStyle,
     val basemapName: String,
-    val basemapImage: Drawable?
+    val basemapImage: Drawable?,
 )

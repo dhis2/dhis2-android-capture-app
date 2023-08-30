@@ -14,12 +14,12 @@ import org.hisp.dhis.android.core.program.ProgramStage
 class ProgramStageSelectionViewHolder(
     private val binding: ItemProgramStageBinding,
     private val colorUtils: ColorUtils,
-    val onItemClick: (ProgramStage) -> Unit
+    val onItemClick: (ProgramStage) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeProgramStageIcon.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -31,23 +31,23 @@ class ProgramStageSelectionViewHolder(
             programStage.style().color(),
             colorUtils.getPrimaryColor(
                 itemView.context,
-                ColorType.PRIMARY_LIGHT
-            )
+                ColorType.PRIMARY_LIGHT,
+            ),
         )
 
         val iconResource =
             ResourceManager(itemView.context, colorUtils).getObjectStyleDrawableResource(
                 programStage.style().icon(),
-                R.drawable.ic_default_outline
+                R.drawable.ic_default_outline,
             )
 
         binding.composeProgramStageIcon.setUpMetadataIcon(
             MetadataIconData(
                 programColor = color,
                 iconResource = iconResource,
-                sizeInDp = 80
+                sizeInDp = 80,
             ),
-            false
+            false,
         )
 
         itemView.setOnClickListener {

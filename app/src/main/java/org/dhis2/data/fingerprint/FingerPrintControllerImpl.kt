@@ -3,7 +3,7 @@ package org.dhis2.data.fingerprint
 import io.reactivex.Observable
 
 class FingerPrintControllerImpl(
-    val mapper: FingerPrintMapper
+    val mapper: FingerPrintMapper,
 ) : FingerPrintController {
 
     /***

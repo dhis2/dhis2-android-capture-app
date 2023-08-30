@@ -8,7 +8,7 @@ data class OrgUnitTreeItem(
     val selected: Boolean = false,
     val level: Int = 0,
     val selectedChildrenCount: Int = 0,
-    val canBeSelected: Boolean = true
+    val canBeSelected: Boolean = true,
 ) {
     fun formattedLabel() = if (selectedChildrenCount == 0 || !hasChildren) {
         label

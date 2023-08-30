@@ -3,12 +3,12 @@ package org.dhis2.usescases.searchTrackEntity.adapters
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.getEnrollmentIconsData
-import org.dhis2.Bindings.hasFollowUp
-import org.dhis2.Bindings.paintAllEnrollmentIcons
-import org.dhis2.Bindings.setAttributeList
-import org.dhis2.Bindings.setStatusText
-import org.dhis2.Bindings.setTeiImage
+import org.dhis2.bindings.getEnrollmentIconsData
+import org.dhis2.bindings.hasFollowUp
+import org.dhis2.bindings.paintAllEnrollmentIcons
+import org.dhis2.bindings.setAttributeList
+import org.dhis2.bindings.setStatusText
+import org.dhis2.bindings.setTeiImage
 import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
@@ -17,7 +17,7 @@ import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 
 abstract class BaseTeiViewHolder(
     private val binding: ItemSearchTrackedEntityBinding,
-    private val colorUtils: ColorUtils
+    private val colorUtils: ColorUtils,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     lateinit var teiModel: SearchTeiModel
@@ -28,14 +28,14 @@ abstract class BaseTeiViewHolder(
 
     init {
         binding.composeProgramList.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
     fun bind(
         teiModel: SearchTeiModel,
         attributeVisibilityCallback: () -> Unit,
-        profileImagePreviewCallback: (String) -> Unit
+        profileImagePreviewCallback: (String) -> Unit,
     ) {
         this.teiModel = teiModel
         if (teiModel.isAttributeListOpen) {
@@ -62,17 +62,17 @@ abstract class BaseTeiViewHolder(
                 programInfo.getEnrollmentIconsData(
                     itemView.context,
                     if (selectedEnrollment != null) selectedEnrollment.program() else null,
-                    colorUtils
+                    colorUtils,
                 )
             enrollmentIconDataList.paintAllEnrollmentIcons(
-                binding.composeProgramList
+                binding.composeProgramList,
             )
             if (selectedEnrollment != null) {
                 selectedEnrollment.setStatusText(
                     itemView.context,
                     binding.enrollmentStatus,
                     isHasOverdue,
-                    overdueDate
+                    overdueDate,
                 )
             }
             setTeiImage(
@@ -80,7 +80,7 @@ abstract class BaseTeiViewHolder(
                 binding.trackedEntityImage,
                 binding.imageText,
                 colorUtils,
-                profileImagePreviewCallback
+                profileImagePreviewCallback,
             )
             attributeValues.setAttributeList(
                 binding.attributeList,
@@ -89,7 +89,7 @@ abstract class BaseTeiViewHolder(
                 teiModel.isAttributeListOpen,
                 teiModel.sortingKey,
                 teiModel.sortingValue,
-                teiModel.enrolledOrgUnit
+                teiModel.enrolledOrgUnit,
             ) {
                 attributeVisibilityCallback()
             }

@@ -20,7 +20,7 @@ class CarouselProgramEventHolder(
     val binding: ItemCarouselProgramEventBinding,
     val onClick: (teiUid: String?, orgUnitUid: String?, eventUid: String?) -> Boolean,
     val attributeVisibilityCallback: (ProgramEventViewModel) -> Unit,
-    val onNavigate: (teiUid: String) -> Unit
+    val onNavigate: (teiUid: String) -> Unit,
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<ProgramEventViewModel> {
@@ -47,7 +47,7 @@ class CarouselProgramEventHolder(
 
     private fun setEventValueLayout(
         programEventModel: ProgramEventViewModel,
-        toggleList: () -> Unit
+        toggleList: () -> Unit,
     ) {
         binding.showValuesButtonContainer.visibility = View.VISIBLE
         binding.showValuesButtonContainer.setOnClickListener {
@@ -75,7 +75,7 @@ class CarouselProgramEventHolder(
 
     private fun initValues(
         valueListIsOpen: Boolean,
-        dataElementValues: MutableList<Pair<String, String>>
+        dataElementValues: MutableList<Pair<String, String>>,
     ) {
         binding.dataElementList.removeAllViews()
         binding.dataValue.text = null
@@ -93,7 +93,7 @@ class CarouselProgramEventHolder(
             for (nameValuePair in dataElementValues) {
                 val fieldValueBinding: ItemFieldValueBinding =
                     ItemFieldValueBinding.inflate(
-                        LayoutInflater.from(binding.dataElementList.context)
+                        LayoutInflater.from(binding.dataElementList.context),
                     )
                 fieldValueBinding.name = nameValuePair.val0()
                 fieldValueBinding.value = nameValuePair.val1()
@@ -118,7 +118,7 @@ class CarouselProgramEventHolder(
                         ForegroundColorSpan(colorToUse),
                         0,
                         value.length,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE,
                     )
                     stringBuilder.append(value)
                     if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size - 1) {

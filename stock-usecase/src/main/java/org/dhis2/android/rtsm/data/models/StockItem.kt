@@ -7,5 +7,5 @@ import kotlinx.parcelize.Parcelize
 data class StockItem(
     val id: String,
     val name: String,
-    var stockOnHand: String?
+    var stockOnHand: String?,
 ) : Parcelable

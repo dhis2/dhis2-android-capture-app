@@ -4,5 +4,5 @@ enum class HomeItemType {
     DATA_SET,
     EVENTS,
     PROGRAM,
-    PROGRAM_STOCK
+    PROGRAM_STOCK,
 }

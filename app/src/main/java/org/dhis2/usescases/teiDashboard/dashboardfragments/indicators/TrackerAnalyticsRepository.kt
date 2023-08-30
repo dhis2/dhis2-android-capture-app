@@ -19,7 +19,7 @@ class TrackerAnalyticsRepository(
     val charts: Charts?,
     programUid: String,
     val teiUid: String,
-    resourceManager: ResourceManager
+    resourceManager: ResourceManager,
 ) : BaseIndicatorRepository(d2, ruleEngineRepository, programUid, resourceManager) {
 
     val enrollmentUid: String
@@ -35,26 +35,28 @@ class TrackerAnalyticsRepository(
     }
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {
-        return Flowable.zip<List<AnalyticsModel>?,
+        return Flowable.zip<
+            List<AnalyticsModel>?,
             List<AnalyticsModel>?,
             List<AnalyticsModel>,
-            List<AnalyticsModel>>(
+            List<AnalyticsModel>,
+            >(
             getIndicators(
-                !DhisTextUtils.isEmpty(enrollmentUid)
+                !DhisTextUtils.isEmpty(enrollmentUid),
             ) { indicatorUid ->
                 d2.programModule()
                     .programIndicatorEngine().getEnrollmentProgramIndicatorValue(
                         enrollmentUid,
-                        indicatorUid
+                        indicatorUid,
                     )
             },
             getRulesIndicators(),
             Flowable.just(
-                charts?.geEnrollmentCharts(enrollmentUid)?.map { ChartModel(it) }
+                charts?.geEnrollmentCharts(enrollmentUid)?.map { ChartModel(it) },
             ),
             Function3 { indicators, ruleIndicators, charts ->
                 arrangeSections(indicators, ruleIndicators, charts)
-            }
+            },
         )
     }
 
@@ -67,7 +69,7 @@ class TrackerAnalyticsRepository(
     override fun filterByOrgUnit(
         chartModel: ChartModel,
         selectedOrgUnits: List<OrganisationUnit>,
-        filterType: OrgUnitFilterType
+        filterType: OrgUnitFilterType,
     ) {
         chartModel.graph.visualizationUid?.let { visualizationUid ->
             charts?.setVisualizationOrgUnits(visualizationUid, selectedOrgUnits, filterType)

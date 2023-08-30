@@ -1,9 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
-import java.util.Locale
-import org.dhis2.Bindings.applyFilters
-import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.bindings.applyFilters
+import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
@@ -25,13 +24,14 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import java.util.Locale
 
 class TeiDataRepositoryImpl(
     private val d2: D2,
     private val programUid: String?,
     private val teiUid: String,
     private val enrollmentUid: String?,
-    private val periodUtils: DhisPeriodUtils
+    private val periodUtils: DhisPeriodUtils,
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -43,7 +43,7 @@ class TeiDataRepositoryImpl(
         assignedToMe: Boolean,
         eventStatusFilters: MutableList<EventStatus>,
         catOptComboFilters: MutableList<CategoryOptionCombo>,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
@@ -57,7 +57,7 @@ class TeiDataRepositoryImpl(
                 null
             },
             eventStatusFilters,
-            catOptComboFilters
+            catOptComboFilters,
         )
 
         return if (groupedByStage) {
@@ -115,7 +115,7 @@ class TeiDataRepositoryImpl(
                         .get()
                     val eventSource = Single.zip(
                         eventsWithDefaultCatCombo,
-                        eventsWithNoCatCombo
+                        eventsWithNoCatCombo,
                     ) { sourceA, sourceB ->
                         mutableListOf<Event>().apply {
                             addAll(sourceA)
@@ -138,7 +138,7 @@ class TeiDataRepositoryImpl(
                                 orgUnitName = it.organisationUnit()!!,
                                 catComboName = null,
                                 dataElementValues = null,
-                                displayDate = null
+                                displayDate = null,
                             )
                         }
                     }
@@ -154,7 +154,7 @@ class TeiDataRepositoryImpl(
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
@@ -177,7 +177,7 @@ class TeiDataRepositoryImpl(
                         programStage.access()?.data()?.write() == true &&
                             d2.eventModule().eventService().blockingCanAddEventToEnrollment(
                                 it,
-                                programStage.uid()
+                                programStage.uid(),
                             )
                     } ?: false
 
@@ -194,8 +194,8 @@ class TeiDataRepositoryImpl(
                             catComboName = "",
                             dataElementValues = emptyList(),
                             groupedByStage = true,
-                            displayDate = null
-                        )
+                            displayDate = null,
+                        ),
                     )
                     if (isSelected) {
                         checkEventStatus(eventList).forEachIndexed { index, event ->
@@ -216,7 +216,7 @@ class TeiDataRepositoryImpl(
                                     catComboName = getCatComboName(event.attributeOptionCombo()),
                                     dataElementValues = getEventValues(
                                         event.uid(),
-                                        programStage.uid()
+                                        programStage.uid(),
                                     ),
                                     groupedByStage = true,
                                     showTopShadow = showTopShadow,
@@ -224,9 +224,9 @@ class TeiDataRepositoryImpl(
                                     displayDate = periodUtils.getPeriodUIString(
                                         programStage.periodType() ?: PeriodType.Daily,
                                         event.eventDate() ?: event.dueDate()!!,
-                                        Locale.getDefault()
-                                    )
-                                )
+                                        Locale.getDefault(),
+                                    ),
+                                ),
                             )
                         }
                     }
@@ -237,7 +237,7 @@ class TeiDataRepositoryImpl(
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo = eventRepository
@@ -272,9 +272,9 @@ class TeiDataRepositoryImpl(
                             displayDate = periodUtils.getPeriodUIString(
                                 programStage?.periodType() ?: PeriodType.Daily,
                                 event.eventDate() ?: event.dueDate()!!,
-                                Locale.getDefault()
-                            )
-                        )
+                                Locale.getDefault(),
+                            ),
+                        ),
                     )
                 }
                 eventViewModels
@@ -283,7 +283,7 @@ class TeiDataRepositoryImpl(
 
     private fun eventRepoSorting(
         sortingItem: SortingItem?,
-        eventRepo: EventCollectionRepository
+        eventRepo: EventCollectionRepository,
     ): EventCollectionRepository {
         return if (sortingItem != null) {
             when (sortingItem.filterSelectedForSorting) {
@@ -344,7 +344,7 @@ class TeiDataRepositoryImpl(
                         valueRepo.blockingGet().userFriendlyValue(d2)
                     } else {
                         "-"
-                    }
+                    },
                 )
             }
         } else {

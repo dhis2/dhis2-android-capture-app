@@ -1,6 +1,5 @@
 package dhis2.org.analytics.charts.providers
 
-import java.util.Date
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.AnalyticsLegendStrategy
@@ -13,6 +12,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class ChartCoordinatesProviderImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -29,10 +29,10 @@ class ChartCoordinatesProviderImplTest {
             "teiUid",
             "dataElementUid",
             null,
-            null
+            null,
         )
         assertTrue(
-            result.isNotEmpty()
+            result.isNotEmpty(),
         )
     }
 
@@ -44,10 +44,10 @@ class ChartCoordinatesProviderImplTest {
             "teiUid",
             "dataElementUid",
             null,
-            null
+            null,
         )
         assertTrue(
-            result.isEmpty()
+            result.isEmpty(),
         )
     }
 
@@ -59,10 +59,10 @@ class ChartCoordinatesProviderImplTest {
             "teiUid",
             "indicatorUid",
             null,
-            null
+            null,
         )
         assertTrue(
-            result.isNotEmpty()
+            result.isNotEmpty(),
         )
     }
 
@@ -74,33 +74,33 @@ class ChartCoordinatesProviderImplTest {
             "teiUid",
             "indicatorUid",
             null,
-            null
+            null,
         )
         assertTrue(
-            result.isEmpty()
+            result.isEmpty(),
         )
     }
 
     private fun mockedLineListResponse(emptyList: Boolean) {
         whenever(
             d2.analyticsModule().eventLineList()
-                .byProgramStage().eq("stageUid")
+                .byProgramStage().eq("stageUid"),
         ) doReturn mock()
         whenever(
             d2.analyticsModule().eventLineList()
                 .byProgramStage().eq("stageUid")
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
+        ) doReturn mock()
+        whenever(
+            d2.analyticsModule().eventLineList()
+                .byProgramStage().eq("stageUid")
+                .byTrackedEntityInstance().eq("teiUid"),
         ) doReturn mock()
         whenever(
             d2.analyticsModule().eventLineList()
                 .byProgramStage().eq("stageUid")
                 .byTrackedEntityInstance().eq("teiUid")
-        ) doReturn mock()
-        whenever(
-            d2.analyticsModule().eventLineList()
-                .byProgramStage().eq("stageUid")
-                .byTrackedEntityInstance().eq("teiUid")
-                .withDataElement("dataElementUid")
+                .withDataElement("dataElementUid"),
         ) doReturn mock()
 
         whenever(
@@ -108,7 +108,7 @@ class ChartCoordinatesProviderImplTest {
                 .byProgramStage().eq("stageUid")
                 .byTrackedEntityInstance().eq("teiUid")
                 .withDataElement("dataElementUid")
-                .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
+                .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem),
         ) doReturn mock()
 
         if (emptyList) {
@@ -118,7 +118,7 @@ class ChartCoordinatesProviderImplTest {
                     .byTrackedEntityInstance().eq("teiUid")
                     .withDataElement("dataElementUid")
                     .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
-                    .blockingEvaluate()
+                    .blockingEvaluate(),
             ) doReturn emptyList()
         } else {
             whenever(
@@ -127,7 +127,7 @@ class ChartCoordinatesProviderImplTest {
                     .byTrackedEntityInstance().eq("teiUid")
                     .withDataElement("dataElementUid")
                     .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
-                    .blockingEvaluate()
+                    .blockingEvaluate(),
             ) doReturn listOf(
                 LineListResponse(
                     "uid",
@@ -136,9 +136,9 @@ class ChartCoordinatesProviderImplTest {
                     "orgUnit",
                     "orgUnitUid",
                     listOf(
-                        LineListResponseValue("uid", "field", "125", null)
-                    )
-                )
+                        LineListResponseValue("uid", "field", "125", null),
+                    ),
+                ),
             )
         }
     }
@@ -146,30 +146,30 @@ class ChartCoordinatesProviderImplTest {
     private fun mockedIndicatorLineListResponse(emptyList: Boolean) {
         whenever(
             d2.analyticsModule().eventLineList()
-                .byProgramStage().eq("stageUid")
+                .byProgramStage().eq("stageUid"),
         ) doReturn mock()
         whenever(
             d2.analyticsModule().eventLineList()
                 .byProgramStage().eq("stageUid")
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
+        ) doReturn mock()
+        whenever(
+            d2.analyticsModule().eventLineList()
+                .byProgramStage().eq("stageUid")
+                .byTrackedEntityInstance().eq("teiUid"),
         ) doReturn mock()
         whenever(
             d2.analyticsModule().eventLineList()
                 .byProgramStage().eq("stageUid")
                 .byTrackedEntityInstance().eq("teiUid")
+                .withProgramIndicator("indicatorUid"),
         ) doReturn mock()
         whenever(
             d2.analyticsModule().eventLineList()
                 .byProgramStage().eq("stageUid")
                 .byTrackedEntityInstance().eq("teiUid")
                 .withProgramIndicator("indicatorUid")
-        ) doReturn mock()
-        whenever(
-            d2.analyticsModule().eventLineList()
-                .byProgramStage().eq("stageUid")
-                .byTrackedEntityInstance().eq("teiUid")
-                .withProgramIndicator("indicatorUid")
-                .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
+                .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem),
         ) doReturn mock()
         if (emptyList) {
             whenever(
@@ -178,7 +178,7 @@ class ChartCoordinatesProviderImplTest {
                     .byTrackedEntityInstance().eq("teiUid")
                     .withProgramIndicator("indicatorUid")
                     .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
-                    .blockingEvaluate()
+                    .blockingEvaluate(),
             ) doReturn emptyList()
         } else {
             whenever(
@@ -187,7 +187,7 @@ class ChartCoordinatesProviderImplTest {
                     .byTrackedEntityInstance().eq("teiUid")
                     .withProgramIndicator("indicatorUid")
                     .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
-                    .blockingEvaluate()
+                    .blockingEvaluate(),
             ) doReturn listOf(
                 LineListResponse(
                     "uid",
@@ -196,9 +196,9 @@ class ChartCoordinatesProviderImplTest {
                     "orgUnit",
                     "orgUnitUid",
                     listOf(
-                        LineListResponseValue("uid", "field", "125", null)
-                    )
-                )
+                        LineListResponseValue("uid", "field", "125", null),
+                    ),
+                ),
             )
         }
     }

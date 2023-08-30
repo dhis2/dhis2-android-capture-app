@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.bindings
 
 import android.content.Context
 import android.widget.TextView
@@ -38,7 +38,7 @@ fun List<String>.calculateWidth(context: Context): Pair<String, Int> {
 
 fun Pair<String, Int>.calculateHeight(
     context: Context,
-    widthFactor: Int
+    widthFactor: Int,
 ): Triple<String, Int, Int> {
     var minHeight = 0
     val minWidth: Int

@@ -1,10 +1,10 @@
 package org.dhis2.data.dhislogic
 
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import javax.inject.Inject
 
 class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
 
@@ -49,7 +49,7 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
 
     fun generateEnrollmentEvents(enrollmentUid: String): Pair<String, String?> {
         return EnrollmentEventGenerator(
-            EnrollmentEventGeneratorRepositoryImpl(d2)
+            EnrollmentEventGeneratorRepositoryImpl(d2),
         ).generateEnrollmentEvents(enrollmentUid)
     }
 
@@ -61,7 +61,7 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
     private fun getTrackedEntityAttributeValues(
         uid: String,
         value: String,
-        teiUid: String
+        teiUid: String,
     ): List<TrackedEntityAttributeValue> {
         return d2.trackedEntityModule().trackedEntityAttributeValues()
             .byTrackedEntityAttribute().eq(uid)

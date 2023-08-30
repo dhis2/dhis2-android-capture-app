@@ -28,7 +28,7 @@ class ChartsRepositoryImpl(
     private val dataElementToGraph: DataElementToGraph,
     private val programIndicatorToGraph: ProgramIndicatorToGraph,
     private val analyticsResources: AnalyticResources,
-    private val analyticsFilterProvider: AnalyticsFilterProvider
+    private val analyticsFilterProvider: AnalyticsFilterProvider,
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -97,7 +97,7 @@ class ChartsRepositoryImpl(
             ?.forEach { visualizationGroup ->
                 addVisualizationsInGroup(
                     visualizationGroup,
-                    graphList
+                    graphList,
                 )
             }
 
@@ -121,7 +121,7 @@ class ChartsRepositoryImpl(
             ?.forEach { visualizationGroup ->
                 addVisualizationsInGroup(
                     visualizationGroup,
-                    graphList
+                    graphList,
                 )
             }
 
@@ -130,7 +130,7 @@ class ChartsRepositoryImpl(
 
     private fun addVisualizationsInGroup(
         visualizationGroup: AnalyticsDhisVisualizationsGroup,
-        graphList: MutableList<Graph>
+        graphList: MutableList<Graph>,
     ) {
         visualizationGroup.visualizations().forEach { analyticVisualization ->
             val customTitle = analyticVisualization.takeIf {
@@ -163,9 +163,9 @@ class ChartsRepositoryImpl(
                             withOrganisationUnits(
                                 listOf(
                                     DimensionItem.OrganisationUnitItem.Relative(
-                                        RelativeOrganisationUnit.USER_ORGUNIT
-                                    )
-                                )
+                                        RelativeOrganisationUnit.USER_ORGUNIT,
+                                    ),
+                                ),
                             )
                         }
 
@@ -190,8 +190,8 @@ class ChartsRepositoryImpl(
                                     visualization,
                                     gridAnalyticsResponse,
                                     selectedRelativePeriod?.firstOrNull(),
-                                    selectedOrgUnits
-                                )
+                                    selectedOrgUnits,
+                                ),
                             )
                         }
                     },
@@ -204,11 +204,11 @@ class ChartsRepositoryImpl(
                                     visualization,
                                     selectedRelativePeriod?.firstOrNull(),
                                     selectedOrgUnits,
-                                    analyticsResources.analyticsExceptionMessage(analyticException)
-                                )
+                                    analyticsResources.analyticsExceptionMessage(analyticException),
+                                ),
                             )
                         }
-                    }
+                    },
                 )
         }
     }
@@ -234,10 +234,10 @@ class ChartsRepositoryImpl(
                         val genderValue =
                             d2.trackedEntityModule().trackedEntityAttributeValues().value(
                                 nutritionGenderData.attributeUid,
-                                enrollment.trackedEntityInstance()
+                                enrollment.trackedEntityInstance(),
                             ).blockingGet()
                         nutritionGenderData.isFemale(genderValue?.value())
-                    }
+                    },
                 )
             } ?: emptyList()
     }
@@ -252,13 +252,13 @@ class ChartsRepositoryImpl(
                     analyticsFilterProvider.visualizationPeriod(
                         enrollment.trackedEntityInstance()!! +
                             programStage.uid() +
-                            dataElement.uid()
+                            dataElement.uid(),
                     )
                 val selectedOrgUnits =
                     analyticsFilterProvider.visualizationOrgUnits(
                         enrollment.trackedEntityInstance()!! +
                             programStage.uid() +
-                            dataElement.uid()
+                            dataElement.uid(),
                     )
                 dataElementToGraph.map(
                     dataElement,
@@ -267,7 +267,7 @@ class ChartsRepositoryImpl(
                     period,
                     selectedRelativePeriod,
                     selectedOrgUnits,
-                    true
+                    true,
                 )
             }.union(
                 getStageIndicators(enrollment.program()).map { programIndicator ->
@@ -275,13 +275,13 @@ class ChartsRepositoryImpl(
                         analyticsFilterProvider.visualizationPeriod(
                             enrollment.trackedEntityInstance()!! +
                                 programStage.uid() +
-                                programIndicator.uid()
+                                programIndicator.uid(),
                         )
                     val selectedOrgUnits =
                         analyticsFilterProvider.visualizationOrgUnits(
                             enrollment.trackedEntityInstance()!! +
                                 programStage.uid() +
-                                programIndicator.uid()
+                                programIndicator.uid(),
                         )
                     programIndicatorToGraph.map(
                         programIndicator,
@@ -290,9 +290,9 @@ class ChartsRepositoryImpl(
                         period,
                         selectedRelativePeriod,
                         selectedOrgUnits,
-                        true
+                        true,
                     )
-                }
+                },
             )
         }.flatten()
             .filter { it.canBeShown() }
@@ -315,7 +315,7 @@ class ChartsRepositoryImpl(
                     .blockingGet()?.valueType()?.isNumeric ?: false
             }.mapNotNull {
                 d2.dataElementModule().dataElements().uid(
-                    it.dataElement()?.uid()
+                    it.dataElement()?.uid(),
                 ).blockingGet()
             }
     }
@@ -338,14 +338,14 @@ class ChartsRepositoryImpl(
     override fun setVisualizationOrgUnits(
         visualizationUid: String,
         orgUnits: List<OrganisationUnit>,
-        orgUnitFilterType: OrgUnitFilterType
+        orgUnitFilterType: OrgUnitFilterType,
     ) {
         when (orgUnitFilterType) {
             OrgUnitFilterType.NONE -> analyticsFilterProvider.removeOrgUnitFilter(visualizationUid)
             OrgUnitFilterType.ALL -> analyticsFilterProvider.addOrgUnitFilter(
                 visualizationUid,
                 orgUnitFilterType,
-                orgUnits
+                orgUnits,
             )
 
             OrgUnitFilterType.SELECTION -> {
@@ -353,7 +353,7 @@ class ChartsRepositoryImpl(
                     analyticsFilterProvider.addOrgUnitFilter(
                         visualizationUid,
                         orgUnitFilterType,
-                        orgUnits
+                        orgUnits,
                     )
                 } else {
                     analyticsFilterProvider.removeOrgUnitFilter(visualizationUid)

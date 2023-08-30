@@ -37,14 +37,14 @@ class TeiAttributesProviderTest {
             d2.trackedEntityModule().trackedEntityTypeAttributes()
                 .byTrackedEntityTypeUid().eq(teType)
                 .byDisplayInList().isTrue
-                .blockingGet()
+                .blockingGet(),
         ) doReturn trackedEntityTypeAttributes()
         mockTrackedEntityAttributeValues(teType, teiUid)
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(anyString())
                 .byTrackedEntityAttribute().eq(anyString())
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturnConsecutively trackedEntityAttributeValues()
 
         val result = attributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)
@@ -66,14 +66,14 @@ class TeiAttributesProviderTest {
             d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(anyString())
                 .byDisplayInList().isTrue
-                .blockingGet()
+                .blockingGet(),
         ) doReturn programAttributeValues()
         mockTrackedEntityAttributeValues(teType, teiUid)
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(anyString())
                 .byTrackedEntityAttribute().eq(anyString())
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturnConsecutively trackedEntityAttributeValues()
 
         val result = attributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid)
@@ -95,21 +95,21 @@ class TeiAttributesProviderTest {
             d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(anyString())
                 .byDisplayInList().isTrue
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(anyString())
                 .byDisplayInList().isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
+                .blockingGet(),
         ) doReturn programAttributeValues()
         mockTrackedEntityAttributeValues(teiUid, program)
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(anyString())
                 .byTrackedEntityAttribute().eq(anyString())
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturnConsecutively trackedEntityAttributeValues()
 
         val testObserver =
@@ -136,21 +136,21 @@ class TeiAttributesProviderTest {
             d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(anyString())
                 .byDisplayInList().isTrue
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(anyString())
                 .byDisplayInList().isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
+                .blockingGet(),
         ) doReturn programAttributeValues()
         mockTrackedEntityAttributeValues(teiUid, program)
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(anyString())
                 .byTrackedEntityAttribute().eq(anyString())
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturnConsecutively trackedEntityAttributeValues()
 
         val attributes =
@@ -160,28 +160,28 @@ class TeiAttributesProviderTest {
         assert(
             attributes[0].value() == expectedResult[0] &&
                 attributes[1].value() == expectedResult[1] &&
-                attributes[2].value() == expectedResult[2]
+                attributes[2].value() == expectedResult[2],
         )
     }
 
     private fun mockTrackedEntityTypeAttributes(teType: String) {
         whenever(d2.trackedEntityModule().trackedEntityTypeAttributes()) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypeAttributes().byTrackedEntityTypeUid()
+            d2.trackedEntityModule().trackedEntityTypeAttributes().byTrackedEntityTypeUid(),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypeAttributes()
+                .byTrackedEntityTypeUid().eq(teType),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityTypeAttributes()
                 .byTrackedEntityTypeUid().eq(teType)
+                .byDisplayInList(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityTypeAttributes()
                 .byTrackedEntityTypeUid().eq(teType)
-                .byDisplayInList()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityTypeAttributes()
-                .byTrackedEntityTypeUid().eq(teType)
-                .byDisplayInList().isTrue
+                .byDisplayInList().isTrue,
         ) doReturn mock()
     }
 
@@ -190,25 +190,25 @@ class TeiAttributesProviderTest {
         whenever(d2.programModule().programs().byTrackedEntityTypeUid()) doReturn mock()
         whenever(d2.programModule().programs().byTrackedEntityTypeUid().eq(teType)) doReturn mock()
         whenever(
-            d2.programModule().programs().byTrackedEntityTypeUid().eq(teType).blockingGet()
+            d2.programModule().programs().byTrackedEntityTypeUid().eq(teType).blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programs().byTrackedEntityTypeUid().eq(teType).blockingGet()[0]
+            d2.programModule().programs().byTrackedEntityTypeUid().eq(teType).blockingGet()[0],
         ) doReturn Program.builder().uid(program).build()
 
         whenever(d2.programModule().programTrackedEntityAttributes()) doReturn mock()
         whenever(d2.programModule().programTrackedEntityAttributes().byProgram()) doReturn mock()
         whenever(
-            d2.programModule().programTrackedEntityAttributes().byProgram().eq(anyString())
+            d2.programModule().programTrackedEntityAttributes().byProgram().eq(anyString()),
         ) doReturn mock()
         whenever(
             d2.programModule().programTrackedEntityAttributes()
-                .byProgram().eq(anyString()).byDisplayInList()
+                .byProgram().eq(anyString()).byDisplayInList(),
         ) doReturn mock()
         whenever(
             d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(anyString())
-                .byDisplayInList().isTrue
+                .byDisplayInList().isTrue,
         ) doReturn mock()
     }
 
@@ -216,27 +216,27 @@ class TeiAttributesProviderTest {
         whenever(d2.trackedEntityModule().trackedEntityAttributeValues()) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(anyString()),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(anyString())
+                .byTrackedEntityAttribute(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(anyString())
-                .byTrackedEntityAttribute()
+                .byTrackedEntityAttribute().eq(anyString()),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(anyString())
                 .byTrackedEntityAttribute().eq(anyString())
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityInstance().eq(anyString())
-                .byTrackedEntityAttribute().eq(anyString())
-                .one()
+                .one(),
         ) doReturn mock()
     }
 
@@ -262,7 +262,7 @@ class TeiAttributesProviderTest {
                 .displayInList(true)
                 .trackedEntityType(ObjectWithUid.create("teType"))
                 .trackedEntityAttribute(ObjectWithUid.create("attr3"))
-                .build()
+                .build(),
         )
     }
 
@@ -282,7 +282,7 @@ class TeiAttributesProviderTest {
                 .id(3)
                 .value("attrValue3")
                 .trackedEntityAttribute("attr3")
-                .build()
+                .build(),
         )
     }
 
@@ -299,7 +299,7 @@ class TeiAttributesProviderTest {
             ProgramTrackedEntityAttribute.builder()
                 .uid("programAttr3")
                 .trackedEntityAttribute(ObjectWithUid.create(("attr3")))
-                .build()
+                .build(),
         )
     }
 }

@@ -1,18 +1,18 @@
 package dhis2.org.analytics.charts.bindings
 
+import org.hisp.dhis.android.core.period.PeriodType
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.util.Date
-import org.hisp.dhis.android.core.period.PeriodType
 
 class DateToPosition {
     operator fun invoke(
         eventDate: Date,
         eventPeriodType: PeriodType,
         minMonth: YearMonth?,
-        updateMinMonth: (YearMonth) -> Unit
+        updateMinMonth: (YearMonth) -> Unit,
     ): Float {
         val localDate = eventDate.toInstant()
             .atZone(ZoneId.systemDefault())
@@ -33,7 +33,8 @@ class DateToPosition {
             PeriodType.Quarterly,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
-            PeriodType.SixMonthlyNov -> {
+            PeriodType.SixMonthlyNov,
+            -> {
                 val dayInMonth = localDate[ChronoField.DAY_OF_MONTH]
 
                 val monthDiff = minMonth?.let { ChronoUnit.MONTHS.between(it, yearMonth) } ?: 0
@@ -46,7 +47,8 @@ class DateToPosition {
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
-            PeriodType.FinancialNov -> {
+            PeriodType.FinancialNov,
+            -> {
                 val yearDiff = minMonth?.let { ChronoUnit.YEARS.between(it, yearMonth) } ?: 0
                 yearDiff.toFloat()
             }

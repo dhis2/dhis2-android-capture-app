@@ -1,6 +1,5 @@
 package org.dhis2.maps.utils
 
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -13,6 +12,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import javax.inject.Inject
 
 class DhisMapUtils @Inject constructor(val d2: D2) {
 
@@ -41,7 +41,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
                         stage,
                         de,
                         enrollment,
-                        geometry
+                        geometry,
                     )
                 } else {
                     null
@@ -50,7 +50,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
     }
 
     private fun dataElementHasCoordinateValue(
-        trackedEntityDataValue: TrackedEntityDataValue
+        trackedEntityDataValue: TrackedEntityDataValue,
     ): Boolean {
         val isCoordinateValueType = d2.dataElementModule().dataElements()
             .uid(trackedEntityDataValue.dataElement()).blockingGet()
@@ -77,7 +77,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
                     CoordinateAttributeInfo(
                         tei,
                         attribute,
-                        geometry
+                        geometry,
                     )
                 } else {
                     null
@@ -86,7 +86,7 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
     }
 
     private fun attributeHasCoordinateValue(
-        trackedEntityAttributeValue: TrackedEntityAttributeValue
+        trackedEntityAttributeValue: TrackedEntityAttributeValue,
     ): Boolean {
         val isCoordinateValueType = d2.trackedEntityModule().trackedEntityAttributes()
             .uid(trackedEntityAttributeValue.trackedEntityAttribute()).blockingGet()
@@ -103,11 +103,11 @@ data class CoordinateDataElementInfo(
     val stage: ProgramStage,
     val dataElement: DataElement,
     val enrollment: Enrollment?,
-    val geometry: Geometry
+    val geometry: Geometry,
 ) : CoordinateFieldInfo()
 
 data class CoordinateAttributeInfo(
     val tei: TrackedEntityInstance,
     val attribute: TrackedEntityAttribute,
-    val geometry: Geometry
+    val geometry: Geometry,
 ) : CoordinateFieldInfo()

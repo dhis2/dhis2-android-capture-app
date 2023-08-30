@@ -7,7 +7,7 @@ import org.dhis2.commons.dialogs.CustomDialog
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
 class IndicatorViewHolder(
-    val binding: ItemIndicatorBinding
+    val binding: ItemIndicatorBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(programIndicatorModel: IndicatorModel) {
@@ -25,7 +25,7 @@ class IndicatorViewHolder(
             itemView.context.getString(R.string.action_accept),
             null,
             CustomDialog.DESCRIPTION_DIALOG,
-            null
+            null,
         ).show()
     }
 }

@@ -28,7 +28,7 @@ fun SyncStatusItem(
     subtitle: String? = null,
     onClick: () -> Unit,
     syncStatusIcon: @Composable
-    () -> Unit
+    () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -36,7 +36,7 @@ fun SyncStatusItem(
             .background(color = Color.White)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onClick() },
-        horizontalArrangement = spacedBy(8.dp)
+        horizontalArrangement = spacedBy(8.dp),
     ) {
         syncStatusIcon()
         Column {
@@ -44,15 +44,15 @@ fun SyncStatusItem(
                 modifier = Modifier.fillMaxWidth(),
                 text = title,
                 style = MaterialTheme.typography.bodyMedium
-                    .copy(color = textPrimary)
+                    .copy(color = textPrimary),
             )
             subtitle?.let {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        color = textSecondary
-                    )
+                        color = textSecondary,
+                    ),
                 )
             }
         }
@@ -65,11 +65,11 @@ fun SyncStatusItemPreview() {
     SyncStatusItem(
         title = "Education program",
         subtitle = "Sync error",
-        onClick = {}
+        onClick = {},
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_warning_alert),
-            contentDescription = ""
+            contentDescription = "",
         )
     }
 }

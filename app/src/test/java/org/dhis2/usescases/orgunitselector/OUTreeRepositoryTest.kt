@@ -1,6 +1,5 @@
 package org.dhis2.usescases.orgunitselector
 
-import java.util.UUID
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -10,6 +9,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 class OUTreeRepositoryTest {
 
@@ -21,11 +21,11 @@ class OUTreeRepositoryTest {
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn mock()
 
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn orgUnits
 
         val result = repository.orgUnits()
@@ -40,13 +40,13 @@ class OUTreeRepositoryTest {
         val orgUnits = mutableListOf(
             dummyOrgUnit(parents = listOf(parentUid)),
             dummyOrgUnit(parents = listOf(parentUid)),
-            dummyOrgUnit(parents = listOf(parentUid))
+            dummyOrgUnit(parents = listOf(parentUid)),
         )
 
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn orgUnits
 
         repository.orgUnits()
@@ -64,7 +64,7 @@ class OUTreeRepositoryTest {
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = name)
+            ouRepositoryConfiguration.orgUnitRepository(name = name),
         ) doReturn orgUnits
 
         val result = repository.orgUnits(name)
@@ -79,7 +79,7 @@ class OUTreeRepositoryTest {
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn listOf(orgUnit)
 
         repository.orgUnits()
@@ -94,10 +94,10 @@ class OUTreeRepositoryTest {
         val orgUnits = mutableListOf(
             dummyOrgUnit(parents = listOf(parentUid)),
             dummyOrgUnit(parents = listOf(parentUid)),
-            dummyOrgUnit(parents = listOf(parentUid))
+            dummyOrgUnit(parents = listOf(parentUid)),
         )
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn orgUnits
 
         repository.orgUnits()
@@ -120,7 +120,7 @@ class OUTreeRepositoryTest {
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn orgUnits
 
         val result = repository.orgUnits()
@@ -142,13 +142,13 @@ class OUTreeRepositoryTest {
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn orgUnits
         whenever(
-            ouRepositoryConfiguration.orgUnit("ou1")
+            ouRepositoryConfiguration.orgUnit("ou1"),
         ) doReturn ou1
         whenever(
-            ouRepositoryConfiguration.orgUnit("ou12")
+            ouRepositoryConfiguration.orgUnit("ou12"),
         ) doReturn ou12
 
         val result = repository.orgUnits()
@@ -160,7 +160,7 @@ class OUTreeRepositoryTest {
     private fun dummyOrgUnit(
         parents: List<String> = emptyList(),
         uid: String = UUID.randomUUID().toString(),
-        level: Int = 1
+        level: Int = 1,
     ) = OrganisationUnit.builder()
         .uid(uid)
         .level(level)
@@ -170,7 +170,7 @@ class OUTreeRepositoryTest {
     private fun dummyOrderOrgUnit(
         parents: List<String> = emptyList(),
         uid: String = UUID.randomUUID().toString(),
-        level: Int = 1
+        level: Int = 1,
     ) = OrganisationUnit.builder()
         .uid(uid)
         .level(level)

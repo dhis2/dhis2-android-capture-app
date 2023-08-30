@@ -1,22 +1,22 @@
 package org.dhis2.commons.filters.data
 
-import javax.inject.Inject
 import org.dhis2.commons.filters.FilterManager
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
+import javax.inject.Inject
 
 class DataSetFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
-    val filterManager: FilterManager
+    val filterManager: FilterManager,
 ) : FilterHelperActions<DataSetInstanceSummaryCollectionRepository> {
 
     fun getFilteredDataSetSearchRepository(): DataSetInstanceSummaryCollectionRepository {
         return applyFiltersTo(
-            filterRepository.dataSetInstanceSummaries()
+            filterRepository.dataSetInstanceSummaries(),
         )
     }
 
     override fun applyFiltersTo(
-        repository: DataSetInstanceSummaryCollectionRepository
+        repository: DataSetInstanceSummaryCollectionRepository,
     ): DataSetInstanceSummaryCollectionRepository {
         return repository
             .withFilter { applyOrgUnitFilter(it) }
@@ -26,12 +26,12 @@ class DataSetFilterSearchHelper @Inject constructor(
     }
 
     private fun applyOrgUnitFilter(
-        dataSetInstanceRepository: DataSetInstanceSummaryCollectionRepository
+        dataSetInstanceRepository: DataSetInstanceSummaryCollectionRepository,
     ): DataSetInstanceSummaryCollectionRepository {
         return if (filterManager.orgUnitUidsFilters.isNotEmpty()) {
             filterRepository.applyOrgUnitFilter(
                 dataSetInstanceRepository,
-                filterManager.orgUnitUidsFilters
+                filterManager.orgUnitUidsFilters,
             )
         } else {
             dataSetInstanceRepository
@@ -39,7 +39,7 @@ class DataSetFilterSearchHelper @Inject constructor(
     }
 
     private fun applyStateFilter(
-        dataSetInstanceRepository: DataSetInstanceSummaryCollectionRepository
+        dataSetInstanceRepository: DataSetInstanceSummaryCollectionRepository,
     ): DataSetInstanceSummaryCollectionRepository {
         return if (filterManager.stateFilters.isNotEmpty()) {
             filterRepository.applyStateFilter(dataSetInstanceRepository, filterManager.stateFilters)
@@ -49,12 +49,12 @@ class DataSetFilterSearchHelper @Inject constructor(
     }
 
     private fun applyDateFilter(
-        dataSetInstanceRepository: DataSetInstanceSummaryCollectionRepository
+        dataSetInstanceRepository: DataSetInstanceSummaryCollectionRepository,
     ): DataSetInstanceSummaryCollectionRepository {
         return if (filterManager.periodFilters.isNotEmpty()) {
             filterRepository.applyPeriodFilter(
                 dataSetInstanceRepository,
-                filterManager.periodFilters
+                filterManager.periodFilters,
             )
         } else {
             dataSetInstanceRepository
@@ -62,7 +62,7 @@ class DataSetFilterSearchHelper @Inject constructor(
     }
 
     override fun applySorting(
-        repository: DataSetInstanceSummaryCollectionRepository
+        repository: DataSetInstanceSummaryCollectionRepository,
     ): DataSetInstanceSummaryCollectionRepository {
         return repository
     }
