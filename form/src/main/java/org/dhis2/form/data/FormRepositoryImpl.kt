@@ -122,7 +122,7 @@ class FormRepositoryImpl(
         )
         val fields = list.filter {
             it.valueType != null &&
-                    !unsupportedValueTypes.contains(it.valueType)
+                !unsupportedValueTypes.contains(it.valueType)
         }
         val totalFields = fields.size
         val fieldsWithValue = fields.filter { !it.value.isNullOrEmpty() }.size
@@ -275,8 +275,8 @@ class FormRepositoryImpl(
         }
             .filter { field ->
                 field.isSectionWithFields() ||
-                        allowCollapsableSections == false ||
-                        field.programStageSection == openedSectionUid
+                    allowCollapsableSections == false ||
+                    field.programStageSection == openedSectionUid
             }
     }
 
@@ -331,7 +331,7 @@ class FormRepositoryImpl(
 
     private fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
         val needsMandatoryWarning = fieldUiModel.mandatory &&
-                fieldUiModel.value.isNullOrEmpty()
+            fieldUiModel.value.isNullOrEmpty()
 
         if (needsMandatoryWarning) {
             mandatoryItemsWithoutValue[fieldUiModel.label] = fieldUiModel.programStageSection ?: ""

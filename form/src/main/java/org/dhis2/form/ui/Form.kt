@@ -76,16 +76,16 @@ fun Form(
             val prevItem = items.getOrNull(index - 1)
             val nextItem = items.getOrNull(index + 1)
             val showBottomShadow = (fieldUiModel is SectionUiModelImpl) &&
-                    prevItem != null &&
-                    prevItem !is SectionUiModelImpl
+                prevItem != null &&
+                prevItem !is SectionUiModelImpl
             val sectionNumber = items.count {
                 (it is SectionUiModelImpl) && items.indexOf(it) < index
             } + 1
             val lastSectionHeight = (fieldUiModel is SectionUiModelImpl) &&
-                    index > 0 &&
-                    index == items.size - 1 &&
-                    prevItem != null &&
-                    prevItem !is SectionUiModelImpl
+                index > 0 &&
+                index == items.size - 1 &&
+                prevItem != null &&
+                prevItem !is SectionUiModelImpl
 
             fieldUiModel.updateSectionData(
                 showBottomShadow = showBottomShadow,
