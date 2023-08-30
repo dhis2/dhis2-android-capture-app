@@ -49,7 +49,7 @@ fun Form(
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     textWatcher: TextWatcher,
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
-    needToForceUpdate: Boolean
+    needToForceUpdate: Boolean,
 ) {
     val scrollState = rememberLazyListState()
     val context = LocalContext.current
@@ -70,7 +70,7 @@ fun Form(
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        state = scrollState
+        state = scrollState,
     ) {
         items.forEachIndexed { index, fieldUiModel ->
             val prevItem = items.getOrNull(index - 1)
@@ -90,7 +90,7 @@ fun Form(
             fieldUiModel.updateSectionData(
                 showBottomShadow = showBottomShadow,
                 sectionNumber = sectionNumber,
-                lastSectionHeight = lastSectionHeight
+                lastSectionHeight = lastSectionHeight,
             )
             fieldUiModel.setCallback(callback)
             formItem(isSection = fieldUiModel is SectionUiModelImpl, key = fieldUiModel.uid) {
@@ -106,7 +106,7 @@ fun Form(
                             true -> CollapsableState.OPENED
                             false -> CollapsableState.CLOSED
                             null -> CollapsableState.FIXED
-                        }
+                        },
                     ) {
                         fieldUiModel.setSelected()
                     }
@@ -115,14 +115,14 @@ fun Form(
                         modifier = Modifier.animateItemPlacement(
                             animationSpec = tween(
                                 durationMillis = 500,
-                                easing = LinearOutSlowInEasing
-                            )
+                                easing = LinearOutSlowInEasing,
+                            ),
                         ),
                         context = context,
                         fieldUiModel = fieldUiModel,
                         needToForceUpdate = needToForceUpdate,
                         textWatcher = textWatcher,
-                        coordinateTextWatcher = coordinateTextWatcher
+                        coordinateTextWatcher = coordinateTextWatcher,
                     )
                 }
             }
@@ -147,10 +147,10 @@ private fun NextSectionButton(onClick: () -> Unit) {
                 Icon(
                     imageVector = Icons.Filled.ArrowForward,
                     tint = SurfaceColor.Primary,
-                    contentDescription = ""
+                    contentDescription = "",
                 )
             },
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }
@@ -158,7 +158,7 @@ private fun NextSectionButton(onClick: () -> Unit) {
 private fun FieldUiModel.updateSectionData(
     showBottomShadow: Boolean,
     sectionNumber: Int,
-    lastSectionHeight: Boolean
+    lastSectionHeight: Boolean,
 ) {
     if (this is SectionUiModelImpl) {
         setShowBottomShadow(showBottomShadow)
@@ -171,7 +171,7 @@ private fun FieldUiModel.updateSectionData(
 private fun LazyListScope.formItem(
     isSection: Boolean,
     key: String,
-    content: @Composable LazyItemScope.() -> Unit
+    content: @Composable LazyItemScope.() -> Unit,
 ) {
     if (isSection) {
         stickyHeader(key = key) {
@@ -191,7 +191,7 @@ private fun FieldProvider(
     fieldUiModel: FieldUiModel,
     needToForceUpdate: Boolean,
     textWatcher: TextWatcher,
-    coordinateTextWatcher: LatitudeLongitudeTextWatcher
+    coordinateTextWatcher: LatitudeLongitudeTextWatcher,
 ) {
     AndroidViewBinding(
         modifier = modifier.fillMaxWidth(),
@@ -202,9 +202,9 @@ private fun FieldProvider(
                 viewgroup,
                 add,
                 fieldUiModel.layoutId,
-                needToForceUpdate
+                needToForceUpdate,
             )
-        }
+        },
     ) {
         this.setVariable(BR.textWatcher, textWatcher)
         this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
@@ -218,22 +218,22 @@ private fun getFieldView(
     viewgroup: ViewGroup,
     add: Boolean,
     layoutId: Int,
-    needToForceUpdate: Boolean
+    needToForceUpdate: Boolean,
 ): ViewDataBinding {
     val layoutInflater =
         if (needToForceUpdate) {
             inflater.cloneInContext(
                 ContextThemeWrapper(
                     context,
-                    R.style.searchFormInputText
-                )
+                    R.style.searchFormInputText,
+                ),
             )
         } else {
             inflater.cloneInContext(
                 ContextThemeWrapper(
                     context,
-                    R.style.formInputText
-                )
+                    R.style.formInputText,
+                ),
             )
         }
 

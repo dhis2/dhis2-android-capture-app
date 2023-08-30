@@ -18,7 +18,7 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class DataEntryAdapter(
     private val searchStyle: Boolean,
-    private val collapsableSections: Boolean
+    private val collapsableSections: Boolean,
 ) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
@@ -81,8 +81,8 @@ class DataEntryAdapter(
         (getItem(position) as SectionUiModelImpl?)!!.setShowBottomShadow(
             collapsableSections &&
                 !isHeader && position > 0 && getItem(
-                position - 1,
-            ) !is SectionUiModelImpl,
+                    position - 1,
+                ) !is SectionUiModelImpl,
         )
         (getItem(position) as SectionUiModelImpl?)!!.setSectionNumber(getSectionNumber(position))
         (getItem(position) as SectionUiModelImpl?)!!.setLastSectionHeight(

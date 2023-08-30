@@ -44,7 +44,7 @@ fun FormSection(
     errorCount: Int,
     warningCount: Int,
     collapsableState: CollapsableState,
-    onSectionClick: () -> Unit
+    onSectionClick: () -> Unit,
 ) {
     val sectionTopPadding = if (collapsableState == CollapsableState.FIXED) {
         32.dp
@@ -62,19 +62,19 @@ fun FormSection(
             .fillMaxWidth()
             .background(Color.White)
             .clickable(enabled = collapsableState != CollapsableState.FIXED) { onSectionClick() }
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(top = sectionTopPadding, bottom = sectionBottomPadding),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = spacedBy(16.dp)
+            horizontalArrangement = spacedBy(16.dp),
         ) {
             SectionNumber(sectionNumber = sectionNumber)
             SectionName(
                 modifier = Modifier.weight(1f),
-                sectionName = sectionLabel
+                sectionName = sectionLabel,
             )
             when {
                 errorCount > 0 || warningCount > 0 ->
@@ -83,7 +83,7 @@ fun FormSection(
                 else ->
                     SectionCompletedFields(
                         completedFieldsText = "$completedFieldCount/$fieldCount",
-                        areAllFieldsCompleted = fieldCount == completedFieldCount
+                        areAllFieldsCompleted = fieldCount == completedFieldCount,
                     )
             }
 
@@ -95,7 +95,7 @@ fun FormSection(
                     } else {
                         Icons.Filled.KeyboardArrowDown
                     },
-                    contentDescription = null
+                    contentDescription = null,
                 )
             }
         }
@@ -103,7 +103,7 @@ fun FormSection(
             Divider(
                 modifier = Modifier.padding(top = 14.dp),
                 thickness = 1.dp,
-                color = dividerColor
+                color = dividerColor,
             )
         }
     }
@@ -115,12 +115,12 @@ internal fun SectionNumber(sectionNumber: Int) {
         modifier = Modifier
             .size(18.dp)
             .background(color = colorGray, shape = Shape.Full),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = sectionNumber.toString(),
             textAlign = TextAlign.Center,
-            style = TextStyle.Default.copy(fontSize = 9.sp, color = textColor)
+            style = TextStyle.Default.copy(fontSize = 9.sp, color = textColor),
         )
     }
 }
@@ -130,7 +130,7 @@ internal fun SectionName(modifier: Modifier = Modifier, sectionName: String) {
     Text(
         modifier = modifier,
         text = sectionName,
-        style = TextStyle.Default.copy(fontSize = 16.sp, color = textColor)
+        style = TextStyle.Default.copy(fontSize = 16.sp, color = textColor),
     )
 }
 
@@ -138,22 +138,22 @@ internal fun SectionName(modifier: Modifier = Modifier, sectionName: String) {
 internal fun SectionCompletedFields(
     modifier: Modifier = Modifier,
     completedFieldsText: String,
-    areAllFieldsCompleted: Boolean
+    areAllFieldsCompleted: Boolean,
 ) {
     Text(
         modifier = modifier,
         text = completedFieldsText,
         style = TextStyle.Default.copy(
             fontSize = 12.sp,
-            color = textColor
-        )
+            color = textColor,
+        ),
     )
 }
 
 @Composable
 internal fun ErrorWarningCounters(errorCount: Int, warningCount: Int) {
     Row(
-        horizontalArrangement = spacedBy(8.dp)
+        horizontalArrangement = spacedBy(8.dp),
     ) {
         if (errorCount > 0) ErrorCounter(errorCount = errorCount)
         if (warningCount > 0) WarningCounter(warningCount = warningCount)
@@ -166,18 +166,18 @@ internal fun ErrorCounter(errorCount: Int) {
         modifier = Modifier
             .background(
                 color = SurfaceColor.ErrorContainer,
-                shape = Shape.Small
+                shape = Shape.Small,
             )
             .padding(horizontal = 4.dp),
         text = pluralStringResource(
             id = R.plurals.error_count,
             count = errorCount,
-            errorCount
+            errorCount,
         ),
         style = TextStyle.Default.copy(
             fontSize = 14.sp,
-            color = TextColor.OnErrorContainer
-        )
+            color = TextColor.OnErrorContainer,
+        ),
     )
 }
 
@@ -187,18 +187,18 @@ internal fun WarningCounter(warningCount: Int) {
         modifier = Modifier
             .background(
                 color = SurfaceColor.WarningContainer,
-                shape = Shape.Small
+                shape = Shape.Small,
             )
             .padding(horizontal = 4.dp),
         text = pluralStringResource(
             id = R.plurals.warning_count,
             count = warningCount,
-            warningCount
+            warningCount,
         ),
         style = TextStyle.Default.copy(
             fontSize = 14.sp,
-            color = TextColor.OnWarningContainer
-        )
+            color = TextColor.OnWarningContainer,
+        ),
     )
 }
 
@@ -213,7 +213,7 @@ fun SectionPreview() {
             completedFieldCount = 3,
             errorCount = 0,
             warningCount = 0,
-            collapsableState = CollapsableState.CLOSED
+            collapsableState = CollapsableState.CLOSED,
         ) {
         }
         FormSection(
@@ -223,7 +223,7 @@ fun SectionPreview() {
             completedFieldCount = 3,
             errorCount = 0,
             warningCount = 0,
-            collapsableState = CollapsableState.OPENED
+            collapsableState = CollapsableState.OPENED,
         ) {
         }
         FormSection(
@@ -233,7 +233,7 @@ fun SectionPreview() {
             completedFieldCount = 3,
             errorCount = 0,
             warningCount = 0,
-            collapsableState = CollapsableState.FIXED
+            collapsableState = CollapsableState.FIXED,
         ) {
         }
         FormSection(
@@ -243,7 +243,7 @@ fun SectionPreview() {
             completedFieldCount = 3,
             errorCount = 1,
             warningCount = 0,
-            collapsableState = CollapsableState.FIXED
+            collapsableState = CollapsableState.FIXED,
         ) {
         }
         FormSection(
@@ -253,7 +253,7 @@ fun SectionPreview() {
             completedFieldCount = 3,
             errorCount = 1,
             warningCount = 2,
-            collapsableState = CollapsableState.FIXED
+            collapsableState = CollapsableState.FIXED,
         ) {
         }
     }

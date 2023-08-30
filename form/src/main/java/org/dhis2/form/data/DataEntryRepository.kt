@@ -12,7 +12,7 @@ interface DataEntryRepository {
         totalFields: Int,
         fieldsWithValue: Int,
         errorCount: Int,
-        warningCount: Int
+        warningCount: Int,
     ): FieldUiModel
 
     fun updateField(
@@ -20,7 +20,7 @@ interface DataEntryRepository {
         warningMessage: String?,
         optionsToHide: List<String>,
         optionGroupsToHide: List<String>,
-        optionGroupsToShow: List<String>
+        optionGroupsToShow: List<String>,
     ): FieldUiModel
 
     fun isEvent(): Boolean

@@ -24,7 +24,7 @@ class FormRepositoryImpl(
     private val ruleEngineRepository: RuleEngineRepository?,
     private val rulesUtilsProvider: RulesUtilsProvider?,
     private val legendValueProvider: LegendValueProvider?,
-    private val forceDisableCollapsibleSections: Boolean
+    private val forceDisableCollapsibleSections: Boolean,
 ) : FormRepository {
 
     private var completionPercentage: Float = 0f

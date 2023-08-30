@@ -44,8 +44,6 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import com.journeyapps.barcodescanner.ScanOptions
-import java.io.File
-import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
@@ -280,7 +278,7 @@ class FormView : Fragment() {
             repositoryRecords = arguments?.serializable(RECORDS)
                 ?: throw RepositoryRecordsException(),
             openErrorLocation = openErrorLocation,
-            forceDisableCollapsibleSections = forceDisableCollapsibleSections
+            forceDisableCollapsibleSections = forceDisableCollapsibleSections,
         )
     }
 
@@ -337,7 +335,7 @@ class FormView : Fragment() {
         if (useCompose) {
             return ComposeView(requireContext()).apply {
                 setViewCompositionStrategy(
-                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
                 )
                 setContent {
                     val items by viewModel.items.observeAsState(emptyList())
@@ -347,7 +345,7 @@ class FormView : Fragment() {
                         ::uiEventHandler,
                         textWatcher,
                         coordinateTextWatcher,
-                        needToForceUpdate
+                        needToForceUpdate,
                     )
                 }
             }
@@ -362,7 +360,7 @@ class FormView : Fragment() {
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(
             needToForceUpdate,
-            viewModel.areSectionCollapsable()
+            viewModel.areSectionCollapsable(),
         )
 
         binding.recyclerView.adapter = adapter
@@ -1089,7 +1087,7 @@ class FormView : Fragment() {
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
         useCompose: Boolean,
-        forceDisableCollapsibleSections: Boolean
+        forceDisableCollapsibleSections: Boolean,
     ) {
         this.locationProvider = locationProvider
         this.needToForceUpdate = needToForceUpdate
@@ -1232,7 +1230,7 @@ class FormView : Fragment() {
                     actionIconsActive,
                     openErrorLocation,
                     useComposeForms,
-                    forceDisableCollapsibleSections
+                    forceDisableCollapsibleSections,
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(
