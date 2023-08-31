@@ -1,6 +1,5 @@
 package org.dhis2.composetable.ui
 
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -27,7 +26,7 @@ fun styleForColumnHeader(
 ): CellStyle = when {
     isSelected -> CellStyle.HeaderStyle(
         backgroundColor = LocalTableColors.current.primary,
-        textColor = contentColorFor(LocalTableColors.current.primary),
+        textColor = LocalTableColors.current.onPrimary,
     )
     isParentSelected -> CellStyle.HeaderStyle(
         backgroundColor = LocalTableColors.current.primaryLight,
@@ -48,7 +47,7 @@ fun styleForColumnHeader(
 fun styleForRowHeader(isSelected: Boolean, isOtherRowSelected: Boolean): CellStyle = when {
     isSelected -> CellStyle.HeaderStyle(
         TableTheme.colors.primary,
-        contentColorFor(TableTheme.colors.primary),
+        TableTheme.colors.onPrimary,
     )
     isOtherRowSelected -> CellStyle.HeaderStyle(
         TableTheme.colors.primaryLight,

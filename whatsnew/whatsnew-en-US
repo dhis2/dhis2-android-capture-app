@@ -1,3 +1,9 @@
-This is a hotfix version that fixes:
-- ANDROAPP-5371 Update SDK to 1.8.1.1: Missing Visualization after update to 1.8.1
-You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app)
+This is a Patch version that fixes:
+ANDROAPP-3106 [Bug]Error when searching with comma char in the values
+ANDROAPP-4322 Analytics legends don't show event's exact date
+ANDROAPP-4710 Mandatory Fields
+ANDROAPP-5253 Event status filter doesn't remove checkmarks after the reset
+ANDROAPP-5255 Loading bar never hides in overview screen
+ANDROAPP-5271 After finishing transaction, orgunit on the Dialog is not reset
+
+You can find all details in Github (github.com/dhis2/dhis2-android-capture-app) releases

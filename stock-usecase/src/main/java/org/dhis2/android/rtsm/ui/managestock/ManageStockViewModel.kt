@@ -98,6 +98,7 @@ class ManageStockViewModel @Inject constructor(
     val dataEntryUiState: StateFlow<DataEntryUiState> = _dataEntryUiState
 
     private val _themeColor = MutableStateFlow(Color.White)
+    val themeColor: StateFlow<Color> = _themeColor
 
     private val _scanText = MutableStateFlow("")
     val scanText = _scanText.asStateFlow()
@@ -150,6 +151,10 @@ class ManageStockViewModel @Inject constructor(
     fun setConfig(config: AppConfig) {
         _config.value = config
         tableDimensionStore.setUids(config.program)
+        refreshConfig()
+    }
+
+    fun refreshConfig() {
         viewModelScope.launch {
             _tableConfigurationState.emit(refreshTableConfiguration())
         }

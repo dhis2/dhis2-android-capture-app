@@ -54,6 +54,7 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
+import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.ui.managestock.STOCK_TABLE_ID
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
@@ -249,57 +250,35 @@ fun MainContent(
                 .padding(bottom = tablePadding)
                 .height(columnHeightDp),
         ) {
-            if (manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                != DataEntryStep.COMPLETED ||
-                manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                != DataEntryStep.START
+            if ((
+                    manageStockViewModel.dataEntryUiState.collectAsState().value.step
+                        != DataEntryStep.COMPLETED ||
+                        manageStockViewModel.dataEntryUiState.collectAsState().value.step
+                        != DataEntryStep.START
+                    ) && shouldDisplayTable(settingsUiState)
             ) {
-                if (settingsUiState.transactionType == TransactionType.DISTRIBUTION) {
-                    if (settingsUiState.hasFacilitySelected() &&
-                        settingsUiState.hasDestinationSelected()
-                    ) {
-                        manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(
-                            manageStockViewModel,
-                            concealBackdropState = {
-                                scope.launch { backdropState.conceal() }
-                            },
-                            onResized = { actions ->
-                                tableResizeActions = actions
-                            },
-                        )
-                    }
-                } else if (settingsUiState.transactionType == TransactionType.CORRECTION) {
-                    if (settingsUiState.hasFacilitySelected()) {
-                        manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(
-                            manageStockViewModel,
-                            concealBackdropState = {
-                                scope.launch { backdropState.conceal() }
-                            },
-                            onResized = { actions ->
-                                tableResizeActions = actions
-                            },
-                        )
-                    }
-                } else if (settingsUiState.transactionType == TransactionType.DISCARD) {
-                    if (settingsUiState.hasFacilitySelected()) {
-                        manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(
-                            manageStockViewModel,
-                            concealBackdropState = {
-                                scope.launch { backdropState.conceal() }
-                            },
-                            onResized = { actions ->
-                                tableResizeActions = actions
-                            },
-                        )
-                    }
-                }
+                manageStockViewModel.setup(viewModel.getData())
+                ManageStockTable(
+                    manageStockViewModel,
+                    concealBackdropState = {
+                        scope.launch { backdropState.conceal() }
+                    },
+                    onResized = { actions ->
+                        manageStockViewModel.refreshConfig()
+                        tableResizeActions = actions
+                    },
+                )
             }
         }
     }
 }
+
+private fun shouldDisplayTable(settingsUiState: SettingsUiState): Boolean =
+    when (settingsUiState.transactionType) {
+        TransactionType.DISTRIBUTION ->
+            settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()
+        else -> settingsUiState.hasFacilitySelected()
+    }
 
 private fun scanBarcode(launcher: ActivityResultLauncher<ScanOptions>) {
     val scanOptions = ScanOptions()

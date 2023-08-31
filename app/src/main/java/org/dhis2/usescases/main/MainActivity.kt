@@ -201,6 +201,14 @@ class MainActivity :
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
         }
+
+        checkNotificationPermission()
+    }
+
+    private fun checkNotificationPermission() {
+        if (!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS))) {
+            requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -606,6 +614,23 @@ class MainActivity :
                     context,
                     getString(R.string.storage_denied),
                     Toast.LENGTH_LONG,
+                ).show()
+            }
+        }
+
+    private val requestNotificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.permission_notification_granted),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.permission_notification_denied),
+                    Toast.LENGTH_SHORT,
                 ).show()
             }
         }
