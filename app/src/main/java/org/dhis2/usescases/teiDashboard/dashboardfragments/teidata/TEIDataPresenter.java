@@ -1,6 +1,9 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.commons.data.EventCreationType.ADDNEW;
+import static org.dhis2.commons.data.EventCreationType.REFERAL;
+import static org.dhis2.commons.data.EventCreationType.SCHEDULE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
@@ -51,6 +54,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -448,13 +452,6 @@ public class TEIDataPresenter {
         }
     }
 
-    public void onAddNewEvent(@NonNull View anchor, @NonNull ProgramStage stage) {
-        view.showNewEventOptions(anchor, stage);
-        if (stage.hideDueDate() != null && stage.hideDueDate()) {
-            view.hideDueDate();
-        }
-    }
-
     public void getEnrollment(String enrollmentUid) {
         compositeDisposable.add(
                 d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
@@ -523,5 +520,22 @@ public class TEIDataPresenter {
         FilterManager.getInstance().addCatOptCombo(
                 dashboardRepository.catOptionCombo(selectedCatOptionCombo)
         );
+    }
+
+    public void onAddNewEventOptionSelected(@NotNull EventCreationType it, ProgramStage stage) {
+        view.goToEventInitial(it, stage);
+    }
+
+    @NotNull
+    public List<EventCreationType> getNewEventOptions(ProgramStage stage) {
+        if (stage.hideDueDate() != null && stage.hideDueDate()) {
+            //TODO Not add SCHEDULE event type
+        }
+        //TODO check refereal with configuration
+        List<EventCreationType> list = new ArrayList<>();
+        list.add(SCHEDULE);
+        list.add(ADDNEW);
+        list.add(REFERAL);
+        return list;
     }
 }

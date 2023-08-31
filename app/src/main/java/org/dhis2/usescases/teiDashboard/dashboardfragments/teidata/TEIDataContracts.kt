@@ -5,6 +5,7 @@ import android.os.Bundle
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.filters.FilterItem
@@ -19,7 +20,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
-        fun hideDueDate()
         fun setEvents(events: List<EventViewModel>, canAddEvents: Boolean)
         fun displayGenerateEvent(): Consumer<ProgramStage>
         fun areEventsCompleted(): Consumer<Single<Boolean>>
@@ -39,7 +39,6 @@ class TEIDataContracts {
             currentEnrollment: Enrollment,
         ): Flowable<StageSection>
 
-        fun showNewEventOptions(view: android.view.View, stageUid: ProgramStage)
         fun setEnrollmentData(program: Program?, enrollment: Enrollment?)
         fun setTrackedEntityInstance(
             trackedEntityInstance: TrackedEntityInstance,
@@ -54,5 +53,6 @@ class TEIDataContracts {
 
         fun showProgramRuleErrorMessage(message: String)
         fun showCatOptComboDialog(catComboUid: String)
+        fun goToEventInitial(eventCreationType: EventCreationType, programStage: ProgramStage)
     }
 }

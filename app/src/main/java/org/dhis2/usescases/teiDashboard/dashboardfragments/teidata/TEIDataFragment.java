@@ -541,35 +541,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         }
     }
 
-    @Override
-    public void showNewEventOptions(View anchor, ProgramStage stage) {
-        popupMenu = new PopupMenu(context, anchor);
-        popupMenu.inflate(R.menu.dashboard_event_creation);
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.schedulenew:
-                    goToEventInitial(EventCreationType.SCHEDULE, stage);
-                    break;
-                case R.id.addnew:
-                    goToEventInitial(EventCreationType.ADDNEW, stage);
-                    break;
-                case R.id.referral:
-                    goToEventInitial(EventCreationType.REFERAL, stage);
-                    break;
-            }
-            return true;
-        });
-        popupMenu.show();
-
-    }
-
-    @Override
-    public void hideDueDate() {
-        popupMenu.getMenu().findItem(R.id.schedulenew).setVisible(false);
-    }
-
-    private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
+    public void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
         Intent intent = new Intent(activity, EventInitialActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, dashboardModel.getCurrentProgram().uid());

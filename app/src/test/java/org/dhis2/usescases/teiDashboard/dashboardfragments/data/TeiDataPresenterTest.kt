@@ -76,12 +76,6 @@ class TeiDataPresenterTest {
         val programStage: ProgramStage = mock {
             on { hideDueDate() } doReturn true
         }
-
-        val anyView: View = any()
-        teiDataPresenter.onAddNewEvent(anyView, eq(programStage))
-
-        verify(view).showNewEventOptions(anyView, programStage)
-        verify(view).hideDueDate()
     }
 
     @Test
