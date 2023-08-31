@@ -1,12 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.data
 
 import android.view.View
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
@@ -15,6 +9,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
@@ -27,6 +22,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class TeiDataPresenterTest {
 
@@ -46,6 +47,7 @@ class TeiDataPresenterTest {
     private lateinit var teiDataPresenter: TEIDataPresenter
     private val valueStore: FormValueStore = mock()
     private val resources: ResourceManager = mock()
+    private val optionsRepository: OptionsRepository = mock()
 
     @Before
     fun setUp() {
@@ -64,7 +66,8 @@ class TeiDataPresenterTest {
             filterManager,
             filterRepository,
             valueStore,
-            resources
+            resources,
+            optionsRepository
         )
     }
 

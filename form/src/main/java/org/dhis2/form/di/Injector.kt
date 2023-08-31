@@ -14,10 +14,12 @@ import org.dhis2.form.data.EventRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
 import org.dhis2.form.data.SearchRepository
+import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentRecords
@@ -107,10 +109,12 @@ object Injector {
                 context,
                 repositoryRecords as EnrollmentRecords
             )
+
             EntryMode.DE -> provideEventRepository(
                 context,
                 repositoryRecords as EventRecords
             )
+
             else -> provideSearchRepository(
                 context,
                 repositoryRecords as SearchRecords
@@ -242,7 +246,8 @@ object Injector {
 
     private fun provideDisplayNameProvider() = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
-        OrgUnitConfiguration(provideD2())
+        OrgUnitConfiguration(provideD2()),
+        FileResourceConfiguration(provideD2())
     )
 
     private fun provideRuleEngineRepository(
@@ -262,7 +267,12 @@ object Injector {
     private fun provideEventRuleEngineRepository(eventUid: String) =
         EventRuleEngineRepository(provideD2(), eventUid)
 
-    private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(provideD2())
+    private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(
+        provideD2(),
+        provideOptionsRepository()
+    )
+
+    private fun provideOptionsRepository() = OptionsRepository(provideD2())
 
     private fun provideLegendValueProvider(context: Context) = LegendValueProviderImpl(
         provideD2(),

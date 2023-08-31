@@ -1,10 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
-import mock
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.hisp.dhis.android.core.D2
@@ -18,6 +14,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class ProgramEventMapperTest {
 

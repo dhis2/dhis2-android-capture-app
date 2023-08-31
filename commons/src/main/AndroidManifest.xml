@@ -8,6 +8,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <meta-data
+            android:name="io.sentry.auto-init"
+            android:value="false" />
+
         <activity
             android:name="org.dhis2.commons.featureconfig.ui.FeatureConfigView"
             android:exported="false"/>

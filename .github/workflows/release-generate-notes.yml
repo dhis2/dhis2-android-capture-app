@@ -1,4 +1,3 @@
-
 name: Generate notes
 
 on:
@@ -7,10 +6,6 @@ on:
     inputs:
       filter_id:
         description: 'Please, provide the Jira filter id'
-        required: true
-        type: string
-      release_branch:
-        description: 'Release branch'
         required: true
         type: string
 
@@ -25,13 +20,21 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v3
-    # Generate github release notes
-    - name: Generate release notes
-      working-directory: ./scripts
-      run: python3 generateReleaseNotes.py
+    
+      - uses: actions/checkout@v3
+      # Generate github release notes
+      - name: Generate release notes
+        working-directory: ./scripts
+        run: python3 generateReleaseNotes.py
 
-    - name: Commit changes
-      run: git commit -am "Update release notes"
-    - name: Push changes
-      run: git push origin ${{ inputs.release_branch }}
+      - name: setup git config
+        run: |
+          # setup the username and email.
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<android@dhis2.org>"
+
+      - name: Commit changes
+        run: |
+          # Commit and push
+          git commit -am "Update release notes"
+          git push

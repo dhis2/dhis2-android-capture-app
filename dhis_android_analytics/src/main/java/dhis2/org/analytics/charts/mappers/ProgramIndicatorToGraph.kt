@@ -18,14 +18,16 @@ class ProgramIndicatorToGraph(
         teiUid: String,
         stagePeriod: PeriodType,
         selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
+        isDefault: Boolean = false
     ): Graph {
         val coordinates = chartCoordinatesProvider.indicatorCoordinates(
             stageUid,
             teiUid,
             programIndicator.uid(),
             selectedRelativePeriod,
-            selectedOrgUnits
+            selectedOrgUnits,
+            isDefault
         )
 
         val serie = if (coordinates.isNotEmpty()) {

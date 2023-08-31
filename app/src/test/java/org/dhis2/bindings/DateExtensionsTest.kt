@@ -1,9 +1,6 @@
 package org.dhis2.bindings
 
 import android.content.Context
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Calendar
@@ -13,6 +10,9 @@ import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toUiText
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DateExtensionsTest {
 

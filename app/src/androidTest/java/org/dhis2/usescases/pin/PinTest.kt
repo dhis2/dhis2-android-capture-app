@@ -32,8 +32,8 @@ class PinTest : BaseTest() {
         }
     }
 
-    @Test
     @Ignore("Killing process makes test failed")
+    @Test
     fun shouldCloseAppIfPinIsSet() {
         startActivity()
 

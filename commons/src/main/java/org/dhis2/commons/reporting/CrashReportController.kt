@@ -4,7 +4,7 @@ interface CrashReportController {
 
     fun trackUser(user: String?, server: String?)
 
-    fun trackServer(server: String?)
+    fun trackServer(server: String?, serverDhisVersion: String?)
 
     fun trackError(exception: Exception, message: String?)
 

@@ -1,8 +1,6 @@
 package org.dhis2.composetable.model
 
-import androidx.compose.runtime.compositionLocalOf
 import kotlinx.serialization.Serializable
-import org.dhis2.composetable.ui.SelectionState
 import org.dhis2.composetable.ui.TableSelection
 
 @Serializable
@@ -54,8 +52,17 @@ data class TableModel(
         }
     }
 
-    fun cellHasError(cell: TableSelection.CellSelection): TableCell? =
-        tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
+    fun cellHasError(cell: TableSelection.CellSelection): TableCell? {
+        return when {
+            tableRows.size == 1 && tableRows.size == cell.rowIndex -> {
+                tableRows[0].values[cell.columnIndex]?.takeIf { it.error != null }
+            }
+            tableRows.size == cell.rowIndex -> {
+                tableRows[cell.rowIndex - 1].values[cell.columnIndex]?.takeIf { it.error != null }
+            }
+            else -> tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
+        }
+    }
 
     fun hasCellWithId(cellId: String?): Boolean {
         return tableRows.any { row ->
@@ -65,77 +72,3 @@ data class TableModel(
         }
     }
 }
-
-@Serializable
-data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = false) {
-    fun numberOfColumns(rowIndex: Int): Int {
-        var totalCells = 1
-        for (index in 0 until rowIndex + 1) {
-            totalCells *= rows[index].cells.size
-        }
-        return totalCells
-    }
-
-    fun tableMaxColumns() = numberOfColumns(rows.size - 1)
-}
-
-@Serializable
-data class TableHeaderRow(val cells: List<TableHeaderCell>)
-
-@Serializable
-data class TableHeaderCell(val value: String)
-
-@Serializable
-data class TableCell(
-    val id: String? = null,
-    val row: Int? = null,
-    val column: Int? = null,
-    val value: String?,
-    val editable: Boolean = true,
-    val mandatory: Boolean? = false,
-    val error: String? = null,
-    val warning: String? = null,
-    val legendColor: Int? = null
-) {
-    fun isSelected(selectionState: SelectionState): Boolean {
-        return selectionState.cellOnly &&
-            selectionState.row == row &&
-            selectionState.column == column
-    }
-
-    fun hasErrorOrWarning() = errorOrWarningMessage() != null
-    fun errorOrWarningMessage() = error ?: warning
-}
-
-@Serializable
-data class TableRowModel(
-    val rowHeader: RowHeader,
-    val values: Map<Int, TableCell>,
-    val isLastRow: Boolean = false,
-    val maxLines: Int = 3,
-    val dropDownOptions: List<String>? = null
-)
-
-@Serializable
-data class RowHeader(
-    val id: String? = null,
-    val title: String,
-    val row: Int? = null,
-    val showDecoration: Boolean = false,
-    val description: String? = null
-)
-
-data class HeaderMeasures(val width: Int, val height: Int)
-
-fun TableModel.areAllValuesEmpty(): Boolean {
-    this.tableRows.forEach { it ->
-        val result = it.values.values.filterNot { it.value == "" }
-        if (result.isNotEmpty()) {
-            return false
-        }
-    }
-    return true
-}
-
-val LocalCurrentCellValue = compositionLocalOf<() -> String?> { { "" } }
-val LocalUpdatingCell = compositionLocalOf<TableCell?> { null }

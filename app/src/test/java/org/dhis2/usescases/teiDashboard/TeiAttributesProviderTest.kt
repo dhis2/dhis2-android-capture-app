@@ -1,9 +1,5 @@
 package org.dhis2.usescases.teiDashboard
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -15,6 +11,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class TeiAttributesProviderTest {
 

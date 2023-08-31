@@ -53,5 +53,6 @@ class TEIDataContracts {
         fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>)
 
         fun showProgramRuleErrorMessage(message: String)
+        fun showCatOptComboDialog(catComboUid: String)
     }
 }

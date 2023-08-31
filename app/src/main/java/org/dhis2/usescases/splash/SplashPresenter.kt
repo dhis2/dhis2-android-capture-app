@@ -30,6 +30,7 @@ class SplashPresenter internal constructor(
             when (it.key) {
                 Constants.PREFS_URLS, Constants.PREFS_USERS -> {
                 }
+
                 else -> preferenceProvider.setValue(it.key, it.value)
             }
         }
@@ -46,10 +47,12 @@ class SplashPresenter internal constructor(
                     .subscribe(
                         { userLogged ->
                             if (userLogged && trackingPermissionGranted()) {
-                                trackUserInfo(
+                                val systemInfo =
                                     userManager.d2.systemInfoModule().systemInfo().blockingGet()
-                                        .contextPath() ?: "",
-                                    userManager.userName().blockingGet()
+                                trackUserInfo(
+                                    serverUrl = systemInfo.contextPath() ?: "",
+                                    serverVersion = systemInfo.version() ?: "",
+                                    userName = userManager.userName().blockingGet()
                                 )
                             }
                             view.goToNextScreen(
@@ -85,8 +88,8 @@ class SplashPresenter internal constructor(
             ?.blockingGet()?.value() == true.toString()
     }
 
-    private fun trackUserInfo(serverUrl: String, userName: String) {
-        crashReportController.trackServer(serverUrl)
+    private fun trackUserInfo(serverUrl: String, serverVersion: String, userName: String) {
+        crashReportController.trackServer(serverUrl, serverVersion)
         crashReportController.trackUser(userName, serverUrl)
     }
 

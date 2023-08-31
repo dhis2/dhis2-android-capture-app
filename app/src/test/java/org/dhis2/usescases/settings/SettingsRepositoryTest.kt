@@ -1,8 +1,5 @@
 package org.dhis2.usescases.settings
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.commons.Constants
@@ -36,6 +33,9 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class SettingsRepositoryTest {
 

@@ -1,9 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -38,6 +35,9 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class EventDetailsIntegrationTest {

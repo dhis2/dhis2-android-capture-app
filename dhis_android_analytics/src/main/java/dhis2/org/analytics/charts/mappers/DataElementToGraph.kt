@@ -18,14 +18,16 @@ class DataElementToGraph(
         teiUid: String,
         stagePeriod: PeriodType,
         selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
+        isDefault: Boolean = false
     ): Graph {
         val coordinates = chartCoordinatesProvider.dataElementCoordinates(
             stageUid,
             teiUid,
             dataElement.uid(),
             selectedRelativePeriod,
-            selectedOrgUnits
+            selectedOrgUnits,
+            isDefault
         )
 
         val serie = if (coordinates.isNotEmpty()) {

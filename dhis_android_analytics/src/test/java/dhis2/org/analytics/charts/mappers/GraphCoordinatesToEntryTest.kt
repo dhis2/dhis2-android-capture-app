@@ -19,7 +19,7 @@ class GraphCoordinatesToEntryTest {
     @Test
     fun `Should return mapped list`() {
         val result = graphToLineData.map(mockedGraph(), mockedCoordinates(), "serieLabel")
-        val expectedEntryPosition = listOf(0f, 1f, 3f, 6f)
+        val expectedEntryPosition = listOf(0f, 0.032258064f, 0.09677419f, 0.19354838f)
         assertTrue(result.size == 4)
         result.forEachIndexed { index, entry ->
             assertTrue(

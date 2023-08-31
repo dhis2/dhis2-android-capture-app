@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import co.infinum.goldfinger.Goldfinger
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -34,6 +33,8 @@ import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.data.fingerprint.FingerPrintResult
+import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
@@ -515,12 +516,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
-        if (type == Goldfinger.Type.SUCCESS) {
+    override fun showCredentialsData(result: FingerPrintResult, vararg args: String) {
+        if (result.type == Type.SUCCESS) {
             binding.serverUrlEdit.setText(args[0])
             binding.userNameEdit.setText(args[1])
             binding.userPassEdit.setText(args[2])
-        } else if (type == Goldfinger.Type.ERROR && args[0] != getString(R.string.cancel)) {
+        } else if (result.type == Type.ERROR && args[0] != getString(R.string.cancel)) {
             showInfoDialog(getString(R.string.biometrics_dialog_title), args[0])
         }
     }
@@ -547,11 +548,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun getDefaultServerProtocol(): String = getString(R.string.login_https)
-
-    override fun getPromptParams(): Goldfinger.PromptParams = Goldfinger.PromptParams.Builder(this)
-        .title(R.string.fingerprint_title)
-        .negativeButtonText(R.string.cancel)
-        .build()
 
     private fun showLoginOptions(authServiceModel: AuthServiceModel?) {
         authServiceModel?.let {

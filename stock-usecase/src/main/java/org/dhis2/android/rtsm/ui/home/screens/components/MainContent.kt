@@ -54,9 +54,12 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
+import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
+import org.dhis2.android.rtsm.ui.managestock.STOCK_TABLE_ID
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
+import org.dhis2.composetable.actions.TableResizeActions
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -71,6 +74,7 @@ fun MainContent(
     val scope = rememberCoroutineScope()
     val resource = painterResource(R.drawable.ic_arrow_up)
     val qrcodeResource = painterResource(R.drawable.ic_qr_code_scanner)
+    val resetResize = painterResource(id = R.drawable.ic_restart_alt)
     val searchResource = painterResource(R.drawable.ic_search)
     val closeResource = painterResource(R.drawable.ic_close)
     var closeButtonVisibility by remember { mutableStateOf(0f) }
@@ -83,6 +87,10 @@ fun MainContent(
     var columnHeightDp by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
     val tablePadding = if (backdropState.isRevealed) 200.dp else 0.dp
+
+    var tableResizeActions by remember {
+        mutableStateOf<TableResizeActions?>(null)
+    }
 
     Column(
         modifier = Modifier
@@ -193,6 +201,25 @@ fun MainContent(
                     tint = themeColor
                 )
             }
+
+            AnimatedVisibility(visible = tableResizeActions != null) {
+                IconButton(
+                    onClick = {
+                        tableResizeActions?.onTableDimensionReset(STOCK_TABLE_ID)
+                    },
+                    modifier = Modifier
+                        .weight(weightValue)
+                        .alignBy(FirstBaseline)
+                        .align(alignment = Alignment.CenterVertically)
+                ) {
+                    Icon(
+                        painter = resetResize,
+                        contentDescription = "",
+                        tint = themeColor
+                    )
+                }
+            }
+
             AnimatedVisibility(
                 visible = backdropState.isRevealed
             ) {
@@ -223,39 +250,35 @@ fun MainContent(
                 .padding(bottom = tablePadding)
                 .height(columnHeightDp)
         ) {
-            if (manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                != DataEntryStep.COMPLETED ||
+            if ((
                 manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                != DataEntryStep.START
+                    != DataEntryStep.COMPLETED ||
+                    manageStockViewModel.dataEntryUiState.collectAsState().value.step
+                    != DataEntryStep.START
+                ) && shouldDisplayTable(settingsUiState)
             ) {
-                if (settingsUiState.transactionType == TransactionType.DISTRIBUTION) {
-                    if (settingsUiState.hasFacilitySelected() &&
-                        settingsUiState.hasDestinationSelected()
-                    ) {
-                        manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(manageStockViewModel) {
-                            scope.launch { backdropState.conceal() }
-                        }
+                manageStockViewModel.setup(viewModel.getData())
+                ManageStockTable(
+                    manageStockViewModel,
+                    concealBackdropState = {
+                        scope.launch { backdropState.conceal() }
+                    },
+                    onResized = { actions ->
+                        manageStockViewModel.refreshConfig()
+                        tableResizeActions = actions
                     }
-                } else if (settingsUiState.transactionType == TransactionType.CORRECTION) {
-                    if (settingsUiState.hasFacilitySelected()) {
-                        manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(manageStockViewModel) {
-                            scope.launch { backdropState.conceal() }
-                        }
-                    }
-                } else if (settingsUiState.transactionType == TransactionType.DISCARD) {
-                    if (settingsUiState.hasFacilitySelected()) {
-                        manageStockViewModel.setup(viewModel.getData())
-                        ManageStockTable(manageStockViewModel) {
-                            scope.launch { backdropState.conceal() }
-                        }
-                    }
-                }
+                )
             }
         }
     }
 }
+
+private fun shouldDisplayTable(settingsUiState: SettingsUiState): Boolean =
+    when (settingsUiState.transactionType) {
+        TransactionType.DISTRIBUTION ->
+            settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()
+        else -> settingsUiState.hasFacilitySelected()
+    }
 
 private fun scanBarcode(launcher: ActivityResultLauncher<ScanOptions>) {
     val scanOptions = ScanOptions()

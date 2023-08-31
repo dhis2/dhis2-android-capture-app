@@ -28,7 +28,6 @@ const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 class SearchTEIViewModel(
     private val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
-    private val presenter: SearchTEContractsModule.Presenter,
     private val searchRepository: SearchRepository,
     private val searchNavPageConfigurator: SearchPageConfigurator,
     private val mapDataRepository: MapDataRepository,
@@ -44,6 +43,9 @@ class SearchTEIViewModel(
         initialQuery?.let { putAll(it) }
     }
 
+    private val _legacyInteraction = MutableLiveData<LegacyInteraction?>()
+    val legacyInteraction: LiveData<LegacyInteraction?> = _legacyInteraction
+
     private val _refreshData = MutableLiveData(Unit)
     val refreshData: LiveData<Unit> = _refreshData
 
@@ -58,7 +60,6 @@ class SearchTEIViewModel(
 
     private var searching: Boolean = false
     private val _filtersActive = MutableLiveData(false)
-    val filtersActive: LiveData<Boolean> = _filtersActive
 
     private val _downloadResult = MutableLiveData<TeiDownloadResult>()
     val downloadResult: LiveData<TeiDownloadResult> = _downloadResult
@@ -302,12 +303,14 @@ class SearchTEIViewModel(
                         setListScreen()
                         _refreshData.value = Unit
                     }
+
                     SearchScreenState.MAP -> {
                         SearchIdlingResourceSingleton.increment()
                         _refreshData.value = Unit
                         setMapScreen()
                         fetchMapResults()
                     }
+
                     else -> searching = false
                 }
             } else {
@@ -353,15 +356,19 @@ class SearchTEIViewModel(
     }
 
     fun onEnrollClick() {
-        presenter.onEnrollClick(HashMap(queryData))
+        _legacyInteraction.value = LegacyInteraction.OnEnrollClick(queryData)
     }
 
     fun onAddRelationship(teiUid: String, relationshipTypeUid: String?, online: Boolean) {
-        presenter.addRelationship(teiUid, relationshipTypeUid, online)
+        _legacyInteraction.value = LegacyInteraction.OnAddRelationship(
+            teiUid,
+            relationshipTypeUid,
+            online
+        )
     }
 
     fun onSyncIconClick(teiUid: String) {
-        presenter.onSyncIconClick(teiUid)
+        _legacyInteraction.value = (LegacyInteraction.OnSyncIconClick(teiUid))
     }
 
     fun onDownloadTei(teiUid: String, enrollmentUid: String?, reason: String? = null) {
@@ -372,10 +379,10 @@ class SearchTEIViewModel(
             try {
                 val downloadResult = result.await()
                 if (downloadResult is TeiDownloadResult.TeiToEnroll) {
-                    presenter.enroll(
-                        searchRepository.getProgram(initialProgramUid)?.uid(),
+                    _legacyInteraction.value = LegacyInteraction.OnEnroll(
+                        initialProgramUid,
                         downloadResult.teiUid,
-                        hashMapOf<String, String>().apply { putAll(queryData) }
+                        queryData
                     )
                 } else {
                     _downloadResult.postValue(downloadResult)
@@ -387,7 +394,7 @@ class SearchTEIViewModel(
     }
 
     fun onTeiClick(teiUid: String, enrollmentUid: String?, online: Boolean) {
-        presenter.onTEIClick(teiUid, enrollmentUid, online)
+        _legacyInteraction.value = LegacyInteraction.OnTeiClick(teiUid, enrollmentUid, online)
     }
 
     fun onDataLoaded(
@@ -431,6 +438,7 @@ class SearchTEIViewModel(
                         searchRepository.getTrackedEntityType().displayName()
                     )
                 )
+
             else -> listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE))
         }
 
@@ -450,6 +458,7 @@ class SearchTEIViewModel(
             !canDisplayResults -> {
                 listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
             }
+
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
                 searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
                 searchRepository.filtersApplyOnGlobalSearch() -> {
@@ -461,6 +470,7 @@ class SearchTEIViewModel(
                     )
                 )
             }
+
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
                 searchRepository.trackedEntityTypeFields().isNotEmpty() &&
                 searchRepository.filtersApplyOnGlobalSearch() -> {
@@ -476,8 +486,10 @@ class SearchTEIViewModel(
                     )
                 )
             }
+
             hasProgramResults || hasGlobalResults == true ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
+
             else ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
         }
@@ -494,6 +506,7 @@ class SearchTEIViewModel(
                     searchRepository.trackedEntityType.displayName()
                 )
             )
+
             false -> listOf(
                 SearchResult(
                     SearchResult.SearchResultType.SEARCH,
@@ -550,6 +563,7 @@ class SearchTEIViewModel(
             programIndex > 0 ->
                 programs.takeIf { it.size > 1 }?.let { it[programIndex - 1] }
                     ?: programs.first()
+
             else -> null
         }
         searchRepository.setCurrentTheme(selectedProgram)
@@ -605,18 +619,11 @@ class SearchTEIViewModel(
         } ?: false
     }
 
-    fun searchIsOpen(): Boolean {
-        return _screenState.value?.takeIf { it is SearchList }?.let {
-            val currentScreen = it as SearchList
-            currentScreen.searchForm.isOpened
-        } ?: false
-    }
-
-    fun onClearFilters() {
-        presenter.clearFilterClick()
-    }
-
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
+    }
+
+    fun onLegacyInteractionConsumed() {
+        _legacyInteraction.value = null
     }
 }

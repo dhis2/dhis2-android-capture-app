@@ -17,6 +17,7 @@ import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.table.CellModel
 import kotlin.math.roundToInt
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
@@ -25,11 +26,11 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
+import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 
 class GraphToTable {
@@ -106,6 +107,29 @@ class GraphToTable {
                 )
             }
 
+            val tableResizeActions = object : TableResizeActions {
+                override fun onTableWidthChanged(width: Int) {
+                    dimensions = dimensions.copy(totalWidth = width)
+                }
+
+                override fun onRowHeaderResize(tableId: String, newValue: Float) {
+                    dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+                }
+
+                override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
+                    dimensions =
+                        dimensions.updateColumnWidth(tableId, column, newValue)
+                }
+
+                override fun onTableDimensionResize(tableId: String, newValue: Float) {
+                    dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                }
+
+                override fun onTableDimensionReset(tableId: String) {
+                    dimensions = dimensions.resetWidth(tableId)
+                }
+            }
+
             resetDimensionButton?.visibility = if (
                 dimensions.hasOverriddenWidths(tableModel.id ?: "")
             ) {
@@ -129,7 +153,8 @@ class GraphToTable {
                     headerActionsEnabled = false,
                     editable = false
                 ),
-                tableDimensions = dimensions
+                tableDimensions = dimensions,
+                tableResizeActions = tableResizeActions
             ) {
                 DataSetTableScreen(
                     tableScreenState = TableScreenState(
@@ -137,23 +162,7 @@ class GraphToTable {
                     ),
                     onCellClick = { _, _, _ -> null },
                     onEdition = {},
-                    onSaveValue = {},
-                    onTableWidthChanged = { width ->
-                        dimensions = dimensions.copy(totalWidth = width)
-                    },
-                    onRowHeaderResize = { tableId, newValue ->
-                        dimensions = dimensions.updateHeaderWidth(tableId, newValue)
-                    },
-                    onColumnHeaderResize = { tableId, column, newValue ->
-                        dimensions =
-                            dimensions.updateColumnWidth(tableId, column, newValue)
-                    },
-                    onTableDimensionResize = { tableId, newValue ->
-                        dimensions = dimensions.updateAllWidthBy(tableId, newValue)
-                    },
-                    onTableDimensionReset = { tableId ->
-                        dimensions = dimensions.resetWidth(tableId)
-                    }
+                    onSaveValue = {}
                 )
             }
         }

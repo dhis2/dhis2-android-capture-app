@@ -12,10 +12,6 @@ private val layouts = mapOf<KClass<*>, Int>()
 
 class LayoutProviderImpl : LayoutProvider {
 
-    override fun getLayoutByModel(modelClass: KClass<*>): Int {
-        return layouts[modelClass]!!
-    }
-
     override fun getLayoutByType(
         valueType: ValueType?,
         renderingType: ValueTypeRenderingType?,
@@ -35,10 +31,13 @@ class LayoutProviderImpl : LayoutProvider {
                     ValueType.TRUE_ONLY -> R.layout.form_toggle
                     else -> R.layout.form_radio_button
                 }
+
                 ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
                 ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_check_button
+
                 else -> R.layout.form_radio_button
             }
+
             ValueType.LETTER -> R.layout.form_letter
             ValueType.PHONE_NUMBER -> R.layout.form_phone_number
             ValueType.EMAIL -> R.layout.form_email
@@ -55,6 +54,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.GEOJSON,
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
+
             else -> R.layout.form_edit_text_custom
         }
         return getLayoutForOptionSet(optionSet, sectionRenderingType, renderingType, layout)
@@ -69,12 +69,16 @@ class LayoutProviderImpl : LayoutProvider {
         return when {
             shouldRenderAsMatrixImage(optionSet, sectionRenderingType, renderingType) ->
                 R.layout.form_option_set_matrix
+
             shouldRenderAsSelector(optionSet, renderingType) ->
                 R.layout.form_option_set_selector
+
             shouldRenderAsSpinner(optionSet) ->
                 R.layout.form_option_set_spinner
+
             shouldRenderAsScan(renderingType) ->
                 R.layout.form_scan
+
             else ->
                 defaultLayout
         }
@@ -103,6 +107,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueTypeRenderingType.VERTICAL_CHECKBOXES -> {
                 true
             }
+
             else -> false
         }
         return isOptionSet && isSelectorRendering
@@ -117,7 +122,7 @@ class LayoutProviderImpl : LayoutProvider {
         val isDefaultRendering =
             renderingType == null || renderingType == ValueTypeRenderingType.DEFAULT
         val isSectionRenderingMatrix =
-            sectionRenderingType ?: SectionRenderingType.LISTING != SectionRenderingType.LISTING
+            (sectionRenderingType ?: SectionRenderingType.LISTING) != SectionRenderingType.LISTING
         return isOptionSet && isDefaultRendering && isSectionRenderingMatrix
     }
 

@@ -1,9 +1,12 @@
 package org.dhis2.commons.filters.data
 
+import java.util.Calendar
 import javax.inject.Inject
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
+import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 
 class TrackerFilterSearchHelper @Inject constructor(
@@ -80,7 +83,17 @@ class TrackerFilterSearchHelper @Inject constructor(
             filterRepository.applyEventStatusFilter(
                 teiQuery,
                 filterManager.eventStatusFilters
-            )
+            ).let {
+                if (filterManager.periodFilters.isEmpty()) {
+                    val datePeriod = DatePeriod.create(
+                        Calendar.getInstance().apply { add(Calendar.YEAR, -1) }.time,
+                        Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time
+                    )
+                    filterRepository.applyDateFilter(it, datePeriod)
+                } else {
+                    it
+                }
+            }
         } else {
             teiQuery
         }
@@ -116,7 +129,16 @@ class TrackerFilterSearchHelper @Inject constructor(
         teiQuery: TrackedEntityInstanceQueryCollectionRepository
     ): TrackedEntityInstanceQueryCollectionRepository {
         return if (filterManager.periodFilters.isNotEmpty()) {
-            filterRepository.applyDateFilter(teiQuery, filterManager.periodFilters[0])
+            filterRepository.applyDateFilter(teiQuery, filterManager.periodFilters[0]).let {
+                if (filterManager.eventStatusFilters.isEmpty()) {
+                    filterRepository.applyEventStatusFilter(
+                        it,
+                        EventStatus.values().toMutableList()
+                    )
+                } else {
+                    it
+                }
+            }
         } else {
             teiQuery
         }

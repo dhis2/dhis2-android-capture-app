@@ -24,7 +24,10 @@ import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
-class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
+class RulesUtilsProviderImpl(
+    val d2: D2,
+    private val optionsRepository: OptionsRepository
+) : RulesUtilsProvider {
 
     var applyForEvent = false
     var canComplete = true
@@ -73,64 +76,79 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionShowError -> showError(
                     it.ruleAction() as RuleActionShowError,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionHideField -> hideField(
                     it.ruleAction() as RuleActionHideField,
                     fieldViewModels
                 )
+
                 is RuleActionDisplayText -> displayText(
                     it.ruleAction() as RuleActionDisplayText,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionDisplayKeyValuePair -> displayKeyValuePair(
                     it.ruleAction() as RuleActionDisplayKeyValuePair,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionHideSection -> hideSection(
                     fieldViewModels,
                     it.ruleAction() as RuleActionHideSection
                 )
+
                 is RuleActionAssign -> assign(
                     it.ruleAction() as RuleActionAssign,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionCreateEvent -> createEvent(
                     it.ruleAction() as RuleActionCreateEvent,
                     fieldViewModels
                 )
+
                 is RuleActionSetMandatoryField -> setMandatory(
                     it.ruleAction() as RuleActionSetMandatoryField,
                     fieldViewModels
                 )
+
                 is RuleActionWarningOnCompletion -> warningOnCompletion(
                     it.ruleAction() as RuleActionWarningOnCompletion,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionErrorOnCompletion -> errorOnCompletion(
                     it.ruleAction() as RuleActionErrorOnCompletion,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionHideProgramStage -> hideProgramStage(
                     it.ruleAction() as RuleActionHideProgramStage
                 )
+
                 is RuleActionHideOption -> hideOption(
                     it.ruleAction() as RuleActionHideOption
                 )
+
                 is RuleActionHideOptionGroup -> hideOptionGroup(
                     it.ruleAction() as RuleActionHideOptionGroup
                 )
+
                 is RuleActionShowOptionGroup -> showOptionGroup(
                     it.ruleAction() as RuleActionShowOptionGroup
                 )
+
                 else -> it.ruleId()?.let { ruleUid -> unsupportedRuleActions.add(ruleUid) }
             }
         }
@@ -269,15 +287,13 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         ruleEffect: RuleEffect,
         fieldViewModels: MutableMap<String, FieldUiModel>
     ) {
-        if (fieldViewModels[assign.field()] != null) {
-            val field = fieldViewModels[assign.field()]!!
-
+        fieldViewModels[assign.field()]?.let { field ->
             val value =
-                if (field.optionSet != null && field.value != null) {
-                    val valueOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
-                            .byDisplayName().eq(field.displayName)
-                            .one().blockingGet()
+                if (field.optionSet != null && field.displayName != null) {
+                    val valueOption = optionsRepository.getOptionByDisplayName(
+                        optionSet = field.optionSet!!,
+                        displayName = field.displayName!!
+                    )
                     if (valueOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(
@@ -300,10 +316,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             }
             val valueToShow =
                 if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
-                    val effectOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
-                            .byCode().eq(ruleEffect.data())
-                            .one().blockingGet()
+                    val effectOption = optionsRepository.getOptionByCode(
+                        optionSet = field.optionSet!!,
+                        code = ruleEffect.data()!!
+                    )
                     if (effectOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(
@@ -323,15 +339,20 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     ruleEffect.data()
                 }
 
-            ruleEffect.data()?.formatData(field.valueType)?.let {
-                fieldViewModels[assign.field()] =
-                    fieldViewModels[assign.field()]!!
-                        .setValue(it)
-                        .setDisplayName(valueToShow?.formatData(field.valueType))
-                        .setEditable(false)
+            ruleEffect.data()?.formatData(field.valueType)?.let { formattedValue ->
+                val updatedField = fieldViewModels[assign.field()]
+                    ?.setValue(formattedValue)
+                    ?.setDisplayName(valueToShow?.formatData(field.valueType))
+                    ?.setEditable(false)
+
+                updatedField?.let {
+                    fieldViewModels[assign.field()] = it
+                }
             }
-        } else if (!hiddenFields.contains(assign.field())) {
-            valuesToChange[assign.field()] = ruleEffect.data()?.formatData()
+        } ?: {
+            if (!hiddenFields.contains(assign.field())) {
+                valuesToChange[assign.field()] = ruleEffect.data()?.formatData()
+            }
         }
     }
 
@@ -446,7 +467,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             if (optionGroupsToShow[fieldUid] == null) {
                 optionGroupsToShow[fieldUid] = mutableListOf(optionGroupUid)
             } else {
-                optionGroupsToShow[fieldUid]!!.add(optionGroupUid)
+                optionGroupsToShow[fieldUid]?.add(optionGroupUid)
             }
         }
         if (valueStore?.deleteOptionValueIfSelectedInGroup(

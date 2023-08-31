@@ -7,7 +7,7 @@ import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.utils.CoordinateDataElementInfo
 
 class MapDataElementToFeature @Inject constructor(
-    val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature
+    private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature
 ) {
 
     fun mapDataElement(
@@ -21,7 +21,7 @@ class MapDataElementToFeature @Inject constructor(
                     if (!featureMap.containsKey(key)) {
                         featureMap[key] = mutableListOf()
                     }
-                    featureMap[key]!!.add(feature)
+                    featureMap[key]?.add(feature)
                 }
             }
             val finalMap = featureMap.map {

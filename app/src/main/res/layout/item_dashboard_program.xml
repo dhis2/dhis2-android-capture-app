@@ -51,6 +51,7 @@
             android:gravity="bottom"
             android:maxLines="1"
             android:text="@{program.incidentDateLabel()}"
+            android:visibility="@{program.displayIncidentDate() ? View.VISIBLE : View.GONE}"
             android:textColor="@color/text_black_333"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/program_last_date"
@@ -64,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="7.8dp"
             android:gravity="bottom"
-
+            android:visibility="@{program.displayIncidentDate() ? View.VISIBLE : View.GONE}"
             android:textColor="@color/text_black_333"
             android:textSize="12sp"
             app:date="@{enrollment.incidentDate ()}"

@@ -426,6 +426,10 @@ class FormRepositoryImpl(
         return formValueStore?.save(id, value, extraData)
     }
 
+    override fun storeFile(id: String, filePath: String?): StoreResult? {
+        return formValueStore?.storeFile(id, filePath)
+    }
+
     override fun setFocusedItem(action: RowAction) {
         focusedItemId = when (action.type) {
             ActionType.ON_NEXT -> getNextItem(action.id)
