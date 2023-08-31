@@ -19,7 +19,4 @@ class FingerPrintControllerImpl(
     override fun authenticate(): Observable<FingerPrintResult> {
         return Observable.empty()
     }
-
-    override fun cancel() {
-    }
 }
