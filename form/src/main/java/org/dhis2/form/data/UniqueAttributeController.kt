@@ -82,9 +82,10 @@ class UniqueAttributeController(
             .blockingGet()
     }
 
-    private fun getOrgUnit(teiUid: String): String? {
+    private fun getOrgUnit(teiUid: String): String {
         return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
             ?.organisationUnit()
+            ?: throw NoSuchElementException("Organisation unit not found for trackedEntity $teiUid")
     }
 
     private fun trackSentryError(
