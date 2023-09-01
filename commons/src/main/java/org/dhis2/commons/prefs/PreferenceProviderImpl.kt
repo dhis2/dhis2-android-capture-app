@@ -10,7 +10,7 @@ import java.util.Date
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
 
-open class PreferenceProviderImpl(private val context: Context) : PreferenceProvider {
+open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
@@ -102,12 +102,6 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
 
     override fun saveJiraCredentials(jiraAuth: String): String {
         return String.format("Basic %s", jiraAuth)
-    }
-
-    override fun saveJiraUser(jiraUser: String) {
-    }
-
-    override fun closeJiraSession() {
     }
 
     override fun clear() {

@@ -151,7 +151,9 @@ class EventCapturePresenterImpl(
 
             EventStatus.OVERDUE -> view.attemptToSkip()
             EventStatus.SKIPPED -> view.attemptToReschedule()
-            else -> {}
+            else -> {
+                // No actions for the remaining cases
+            }
         }
     }
 

@@ -43,13 +43,6 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadFeatureConfig();
         loadSignature();
         loadConflicts();
-        loadUIComponents();
-    }
-
-    private void loadUIComponents() {
-        binding.components.setOnClickListener(view -> {
-            startActivity(UIComponentsView.class, null, false, false, null);
-        });
     }
 
     private void loadConflicts() {

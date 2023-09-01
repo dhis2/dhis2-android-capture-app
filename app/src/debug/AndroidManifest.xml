@@ -15,8 +15,6 @@
 
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
-        <activity android:name=".usescases.development.UIComponentsView" />
-
         <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
 
     </application>
