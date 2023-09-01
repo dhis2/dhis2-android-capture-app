@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.data
 
-import android.view.View
 import io.reactivex.Single
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
@@ -14,17 +13,16 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
+import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -48,6 +46,7 @@ class TeiDataPresenterTest {
     private val valueStore: FormValueStore = mock()
     private val resources: ResourceManager = mock()
     private val optionsRepository: OptionsRepository = mock()
+    private val getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions = mock()
 
     @Before
     fun setUp() {
@@ -68,14 +67,8 @@ class TeiDataPresenterTest {
             valueStore,
             resources,
             optionsRepository,
+            getNewEventCreationTypeOptions,
         )
-    }
-
-    @Test
-    fun `Should hide schedule event when hideDueDate is true`() {
-        val programStage: ProgramStage = mock {
-            on { hideDueDate() } doReturn true
-        }
     }
 
     @Test
