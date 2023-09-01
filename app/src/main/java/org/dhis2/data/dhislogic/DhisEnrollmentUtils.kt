@@ -53,9 +53,10 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
         ).generateEnrollmentEvents(enrollmentUid)
     }
 
-    fun getOrgUnit(teiUid: String): String? {
+    fun getOrgUnit(teiUid: String): String {
         return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
             ?.organisationUnit()
+            ?: throw NoSuchElementException("Organisation unit not found for trackedEntity $teiUid")
     }
 
     private fun getTrackedEntityAttributeValues(

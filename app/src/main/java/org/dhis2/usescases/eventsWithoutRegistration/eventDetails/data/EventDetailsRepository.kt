@@ -183,7 +183,7 @@ class EventDetailsRepository(
 
     fun getCategoryOptionCombo(
         categoryComboUid: String?,
-        categoryOptionsUid: List<String?>?,
+        categoryOptionsUid: List<String>,
     ): String? {
         return d2.categoryModule().categoryOptionCombos()
             .byCategoryComboUid().eq(categoryComboUid)
@@ -195,7 +195,7 @@ class EventDetailsRepository(
         return d2.categoryModule().categoryOptions().uid(selectedOption).blockingGet()
     }
 
-    fun getCatOptionSize(uid: String?): Int {
+    fun getCatOptionSize(uid: String): Int {
         return d2.categoryModule().categoryOptions()
             .byCategoryUid(uid)
             .byAccessDataWrite().isTrue
