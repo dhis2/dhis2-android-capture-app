@@ -49,6 +49,7 @@ class TEIDataModule(
         resources: ResourceManager,
         optionsRepository: OptionsRepository,
         getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
+        eventCreationOptionsMapper: EventCreationOptionsMapper,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -68,6 +69,7 @@ class TEIDataModule(
             resources,
             optionsRepository,
             getNewEventCreationTypeOptions,
+            eventCreationOptionsMapper,
         )
     }
 
@@ -116,10 +118,9 @@ class TEIDataModule(
 
     @Provides
     fun provideGetNewEventCreationTypeOptions(
-        resourceManager: ResourceManager,
         programConfigurationRepository: ProgramConfigurationRepository,
     ): GetNewEventCreationTypeOptions {
-        return GetNewEventCreationTypeOptions(resourceManager, programConfigurationRepository)
+        return GetNewEventCreationTypeOptions(programConfigurationRepository)
     }
 
     @Provides
@@ -127,5 +128,12 @@ class TEIDataModule(
         d2: D2,
     ): ProgramConfigurationRepository {
         return ProgramConfigurationRepository(d2)
+    }
+
+    @Provides
+    fun provideEventCreationsOptionsMapper(
+        resourceManager: ResourceManager,
+    ): EventCreationOptionsMapper {
+        return EventCreationOptionsMapper(resourceManager)
     }
 }

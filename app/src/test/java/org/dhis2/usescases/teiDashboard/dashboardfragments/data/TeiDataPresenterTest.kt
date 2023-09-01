@@ -10,6 +10,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.EventCreationOptionsMapper
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
@@ -47,6 +48,7 @@ class TeiDataPresenterTest {
     private val resources: ResourceManager = mock()
     private val optionsRepository: OptionsRepository = mock()
     private val getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions = mock()
+    private val eventCreationOptionsMapper: EventCreationOptionsMapper = mock()
 
     @Before
     fun setUp() {
@@ -68,6 +70,7 @@ class TeiDataPresenterTest {
             resources,
             optionsRepository,
             getNewEventCreationTypeOptions,
+            eventCreationOptionsMapper,
         )
     }
 

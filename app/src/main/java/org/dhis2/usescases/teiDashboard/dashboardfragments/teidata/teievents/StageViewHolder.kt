@@ -76,7 +76,7 @@ internal class StageViewHolder(
         }
         binding.addStageButton.setContent {
             MdcTheme {
-                NewEventOptions(presenter.getNewEventOptions(stage)) {
+                NewEventOptions(presenter.getNewEventOptionsByStages(stage)) {
                     presenter.onAddNewEventOptionSelected(it, stage)
                 }
             }

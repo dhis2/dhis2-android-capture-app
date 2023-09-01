@@ -42,6 +42,7 @@ import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
@@ -89,6 +90,8 @@ public class TEIDataPresenter {
 
     private final GetNewEventCreationTypeOptions getNewEventCreationTypeOptions;
 
+    private final EventCreationOptionsMapper eventCreationOptionsMapper;
+
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
@@ -106,7 +109,10 @@ public class TEIDataPresenter {
                             FilterRepository filterRepository,
                             FormValueStore valueStore,
                             ResourceManager resources,
-                            OptionsRepository optionsRepository, GetNewEventCreationTypeOptions getNewEventCreationTypeOptions) {
+                            OptionsRepository optionsRepository,
+                            GetNewEventCreationTypeOptions getNewEventCreationTypeOptions,
+                            EventCreationOptionsMapper eventCreationOptionsMapper
+    ) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -121,6 +127,7 @@ public class TEIDataPresenter {
         this.filterManager = filterManager;
         this.resources = resources;
         this.getNewEventCreationTypeOptions = getNewEventCreationTypeOptions;
+        this.eventCreationOptionsMapper = eventCreationOptionsMapper;
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
         this.filterRepository = filterRepository;
@@ -521,7 +528,13 @@ public class TEIDataPresenter {
     }
 
     @NotNull
-    public List<EventCreationOptions> getNewEventOptions(ProgramStage stage) {
-        return getNewEventCreationTypeOptions.invoke(stage);
+    public List<EventCreationOptions> getNewEventOptionsByStages(ProgramStage stage) {
+        List<EventCreationType> options = getNewEventCreationTypeOptions.invoke(stage, programUid);
+        return eventCreationOptionsMapper.mapToEventsByStage(options);
+    }
+
+    public List<DialItem> getNewEventOptionsByTimeline() {
+        List<EventCreationType> options = getNewEventCreationTypeOptions.invoke(null, programUid);
+        return eventCreationOptionsMapper.mapToEventsByTimeLine(options);
     }
 }
