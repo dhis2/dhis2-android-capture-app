@@ -1,9 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
-import static android.text.TextUtils.isEmpty;
-import static org.dhis2.commons.data.EventCreationType.ADDNEW;
-import static org.dhis2.commons.data.EventCreationType.REFERAL;
-import static org.dhis2.commons.data.EventCreationType.SCHEDULE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
@@ -41,6 +37,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
+import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions;
+import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -54,7 +52,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -90,6 +87,8 @@ public class TEIDataPresenter {
 
     private final OptionsRepository optionsRepository;
 
+    private final GetNewEventCreationTypeOptions getNewEventCreationTypeOptions;
+
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
@@ -107,7 +106,7 @@ public class TEIDataPresenter {
                             FilterRepository filterRepository,
                             FormValueStore valueStore,
                             ResourceManager resources,
-                            OptionsRepository optionsRepository) {
+                            OptionsRepository optionsRepository, GetNewEventCreationTypeOptions getNewEventCreationTypeOptions) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -121,6 +120,7 @@ public class TEIDataPresenter {
         this.analyticsHelper = analyticsHelper;
         this.filterManager = filterManager;
         this.resources = resources;
+        this.getNewEventCreationTypeOptions = getNewEventCreationTypeOptions;
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
         this.filterRepository = filterRepository;
@@ -468,15 +468,9 @@ public class TEIDataPresenter {
         );
     }
 
-    public boolean hasAssignment() {
-        return !isEmpty(programUid) && !d2.programModule().programStages()
-                .byProgramUid().eq(programUid)
-                .byEnableUserAssignment().isTrue().blockingIsEmpty();
-    }
-
     private Map<String, Boolean> getGrouping() {
         TypeToken<HashMap<String, Boolean>> typeToken =
-                new TypeToken<HashMap<String, Boolean>>() {
+                new TypeToken<>() {
                 };
         return preferences.getObjectFromJson(
                 Preference.GROUPING,
@@ -527,15 +521,7 @@ public class TEIDataPresenter {
     }
 
     @NotNull
-    public List<EventCreationType> getNewEventOptions(ProgramStage stage) {
-        if (stage.hideDueDate() != null && stage.hideDueDate()) {
-            //TODO Not add SCHEDULE event type
-        }
-        //TODO check refereal with configuration
-        List<EventCreationType> list = new ArrayList<>();
-        list.add(SCHEDULE);
-        list.add(ADDNEW);
-        list.add(REFERAL);
-        return list;
+    public List<EventCreationOptions> getNewEventOptions(ProgramStage stage) {
+        return getNewEventCreationTypeOptions.invoke(stage);
     }
 }

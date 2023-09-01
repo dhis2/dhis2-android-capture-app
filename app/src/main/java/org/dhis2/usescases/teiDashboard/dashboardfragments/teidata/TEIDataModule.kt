@@ -21,6 +21,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 
@@ -46,6 +47,7 @@ class TEIDataModule(
         valueStore: FormValueStore?,
         resources: ResourceManager,
         optionsRepository: OptionsRepository,
+        getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -64,6 +66,7 @@ class TEIDataModule(
             valueStore,
             resources,
             optionsRepository,
+            getNewEventCreationTypeOptions,
         )
     }
 
@@ -108,5 +111,12 @@ class TEIDataModule(
             networkUtils,
             resourceManager,
         )
+    }
+
+    @Provides
+    fun provideGetNewEventCreationTypeOptions(
+        resourceManager: ResourceManager,
+    ): GetNewEventCreationTypeOptions {
+        return GetNewEventCreationTypeOptions(resourceManager)
     }
 }

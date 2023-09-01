@@ -19,40 +19,37 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
-import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @Composable
 fun NewEventOptions(
-    options: List<EventCreationType>,
+    options: List<EventCreationOptions>,
     onOptionSelected: (EventCreationType) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    DHIS2Theme {
-        Column {
-            IconButton(
-                icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_add_accent),
-                        contentDescription = "",
-                        tint = MaterialTheme.colors.primary,
-                    )
-                },
-                onClick = { expanded = !expanded },
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                options.forEach {
-                    DropdownMenuItem(
-                        content = { Text(it.name) },
-                        onClick = {
-                            onOptionSelected.invoke(it)
-                            expanded = false
-                        },
-                    )
-                }
+    Column {
+        IconButton(
+            icon = {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_add_accent),
+                    contentDescription = "",
+                    tint = MaterialTheme.colors.primary,
+                )
+            },
+            onClick = { expanded = !expanded },
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEach {
+                DropdownMenuItem(
+                    content = { Text(it.name) },
+                    onClick = {
+                        onOptionSelected.invoke(it.type)
+                        expanded = false
+                    },
+                )
             }
         }
     }
@@ -64,6 +61,15 @@ fun NewEventOptionsPreview() {
     Surface(
         contentColor = Color.White,
     ) {
-        NewEventOptions(listOf(EventCreationType.SCHEDULE, EventCreationType.ADDNEW)) {}
+        NewEventOptions(
+            listOf(
+                EventCreationOptions(
+                    EventCreationType.SCHEDULE,
+                    "Schedule",
+                ),
+            ),
+        ) {}
     }
 }
+
+data class EventCreationOptions(val type: EventCreationType, val name: String)
