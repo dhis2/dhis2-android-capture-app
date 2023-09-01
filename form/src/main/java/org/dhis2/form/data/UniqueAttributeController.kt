@@ -97,16 +97,16 @@ class UniqueAttributeController(
         val exception = if (e.cause != null && e.cause is D2Error) {
             val d2Error = e.cause as D2Error
             "component: ${d2Error.errorComponent()}," +
-                " code: ${d2Error.errorCode()}," +
-                " description: ${d2Error.errorDescription()}"
+                    " code: ${d2Error.errorCode()}," +
+                    " description: ${d2Error.errorDescription()}"
         } else {
             "No d2 Error"
         }
         crashReportController.addBreadCrumb(
             "SearchTEIRepositoryImpl.isUniqueAttribute",
             "programUid: $programUid ," +
-                " attruid: $attributeUid ," +
-                " attrvalue: $value, $exception",
+                    " attruid: $attributeUid ," +
+                    " attrvalue: $value, $exception",
         )
         return true
     }
