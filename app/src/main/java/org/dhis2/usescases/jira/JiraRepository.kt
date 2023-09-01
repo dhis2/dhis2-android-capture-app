@@ -48,7 +48,6 @@ class JiraRepository(
 
     fun saveCredentials() {
         session?.let { prefs.saveJiraCredentials(it) }
-        userName?.let { prefs.saveJiraUser(it) }
     }
 
     fun setAuth(userName: String, pass: String) {
@@ -63,7 +62,6 @@ class JiraRepository(
     }
 
     fun closeSession() {
-        prefs.closeJiraSession()
         session = null
     }
 }

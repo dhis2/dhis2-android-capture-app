@@ -350,10 +350,6 @@ class LoginViewModel(
             ?.blockingGet()?.value() == null
     }
 
-    fun stopReadingFingerprint() {
-        fingerPrintController.cancel()
-    }
-
     fun canHandleBiometrics(): Boolean? {
         return canHandleBiometrics
     }

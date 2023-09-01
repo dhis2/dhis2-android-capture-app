@@ -289,13 +289,6 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should stop reading fingerprint`() {
-        instantiateLoginViewModel()
-        loginViewModel.stopReadingFingerprint()
-        verify(goldfinger).cancel()
-    }
-
-    @Test
     fun `Should load testing servers and users`() {
         instantiateLoginViewModel()
         val urlSet = hashSetOf("url1", "url2", "url3")
