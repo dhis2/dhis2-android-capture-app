@@ -7,10 +7,19 @@ class ProgramConfigurationRepository(private val d2: D2) {
 
     fun getConfigurationByProgram(uid: String): ProgramConfigurationSetting? {
         if (d2.settingModule().appearanceSettings().blockingExists()) {
-            return d2.settingModule()
-                .appearanceSettings()
-                .getProgramConfigurationByUid(uid)
+            getSpecificProgramSettings(uid)?.let {
+                return it
+            } ?: getGlobalConfigurationSettings()?.let {
+                return it
+            }
         }
         return null
     }
+
+    private fun getGlobalConfigurationSettings() =
+        d2.settingModule().appearanceSettings().globalProgramConfigurationSetting
+
+    private fun getSpecificProgramSettings(uid: String) = d2.settingModule()
+        .appearanceSettings()
+        .getProgramConfigurationByUid(uid)
 }
