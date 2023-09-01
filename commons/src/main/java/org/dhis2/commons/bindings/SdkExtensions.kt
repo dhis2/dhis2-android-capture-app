@@ -256,11 +256,11 @@ fun D2.allowCollapsableSectionsInProgram(programUid: String): Boolean? {
     val globalSettingEnabled: Boolean? =
         settingModule().appearanceSettings()
             .globalProgramConfigurationSetting
-            .collapsibleSections()
+            ?.collapsibleSections()
     val specificSettingEnabled: Boolean? =
         settingModule().appearanceSettings()
             .getProgramConfigurationByUid(programUid)
-            .collapsibleSections()
+            ?.collapsibleSections()
 
     return when {
         globalSettingEnabled == true -> true
