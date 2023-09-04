@@ -357,4 +357,12 @@ class MainPresenter(
             )
         }
     }
+
+    fun hasOneHomeItem(): Boolean {
+        return repository.homeItemCount() == 1
+    }
+
+    fun getSingleItemData(): HomeItemData? {
+        return repository.singleHomeItemData()
+    }
 }

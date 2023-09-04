@@ -2,6 +2,8 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
+import org.dhis2.commons.bindings.isStockProgram
+import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -111,6 +113,12 @@ internal class ProgramRepositoryImpl(
                     state,
                     hasOverdue = false,
                     filtersAreActive = false,
+                ).copy(
+                    stockConfig = if (d2.isStockProgram(program.uid())) {
+                        d2.stockUseCase(program.uid())?.toAppConfig()
+                    } else {
+                        null
+                    },
                 )
             }.toList().toFlowable().blockingFirst()
     }
@@ -152,7 +160,6 @@ internal class ProgramRepositoryImpl(
                             D2ProgressSyncStatus.ERROR,
                             D2ProgressSyncStatus.PARTIAL_ERROR,
                             -> ProgramDownloadState.ERROR
-
                             null -> ProgramDownloadState.DOWNLOADED
                         }
 

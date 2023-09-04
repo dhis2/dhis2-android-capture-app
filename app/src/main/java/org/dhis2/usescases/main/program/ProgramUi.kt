@@ -476,6 +476,7 @@ private fun testingProgramModel() = ProgramViewModel(
     hasOverdueEvent = true,
     false,
     downloadState = ProgramDownloadState.NONE,
+    stockConfig = null,
 )
 
 const val HOME_ITEMS = "HOME_ITEMS"

@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.TextUtils
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -25,22 +24,19 @@ import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.bindings.Bindings
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
-import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
-import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.main.navigateTo
+import org.dhis2.usescases.main.toHomeItemData
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -191,53 +187,16 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun navigateTo(program: ProgramViewModel) {
-        val bundle = Bundle()
-        val idTag = if (program.programType.isEmpty()) {
-            Constants.DATASET_UID
-        } else {
-            Constants.PROGRAM_UID
-        }
-
-        if (!TextUtils.isEmpty(program.type)) {
-            bundle.putString(Constants.TRACKED_ENTITY_UID, program.type)
-        }
-
         abstractActivity.analyticsHelper.setEvent(
             TYPE_PROGRAM_SELECTED,
-            if (program.programType.isNotEmpty()) {
-                program.programType
-            } else {
-                program.typeName
-            },
+            program.programType.ifEmpty { program.typeName },
             SELECT_PROGRAM,
         )
-        bundle.putString(idTag, program.uid)
-        bundle.putString(Constants.DATA_SET_NAME, program.title)
-        bundle.putString(
-            Constants.ACCESS_DATA,
-            program.accessDataWrite.toString(),
-        )
 
-        when (program.programType) {
-            ProgramType.WITH_REGISTRATION.name -> {
-                Intent(activity, SearchTEActivity::class.java).apply {
-                    putExtras(bundle)
-                    getActivityContent.launch(this)
-                }
-            }
-            ProgramType.WITHOUT_REGISTRATION.name -> {
-                Intent(activity, ProgramEventDetailActivity::class.java).apply {
-                    putExtras(ProgramEventDetailActivity.getBundle(program.uid))
-                    getActivityContent.launch(this)
-                }
-            }
-            else -> {
-                Intent(activity, DataSetDetailActivity::class.java).apply {
-                    putExtras(bundle)
-                    getActivityContent.launch(this)
-                }
-            }
-        }
+        getActivityContent.navigateTo(
+            requireContext(),
+            program.toHomeItemData(),
+        )
     }
 
     override fun navigateToStockManagement(config: AppConfig) {

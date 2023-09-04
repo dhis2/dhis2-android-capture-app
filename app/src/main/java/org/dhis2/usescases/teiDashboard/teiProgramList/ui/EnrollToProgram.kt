@@ -101,6 +101,7 @@ private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramVi
     hasOverdueEvent = true,
     false,
     downloadState = downloadState,
+    stockConfig = null,
 )
 
 const val PROGRAM_TO_ENROLL = "PROGRAM_TO_ENROLL_%s"

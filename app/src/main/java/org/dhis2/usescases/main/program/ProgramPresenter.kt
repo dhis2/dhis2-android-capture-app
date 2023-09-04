@@ -11,7 +11,6 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -22,8 +21,6 @@ class ProgramPresenter internal constructor(
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val syncStatusController: SyncStatusController,
-    private val identifyProgramType: IdentifyProgramType,
-    private val stockManagementMapper: StockManagementMapper,
 ) {
 
     private val programs = MutableLiveData<List<ProgramViewModel>>(emptyList())
@@ -96,26 +93,7 @@ class ProgramPresenter internal constructor(
     }
 
     fun onItemClick(programModel: ProgramViewModel) {
-        when (getHomeItemType(programModel)) {
-            HomeItemType.PROGRAM_STOCK ->
-                view.navigateToStockManagement(stockManagementMapper.map(programModel))
-            else ->
-                view.navigateTo(programModel)
-        }
-    }
-
-    private fun getHomeItemType(programModel: ProgramViewModel): HomeItemType {
-        return when (programModel.programType) {
-            ProgramType.WITH_REGISTRATION.name -> {
-                identifyProgramType(programModel.uid)
-            }
-            ProgramType.WITHOUT_REGISTRATION.name -> {
-                HomeItemType.EVENTS
-            }
-            else -> {
-                HomeItemType.DATA_SET
-            }
-        }
+        view.navigateTo(programModel)
     }
 
     fun showDescription(description: String?) {
