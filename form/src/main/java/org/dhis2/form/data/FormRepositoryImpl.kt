@@ -24,7 +24,6 @@ class FormRepositoryImpl(
     private val ruleEngineRepository: RuleEngineRepository?,
     private val rulesUtilsProvider: RulesUtilsProvider?,
     private val legendValueProvider: LegendValueProvider?,
-    private val forceDisableCollapsibleSections: Boolean,
 ) : FormRepository {
 
     private var completionPercentage: Float = 0f
@@ -39,11 +38,7 @@ class FormRepositoryImpl(
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
 
-    private val allowCollapsableSections: Boolean? = if (forceDisableCollapsibleSections) {
-        false
-    } else {
-        dataEntryRepository?.allowCollapsableSections()
-    }
+    private val allowCollapsableSections: Boolean? = dataEntryRepository?.allowCollapsableSections()
 
     override fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()

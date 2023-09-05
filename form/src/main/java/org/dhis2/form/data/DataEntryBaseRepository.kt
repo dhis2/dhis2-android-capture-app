@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 abstract class DataEntryBaseRepository(
     private val d2: D2,
     private val fieldFactory: FieldViewModelFactory,
+    private val enableCollapsableFeature: Boolean,
 ) : DataEntryRepository {
 
     abstract val programUid: String?
@@ -106,6 +107,8 @@ abstract class DataEntryBaseRepository(
     }
 
     override fun allowCollapsableSections(): Boolean? {
-        return programUid?.let { d2.allowCollapsableSectionsInProgram(programUid = it) }
+        return programUid?.let { d2.allowCollapsableSectionsInProgram(programUid = it) }.takeIf {
+            enableCollapsableFeature
+        }
     }
 }

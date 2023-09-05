@@ -33,7 +33,8 @@ class EnrollmentRepository(
     private val d2: D2,
     private val enrollmentMode: EnrollmentMode,
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
-) : DataEntryBaseRepository(d2, fieldFactory) {
+    private val enableCollapsableFeature: Boolean,
+) : DataEntryBaseRepository(d2, fieldFactory, enableCollapsableFeature) {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)

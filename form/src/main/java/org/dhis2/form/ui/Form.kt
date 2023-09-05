@@ -114,7 +114,7 @@ fun Form(
                     FieldProvider(
                         modifier = Modifier.animateItemPlacement(
                             animationSpec = tween(
-                                durationMillis = 500,
+                                durationMillis = 750,
                                 easing = LinearOutSlowInEasing,
                             ),
                         ),
@@ -126,7 +126,10 @@ fun Form(
                     )
                 }
             }
-            if (fieldUiModel !is SectionUiModelImpl && nextItem is SectionUiModelImpl) {
+            if (fieldUiModel !is SectionUiModelImpl &&
+                nextItem is SectionUiModelImpl &&
+                nextItem.isOpen == false
+            ) {
                 item {
                     NextSectionButton {
                         nextItem.setSelected()
