@@ -151,6 +151,10 @@ class ManageStockViewModel @Inject constructor(
     fun setConfig(config: AppConfig) {
         _config.value = config
         tableDimensionStore.setUids(config.program)
+        refreshConfig()
+    }
+
+    fun refreshConfig() {
         viewModelScope.launch {
             _tableConfigurationState.emit(refreshTableConfiguration())
         }
