@@ -74,7 +74,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -95,9 +94,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private static final int RC_GENERATE_EVENT = 1501;
     private static final int RC_EVENTS_COMPLETED = 1601;
 
-    private static final int REFERAL_ID = 3;
-    private static final int ADD_NEW_ID = 2;
-    private static final int SCHEDULE_ID = 1;
+    protected static final int REFERAL_ID = 3;
+    protected static final int ADD_NEW_ID = 2;
+    protected static final int SCHEDULE_ID = 1;
 
     private static final String PREF_COMPLETED_EVENT = "COMPLETED_EVENT";
 
@@ -185,29 +184,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     private void updateFabItems() {
-        List<DialItem> dialItems = new ArrayList<>();
-        dialItems.add(
-                new DialItem(REFERAL_ID, getString(R.string.referral), R.drawable.ic_arrow_forward)
-        );
-        dialItems.add(
-                new DialItem(ADD_NEW_ID, getString(R.string.add_new), R.drawable.ic_note_add)
-        );
-        dialItems.add(
-                new DialItem(SCHEDULE_ID, getString(R.string.schedule_new), R.drawable.ic_date_range)
-        );
+        List<DialItem> dialItems = presenter.getNewEventOptionsByTimeline();
         binding.dialFabLayout.addDialItems(dialItems, clickedId -> {
             switch (clickedId) {
-                case REFERAL_ID:
-                    createEvent(EventCreationType.REFERAL, 0);
-                    break;
-                case ADD_NEW_ID:
-                    createEvent(EventCreationType.ADDNEW, 0);
-                    break;
-                case SCHEDULE_ID:
-                    createEvent(EventCreationType.SCHEDULE, 0);
-                    break;
-                default:
-                    break;
+                case REFERAL_ID -> createEvent(EventCreationType.REFERAL, 0);
+                case ADD_NEW_ID -> createEvent(EventCreationType.ADDNEW, 0);
+                case SCHEDULE_ID -> createEvent(EventCreationType.SCHEDULE, 0);
+                default -> {
+                }
             }
             return Unit.INSTANCE;
         });
@@ -541,35 +525,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         }
     }
 
-    @Override
-    public void showNewEventOptions(View anchor, ProgramStage stage) {
-        popupMenu = new PopupMenu(context, anchor);
-        popupMenu.inflate(R.menu.dashboard_event_creation);
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.schedulenew:
-                    goToEventInitial(EventCreationType.SCHEDULE, stage);
-                    break;
-                case R.id.addnew:
-                    goToEventInitial(EventCreationType.ADDNEW, stage);
-                    break;
-                case R.id.referral:
-                    goToEventInitial(EventCreationType.REFERAL, stage);
-                    break;
-            }
-            return true;
-        });
-        popupMenu.show();
-
-    }
-
-    @Override
-    public void hideDueDate() {
-        popupMenu.getMenu().findItem(R.id.schedulenew).setVisible(false);
-    }
-
-    private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
+    public void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
         Intent intent = new Intent(activity, EventInitialActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, dashboardModel.getCurrentProgram().uid());

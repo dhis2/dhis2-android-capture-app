@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
@@ -38,9 +37,12 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
+import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions;
+import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
@@ -86,6 +88,10 @@ public class TEIDataPresenter {
 
     private final OptionsRepository optionsRepository;
 
+    private final GetNewEventCreationTypeOptions getNewEventCreationTypeOptions;
+
+    private final EventCreationOptionsMapper eventCreationOptionsMapper;
+
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
@@ -103,7 +109,10 @@ public class TEIDataPresenter {
                             FilterRepository filterRepository,
                             FormValueStore valueStore,
                             ResourceManager resources,
-                            OptionsRepository optionsRepository) {
+                            OptionsRepository optionsRepository,
+                            GetNewEventCreationTypeOptions getNewEventCreationTypeOptions,
+                            EventCreationOptionsMapper eventCreationOptionsMapper
+    ) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -117,6 +126,8 @@ public class TEIDataPresenter {
         this.analyticsHelper = analyticsHelper;
         this.filterManager = filterManager;
         this.resources = resources;
+        this.getNewEventCreationTypeOptions = getNewEventCreationTypeOptions;
+        this.eventCreationOptionsMapper = eventCreationOptionsMapper;
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
         this.filterRepository = filterRepository;
@@ -448,13 +459,6 @@ public class TEIDataPresenter {
         }
     }
 
-    public void onAddNewEvent(@NonNull View anchor, @NonNull ProgramStage stage) {
-        view.showNewEventOptions(anchor, stage);
-        if (stage.hideDueDate() != null && stage.hideDueDate()) {
-            view.hideDueDate();
-        }
-    }
-
     public void getEnrollment(String enrollmentUid) {
         compositeDisposable.add(
                 d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
@@ -471,15 +475,9 @@ public class TEIDataPresenter {
         );
     }
 
-    public boolean hasAssignment() {
-        return !isEmpty(programUid) && !d2.programModule().programStages()
-                .byProgramUid().eq(programUid)
-                .byEnableUserAssignment().isTrue().blockingIsEmpty();
-    }
-
     private Map<String, Boolean> getGrouping() {
         TypeToken<HashMap<String, Boolean>> typeToken =
-                new TypeToken<HashMap<String, Boolean>>() {
+                new TypeToken<>() {
                 };
         return preferences.getObjectFromJson(
                 Preference.GROUPING,
@@ -523,5 +521,20 @@ public class TEIDataPresenter {
         FilterManager.getInstance().addCatOptCombo(
                 dashboardRepository.catOptionCombo(selectedCatOptionCombo)
         );
+    }
+
+    public void onAddNewEventOptionSelected(@NotNull EventCreationType it, ProgramStage stage) {
+        view.goToEventInitial(it, stage);
+    }
+
+    @NotNull
+    public List<EventCreationOptions> getNewEventOptionsByStages(ProgramStage stage) {
+        List<EventCreationType> options = getNewEventCreationTypeOptions.invoke(stage, programUid);
+        return eventCreationOptionsMapper.mapToEventsByStage(options);
+    }
+
+    public List<DialItem> getNewEventOptionsByTimeline() {
+        List<EventCreationType> options = getNewEventCreationTypeOptions.invoke(null, programUid);
+        return eventCreationOptionsMapper.mapToEventsByTimeLine(options);
     }
 }
