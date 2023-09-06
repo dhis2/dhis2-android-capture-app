@@ -493,37 +493,39 @@ class EnrollmentRepository(
     }
 
     fun hasEventsGeneratedByEnrollmentDate(): Boolean {
-        val enrollment = enrollmentRepository.blockingGet()
+        val enrollment = enrollmentRepository.blockingGet() ?: return false
+
         val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment?.program())
+            .byProgramUid().eq(enrollment.program())
             .byOpenAfterEnrollment().isTrue
             .byReportDateToUse().eq("enrollmentDate")
             .blockingGetUids()
         val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment?.program())
+            .byProgramUid().eq(enrollment.program())
             .byAutoGenerateEvent().isTrue
             .byGeneratedByEnrollmentDate().isTrue
             .blockingGetUids()
         return !d2.eventModule().events()
-            .byTrackedEntityInstanceUids(arrayListOf(enrollment?.trackedEntityInstance()))
+            .byEnrollmentUid().eq(enrollmentUid)
             .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
             .blockingIsEmpty()
     }
 
     fun hasEventsGeneratedByIncidentDate(): Boolean {
-        val enrollment = enrollmentRepository.blockingGet()
+        val enrollment = enrollmentRepository.blockingGet() ?: return false
+
         val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment?.program())
+            .byProgramUid().eq(enrollment.program())
             .byOpenAfterEnrollment().isTrue
             .byReportDateToUse().eq("incidentDate")
             .blockingGetUids()
         val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment?.program())
+            .byProgramUid().eq(enrollment.program())
             .byAutoGenerateEvent().isTrue
             .byGeneratedByEnrollmentDate().isFalse
             .blockingGetUids()
         return !d2.eventModule().events()
-            .byTrackedEntityInstanceUids(arrayListOf(enrollment?.trackedEntityInstance()))
+            .byEnrollmentUid().eq(enrollmentUid)
             .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
             .blockingIsEmpty()
     }
