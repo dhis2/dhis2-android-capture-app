@@ -53,7 +53,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(
                 tableId = tableId,
                 totalColumns = totalColumns,
-                hasTotal = hasTotal
+                hasTotal = hasTotal,
             )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
@@ -82,7 +82,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(
                 tableId = tableId,
                 totalColumns = totalColumns,
-                hasTotal = hasTotal
+                hasTotal = hasTotal,
             )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
@@ -112,7 +112,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(
                 tableId = tableId,
                 totalColumns = totalColumns,
-                hasTotal = hasTotal
+                hasTotal = hasTotal,
             )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
@@ -147,7 +147,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(
                 tableId = tableId,
                 totalColumns = totalColumns,
-                hasTotal = hasTotal
+                hasTotal = hasTotal,
             )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
