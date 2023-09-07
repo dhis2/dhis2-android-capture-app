@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.TextView
@@ -22,8 +23,6 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.hasPermissions
 import org.dhis2.BuildConfig
@@ -47,6 +46,9 @@ import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import timber.log.Timber
+import java.io.File
+import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
@@ -70,6 +72,8 @@ class MainActivity :
 
     @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
+
+    private val TAG = "This is MyActivity"
 
     var notification: Boolean = false
     var forceToNotSynced = false
@@ -121,6 +125,9 @@ class MainActivity :
 
     //region LIFECYCLE
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        Timber.tag(TAG).v("For Sure")
+
         app().userComponent()?.let {
             mainComponent = it.plus(MainModule(this)).apply {
                 inject(this@MainActivity)
@@ -134,6 +141,7 @@ class MainActivity :
         } else {
             navigateTo<LoginActivity>(true)
         }
+
 
         binding.navView.setNavigationItemSelectedListener { item ->
             changeFragment(item.itemId)
@@ -151,7 +159,9 @@ class MainActivity :
                 }
 
                 R.id.navigation_programs -> {
+                    Timber.tag("Attempt to open programs").v("kutrya uku")
                     mainNavigator.openPrograms()
+
                 }
 
                 R.id.navigation_analytics -> {

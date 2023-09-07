@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
@@ -140,6 +141,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
+        Timber.tag("Tasvika pascreen riya").v("kutrya uku");
+
         initializeVariables(savedInstanceState);
         inject();
 
@@ -253,6 +256,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onResume() {
+        Timber.tag("Tasvika paResumescreen").v("kutrya uku");
         super.onResume();
         FilterManager.getInstance().clearUnsupportedFilters();
 
@@ -499,6 +503,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             if (legacyInteraction != null) {
                 switch (legacyInteraction.getId()) {
                     case ON_ENROLL_CLICK -> {
+
                         LegacyInteraction.OnEnrollClick interaction = (LegacyInteraction.OnEnrollClick) legacyInteraction;
                         presenter.onEnrollClick(new HashMap<>(interaction.getQueryData()));
                     }
@@ -519,12 +524,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         );
                     }
                     case ON_TEI_CLICK -> {
-                        LegacyInteraction.OnTeiClick interaction = (LegacyInteraction.OnTeiClick) legacyInteraction;
-                        presenter.onTEIClick(
-                                interaction.getTeiUid(),
-                                interaction.getEnrollmentUid(),
-                                interaction.getOnline()
-                        );
+                        Timber.tag("New Activity").v("Navigating ...");
+                        var activityName = "com.hisp.phefumla.MainActivity"; // target activity name
+                        var packageName = "com.hisp.phefumla"; // target package's name
+                        var intent = new Intent().setClassName(packageName, activityName);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                     }
                 }
 
@@ -564,6 +569,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         ViewExtensionsKt.overrideHeight(binding.programSpinner, 500);
         ViewExtensionsKt.doOnItemSelected(binding.programSpinner, selectedIndex -> {
             viewModel.onProgramSelected(selectedIndex, programs, selectedProgram -> {
+
+                Timber.tag("Tasvika paClick riya").v(programs.get(0).getUid());
+
                 changeProgram(selectedProgram);
                 return Unit.INSTANCE;
             });
