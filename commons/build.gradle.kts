@@ -61,10 +61,6 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     api(project(":ui-components"))
 
-    api(libs.dhis2.android.sdk) {
-        exclude("org.hisp.dhis", "core-rules")
-        exclude("com.facebook.flipper")
-    }
     api(project(":core"))
 /*    api(libs.dhis2.android.sdk) {
         exclude("org.hisp.dhis", "core-rules")
