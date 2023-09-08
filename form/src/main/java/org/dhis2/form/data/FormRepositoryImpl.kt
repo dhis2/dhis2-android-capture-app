@@ -38,6 +38,8 @@ class FormRepositoryImpl(
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
 
+    private val allowCollapsableSections: Boolean? = dataEntryRepository?.allowCollapsableSections()
+
     override fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
         openedSectionUid = getInitialOpenedSection(shouldOpenErrorLocation)
@@ -45,13 +47,17 @@ class FormRepositoryImpl(
         return composeList()
     }
 
-    private fun getInitialOpenedSection(shouldOpenErrorLocation: Boolean) =
-        if (shouldOpenErrorLocation) {
+    private fun getInitialOpenedSection(shouldOpenErrorLocation: Boolean) = when {
+        allowCollapsableSections == false ->
+            null
+
+        shouldOpenErrorLocation ->
             itemList.firstOrNull { it.error != null || it.warning != null }?.programStageSection
                 ?: dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
-        } else {
+
+        else ->
             dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
-        }
+    }
 
     override fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
         calculationLoop = 0
@@ -146,6 +152,7 @@ class FormRepositoryImpl(
                     allowDiscard = allowDiscard,
                 )
             }
+
             mandatoryItemsWithoutValue.isNotEmpty() -> {
                 MissingMandatoryResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
@@ -156,6 +163,7 @@ class FormRepositoryImpl(
                     allowDiscard = allowDiscard,
                 )
             }
+
             itemsWithWarning.isNotEmpty() -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
@@ -163,6 +171,7 @@ class FormRepositoryImpl(
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                 )
             }
+
             backupOfChangedItems().isNotEmpty() && allowDiscard -> NotSavedResult
             else -> {
                 SuccessfulResult(
@@ -218,7 +227,7 @@ class FormRepositoryImpl(
         }
         val fieldMap = this.associateBy { it.uid }.toMutableMap()
         ruleEffectsResult = rulesUtilsProvider?.applyRuleEffects(
-            applyForEvent = dataEntryRepository?.isEvent == true,
+            applyForEvent = dataEntryRepository?.isEvent() == true,
             fieldViewModels = fieldMap,
             ruleEffects,
             valueStore = formValueStore,
@@ -258,8 +267,14 @@ class FormRepositoryImpl(
             }
         }
             .filter { field ->
-                field.isSectionWithFields() ||
-                    field.programStageSection == openedSectionUid
+                when (field) {
+                    is SectionUiModelImpl ->
+                        field.isSectionWithFields()
+
+                    else ->
+                        allowCollapsableSections == false ||
+                            field.programStageSection == openedSectionUid
+                }
             }
     }
 
@@ -269,7 +284,8 @@ class FormRepositoryImpl(
     ): FieldUiModel {
         var total = 0
         var values = 0
-        val isOpen = sectionFieldUiModel.uid == openedSectionUid
+        val isOpen = (sectionFieldUiModel.uid == openedSectionUid)
+            .takeIf { allowCollapsableSections != false }
         fields.filter {
             it.programStageSection.equals(sectionFieldUiModel.uid) && it.valueType != null
         }.forEach {
@@ -430,6 +446,10 @@ class FormRepositoryImpl(
         return formValueStore?.storeFile(id, filePath)
     }
 
+    override fun areSectionCollapsable(): Boolean {
+        return allowCollapsableSections ?: true
+    }
+
     override fun setFocusedItem(action: RowAction) {
         focusedItemId = when (action.type) {
             ActionType.ON_NEXT -> getNextItem(action.id)
@@ -447,7 +467,9 @@ class FormRepositoryImpl(
     }
 
     override fun updateSectionOpened(action: RowAction) {
-        openedSectionUid = action.id
+        if (allowCollapsableSections != false) {
+            openedSectionUid = action.id
+        }
     }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =

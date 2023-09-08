@@ -37,6 +37,7 @@ composeConstraintLayout = "1.0.1"
 activityCompose = "1.7.2"
 viewModelCompose = "2.6.1"
 compose_ui_test = "1.5.0"
+compose_ui_viewbinding = "1.5.0"
 material = "1.9.0"
 flexbox = "3.0.0"
 material3 = "1.1.1"
@@ -125,6 +126,7 @@ androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name 
 androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
 androidx-compose-uitooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
 androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
+androidx-compose-viewbinding = {group="androidx.compose.ui", name="ui-viewbinding",version.ref="compose"}
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
@@ -252,8 +254,8 @@ deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose",
     "androidx-material3", "google-material"]
-uicomponents-api = ["androidx-compose-constraintlayout", "androidx-compose-preview",
-    "androidx-compose-ui", "androidx-compose-livedata", "google-material-themeadapter", "google-material3-themeadapter"]
+uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview",
+    "androidx-compose-ui", "androidx-compose-viewbinding", "androidx-compose-livedata", "google-material-themeadapter", "google-material3-themeadapter"]
 uicomponents-debugapi = ["androidx-compose-uitooling"]
 uicomponents-test = ["test-junit"]
 uicomponents-androidtest = ["test-junit-ext", "test-espresso"]

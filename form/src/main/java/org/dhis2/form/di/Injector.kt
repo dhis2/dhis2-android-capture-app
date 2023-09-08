@@ -51,11 +51,13 @@ object Injector {
         context: Context,
         repositoryRecords: FormRepositoryRecords,
         openErrorLocation: Boolean,
+        forceDisableCollapsibleSections: Boolean,
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
                 repositoryRecords,
+                forceDisableCollapsibleSections,
             ),
             provideDispatchers(),
             openErrorLocation,
@@ -77,6 +79,7 @@ object Injector {
     private fun provideFormRepository(
         context: Context,
         repositoryRecords: FormRepositoryRecords,
+        enableCollapsableFeature: Boolean,
     ): FormRepository {
         return FormRepositoryImpl(
             formValueStore = provideFormValueStore(
@@ -90,6 +93,7 @@ object Injector {
                 entryMode = repositoryRecords.entryMode,
                 context = context,
                 repositoryRecords = repositoryRecords,
+                enableCollapsableFeature = enableCollapsableFeature,
             ),
             ruleEngineRepository = provideRuleEngineRepository(
                 repositoryRecords.entryMode,
@@ -104,16 +108,19 @@ object Injector {
         entryMode: EntryMode?,
         context: Context,
         repositoryRecords: FormRepositoryRecords,
+        enableCollapsableFeature: Boolean,
     ): DataEntryRepository {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRepository(
                 context,
                 repositoryRecords as EnrollmentRecords,
+                enableCollapsableFeature,
             )
 
             EntryMode.DE -> provideEventRepository(
                 context,
                 repositoryRecords as EventRecords,
+                enableCollapsableFeature,
             )
 
             else -> provideSearchRepository(
@@ -143,6 +150,7 @@ object Injector {
     private fun provideEnrollmentRepository(
         context: Context,
         enrollmentRecords: EnrollmentRecords,
+        enableCollapsableFeature: Boolean,
     ): DataEntryRepository {
         return EnrollmentRepository(
             fieldFactory = provideFieldFactory(
@@ -154,12 +162,14 @@ object Injector {
             d2 = provideD2(),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
+            enableCollapsableFeature = enableCollapsableFeature,
         )
     }
 
     private fun provideEventRepository(
         context: Context,
         eventRecords: EventRecords,
+        enableCollapsableFeature: Boolean,
     ): DataEntryRepository {
         return EventRepository(
             fieldFactory = provideFieldFactory(
@@ -169,6 +179,7 @@ object Injector {
             ),
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
+            enableCollapsableFeature = enableCollapsableFeature,
         )
     }
 

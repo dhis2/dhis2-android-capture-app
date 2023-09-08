@@ -43,6 +43,7 @@ class FormRepositoryImplTest {
 
     @Before
     fun setUp() {
+        whenever(dataEntryRepository.allowCollapsableSections()) doReturn null
         whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
         repository = FormRepositoryImpl(
@@ -164,7 +165,7 @@ class FormRepositoryImplTest {
             ),
         )
 
-        whenever(dataEntryRepository.isEvent) doReturn true
+        whenever(dataEntryRepository.isEvent()) doReturn true
 
         whenever(
             rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
@@ -232,7 +233,7 @@ class FormRepositoryImplTest {
         val ruleEffects = emptyList<RuleEffect>()
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideMandatoryItemList())
         whenever(ruleEngineRepository.calculate()) doReturn ruleEffects
-        whenever(dataEntryRepository.isEvent) doReturn true
+        whenever(dataEntryRepository.isEvent()) doReturn true
         whenever(
             rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
         ) doReturn RuleUtilsProviderResult(

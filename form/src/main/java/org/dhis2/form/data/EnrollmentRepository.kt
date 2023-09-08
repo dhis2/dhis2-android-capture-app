@@ -33,10 +33,19 @@ class EnrollmentRepository(
     private val d2: D2,
     private val enrollmentMode: EnrollmentMode,
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
-) : DataEntryBaseRepository(d2, fieldFactory) {
+    private val enableCollapsableFeature: Boolean,
+) : DataEntryBaseRepository(d2, fieldFactory, enableCollapsableFeature) {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
+
+    private val program by lazy {
+        d2.programModule().programs().uid(enrollmentRepository.blockingGet()?.program()).get()
+    }
+
+    override val programUid by lazy {
+        program.blockingGet()?.uid()
+    }
 
     private fun canBeEdited(): Boolean {
         val selectedProgram = d2.programModule().programs().uid(
@@ -49,23 +58,19 @@ class EnrollmentRepository(
         return programAccess && teTypeAccess
     }
 
-    private val program by lazy {
-        d2.programModule().programs().uid(enrollmentRepository.blockingGet()?.program()).get()
-    }
-
     private val programSections by lazy {
         d2.programModule().programSections().withAttributes()
             .byProgramUid().eq(enrollmentRepository.blockingGet()?.program())
             .blockingGet()
     }
 
-    override fun sectionUids(): Flowable<MutableList<String>> {
+    override fun sectionUids(): Flowable<List<String>> {
         val sectionUids = mutableListOf(ENROLLMENT_DATA_SECTION_UID)
         sectionUids.addAll(programSections.map { it.uid() })
         return Flowable.just(sectionUids)
     }
 
-    override fun list(): Flowable<MutableList<FieldUiModel>> {
+    override fun list(): Flowable<List<FieldUiModel>> {
         return program
             .flatMap { program ->
                 d2.programModule().programSections().byProgramUid().eq(program.uid())
@@ -85,7 +90,7 @@ class EnrollmentRepository(
                         val fields = getEnrollmentData(program)
                         fields.addAll(list)
                         fields.add(fieldFactory.createClosingSection())
-                        fields
+                        fields.toList()
                     }
             }.toFlowable()
     }

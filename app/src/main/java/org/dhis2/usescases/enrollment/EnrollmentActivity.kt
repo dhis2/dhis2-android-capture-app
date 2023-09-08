@@ -20,6 +20,8 @@ import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
@@ -54,6 +56,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var enrollmentResultDialogUiProvider: EnrollmentResultDialogUiProvider
+
+    @Inject
+    lateinit var featureConfig: FeatureConfigRepository
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -124,6 +129,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 ),
             )
             .openErrorLocation(openErrorLocation)
+            .useComposeForm(
+                featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
+                featureConfig.isFeatureEnable(Feature.DISABLE_COLLAPSIBLE_SECTIONS),
+            )
             .build()
 
         super.onCreate(savedInstanceState)
@@ -176,6 +185,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         )
                     }
                 }
+
                 RQ_EVENT -> openDashboard(presenter.getEnrollment()!!.uid()!!)
             }
         }
@@ -285,6 +295,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 RQ_ENROLLMENT_GEOMETRY -> {
                     presenter.saveEnrollmentGeometry(geometry)
                 }
+
                 RQ_INCIDENT_GEOMETRY -> {
                     presenter.saveTeiGeometry(geometry)
                 }

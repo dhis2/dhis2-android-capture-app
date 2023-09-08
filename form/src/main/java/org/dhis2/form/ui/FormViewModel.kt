@@ -619,6 +619,10 @@ class FormViewModel(
         }
     }
 
+    fun areSectionCollapsable(): Boolean {
+        return repository.areSectionCollapsable()
+    }
+
     companion object {
         const val TAG = "FormViewModel"
     }

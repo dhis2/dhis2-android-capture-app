@@ -117,4 +117,5 @@ dependencies {
     api(libs.test.espresso.idlingconcurrent)
     api(libs.analytics.sentry)
     implementation(libs.github.treeView)
+    api(libs.dhis2.mobile.designsystem)
 }

@@ -7,6 +7,8 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
@@ -85,6 +87,7 @@ class EnrollmentModule(
         d2: D2,
         modelFactory: FieldViewModelFactory,
         enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
+        featureConfigRepository: FeatureConfigRepository,
     ): EnrollmentRepository {
         return EnrollmentRepository(
             fieldFactory = modelFactory,
@@ -92,6 +95,7 @@ class EnrollmentModule(
             d2 = d2,
             enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
             enrollmentFormLabelsProvider = enrollmentFormLabelsProvider,
+            enableCollapsableFeature = featureConfigRepository.isFeatureEnable(Feature.DISABLE_COLLAPSIBLE_SECTIONS),
         )
     }
 

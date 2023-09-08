@@ -22,11 +22,16 @@ class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
     private val d2: D2,
-) : DataEntryBaseRepository(d2, fieldFactory) {
+    private val enableCollapsableFeature: Boolean,
+) : DataEntryBaseRepository(d2, fieldFactory, enableCollapsableFeature) {
 
     private val event by lazy {
         d2.eventModule().events().uid(eventUid)
             .blockingGet()
+    }
+
+    override val programUid by lazy {
+        event?.program()
     }
 
     private val sectionMap by lazy {
@@ -38,11 +43,11 @@ class EventRepository(
             .toMap()
     }
 
-    override fun sectionUids(): Flowable<MutableList<String>> {
-        return Flowable.just(sectionMap.keys.toMutableList())
+    override fun sectionUids(): Flowable<List<String>> {
+        return Flowable.just(sectionMap.keys.toList())
     }
 
-    override fun list(): Flowable<MutableList<FieldUiModel>> {
+    override fun list(): Flowable<List<FieldUiModel>> {
         return d2.programModule().programStageSections()
             .byProgramStageUid().eq(event?.programStage())
             .withDataElements()
@@ -56,7 +61,7 @@ class EventRepository(
             }.map { list ->
                 val fields = list.toMutableList()
                 fields.add(fieldFactory.createClosingSection())
-                fields
+                fields.toList()
             }.toFlowable()
     }
 

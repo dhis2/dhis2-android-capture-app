@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package org.dhis2.form.ui
 
 import android.Manifest
@@ -13,6 +15,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -22,6 +26,11 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -91,6 +100,7 @@ import java.io.File
 import java.util.Calendar
 
 class FormView : Fragment() {
+
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
     private var locationProvider: LocationProvider? = null
     private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
@@ -104,6 +114,27 @@ class FormView : Fragment() {
     private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
+    private var useCompose = false
+    private var forceDisableCollapsibleSections = false
+
+    val textWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            // Not needed
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            viewModel.items.value?.find { it.focused }?.onTextChange(p0)
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            // Not needed
+        }
+    }
+
+    val coordinateTextWatcher = LatitudeLongitudeTextWatcher { coordinates ->
+        viewModel.items.value?.find { it.focused && it.valueType == ValueType.COORDINATE }
+            ?.onTextChange(coordinates)
+    }
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -247,6 +278,7 @@ class FormView : Fragment() {
             repositoryRecords = arguments?.serializable(RECORDS)
                 ?: throw RepositoryRecordsException(),
             openErrorLocation = openErrorLocation,
+            forceDisableCollapsibleSections = forceDisableCollapsibleSections,
         )
     }
 
@@ -299,14 +331,37 @@ class FormView : Fragment() {
             retainInstance = true
         }
         FormFileProvider.init(contextWrapper.applicationContext)
-        return binding.root
+
+        if (useCompose) {
+            return ComposeView(requireContext()).apply {
+                setViewCompositionStrategy(
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+                )
+                setContent {
+                    val items by viewModel.items.observeAsState(emptyList())
+                    Form(
+                        items,
+                        ::intentHandler,
+                        ::uiEventHandler,
+                        textWatcher,
+                        coordinateTextWatcher,
+                        needToForceUpdate,
+                    )
+                }
+            }
+        } else {
+            return binding.root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         FormCountingIdlingResource.increment()
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
-        adapter = DataEntryAdapter(needToForceUpdate)
+        adapter = DataEntryAdapter(
+            needToForceUpdate,
+            viewModel.areSectionCollapsable(),
+        )
 
         binding.recyclerView.adapter = adapter
 
@@ -511,10 +566,12 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
                 uiEvent,
             )
+
             is RecyclerViewUiEvents.OpenTimePicker -> showTimePicker(uiEvent)
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent,
             )
+
             is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
             is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
             is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
@@ -548,6 +605,7 @@ class FormView : Fragment() {
                     Intent.ACTION_DIAL -> {
                         data = Uri.parse("tel:${currentValue.value}")
                     }
+
                     Intent.ACTION_SENDTO -> {
                         data = Uri.parse("mailto:${currentValue.value}")
                     }
@@ -654,6 +712,7 @@ class FormView : Fragment() {
                                 datePicker.dayOfMonth,
                             ),
                         )
+
                         else -> intentHandler(
                             dialogDelegate.handleDateInput(
                                 intent.uid,
@@ -1027,6 +1086,8 @@ class FormView : Fragment() {
         resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
+        useCompose: Boolean,
+        forceDisableCollapsibleSections: Boolean,
     ) {
         this.locationProvider = locationProvider
         this.needToForceUpdate = needToForceUpdate
@@ -1034,6 +1095,8 @@ class FormView : Fragment() {
         this.resultDialogUiProvider = resultDialogUiProvider
         this.actionIconsActivate = actionIconsActivate
         this.openErrorLocation = openErrorLocation
+        this.useCompose = useCompose
+        this.forceDisableCollapsibleSections = forceDisableCollapsibleSections
     }
 
     internal fun setCallbackConfiguration(
@@ -1070,6 +1133,13 @@ class FormView : Fragment() {
         private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
+        private var useComposeForms: Boolean = false
+        private var forceDisableCollapsibleSections: Boolean = false
+
+        fun useComposeForm(useCompose: Boolean, forceDisableCollapsibleSections: Boolean) = apply {
+            this.useComposeForms = useCompose
+            this.forceDisableCollapsibleSections = forceDisableCollapsibleSections
+        }
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -1159,6 +1229,8 @@ class FormView : Fragment() {
                     resultDialogUiProvider,
                     actionIconsActive,
                     openErrorLocation,
+                    useComposeForms,
+                    forceDisableCollapsibleSections,
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(

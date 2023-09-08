@@ -11,10 +11,10 @@ import org.hisp.dhis.android.core.common.ValueType
 class SearchRepository(
     private val d2: D2,
     private val fieldViewModelFactory: FieldViewModelFactory,
-    private val programUid: String?,
+    override val programUid: String?,
     private val teiTypeUid: String,
     private val currentSearchValues: Map<String, String>,
-) : DataEntryBaseRepository(d2, fieldViewModelFactory) {
+) : DataEntryBaseRepository(d2, fieldViewModelFactory, false) {
 
     override fun list(): Flowable<List<FieldUiModel>> {
         return programUid?.let {
@@ -22,7 +22,7 @@ class SearchRepository(
         } ?: trackedEntitySearchFields()
     }
 
-    override fun sectionUids(): Flowable<MutableList<String>> {
+    override fun sectionUids(): Flowable<List<String>> {
         return Flowable.just(mutableListOf())
     }
 

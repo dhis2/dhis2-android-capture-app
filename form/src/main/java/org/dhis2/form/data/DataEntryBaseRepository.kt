@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.bindings.allowCollapsableSectionsInProgram
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -10,10 +11,14 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 abstract class DataEntryBaseRepository(
     private val d2: D2,
     private val fieldFactory: FieldViewModelFactory,
+    private val enableCollapsableFeature: Boolean,
 ) : DataEntryRepository {
+
+    abstract val programUid: String?
+
     override fun updateSection(
         sectionToUpdate: FieldUiModel,
-        isSectionOpen: Boolean,
+        isSectionOpen: Boolean?,
         totalFields: Int,
         fieldsWithValue: Int,
         errorCount: Int,
@@ -31,9 +36,9 @@ abstract class DataEntryBaseRepository(
     override fun updateField(
         fieldUiModel: FieldUiModel,
         warningMessage: String?,
-        optionsToHide: MutableList<String>,
-        optionGroupsToHide: MutableList<String>,
-        optionGroupsToShow: MutableList<String>,
+        optionsToHide: List<String>,
+        optionGroupsToHide: List<String>,
+        optionGroupsToShow: List<String>,
     ): FieldUiModel {
         val optionsInGroupsToHide = optionsFromGroups(optionGroupsToHide)
         val optionsInGroupsToShow = optionsFromGroups(optionGroupsToShow)
@@ -48,6 +53,7 @@ abstract class DataEntryBaseRepository(
                         )
                 }
             }
+
             else -> {
                 fieldUiModel
             }
@@ -97,6 +103,12 @@ abstract class DataEntryBaseRepository(
             it.displayDescription()
         } else {
             null
+        }
+    }
+
+    override fun allowCollapsableSections(): Boolean? {
+        return programUid?.let { d2.allowCollapsableSectionsInProgram(programUid = it) }.takeIf {
+            enableCollapsableFeature
         }
     }
 }
