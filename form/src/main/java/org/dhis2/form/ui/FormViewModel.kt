@@ -51,7 +51,7 @@ class FormViewModel(
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
 
     private val _formFields: MutableState<List<FieldUiModel>> = mutableStateOf(emptyList())
-    val formFields : State<List<FieldUiModel>>
+    val formFields: State<List<FieldUiModel>>
         get() = _formFields
 
     private val _items = MutableLiveData<List<FieldUiModel>>()

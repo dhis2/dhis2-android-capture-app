@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
@@ -28,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,12 +39,6 @@ import kotlinx.coroutines.launch
 import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.SectionUiModelImpl
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
-import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.ui.forms.CollapsableState
-import org.dhis2.ui.forms.FormSection
-import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -66,7 +59,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 @Composable
 fun Form(
     items: List<FieldUiModel>,
-    sections:List<Section> = emptyList(),
+    sections: List<Section> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     textWatcher: TextWatcher,
@@ -98,13 +91,12 @@ fun Form(
             .background(Color.White)
             .padding(horizontal = 16.dp),
         state = scrollState,
-        verticalArrangement = spacedBy(24.dp)
+        verticalArrangement = spacedBy(24.dp),
     ) {
-
-        if(sections.isNotEmpty()){
+        if (sections.isNotEmpty()) {
             this.itemsIndexed(
                 items = sections,
-                key = { _, fieldUiModel -> fieldUiModel.uid }
+                key = { _, fieldUiModel -> fieldUiModel.uid },
             ) { index, section ->
                 Section(
                     title = section.title,
@@ -130,29 +122,30 @@ fun Form(
                                 textWatcher = textWatcher,
                                 coordinateTextWatcher = coordinateTextWatcher,
                                 uiEventHandler = uiEventHandler,
-                                intentHandler = intentHandler
+                                intentHandler = intentHandler,
                             )
                         }
-                    })
+                    },
+                )
             }
-        }else{
+        } else {
             this.itemsIndexed(
                 items = items,
-                key = { _, fieldUiModel -> fieldUiModel.uid }
+                key = { _, fieldUiModel -> fieldUiModel.uid },
             ) { index, fieldUiModel ->
                 val prevItem = items.getOrNull(index - 1)
                 val nextItem = items.getOrNull(index + 1)
                 val showBottomShadow = (fieldUiModel is SectionUiModelImpl) &&
-                        prevItem != null &&
-                        prevItem !is SectionUiModelImpl
+                    prevItem != null &&
+                    prevItem !is SectionUiModelImpl
                 val sectionNumber = items.count {
                     (it is SectionUiModelImpl) && items.indexOf(it) < index
                 } + 1
                 val lastSectionHeight = (fieldUiModel is SectionUiModelImpl) &&
-                        index > 0 &&
-                        index == items.size - 1 &&
-                        prevItem != null &&
-                        prevItem !is SectionUiModelImpl
+                    index > 0 &&
+                    index == items.size - 1 &&
+                    prevItem != null &&
+                    prevItem !is SectionUiModelImpl
 
                 fieldUiModel.updateSectionData(
                     showBottomShadow = showBottomShadow,
@@ -173,7 +166,7 @@ fun Form(
                         },
                         errorCount = fieldUiModel.errors,
                         warningCount = fieldUiModel.warnings,
-                        onSectionClick = fieldUiModel::setSelected
+                        onSectionClick = fieldUiModel::setSelected,
                     )
                 } else {
                     FieldProvider(
@@ -189,7 +182,7 @@ fun Form(
                         textWatcher = textWatcher,
                         coordinateTextWatcher = coordinateTextWatcher,
                         uiEventHandler,
-                        intentHandler
+                        intentHandler,
                     )
                 }
                 if (fieldUiModel !is SectionUiModelImpl && nextItem is SectionUiModelImpl) {
@@ -262,24 +255,24 @@ private fun FieldProvider(
                         add(
                             SupportingTextData(
                                 it,
-                                SupportingTextState.ERROR
-                            )
+                                SupportingTextState.ERROR,
+                            ),
                         )
                     }
                     fieldUiModel.warning?.let {
                         add(
                             SupportingTextData(
                                 it,
-                                SupportingTextState.WARNING
-                            )
+                                SupportingTextState.WARNING,
+                            ),
                         )
                     }
                     fieldUiModel.description?.let {
                         add(
                             SupportingTextData(
                                 it,
-                                SupportingTextState.DEFAULT
-                            )
+                                SupportingTextState.DEFAULT,
+                            ),
                         )
                     }
                 },
@@ -296,10 +289,10 @@ private fun FieldProvider(
                         FormIntent.OnSave(
                             fieldUiModel.uid,
                             value,
-                            fieldUiModel.valueType
-                        )
+                            fieldUiModel.valueType,
+                        ),
                     )
-                }
+                },
             )
         }
 
@@ -359,7 +352,7 @@ data class Section(
     val title: String,
     val description: String,
     val state: SectionState,
-    val fields: List<FieldUiModelImpl>
+    val fields: List<FieldUiModelImpl>,
 ) {
     fun completedFields() = fields.count { it.value != null }
     fun errorCount() = fields.count { it.error != null }
