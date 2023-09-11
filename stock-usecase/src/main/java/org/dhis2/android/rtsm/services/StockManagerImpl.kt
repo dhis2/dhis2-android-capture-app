@@ -126,15 +126,11 @@ class StockManagerImpl @Inject constructor(
     }
 
     private fun filterDeleted(
-        list: MutableList<TrackedEntityInstance>,
+        list: List<TrackedEntityInstance>,
     ): List<TrackedEntityInstance> {
-        val iterator = list.iterator()
-        while (iterator.hasNext()) {
-            val tei = iterator.next()
-            if (tei.deleted() != null && tei.deleted()!!) iterator.remove()
+        return list.filter {
+            it.deleted() == null || !it.deleted()!!
         }
-
-        return list
     }
 
     private fun createEventProjection(
