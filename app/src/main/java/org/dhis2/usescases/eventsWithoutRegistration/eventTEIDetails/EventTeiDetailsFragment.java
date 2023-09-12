@@ -690,11 +690,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
         binding.setCanAddEvents(canAddEvents);
 
-        System.out.println("SETTING EVENTS");
-        System.out.println(canAddEvents);
-        System.out.println(binding.getEnrollment().status());
-//        System.out.println(enrollment);
-
         if (OrientationUtilsKt.isLandscape()) {
             activity.findViewById(R.id.dialFabLayout).setVisibility(View.GONE);
         }

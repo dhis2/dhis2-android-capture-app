@@ -351,6 +351,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     return Unit.INSTANCE;
                 });
                 dialog.show(getSupportFragmentManager(), SHOW_OPTIONS);
+                EventCaptureFormFragment.getBinding().progress.setVisibility(View.GONE);
+                EventCaptureFormFragment.getBinding().actionButton.setVisibility(View.VISIBLE);
             }
         }
     }

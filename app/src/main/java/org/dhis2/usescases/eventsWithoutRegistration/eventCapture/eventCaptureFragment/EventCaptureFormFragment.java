@@ -5,6 +5,7 @@ import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.inject.Inject;
 
 import kotlin.Unit;
@@ -34,7 +37,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     EventCaptureFormPresenter presenter;
 
     private EventCaptureActivity activity;
-    private SectionSelectorFragmentBinding binding;
+    private static SectionSelectorFragmentBinding binding;
     private FormView formView;
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
@@ -43,6 +46,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         args.putString(Constants.EVENT_UID, eventUid);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static SectionSelectorFragmentBinding getBinding() {
+        return binding;
     }
 
     @Override
@@ -95,6 +102,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding.setPresenter(activity.getPresenter());
         binding.actionButton.setOnClickListener(view -> {
             closeKeyboard(view);
+            binding.actionButton.setVisibility(View.GONE);
+            binding.progress.setVisibility(View.VISIBLE);
             performSaveClick();
         });
 

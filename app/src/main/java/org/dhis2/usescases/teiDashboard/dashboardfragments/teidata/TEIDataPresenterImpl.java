@@ -109,7 +109,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void init() {
-
         List<ProgramTrackedEntityAttribute> attributes = dashboardRepository.getProgramTrackedEntityAttributes(programUid).blockingFirst();
         view.setProgramAttributes(attributes);
 
