@@ -153,17 +153,11 @@ class CategoryDialogPresenter(
         )
     }
 
-    private fun filterByDate(options: MutableList<CategoryOption>): MutableList<CategoryOption>? {
-        val iterator = options.iterator()
-        while (iterator.hasNext()) {
-            val option = iterator.next()
-            if (date != null &&
-                (isBeforeDate(option) || isAfterDate(option))
-            ) {
-                iterator.remove()
-            }
+    private fun filterByDate(options: List<CategoryOption>): List<CategoryOption> {
+        return options.filter {
+            date == null ||
+                (!isBeforeDate(it) && !isAfterDate(it))
         }
-        return options
     }
 
     private fun isBeforeDate(option: CategoryOption): Boolean {
