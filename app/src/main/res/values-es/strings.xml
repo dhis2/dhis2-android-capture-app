@@ -888,4 +888,10 @@
     <string name="sms_sync_opening_app">Abriendo aplicación de SMS. Por favor, no modifique el mensaje.</string>
     <string name="sms_sync_sms_app_chooser_title">Enviar SMS con</string>
     <string name="sms_sync_manual_confirmation">Esperando confirmación manual</string>
+    <string name="enrolledIn">Inscrito en:</string>
+    <string name="sync_dialog_title_synced">Sincronizado</string>
+    <string name="sync_dialog_title_syncing">Sincronizando</string>
+    <string name="sync_dialog_action_send">Enviar</string>
+    <string name="sync_dialog_action_refresh">Actualizar</string>
+    <string name="sync_dialog_action_not_now">Ahora no</string>
     </resources>

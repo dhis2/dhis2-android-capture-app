@@ -1,0 +1,63 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Thuis</string>
+    <string name="title_activity_review">Beoordeling</string>
+    <string name="action_settings">Instellingen</string>
+
+    <string name="username">Gebruikersnaam</string>
+    <string name="password">Wachtwoord</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Ga door</string>
+    <string name="review">Beoordeling</string>
+
+    <string name="delete">Verwijder</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annuleren</string>
+    <string name="from">Van</string>
+    <string name="language">Taal</string>
+    <string name="logout">Uitloggen</string>
+
+
+    <string name="prompt_email">Emailadres</string>
+    <string name="prompt_password">Wachtwoord</string>
+    <string name="content_desc_search">Zoek</string>
+    <string name="confirm_transaction_label">Bevestigen</string>
+    <string name="invalid_quantity">Ongeldig</string>
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">Er is iets fout gegaan. Controleer of de server-URL, gebruikersnaam en wachtwoord juist zijn en probeer het opnieuw.</string>
+    <string name="login_error_unknown_host">Onbekende server</string>
+    <string name="online_search_parsing_error">Fout bij het parseren van resultaten</string>
+    <string name="error_many_requests">De server is op dit moment een beetje druk. Probeer het later nog eens.</string>
+    <string name="error_already_authenticated">De gebruiker is al ingelogd.</string>
+    <string name="error_already_executed">Het verzoek is al uitgevoerd.</string>
+    <string name="error_api_invalid_query">Serververzoek is ongeldig.</string>
+    <string name="error_create_existing_error">Creatie afgebroken. Het object bestaat al.</string>
+    <string name="error_export_login">Log in om de database te exporteren.</string>
+    <string name="error_export_encrypted">Het exporteren van een versleutelde database wordt niet ondersteund.</string>
+    <string name="error_import_exist">U importeert een reeds bestaande database.</string>
+    <string name="error_import_logout">Gelieve uit te loggen om een nieuwe database te importeren.</string>
+    <string name="error_import_version">De versie van de geïmporteerde database is hoger dan ondersteund.</string>
+    <string name="error_user_no_authenticated">Er is geen gebruiker geverifieerd.</string>
+    <string name="error_user_no_authenticated_offline">Er is geen gebruiker offline geverifieerd.</string>
+    <string name="error_different_offline_user">U probeert offline in te loggen met een andere gebruiker.</string>
+    <string name="error_object_update">Het object kan niet worden bijgewerkt.</string>
+    <string name="error_object_insert">Het object kon niet worden ingevoegd.</string>
+    <string name="error_null_url">De server-URL ontbreekt. Voer de URL in.</string>
+    <string name="error_server_malformed">De server-URL is niet goed gevormd. Controleer het alstublieft.</string>
+    <string name="error_settings_app_not_supported">Deze versie van de Instellingen-webapp wordt niet ondersteund.</string>
+    <string name="error_settings_app_not_intalled">De Settings Web App is niet op de server geïnstalleerd.</string>
+    <string name="error_socket_timeout">De server nam te veel tijd om te reageren. We hebben het verzoek geannuleerd.</string>
+    <string name="error_url_not_found">We konden de URL niet vinden. Controleer het alstublieft.</string>
+    <string name="error_account_disabled">Uw gebruikersaccount is uitgeschakeld. Neem contact op met uw beheerder als dit een fout is.</string>
+    <string name="error_account_locked">Uw gebruikersaccount is vergrendeld. Neem contact op met uw beheerder als dit een fout is.</string>
+    <string name="error_set_value">De waarde kon niet worden ingesteld.</string>
+    <string name="error_ssl">Er is een probleem met de servercertificaten. Neem contact op met uw beheerder.</string>
+    <string name="done_task">Thuis</string>
+    <string name="back">Terug</string>
+    <string name="no_conflicts_message">Er zijn geen conflicten voor dit programma</string>
+    <string name="action_sync">Versturen</string>
+    <string name="not_saved">Niet opgeslagen</string>
+    <string name="count">Tel</string>
+    <string name="formatting_error">Formatteringsfout</string>
+    <string name="invalid_possitive_zero">Alleen positieve getallen of nul toegestaan</string>
+    <string name="leading_zero_error">Voorloopnullen zijn niet toegestaan</string>
+</resources>
