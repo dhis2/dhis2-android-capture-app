@@ -101,6 +101,7 @@ object Injector {
             ),
             rulesUtilsProvider = provideRulesUtilsProvider(),
             legendValueProvider = provideLegendValueProvider(context),
+            forceDisableCollapsibleSections = enableCollapsableFeature,
         )
     }
 

@@ -28,7 +28,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
@@ -338,14 +337,15 @@ class FormView : Fragment() {
                     ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
                 )
                 setContent {
-                    val items by viewModel.items.observeAsState(emptyList())
+                    val items by viewModel.formFields
                     Form(
-                        items,
-                        ::intentHandler,
-                        ::uiEventHandler,
-                        textWatcher,
-                        coordinateTextWatcher,
-                        needToForceUpdate,
+                        items = items,
+                        sections = emptyList(),
+                        intentHandler = ::intentHandler,
+                        uiEventHandler = ::uiEventHandler,
+                        textWatcher = textWatcher,
+                        coordinateTextWatcher = coordinateTextWatcher,
+                        needToForceUpdate = needToForceUpdate,
                     )
                 }
             }

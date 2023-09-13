@@ -17,8 +17,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.bindings.app
-import org.dhis2.bindings.clipWithRoundedCorners
-import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
@@ -127,7 +125,6 @@ class EventCaptureActivity :
         )
         binding!!.eventViewPager.adapter = adapter
         binding!!.eventViewPager.setCurrentItem(initialPage, false)
-        binding!!.eventViewPager.clipWithRoundedCorners(16.dp)
         binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
