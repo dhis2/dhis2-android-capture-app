@@ -10,17 +10,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
@@ -40,25 +34,19 @@ import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
-import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
-import org.hisp.dhis.mobile.ui.designsystem.component.SectionHeader
-import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Form(
-    items: List<FieldUiModel>,
     sections: List<FormSection> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -100,18 +88,24 @@ fun Form(
             ) { _, section ->
                 Section(
                     title = section.title,
+                    isLastSection = getNextSection(section, sections) == null,
                     description = section.description,
                     completedFields = section.completedFields(),
                     totalFields = section.fields.size,
                     state = section.state,
                     errorCount = section.errorCount(),
                     warningCount = section.warningCount(),
-                    onNextSection = { TODO("Implement next section") },
+                    onNextSection = {
+                        getNextSection(section, sections)?.let {
+                            intentHandler.invoke(FormIntent.OnSection(it.uid))
+                        }
+                    },
                     onSectionClick = {
                         intentHandler.invoke(FormIntent.OnSection(section.uid))
                     },
                     content = {
                         section.fields.forEach { fieldUiModel ->
+                            fieldUiModel.setCallback(callback)
                             FieldProvider(
                                 modifier = Modifier.animateItemPlacement(
                                     animationSpec = tween(
@@ -131,101 +125,16 @@ fun Form(
                     },
                 )
             }
-        } else {
-            this.itemsIndexed(
-                items = items,
-                key = { _, fieldUiModel -> fieldUiModel.uid },
-            ) { index, fieldUiModel ->
-                val prevItem = items.getOrNull(index - 1)
-                val nextItem = items.getOrNull(index + 1)
-                val showBottomShadow = (fieldUiModel is SectionUiModelImpl) &&
-                    prevItem != null &&
-                    prevItem !is SectionUiModelImpl
-                val sectionNumber = items.count {
-                    (it is SectionUiModelImpl) && items.indexOf(it) < index
-                } + 1
-                val lastSectionHeight = (fieldUiModel is SectionUiModelImpl) &&
-                    index > 0 &&
-                    index == items.size - 1 &&
-                    prevItem != null &&
-                    prevItem !is SectionUiModelImpl
-
-                fieldUiModel.updateSectionData(
-                    showBottomShadow = showBottomShadow,
-                    sectionNumber = sectionNumber,
-                    lastSectionHeight = lastSectionHeight,
-                )
-                fieldUiModel.setCallback(callback)
-                if (fieldUiModel is SectionUiModelImpl) {
-                    SectionHeader(
-                        title = fieldUiModel.label,
-                        description = fieldUiModel.description,
-                        completedFields = fieldUiModel.completedFields,
-                        totalFields = fieldUiModel.totalFields,
-                        sectionState = when (fieldUiModel.isOpen) {
-                            true -> SectionState.OPEN
-                            false -> SectionState.CLOSE
-                            null -> SectionState.FIXED
-                        },
-                        errorCount = fieldUiModel.errors,
-                        warningCount = fieldUiModel.warnings,
-                        onSectionClick = fieldUiModel::setSelected,
-                    )
-                } else {
-                    FieldProvider(
-                        modifier = Modifier.animateItemPlacement(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = LinearOutSlowInEasing,
-                            ),
-                        ),
-                        context = context,
-                        fieldUiModel = fieldUiModel,
-                        needToForceUpdate = needToForceUpdate,
-                        textWatcher = textWatcher,
-                        coordinateTextWatcher = coordinateTextWatcher,
-                        uiEventHandler,
-                        intentHandler,
-                    )
-                }
-                if (fieldUiModel !is SectionUiModelImpl && nextItem is SectionUiModelImpl) {
-                    NextSectionButton {
-                        nextItem.setSelected()
-                    }
-                }
-            }
         }
     }
 }
 
-@Composable
-private fun NextSectionButton(onClick: () -> Unit) {
-    Row(Modifier.padding(horizontal = 16.dp)) {
-        Spacer(modifier = Modifier.weight(1f))
-        Button(
-            text = stringResource(id = R.string.next),
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    tint = SurfaceColor.Primary,
-                    contentDescription = "",
-                )
-            },
-            onClick = onClick,
-        )
+private fun getNextSection(section: FormSection, sections: List<FormSection>): FormSection? {
+    val currentIndex = sections.indexOf(section)
+    if (currentIndex != -1 && currentIndex < sections.size - 1) {
+        return sections[currentIndex + 1]
     }
-}
-
-private fun FieldUiModel.updateSectionData(
-    showBottomShadow: Boolean,
-    sectionNumber: Int,
-    lastSectionHeight: Boolean,
-) {
-    if (this is SectionUiModelImpl) {
-        setShowBottomShadow(showBottomShadow)
-        setSectionNumber(sectionNumber)
-        setLastSectionHeight(lastSectionHeight)
-    }
+    return null
 }
 
 @Composable

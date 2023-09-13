@@ -337,10 +337,8 @@ class FormView : Fragment() {
                     ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
                 )
                 setContent {
-                    val items by viewModel.formFields
                     val sections by viewModel.data
                     Form(
-                        items = items,
                         sections = sections,
                         intentHandler = ::intentHandler,
                         uiEventHandler = ::uiEventHandler,
