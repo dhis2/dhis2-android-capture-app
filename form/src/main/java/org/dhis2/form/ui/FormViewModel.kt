@@ -22,8 +22,11 @@ import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.FormSection
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
@@ -35,6 +38,7 @@ import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
 import timber.log.Timber
 
 class FormViewModel(
@@ -53,6 +57,33 @@ class FormViewModel(
     private val _formFields: MutableState<List<FieldUiModel>> = mutableStateOf(emptyList())
     val formFields: State<List<FieldUiModel>>
         get() = _formFields
+
+    val data: State<List<FormSection>>
+        get() {
+            formFields.value.let { items ->
+                val sections = mutableListOf<FormSection>()
+
+                items.forEach { item ->
+                    if (item is SectionUiModelImpl) {
+                        sections.add(
+                            FormSection(
+                                uid = item.uid,
+                                title = item.label,
+                                description = item.description,
+                                state = when (item.isOpen) {
+                                    true -> SectionState.OPEN
+                                    false -> SectionState.CLOSE
+                                    null -> SectionState.FIXED
+                                },
+                                fields = items.filterIsInstance<FieldUiModelImpl>()
+                                    .filter { it.programStageSection == item.uid },
+                            ),
+                        )
+                    }
+                }
+                return mutableStateOf(sections)
+            }
+        }
 
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
@@ -624,6 +655,7 @@ class FormViewModel(
                     null,
                 ),
             )
+
             else -> RowAction(
                 id = uiEvent.uid,
                 value = uiEvent.value,

@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.FormSection
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
@@ -59,7 +59,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 @Composable
 fun Form(
     items: List<FieldUiModel>,
-    sections: List<Section> = emptyList(),
+    sections: List<FormSection> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     textWatcher: TextWatcher,
@@ -97,7 +97,7 @@ fun Form(
             this.itemsIndexed(
                 items = sections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
-            ) { index, section ->
+            ) { _, section ->
                 Section(
                     title = section.title,
                     description = section.description,
@@ -106,7 +106,10 @@ fun Form(
                     state = section.state,
                     errorCount = section.errorCount(),
                     warningCount = section.warningCount(),
-                    onNextSection = { /*TODO*/ },
+                    onNextSection = { TODO("Implement next section") },
+                    onSectionClick = {
+                        intentHandler.invoke(FormIntent.OnSection(section.uid))
+                    },
                     content = {
                         section.fields.forEach { fieldUiModel ->
                             FieldProvider(
@@ -345,16 +348,4 @@ private fun getFieldView(
         }
 
     return DataBindingUtil.inflate(layoutInflater, layoutId, viewgroup, add)
-}
-
-data class Section(
-    val uid: String,
-    val title: String,
-    val description: String,
-    val state: SectionState,
-    val fields: List<FieldUiModelImpl>,
-) {
-    fun completedFields() = fields.count { it.value != null }
-    fun errorCount() = fields.count { it.error != null }
-    fun warningCount() = fields.count { it.error != null }
 }

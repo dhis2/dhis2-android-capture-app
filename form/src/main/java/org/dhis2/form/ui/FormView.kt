@@ -338,9 +338,10 @@ class FormView : Fragment() {
                 )
                 setContent {
                     val items by viewModel.formFields
+                    val sections by viewModel.data
                     Form(
                         items = items,
-                        sections = emptyList(),
+                        sections = sections,
                         intentHandler = ::intentHandler,
                         uiEventHandler = ::uiEventHandler,
                         textWatcher = textWatcher,
