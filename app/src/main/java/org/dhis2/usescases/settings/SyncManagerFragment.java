@@ -39,7 +39,6 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -57,6 +56,8 @@ import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.databinding.FragmentSettingsBinding;
+import org.dhis2.ui.dialogs.alert.AlertDialog;
+import org.dhis2.ui.model.ButtonUiModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
@@ -74,6 +75,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
@@ -203,16 +205,26 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void deleteLocalData() {
-        new MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
-                .setTitle(getString(R.string.delete_local_data))
-                .setMessage(getString(R.string.delete_local_data_message))
-                .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
-                    analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
-                    presenter.deleteLocalData();
-                })
-                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
-                .show();
+        new AlertDialog(
+                getString(R.string.delete_local_data),
+                getString(R.string.delete_local_data_message),
+                null,
+                null,
+                R.raw.warning,
+                new ButtonUiModel(
+                        getString(R.string.cancel),
+                        true,
+                        () -> null
+                ),
+                new ButtonUiModel(
+                        getString(R.string.action_accept),
+                        true,
+                        () -> {
+                            analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
+                            presenter.deleteLocalData();
+                            return null;
+                        })
+        ).show(requireActivity().getSupportFragmentManager());
     }
 
     @Override
