@@ -28,6 +28,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
@@ -81,6 +82,7 @@ import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
@@ -286,6 +288,7 @@ class FormView : Fragment() {
     private lateinit var adapter: DataEntryAdapter
     private lateinit var alertDialogView: View
     private lateinit var dialogDelegate: DialogDelegate
+    private lateinit var formSectionMapper: FormSectionMapper
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
     private var onSavePicture: ((String) -> Unit)? = null
@@ -314,6 +317,7 @@ class FormView : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
         dialogDelegate = DialogDelegate()
+        formSectionMapper = FormSectionMapper()
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -337,7 +341,10 @@ class FormView : Fragment() {
                     ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
                 )
                 setContent {
-                    val sections by viewModel.data
+                    val items by viewModel.items.observeAsState()
+                    val sections = items?.let {
+                        formSectionMapper.mapFromFieldUiModelList(it)
+                    } ?: emptyList()
                     Form(
                         sections = sections,
                         intentHandler = ::intentHandler,
