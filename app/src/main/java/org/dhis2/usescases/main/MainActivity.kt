@@ -138,10 +138,6 @@ class MainActivity :
             navigateTo<LoginActivity>(true)
         }
 
-        if (forceToNotSynced && presenter.hasOneHomeItem()) {
-            navigateToSingleProgram()
-        }
-
         binding.navView.setNavigationItemSelectedListener { item ->
             changeFragment(item.itemId)
             false
