@@ -370,10 +370,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         tEType,
                         initialQuery
                 ))
-                .useComposeForm(
-                        featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
-                        featureConfig.isFeatureEnable(Feature.DISABLE_COLLAPSIBLE_SECTIONS)
-                )
                 .build();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();
