@@ -97,7 +97,7 @@ kotlinxcoroutines = "1.6.4"
 rxrelay = "2.1.1"
 preference_ktx = "1.2.1"
 uiautomator = "2.2.0"
-maplibre = "9.6.0"
+maplibre = "10.2.0"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }

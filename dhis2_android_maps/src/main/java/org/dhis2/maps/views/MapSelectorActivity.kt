@@ -20,8 +20,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-//import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
-import com.mapbox.mapboxsdk.location.engine.LocationEngineProvider
+import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
@@ -128,12 +127,12 @@ class MapSelectorActivity :
             locationComponent.renderMode = RenderMode.COMPASS
             locationComponent.zoomWhileTracking(13.0)
 
-            LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
-                MapActivityLocationCallback(this),
-            )
-            /*LocationEngineDefault.getDefaultLocationEngine(this).getLastLocation(
+            /*LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
                 MapActivityLocationCallback(this),
             )*/
+            LocationEngineDefault.getDefaultLocationEngine(this).getLastLocation(
+                MapActivityLocationCallback(this),
+            )
         }
     }
 
@@ -177,7 +176,7 @@ class MapSelectorActivity :
             viewModel.source!!,
             viewModel.layer!!,
             viewModel.getId(),
-            R.drawable.map_marker,
+            R.drawable.maplibre_marker_icon_default,
         )
     }
 
