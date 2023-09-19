@@ -11,5 +11,5 @@ data class FormSection(
 ) {
     fun completedFields() = fields.count { it.value != null }
     fun errorCount() = fields.count { it.error != null }
-    fun warningCount() = fields.count { it.error != null }
+    fun warningCount() = fields.count { it.warning != null }
 }

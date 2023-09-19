@@ -24,6 +24,7 @@ class FormRepositoryImpl(
     private val ruleEngineRepository: RuleEngineRepository?,
     private val rulesUtilsProvider: RulesUtilsProvider?,
     private val legendValueProvider: LegendValueProvider?,
+    private val useCompose: Boolean,
     private val forceDisableCollapsibleSections: Boolean,
 ) : FormRepository {
 
@@ -273,7 +274,7 @@ class FormRepositoryImpl(
                         field.isSectionWithFields()
 
                     else ->
-                        allowCollapsableSections == false ||
+                        useCompose || allowCollapsableSections == false ||
                             field.programStageSection == openedSectionUid
                 }
             }
