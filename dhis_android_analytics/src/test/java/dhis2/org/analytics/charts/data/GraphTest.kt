@@ -79,6 +79,12 @@ class GraphTest {
         assertTrue(graph.xAxixMaximun() == 0.0f)
     }
 
+    @Test(expected = Test.None::class)
+    fun `Should use current date to calculate localDateFromSteps and don't throw exception`() {
+        val graph = mockedGraph(emptyList())
+        graph.localDateFromSteps(3)
+    }
+
     private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph {
         return Graph(
             "testGraph",
