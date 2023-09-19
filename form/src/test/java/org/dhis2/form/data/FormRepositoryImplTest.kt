@@ -55,6 +55,7 @@ class FormRepositoryImplTest {
             rulesUtilsProvider,
             legendValueProvider,
             false,
+            false
         )
         repository.fetchFormItems()
     }
