@@ -127,9 +127,6 @@ class MapSelectorActivity :
             locationComponent.renderMode = RenderMode.COMPASS
             locationComponent.zoomWhileTracking(13.0)
 
-            /*LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
-                MapActivityLocationCallback(this),
-            )*/
             LocationEngineDefault.getDefaultLocationEngine(this).getLastLocation(
                 MapActivityLocationCallback(this),
             )
