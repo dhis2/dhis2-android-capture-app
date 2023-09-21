@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.view.Gravity;
 import androidx.annotation.NonNull;
@@ -203,6 +204,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         System.out.println("on create view");
         System.out.println(this.teiModel.getAttributeValues());
         System.out.println(this.teiModel.getSelectedEnrollment());
+        System.out.println(this.teiModel.getSelectedEnrollment());
 
 
 
@@ -218,12 +220,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.cardFrontLand.setAttributeListOpened(false);
             binding.cardFrontLand.showAttributesButton.setOnClickListener((event) -> {
 
-                System.out.println("I got click on Tei");
-//                binding.cardFrontLand.setAttributeListOpened(true);
+            ImageView imageView =  activity.findViewById(R.id.showAttributesButton);
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) imageView.getLayoutParams();
+
                 if (binding.cardFrontLand.getAttributeListOpened()) {
                     binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
                     binding.cardFrontLand.setAttributeListOpened(false);
-//                    binding.cardFrontLand.setGravityPosition("start");
+
+                    layoutParams.bottomMargin = 0;
+                    binding.cardFrontLand.showAttributesButton.setLayoutParams(layoutParams);
+
                 } else {
                     binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
                     binding.cardFrontLand.setAttributeListOpened(true);
@@ -232,13 +238,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
                     binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
 
+                    layoutParams.bottomMargin = 90;
+                    binding.cardFrontLand.showAttributesButton.setLayoutParams(layoutParams);
                 }
-
             });
 
             ViewExtensionsKt.clipWithAllRoundedCorners(binding.sectionSelectedMark, ExtensionsKt.getDp(2));
-//            binding.cardLayout.getBackground().setAlpha(11);
-
         }
 
         return binding.getRoot();

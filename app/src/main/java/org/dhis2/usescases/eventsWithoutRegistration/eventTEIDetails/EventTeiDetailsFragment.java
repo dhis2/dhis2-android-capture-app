@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
@@ -215,6 +216,8 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 //        activity.observeFilters().observe(getViewLifecycleOwner(), this::showHideFilters);
 //        activity.updatedEnrollment().observe(getViewLifecycleOwner(), this::updateEnrollment);
 
+        binding.cardFrontLand.setAttributeListOpened(true);
+
         binding.cardFrontLand.showAttributesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -222,12 +225,14 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
                 binding.cardFrontLand.setAttributeListOpened(!binding.cardFrontLand.getAttributeListOpened());
 
+
                 binding.cardFrontLand.showAttributesButton.setOnClickListener((event) -> {
 
-                    System.out.println("I got click on eventStagePage");
+
                     if (binding.cardFrontLand.getAttributeListOpened()) {
                         binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
                         binding.cardFrontLand.setAttributeListOpened(false);
+
                     } else {
                         binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
                         binding.cardFrontLand.setAttributeListOpened(true);
@@ -235,11 +240,13 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                         binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
                         binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
                         binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
+
                     }
 
                 });
             }
         });
+
 
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -252,7 +259,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
         binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
 
-
+        binding.cardFrontLand.setAttributeListOpened(true);
 
         return binding.getRoot();
 

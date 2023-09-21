@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="amber">#FFBF00</color>
+    <color name="black">#FF000000</color>
+    <color name="button_highlight_color">#D685CDE8</color>
+    <color name="button_proceed_background_color">#0000000f</color>
+    <color name="button_proceed_text_color">#00000061</color>
+    <color name="correction_color">#FF9800</color>
+    <color name="correction_dark_color">#CC7A00</color>
+    <color name="correction_light_color">#FFCB33</color>
+    <color name="cyan">#FF62A3BB</color>
+    <color name="dark_grey">#FF716C6C</color>
+    <color name="discard_color">#E91E63</color>
+    <color name="discard_dark_color">#C1134E</color>
+    <color name="discard_light_color">#FF5196</color>
+    <color name="distribution_color">#FF5F8D79</color>
+    <color name="error">#FFAF2D3B</color>
+    <color name="gray_200">#EDEDED</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_900">#212121</color>
+    <color name="grey_border">#FFC7C7C7</color>
+    <color name="info_guide_background_color">#F5FCFF</color>
+    <color name="info_guide_border_color">#0F579DBB</color>
+    <color name="info_guide_icon_color">#5B97B1</color>
+    <color name="input_field_icon_color_tint">#656565</color>
+    <color name="label_text_color">#2E384D</color>
+    <color name="light_grey">#FFF6F5F5</color>
+    <color name="login_separator_line_color">#E1E1E1</color>
+    <color name="mic_active">#E00019</color>
+    <color name="mic_default">#C7C7C7</color>
+    <color name="mic_disabled">#59C7C7C7</color>
+    <color name="normal_text_color">#757D84</color>
+    <color name="primary_color">#FF62A3BB</color>
+    <color name="primary_dark_color">#2F748B</color>
+    <color name="primary_light_color">#94D4ED</color>
+    <color name="primary_stock">#2C98F0</color>
+    <color name="primary_text_color">#ffffff</color>
+    <color name="proceed_color">#E0E0E0</color>
+    <color name="proceed_text_color">#61000000</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="recent_activity_date_text_color">#333333</color>
+    <color name="recent_activity_transaction_text_color">#000000</color>
+    <color name="secondary_color">#62A3BB</color>
+    <color name="secondary_dark_color">#2f748b</color>
+    <color name="secondary_light_color">#94d4ed</color>
+    <color name="secondary_text_color">#ffffff</color>
+    <color name="success_color">#4CAF50</color>
+    <color name="table_text_color">#2E384D</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="text_color">#8A000000</color>
+    <color name="toolbar_subtitle">#8AFFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="viewfinder_mask">#E0161616</color>
+    <color name="white">#FFFFFFFF</color>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="available_count_bottom_margin">8dp</dimen>
+    <dimen name="available_count_top_margin">16dp</dimen>
+    <dimen name="barcode_viewfinder_height">200dp</dimen>
+    <dimen name="barcode_viewfinder_message_offset">350dp</dimen>
+    <dimen name="barcode_viewfinder_width">500dp</dimen>
+    <dimen name="border_radius">4dp</dimen>
+    <dimen name="choices_padding_bottom">16dp</dimen>
+    <dimen name="choices_padding_left">16dp</dimen>
+    <dimen name="choices_padding_right">16dp</dimen>
+    <dimen name="choices_padding_top">16dp</dimen>
+    <dimen name="choices_top_margin">16dp</dimen>
+    <dimen name="close_scanner_right_margin">4dp</dimen>
+    <dimen name="contact_label_top_margin">64dp</dimen>
+    <dimen name="content_area_lr_margin">8dp</dimen>
+    <dimen name="content_area_top_margin">16dp</dimen>
+    <dimen name="distribution_icon_padding">14dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_64">64dp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="fab_bottom_margin">40dp</dimen>
+    <dimen name="fab_corner_radius">16dp</dimen>
+    <dimen name="fab_lr_padding">24dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_right_margin">8dp</dimen>
+    <dimen name="facility_icon_padding">8dp</dimen>
+    <dimen name="flashlight_left_margin">4dp</dimen>
+    <dimen name="flashlight_padding">16dp</dimen>
+    <dimen name="flashlight_top_margin">0dp</dimen>
+    <dimen name="icon_min_size">48dp</dimen>
+    <dimen name="input_to_label_top_margin">4dp</dimen>
+    <dimen name="last_sync_label_bottom_margin">8dp</dimen>
+    <dimen name="last_sync_label_lr_margin">16dp</dimen>
+    <dimen name="last_sync_label_top_margin">8dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+    <dimen name="login_container_precent_width1">0.8</dimen>
+    <dimen name="login_line_border_height">1dp</dimen>
+    <dimen name="login_line_border_width">50dp</dimen>
+    <dimen name="min_touch_target_size">48dp</dimen>
+    <dimen name="oidc_button_top_margin">24dp</dimen>
+    <dimen name="password_top_margin">12dp</dimen>
+    <dimen name="qty_field_padding">8dp</dimen>
+    <dimen name="qty_guide_border_width">1dp</dimen>
+    <dimen name="qty_guide_lr_padding">24dp</dimen>
+    <dimen name="qty_guide_message_margin">4dp</dimen>
+    <dimen name="qty_guide_tb_padding">16dp</dimen>
+    <dimen name="recent_activity_list_margin_bottom">96dp</dimen>
+    <dimen name="recent_activity_list_top_margin">4dp</dimen>
+    <dimen name="recent_activity_margin">8dp</dimen>
+    <dimen name="recent_activity_top_margin">24dp</dimen>
+    <dimen name="round_button_corner_radius">24dp</dimen>
+    <dimen name="scan_button_tb_padding">8dp</dimen>
+    <dimen name="search_box_top_margin">16dp</dimen>
+    <dimen name="select_facility_bottom_margin">16dp</dimen>
+    <dimen name="server_container_padding">12dp</dimen>
+    <dimen name="server_url_lr_margin">40dp</dimen>
+    <dimen name="server_url_padding">8dp</dimen>
+    <dimen name="sign_in_button_top_margin">32dp</dimen>
+    <dimen name="sign_in_header_label_bottom_margin">24dp</dimen>
+    <dimen name="sign_in_header_label_top_margin">48dp</dimen>
+    <dimen name="sign_in_lr_margin">40dp</dimen>
+    <dimen name="splash_screen_text_size">32sp</dimen>
+    <dimen name="splash_screen_text_top_margin">16dp</dimen>
+    <dimen name="staff_members_label_top_margin">48dp</dimen>
+    <dimen name="stock_item_entry_left_margin">16dp</dimen>
+    <dimen name="stock_item_margin">8dp</dimen>
+    <dimen name="stock_item_margin_bottom">4dp</dimen>
+    <dimen name="stock_table_top_margin">8dp</dimen>
+    <dimen name="text_input_corner_radius">4dp</dimen>
+    <dimen name="text_input_width">90dp</dimen>
+    <dimen name="toolbar_text_size">20sp</dimen>
+    <dimen name="trans_date_icon_padding">8dp</dimen>
+    <dimen name="transaction_button_corner_radius">6dp</dimen>
+    <dimen name="transaction_button_divider">16dp</dimen>
+    <dimen name="transaction_button_highlight_width">4dp</dimen>
+    <dimen name="transaction_button_lr_padding">16dp</dimen>
+    <dimen name="transaction_button_no_highlight_width">0dp</dimen>
+    <dimen name="transaction_button_tb_padding">24dp</dimen>
+    <dimen name="transaction_button_text_size">12sp</dimen>
+    <dimen name="transaction_center_button_margin">8dp</dimen>
+    <dimen name="username_top_margin">24dp</dimen>
+    <plurals name="items_found">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="action_settings">Settings</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sync">Send</string>
+    <string name="app_name">Pharmacy Stock Management</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="config_file_error">Unable to load configuration file</string>
+    <string name="config_file_program_error">
+        Stock program id has not been set in the configuration file
+    </string>
+    <string name="confirm_app_restart_message">
+        The application needs to be restarted for the changes to be effected, however,
+        any unsaved changes will be lost.\n\nWill you like to proceed with the restart\?
+    </string>
+    <string name="confirm_transaction_label">Confirm</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="contact_service_desk_message">
+        In case of problems, \nplease contact ICRC service desk
+    </string>
+    <string name="content_desc_clear_text">Clear text</string>
+    <string name="content_desc_close_info_guide">Close information guide</string>
+    <string name="content_desc_distributed_to">Distributed to</string>
+    <string name="content_desc_last_sync">Last Synced</string>
+    <string name="content_desc_quantity_info">More information on quantity</string>
+    <string name="content_desc_recent_activity">Directional arrow</string>
+    <string name="content_desc_recent_activity_status">Recent activity status</string>
+    <string name="content_desc_remove">Remove item</string>
+    <string name="content_desc_search">Search</string>
+    <string name="content_desc_splash" translatable="false">Splash screen image</string>
+    <string name="content_desc_sync_info">Sync information</string>
+    <string name="content_desc_transaction_date">Show date picker</string>
+    <string name="correction">Correction</string>
+    <string name="count">Count</string>
+    <string name="data_sync_error">Unable to complete data sync</string>
+    <string name="data_sync_in_progress">Syncing data…</string>
+    <string name="default_language" translatable="false">en</string>
+    <string name="delete">Delete</string>
+    <string name="destinations_load_error">
+        Unable to load the list of available destinations
+    </string>
+    <string name="discard">Discard</string>
+    <string name="distributed_to">Distributed to</string>
+    <string name="distribution">Distribution</string>
+    <string name="done_task">Home</string>
+    <string name="error_account_disabled">Your user account have been disabled. If this is an error, contact your administrator.</string>
+    <string name="error_account_locked">Your user account is locked. If this is an error, contact your administrator.</string>
+    <string name="error_already_authenticated">The user is already logged in.</string>
+    <string name="error_already_executed">The request has already been executed.</string>
+    <string name="error_api_invalid_query">Server request is invalid.</string>
+    <string name="error_create_existing_error">Creation aborted. The object already exists.</string>
+    <string name="error_different_offline_user">You are trying to login offline with a different user.</string>
+    <string name="error_export_encrypted">Exporting an encrypted database is not supported.</string>
+    <string name="error_export_login">Please login to export the database.</string>
+    <string name="error_import_exist">You are importing an already existing database.</string>
+    <string name="error_import_logout">Please logout to import a new database.</string>
+    <string name="error_import_version">The version of the imported database is higher than supported.</string>
+    <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>
+    <string name="error_null_url">The server URL is missing. Please enter URL.</string>
+    <string name="error_object_insert">The object could not be inserted.</string>
+    <string name="error_object_update">The object could not be updated.</string>
+    <string name="error_ownership_access">You do not have access.</string>
+    <string name="error_server_malformed">The server URL is not well formed. Please check it.</string>
+    <string name="error_set_value">The value could not be set.</string>
+    <string name="error_settings_app_not_intalled">The Settings Web App is not installed in the server.</string>
+    <string name="error_settings_app_not_supported">This version of the Settings Web App is not supported.</string>
+    <string name="error_socket_timeout">The server took too much time to respond. We canceled the request. </string>
+    <string name="error_ssl">There is a problem with the server certificates. Please, contact your administrator.</string>
+    <string name="error_unexpected">Something unexpected went wrong.</string>
+    <string name="error_url_not_found">We couldn´t find the URL. Please verify it.</string>
+    <string name="error_user_no_authenticated">There is no user authenticated.</string>
+    <string name="error_user_no_authenticated_offline">There is no user authenticated offline.</string>
+    <string name="facilities_load_error">Unable to load the list of available facilities</string>
+    <string name="force_data_sync">Force data synchronization</string>
+    <string name="force_sync_confirmation_message">
+        Are you sure you want to force synchronization\?
+    </string>
+    <string name="force_sync_pref_key" translatable="false">force_sync</string>
+    <string name="forgot_password">Forgot password\?</string>
+    <string name="formatting_error">Formatting error</string>
+    <string name="from">From</string>
+    <string name="from_facility">From facility</string>
+    <string name="icrc_staff_members">For ICRC staff members only</string>
+    <string name="insufficient_speech_permissions_error">
+        Insufficient permissions. Request android.permission.RECORD_AUDIO
+    </string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_possitive_zero">Only positive numbers or zero allowed</string>
+    <string name="invalid_quantity">Invalid</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="item">Item</string>
+    <string name="items_available">items available</string>
+    <string name="language">Language</string>
+    <string name="language_arabic">Arabic</string>
+    <string name="language_change_dialog_title">Confirm Restart</string>
+    <string name="language_english">English</string>
+    <string name="language_french">French</string>
+    <string name="language_pref_default" translatable="false">en</string>
+    <string name="language_pref_key" translatable="false">language_preference</string>
+    <string name="language_russian">Russian</string>
+    <string name="language_spanish">Spanish</string>
+    <string name="last_synced">Last synced:</string>
+    <string name="leading_zero_error">Leading zero numbers are not allowed</string>
+    <string name="loading_items_message">Loading stock items …</string>
+    <string name="login_error">Unable to login</string>
+    <string name="login_error_bad_credentials">The username and/or password are incorrect</string>
+    <string name="login_error_error_response">Oops! Something went wrong on the server side.</string>
+    <string name="login_error_no_dhis_instance">The provided URL is not a DHIS2 server.</string>
+    <string name="login_error_unknown_host">Unknown server</string>
+    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
+    <string name="login_failed">Login failed</string>
+    <string name="logout">Logout</string>
+    <string name="logout_confirmation_message">Are you sure you want to log out\?</string>
+    <string name="logout_error_message">
+        An error occurred during logout. Please try again later.
+    </string>
+    <string name="logout_pref_key" translatable="false">logout</string>
+    <string name="logout_success_message">Successfully logged out</string>
+    <string name="mandatory_distributed_to_selection">
+        The "Distributed to" field must be filled before you can proceed
+    </string>
+    <string name="mandatory_facility_selection">
+        The facility field must be filled before you can proceed
+    </string>
+    <string name="mandatory_transaction_date_selection">
+        The \"Distributed to\" field must be filled before you can proceed
+    </string>
+    <string name="mandatory_transaction_selection">
+        A transaction type must be selected and all fields must be filled before you can proceed
+    </string>
+    <string name="metadata_sync_completed">Metadata sync completed!</string>
+    <string name="metadata_sync_error">Unable to complete metadata sync</string>
+    <string name="metadata_sync_in_progress">Syncing metadata…</string>
+    <string name="missing_configuration">
+        One or more required fields are missing in the configuration file
+    </string>
+    <string name="negative_number_speech_input_error">
+        Negative number input is not allowed: \"%s\"
+    </string>
+    <string name="negative_value">
+        <b><span style="color: #C81818">Negative value</span></b> = \"found in stock\"     (<i>physical stock is more than the calculated value</i>)
+    </string>
+    <string name="no_conflicts_message">There are no conflicts for this program</string>
+    <string name="no_items_found">No items found</string>
+    <string name="no_network_available">No network connection available</string>
+    <string name="no_speech_match_error">No recognition result matched.</string>
+    <string name="non_icrc_staff_members">For non-ICRC staff members only</string>
+    <string name="non_numeric_speech_input_error">Non-numeric input is not allowed: \"%s\"</string>
+    <string name="not_saved">Not saved</string>
+    <string name="ok">OK</string>
+    <string name="online_search_parsing_error">Error while parsing results</string>
+    <string name="openid_authentication_not_successful">
+        Unable to authenticate with your ICRC account
+    </string>
+    <string name="openid_config_load_error">Unable to load OpenID configuration</string>
+    <string name="password">Password</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_granted">Permission Granted</string>
+    <string name="positive_value">
+        <b>Positive value</b>  = \"missing quantity\" (<i>physical stock less than the calculated value</i>)
+    </string>
+    <string name="previous_page_lose_data_warning">
+        Are you sure you want to go back to the previous screen\?
+        You will lose the data just entered if you decide to proceed.
+    </string>
+    <string name="proceed">Proceed</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="quantity">Quantity</string>
+    <string name="recent_activities_empty_message">You are yet to perform any activity</string>
+    <string name="recent_activities_load_error">Unable to load your recent activities</string>
+    <string name="recent_activities_loading_message">Loading recent activities…</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="remove_correction_item_confirmation_message">
+        Are you sure you want to permanently delete the entry for the correction of \"%1$s\"\?
+        This action cannot be undone.
+    </string>
+    <string name="remove_discard_item_confirmation_message">
+        Are you sure you want to permanently delete the entry for the discard of \"%1$s\"\?
+        This action cannot be undone.
+    </string>
+    <string name="remove_distribution_item_confirmation_message">
+        Are you sure you want to permanently delete the entry for the distribution of \"%1$s\"\?
+        This action cannot be undone.
+    </string>
+    <string name="restart_later">Restart Later</string>
+    <string name="resync">Resync</string>
+    <string name="review">Review</string>
+    <string name="reviewed_item_cannot_be_empty_message">
+        A stock under review cannot be empty. You can remove the item if not desired
+    </string>
+    <string name="scan_barcode">Scan barcode</string>
+    <string name="scan_canceled">Scan cancelled!</string>
+    <string name="scanning">Scanning…</string>
+    <string name="search">Search item</string>
+    <string name="search_placeholder">Search…</string>
+    <string name="select_facility">Select Facility</string>
+    <string name="select_language">Select your desired language</string>
+    <string name="select_one">Select one</string>
+    <string name="select_transaction">Select transaction</string>
+    <string name="server">Server:</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_in_to_with_oidc">Sign in with ICRC account</string>
+    <string name="sign_in_to_your_account">Sign in to your account</string>
+    <string name="speech_audio_error">Audio recording error</string>
+    <string name="speech_client_error">
+        Client side error. Please check your internet connection!
+    </string>
+    <string name="speech_network_error">Network error</string>
+    <string name="speech_network_timeout_error">Network operation timed out</string>
+    <string name="speech_recognition_service_busy_error">Recognition service is busy</string>
+    <string name="speech_server_error">An error occurred on the speech server</string>
+    <string name="speech_timeout_error">No speech input detected</string>
+    <string name="stock">Stock</string>
+    <string name="stock_on_hand">Stock on hand</string>
+    <string name="stock_on_hand_exceeded_message">
+        Available stock on hand cannot be exceeded
+    </string>
+    <string name="subtitle">%s</string>
+    <string name="sync_completed">Syncing completed!</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_review">Review</string>
+    <string name="to">Delivery to…</string>
+    <string name="to_arg">To %s</string>
+    <string name="to_facility">To facility</string>
+    <string name="transaction_cancelled">
+        The transaction was successfully cancelled!
+    </string>
+    <string name="transaction_completed">
+        The transaction was successfully completed!
+    </string>
+    <string name="transaction_date">Date of Transaction</string>
+    <string name="transaction_discarted">This transaction has not been confirmed. If you change the settings, the data entered will be discarted.</string>
+    <string name="transaction_not_confirmed">The transaction has not been confirmed. If you exit now the data entered will be discarded.</string>
+    <string name="unable_to_sync_data_no_network_available">
+        Unable to synchronize data because there is no network connection available
+    </string>
+    <string name="under_review">Under Review</string>
+    <string name="unexpected_openid_authentication_error">
+        An unexpected error occurred while authenticating with OpenID
+    </string>
+    <string name="unknown_speech_error">An unknown error occurred.</string>
+    <string name="use_mic_pref_key" translatable="false">use_mic</string>
+    <string name="use_microphone_for_data_entry">Use microphone for data entry</string>
+    <string name="username">Username</string>
+    <string name="username_pref_key" translatable="false">logged_in_user</string>
+    <string name="welcome">Welcome !</string>
+    <style name="InfoBoxTextStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="ListError">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@color/error</item>
+    </style>
+    <style name="ListNormal">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@color/gray_400</item>
+    </style>
+    <style name="SignInHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/label_text_color</item>
+    </style>
+    <style name="SplashScreenLabel">
+        <item name="android:textSize">@dimen/splash_screen_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextLabel">
+        <item name="android:textColor">@color/label_text_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingBottom">@dimen/dp_8</item>
+    </style>
+    <style name="Theme.App" parent="Theme.MaterialComponents.Light.NoActionBar">
+        
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryVariant">@color/primary_dark_color</item>
+        <item name="colorOnPrimary">@color/primary_text_color</item>
+
+        
+        <item name="colorSecondary">@color/secondary_color</item>
+        <item name="colorSecondaryVariant">@color/secondary_dark_color</item>
+        <item name="colorOnSecondary">@color/secondary_text_color</item>
+
+        
+        <item name="android:statusBarColor" ns1:targetApi="l">@color/gray_900</item>
+        <item name="android:colorControlNormal">@color/white</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+    <style name="Theme.App.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="Theme.App.Correction" parent="Theme.App">
+        <item name="extendedFloatingActionButtonStyle">
+            @style/Widget.App.Correction.ExtendedFloatingActionButton
+        </item>
+        <item name="toolbarStyle">@style/Widget.App.Correction.Toolbar</item>
+    </style>
+    <style name="Theme.App.Discard" parent="Theme.App">
+        <item name="extendedFloatingActionButtonStyle">
+            @style/Widget.App.Discard.ExtendedFloatingActionButton
+        </item>
+        <item name="toolbarStyle">@style/Widget.App.Discard.Toolbar</item>
+    </style>
+    <style name="Theme.App.Distribution" parent="Theme.App">
+        <item name="extendedFloatingActionButtonStyle">
+            @style/Widget.App.Distribution.ExtendedFloatingActionButton
+        </item>
+
+        <item name="toolbarStyle">@style/Widget.App.Distribution.Toolbar</item>
+    </style>
+    <style name="Theme.App.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.App.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="Theme.App.TextButton" parent="Widget.MaterialComponents.Button.TextButton"/>
+    <style name="Theme.BarcodeCapture" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <style name="ThemeOverlay.App.Correction" parent="">
+        <item name="colorSecondary">@color/correction_color</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSurface">@color/white</item>
+    </style>
+    <style name="ThemeOverlay.App.Correction.Toolbar" parent="">
+        <item name="colorPrimary">@color/correction_color</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+    <style name="ThemeOverlay.App.Default.Toolbar" parent="">
+        <item name="colorPrimary">@color/gray_900</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+    <style name="ThemeOverlay.App.Discard" parent="">
+        <item name="colorSecondary">@color/discard_color</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSurface">@color/white</item>
+    </style>
+    <style name="ThemeOverlay.App.Discard.Toolbar" parent="">
+        <item name="colorPrimary">@color/discard_color</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+    <style name="ThemeOverlay.App.Distribution" parent="">
+        <item name="colorSecondary">@color/distribution_color</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSurface">@color/white</item>
+    </style>
+    <style name="ThemeOverlay.App.Distribution.Toolbar" parent="">
+        <item name="colorPrimary">@color/distribution_color</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+    <style name="Widget.App.Button.OutlinedButton.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@android:color/transparent</item>
+        <item name="android:minWidth">@dimen/icon_min_size</item>
+        <item name="android:minHeight">@dimen/icon_min_size</item>
+    </style>
+    <style name="Widget.App.Correction.ExtendedFloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Correction
+        </item>
+    </style>
+    <style name="Widget.App.Correction.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Correction
+        </item>
+    </style>
+    <style name="Widget.App.Correction.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Correction.Toolbar
+        </item>
+    </style>
+    <style name="Widget.App.Default.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Default.Toolbar
+        </item>
+    </style>
+    <style name="Widget.App.Discard.ExtendedFloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Discard
+        </item>
+    </style>
+    <style name="Widget.App.Discard.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Discard
+        </item>
+    </style>
+    <style name="Widget.App.Discard.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Discard.Toolbar
+        </item>
+    </style>
+    <style name="Widget.App.Distribution.ExtendedFloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Distribution
+        </item>
+    </style>
+    <style name="Widget.App.Distribution.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Distribution
+        </item>
+    </style>
+    <style name="Widget.App.Distribution.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.App.Distribution.Toolbar
+        </item>
+    </style>
+    <style name="correction" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorPrimary">@color/correction_color</item>
+        <item name="colorPrimaryDark">@color/correction_dark_color</item>
+        <item name="colorPrimaryLight">@color/correction_light_color</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor</item>
+        <item name="primaryDarkBgTextColor">@color/primaryDarkBgTextColor</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="button_selector">@drawable/button_selector</item>
+        <item name="selector_button_round_20">@drawable/selector_button_round_20</item>
+        <item name="selector_button_round_7">@drawable/selector_button_round_7</item>
+        <item name="selector_button_round_2">@drawable/selector_button_round_2</item>
+        <item name="image_selector_bg">@drawable/image_selector_bg</item>
+        <item name="period_button">@drawable/period_button</item>
+        <item name="period_time_button">@drawable/period_time_button</item>
+        <item name="toast_bg">@drawable/toast_bg</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+        <item name="textInputStyle">@style/Widget.Design.TextInputLayout</item>
+        <item name="navigationViewStyle">@style/Widget.Design.NavigationView</item>
+        <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
+
+    </style>
+    <style name="discard" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorPrimary">@color/discard_color</item>
+        <item name="colorPrimaryDark">@color/discard_dark_color</item>
+        <item name="colorPrimaryLight">@color/discard_light_color</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor</item>
+        <item name="primaryDarkBgTextColor">@color/primaryDarkBgTextColor</item>
+        <item name="whiteBgTextColor">@color/discard_light_color</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="button_selector">@drawable/button_selector</item>
+        <item name="selector_button_round_20">@drawable/selector_button_round_20</item>
+        <item name="selector_button_round_7">@drawable/selector_button_round_7</item>
+        <item name="selector_button_round_2">@drawable/selector_button_round_2</item>
+        <item name="image_selector_bg">@drawable/image_selector_bg</item>
+        <item name="period_button">@drawable/period_button</item>
+        <item name="period_time_button">@drawable/period_time_button</item>
+        <item name="toast_bg">@drawable/toast_bg</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+        <item name="textInputStyle">@style/Widget.Design.TextInputLayout</item>
+        <item name="navigationViewStyle">@style/Widget.Design.NavigationView</item>
+        <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
+    </style>
+</resources>
