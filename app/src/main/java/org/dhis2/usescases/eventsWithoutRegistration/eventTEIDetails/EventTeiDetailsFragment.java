@@ -227,11 +227,15 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
 
                 binding.cardFrontLand.showAttributesButton.setOnClickListener((event) -> {
-
+                    ImageView imageView =  activity.findViewById(R.id.showAttributesButton);
+                    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) imageView.getLayoutParams();
 
                     if (binding.cardFrontLand.getAttributeListOpened()) {
                         binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
                         binding.cardFrontLand.setAttributeListOpened(false);
+
+                        layoutParams.bottomMargin = 0;
+                        binding.cardFrontLand.showAttributesButton.setLayoutParams(layoutParams);
 
                     } else {
                         binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
@@ -240,6 +244,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                         binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END);
                         binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END);
                         binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END);
+
+                        layoutParams.bottomMargin = 90;
+                        binding.cardFrontLand.showAttributesButton.setLayoutParams(layoutParams);
 
                     }
 
