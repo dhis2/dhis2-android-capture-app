@@ -38,6 +38,10 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.development_activity);
 
+        binding.periodGeneration.setOnClickListener(view ->
+                startActivity(PeriodGenerationActivity.class, null, false, false, null)
+        );
+
         loadIconsDevTools();
         loadCrashControl();
         loadFeatureConfig();

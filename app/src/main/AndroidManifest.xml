@@ -166,6 +166,7 @@
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
             </intent-filter>
         </activity>
+        <activity android:name="org.dhis2.usescases.development.PeriodGenerationActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

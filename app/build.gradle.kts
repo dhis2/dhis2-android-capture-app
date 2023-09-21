@@ -14,6 +14,7 @@ apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 repositories {
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
     mavenCentral()
+    mavenLocal()
 }
 
 android {
@@ -306,4 +307,7 @@ dependencies {
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
     androidTestImplementation(libs.dispatcher.dispatchEspresso)
+
+    implementation(libs.dhis2.period.generator)
+
 }

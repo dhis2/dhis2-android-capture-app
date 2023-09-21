@@ -1,8 +1,11 @@
+import java.util.Locale
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
         google()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+        mavenLocal()
     }
     dependencies {
         classpath(libs.gradlePlugin)
@@ -43,7 +46,7 @@ sonarqube {
 
 val isNonStable: (String) -> Boolean = { version ->
     val stableKeyword =
-        listOf("RELEASE", "FINAL", "GA").any { it -> version.toUpperCase().contains(it) }
+        listOf("RELEASE", "FINAL", "GA").any { it -> version.uppercase(Locale.getDefault()).contains(it) }
     val regex = """^[0-9,.v-]+(-r)?$""".toRegex()
     !stableKeyword && !(version matches regex)
 }
