@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -29,9 +31,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import kotlin.js.ExperimentalJsExport
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import period_calculation.CalendarType
 import period_calculation.FixedPeriod
@@ -66,7 +70,7 @@ class PeriodGenerationActivity : ActivityGlobalAbstract() {
                         onExpandedChange = { viewModel.showDropDown() }
                     ) {
                         TextField(
-                            value = when(currentValue.calendarType){
+                            value = when (currentValue.calendarType) {
                                 is CalendarType.Ethiopian -> "Ethiopian"
                                 is CalendarType.Gregorian -> "Gregorian"
                                 is CalendarType.Nepali -> "Nepali"
@@ -99,11 +103,25 @@ class PeriodGenerationActivity : ActivityGlobalAbstract() {
                             .weight(1f),
                         verticalArrangement = spacedBy(8.dp)
                     ) {
+                        if (currentValue.loading) {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        }
                         items(items = currentValue.periods) { fixedPeriod ->
-                            Card(Modifier.fillMaxWidth().padding(
-                                horizontal = 8.dp,
-                                vertical = 4.dp
-                            )) {
+                            Card(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        horizontal = 8.dp,
+                                        vertical = 4.dp
+                                    )
+                            ) {
                                 Column(
                                     Modifier
                                         .fillMaxWidth()
@@ -118,12 +136,16 @@ class PeriodGenerationActivity : ActivityGlobalAbstract() {
                                     Text(
                                         modifier = Modifier
                                             .fillMaxWidth(),
-                                        text = fixedPeriod.name
+                                        text = "Name: ${fixedPeriod.name}"
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        text = "ISO: ${fixedPeriod.startDate}"
                                     )
                                 }
                             }
                         }
-
                     }
 
                     Button(onClick = viewModel::getPeriods) {
@@ -149,16 +171,21 @@ class PeriodGenerationViewModel : ViewModel() {
     }
 
     fun getPeriods() {
-        viewModelScope.launch {
-            val periods = periodGenerator.generatePeriod(
-                PeriodOptions(
-                    year = _screenState.value.currentValue.toIntOrNull() ?: 2023,
-                    periodType = PeriodType.DAILY,
-                    calendar = _screenState.value.calendarType
-                )
-            )
-            _screenState.emit(_screenState.value.copy(periods = periods.toList()))
+        viewModelScope.launch(Dispatchers.IO) {
+            _screenState.emit(_screenState.value.copy(loading = true))
+            val periods = generatePeriods()
+            _screenState.emit(_screenState.value.copy(periods = periods, loading = false))
         }
+    }
+
+    private suspend fun generatePeriods() = withContext(Dispatchers.IO) {
+        periodGenerator.generatePeriod(
+            PeriodOptions(
+                year = _screenState.value.currentValue.toIntOrNull() ?: 2023,
+                periodType = PeriodType.DAILY,
+                calendar = _screenState.value.calendarType
+            )
+        ).toList()
     }
 
     fun selectCalendar(calendar: CalendarType) {
@@ -188,4 +215,5 @@ data class ScreenState(
     val periods: List<FixedPeriod> = emptyList(),
     val calendarType: CalendarType = CalendarType.Gregorian(),
     val showDropDown: Boolean = false,
+    val loading: Boolean = false,
 )

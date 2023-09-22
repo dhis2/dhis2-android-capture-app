@@ -308,6 +308,8 @@ dependencies {
     androidTestImplementation(libs.test.hamcrest)
     androidTestImplementation(libs.dispatcher.dispatchEspresso)
 
-    implementation(libs.dhis2.period.generator)
+    implementation(libs.dhis2.period.generator){
+        isChanging = true
+    }
 
 }
