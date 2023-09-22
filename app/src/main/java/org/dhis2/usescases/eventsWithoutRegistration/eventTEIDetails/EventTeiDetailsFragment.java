@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -208,15 +209,22 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_event_tei_details, container, false);
         binding.setPresenter(presenter);
-//        activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
-//            showLoadingProgress(true);
-//            binding.setIsGrouping(group);
-//            presenter.onGroupingChanged(group);
-//        });
-//        activity.observeFilters().observe(getViewLifecycleOwner(), this::showHideFilters);
-//        activity.updatedEnrollment().observe(getViewLifecycleOwner(), this::updateEnrollment);
 
-        binding.cardFrontLand.setAttributeListOpened(true);
+        binding.cardFrontLand.setAttributeListOpened(false);
+
+        Handler handler = new Handler();
+        int delayMillis = 1000;
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                ImageView imageView =  activity.findViewById(R.id.showAttributesButton);
+                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) imageView.getLayoutParams();
+
+                layoutParams.bottomMargin = 90;
+                binding.cardFrontLand.showAttributesButton.setLayoutParams(layoutParams);
+            }
+        };
+        handler.postDelayed(runnable, delayMillis);
 
         binding.cardFrontLand.showAttributesButton.setOnClickListener(new View.OnClickListener() {
             @Override
