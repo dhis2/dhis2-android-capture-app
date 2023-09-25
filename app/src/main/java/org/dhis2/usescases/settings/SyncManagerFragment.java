@@ -20,6 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -42,10 +43,10 @@ import androidx.work.WorkInfo;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.dhis2.bindings.ContextExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.bindings.ContextExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
@@ -286,6 +287,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.dataDivider.setVisibility(View.GONE);
                         binding.dataSyncBottomShadow.setVisibility(View.VISIBLE);
                         binding.dataSyncTopShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemData);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -295,6 +297,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.metaDivider.setVisibility(View.GONE);
                         binding.metaDataTopShadow.setVisibility(View.VISIBLE);
                         binding.metaDataBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemMeta);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -304,6 +307,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.parameterDivider.setVisibility(View.GONE);
                         binding.itemParamsSyncTopShadow.setVisibility(View.VISIBLE);
                         binding.itemParamsSyncBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemParams);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -313,12 +317,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.reservedValueDivider.setVisibility(View.GONE);
                         binding.reservedValueTopShadow.setVisibility(View.VISIBLE);
                         binding.reservedValueBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemValues);
                         return Unit.INSTANCE;
                     });
                     break;
                 case DELETE_LOCAL_DATA:
                     ViewAnimationsKt.expand(binding.deleteDataButton, true, () -> {
                         binding.deleteDataButton.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemDeleteData);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -327,12 +333,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.smsContent.setVisibility(View.VISIBLE);
                         binding.smsTopShadow.setVisibility(View.VISIBLE);
                         binding.smsBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.smsSettings);
                         return Unit.INSTANCE;
                     });
                     break;
                 case VERSION_UPDATE:
-                    ViewAnimationsKt.expand(binding.versionButton,true, () -> {
+                    ViewAnimationsKt.expand(binding.versionButton, true, () -> {
                         binding.versionButton.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemVersion);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -343,6 +351,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             closedSettingItem(settingOpened);
             settingOpened = null;
         }
+    }
+
+    private void scrollToChild(View child) {
+        int[] l = new int[2];
+        child.getLocationOnScreen(l);
+        Rect rect = new Rect(l[0], l[1], l[0] + child.getWidth(), l[1] + child.getHeight());
+        binding.scrollView.requestChildRectangleOnScreen(child,rect, false);
     }
 
     private void closedSettingItem(SettingItem settingItemToClose) {
