@@ -141,7 +141,7 @@ fun Dhis2AlertDialogUi(
                         }
                     },
                 )
-                if (animationRes != null) {
+                animationRes?.let {
                     Spacer(modifier = Modifier.size(16.dp))
                     if (!confirmButtonClick.value) {
                         LottieAnimation(
@@ -151,8 +151,7 @@ fun Dhis2AlertDialogUi(
                             composition = composition,
                             iterations = LottieConstants.IterateForever,
                         )
-                    }
-                    if (confirmButtonClick.value) {
+                    } else {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -172,7 +171,7 @@ fun Dhis2AlertDialogUi(
             }
         },
         icon = {
-            if (iconResource != null) {
+            iconResource?.let {
                 Icon(
                     painter = painterResource(id = iconResource),
                     tint = MaterialTheme.colorScheme.primary,
@@ -185,7 +184,7 @@ fun Dhis2AlertDialogUi(
                 modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
                 onClick = {
                     confirmButtonClick.value = true
-                    if (animationRes != null) {
+                    animationRes?.let {
                         val job = Job()
                         val scope = CoroutineScope(job)
 
@@ -193,9 +192,7 @@ fun Dhis2AlertDialogUi(
                             delay(5000)
                             confirmButton.onClick.invoke()
                         }
-                    } else {
-                        confirmButton.onClick.invoke()
-                    }
+                    } ?: confirmButton.onClick.invoke()
                 },
             ) {
                 Text(text = confirmButton.text)

@@ -1035,7 +1035,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     private void observeVersionUpdates() {
         presenter.getUpdatesLoading().observe(getViewLifecycleOwner(), loading -> {
-            if (loading) {
+            if (Boolean.TRUE.equals(loading)) {
                 ViewAnimationsKt.expand(binding.loadingCheckVersion, true, () -> Unit.INSTANCE);
             }
         });
