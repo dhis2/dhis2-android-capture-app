@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -180,20 +181,23 @@ fun Dhis2AlertDialogUi(
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                confirmButtonClick.value = true
-                if (animationRes != null) {
-                    val job = Job()
-                    val scope = CoroutineScope(job)
+            TextButton(
+                modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
+                onClick = {
+                    confirmButtonClick.value = true
+                    if (animationRes != null) {
+                        val job = Job()
+                        val scope = CoroutineScope(job)
 
-                    scope.launch {
-                        delay(5000)
+                        scope.launch {
+                            delay(5000)
+                            confirmButton.onClick.invoke()
+                        }
+                    } else {
                         confirmButton.onClick.invoke()
                     }
-                } else {
-                    confirmButton.onClick.invoke()
-                }
-            }) {
+                },
+            ) {
                 Text(text = confirmButton.text)
             }
         },
@@ -204,3 +208,5 @@ fun Dhis2AlertDialogUi(
         },
     )
 }
+
+const val CONFIRM_BUTTON_TAG = "CONFIRM_BUTTON_TAG"
