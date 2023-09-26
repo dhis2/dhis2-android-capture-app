@@ -44,7 +44,7 @@ material3 = "1.1.1"
 themeAdapter = "0.28.0"
 pinlock = "2.1.0"
 fancyshowcase = "1.1.5"
-lottie = "3.4.0"
+lottie = "6.1.0"
 rxjava = "2.2.21"
 rxandroid = "2.1.1"
 rxbindings = "2.1.1"
@@ -186,6 +186,7 @@ barcodeScanner-scanner = { group = "me.dm7.barcodescanner", name = "zxing", vers
 barcodeScanner-zxing-android = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingandroid" }
 
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+lottie-compose = { group = "com.airbnb.android", name= "lottie-compose", version.ref= "lottie"}
 
 analytics-matomo = { group = "com.github.matomo-org", name = "matomo-sdk-android", version.ref = "matomo" }
 analytics-flipper = { group = "com.facebook.flipper", name = "flipper", version.ref = "flipper" }
@@ -253,7 +254,7 @@ deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto
 
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose",
-    "androidx-material3", "google-material"]
+    "androidx-material3", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview",
     "androidx-compose-ui", "androidx-compose-viewbinding", "androidx-compose-livedata", "google-material-themeadapter", "google-material3-themeadapter"]
 uicomponents-debugapi = ["androidx-compose-uitooling"]
