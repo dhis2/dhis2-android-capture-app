@@ -95,8 +95,8 @@ class MapSelectorActivity :
             map = mapboxMap
             mapboxMap.setStyle(
                 baseMapManager.styleJson(
-                    baseMapManager.getDefaultBasemap()
-                )
+                    baseMapManager.getDefaultBasemap(),
+                ),
             ) { style ->
                 this.style = style
                 enableLocationComponent()
@@ -118,8 +118,8 @@ class MapSelectorActivity :
             locationComponent.activateLocationComponent(
                 LocationComponentActivationOptions.builder(
                     this,
-                    style!!
-                ).build()
+                    style!!,
+                ).build(),
             )
 
             locationComponent.isLocationComponentEnabled = true
@@ -128,7 +128,7 @@ class MapSelectorActivity :
             locationComponent.zoomWhileTracking(13.0)
 
             LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
-                MapActivityLocationCallback(this)
+                MapActivityLocationCallback(this),
             )
         }
     }
@@ -173,7 +173,7 @@ class MapSelectorActivity :
             viewModel.source!!,
             viewModel.layer!!,
             viewModel.getId(),
-            R.drawable.mapbox_marker_icon_default
+            R.drawable.mapbox_marker_icon_default,
         )
     }
 
@@ -181,8 +181,8 @@ class MapSelectorActivity :
         val geoJson = (style?.getSource(source.id) as GeoJsonSource)
         geoJson.setGeoJson(
             Feature.fromGeometry(
-                point
-            )
+                point,
+            ),
         )
         return geoJson
     }
@@ -190,7 +190,7 @@ class MapSelectorActivity :
     private fun showSource(source: GeoJsonSource, layer: SymbolLayer, id: String, drawable: Int) {
         style?.addImage(
             id,
-            ResourcesCompat.getDrawable(resources, drawable, null)!!.toBitmap()
+            ResourcesCompat.getDrawable(resources, drawable, null)!!.toBitmap(),
         )
         style?.addSource(source)
         style?.addLayer(layer)
@@ -201,7 +201,7 @@ class MapSelectorActivity :
         source: GeoJsonSource,
         layer: SymbolLayer,
         id: String,
-        drawable: Int
+        drawable: Int,
     ) {
         if (style?.getSource(source.id) != null) {
             updateSource(point, source)
@@ -213,7 +213,7 @@ class MapSelectorActivity :
     private fun createLayer(id: String): SymbolLayer {
         val symbolLayer = SymbolLayer(id, id)
         symbolLayer.withProperties(
-            PropertyFactory.iconImage(id)
+            PropertyFactory.iconImage(id),
         )
         return symbolLayer
     }
@@ -222,8 +222,8 @@ class MapSelectorActivity :
         return GeoJsonSource(
             id,
             Feature.fromGeometry(
-                point
-            )
+                point,
+            ),
         )
     }
 
@@ -238,7 +238,7 @@ class MapSelectorActivity :
             Observer<MutableList<PolygonViewModel.PolygonPoint>> {
                 binding.recycler.adapter = PolygonAdapter(it, viewModel)
                 updateVector(it)
-            }
+            },
         )
         map.addOnMapClickListener {
             val point = Point.fromLngLat(it.longitude, it.latitude)
@@ -300,7 +300,7 @@ class MapSelectorActivity :
                         point.source!!,
                         point.layer!!,
                         point.uuid,
-                        R.drawable.ic_oval_green
+                        R.drawable.ic_oval_green,
                     )
                 }
             }
@@ -309,15 +309,15 @@ class MapSelectorActivity :
                     style.addSource(GeoJsonSource(sourceName, Polygon.fromLngLats(points)))
                     style.addLayerBelow(
                         FillLayer(sourceName, sourceName).withProperties(
-                            fillColor(resources.getColor(R.color.green_7ed))
+                            fillColor(resources.getColor(R.color.green_7ed)),
                         ),
-                        "settlement-label"
+                        "settlement-label",
                     )
                 } else {
                     (style.getSource(sourceName) as GeoJsonSource).setGeoJson(
                         Polygon.fromLngLats(
-                            points
-                        )
+                            points,
+                        ),
                     )
                 }
             }
@@ -361,14 +361,14 @@ class MapSelectorActivity :
 
     private fun centerMapOnCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                ACCESS_LOCATION_PERMISSION_REQUEST
+                ACCESS_LOCATION_PERMISSION_REQUEST,
             )
             return
         }
@@ -377,7 +377,7 @@ class MapSelectorActivity :
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
@@ -418,7 +418,7 @@ class MapSelectorActivity :
             activity: Context,
             fieldUid: String,
             locationType: FeatureType,
-            initialData: String?
+            initialData: String?,
         ): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
             intent.putExtra(FIELD_UID, fieldUid)

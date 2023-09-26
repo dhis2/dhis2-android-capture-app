@@ -2,8 +2,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.Bindings.blockingGetValueCheck
-import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.bindings.blockingGetValueCheck
+import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.LegendValue
@@ -24,7 +24,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSection
 class EventCaptureFieldProvider(
     private val d2: D2,
     private val fieldFactory: FieldViewModelFactory,
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
 ) {
 
     fun provideEventFields(
@@ -32,7 +32,7 @@ class EventCaptureFieldProvider(
         programStageSections: List<ProgramStageSection>,
         isEventEditable: Boolean,
         actionProcessor: FlowableProcessor<RowAction>,
-        cachedFields: List<FieldUiModel>
+        cachedFields: List<FieldUiModel>,
     ): Flowable<List<FieldUiModel>> {
         return if (cachedFields.isNotEmpty()) {
             updateEventFields(event, cachedFields, isEventEditable)
@@ -45,7 +45,7 @@ class EventCaptureFieldProvider(
         event: Event,
         programStageSections: List<ProgramStageSection>,
         isEventEditable: Boolean,
-        actionProcessor: FlowableProcessor<RowAction>
+        actionProcessor: FlowableProcessor<RowAction>,
     ): Flowable<List<FieldUiModel>> {
         return Flowable.just(sortedStageDataElements(event.programStage()!!))
             .flatMapIterable { list -> list }
@@ -55,7 +55,7 @@ class EventCaptureFieldProvider(
                     event.uid(),
                     programStageSections,
                     isEventEditable,
-                    actionProcessor
+                    actionProcessor,
                 )
             }.toList().toFlowable()
     }
@@ -63,7 +63,7 @@ class EventCaptureFieldProvider(
     private fun updateEventFields(
         event: Event,
         fields: List<FieldUiModel>,
-        isEventEditable: Boolean
+        isEventEditable: Boolean,
     ): Flowable<List<FieldUiModel>> {
         return Flowable.just(fields)
             .flatMapIterable { list -> list }
@@ -74,13 +74,13 @@ class EventCaptureFieldProvider(
                 val (rawValue, friendlyValue) = dataValue(
                     event.uid(),
                     fieldViewModel.uid,
-                    fieldViewModel.valueType == ValueType.ORGANISATION_UNIT
+                    fieldViewModel.valueType == ValueType.ORGANISATION_UNIT,
                 )
 
                 val error = checkConflicts(
                     event.uid(),
                     fieldViewModel.uid,
-                    rawValue
+                    rawValue,
                 )
 
                 val legend = if (fieldViewModel.legend != null) {
@@ -112,12 +112,12 @@ class EventCaptureFieldProvider(
             stageSections.forEach { section ->
                 dataElementsOrder.addAll(getUidsList(section.dataElements()!!))
             }
-            stageDataElements.sortWith(
+            stageDataElements.toMutableList().sortWith(
                 Comparator { de1: ProgramStageDataElement, de2: ProgramStageDataElement ->
                     val pos1 = dataElementsOrder.indexOf(de1.dataElement()!!.uid())
                     val pos2 = dataElementsOrder.indexOf(de2.dataElement()!!.uid())
                     pos1.compareTo(pos2)
-                }
+                },
             )
         }
         return stageDataElements
@@ -128,32 +128,32 @@ class EventCaptureFieldProvider(
         eventUid: String,
         programStageSections: List<ProgramStageSection>,
         isEventEditable: Boolean,
-        actionProcessor: FlowableProcessor<RowAction>
+        actionProcessor: FlowableProcessor<RowAction>,
     ): FieldUiModel {
         val de = dataElement(programStageDataElement.dataElement()!!.uid())
 
         val programStageSection: ProgramStageSection? =
             programStageSections.firstOrNull { section ->
-                getUidsList(section.dataElements()!!).contains(de.uid())
+                getUidsList(section.dataElements()!!).contains(de?.uid())
             }
 
-        val optionSet = de.optionSetUid()
+        val optionSet = de?.optionSetUid()
 
         val (rawValue, friendlyValue) = dataValue(
             eventUid,
-            de.uid(),
-            de.valueType() == ValueType.ORGANISATION_UNIT
+            de?.uid() ?: "",
+            de?.valueType() == ValueType.ORGANISATION_UNIT,
         )
 
         val optionSetConfiguration = options(optionSet)
 
-        val error: String = checkConflicts(eventUid, de.uid(), rawValue)
+        val error: String = checkConflicts(eventUid, de?.uid() ?: "", rawValue)
 
         val fieldViewModel: FieldUiModel =
             fieldFactory.create(
-                de.uid(),
-                de.formName() ?: de.displayName()!!,
-                de.valueType()!!,
+                de?.uid() ?: "",
+                de?.formName() ?: de?.displayName() ?: "",
+                de?.valueType()!!,
                 programStageDataElement.compulsory() == true,
                 de.optionSetUid(),
                 friendlyValue,
@@ -166,7 +166,7 @@ class EventCaptureFieldProvider(
                 de.style() ?: ObjectStyle.builder().build(),
                 de.fieldMask(),
                 optionSetConfiguration,
-                FeatureType.POINT
+                FeatureType.POINT,
             )
 
         return if (error.isNotEmpty()) {
@@ -193,12 +193,12 @@ class EventCaptureFieldProvider(
     private fun dataValue(
         eventUid: String,
         dataElementUid: String,
-        isValueTypeOrgUnit: Boolean
+        isValueTypeOrgUnit: Boolean,
     ): Pair<String?, String?> {
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(eventUid, dataElementUid)
         return if (valueRepository.blockingExists()) {
-            val value = valueRepository.blockingGet().value()
+            val value = valueRepository.blockingGet()?.value()
             var friendlyValue =
                 valueRepository.blockingGetValueCheck(d2, dataElementUid).userFriendlyValue(d2)
             if (value != null && isValueTypeOrgUnit) {
@@ -210,11 +210,7 @@ class EventCaptureFieldProvider(
         }
     }
 
-    private fun checkConflicts(
-        eventUid: String,
-        dataElementUid: String,
-        value: String?
-    ): String {
+    private fun checkConflicts(eventUid: String, dataElementUid: String, value: String?): String {
         val conflicts = d2.importModule().trackerImportConflicts()
             .byEventUid().eq(eventUid)
             .blockingGet()
@@ -226,48 +222,47 @@ class EventCaptureFieldProvider(
         }?.displayDescription() ?: ""
     }
 
-    private fun getColorByLegend(
-        value: String?,
-        dataElement: DataElement
-    ): LegendValue? {
-        return if (value == null) {
+    private fun getColorByLegend(value: String?, dataElement: DataElement?): LegendValue? {
+        return if (value == null || dataElement == null) {
             null
-        } else try {
-            if (dataElement.valueType()!!.isNumeric &&
-                dataElement.legendSets() != null &&
-                dataElement.legendSets()!!.isNotEmpty()
-            ) {
-                val legendSet = dataElement.legendSets()!![0]
-                var legend =
-                    d2.legendSetModule().legends()
-                        .byStartValue().smallerThan(java.lang.Double.valueOf(value))
-                        .byEndValue().biggerThan(java.lang.Double.valueOf(value))
-                        .byLegendSet().eq(legendSet.uid())
-                        .one()
-                        .blockingGet()
-                if (legend == null) {
-                    legend = d2.legendSetModule().legends()
-                        .byEndValue().eq(java.lang.Double.valueOf(value))
-                        .byLegendSet().eq(legendSet.uid())
-                        .one()
-                        .blockingGet()
+        } else {
+            try {
+                if (dataElement.valueType()!!.isNumeric &&
+                    dataElement.legendSets() != null &&
+                    dataElement.legendSets()!!.isNotEmpty()
+                ) {
+                    val legendSet = dataElement.legendSets()!![0]
+                    var legend =
+                        d2.legendSetModule().legends()
+                            .byStartValue().smallerThan(java.lang.Double.valueOf(value))
+                            .byEndValue().biggerThan(java.lang.Double.valueOf(value))
+                            .byLegendSet().eq(legendSet.uid())
+                            .one()
+                            .blockingGet()
+                    if (legend == null) {
+                        legend = d2.legendSetModule().legends()
+                            .byEndValue().eq(java.lang.Double.valueOf(value))
+                            .byLegendSet().eq(legendSet.uid())
+                            .one()
+                            .blockingGet()
+                    }
+                    if (legend != null) {
+                        return LegendValue(
+                            resourceManager.getColorFrom(legend.color()),
+                            legend.displayName(),
+                        )
+                    }
                 }
-                if (legend != null) {
-                    return LegendValue(
-                        resourceManager.getColorFrom(legend.color()),
-                        legend.displayName()
-                    )
-                }
+                null
+            } catch (e: Exception) {
+                null
             }
-            null
-        } catch (e: Exception) {
-            null
         }
     }
 
     private fun options(optionSetUid: String?): OptionSetConfiguration? = optionSetUid?.let {
         OptionSetConfiguration.config(
-            d2.optionModule().options().byOptionSetUid().eq(it).blockingCount()
+            d2.optionModule().options().byOptionSetUid().eq(it).blockingCount(),
         ) {
             d2.optionModule().options().byOptionSetUid().eq(it)
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()

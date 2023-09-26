@@ -1,51 +1,44 @@
 package org.dhis2.commons.orgunitselector
 
-import io.reactivex.Single
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-class OUTreeRepository(private val d2: D2) {
+class OUTreeRepository(
+    private val orgUnitRepositoryConfiguration: OURepositoryConfiguration,
+) {
+    private var availableOrgUnits: List<OrganisationUnit> = emptyList()
 
-    fun orgUnits(
-        parentUid: String? = null,
-        name: String? = null
-    ): Single<MutableList<OrganisationUnit>> {
-        var orgUnitRepository = d2.organisationUnitModule().organisationUnits()
-            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-
-        orgUnitRepository = when {
-            parentUid != null -> orgUnitRepository.byParentUid().eq(parentUid)
-            name != null -> orgUnitRepository.byDisplayName().like("%$name%")
-            else -> orgUnitRepository.byRootOrganisationUnit(true)
-        }
-
-        return when {
-            orgUnitRepository
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                .blockingCount() > 0 ->
-                orgUnitRepository
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                    .get()
-            else ->
-                orgUnitRepository
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                    .get()
-        }
+    fun orgUnits(name: String? = null): List<OrganisationUnit> {
+        availableOrgUnits = orgUnitRepositoryConfiguration.orgUnitRepository(name)
+        return availableOrgUnits.withParents().sortedBy { it.displayNamePath()?.joinToString(" ") }
     }
 
-    fun orgUnit(uid: String): OrganisationUnit? =
-        d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet()
+    fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> = availableOrgUnits
+        .filter { it.uid() != parentUid && it.path()?.contains(parentUid) == true }
+        .sortedBy { it.displayNamePath()?.joinToString(" ") }
+    fun orgUnit(uid: String): OrganisationUnit? = availableOrgUnits.firstOrNull { it.uid() == uid }
+
+    fun canBeSelected(orgUnitUid: String): Boolean =
+        availableOrgUnits.any { it.uid() == orgUnitUid }
 
     fun orgUnitHasChildren(uid: String): Boolean =
-        !d2.organisationUnitModule().organisationUnits().byParentUid().eq(uid).blockingIsEmpty()
+        availableOrgUnits.filter { it.uid() != uid }.any { it.path()?.contains(uid) == true }
 
-    fun countSelectedChildren(
-        parentOrgUnit: OrganisationUnit,
-        selectedOrgUnits: List<String>
-    ): Int {
-        return d2.organisationUnitModule().organisationUnits()
-            .byPath().like("%${parentOrgUnit.uid()}%")
-            .byUid().`in`(selectedOrgUnits).blockingCount()
+    fun countSelectedChildren(parentOrgUnitUid: String, selectedOrgUnits: List<String>): Int {
+        return orgUnitRepositoryConfiguration.countChildren(
+            parentOrgUnitUid,
+            selectedOrgUnits,
+        )
+    }
+    private fun List<OrganisationUnit>.withParents(): List<OrganisationUnit> {
+        val listWithParents = this.toMutableList()
+        this.forEach { organisationUnit ->
+            organisationUnit.path()?.split("/")?.filter { it.isNotEmpty() }?.forEach { parentUid ->
+                if (!listWithParents.any { it.uid() == parentUid }) {
+                    orgUnitRepositoryConfiguration.orgUnit(parentUid)
+                        ?.let { listWithParents.add(it) }
+                }
+            }
+        }
+        return listWithParents
     }
 }

@@ -6376,10 +6376,6 @@ int id inspection_slot_table_set 0x0
 int id invisible 0x0
 int id inward 0x0
 int id italic 0x0
-int id item1 0x0
-int id item2 0x0
-int id item3 0x0
-int id item4 0x0
 int id item_touch_helper_previous_elevation 0x0
 int id jumpToEnd 0x0
 int id jumpToStart 0x0
@@ -7017,8 +7013,6 @@ int layout support_simple_spinner_dropdown_item 0x0
 int layout tooltip 0x0
 int layout zxing_barcode_scanner 0x0
 int layout zxing_capture 0x0
-int menu example_menu 0x0
-int menu example_menu2 0x0
 int menu navigation_dashboard_landscape_menu 0x0
 int menu navigation_dashboard_menu 0x0
 int menu navigation_dataset_list 0x0

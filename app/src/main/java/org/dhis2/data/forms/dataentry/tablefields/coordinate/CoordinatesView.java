@@ -26,14 +26,15 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.StringExtensionsKt;
 import org.dhis2.commons.ActivityResultObservable;
 import org.dhis2.commons.ActivityResultObserver;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.extensions.DoubleExtensionsKt;
 import org.dhis2.commons.locationprovider.LocationSettingLauncher;
+import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
 import org.dhis2.form.data.GeometryController;
@@ -51,7 +52,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import kotlin.Unit;
+import timber.log.Timber;
 
 public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener, ActivityResultObserver {
 
@@ -69,6 +73,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FeatureType featureType;
     private Geometry currentGeometry;
     private TextView labelText;
+
+    @Inject
+    ColorUtils colorUtils;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -331,12 +338,12 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         findViewById(R.id.location2).setEnabled(editable);
 
         latitude.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent ? colorUtils.getPrimaryColor(getContext(), ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
 
         longitude.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent ? colorUtils.getPrimaryColor(getContext(), ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
 
@@ -363,7 +370,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void dispatchSetActivated(boolean activated) {
         super.dispatchSetActivated(activated);
         if (activated) {
-            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+            labelText.setTextColor(colorUtils.getPrimaryColor(getContext(), ColorType.PRIMARY));
         } else {
             labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
@@ -425,7 +432,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     this.latitude.setText(String.valueOf(list.get(1)));
                     this.longitude.setText(String.valueOf(list.get(0)));
                 } catch (D2Error d2Error) {
-                    d2Error.printStackTrace();
+                    Timber.e(d2Error);
                 }
 
             } else if (geometry.type() == FeatureType.POLYGON) {

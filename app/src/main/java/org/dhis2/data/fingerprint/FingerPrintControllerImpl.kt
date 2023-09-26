@@ -1,28 +1,22 @@
 package org.dhis2.data.fingerprint
 
-import co.infinum.goldfinger.Goldfinger
-import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
 
 class FingerPrintControllerImpl(
-    val goldfinger: RxGoldfinger,
-    val mapper: FingerPrintMapper
-) :
-    FingerPrintController {
+    val mapper: FingerPrintMapper,
+) : FingerPrintController {
 
+    /***
+     *Checks if device supports fingerprint hardware
+     * */
     override fun hasFingerPrint(): Boolean {
-        return goldfinger.hasFingerprintHardware() && goldfinger.hasEnrolledFingerprint()
+        return false
     }
 
-    override fun authenticate(
-        promptParams: Goldfinger.PromptParams
-    ): Observable<FingerPrintResult> {
-        return goldfinger.authenticate(promptParams).map {
-            mapper.mapFromGoldFingerToFingerPrint(it)
-        }
-    }
-
-    override fun cancel() {
-        goldfinger.cancel()
+    /***
+     *Auth using fingerprint and map to result
+     * */
+    override fun authenticate(): Observable<FingerPrintResult> {
+        return Observable.empty()
     }
 }

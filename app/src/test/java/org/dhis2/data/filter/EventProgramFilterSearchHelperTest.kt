@@ -1,15 +1,8 @@
 package org.dhis2.data.filter
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.EventProgramFilterSearchHelper
@@ -27,6 +20,13 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import java.util.Date
 
 class EventProgramFilterSearchHelperTest {
 
@@ -45,10 +45,10 @@ class EventProgramFilterSearchHelperTest {
 
         eventFilterSearchHelper = EventProgramFilterSearchHelper(
             filterRepository,
-            filterManager
+            filterManager,
         )
         whenever(
-            filterRepository.eventsByProgram(any())
+            filterRepository.eventsByProgram(any()),
         ) doReturn mock()
     }
 
@@ -58,24 +58,24 @@ class EventProgramFilterSearchHelperTest {
         RxAndroidPlugins.reset()
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should return query by program`() {
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build()
+            Program.builder().uid("programUid").build(),
         )
         verify(filterRepository).eventsByProgram("programUid")
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should not apply any filters if not set`() {
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build()
+            Program.builder().uid("programUid").build(),
         )
         verify(filterRepository, times(0)).applyOrgUnitFilter(
             any<EventQueryCollectionRepository>(),
-            any()
+            any(),
         )
         verify(filterRepository, times(0))
             .applyStateFilter(any<EventQueryCollectionRepository>(), any())
@@ -87,13 +87,13 @@ class EventProgramFilterSearchHelperTest {
             .applyAssignToMe(any<EventQueryCollectionRepository>())
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should apply filters if set`() {
         filterManager.apply {
             addOrgUnit(
                 OrganisationUnit.builder()
-                    .uid("ouUid").build()
+                    .uid("ouUid").build(),
             )
             addState(false, State.ERROR)
             addPeriod(arrayListOf(DatePeriod.create(Date(), Date())))
@@ -101,20 +101,20 @@ class EventProgramFilterSearchHelperTest {
         }
 
         whenever(
-            filterRepository.applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any())
+            filterRepository.applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyStateFilter(any<EventQueryCollectionRepository>(), any())
+            filterRepository.applyStateFilter(any<EventQueryCollectionRepository>(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyDateFilter(any<EventQueryCollectionRepository>(), any())
+            filterRepository.applyDateFilter(any<EventQueryCollectionRepository>(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyAssignToMe(any<EventQueryCollectionRepository>())
+            filterRepository.applyAssignToMe(any<EventQueryCollectionRepository>()),
         ) doReturn mock()
 
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build()
+            Program.builder().uid("programUid").build(),
         )
 
         verify(filterRepository, times(1))
@@ -129,12 +129,12 @@ class EventProgramFilterSearchHelperTest {
             .applyAssignToMe(any<EventQueryCollectionRepository>())
     }
 
-    @Test
     @Ignore("Null pointer exception in bitrise")
+    @Test
     fun `Should apply sorting for supported sorting type`() {
         filterManager.sortingItem = SortingItem(Filters.PERIOD, SortingStatus.ASC)
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build()
+            Program.builder().uid("programUid").build(),
         )
         verify(filterRepository, times(1)).sortByEventDate(any(), any())
     }

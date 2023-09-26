@@ -7,7 +7,7 @@ class CategoryOptionCategoryDialogItemMapper {
     fun map(categoryOption: CategoryOption): CategoryDialogItem {
         return CategoryDialogItem(
             categoryOption.uid(),
-            categoryOption.displayName() ?: "-"
+            categoryOption.displayName() ?: "-",
         )
     }
 }

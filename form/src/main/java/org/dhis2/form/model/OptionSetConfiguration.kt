@@ -5,24 +5,24 @@ import org.hisp.dhis.android.core.option.Option
 sealed class OptionSetConfiguration(
     open val options: List<Option> = emptyList(),
     open val optionsToHide: List<String>,
-    open val optionsToShow: List<String>
+    open val optionsToShow: List<String>,
 ) {
     data class DefaultOptionSet(
         override val options: List<Option>,
         override val optionsToHide: List<String> = emptyList(),
-        override val optionsToShow: List<String> = emptyList()
+        override val optionsToShow: List<String> = emptyList(),
     ) : OptionSetConfiguration(
         options = options,
         optionsToHide = optionsToHide,
-        optionsToShow = optionsToShow
+        optionsToShow = optionsToShow,
     )
 
     data class BigOptionSet(
         override val optionsToHide: List<String> = emptyList(),
-        override val optionsToShow: List<String> = emptyList()
+        override val optionsToShow: List<String> = emptyList(),
     ) : OptionSetConfiguration(
         optionsToHide = optionsToHide,
-        optionsToShow = optionsToShow
+        optionsToShow = optionsToShow,
     )
 
     fun optionsToDisplay() = options.filter { option ->
@@ -37,12 +37,12 @@ sealed class OptionSetConfiguration(
     companion object {
         fun config(
             optionCount: Int,
-            optionRequestCallback: () -> List<Option>
+            optionRequestCallback: () -> List<Option>,
         ): OptionSetConfiguration {
             return when {
                 optionCount > 15 -> BigOptionSet()
                 else -> DefaultOptionSet(
-                    options = optionRequestCallback()
+                    options = optionRequestCallback(),
                 )
             }
         }
@@ -50,7 +50,7 @@ sealed class OptionSetConfiguration(
 
     fun updateOptionsToHideAndShow(
         optionsToHide: List<String>,
-        optionsToShow: List<String>
+        optionsToShow: List<String>,
     ): OptionSetConfiguration {
         return setOptionsToShow(optionsToShow).setOptionsToHide(optionsToHide)
     }

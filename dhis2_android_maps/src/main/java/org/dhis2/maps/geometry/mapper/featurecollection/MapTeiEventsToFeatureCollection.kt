@@ -14,12 +14,10 @@ import org.hisp.dhis.android.core.common.FeatureType
 class MapTeiEventsToFeatureCollection(
     private val mapPointToFeature: MapPointToFeature,
     private val mapPolygonToFeature: MapPolygonToFeature,
-    private val bounds: GetBoundingBox
+    private val bounds: GetBoundingBox,
 ) {
 
-    fun map(
-        events: List<EventUiComponentModel>
-    ): Pair<EventsByProgramStage, BoundingBox> {
+    fun map(events: List<EventUiComponentModel>): Pair<EventsByProgramStage, BoundingBox> {
         val eventsByProgramStage = events
             .groupBy { it.programStage?.displayName()!! }
             .mapValues { eventModel ->
@@ -45,7 +43,7 @@ class MapTeiEventsToFeatureCollection(
 
         return Pair(
             featureCollection,
-            bounds.getEnclosingBoundingBox(latLngList)
+            bounds.getEnclosingBoundingBox(latLngList),
         )
     }
 

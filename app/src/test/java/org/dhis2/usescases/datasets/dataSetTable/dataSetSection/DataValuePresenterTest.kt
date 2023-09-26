@@ -1,25 +1,21 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.SortedMap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -30,7 +26,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import java.util.SortedMap
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DataValuePresenterTest {
 
     @Rule
@@ -43,26 +46,32 @@ class DataValuePresenterTest {
     private val dataValueRepository: DataValueRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
+    private val tableDimensionStore: TableDimensionStore = mock()
+    private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.IO
+        on { io() } doReturn testingDispatcher
+        on { ui() } doReturn testingDispatcher
     }
     private val mapper: TableDataToTableModelMapper = mock()
+    private val updateCellValueMocked: (TableCell) -> Unit = mock()
 
     @Before
     fun setup() {
+        Dispatchers.setMain(testingDispatcher)
         whenever(dataValueRepository.getDataSetInfo()) doReturn Triple(
             "periodId",
             "orgUnitId",
-            "attrOptCombo"
+            "attrOptCombo",
         )
         presenter =
             DataValuePresenter(
                 view,
                 dataValueRepository,
                 valueStore,
+                tableDimensionStore,
                 schedulers,
                 mapper,
-                dispatcherProvider
+                dispatcherProvider,
             )
     }
 
@@ -70,9 +79,9 @@ class DataValuePresenterTest {
     fun shouldInitData() {
         whenever(dataValueRepository.getCatCombo()) doReturn Flowable.just(mockedCatCombos)
         whenever(
-            dataValueRepository.getDataTableModel(any<CategoryCombo>())
+            dataValueRepository.getDataTableModel(any<CategoryCombo>()),
         ) doReturn Observable.just(
-            mockedDataTableModel
+            mockedDataTableModel,
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedTableModel
@@ -83,42 +92,8 @@ class DataValuePresenterTest {
         presenter.init()
 
         val tableStateValue = presenter.currentState().value
-        assertTrue(tableStateValue!!.tables.isNotEmpty())
+        assertTrue(tableStateValue.tables.isNotEmpty())
         assertTrue(tableStateValue.tables.size == 2)
-    }
-
-    @Test
-    fun shouldUpdateStateOnValueChanged() {
-        val mockedTableModel = mock<TableModel> {
-            on { hasCellWithId(any()) } doReturn true
-        }
-
-        val mockedTableCell = mock<TableCell> {
-            on { id } doReturn ""
-            on { column } doReturn 1
-        }
-
-        val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
-        presenter.onCellValueChanged(mockedTableCell)
-        verify(mockedTableModel).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
-    }
-
-    @Test
-    fun shouldNotUpdateStateOnValueChanged() {
-        val mockedTableModel = mock<TableModel> {
-            on { hasCellWithId(any()) } doReturn false
-        }
-
-        val mockedTableCell = mock<TableCell> {
-            on { id } doReturn ""
-            on { column } doReturn 1
-        }
-
-        val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
-        presenter.onCellValueChanged(mockedTableCell)
-        verify(mockedTableModel, times(0)).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
     }
 
     @Test
@@ -133,12 +108,17 @@ class DataValuePresenterTest {
         val mockedSpinnerModel = mock<SpinnerViewModel>()
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
         whenever(
-            dataValueRepository.getOptionSetViewModel(any(), any())
+            dataValueRepository.getOptionSetViewModel(any(), any()),
         ) doReturn mockedSpinnerModel
 
-        presenter.onCellClick(mockedTableCell)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
 
-        verify(view).showOptionSetDialog(mockedDataElement, mockedTableCell, mockedSpinnerModel)
+        verify(view).showOptionSetDialog(
+            mockedDataElement,
+            mockedTableCell,
+            mockedSpinnerModel,
+            updateCellValueMocked,
+        )
     }
 
     @Test
@@ -155,8 +135,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -173,8 +153,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -191,8 +171,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showCalendar(mockedDataElement, mockedTableCell, false)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showCalendar(mockedDataElement, mockedTableCell, false, updateCellValueMocked)
     }
 
     @Test
@@ -209,8 +189,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showCalendar(mockedDataElement, mockedTableCell, true)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showCalendar(mockedDataElement, mockedTableCell, true, updateCellValueMocked)
     }
 
     @Test
@@ -227,8 +207,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showTimePicker(mockedDataElement, mockedTableCell)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showTimePicker(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -245,8 +225,12 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showCoordinatesDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showCoordinatesDialog(
+            mockedDataElement,
+            mockedTableCell,
+            updateCellValueMocked,
+        )
     }
 
     @Test
@@ -264,8 +248,13 @@ class DataValuePresenterTest {
         val mockedOrgUnits = listOf<OrganisationUnit>()
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
         whenever(dataValueRepository.orgUnits()) doReturn mockedOrgUnits
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showOtgUnitDialog(mockedDataElement, mockedTableCell, mockedOrgUnits)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showOtgUnitDialog(
+            mockedDataElement,
+            mockedTableCell,
+            mockedOrgUnits,
+            updateCellValueMocked,
+        )
     }
 
     @Test
@@ -282,8 +271,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showAgeDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
+        verify(view).showAgeDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -301,7 +290,7 @@ class DataValuePresenterTest {
             ValueType.INTEGER_NEGATIVE,
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_ZERO_OR_POSITIVE,
-            ValueType.URL
+            ValueType.URL,
         )
 
         inputValueTypes.forEach { valueType ->
@@ -319,9 +308,13 @@ class DataValuePresenterTest {
 
             whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
             whenever(
-                dataValueRepository.getCatOptComboOptions(any())
+                dataValueRepository.getCatOptComboOptions(any()),
             ) doReturn listOf("option_${valueType.name}")
-            val textInput = presenter.onCellClick(mockedTableCell)
+            val textInput = presenter.onCellClick(
+                "tableId",
+                mockedTableCell,
+                updateCellValueMocked,
+            )
             assertTrue(textInput != null)
         }
     }
@@ -347,29 +340,29 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
                 uid = "id",
                 valueStoreResult = ValueStoreResult.VALUE_CHANGED,
-                valueStoreResultMessage = null
-            )
+                valueStoreResultMessage = null,
+            ),
         )
 
         whenever(dataValueRepository.getDataTableModel(any<String>())) doReturn Observable.just(
-            mockedDataTableModel
+            mockedDataTableModel,
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
         whenever(
-            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues)
+            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues),
         ) doReturn mockedUpdatedTableModel
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.mutableTableData().value!!.tables.size == 1)
-        assertTrue(presenter.mutableTableData().value!!.tables[0].id == "tableId_updated")
+        assertTrue(presenter.mutableTableData().value.tables.size == 1)
+        assertTrue(presenter.mutableTableData().value.tables[0].id == "tableId_updated")
         verify(view).onValueProcessed()
     }
 
@@ -402,24 +395,24 @@ class DataValuePresenterTest {
 
         val tableStateValue = presenter.mutableTableData()
         tableStateValue.value = TableScreenState(
-            listOf(mockedTableModel, mockedIndicatorTableModel), false
+            listOf(mockedTableModel, mockedIndicatorTableModel),
         )
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
                 uid = "id",
                 valueStoreResult = ValueStoreResult.VALUE_CHANGED,
-                valueStoreResultMessage = null
-            )
+                valueStoreResultMessage = null,
+            ),
         )
 
         whenever(dataValueRepository.getDataTableModel(any<String>())) doReturn Observable.just(
-            mockedDataTableModel
+            mockedDataTableModel,
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
         whenever(
-            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues)
+            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues),
         ) doReturn mockedUpdatedTableModel
 
         whenever(dataValueRepository.getDataSetIndicators()) doReturn Single.just(mockedIndicators)
@@ -427,9 +420,9 @@ class DataValuePresenterTest {
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.currentState().value!!.tables.size == 2)
-        assertTrue(presenter.currentState().value!!.tables[0].id == "tableId_updated")
-        assertTrue(presenter.currentState().value!!.tables.last().id == "updated_indicator")
+        assertTrue(presenter.currentState().value.tables.size == 2)
+        assertTrue(presenter.currentState().value.tables[0].id == "tableId_updated")
+        assertTrue(presenter.currentState().value.tables.last().id == "updated_indicator")
         verify(view).onValueProcessed()
     }
 
@@ -454,29 +447,29 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
                 uid = "id",
                 valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                valueStoreResultMessage = "This is an error"
-            )
+                valueStoreResultMessage = "This is an error",
+            ),
         )
 
         whenever(dataValueRepository.getDataTableModel(any<String>())) doReturn Observable.just(
-            mockedDataTableModel
+            mockedDataTableModel,
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
         whenever(
-            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues)
+            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues),
         ) doReturn mockedUpdatedTableModel
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.currentState().value!!.tables.size == 1)
-        assertTrue(presenter.currentState().value!!.tables[0].id == "tableId_updated")
+        assertTrue(presenter.currentState().value.tables.size == 1)
+        assertTrue(presenter.currentState().value.tables[0].id == "tableId_updated")
         assertTrue(presenter.errors().isNotEmpty())
         verify(view).onValueProcessed()
     }

@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.period.PeriodType
 
 class DataElementToGraph(
     private val periodStepProvider: PeriodStepProvider,
-    private val chartCoordinatesProvider: ChartCoordinatesProvider
+    private val chartCoordinatesProvider: ChartCoordinatesProvider,
 ) {
     fun map(
         dataElement: DataElement,
@@ -18,22 +18,24 @@ class DataElementToGraph(
         teiUid: String,
         stagePeriod: PeriodType,
         selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
+        isDefault: Boolean = false,
     ): Graph {
         val coordinates = chartCoordinatesProvider.dataElementCoordinates(
             stageUid,
             teiUid,
             dataElement.uid(),
             selectedRelativePeriod,
-            selectedOrgUnits
+            selectedOrgUnits,
+            isDefault,
         )
 
         val serie = if (coordinates.isNotEmpty()) {
             listOf(
                 SerieData(
                     dataElement.displayFormName() ?: dataElement.uid(),
-                    coordinates
-                )
+                    coordinates,
+                ),
             )
         } else {
             emptyList()
@@ -47,7 +49,7 @@ class DataElementToGraph(
             periodStep = periodStepProvider.periodStep(stagePeriod),
             visualizationUid = "${teiUid}${stageUid}${dataElement.uid()}",
             periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
-            orgUnitsSelected = selectedOrgUnits ?: emptyList()
+            orgUnitsSelected = selectedOrgUnits ?: emptyList(),
         )
     }
 }

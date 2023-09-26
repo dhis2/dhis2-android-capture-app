@@ -11,13 +11,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
-import javax.inject.Inject
 import org.dhis2.data.jira.ClickedIssueData
 import org.dhis2.data.jira.JiraIssuesResult
 import org.dhis2.databinding.FragmentJiraBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.NetworkUtils
+import javax.inject.Inject
 
 class JiraFragment : FragmentGlobalAbstract() {
     @Inject
@@ -39,7 +39,7 @@ class JiraFragment : FragmentGlobalAbstract() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return FragmentJiraBinding.inflate(inflater, container, false).apply {
             jiraViewModel = jiraModel
@@ -52,8 +52,8 @@ class JiraFragment : FragmentGlobalAbstract() {
                 addItemDecoration(
                     DividerItemDecoration(
                         context,
-                        DividerItemDecoration.VERTICAL
-                    )
+                        DividerItemDecoration.VERTICAL,
+                    ),
                 )
             }
             jiraModel.apply {
@@ -62,7 +62,7 @@ class JiraFragment : FragmentGlobalAbstract() {
                 issueMessage.observe(viewLifecycleOwner, Observer { handleMessage(it) })
                 clickedIssueData.observe(
                     viewLifecycleOwner,
-                    Observer { openJiraTicketInBrowser(it) }
+                    Observer { openJiraTicketInBrowser(it) },
                 )
             }
         }.root
@@ -83,7 +83,7 @@ class JiraFragment : FragmentGlobalAbstract() {
     private fun openJiraTicketInBrowser(clickedIssueData: ClickedIssueData) {
         val browserIntent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse(clickedIssueData.uriString)
+            Uri.parse(clickedIssueData.uriString),
         ).apply {
             val bundle = Bundle().apply {
                 putString(clickedIssueData.authHeader(), clickedIssueData.basicAuth())

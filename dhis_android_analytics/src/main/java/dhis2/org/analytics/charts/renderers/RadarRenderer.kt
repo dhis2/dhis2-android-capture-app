@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 class RadarRenderer(
     viewPortHandler: ViewPortHandler?,
     xAxis: XAxis?,
-    chart: RadarChart?
+    chart: RadarChart?,
 ) : XAxisRendererRadarChart(viewPortHandler, xAxis, chart) {
     override fun drawLabels(c: Canvas, pos: Float, anchor: MPPointF) {
         super.drawLabels(c, pos, anchor)
@@ -33,7 +33,7 @@ class RadarRenderer(
         val labelRotatedSize = Utils.getSizeOfRotatedRectangleByDegrees(
             labelWidth,
             labelHeight,
-            mXAxis.labelRotationAngle
+            mXAxis.labelRotationAngle,
         )
         mXAxis.mLabelWidth = labelWidth.roundToInt()
         mXAxis.mLabelHeight = labelHeight.roundToInt()
@@ -49,13 +49,18 @@ class RadarRenderer(
         x: Float,
         y: Float,
         anchor: MPPointF,
-        angleDegrees: Float
+        angleDegrees: Float,
     ) {
         val line = lines(formattedLabel)
         if (line.size > 1) {
             Utils.drawXAxisValue(
                 c,
-                line[0], x, y, mAxisLabelPaint, anchor, angleDegrees
+                line[0],
+                x,
+                y,
+                mAxisLabelPaint,
+                anchor,
+                angleDegrees,
             )
             Utils.drawXAxisValue(
                 c,
@@ -64,7 +69,7 @@ class RadarRenderer(
                 y + mAxisLabelPaint.textSize,
                 mAxisLabelPaint,
                 anchor,
-                angleDegrees
+                angleDegrees,
             )
         } else {
             super.drawLabel(c, formattedLabel, x, y, anchor, angleDegrees)

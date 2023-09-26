@@ -62,7 +62,7 @@ public interface DashboardRepository {
 
     boolean isStageFromProgram(String stageUid);
 
-    Observable<List<CategoryOptionCombo>> catOptionCombos(String catComboUid);
+    CategoryOptionCombo catOptionCombo(String catComboUid);
 
     void setDefaultCatOptCombToEvent(String eventUid);
 

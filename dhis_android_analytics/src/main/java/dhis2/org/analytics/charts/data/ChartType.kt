@@ -12,7 +12,7 @@ enum class ChartType(@DrawableRes val iconResource: Int) {
     SINGLE_VALUE(R.drawable.ic_single_value),
     NUTRITION(R.drawable.ic_line_chart),
     RADAR(R.drawable.ic_radar_chart),
-    PIE_CHART(R.drawable.ic_pie_chart)
+    PIE_CHART(R.drawable.ic_pie_chart),
 }
 
 enum class NutritionChartType {
@@ -21,7 +21,7 @@ enum class NutritionChartType {
     WHO_HFA_BOY,
     WHO_HFA_GIRL,
     WHO_WFH_BOY,
-    WHO_WHO_WFH_GIRL
+    WHO_WHO_WFH_GIRL,
 }
 
 fun org.hisp.dhis.android.core.settings.ChartType.toAnalyticsChartType(): ChartType {
@@ -40,7 +40,8 @@ fun VisualizationType?.toAnalyticsChartType(): ChartType {
         VisualizationType.COLUMN,
         VisualizationType.STACKED_COLUMN,
         VisualizationType.BAR,
-        VisualizationType.STACKED_BAR -> ChartType.BAR_CHART
+        VisualizationType.STACKED_BAR,
+        -> ChartType.BAR_CHART
         VisualizationType.PIE -> ChartType.PIE_CHART
         VisualizationType.RADAR -> ChartType.RADAR
         VisualizationType.SINGLE_VALUE -> ChartType.SINGLE_VALUE

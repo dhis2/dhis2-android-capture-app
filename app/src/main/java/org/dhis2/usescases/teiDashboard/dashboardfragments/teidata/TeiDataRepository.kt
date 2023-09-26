@@ -24,12 +24,14 @@ interface TeiDataRepository {
         assignedToMe: Boolean,
         eventStatusFilters: MutableList<EventStatus>,
         catOptComboFilters: MutableList<CategoryOptionCombo>,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>>
 
-    fun getEnrollment(): Single<Enrollment>
-    fun getEnrollmentProgram(): Single<Program>
-    fun getTrackedEntityInstance(): Single<TrackedEntityInstance>
-    fun getAttributeValues(teiUid :String): List<TrackedEntityAttributeValue>
+    fun getEnrollment(): Single<Enrollment?>
+    fun getEnrollmentProgram(): Single<Program?>
+    fun getTrackedEntityInstance(): Single<TrackedEntityInstance?>
     fun enrollingOrgUnit(): Single<OrganisationUnit>
+    fun eventsWithoutCatCombo(): Single<List<EventViewModel>>
+    fun getOrgUnitName(orgUnitUid: String): String
+    fun getAttributeValues(teiUid :String): List<TrackedEntityAttributeValue>
 }

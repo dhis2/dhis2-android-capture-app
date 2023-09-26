@@ -1,16 +1,12 @@
 package org.dhis2.utils.granularsync
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.Event
@@ -23,6 +19,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class SMSSyncProviderTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -36,7 +37,7 @@ class SMSSyncProviderTest {
             SmsRepository.SmsSendingState(0, 3),
             SmsRepository.SmsSendingState(1, 3),
             SmsRepository.SmsSendingState(2, 3),
-            SmsRepository.SmsSendingState(3, 3)
+            SmsRepository.SmsSendingState(3, 3),
         )
     }
 
@@ -127,7 +128,7 @@ class SMSSyncProviderTest {
             "uid",
             "orgUnitUid",
             "periodId",
-            "attComboUid"
+            "attComboUid",
         )
     }
 
@@ -148,7 +149,7 @@ class SMSSyncProviderTest {
                 },
                 {
                     statuses.add(it)
-                }
+                },
             )
             .test()
         testObserver
@@ -173,7 +174,7 @@ class SMSSyncProviderTest {
                 },
                 {
                     statuses.add(it)
-                }
+                },
             )
             .test()
         testObserver
@@ -199,7 +200,7 @@ class SMSSyncProviderTest {
                 },
                 {
                     statuses.add(it)
-                }
+                },
             )
             .test()
         statuses.apply {
@@ -212,15 +213,15 @@ class SMSSyncProviderTest {
 
     private fun mockConfirmationSMS() {
         whenever(
-            smsSender.checkConfirmationSms(any())
+            smsSender.checkConfirmationSms(any()),
         )doReturn Completable.complete()
     }
 
     private fun mockConfirmationSMSTimeout() {
         whenever(
-            smsSender.checkConfirmationSms(any())
+            smsSender.checkConfirmationSms(any()),
         )doReturn Completable.error(
-            SmsRepository.ResultResponseException(SmsRepository.ResultResponseIssue.TIMEOUT)
+            SmsRepository.ResultResponseException(SmsRepository.ResultResponseIssue.TIMEOUT),
         )
     }
 
@@ -229,45 +230,54 @@ class SMSSyncProviderTest {
             mock { on { isWaitingForResult } doReturn waitingForResult }
 
         whenever(
-            d2.smsModule().configCase()
+            d2.smsModule().configCase(),
         ) doReturn mock()
         whenever(
-            d2.smsModule().configCase().smsModuleConfig
+            d2.smsModule().configCase().smsModuleConfig,
         ) doReturn Single.just(smsConfig)
     }
 
     fun smsSyncProvider(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
-        conflictType,
-        "uid",
-        null,
-        null,
-        null,
-        resources
+        when (conflictType) {
+            ConflictType.ALL -> SyncContext.Global()
+            ConflictType.PROGRAM -> SyncContext.TrackerProgram("uid")
+            ConflictType.TEI -> SyncContext.TrackerProgramTei("uid")
+            ConflictType.EVENT -> SyncContext.Event("uid")
+            ConflictType.DATA_SET -> SyncContext.DataSet("uid")
+            ConflictType.DATA_VALUES -> SyncContext.DataSetInstance(
+                "uid",
+                "periodId",
+                "orgUnitUid",
+                "attComboUid",
+            )
+        },
+        resources,
     )
 
     fun smsSyncProviderDataValue(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
-        conflictType,
-        "uid",
-        "orgUnitUid",
-        "attComboUid",
-        "periodId",
-        resources
+        SyncContext.DataSetInstance(
+            "uid",
+            "periodId",
+            "orgUnitUid",
+            "attComboUid",
+        ),
+        resources,
     )
 
     private fun mockTrackerSMSVersion(version: SMSVersion) {
         val dhisVersionManager: DHISVersionManager = mock {
-            on { smsVersion } doReturn version
+            on { getSmsVersion() } doReturn version
         }
         whenever(
-            d2.systemInfoModule().versionManager()
+            d2.systemInfoModule().versionManager(),
         ) doReturn dhisVersionManager
     }
 
     private fun mockEnrollmentExists(exists: Boolean) {
         whenever(
-            d2.enrollmentModule().enrollments().uid("uid").blockingExists()
+            d2.enrollmentModule().enrollments().uid("uid").blockingExists(),
         ) doReturn exists
     }
 
@@ -277,7 +287,7 @@ class SMSSyncProviderTest {
         }
 
         whenever(
-            d2.eventModule().events().uid("uid").blockingGet()
+            d2.eventModule().events().uid("uid").blockingGet(),
         ) doReturn event
     }
 
@@ -285,10 +295,10 @@ class SMSSyncProviderTest {
         val smsConfig: ConfigCase.SmsConfig = mock { on { isModuleEnabled } doReturn isEnabled }
 
         whenever(
-            d2.smsModule().configCase()
+            d2.smsModule().configCase(),
         ) doReturn mock()
         whenever(
-            d2.smsModule().configCase().smsModuleConfig
+            d2.smsModule().configCase().smsModuleConfig,
         ) doReturn Single.just(smsConfig)
     }
 }

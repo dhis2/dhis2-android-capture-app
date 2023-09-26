@@ -6,15 +6,10 @@ import androidx.paging.PagedList
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
-import junit.framework.Assert.assertTrue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
@@ -36,9 +31,14 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class ProgramEventDetailPresenterTest {
     @Rule
@@ -69,7 +69,7 @@ class ProgramEventDetailPresenterTest {
             workingListMapper,
             filterRepository,
             disableHomeFilters,
-            matomoAnalyticsController
+            matomoAnalyticsController,
         )
     }
 
@@ -97,7 +97,7 @@ class ProgramEventDetailPresenterTest {
             dataElementValues = emptyList(),
             groupedByStage = false,
             valueListIsOpen = false,
-            displayDate = "2/01/2021"
+            displayDate = "2/01/2021",
         )
         val events =
             MutableLiveData<PagedList<EventViewModel>>().also {
@@ -107,22 +107,22 @@ class ProgramEventDetailPresenterTest {
         val mapEvents = Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>(
             FeatureCollection.fromFeature(Feature.fromGeometry(null)),
             BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0),
-            listOf()
+            listOf(),
         )
         val mapData = ProgramEventMapData(
             mutableListOf(),
             mutableMapOf("key" to FeatureCollection.fromFeature(Feature.fromGeometry(null))),
-            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
+            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0),
         )
         filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
         whenever(repository.getAccessDataWrite()) doReturn true
         whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
         whenever(repository.program()) doReturn Single.just(program)
         whenever(
-            repository.filteredProgramEvents()
+            repository.filteredProgramEvents(),
         ) doReturn events
         whenever(
-            repository.filteredEventsForMap()
+            repository.filteredEventsForMap(),
         ) doReturn Flowable.just(mapData)
         presenter.init()
         verify(view).setWritePermission(true)

@@ -16,6 +16,6 @@ interface ChartsRepository {
     fun setVisualizationOrgUnits(
         visualizationUid: String,
         orgUnits: List<OrganisationUnit>,
-        orgUnitFilterType: OrgUnitFilterType
+        orgUnitFilterType: OrgUnitFilterType,
     )
 }

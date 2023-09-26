@@ -18,7 +18,7 @@ class TrackerController {
             matomo: Matomo,
             matomoUrl: String,
             siteId: Int,
-            trackerName: String
+            trackerName: String,
         ): Tracker? {
             return when (BuildConfig.DEBUG) {
                 true -> null

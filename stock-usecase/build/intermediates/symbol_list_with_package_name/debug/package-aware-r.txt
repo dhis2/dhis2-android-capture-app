@@ -6377,10 +6377,6 @@ id inspection_slot_table_set
 id invisible
 id inward
 id italic
-id item1
-id item2
-id item3
-id item4
 id item_touch_helper_previous_elevation
 id jumpToEnd
 id jumpToStart
@@ -7018,8 +7014,6 @@ layout support_simple_spinner_dropdown_item
 layout tooltip
 layout zxing_barcode_scanner
 layout zxing_capture
-menu example_menu
-menu example_menu2
 menu navigation_dashboard_landscape_menu
 menu navigation_dashboard_menu
 menu navigation_dataset_list

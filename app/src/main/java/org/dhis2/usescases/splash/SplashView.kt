@@ -31,6 +31,6 @@ interface SplashView {
         isUserLogged: Boolean,
         sessionLocked: Boolean,
         initialSyncDone: Boolean,
-        initialDataSyncDone: Boolean
+        initialDataSyncDone: Boolean,
     )
 }

@@ -15,38 +15,38 @@ import org.dhis2.commons.data.EventViewModelType.EVENT
 import org.dhis2.commons.data.EventViewModelType.STAGE
 import org.dhis2.commons.data.EventViewModelType.values
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.databinding.ItemStageSectionBinding
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 
 class EventAdapter(
-        val presenter: TEIDataContracts.Presenter,
-        val program: Program,
-        val selectedStage: String,
-        val selectedEvent: String
+    val presenter: TEIDataPresenter,
+    val program: Program,
+    val colorUtils: ColorUtils,
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
-        object : DiffUtil.ItemCallback<EventViewModel>() {
-            override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-                val oldItemId = if (oldItem.type == STAGE) {
-                    oldItem.stage!!.uid()
-                } else {
-                    oldItem.event!!.uid()
-                }
-                val newItemId = if (newItem.type == STAGE) {
-                    newItem.stage!!.uid()
-                } else {
-                    newItem.event!!.uid()
-                }
-                return oldItemId == newItemId
+    object : DiffUtil.ItemCallback<EventViewModel>() {
+        override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
+            val oldItemId = if (oldItem.type == STAGE) {
+                oldItem.stage!!.uid()
+            } else {
+                oldItem.event!!.uid()
             }
-
-            override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-                return oldItem == newItem
+            val newItemId = if (newItem.type == STAGE) {
+                newItem.stage!!.uid()
+            } else {
+                newItem.event!!.uid()
             }
-        }) {
+            return oldItemId == newItemId
+        }
 
+        override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
+            return oldItem == newItem
+        }
+    },
+) {
 
     private lateinit var enrollment: Enrollment
 
@@ -57,44 +57,39 @@ class EventAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
-        System.out.println("sssssssssssssssssss")
-        System.out.println(values()[viewType]);
-
         return when (values()[viewType]) {
             STAGE -> {
                 val binding = ItemStageSectionBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false,
                 )
                 StageViewHolder(
-                        binding,
-                        stageSelector,
-                        presenter,
-                        selectedStage
+                    binding,
+                    stageSelector,
+                    presenter,
+                    colorUtils,
                 )
             }
             EVENT -> {
                 val binding = DataBindingUtil.inflate<ItemEventBinding>(
-                        LayoutInflater.from(parent.context),
-                        R.layout.item_event,
-                        parent,
-                        false
+                    LayoutInflater.from(parent.context),
+                    R.layout.item_event,
+                    parent,
+                    false,
                 )
                 EventViewHolder(
-                        binding,
-                        program,
-                        selectedEvent,
-                        { presenter.onSyncDialogClick() },
-                        { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
-                        { eventUid, _, eventStatus, sharedView ->
-                            presenter.onEventSelected(
-                                    eventUid,
-                                    eventStatus,
-                                    sharedView
-                            )
-                        }
+                    binding,
+                    program,
+                    colorUtils,
+                    { presenter.onSyncDialogClick(it) },
+                    { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
+                    { eventUid, _, eventStatus, _ ->
+                        presenter.onEventSelected(
+                            eventUid,
+                            eventStatus,
+                        )
+                    },
                 )
             }
         }
@@ -107,9 +102,9 @@ class EventAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is EventViewHolder -> {
-
                 holder.bind(
-                        getItem(position), enrollment
+                    getItem(position),
+                    enrollment,
                 ) {
                     getItem(holder.getAdapterPosition()).toggleValueList()
                     notifyItemChanged(holder.getAdapterPosition())

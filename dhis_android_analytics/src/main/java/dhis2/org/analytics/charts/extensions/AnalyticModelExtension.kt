@@ -69,7 +69,7 @@ fun getDailyPeriods(): List<RelativePeriod> {
         RelativePeriod.LAST_30_DAYS,
         RelativePeriod.LAST_60_DAYS,
         RelativePeriod.LAST_90_DAYS,
-        RelativePeriod.LAST_180_DAYS
+        RelativePeriod.LAST_180_DAYS,
     )
 }
 
@@ -79,7 +79,7 @@ fun getWeeklyPeriods(): List<RelativePeriod> {
         RelativePeriod.LAST_WEEK,
         RelativePeriod.LAST_4_WEEKS,
         RelativePeriod.LAST_12_WEEKS,
-        RelativePeriod.LAST_52_WEEKS
+        RelativePeriod.LAST_52_WEEKS,
     )
 }
 
@@ -90,7 +90,7 @@ fun getMonthlyPeriods(): List<RelativePeriod> {
         RelativePeriod.LAST_3_MONTHS,
         RelativePeriod.LAST_6_MONTHS,
         RelativePeriod.LAST_12_MONTHS,
-        RelativePeriod.MONTHS_THIS_YEAR
+        RelativePeriod.MONTHS_THIS_YEAR,
     )
 }
 
@@ -98,7 +98,7 @@ fun getYearlyPeriods(): List<RelativePeriod> {
     return listOf(
         RelativePeriod.THIS_YEAR,
         RelativePeriod.LAST_YEAR,
-        RelativePeriod.LAST_5_YEARS
+        RelativePeriod.LAST_5_YEARS,
     )
 }
 
@@ -106,7 +106,7 @@ fun getOtherPeriods(): List<RelativePeriod> {
     return listOf(
         RelativePeriod.LAST_QUARTER,
         RelativePeriod.LAST_4_QUARTERS,
-        RelativePeriod.QUARTERS_THIS_YEAR
+        RelativePeriod.QUARTERS_THIS_YEAR,
     )
 }
 

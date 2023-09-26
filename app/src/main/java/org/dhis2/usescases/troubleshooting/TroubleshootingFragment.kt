@@ -12,11 +12,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.google.android.material.composethemeadapter.MdcTheme
-import javax.inject.Inject
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.MainNavigator
 import org.dhis2.usescases.troubleshooting.ui.TroubleshootingScreen
+import javax.inject.Inject
 
 const val OPEN_LANGUAGE_SECTION = "OPEN_LANGUAGE_SECTION"
 
@@ -44,8 +44,8 @@ class TroubleshootingFragment : FragmentGlobalAbstract() {
         if (context is MainActivity) {
             context.mainComponent.plus(
                 TroubleshootingModule(
-                    arguments?.getBoolean(OPEN_LANGUAGE_SECTION) ?: false
-                )
+                    arguments?.getBoolean(OPEN_LANGUAGE_SECTION) ?: false,
+                ),
             ).inject(this)
         }
     }
@@ -55,12 +55,12 @@ class TroubleshootingFragment : FragmentGlobalAbstract() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
                 setViewCompositionStrategy(
-                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
                 )
                 MdcTheme {
                     TroubleshootingScreen(troubleshootingViewModel) {
@@ -75,8 +75,8 @@ class TroubleshootingFragment : FragmentGlobalAbstract() {
         startActivity(
             MainActivity.intent(
                 requireContext(),
-                MainNavigator.MainScreen.TROUBLESHOOTING
-            )
+                MainNavigator.MainScreen.TROUBLESHOOTING,
+            ),
         )
         requireActivity().finish()
         requireActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

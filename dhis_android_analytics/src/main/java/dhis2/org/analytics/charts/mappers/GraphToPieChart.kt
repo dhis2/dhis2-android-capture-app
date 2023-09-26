@@ -51,7 +51,7 @@ class GraphToPieChart {
         pieChart.data = GraphToPieData().map(graph, serieToHighlight)
             .withGlobalStyle(
                 PercentageValueFormatter(pieChart),
-                ContextCompat.getColor(pieChart.context, R.color.textPrimary)
+                ContextCompat.getColor(pieChart.context, R.color.textPrimary),
             )
     }
 }

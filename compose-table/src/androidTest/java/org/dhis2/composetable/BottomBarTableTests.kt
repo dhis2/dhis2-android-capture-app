@@ -1,21 +1,21 @@
 package org.dhis2.composetable
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import org.dhis2.composetable.activity.TableTestActivity
+import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.model.FakeModelType
+import org.dhis2.composetable.ui.TableConfiguration
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
 class BottomBarTableTests {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TableTestActivity>()
+    val composeTestRule = createComposeRule()
 
     @Test
     fun shouldDisplayBottomBarComponentWhenTyping() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MULTIHEADER_TABLE
             )
             val tableId = fakeModel[0].id
@@ -29,7 +29,6 @@ class BottomBarTableTests {
     fun shouldTheElementWrittenInBottomBarBeTheSameInCell() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val tableId = fakeModel[0].id
@@ -46,7 +45,6 @@ class BottomBarTableTests {
     fun shouldAssertBottomBarStateBeforeAndAfterTyping() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val tableId = fakeModel[0].id
@@ -64,7 +62,6 @@ class BottomBarTableTests {
     fun shouldClickOnNextAndSavedValue() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
             val tableId = fakeModel[0].id
@@ -75,6 +72,49 @@ class BottomBarTableTests {
             clickOnAccept()
             composeTestRule.waitForIdle()
             assertOnSavedTableCellValue("test")
+        }
+    }
+
+    @Ignore
+    @Test
+    fun shouldHideInputFieldIfTextInputViewModeIsOff() {
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                fakeModelType = FakeModelType.MANDATORY_TABLE,
+                tableConfiguration = TableConfiguration(
+                    headerActionsEnabled = false,
+                    textInputViewMode = false
+                )
+            )
+            val tableId = fakeModel[0].id
+            clickOnCell(tableId!!, 1, 0)
+            composeTestRule.waitForIdle()
+            typeOnInputComponent("test")
+            assertCellHasText(tableId, 1, 0, "test")
+            clickOnBack()
+            composeTestRule.waitForIdle()
+            assertBottomBarIsNotVisible()
+        }
+    }
+
+    @Test
+    fun shouldShowInputFieldIfTextInputViewModeIsOn() {
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                fakeModelType = FakeModelType.MANDATORY_TABLE,
+                tableConfiguration = TableConfiguration(
+                    headerActionsEnabled = false,
+                    textInputViewMode = true
+                )
+            )
+            val tableId = fakeModel[0].id
+            clickOnCell(tableId!!, 1, 0)
+            composeTestRule.waitForIdle()
+            typeOnInputComponent("test")
+            assertCellHasText(tableId, 1, 0, "test")
+            clickOnBack()
+            composeTestRule.waitForIdle()
+            assertBottomBarIsVisible()
         }
     }
 }

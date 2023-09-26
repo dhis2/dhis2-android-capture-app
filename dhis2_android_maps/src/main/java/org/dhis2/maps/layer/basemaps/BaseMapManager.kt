@@ -16,17 +16,21 @@ const val BING_AERIAL = "Bing Aerial"
 const val BING_AERIAL_LABELS = "Bing Aerial Labels"
 const val DEFAULT_TILE_URL =
     "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png"
+const val DEFAULT_GLYPH_URL =
+    "http://fonts.openmaptiles.org/{fontstack}/{range}.pbf"
+const val DEFAULT_FONT =
+    "Klokantech Noto Sans Regular"
 const val DEFAULT_ATTRIBUTION = "© OpenStreetMap contributors, © Carto"
 
 class BaseMapManager(
     private val context: Context,
-    val baseMapStyles: List<BaseMapStyle>
+    val baseMapStyles: List<BaseMapStyle>,
 ) {
     fun getBaseMaps() = baseMapStyles.map {
         BaseMap(
             baseMapStyle = it,
             basemapName = baseMapName(it.id),
-            basemapImage = baseMapImage(it.id)
+            basemapImage = baseMapImage(it.id),
         )
     }
 
@@ -60,10 +64,9 @@ class BaseMapManager(
         }
     }
 
-    fun styleJson(
-        baseMapStyle: BaseMapStyle
-    ): Style.Builder {
-        return Style.Builder().fromJson(Gson().toJson(baseMapStyle))
+    fun styleJson(baseMapStyle: BaseMapStyle): Style.Builder {
+        return Style.Builder()
+            .fromJson(Gson().toJson(baseMapStyle.copy(glyphs = DEFAULT_GLYPH_URL)))
     }
 
     fun getDefaultBasemap(): BaseMapStyle {

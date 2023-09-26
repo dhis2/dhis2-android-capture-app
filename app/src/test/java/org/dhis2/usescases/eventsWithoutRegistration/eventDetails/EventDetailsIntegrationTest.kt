@@ -1,10 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import java.util.Date
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
@@ -38,6 +34,10 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class EventDetailsIntegrationTest {
@@ -99,7 +99,7 @@ class EventDetailsIntegrationTest {
         // AND is completed
         viewModel = initViewModel(
             periodType = null,
-            enrollmentStatus = EnrollmentStatus.COMPLETED
+            enrollmentStatus = EnrollmentStatus.COMPLETED,
         )
 
         // When user taps on reopen
@@ -114,37 +114,38 @@ class EventDetailsIntegrationTest {
     private fun initViewModel(
         periodType: PeriodType?,
         eventCreationType: EventCreationType = EventCreationType.DEFAULT,
-        enrollmentStatus: EnrollmentStatus
+        enrollmentStatus: EnrollmentStatus,
     ) = EventDetailsViewModel(
         configureEventDetails = createConfigureEventDetails(
             eventCreationType,
-            enrollmentStatus
+            enrollmentStatus,
         ),
         configureEventReportDate = createConfigureEventReportDate(
             eventCreationType,
-            periodType
+            periodType,
         ),
         configureOrgUnit = createConfigureOrgUnit(eventCreationType),
         configureEventCoordinates = createConfigureEventCoordinates(),
         configureEventCatCombo = createConfigureEventCatCombo(),
         configureEventTemp = createConfigureEventTemp(eventCreationType),
         periodType = periodType,
+        eventUid = EVENT_UID,
         geometryController = createGeometryController(),
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
-        resourcesProvider = provideEventResourcesProvider()
+        resourcesProvider = provideEventResourcesProvider(),
     )
 
     private fun createConfigureEventTemp(eventCreationType: EventCreationType) = ConfigureEventTemp(
-        creationType = eventCreationType
+        creationType = eventCreationType,
     )
 
     private fun createConfigureEventCatCombo() = ConfigureEventCatCombo(
-        repository = eventDetailsRepository
+        repository = eventDetailsRepository,
     )
 
     private fun createConfigureEventCoordinates() = ConfigureEventCoordinates(
-        repository = eventDetailsRepository
+        repository = eventDetailsRepository,
     )
 
     private fun createConfigureOrgUnit(eventCreationType: EventCreationType) = ConfigureOrgUnit(
@@ -152,12 +153,12 @@ class EventDetailsIntegrationTest {
         repository = eventDetailsRepository,
         preferencesProvider = preferencesProvider,
         programUid = PROGRAM_UID,
-        initialOrgUnitUid = INITIAL_ORG_UNIT_UID
+        initialOrgUnitUid = INITIAL_ORG_UNIT_UID,
     )
 
     private fun createConfigureEventReportDate(
         eventCreationType: EventCreationType,
-        periodType: PeriodType?
+        periodType: PeriodType?,
     ) = ConfigureEventReportDate(
         creationType = eventCreationType,
         resourceProvider = provideEventResourcesProvider(),
@@ -165,24 +166,24 @@ class EventDetailsIntegrationTest {
         periodType = periodType,
         periodUtils = periodUtils,
         enrollmentId = ENROLLMENT_UID,
-        scheduleInterval = 0
+        scheduleInterval = 0,
     )
 
     private fun createConfigureEventDetails(
         eventCreationType: EventCreationType,
-        enrollmentStatus: EnrollmentStatus
+        enrollmentStatus: EnrollmentStatus,
     ) = ConfigureEventDetails(
         repository = eventDetailsRepository,
         resourcesProvider = provideEventResourcesProvider(),
         creationType = eventCreationType,
-        enrollmentStatus = enrollmentStatus
+        enrollmentStatus = enrollmentStatus,
     )
 
     private fun provideEventResourcesProvider() = EventDetailResourcesProvider(resourceManager)
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,
-        resourcesProvider = provideEventResourcesProvider()
+        resourcesProvider = provideEventResourcesProvider(),
     )
 
     private fun createGeometryController() = GeometryController(GeometryParserImpl())
@@ -190,6 +191,7 @@ class EventDetailsIntegrationTest {
     companion object {
         const val ENROLLMENT_UID = "enrollmentUid"
         const val PROGRAM_UID = "programUid"
+        const val EVENT_UID = "eventUid"
         const val INITIAL_ORG_UNIT_UID = "initialOrgUnitUid"
         const val PROGRAM_STAGE_NAME = "Marvellous Program Stage"
         const val EXECUTION_DATE = "Date of Marvellous Program Stage"

@@ -16,5 +16,5 @@ data class DataTableModel(
     val compulsoryCells: List<DataElementOperand>?,
     val catCombo: CategoryCombo?,
     val header: MutableList<MutableList<CategoryOption>>?,
-    val catOptionOrder: List<List<CategoryOption>>?
+    val catOptionOrder: List<List<CategoryOption>>?,
 )

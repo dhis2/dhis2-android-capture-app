@@ -53,7 +53,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     }
 
     enum class ActionType {
-        FINISH_ADD_NEW, SKIP, RESCHEDULE, FINISH, COMPLETE_ADD_NEW, COMPLETE, CHECK_FIELDS
+        FINISH_ADD_NEW, SKIP, RESCHEDULE, FINISH, COMPLETE_ADD_NEW, COMPLETE, CHECK_FIELDS, NONE
     }
 
     fun setListener(listener: OnFormBottomDialogItemSelection?): FormBottomDialog {
@@ -64,7 +64,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return FormBottomDialogBinding.inflate(inflater, container, false).apply {
             canWrite = mAccessDataWrite
@@ -84,23 +84,20 @@ class FormBottomDialog : BottomSheetDialogFragment() {
             txtMandatoryFields.text = presenter.appendMandatoryFieldList(
                 mMandatoryFields,
                 mEmptyMandatoryFields,
-                txtMandatoryFields.text.toString()
+                txtMandatoryFields.text.toString(),
             )
         }.root
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver
             .addOnGlobalLayoutListener {
                 val dialog = dialog as BottomSheetDialog?
                 val bottomSheet =
                     dialog!!.findViewById<FrameLayout>(
-                        com.google.android.material.R.id.design_bottom_sheet
+                        com.google.android.material.R.id.design_bottom_sheet,
                     )
                 val behavior: BottomSheetBehavior<*> =
                     BottomSheetBehavior.from<FrameLayout?>(bottomSheet!!)

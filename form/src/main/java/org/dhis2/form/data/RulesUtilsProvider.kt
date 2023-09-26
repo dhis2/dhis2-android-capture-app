@@ -10,11 +10,11 @@ interface RulesUtilsProvider {
         applyForEvent: Boolean,
         fieldViewModels: MutableMap<String, FieldUiModel>,
         calcResult: List<RuleEffect>,
-        valueStore: FormValueStore?
+        valueStore: FormValueStore?,
     ): RuleUtilsProviderResult
 
     fun applyRuleEffects(
         programStages: MutableMap<String, ProgramStage>,
-        calcResult: Result<List<RuleEffect>>
+        calcResult: Result<List<RuleEffect>>,
     )
 }

@@ -4,9 +4,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
+import java.util.Calendar
 
 @BindingAdapter(value = ["setInitialValueDate", "parsingErrorText"], requireAll = true)
 fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
@@ -32,11 +32,13 @@ fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
 fun setInitialValueYear(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else try {
-        val dateDifference = getDifferenceBetweenDates(value)
-        editText.setText(dateDifference[0].toString())
-    } catch (e: Exception) {
-        editText.text = null
+    } else {
+        try {
+            val dateDifference = getDifferenceBetweenDates(value)
+            editText.setText(dateDifference[0].toString())
+        } catch (e: Exception) {
+            editText.text = null
+        }
     }
 }
 
@@ -44,11 +46,13 @@ fun setInitialValueYear(editText: EditText, value: String?) {
 fun setInitialValueMonth(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else try {
-        val dateDifference = getDifferenceBetweenDates(value)
-        editText.setText(dateDifference[1].toString())
-    } catch (e: Exception) {
-        editText.text = null
+    } else {
+        try {
+            val dateDifference = getDifferenceBetweenDates(value)
+            editText.setText(dateDifference[1].toString())
+        } catch (e: Exception) {
+            editText.text = null
+        }
     }
 }
 
@@ -56,11 +60,13 @@ fun setInitialValueMonth(editText: EditText, value: String?) {
 fun setInitialValueDay(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else try {
-        val dateDifference = getDifferenceBetweenDates(value)
-        editText.setText(dateDifference[2].toString())
-    } catch (e: Exception) {
-        editText.text = null
+    } else {
+        try {
+            val dateDifference = getDifferenceBetweenDates(value)
+            editText.setText(dateDifference[2].toString())
+        } catch (e: Exception) {
+            editText.text = null
+        }
     }
 }
 
@@ -69,7 +75,7 @@ private fun getDifferenceBetweenDates(value: String?): IntArray {
         Calendar.getInstance().time = it
         DateUtils.getDifference(
             it,
-            Calendar.getInstance().time
+            Calendar.getInstance().time,
         )
     } ?: IntArray(0)
 }

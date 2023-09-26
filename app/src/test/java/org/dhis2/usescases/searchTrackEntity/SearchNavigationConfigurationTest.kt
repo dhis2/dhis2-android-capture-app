@@ -1,10 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import java.util.GregorianCalendar
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -12,6 +7,11 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import java.util.GregorianCalendar
 
 class SearchNavigationConfigurationTest {
 
@@ -73,10 +73,10 @@ class SearchNavigationConfigurationTest {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
                 .uid(teiUId)
-                .blockingGet()
+                .blockingGet(),
         ) doReturnConsecutively listOf(
             defaultTei,
-            teiWithChanges
+            teiWithChanges,
         )
     }
 
@@ -84,10 +84,10 @@ class SearchNavigationConfigurationTest {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
                 .uid(teiUId)
-                .blockingGet()
+                .blockingGet(),
         ) doReturnConsecutively listOf(
             defaultTei,
-            null
+            null,
         )
     }
 
@@ -95,10 +95,10 @@ class SearchNavigationConfigurationTest {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
                 .uid(teiUId)
-                .blockingGet()
+                .blockingGet(),
         ) doReturnConsecutively listOf(
             defaultTei,
-            defaultTei
+            defaultTei,
         )
     }
 
@@ -106,10 +106,10 @@ class SearchNavigationConfigurationTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid(enrollmentUid)
-                .blockingGet()
+                .blockingGet(),
         )doReturnConsecutively listOf(
             defaultEnrollment,
-            defaultEnrollment
+            defaultEnrollment,
         )
     }
 
@@ -117,10 +117,10 @@ class SearchNavigationConfigurationTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid(enrollmentUid)
-                .blockingGet()
+                .blockingGet(),
         )doReturnConsecutively listOf(
             defaultEnrollment,
-            null
+            null,
         )
     }
 
@@ -128,7 +128,7 @@ class SearchNavigationConfigurationTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid(enrollmentUid)
-                .blockingGet()
+                .blockingGet(),
         )doReturn null
     }
 

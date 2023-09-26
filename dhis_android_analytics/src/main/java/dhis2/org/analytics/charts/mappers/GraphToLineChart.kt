@@ -7,6 +7,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.bindings.datePattern
 import dhis2.org.analytics.charts.charts.ChartMarker
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
@@ -36,14 +37,18 @@ class GraphToLineChart {
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
-                    DEFAULT_GRIP_PHASE
+                    DEFAULT_GRIP_PHASE,
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
                 valueFormatter = if (graph.categories.isNotEmpty()) {
                     CategoryFormatter(graph.categories)
                 } else {
-                    DateLabelFormatter { graph.dateFromSteps(it) }
+                    DateLabelFormatter(
+                        datePattern = graph.eventPeriodType.datePattern(),
+                        dateFromValue = { graph.dateFromSteps(it) },
+                        localDateFromValue = { graph.localDateFromSteps(it) },
+                    )
                 }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
@@ -55,7 +60,7 @@ class GraphToLineChart {
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
-                    DEFAULT_GRIP_PHASE
+                    DEFAULT_GRIP_PHASE,
                 )
                 var minValue = graph.minValue()
                 if (graph.isSingleValue()) {

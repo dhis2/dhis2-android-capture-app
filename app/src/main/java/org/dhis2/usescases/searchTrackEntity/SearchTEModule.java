@@ -11,12 +11,13 @@ import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
-import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
+import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -26,6 +27,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
+import org.dhis2.form.data.metadata.FileResourceConfiguration;
 import org.dhis2.form.data.metadata.OptionSetConfiguration;
 import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
@@ -102,14 +104,15 @@ public class SearchTEModule {
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
                                                        PreferenceProvider preferenceProvider,
-                                                       TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
-                                                       SyncStatusController syncStatusController) {
+                                                       SyncStatusController syncStatusController,
+                                                       ResourceManager resourceManager,
+                                                       ColorUtils colorUtils) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
-                teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, syncStatusController);
+                filterRepository, new DisableHomeFiltersFromSettingsApp(),
+                matomoAnalyticsController, syncStatusController, resourceManager, colorUtils);
     }
 
     @Provides
@@ -161,20 +164,22 @@ public class SearchTEModule {
     FieldViewModelFactory fieldViewModelFactory(
             Context context,
             D2 d2,
-            ResourceManager resourceManager
+            ResourceManager resourceManager,
+            ColorUtils colorUtils
     ) {
         return new FieldViewModelFactoryImpl(
                 true,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(moduleContext, false),
-                        new LongTextUiColorFactoryImpl(moduleContext, false)
-
+                        new FormUiModelColorFactoryImpl(moduleContext, false, colorUtils),
+                        new LongTextUiColorFactoryImpl(moduleContext, false, colorUtils),
+                        false
                 ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2)
+                        new OrgUnitConfiguration(d2),
+                        new FileResourceConfiguration(d2)
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
@@ -237,13 +242,11 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchTeiViewModelFactory providesViewModelFactory(
-            SearchTEContractsModule.Presenter presenter,
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2) {
         return new SearchTeiViewModelFactory(
-                presenter,
                 searchRepository,
                 new SearchPageConfigurator(searchRepository),
                 initialProgram,

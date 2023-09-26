@@ -33,7 +33,7 @@ data class SectionUiModelImpl(
     override val renderingType: UiRenderType? = null,
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null,
-    var isOpen: Boolean = false,
+    var isOpen: Boolean? = false,
     var totalFields: Int = 0,
     var completedFields: Int = 0,
     var errors: Int = 0,
@@ -41,7 +41,7 @@ data class SectionUiModelImpl(
     var rendering: String? = null,
     var selectedField: ObservableField<String?> = ObservableField(null),
     override val isLoadingData: Boolean = false,
-    override var optionSetConfiguration: OptionSetConfiguration? = null
+    override var optionSetConfiguration: OptionSetConfiguration? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0
@@ -116,8 +116,8 @@ data class SectionUiModelImpl(
         callback!!.intent(
             OnFocus(
                 uid,
-                value
-            )
+                value,
+            ),
         )
     }
 
@@ -125,8 +125,8 @@ data class SectionUiModelImpl(
         callback?.recyclerViewUiEvents(
             RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                 label,
-                description
-            )
+                description,
+            ),
         )
     }
 
@@ -141,7 +141,7 @@ data class SectionUiModelImpl(
     override val textColor: Int?
         get() = style?.textColor(error, warning)
 
-    override val backGroundColor: Pair<Array<Int>, Int>?
+    override val backGroundColor: Pair<Array<Int>, Int?>?
         get() =
             valueType?.let {
                 style?.backgroundColor(it, error, warning)

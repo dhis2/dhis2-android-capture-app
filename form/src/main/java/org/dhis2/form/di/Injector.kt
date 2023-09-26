@@ -4,7 +4,9 @@ import android.content.Context
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportControllerImpl
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.data.EnrollmentRuleEngineRepository
@@ -13,13 +15,14 @@ import org.dhis2.form.data.EventRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
 import org.dhis2.form.data.SearchRepository
+import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.FormRepositoryRecords
@@ -46,14 +49,18 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 object Injector {
     fun provideFormViewModelFactory(
         context: Context,
-        repositoryRecords: FormRepositoryRecords
+        repositoryRecords: FormRepositoryRecords,
+        openErrorLocation: Boolean,
+        forceDisableCollapsibleSections: Boolean,
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
-                repositoryRecords
+                repositoryRecords,
+                forceDisableCollapsibleSections,
             ),
-            provideDispatchers()
+            provideDispatchers(),
+            openErrorLocation,
         )
     }
 
@@ -61,7 +68,7 @@ object Injector {
 
     fun provideOptionSetDialog(): SearchOptionSetOption {
         return SearchOptionSetOption(
-            provideD2().optionModule().options()
+            provideD2().optionModule().options(),
         )
     }
 
@@ -71,97 +78,109 @@ object Injector {
 
     private fun provideFormRepository(
         context: Context,
-        repositoryRecords: FormRepositoryRecords
+        repositoryRecords: FormRepositoryRecords,
+        enableCollapsableFeature: Boolean,
     ): FormRepository {
         return FormRepositoryImpl(
             formValueStore = provideFormValueStore(
                 context = context,
                 recordUid = repositoryRecords.recordUid,
-                entryMode = repositoryRecords.entryMode
+                entryMode = repositoryRecords.entryMode,
             ),
             fieldErrorMessageProvider = provideFieldErrorMessage(context),
             displayNameProvider = provideDisplayNameProvider(),
             dataEntryRepository = provideDataEntryRepository(
                 entryMode = repositoryRecords.entryMode,
                 context = context,
-                repositoryRecords = repositoryRecords
+                repositoryRecords = repositoryRecords,
+                enableCollapsableFeature = enableCollapsableFeature,
             ),
             ruleEngineRepository = provideRuleEngineRepository(
                 repositoryRecords.entryMode,
-                repositoryRecords.recordUid
+                repositoryRecords.recordUid,
             ),
             rulesUtilsProvider = provideRulesUtilsProvider(),
-            legendValueProvider = provideLegendValueProvider(context)
+            legendValueProvider = provideLegendValueProvider(context),
+            forceDisableCollapsibleSections = enableCollapsableFeature,
         )
     }
 
     private fun provideDataEntryRepository(
         entryMode: EntryMode?,
         context: Context,
-        repositoryRecords: FormRepositoryRecords
+        repositoryRecords: FormRepositoryRecords,
+        enableCollapsableFeature: Boolean,
     ): DataEntryRepository {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRepository(
                 context,
-                repositoryRecords as EnrollmentRecords
+                repositoryRecords as EnrollmentRecords,
+                enableCollapsableFeature,
             )
+
             EntryMode.DE -> provideEventRepository(
                 context,
-                repositoryRecords as EventRecords
+                repositoryRecords as EventRecords,
+                enableCollapsableFeature,
             )
+
             else -> provideSearchRepository(
                 context,
-                repositoryRecords as SearchRecords
+                repositoryRecords as SearchRecords,
             )
         }
     }
 
     private fun provideSearchRepository(
         context: Context,
-        searchRecords: SearchRecords
+        searchRecords: SearchRecords,
     ): DataEntryRepository {
         return SearchRepository(
             d2 = provideD2(),
             fieldViewModelFactory = provideFieldFactory(
                 context,
                 searchRecords.allowMandatoryFields,
-                searchRecords.isBackgroundTransparent
+                searchRecords.isBackgroundTransparent,
             ),
             programUid = searchRecords.programUid,
             teiTypeUid = searchRecords.teiTypeUid,
-            currentSearchValues = searchRecords.currentSearchValues
+            currentSearchValues = searchRecords.currentSearchValues,
         )
     }
 
     private fun provideEnrollmentRepository(
         context: Context,
-        enrollmentRecords: EnrollmentRecords
+        enrollmentRecords: EnrollmentRecords,
+        enableCollapsableFeature: Boolean,
     ): DataEntryRepository {
         return EnrollmentRepository(
             fieldFactory = provideFieldFactory(
                 context,
                 enrollmentRecords.allowMandatoryFields,
-                enrollmentRecords.isBackgroundTransparent
+                enrollmentRecords.isBackgroundTransparent,
             ),
             enrollmentUid = enrollmentRecords.enrollmentUid,
             d2 = provideD2(),
             enrollmentMode = enrollmentRecords.enrollmentMode,
-            enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context)
+            enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
+            enableCollapsableFeature = enableCollapsableFeature,
         )
     }
 
     private fun provideEventRepository(
         context: Context,
-        eventRecords: EventRecords
+        eventRecords: EventRecords,
+        enableCollapsableFeature: Boolean,
     ): DataEntryRepository {
         return EventRepository(
             fieldFactory = provideFieldFactory(
                 context,
                 eventRecords.allowMandatoryFields,
-                eventRecords.isBackgroundTransparent
+                eventRecords.isBackgroundTransparent,
             ),
             eventUid = eventRecords.eventUid,
-            d2 = provideD2()
+            d2 = provideD2(),
+            enableCollapsableFeature = enableCollapsableFeature,
         )
     }
 
@@ -171,18 +190,17 @@ object Injector {
     private fun provideFieldFactory(
         context: Context,
         allowMandatoryFields: Boolean,
-        isBackgroundTransparent: Boolean
-    ): FieldViewModelFactory =
-        FieldViewModelFactoryImpl(
-            noMandatoryFields = !allowMandatoryFields,
-            uiStyleProvider = provideUiStyleProvider(context, isBackgroundTransparent),
-            layoutProvider = provideLayoutProvider(),
-            hintProvider = provideHintProvider(context),
-            displayNameProvider = provideDisplayNameProvider(),
-            uiEventTypesProvider = provideUiEventTypesProvider(),
-            keyboardActionProvider = provideKeyBoardActionProvider(),
-            legendValueProvider = provideLegendValueProvider(context)
-        )
+        isBackgroundTransparent: Boolean,
+    ): FieldViewModelFactory = FieldViewModelFactoryImpl(
+        noMandatoryFields = !allowMandatoryFields,
+        uiStyleProvider = provideUiStyleProvider(context, isBackgroundTransparent),
+        layoutProvider = provideLayoutProvider(),
+        hintProvider = provideHintProvider(context),
+        displayNameProvider = provideDisplayNameProvider(),
+        uiEventTypesProvider = provideUiEventTypesProvider(),
+        keyboardActionProvider = provideKeyBoardActionProvider(),
+        legendValueProvider = provideLegendValueProvider(context),
+    )
 
     private fun provideKeyBoardActionProvider() = KeyboardActionProviderImpl()
 
@@ -194,16 +212,25 @@ object Injector {
 
     private fun provideUiStyleProvider(
         context: Context,
-        isBackgroundTransparent: Boolean
+        isBackgroundTransparent: Boolean,
     ): UiStyleProvider = UiStyleProviderImpl(
-        colorFactory = FormUiModelColorFactoryImpl(context, isBackgroundTransparent),
-        longTextColorFactory = LongTextUiColorFactoryImpl(context, isBackgroundTransparent)
+        colorFactory = FormUiModelColorFactoryImpl(
+            context,
+            isBackgroundTransparent,
+            provideColorUtils(),
+        ),
+        longTextColorFactory = LongTextUiColorFactoryImpl(
+            context,
+            isBackgroundTransparent,
+            provideColorUtils(),
+        ),
+        actionIconClickable = isBackgroundTransparent,
     )
 
     private fun provideFormValueStore(
         context: Context,
         recordUid: String?,
-        entryMode: EntryMode?
+        entryMode: EntryMode?,
     ): FormValueStore? {
         return entryMode?.let { it ->
             val enrollmentObjectRepository = if (it == EntryMode.ATTR) {
@@ -219,13 +246,13 @@ object Injector {
                 enrollmentRepository = enrollmentObjectRepository,
                 crashReportController = provideCrashReportController(),
                 networkUtils = provideNetworkUtils(context),
-                resourceManager = provideResourcesManager(context)
+                resourceManager = provideResourcesManager(context),
             )
         }
     }
 
     private fun provideEnrollmentObjectRepository(
-        enrollmentUid: String
+        enrollmentUid: String,
     ): EnrollmentObjectRepository {
         return provideD2().enrollmentModule().enrollments().uid(enrollmentUid)
     }
@@ -234,18 +261,22 @@ object Injector {
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
-    private fun provideResourcesManager(context: Context) = ResourceManager(context)
+    private fun provideResourcesManager(context: Context) = ResourceManager(
+        context,
+        provideColorUtils(),
+    )
 
     private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
 
     private fun provideDisplayNameProvider() = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
-        OrgUnitConfiguration(provideD2())
+        OrgUnitConfiguration(provideD2()),
+        FileResourceConfiguration(provideD2()),
     )
 
     private fun provideRuleEngineRepository(
         entryMode: EntryMode?,
-        recordUid: String?
+        recordUid: String?,
     ): RuleEngineRepository? {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRuleEngineRepository(recordUid!!)
@@ -260,10 +291,17 @@ object Injector {
     private fun provideEventRuleEngineRepository(eventUid: String) =
         EventRuleEngineRepository(provideD2(), eventUid)
 
-    private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(provideD2())
+    private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(
+        provideD2(),
+        provideOptionsRepository(),
+    )
+
+    private fun provideOptionsRepository() = OptionsRepository(provideD2())
 
     private fun provideLegendValueProvider(context: Context) = LegendValueProviderImpl(
         provideD2(),
-        provideResourcesManager(context)
+        provideResourcesManager(context),
     )
+
+    private fun provideColorUtils() = ColorUtils()
 }

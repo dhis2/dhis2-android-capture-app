@@ -2,10 +2,6 @@ package org.dhis2.uicomponents.map.geometry
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
@@ -16,6 +12,10 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class MapEventToFeatureCollectionTest {
 
@@ -28,7 +28,7 @@ class MapEventToFeatureCollectionTest {
         mapEventToFeatureCollection =
             MapEventToFeatureCollection(
                 mapGeometryToFeature,
-                bounds
+                bounds,
             )
     }
 
@@ -37,15 +37,15 @@ class MapEventToFeatureCollectionTest {
         val (firstFeature, secondFeature) = createFeatures()
         val firstEvent = createEvent(
             "[$FIRST_FEATURE_LONGITUDE, $FIRST_FEATURE_LATITUDE]",
-            UID_FIRST_EVENT_VALUE
+            UID_FIRST_EVENT_VALUE,
         )
         val secondEvent = createEvent(
             " [$SECOND_FEATURE_LONGITUDE, $SECOND_FEATURE_LATITUDE]",
-            UID_SECOND_EVENT_VALUE
+            UID_SECOND_EVENT_VALUE,
         )
 
         whenever(
-            mapGeometryToFeature.map(any(), any())
+            mapGeometryToFeature.map(any(), any()),
         ) doReturn firstFeature doReturn secondFeature
 
         val result = mapEventToFeatureCollection.map(listOf(firstEvent, secondEvent))
@@ -68,11 +68,11 @@ class MapEventToFeatureCollectionTest {
     private fun createFeatures(): Pair<Feature, Feature> {
         return Pair(
             Feature.fromGeometry(
-                Point.fromLngLat(FIRST_FEATURE_LONGITUDE, FIRST_FEATURE_LATITUDE)
+                Point.fromLngLat(FIRST_FEATURE_LONGITUDE, FIRST_FEATURE_LATITUDE),
             ).also { it.addStringProperty(UID, UID_FIRST_EVENT_VALUE) },
             Feature.fromGeometry(
-                Point.fromLngLat(SECOND_FEATURE_LONGITUDE, SECOND_FEATURE_LATITUDE)
-            ).also { it.addStringProperty(UID, UID_SECOND_EVENT_VALUE) }
+                Point.fromLngLat(SECOND_FEATURE_LONGITUDE, SECOND_FEATURE_LATITUDE),
+            ).also { it.addStringProperty(UID, UID_SECOND_EVENT_VALUE) },
         )
     }
 

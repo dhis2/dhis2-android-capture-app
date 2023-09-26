@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.common.ValueType
 
 interface FormRepository {
 
-    fun fetchFormItems(): List<FieldUiModel>
+    fun fetchFormItems(shouldOpenErrorLocation: Boolean = false): List<FieldUiModel>
     fun composeList(skipProgramRules: Boolean = false): List<FieldUiModel>
     fun getConfigurationErrors(): List<RulesUtilsProviderConfigurationError>?
     fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult
@@ -23,4 +23,6 @@ interface FormRepository {
     fun removeAllValues()
     fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean)
     fun clearFocusItem()
+    fun storeFile(id: String, filePath: String?): StoreResult?
+    fun areSectionCollapsable(): Boolean
 }

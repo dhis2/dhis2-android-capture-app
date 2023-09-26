@@ -40,23 +40,15 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
         val request = chain.request()
         val response = chain.proceed(request)
 
-        if (response.code() >= 400 && !isLogged) {
+        if (response.code >= 400 && !isLogged) {
             isLogged = D2Manager.getD2().userModule().blockingIsLogged()
         }
 
-        if (response.code() >= 400 && isLogged) {
-            analyticHelper.setEvent(
-                API_CALL,
-                HashMap<String, String>().apply {
-                    put(API_CALL_RESPONSE_CODE, response.code().toString())
-                    put(API_CALL_ENDPOINT, request.url().toString())
-                }
-            )
-
+        if (response.code >= 400 && isLogged) {
             analyticHelper.trackMatomoEvent(
                 API_CALL,
-                "${request.method()}_${request.url()}",
-                "${response.code()}_${appVersionName}_${getDhis2Version()}"
+                "${request.method}_${request.url}",
+                "${response.code}_${appVersionName}_${getDhis2Version()}",
             )
         }
         return response
@@ -65,7 +57,7 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
     private fun getDhis2Version(): String? {
         if (serverVersionName == null) {
             serverVersionName =
-                D2Manager.getD2().systemInfoModule().systemInfo().blockingGet().version()
+                D2Manager.getD2().systemInfoModule().systemInfo().blockingGet()?.version()
         }
         return serverVersionName
     }

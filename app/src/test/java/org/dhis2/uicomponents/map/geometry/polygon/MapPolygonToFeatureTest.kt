@@ -28,8 +28,8 @@ class MapPolygonToFeatureTest {
         val coordinates = listOf(
             listOf(
                 listOf(longitude1, latitude1),
-                listOf(longitude2, latitude2)
-            )
+                listOf(longitude2, latitude2),
+            ),
         )
 
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)

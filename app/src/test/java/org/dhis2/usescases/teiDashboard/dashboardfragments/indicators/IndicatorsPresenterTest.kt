@@ -1,10 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import dhis2.org.analytics.charts.ui.AnalyticsModel
 import dhis2.org.analytics.charts.ui.IndicatorModel
 import dhis2.org.analytics.charts.ui.LOCATION_INDICATOR_WIDGET
@@ -15,6 +10,11 @@ import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class IndicatorsPresenterTest {
 
@@ -31,7 +31,7 @@ class IndicatorsPresenterTest {
     @Test
     fun `Should get indicators`() {
         whenever(
-            indicatorRepository.fetchData()
+            indicatorRepository.fetchData(),
         ) doReturn Flowable.just(analyticsModels())
 
         presenter.init()
@@ -55,15 +55,14 @@ class IndicatorsPresenterTest {
         verify(view).displayMessage(message)
     }
 
-    private fun analyticsModels(): List<AnalyticsModel> =
-        listOf(
-            IndicatorModel(
-                ProgramIndicator.builder().uid("indicator_uid")
-                    .displayInForm(true).build(),
-                "indicator_value",
-                "#ffffff",
-                LOCATION_INDICATOR_WIDGET,
-                "Info"
-            )
-        )
+    private fun analyticsModels(): List<AnalyticsModel> = listOf(
+        IndicatorModel(
+            ProgramIndicator.builder().uid("indicator_uid")
+                .displayInForm(true).build(),
+            "indicator_value",
+            "#ffffff",
+            LOCATION_INDICATOR_WIDGET,
+            "Info",
+        ),
+    )
 }

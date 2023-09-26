@@ -4,12 +4,12 @@ import android.graphics.Color
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.rules.models.Rule
+import java.util.Locale
 
 @Preview
 @Composable
@@ -17,7 +17,7 @@ fun ConfItemPreview() {
     ConfigurationItem(
         R.drawable.ic_settings_language,
         "Languages",
-        "Tap here to change the language of the application"
+        "Tap here to change the language of the application",
     )
 }
 
@@ -51,7 +51,7 @@ fun ProgramRuleValidations() {
             metadataIconData = MetadataIconData(
                 programColor = Color.parseColor("#4CAF50"),
                 iconResource = R.drawable.ic_home_outline,
-                sizeInDp = 24
+                sizeInDp = 24,
 
             ),
             validations = listOf(
@@ -62,13 +62,13 @@ fun ProgramRuleValidations() {
                         "#{Hello} == hello",
                         emptyList(),
                         "Rule 1",
-                        "uid1"
+                        "uid1",
                     ),
                     conditionError = "Condition error 1",
-                    actionsError = listOf("Action error 11", "Action error 12")
-                )
-            )
+                    actionsError = listOf("Action error 11", "Action error 12"),
+                ),
+            ),
         ),
-        showValidationList = true
+        showValidationList = true,
     ) {}
 }

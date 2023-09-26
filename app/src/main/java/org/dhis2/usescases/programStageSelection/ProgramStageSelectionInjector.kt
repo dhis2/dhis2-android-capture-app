@@ -20,7 +20,7 @@ class ProgramStageSelectionModule(
     private val view: ProgramStageSelectionView,
     private val programUid: String,
     private val enrollmentUid: String,
-    private val eventCreationType: String
+    private val eventCreationType: String,
 ) {
     @Provides
     @PerActivity
@@ -33,13 +33,13 @@ class ProgramStageSelectionModule(
     fun providesPresenter(
         programStageSelectionRepository: ProgramStageSelectionRepository,
         ruleUtils: RulesUtilsProvider,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
     ): ProgramStageSelectionPresenter {
         return ProgramStageSelectionPresenter(
             view,
             programStageSelectionRepository,
             ruleUtils,
-            schedulerProvider
+            schedulerProvider,
         )
     }
 
@@ -47,14 +47,14 @@ class ProgramStageSelectionModule(
     @PerActivity
     fun providesProgramStageSelectionRepository(
         rulesRepository: RulesRepository,
-        d2: D2
+        d2: D2,
     ): ProgramStageSelectionRepository {
         return ProgramStageSelectionRepositoryImpl(
             rulesRepository,
             programUid,
             enrollmentUid,
             eventCreationType,
-            d2
+            d2,
         )
     }
 

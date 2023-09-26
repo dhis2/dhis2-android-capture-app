@@ -3,19 +3,15 @@ package org.dhis2.maps.layer.basemaps
 import com.google.gson.annotations.SerializedName
 
 object BaseMapStyleBuilder {
-    fun build(
-        id: String,
-        tileUrls: List<String>,
-        attribution: String
-    ) = BaseMapStyle(
+    fun build(id: String, tileUrls: List<String>, attribution: String) = BaseMapStyle(
         version = 8,
         sources = StyleSources(
             rasterTiles = RasterTiles(
                 type = "raster",
                 tiles = tileUrls,
-                tileSize = 256
+                tileSize = 256,
             ),
-            attribution = attribution
+            attribution = attribution,
         ),
         layers = listOf(
             StyleLayers(
@@ -23,10 +19,11 @@ object BaseMapStyleBuilder {
                 type = "raster",
                 source = "raster-tiles",
                 minZoom = 0,
-                maxZoom = 22
-            )
+                maxZoom = 22,
+            ),
         ),
-        id = id
+        id = id,
+        glyphs = DEFAULT_GLYPH_URL,
     )
 
     fun internalBaseMap(): BaseMapStyle {
@@ -36,9 +33,9 @@ object BaseMapStyleBuilder {
                 DEFAULT_TILE_URL.replace("{s}", "a"),
                 DEFAULT_TILE_URL.replace("{s}", "b"),
                 DEFAULT_TILE_URL.replace("{s}", "c"),
-                DEFAULT_TILE_URL.replace("{s}", "d")
+                DEFAULT_TILE_URL.replace("{s}", "d"),
             ),
-            DEFAULT_ATTRIBUTION
+            DEFAULT_ATTRIBUTION,
         )
     }
 }
@@ -47,18 +44,19 @@ data class BaseMapStyle(
     val version: Int,
     val sources: StyleSources,
     val layers: List<StyleLayers>,
-    val id: String
+    val id: String,
+    var glyphs: String,
 )
 
 data class StyleSources(
     @SerializedName("raster-tiles") val rasterTiles: RasterTiles,
-    val attribution: String
+    val attribution: String,
 )
 
 data class RasterTiles(
     val type: String,
     val tiles: List<String>,
-    val tileSize: Int
+    val tileSize: Int,
 )
 
 data class StyleLayers(
@@ -66,5 +64,5 @@ data class StyleLayers(
     val type: String,
     val source: String,
     val minZoom: Int,
-    val maxZoom: Int
+    val maxZoom: Int,
 )

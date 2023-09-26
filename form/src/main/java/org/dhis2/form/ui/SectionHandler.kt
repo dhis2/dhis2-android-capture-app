@@ -4,7 +4,7 @@ class SectionHandler {
     fun getSectionPositionFromVisiblePosition(
         visiblePosition: Int,
         isSection: Boolean,
-        sectionPositions: MutableList<Int>
+        sectionPositions: MutableList<Int>,
     ): Int {
         return if (isSection) {
             visiblePosition

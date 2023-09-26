@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.R;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.databinding.ItemFieldValueBinding;
+import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.ui.MetadataIconData;
@@ -46,10 +46,12 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private final Function2<String, View, Unit> onScheduleClick;
     private final Function4<String, String, EventStatus, View, Unit> onEventSelected;
     private ItemEventBinding binding;
+    private ColorUtils colorUtils;
     private String selectedEvent;
 
     public EventViewHolder(ItemEventBinding binding,
                            Program program,
+                           ColorUtils colorUtils,
                            String eventSelected,
                            Function1<String, Unit> syncClick,
                            Function2<String, View, Unit> scheduleClick,
@@ -61,6 +63,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onSyncClick = syncClick;
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
+        this.colorUtils = colorUtils;
         this.selectedEvent = eventSelected;
         MetadataIconKt.handleComposeDispose(binding.composeStageIcon);
     }
@@ -74,12 +77,8 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.setProgram(program);
         binding.executePendingBindings();
 
-        System.out.println("bind called????");
-        System.out.println(event.uid());
-        System.out.println(this.selectedEvent);
 
         if(event.uid().equals(this.selectedEvent)){
-            System.out.println("condition passed????");
             binding.sharedView.setBackgroundColor(Color.rgb(234,245,253));
         }
 
@@ -152,12 +151,12 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void renderStageIcon(ObjectStyle style) {
-        int color = ColorUtils.getColorFrom(
+        int color = colorUtils.getColorFrom(
                 style.color(),
-                ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT)
+                colorUtils.getPrimaryColor(itemView.getContext(), ColorType.PRIMARY_LIGHT)
         );
 
-        int imageResource = new ResourceManager(itemView.getContext()).getObjectStyleDrawableResource(
+        int imageResource = new ResourceManager(itemView.getContext(), colorUtils).getObjectStyleDrawableResource(
                 style.icon(),
                 R.drawable.ic_default_outline
         );

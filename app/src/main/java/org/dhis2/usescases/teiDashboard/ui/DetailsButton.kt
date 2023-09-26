@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
@@ -24,50 +23,39 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 
 @Composable
-fun DetailsButton(
-    trackedEntityName: String,
-    onButtonClicked: () -> Unit
-) {
+fun DetailsButton(trackedEntityName: String, onButtonClicked: () -> Unit) {
     OutlinedButton(
         border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(4.dp),
         onClick = onButtonClicked,
-        modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 16.dp)
+        modifier = Modifier.fillMaxWidth(),
     ) {
 
         trackedEntityName.replaceFirstChar { it.uppercase() };
 
         Icon(
-            painter = painterResource(id = R.drawable.ic_navigation_details_outline),
+            painter = painterResource(id = R.drawable.ic_navigation_details),
             contentDescription = "details",
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colors.primary,
         )
         Text(
             text = stringResource(id = R.string.open_details)
-                .format(trackedEntityName),
+                .format(trackedEntityName)
+                .toUpperCase(Locale.current),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colors.primary,
-            modifier = Modifier.padding(start = 11.dp)
+            modifier = Modifier.padding(start = 11.dp),
         )
     }
 }
 
-fun ComposeView?.setButtonContent(
-    trackedEntityName: String,
-    onButtonClicked: () -> Unit
-) {
-
-    System.out.println("seting details button");
-    System.out.println(trackedEntityName);
-    System.out.println(onButtonClicked);
-
+fun ComposeView?.setButtonContent(trackedEntityName: String, onButtonClicked: () -> Unit) {
     this?.setContent {
         MdcTheme {
             DetailsButton(
                 trackedEntityName = trackedEntityName,
-                onButtonClicked = onButtonClicked
+                onButtonClicked = onButtonClicked,
             )
         }
     }

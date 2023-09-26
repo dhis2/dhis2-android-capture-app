@@ -25,7 +25,7 @@ class SelectionState {
         all: Boolean = false,
         rowHeader: Boolean = false,
         columnHeaderRow: Int? = null,
-        cellOnly: Boolean = false
+        cellOnly: Boolean = false,
     ) {
         this.column = column
         this.row = row
@@ -43,7 +43,7 @@ class SelectionState {
         all: Boolean = false,
         rowHeader: Boolean = false,
         columnHeaderRow: Int? = null,
-        cellOnly: Boolean = false
+        cellOnly: Boolean = false,
     ) {
         this.column = column
         this.row = row

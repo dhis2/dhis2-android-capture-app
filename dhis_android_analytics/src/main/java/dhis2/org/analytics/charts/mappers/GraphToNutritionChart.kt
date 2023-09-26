@@ -26,7 +26,7 @@ class GraphToNutritionChart {
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
-                    DEFAULT_GRIP_PHASE
+                    DEFAULT_GRIP_PHASE,
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
@@ -40,7 +40,7 @@ class GraphToNutritionChart {
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
-                    DEFAULT_GRIP_PHASE
+                    DEFAULT_GRIP_PHASE,
                 )
                 axisMaximum = graph.maxValue()
                 axisMinimum = graph.minValue()
@@ -60,11 +60,11 @@ class GraphToNutritionChart {
                             legendDataSet.formSize,
                             legendDataSet.formLineWidth,
                             legendDataSet.formLineDashEffect,
-                            legendDataSet.color
+                            legendDataSet.color,
                         ).apply {
                             horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-                        }
-                    )
+                        },
+                    ),
                 )
             }
             extraBottomOffset = 10f

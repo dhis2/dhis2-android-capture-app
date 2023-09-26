@@ -24,24 +24,21 @@ import androidx.core.view.updatePaddingRelative
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.commons.bindings.dp as inDp
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
+import org.dhis2.commons.bindings.dp as inDp
 
 @ExperimentalAnimationApi
 @Composable
-fun SearchTEListScreen(
-    viewModel: SearchTEIViewModel,
-    listAdapter: ConcatAdapter
-) {
+fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
     ) {
         val (searchButton, createButton, content) = createRefs()
 
         val createButtonVisibility by viewModel.createButtonScrollVisibility.observeAsState(
-            true
+            true,
         )
 
         var isScrollingDown by remember { mutableStateOf(false) }
@@ -57,18 +54,14 @@ fun SearchTEListScreen(
                     layoutParams =
                         ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
+                            ViewGroup.LayoutParams.MATCH_PARENT,
                         )
                     layoutManager = LinearLayoutManager(context)
                     updatePaddingRelative(top = 80.inDp, bottom = 80.inDp)
                     clipToPadding = false
                     adapter = listAdapter
                     addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                        override fun onScrolled(
-                            recyclerView: RecyclerView,
-                            dx: Int,
-                            dy: Int
-                        ) {
+                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                             super.onScrolled(recyclerView, dx, dy)
                             if (dy > 0) {
                                 isScrollingDown = true
@@ -79,7 +72,7 @@ fun SearchTEListScreen(
                     })
                 }
             },
-            update = {}
+            update = {},
         )
 
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -91,7 +84,7 @@ fun SearchTEListScreen(
                     width = Dimension.fillToConstraints
                 },
                 visible = !isScrollingDown,
-                onClick = { viewModel.setSearchScreen() }
+                onClick = { viewModel.setSearchScreen() },
             )
         }
         CreateNewButton(
@@ -100,7 +93,7 @@ fun SearchTEListScreen(
                 bottom.linkTo(parent.bottom, margin = 72.dp)
             },
             extended = createButtonVisibility and !isScrollingDown,
-            onClick = viewModel::onEnrollClick
+            onClick = viewModel::onEnrollClick,
         )
     }
 }

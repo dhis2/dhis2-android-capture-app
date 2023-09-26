@@ -1,11 +1,11 @@
 package org.dhis2.data.server
 
 import android.content.Context
+import org.conscrypt.Conscrypt
+import timber.log.Timber
 import java.security.NoSuchAlgorithmException
 import java.security.Security
 import javax.net.ssl.SSLContext
-import org.conscrypt.Conscrypt
-import timber.log.Timber
 
 object SSLContextInitializer {
     fun initializeSSLContext(context: Context?) {

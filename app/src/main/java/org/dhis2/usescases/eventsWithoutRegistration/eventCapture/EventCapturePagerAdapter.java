@@ -19,6 +19,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.Indicators
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.commons.Constants;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,37 +30,14 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     private final String programUid;
     private final String eventUid;
-    private final String teiUid;
-    private final String enrollmentUid;
-
-
     private final List<EventPageType> pages;
     private EventCaptureFormFragment formFragment;
 
-    public int getNavigationPagePosition(int navigationId) {
+    private final boolean shouldOpenErrorSection;
 
-        int i = navigationId;
-        EventPageType pageType = null;
-
-        if (i == R.id.navigation_details) {
-            pageType = EventPageType.DETAILS;
-        }
-        if (i == R.id.navigation_analytics) {
-            pageType = EventPageType.ANALYTICS;
-        }
-        if (i == R.id.navigation_relationships) {
-            pageType = EventPageType.RELATIONSHIPS;
-        }
-        if (i == R.id.navigation_notes) {
-            pageType = EventPageType.NOTES;
-        }
-        if (i == R.id.navigation_data_entry) {
-            pageType = EventPageType.DATA_ENTRY;
-        }
-
-        return pages.indexOf(pageType);
+    public boolean isFormScreenShown(@Nullable Integer currentItem) {
+        return currentItem!=null && pages.get(currentItem) == EventPageType.DATA_ENTRY;
     }
-
 
     private enum EventPageType {
         DETAILS, DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
@@ -70,22 +48,16 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String eventUid,
                                     boolean displayAnalyticScreen,
                                     boolean displayRelationshipScreen,
-                                    boolean displayDataEntryScreen,
-                                    String teiUid,
-                                    String enrollmentUid
+                                    boolean openErrorSection
 
     ) {
         super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
-        this.enrollmentUid = enrollmentUid;
-        this.teiUid = teiUid;
+        this.shouldOpenErrorSection = openErrorSection;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
-
-        if (displayDataEntryScreen) {
-            pages.add(EventPageType.DATA_ENTRY);
-        }
+        pages.add(EventPageType.DATA_ENTRY);
 
         if (displayAnalyticScreen) {
             pages.add(EventPageType.ANALYTICS);
@@ -98,8 +70,6 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     }
 
     public int getDynamicTabIndex(@IntegerRes int tabClicked) {
-
-
         if (tabClicked == R.id.navigation_details) {
             return pages.indexOf(EventPageType.DETAILS);
         } else if (tabClicked == R.id.navigation_data_entry) {
@@ -133,7 +103,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                 });
                 return eventDetailsFragment;
             case DATA_ENTRY:
-                formFragment = EventCaptureFormFragment.newInstance(eventUid);
+                formFragment = EventCaptureFormFragment.newInstance(eventUid, shouldOpenErrorSection);
                 return formFragment;
             case ANALYTICS:
                 Fragment indicatorFragment = new IndicatorsFragment();

@@ -1,10 +1,5 @@
 package org.dhis2.data.dhislogic
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import java.util.GregorianCalendar
-import java.util.Locale
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
@@ -13,6 +8,11 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import java.util.GregorianCalendar
+import java.util.Locale
 
 class DhisPeriodUtilsTest {
 
@@ -28,7 +28,7 @@ class DhisPeriodUtilsTest {
             d2,
             "%s - %s",
             "Week %d %s to %s",
-            "%d %s - %d %s"
+            "%d %s - %d %s",
         )
     }
 
@@ -37,8 +37,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Daily,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId(null)
             .startDate(testDate)
@@ -46,7 +46,8 @@ class DhisPeriodUtilsTest {
             .build()
 
         Assert.assertEquals(
-            "11/1/2019", periodUtils.getPeriodUIString(null, testDate, Locale.ENGLISH)
+            "11/1/2019",
+            periodUtils.getPeriodUIString(null, testDate, Locale.ENGLISH),
         )
     }
 
@@ -55,8 +56,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Daily,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId(null)
             .startDate(testDate)
@@ -68,8 +69,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.Daily,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -78,8 +79,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Weekly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("2019W2")
             .startDate(GregorianCalendar(2019, 0, 7).time)
@@ -91,8 +92,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.Weekly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -101,8 +102,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.WeeklyWednesday,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("2019WedW2")
             .startDate(GregorianCalendar(2019, 0, 9).time)
@@ -114,8 +115,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.WeeklyWednesday,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -124,8 +125,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.WeeklyThursday,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("2019ThuW2")
             .startDate(GregorianCalendar(2019, 0, 10).time)
@@ -137,8 +138,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.WeeklyThursday,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -147,8 +148,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.WeeklySaturday,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("2019SatW1")
             .startDate(GregorianCalendar(2019, 0, 5).time)
@@ -160,8 +161,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.WeeklySaturday,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -170,8 +171,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.WeeklySunday,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("2019SunW2")
             .startDate(GregorianCalendar(2019, 0, 6).time)
@@ -183,8 +184,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.WeeklySunday,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -193,8 +194,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.BiWeekly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("2019W2")
             .startDate(GregorianCalendar(2019, 0, 9).time)
@@ -204,8 +205,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Weekly,
-                GregorianCalendar(2019, 0, 9).time
-            )
+                GregorianCalendar(2019, 0, 9).time,
+            ),
         )doReturn Period.builder()
             .periodId("2019W2")
             .startDate(GregorianCalendar(2019, 0, 9).time)
@@ -215,8 +216,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Weekly,
-                GregorianCalendar(2019, 0, 15).time
-            )
+                GregorianCalendar(2019, 0, 15).time,
+            ),
         )doReturn Period.builder()
             .periodId("2019W3")
             .startDate(GregorianCalendar(2019, 0, 16).time)
@@ -228,8 +229,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.BiWeekly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -238,8 +239,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Monthly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2019, 0, 1).time)
@@ -251,8 +252,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.Monthly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -261,8 +262,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.BiMonthly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2019, 0, 1).time)
@@ -274,8 +275,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.BiMonthly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -284,8 +285,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Quarterly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2019, 0, 1).time)
@@ -297,8 +298,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.Quarterly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -307,8 +308,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.SixMonthly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2019, 0, 1).time)
@@ -320,8 +321,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.SixMonthly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -330,8 +331,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.SixMonthlyApril,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2018, 9, 1).time)
@@ -343,8 +344,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.SixMonthlyApril,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -353,8 +354,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Yearly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2019, 0, 1).time)
@@ -366,8 +367,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.Yearly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -376,8 +377,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.FinancialApril,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2018, 3, 1).time)
@@ -389,8 +390,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.FinancialApril,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -399,8 +400,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.FinancialJuly,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2018, 6, 1).time)
@@ -412,8 +413,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.FinancialJuly,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 
@@ -422,8 +423,8 @@ class DhisPeriodUtilsTest {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.FinancialOct,
-                testDate
-            )
+                testDate,
+            ),
         ) doReturn Period.builder()
             .periodId("periodId")
             .startDate(GregorianCalendar(2018, 9, 1).time)
@@ -435,8 +436,8 @@ class DhisPeriodUtilsTest {
             periodUtils.getPeriodUIString(
                 PeriodType.FinancialOct,
                 testDate,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
     }
 }

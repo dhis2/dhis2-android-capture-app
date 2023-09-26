@@ -10,7 +10,7 @@ data class DataSetTableModel(
     val storedBy: String?,
     val catOption: String?,
     val listCategoryOption: List<String?>?,
-    val catCombo: String?
+    val catCombo: String?,
 ) {
     fun setValue(value: String?) = copy(value = value)
 }

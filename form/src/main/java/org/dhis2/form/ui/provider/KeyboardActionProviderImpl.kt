@@ -6,9 +6,8 @@ import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
 
 class KeyboardActionProviderImpl : KeyboardActionProvider {
 
-    override fun provideKeyboardAction(valueType: ValueType) =
-        when (valueType) {
-            LONG_TEXT -> KeyboardActionType.ENTER
-            else -> KeyboardActionType.NEXT
-        }
+    override fun provideKeyboardAction(valueType: ValueType) = when (valueType) {
+        LONG_TEXT -> KeyboardActionType.ENTER
+        else -> KeyboardActionType.NEXT
+    }
 }

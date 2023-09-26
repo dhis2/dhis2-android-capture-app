@@ -25,17 +25,17 @@ class TeiFilterToWorkingListItemMapperTest {
                 .uid("uid")
                 .displayName("name")
                 .entityQueryCriteria(
-                    EntityQueryCriteria.builder().enrollmentStatus(EnrollmentStatus.ACTIVE).build()
+                    EntityQueryCriteria.builder().enrollmentStatus(EnrollmentStatus.ACTIVE).build(),
                 )
                 .eventFilters(
                     listOf(
                         TrackedEntityInstanceEventFilter.builder()
                             .programStage("stage")
                             .assignedUserMode(AssignedUserMode.CURRENT)
-                            .build()
-                    )
+                            .build(),
+                    ),
                 )
-                .build()
+                .build(),
         )
 
         assertTrue(result.uid == "uid")
@@ -47,7 +47,7 @@ class TeiFilterToWorkingListItemMapperTest {
         val result = mapper.map(
             TrackedEntityInstanceFilter.builder()
                 .uid("uid")
-                .build()
+                .build(),
         )
 
         assertTrue(result.uid == "uid")

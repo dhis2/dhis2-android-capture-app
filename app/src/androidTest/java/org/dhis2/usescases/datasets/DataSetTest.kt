@@ -10,6 +10,8 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,15 +28,13 @@ class DataSetTest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    @Ignore("There are no validation rules in the testing database")
     @Test
     fun shouldNotCloseActivityAfterQualityCheckIfDataSetIsComplete() {
         setupCredentials()
         startDataSetActivity(
             "BfMAe6Itzgt",
             "DiszpKrYNg8",
-            "Ngelehun CHC",
-            "periodName",
-            "",
             "202001",
             "HllvX50cXC0",
             ruleDataSet
@@ -48,7 +48,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Mar 2022"
+        val period = "Dec 2022"
         val orgUnit = "Ngelehun CHC"
         startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
@@ -57,8 +57,9 @@ class DataSetTest : BaseTest() {
         }
         dataSetInitialRobot {
             clickOnInputOrgUnit()
-            selectOrgUnit(orgUnit)
-            clickOnAcceptButton()
+            orgUnitSelectorRobot(composeTestRule){
+                selectTreeOrgUnit(orgUnit)
+            }
             clickOnInputPeriod()
             selectPeriod(period)
             clickOnActionButton()
@@ -159,6 +160,7 @@ class DataSetTest : BaseTest() {
             composeTestRule.waitForIdle()
             composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
             composeTestRule.waitForIdle()
+            waitToDebounce(500)
             assertCellSelected("bjDvmb4bfuf", 1, 0)
         }
     }

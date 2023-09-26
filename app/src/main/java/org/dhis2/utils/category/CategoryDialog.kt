@@ -15,18 +15,18 @@ import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
+import org.dhis2.R
+import org.dhis2.bindings.app
+import org.dhis2.databinding.DialogOptionSetBinding
 import java.util.Date
 import javax.inject.Inject
-import org.dhis2.Bindings.app
-import org.dhis2.R
-import org.dhis2.databinding.DialogOptionSetBinding
 
 class CategoryDialog(
     val type: Type,
     val uid: String,
     private val accessControl: Boolean,
     private val dateControl: Date?,
-    val onItemSelected: (String) -> Unit
+    val onItemSelected: (String) -> Unit,
 ) : DialogFragment(), CategoryDialogView {
 
     private lateinit var binding: DialogOptionSetBinding
@@ -57,7 +57,7 @@ class CategoryDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false)
 
@@ -93,7 +93,13 @@ class CategoryDialog(
             this,
             Observer {
                 adapter?.submitList(it)
-            }
+                binding.layoutSearch.visibility =
+                    if ((adapter?.itemCount ?: 0) < DEFAULT_COUNT_LIMIT) {
+                        View.GONE
+                    } else {
+                        View.VISIBLE
+                    }
+            },
         )
     }
 

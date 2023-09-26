@@ -13,7 +13,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/stageCard"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
             android:background="@color/white"
             app:layout_constraintTop_toBottomOf="@id/shadow_bottom">
 
@@ -56,17 +57,18 @@
             <TextView
                 android:id="@+id/programStageName"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="7dp"
                 android:ellipsize="end"
                 android:gravity="bottom"
-                android:lines="1"
+                android:maxLines="3"
                 android:textColor="@color/textPrimary"
                 android:textSize="14sp"
                 android:translationY="3.71sp"
                 app:layout_constrainedWidth="true"
-                app:layout_constraintEnd_toStartOf="@id/lastUpdatedEvent"
+                app:layout_constraintEnd_toStartOf="@id/actionContainer"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/composeProgramStageIcon"
                 app:layout_constraintTop_toTopOf="parent"
@@ -84,29 +86,37 @@
                 app:layout_constraintTop_toBottomOf="@id/programStageName"
                 tools:text="X events" />
 
-            <TextView
-                android:id="@+id/lastUpdatedEvent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/actionContainer"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                android:textColor="@color/text_black_C4C"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                android:layout_height="0dp"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Yesterday" />
-
-            <ImageButton
-                android:id="@+id/addStageButton"
-                style="@style/ActionIcon"
-                android:layout_width="54dp"
-                android:layout_height="48dp"
-                android:tint="?colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_add_accent">
+                app:layout_constraintEnd_toEndOf="parent">
 
-            </ImageButton>
+                <TextView
+                    android:id="@+id/lastUpdatedEvent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:textColor="@color/text_black_C4C"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginEnd="16dp"
+                    tools:text="Yesterday" />
+
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/addStageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

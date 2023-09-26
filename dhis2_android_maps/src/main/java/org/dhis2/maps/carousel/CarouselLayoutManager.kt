@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 class CarouselLayoutManager(
     context: Context,
     horizontal: Int,
-    reverseLayout: Boolean
+    reverseLayout: Boolean,
 ) : LinearLayoutManager(context, horizontal, reverseLayout) {
 
     private var enabled: Boolean = true

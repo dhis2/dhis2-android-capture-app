@@ -1,6 +1,7 @@
 package org.dhis2.usescases
 
 import android.content.Context
+import android.os.Build
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
@@ -47,10 +48,18 @@ open class BaseTest {
     val timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
 
     @get:Rule
-    var permissionRule = GrantPermissionRule.grant(
-        android.Manifest.permission.ACCESS_FINE_LOCATION,
-        android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
+    var permissionRule = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+        GrantPermissionRule.grant(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.CAMERA
+        )
+    }else {
+        GrantPermissionRule.grant(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    }
 
     @Before
     @Throws(Exception::class)

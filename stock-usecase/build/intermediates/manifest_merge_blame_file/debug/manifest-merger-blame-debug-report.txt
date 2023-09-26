@@ -5,72 +5,72 @@
 5    <uses-sdk android:minSdkVersion="21" />
 6
 7    <uses-permission android:name="android.permission.INTERNET" />
-7-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:4:5-67
-7-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:4:22-64
+7-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:4:5-67
+7-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:4:22-64
 8    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-8-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:5:5-79
-8-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:5:22-76
+8-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:5:5-79
+8-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:5:22-76
 9
 10    <queries>
-10-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:7:5-24:15
+10-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:7:5-24:15
 11        <intent>
-11-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:8:9-10:18
+11-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:8:9-10:18
 12            <action android:name="android.speech.RecognitionService" />
-12-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:9:13-72
-12-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:9:21-69
+12-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:9:13-72
+12-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:9:21-69
 13        </intent>
 14        <intent>
-14-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:11:9-20:18
+14-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:11:9-20:18
 15            <action android:name="android.intent.action.VIEW" />
-15-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:12:13-65
-15-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:12:21-62
+15-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:12:13-65
+15-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:12:21-62
 16
 17            <category android:name="android.intent.category.BROWSABLE" />
-17-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:14:13-74
-17-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:14:23-71
+17-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:14:13-74
+17-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:14:23-71
 18
 19            <data
-19-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:16:13-19:43
+19-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:16:13-19:43
 20                android:host="org.icrc.dhis2.psmadvanced_test"
-20-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:17:17-63
+20-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:17:17-63
 21                android:path="/J4CFTTod1TjeYgl9zsMgdcEaXnY="
-21-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:18:17-61
+21-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:18:17-61
 22                android:scheme="msauth" />
-22-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:19:17-40
+22-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:19:17-40
 23        </intent>
 24        <intent>
-24-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:21:9-23:18
+24-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:21:9-23:18
 25            <action android:name="android.support.customtabs.action.CustomTabsService" />
-25-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:22:13-90
-25-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:22:21-87
+25-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:22:13-90
+25-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:22:21-87
 26        </intent>
 27    </queries>
 28
 29    <application android:allowBackup="false" >
-29-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:26:5-39:19
-29-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:27:9-36
+29-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:26:5-39:19
+29-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:27:9-36
 30        <activity
-30-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:28:9-31:58
+30-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:28:9-31:58
 31            android:name="org.dhis2.android.rtsm.ui.home.HomeActivity"
-31-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:29:13-49
+31-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:29:13-49
 32            android:configChanges="keyboardHidden|orientation|screenSize"
-32-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:30:13-74
+32-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:30:13-74
 33            android:windowSoftInputMode="adjustResize" />
-33-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:31:13-55
+33-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:31:13-55
 34        <activity
-34-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:32:9-38:63
+34-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:32:9-38:63
 35            android:name="org.dhis2.android.rtsm.ui.scanner.ScannerActivity"
-35-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:33:13-55
+35-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:33:13-55
 36            android:exported="false"
-36-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:34:13-37
+36-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:34:13-37
 37            android:screenOrientation="fullSensor"
-37-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:35:13-51
+37-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:35:13-51
 38            android:stateNotNeeded="true"
-38-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:36:13-42
+38-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:36:13-42
 39            android:theme="@style/Theme.BarcodeCapture"
-39-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:37:13-56
+39-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:37:13-56
 40            android:windowSoftInputMode="stateAlwaysHidden" />
-40-->/Users/ibrahimwickama/AndroidStudioProjects/dhis2-android-capture-app/stock-usecase/src/main/AndroidManifest.xml:38:13-60
+40-->C:\Users\dell\Java_Projects\dhis2-android-capture-app\stock-usecase\src\main\AndroidManifest.xml:38:13-60
 41    </application>
 42
 43</manifest>

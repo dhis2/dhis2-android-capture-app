@@ -1,8 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
@@ -15,6 +12,9 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class ConfigureEventCatComboTest {
 
@@ -48,7 +48,7 @@ class ConfigureEventCatComboTest {
         // Given a default category combo
         whenever(categoryCombo.isDefault) doReturn true
         whenever(
-            repository.getCatOptionCombos(CATEGORY_COMBO_UID)
+            repository.getCatOptionCombos(CATEGORY_COMBO_UID),
         ) doReturn listOf(categoryOptionCombo)
 
         // When catCombo is invoked
@@ -68,7 +68,7 @@ class ConfigureEventCatComboTest {
         }
         val selectedCategoryOption = Pair(CATEGORY_UID, CATEGORY_OPTION_UID)
         whenever(
-            repository.getCatOption(CATEGORY_OPTION_UID)
+            repository.getCatOption(CATEGORY_OPTION_UID),
         ) doReturn categoryOption
 
         // When catCombo is invoked
@@ -87,7 +87,7 @@ class ConfigureEventCatComboTest {
             on { uid() } doReturn CATEGORY_OPTION_UID
         }
         whenever(
-            repository.getCatOption(CATEGORY_OPTION_UID)
+            repository.getCatOption(CATEGORY_OPTION_UID),
         ) doReturn categoryOption
 
         // When catCombo is invoked

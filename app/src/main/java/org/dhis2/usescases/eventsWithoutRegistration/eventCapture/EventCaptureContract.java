@@ -1,17 +1,15 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import org.dhis2.commons.data.FieldWithIssue;
+import androidx.lifecycle.LiveData;
+
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.common.ValidationStrategy;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.List;
@@ -40,8 +38,6 @@ public class EventCaptureContract {
 
         void finishDataEntry();
 
-        void preselectStage(String programStageUid);
-
         void SaveAndFinish();
 
         void showSnackBar(int messageId);
@@ -49,8 +45,6 @@ public class EventCaptureContract {
         void attemptToSkip();
 
         void attemptToReschedule();
-
-        void showErrorSnackBar();
 
         void showEventIntegrityAlert();
 
@@ -64,19 +58,19 @@ public class EventCaptureContract {
 
         void showNavigationBar();
 
-        void setData(DashboardProgramModel program);
-
         void hideNavigationBar();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
+
+        LiveData<EventCaptureAction> observeActions();
 
         void init();
 
         void onBackClick();
 
         void attemptFinish(boolean canComplete,
-                           String onCompleteMessage,
+                           @Nullable String onCompleteMessage,
                            List<FieldWithIssue> errorFields,
                            Map<String, String> emptyMandatoryFields,
                            List<FieldWithIssue> warningFields);
@@ -105,9 +99,7 @@ public class EventCaptureContract {
 
         boolean getCompletionPercentageVisibility();
 
-        void programStageUid();
-
-        String getProgramStageUidString();
+        void emitAction(@NotNull EventCaptureAction onBack);
     }
 
     public interface EventCaptureRepository {
@@ -119,22 +111,6 @@ public class EventCaptureContract {
         Flowable<String> eventDate();
 
         Flowable<OrganisationUnit> orgUnit();
-
-        Flowable<ProgramStage> programStageObject();
-
-        Observable<Enrollment> getEnrollmentObject();
-
-        Observable<TrackedEntityInstance> getTrackedEntityInstance();
-
-        Observable<List<Event>> getTEIEnrollmentEvents();
-
-        Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes();
-
-//        Observable<List<TrackedEntityAttributeValue>> getTEIAttributeValues();
-
-        Observable<List<OrganisationUnit>> getTeiOrgUnits();
-
-        Observable<List<Program>> getTeiActivePrograms();
 
         Flowable<String> catOption();
 
@@ -151,8 +127,6 @@ public class EventCaptureContract {
         Observable<Boolean> rescheduleEvent(Date time);
 
         Observable<String> programStage();
-
-        String getProgramStageUid();
 
         boolean getAccessDataWrite();
 
@@ -171,6 +145,8 @@ public class EventCaptureContract {
         boolean hasAnalytics();
 
         boolean hasRelationships();
+
+        ValidationStrategy validationStrategy();
     }
 
 }

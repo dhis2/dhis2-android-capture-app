@@ -1,16 +1,16 @@
 package org.dhis2.usescases.events
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import java.util.Date
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import java.util.Date
 
 class ScheduledEventPresenterImplTest {
 
@@ -27,10 +27,10 @@ class ScheduledEventPresenterImplTest {
     @Test
     fun `Should open event initial screen if the event needs extra info`() {
         whenever(
-            d2.eventModule().events().uid(any())
+            d2.eventModule().events().uid(any()),
         ) doReturn mock()
         whenever(
-            eventUtils.newEventNeedsExtraInfo(any())
+            eventUtils.newEventNeedsExtraInfo(any()),
         ) doReturn true
 
         presenter.setEventDate(Date())
@@ -41,10 +41,10 @@ class ScheduledEventPresenterImplTest {
     @Test
     fun `Should open event form screen if the event does not need coordinates or catCombo`() {
         whenever(
-            d2.eventModule().events().uid(any())
+            d2.eventModule().events().uid(any()),
         ) doReturn mock()
         whenever(
-            eventUtils.newEventNeedsExtraInfo(any())
+            eventUtils.newEventNeedsExtraInfo(any()),
         ) doReturn false
 
         presenter.setEventDate(Date())

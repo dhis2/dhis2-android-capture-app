@@ -1,11 +1,11 @@
 package org.dhis2.data.forms.dataentry
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import org.dhis2.data.forms.FormRepository
 import org.hisp.dhis.android.core.D2
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyNoMoreInteractions
 
 class EnrollmentRuleEngineRepositoryTest {
     private val formRepository: FormRepository = mock()

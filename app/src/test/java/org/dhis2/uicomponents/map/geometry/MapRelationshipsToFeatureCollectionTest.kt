@@ -4,10 +4,6 @@ import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
@@ -21,6 +17,10 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class MapRelationshipsToFeatureCollectionTest {
 
@@ -37,7 +37,7 @@ class MapRelationshipsToFeatureCollectionTest {
                 mapLineToFeature,
                 mapPointToFeature,
                 mapPolygonToFeature,
-                bounds
+                bounds,
             )
     }
 
@@ -50,25 +50,25 @@ class MapRelationshipsToFeatureCollectionTest {
 
         whenever(mapLineToFeature.map(firstRelationship)) doReturn getLineFeature(firstRelationship)
         whenever(
-            mapLineToFeature.map(secondRelationship)
+            mapLineToFeature.map(secondRelationship),
         ) doReturn getLineFeature(secondRelationship)
         whenever(
-            mapPointToFeature.map(firstRelationship.from.geometry!!)
+            mapPointToFeature.map(firstRelationship.from.geometry!!),
         ) doReturn getPointFromFeature(firstRelationship)
         whenever(
-            mapPointToFeature.map(secondRelationship.from.geometry!!)
+            mapPointToFeature.map(secondRelationship.from.geometry!!),
         ) doReturn getPointFromFeature(secondRelationship)
         whenever(
-            mapPointToFeature.map(firstRelationship.to.geometry!!)
+            mapPointToFeature.map(firstRelationship.to.geometry!!),
         ) doReturn getPointToFeature(firstRelationship)
         whenever(
-            mapPointToFeature.map(secondRelationship.to.geometry!!)
+            mapPointToFeature.map(secondRelationship.to.geometry!!),
         ) doReturn getPointToFeature(secondRelationship)
         whenever(bounds.getEnclosingBoundingBox(any())) doReturn BoundingBox.fromLngLats(
             0.0,
             0.0,
             0.0,
-            0.0
+            0.0,
         )
 
         val result = mapRelationshipsToFeatureCollection.map(relationshipsModel)
@@ -117,20 +117,18 @@ class MapRelationshipsToFeatureCollectionTest {
                 listOf(
                     Point.fromLngLat(
                         coordinates1[0],
-                        coordinates1[1]
+                        coordinates1[1],
                     ),
                     Point.fromLngLat(
                         coordinates2[0],
-                        coordinates2[1]
-                    )
-                )
-            )
+                        coordinates2[1],
+                    ),
+                ),
+            ),
         )
     }
 
-    private fun getPointFromFeature(
-        model: RelationshipUiComponentModel
-    ): Feature {
+    private fun getPointFromFeature(model: RelationshipUiComponentModel): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.from.geometry!!)
 
         val point = Point.fromLngLat(coordinates1[0], coordinates1[1])

@@ -15,7 +15,7 @@ class MapLineRelationshipToFeature {
     fun map(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
         val (lineStartPoint, lineEndPoint) = getStartPoints(
             relationshipUiComponentModel.from.geometry!!,
-            relationshipUiComponentModel.to.geometry!!
+            relationshipUiComponentModel.to.geometry!!,
         )
 
         val lonLineStart = lineStartPoint[0]
@@ -45,7 +45,7 @@ class MapLineRelationshipToFeature {
 
     private fun getStartPoints(
         fromGeometry: Geometry,
-        toGeometry: Geometry
+        toGeometry: Geometry,
     ): Pair<List<Double>, List<Double>> {
         return if (fromGeometry.type() == FeatureType.POINT &&
             toGeometry.type() == FeatureType.POINT
@@ -57,7 +57,7 @@ class MapLineRelationshipToFeature {
             Pair(
                 GeometryHelper.getPoint(fromGeometry),
                 GeometryHelper.getPolygon(toGeometry)
-                    .closestPointTo(GeometryHelper.getPoint(fromGeometry))
+                    .closestPointTo(GeometryHelper.getPoint(fromGeometry)),
             )
         } else if (fromGeometry.type() == FeatureType.POLYGON &&
             toGeometry.type() == FeatureType.POINT
@@ -65,7 +65,7 @@ class MapLineRelationshipToFeature {
             Pair(
                 GeometryHelper.getPolygon(fromGeometry)
                     .closestPointTo(GeometryHelper.getPoint(toGeometry)),
-                GeometryHelper.getPoint(toGeometry)
+                GeometryHelper.getPoint(toGeometry),
             )
         } else if (fromGeometry.type() == FeatureType.POLYGON &&
             toGeometry.type() == FeatureType.POLYGON

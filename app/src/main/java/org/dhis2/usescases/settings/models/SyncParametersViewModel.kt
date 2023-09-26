@@ -11,5 +11,5 @@ data class SyncParametersViewModel(
     val teiNumberIsEditable: Boolean,
     val eventNumberIsEditable: Boolean,
     val limitScopeIsEditable: Boolean,
-    val hasSpecificProgramSettings: Int
+    val hasSpecificProgramSettings: Int,
 )

@@ -11,8 +11,8 @@ data class IssueRequest(private val fields: Fields) {
             DEFAULT_ENVIRONMENT,
             arrayListOf(FixVersion(BuildConfig.VERSION_NAME)),
             Project(JIRA_PROJECT_NUMBER),
-            Issue(ISSUE_TYPE_BUG)
-        )
+            Issue(ISSUE_TYPE_BUG),
+        ),
     )
 }
 
@@ -23,7 +23,7 @@ data class Fields(
     private val environment: String,
     private val versions: List<FixVersion>,
     private val project: Project,
-    private val issuetype: Issue
+    private val issuetype: Issue,
 )
 
 data class Project(val id: String)

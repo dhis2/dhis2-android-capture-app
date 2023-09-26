@@ -1,7 +1,6 @@
 package org.dhis2.data.dhislogic
 
 import io.reactivex.Flowable
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
@@ -10,6 +9,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCollectionRepository
+import javax.inject.Inject
 
 class DhisProgramUtils @Inject constructor(val d2: D2) {
 
@@ -19,11 +19,12 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
         }.plus(
             d2.dataSetModule().dataSetInstanceSummaries().blockingGet().map {
                 it.state()
-            }
+            },
         ).distinct()
 
         return when {
-            states.contains(State.ERROR) or states.contains(State.WARNING) -> State.WARNING
+            states.contains(State.ERROR) -> State.ERROR
+            states.contains(State.WARNING) -> State.WARNING
             states.contains(State.TO_POST) -> State.TO_POST
             states.contains(State.TO_UPDATE) -> State.TO_UPDATE
             states.contains(State.SENT_VIA_SMS) or states.contains(State.SYNCED_VIA_SMS) ->
@@ -40,12 +41,6 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
         }
     }
 
-    fun getProgramState(programUid: String): State {
-        return getProgramState(
-            d2.programModule().programs().uid(programUid).blockingGet()
-        )
-    }
-
     fun getProgramsInCaptureOrgUnits(): Flowable<List<Program>> {
         return d2.programModule().programs()
             .withTrackedEntityType()
@@ -60,27 +55,40 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
             .byProgram().eq(program.uid())
 
         return when {
-            hasTeiWithErrorOrWarningState(teiRepository, enrollmentRepository) -> State.WARNING
+            hasTeiWithErrorState(teiRepository, enrollmentRepository) -> State.ERROR
+            hasTeiWithWarningState(teiRepository, enrollmentRepository) -> State.WARNING
             hasTeiWithSMSState(teiRepository) -> State.SENT_VIA_SMS
             hasTeiWithNotSyncedStateOrDeleted(teiRepository) -> State.TO_UPDATE
             else -> State.SYNCED
         }
     }
 
-    private fun hasTeiWithErrorOrWarningState(
+    private fun hasTeiWithWarningState(
         teiRepository: TrackedEntityInstanceCollectionRepository,
-        enrollmentRepository: EnrollmentCollectionRepository
+        enrollmentRepository: EnrollmentCollectionRepository,
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
-            .byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
+            .byAggregatedSyncState().`in`(State.WARNING)
             .blockingGet().isNotEmpty() ||
-            enrollmentRepository.byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
+            enrollmentRepository.byAggregatedSyncState().`in`(State.WARNING)
+                .blockingGet().isNotEmpty()
+    }
+
+    private fun hasTeiWithErrorState(
+        teiRepository: TrackedEntityInstanceCollectionRepository,
+        enrollmentRepository: EnrollmentCollectionRepository,
+    ): Boolean {
+        return teiRepository
+            .byDeleted().isFalse
+            .byAggregatedSyncState().`in`(State.ERROR)
+            .blockingGet().isNotEmpty() ||
+            enrollmentRepository.byAggregatedSyncState().`in`(State.ERROR)
                 .blockingGet().isNotEmpty()
     }
 
     private fun hasTeiWithSMSState(
-        teiRepository: TrackedEntityInstanceCollectionRepository
+        teiRepository: TrackedEntityInstanceCollectionRepository,
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
@@ -89,7 +97,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     }
 
     private fun hasTeiWithNotSyncedStateOrDeleted(
-        teiRepository: TrackedEntityInstanceCollectionRepository
+        teiRepository: TrackedEntityInstanceCollectionRepository,
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
@@ -103,7 +111,8 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
         val eventRepository = d2.eventModule().events()
             .byProgramUid().eq(program.uid())
         return when {
-            hasEventWithErrorState(eventRepository) -> State.WARNING
+            hasEventWithErrorState(eventRepository) -> State.ERROR
+            hasEventWithWarningState(eventRepository) -> State.WARNING
             hasEventWithSMSState(eventRepository) -> State.SENT_VIA_SMS
             hasEventWithNotSyncedStateOrDeleted(eventRepository) -> State.TO_UPDATE
             else -> State.SYNCED
@@ -113,7 +122,14 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     private fun hasEventWithErrorState(eventRepository: EventCollectionRepository): Boolean {
         return eventRepository
             .byDeleted().isFalse
-            .byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
+            .byAggregatedSyncState().`in`(State.ERROR)
+            .blockingGet().isNotEmpty()
+    }
+
+    private fun hasEventWithWarningState(eventRepository: EventCollectionRepository): Boolean {
+        return eventRepository
+            .byDeleted().isFalse
+            .byAggregatedSyncState().`in`(State.WARNING)
             .blockingGet().isNotEmpty()
     }
 
@@ -125,7 +141,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     }
 
     private fun hasEventWithNotSyncedStateOrDeleted(
-        eventRepository: EventCollectionRepository
+        eventRepository: EventCollectionRepository,
     ): Boolean {
         return eventRepository
             .byDeleted().isFalse
@@ -139,7 +155,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     fun getProgramRecordLabel(
         program: Program,
         defaultTrackerLabel: String,
-        defaultEventLabel: String
+        defaultEventLabel: String,
     ): String {
         return when (program.programType()) {
             ProgramType.WITH_REGISTRATION -> {

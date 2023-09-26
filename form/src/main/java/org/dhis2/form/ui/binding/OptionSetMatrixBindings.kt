@@ -22,11 +22,16 @@ import org.hisp.dhis.android.core.option.Option
 @BindingAdapter("optionImage")
 fun ImageView.setOptionImage(option: Option) {
     val iconDrawable =
-        ObjectStyleUtils.getIconResource(context, option.style().icon(), R.drawable.ic_default_icon)
+        ObjectStyleUtils.getIconResource(
+            context,
+            option.style().icon(),
+            R.drawable.ic_default_icon,
+            ColorUtils(),
+        )
     val color =
         ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
     iconDrawable?.let {
-        setImageDrawable(ColorUtils.tintDrawableReosurce(iconDrawable, color))
+        setImageDrawable(ColorUtils().tintDrawableReosurce(iconDrawable, color))
     }
     setBackgroundColor(color)
     clipWithAllRoundedCorners(8.dp)
@@ -42,7 +47,7 @@ fun View.setOptionSelection(field: FieldUiModel, option: Option) {
             clipWithAllRoundedCorners(8.dp)
             rippleColor = ColorStateList.valueOf(color)
             if (isSelected) {
-                setCardBackgroundColor(ColorUtils.withAlpha(color, 50))
+                setCardBackgroundColor(ColorUtils().withAlpha(color, 50))
             } else {
                 setBackgroundColor(Color.WHITE)
             }
@@ -89,7 +94,7 @@ fun FrameLayout.addOptions(item: FieldUiModel) {
 private fun configLayoutParams(index: Int, numberOfColumns: Int, parentWidth: Int) =
     FrameLayout.LayoutParams(
         getWidth(numberOfColumns, parentWidth),
-        FrameLayout.LayoutParams.WRAP_CONTENT
+        FrameLayout.LayoutParams.WRAP_CONTENT,
     ).apply {
         topMargin = getTopMargin(index, numberOfColumns)
         marginStart = getStartMargin(index, numberOfColumns, parentWidth)

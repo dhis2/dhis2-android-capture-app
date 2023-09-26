@@ -7,7 +7,7 @@ import org.dhis2.maps.utils.CoordinateFieldInfo
 
 class MapCoordinateFieldToFeatureCollection(
     private val mapDataElementToFeature: MapDataElementToFeature,
-    private val mapAttributeToFeature: MapAttributeToFeature
+    private val mapAttributeToFeature: MapAttributeToFeature,
 
 ) {
 
@@ -15,12 +15,12 @@ class MapCoordinateFieldToFeatureCollection(
         return when {
             coordinateFieldInfos.any { it is CoordinateDataElementInfo } -> {
                 mapDataElementToFeature.mapDataElement(
-                    coordinateFieldInfos as List<CoordinateDataElementInfo>
+                    coordinateFieldInfos as List<CoordinateDataElementInfo>,
                 )
             }
             coordinateFieldInfos.any { it is CoordinateAttributeInfo } -> {
                 mapAttributeToFeature.mapAttribute(
-                    coordinateFieldInfos as List<CoordinateAttributeInfo>
+                    coordinateFieldInfos as List<CoordinateAttributeInfo>,
                 )
             }
             else -> {

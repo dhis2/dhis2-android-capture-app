@@ -43,12 +43,11 @@ import androidx.compose.ui.unit.sp
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.google.android.material.composethemeadapter.MdcTheme
-import hu.supercluster.paperwork.Paperwork
+import org.dhis2.BuildConfig
+import org.dhis2.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import org.dhis2.BuildConfig
-import org.dhis2.R
 
 class CrashActivity : AppCompatActivity() {
     var config: CaocConfig? = null
@@ -67,11 +66,11 @@ class CrashActivity : AppCompatActivity() {
                         CrashGoBackButton {
                             goBack()
                         }
-                    }
+                    },
                 ) {
                     CrashScreen(
                         crashReport = loadCrashReport(),
-                        onCopy = { copyTextToClipboard(it) }
+                        onCopy = { copyTextToClipboard(it) },
                     )
                 }
             }
@@ -80,14 +79,14 @@ class CrashActivity : AppCompatActivity() {
 
     private fun loadCrashReport() = CrashReport(
         buildVersion = BuildConfig.VERSION_NAME,
-        buildDate = Paperwork(this)["buildTime"],
+        buildDate = BuildConfig.BUILD_DATE,
         currentDate = SimpleDateFormat(
             "yyyy-MM-dd HH:mm",
-            Locale.getDefault()
+            Locale.getDefault(),
         ).format(Date()),
         device = "%s %s".format(Build.MANUFACTURER, Build.MODEL),
         osVersion = Build.VERSION.RELEASE,
-        stackTrace = CustomActivityOnCrash.getStackTraceFromIntent(intent) ?: "-"
+        stackTrace = CustomActivityOnCrash.getStackTraceFromIntent(intent) ?: "-",
     )
 
     private fun copyTextToClipboard(textToCopy: String) {
@@ -99,7 +98,7 @@ class CrashActivity : AppCompatActivity() {
             Toast.makeText(
                 this,
                 getString(R.string.copied_text),
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_SHORT,
             ).show()
         }
     }
@@ -117,14 +116,11 @@ data class CrashReport(
     val currentDate: String,
     val device: String,
     val osVersion: String,
-    val stackTrace: String
+    val stackTrace: String,
 )
 
 @Composable
-fun CrashScreen(
-    crashReport: CrashReport,
-    onCopy: (textToCopy: String) -> Unit
-) {
+fun CrashScreen(crashReport: CrashReport, onCopy: (textToCopy: String) -> Unit) {
     Column(modifier = Modifier.fillMaxHeight()) {
         CrashHeader()
         CrashDeviceInfo(crashReport)
@@ -140,20 +136,20 @@ fun CrashHeader() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
             modifier = Modifier.size(48.dp),
             painter = painterResource(id = R.drawable.ic_dhis),
-            contentDescription = "dhis2"
+            contentDescription = "dhis2",
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(
-                id = R.string.customactivityoncrash_error_activity_error_occurred_explanation
+                id = R.string.customactivityoncrash_error_activity_error_occurred_explanation,
             ),
-            color = colorResource(id = R.color.textPrimary)
+            color = colorResource(id = R.color.textPrimary),
         )
     }
 }
@@ -163,47 +159,44 @@ fun CrashDeviceInfo(crashReport: CrashReport) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Text(
             fontSize = 14.sp,
             text = stringResource(R.string.customactivityoncrash_error_activity_build_version)
-                .format(crashReport.buildVersion)
+                .format(crashReport.buildVersion),
         )
         Text(
             fontSize = 14.sp,
             text = stringResource(R.string.customactivityoncrash_error_activity_buid_date)
-                .format(crashReport.buildDate)
+                .format(crashReport.buildDate),
         )
         Text(
             fontSize = 14.sp,
             text = stringResource(R.string.customactivityoncrash_error_activity_current_date)
-                .format(crashReport.currentDate)
+                .format(crashReport.currentDate),
         )
         Text(
             fontSize = 14.sp,
             text = stringResource(R.string.customactivityoncrash_error_activity_device)
-                .format(crashReport.device)
+                .format(crashReport.device),
         )
         Text(
             fontSize = 14.sp,
             text = stringResource(R.string.customactivityoncrash_error_activity_os_version)
-                .format(crashReport.osVersion)
+                .format(crashReport.osVersion),
         )
     }
 }
 
 @Composable
-fun CrashStackTraceInfo(
-    stackTrace: String,
-    onCopy: (textToCopy: String) -> Unit
-) {
+fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
 
     ) {
         Column(
@@ -212,21 +205,21 @@ fun CrashStackTraceInfo(
                 .height(200.dp)
                 .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
                 .padding(8.dp)
-                .verticalScroll(state = scrollState)
+                .verticalScroll(state = scrollState),
         ) {
             Text(
                 modifier = Modifier.fillMaxSize(),
                 text = stackTrace,
                 fontSize = 12.sp,
-                color = Color.DarkGray
+                color = Color.DarkGray,
             )
         }
         TextButton(onClick = { onCopy(stackTrace) }) {
             Text(
                 text = stringResource(
-                    id = R.string.customactivityoncrash_error_activity_error_details_copy
+                    id = R.string.customactivityoncrash_error_activity_error_details_copy,
                 ).uppercase(),
-                color = colorResource(id = R.color.colorPrimary)
+                color = colorResource(id = R.color.colorPrimary),
             )
         }
     }
@@ -237,19 +230,19 @@ fun CrashGoBackButton(onGoBack: () -> Unit) {
     Row(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         Button(
             onClick = { onGoBack() },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.colorPrimary)
-            )
+                backgroundColor = colorResource(id = R.color.colorPrimary),
+            ),
         ) {
             Text(
                 text = stringResource(
-                    id = R.string.customactivityoncrash_error_activity_restart_app
+                    id = R.string.customactivityoncrash_error_activity_restart_app,
                 ).uppercase(),
-                color = colorResource(id = R.color.primaryBgTextColor)
+                color = colorResource(id = R.color.primaryBgTextColor),
             )
         }
     }
@@ -265,7 +258,7 @@ fun ScreenPreview() {
             currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date()),
             device = "%s %s".format(Build.MANUFACTURER, Build.MODEL),
             osVersion = Build.VERSION.RELEASE,
-            stackTrace = "Error, Error,Error,\n Error, Error, Error,\nError, Error"
-        )
+            stackTrace = "Error, Error,Error,\n Error, Error, Error,\nError, Error",
+        ),
     ) {}
 }

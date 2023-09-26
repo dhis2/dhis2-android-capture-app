@@ -1,13 +1,6 @@
 package org.dhis2.usescases.teiDashboard
 
 import com.google.gson.reflect.TypeToken
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -33,6 +26,13 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 
 class TeiDashboardPresenterTest {
 
@@ -60,7 +60,7 @@ class TeiDashboardPresenterTest {
             analyticsHelper,
             preferenceProvider,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
         )
     }
 
@@ -71,38 +71,38 @@ class TeiDashboardPresenterTest {
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
         val events = listOf(Event.builder().uid("eventUid").build())
         val trackedEntityAttributes = listOf(
-            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build()
+            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build(),
         )
         val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
         val programs = listOf(Program.builder().uid(programUid).build())
 
         whenever(
-            repository.getTrackedEntityInstance(teiUid)
+            repository.getTrackedEntityInstance(teiUid),
         ) doReturn Observable.just(trackedEntityInstance)
         whenever(
-            repository.getEnrollment()
+            repository.getEnrollment(),
         ) doReturn Observable.just(enrollment)
         whenever(
-            repository.getProgramStages(programUid)
+            repository.getProgramStages(programUid),
         ) doReturn Observable.just(programStages)
         whenever(
-            repository.getTEIEnrollmentEvents(programUid, teiUid)
+            repository.getTEIEnrollmentEvents(programUid, teiUid),
         ) doReturn Observable.just(events)
         whenever(
-            repository.getProgramTrackedEntityAttributes(programUid)
+            repository.getProgramTrackedEntityAttributes(programUid),
         ) doReturn Observable.just(trackedEntityAttributes)
         whenever(
-            repository.getTEIAttributeValues(programUid, teiUid)
+            repository.getTEIAttributeValues(programUid, teiUid),
         ) doReturn Observable.just(trackedEntityAttributeValues)
         whenever(
-            repository.getTeiOrgUnits(teiUid, programUid)
+            repository.getTeiOrgUnits(teiUid, programUid),
         ) doReturn Observable.just(orgUnits)
         whenever(
-            repository.getTeiActivePrograms(teiUid, false)
+            repository.getTeiActivePrograms(teiUid, false),
         ) doReturn Observable.just(programs)
         whenever(
-            filterManager.asFlowable()
+            filterManager.asFlowable(),
         ) doReturn Flowable.just(filterManager)
 
         presenter.init()
@@ -116,7 +116,7 @@ class TeiDashboardPresenterTest {
         presenter.programUid = null
         val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
         val trackedEntityAttributes = listOf(
-            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build()
+            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build(),
         )
         val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
@@ -124,25 +124,25 @@ class TeiDashboardPresenterTest {
         val enrollments = listOf(Enrollment.builder().uid("enrollmentUid").build())
 
         whenever(
-            repository.getTrackedEntityInstance(teiUid)
+            repository.getTrackedEntityInstance(teiUid),
         ) doReturn Observable.just(trackedEntityInstance)
         whenever(
-            repository.getProgramTrackedEntityAttributes(null)
+            repository.getProgramTrackedEntityAttributes(null),
         ) doReturn Observable.just(trackedEntityAttributes)
         whenever(
-            repository.getTEIAttributeValues(null, teiUid)
+            repository.getTEIAttributeValues(null, teiUid),
         ) doReturn Observable.just(trackedEntityAttributeValues)
         whenever(
-            repository.getTeiOrgUnits(teiUid, null)
+            repository.getTeiOrgUnits(teiUid, null),
         ) doReturn Observable.just(orgUnits)
         whenever(
-            repository.getTeiActivePrograms(teiUid, true)
+            repository.getTeiActivePrograms(teiUid, true),
         ) doReturn Observable.just(programs)
         whenever(
-            repository.getTEIEnrollments(teiUid)
+            repository.getTEIEnrollments(teiUid),
         ) doReturn Observable.just(enrollments)
         whenever(
-            filterManager.asFlowable()
+            filterManager.asFlowable(),
         ) doReturn Flowable.just(filterManager)
 
         presenter.init()
@@ -167,38 +167,38 @@ class TeiDashboardPresenterTest {
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
         val events = listOf(Event.builder().uid("eventUid").build())
         val trackedEntityAttributes = listOf(
-            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build()
+            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build(),
         )
         val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
         val programs = listOf(Program.builder().uid(programUid).build())
 
         whenever(
-            repository.getTrackedEntityInstance(teiUid)
+            repository.getTrackedEntityInstance(teiUid),
         ) doReturn Observable.just(trackedEntityInstance)
         whenever(
-            repository.getEnrollment()
+            repository.getEnrollment(),
         ) doReturn Observable.just(enrollment)
         whenever(
-            repository.getProgramStages(programUid)
+            repository.getProgramStages(programUid),
         ) doReturn Observable.just(programStages)
         whenever(
-            repository.getTEIEnrollmentEvents(programUid, teiUid)
+            repository.getTEIEnrollmentEvents(programUid, teiUid),
         ) doReturn Observable.just(events)
         whenever(
-            repository.getProgramTrackedEntityAttributes(programUid)
+            repository.getProgramTrackedEntityAttributes(programUid),
         ) doReturn Observable.just(trackedEntityAttributes)
         whenever(
-            repository.getTEIAttributeValues(programUid, teiUid)
+            repository.getTEIAttributeValues(programUid, teiUid),
         ) doReturn Observable.just(trackedEntityAttributeValues)
         whenever(
-            repository.getTeiOrgUnits(teiUid, programUid)
+            repository.getTeiOrgUnits(teiUid, programUid),
         ) doReturn Observable.just(orgUnits)
         whenever(
-            repository.getTeiActivePrograms(teiUid, false)
+            repository.getTeiActivePrograms(teiUid, false),
         ) doReturn Observable.just(programs)
         whenever(
-            filterManager.asFlowable()
+            filterManager.asFlowable(),
         ) doReturn Flowable.just(filterManager)
 
         presenter.setProgram(program)
@@ -211,11 +211,18 @@ class TeiDashboardPresenterTest {
     fun `Should not deleteEnrollment if it doesn't has permission`() {
         val currentEnrollment = Enrollment.builder().uid("enrollmentUid").build()
         val dashboardProgramModel = DashboardProgramModel(
-            null, currentEnrollment, null, null, null, null, null, null
+            null,
+            currentEnrollment,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
         )
         presenter.dashboardProgramModel = dashboardProgramModel
         whenever(
-            repository.deleteEnrollmentIfPossible(dashboardProgramModel.currentEnrollment.uid())
+            repository.deleteEnrollmentIfPossible(dashboardProgramModel.currentEnrollment.uid()),
         ) doReturn Single.error(AuthorityException(null))
         presenter.deleteEnrollment()
 
@@ -226,11 +233,18 @@ class TeiDashboardPresenterTest {
     fun `Should deleteEnrollment if it has permission`() {
         val currentEnrollment = Enrollment.builder().uid("enrollmentUid").build()
         val dashboardProgramModel = DashboardProgramModel(
-            null, currentEnrollment, null, null, null, null, null, null
+            null,
+            currentEnrollment,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
         )
         presenter.dashboardProgramModel = dashboardProgramModel
         whenever(
-            repository.deleteEnrollmentIfPossible(dashboardProgramModel.currentEnrollment.uid())
+            repository.deleteEnrollmentIfPossible(dashboardProgramModel.currentEnrollment.uid()),
         ) doReturn Single.just(true)
         presenter.deleteEnrollment()
 
@@ -290,7 +304,7 @@ class TeiDashboardPresenterTest {
         val returnedHashMap = hashMapOf(programUid to true)
 
         whenever(
-            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf())
+            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf()),
         ) doReturn returnedHashMap
 
         val isGrouped = presenter.programGrouping
@@ -305,7 +319,7 @@ class TeiDashboardPresenterTest {
         val returnedHashMap = hashMapOf(programUid to false)
 
         whenever(
-            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf())
+            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf()),
         ) doReturn returnedHashMap
 
         val isGrouped = presenter.programGrouping
@@ -320,7 +334,7 @@ class TeiDashboardPresenterTest {
         val returnedHashMap = hashMapOf("otherProgramUid" to true)
 
         whenever(
-            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf())
+            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf()),
         ) doReturn returnedHashMap
 
         val isGrouped = presenter.programGrouping
@@ -340,7 +354,7 @@ class TeiDashboardPresenterTest {
             analyticsHelper,
             preferenceProvider,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
         )
 
         val isGrouped = presenter.programGrouping
@@ -379,7 +393,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should update the status of the enrollment`() {
         whenever(
-            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED),
         ) doReturn Observable.just(StatusChangeResultCode.CHANGED)
 
         presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
@@ -391,7 +405,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should show error message when updating the status of the enrollment returns an error`() {
         whenever(
-            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED),
         ) doReturn Observable.just(StatusChangeResultCode.FAILED)
 
         presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
@@ -403,7 +417,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should show permission error when updating the status of the enrollment`() {
         whenever(
-            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED),
         ) doReturn Observable.just(StatusChangeResultCode.WRITE_PERMISSION_FAIL)
 
         presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
@@ -415,7 +429,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should show active enrollment error when updating the status of the enrollment`() {
         whenever(
-            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED),
         ) doReturn Observable.just(StatusChangeResultCode.ACTIVE_EXIST)
 
         presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)

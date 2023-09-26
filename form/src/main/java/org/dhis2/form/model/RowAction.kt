@@ -11,5 +11,5 @@ data class RowAction(
     val extraData: String? = null,
     val error: Throwable? = null,
     val type: ActionType,
-    val valueType: ValueType? = null
+    val valueType: ValueType? = null,
 )

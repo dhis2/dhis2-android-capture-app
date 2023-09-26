@@ -1,11 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail.datasetlist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -22,6 +17,11 @@ import org.hisp.dhis.android.core.common.State
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class DataSetListViewModelTest {
     @get:Rule
@@ -44,7 +44,7 @@ class DataSetListViewModelTest {
             repository,
             scheduler,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
         )
     }
 
@@ -52,13 +52,13 @@ class DataSetListViewModelTest {
     fun `Should get the list of dataSet`() {
         val dataSets = listOf(dummyDataSet(), dummyDataSet(), dummyDataSet())
         whenever(
-            repository.dataSetGroups(any(), any(), any(), any())
+            repository.dataSetGroups(any(), any(), any(), any()),
         ) doReturn Flowable.just(dataSets)
         viewModel = DataSetListViewModel(
             repository,
             scheduler,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
         )
         assert(viewModel.datasets.value == dataSets)
     }
@@ -83,7 +83,7 @@ class DataSetListViewModelTest {
         verify(matomoAnalyticsController).trackEvent(
             Categories.DATASET_LIST,
             Actions.SYNC_DATASET,
-            Labels.CLICK
+            Labels.CLICK,
         )
         assert(viewModel.selectedSync.value?.peekContent() == dataSet)
     }
@@ -104,6 +104,6 @@ class DataSetListViewModelTest {
         State.SYNCED,
         "",
         true,
-        false
+        false,
     )
 }

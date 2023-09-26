@@ -5,17 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
-import javax.inject.Inject
-import org.dhis2.Bindings.app
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.databinding.ActivitySettingsProgramBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import javax.inject.Inject
 
 class SettingsProgramActivity : ActivityGlobalAbstract(), ProgramSettingsView {
 
     @Inject
     lateinit var adapter: SettingsProgramAdapter
     private lateinit var binding: ActivitySettingsProgramBinding
+
     @Inject
     lateinit var presenter: SettingsProgramPresenter
 
@@ -30,7 +31,7 @@ class SettingsProgramActivity : ActivityGlobalAbstract(), ProgramSettingsView {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(
             this,
-            R.layout.activity_settings_program
+            R.layout.activity_settings_program,
         )
         binding.toolbar.title = getString(R.string.activity_program_settings)
         binding.programSettingsView.adapter = adapter

@@ -5,14 +5,14 @@ import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import io.reactivex.disposables.CompositeDisposable
-import java.util.Date
-import java.util.concurrent.TimeUnit
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import timber.log.Timber
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 class CategoryDialogPresenter(
     val view: CategoryDialogView,
@@ -23,7 +23,7 @@ class CategoryDialogPresenter(
     private val date: Date?,
     private val catOptMapper: CategoryOptionCategoryDialogItemMapper,
     private val catOptCombMapper: CategoryOptionComboCategoryDialogItemMapper,
-    val schedulerProvider: SchedulerProvider
+    val schedulerProvider: SchedulerProvider,
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -41,9 +41,9 @@ class CategoryDialogPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setTitle(it.displayName() ?: "-") },
-                    { Timber.e(it) }
-                )
+                    { view.setTitle(it?.displayName() ?: "-") },
+                    { Timber.e(it) },
+                ),
         )
 
         disposable.add(
@@ -57,13 +57,13 @@ class CategoryDialogPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.setLiveData(it) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 
     private fun createDataSource(
-        dataSource: DataSource<CategoryOptionCombo, CategoryDialogItem>
+        dataSource: DataSource<CategoryOptionCombo, CategoryDialogItem>,
     ): LiveData<PagedList<CategoryDialogItem>> {
         return LivePagedListBuilder(
             object : DataSource.Factory<CategoryOptionCombo, CategoryDialogItem>() {
@@ -71,7 +71,7 @@ class CategoryDialogPresenter(
                     return dataSource
                 }
             },
-            20
+            20,
         ).build()
     }
 
@@ -81,9 +81,9 @@ class CategoryDialogPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setTitle(it.displayName() ?: "-") },
-                    { Timber.e(it) }
-                )
+                    { view.setTitle(it?.displayName() ?: "-") },
+                    { Timber.e(it) },
+                ),
         )
         disposable.add(
             view.searchSource()
@@ -95,13 +95,13 @@ class CategoryDialogPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.setLiveData(it) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 
     private fun mapCategoryOptionToLivePageList(
-        textToSearch: String
+        textToSearch: String,
     ): LiveData<PagedList<CategoryDialogItem>> {
         var catOptionRepository = d2.categoryModule().categoryOptions()
             .byCategoryUid(uid)
@@ -128,12 +128,12 @@ class CategoryDialogPresenter(
                     return dataSource
                 }
             },
-            20
+            20,
         ).build()
     }
 
     private fun mapCatOptComboToLivePageList(
-        textToSearch: String
+        textToSearch: String,
     ): LiveData<PagedList<CategoryDialogItem>> {
         var catOptComboRepository = d2.categoryModule().categoryOptionCombos()
             .byCategoryComboUid().eq(uid)
@@ -148,22 +148,16 @@ class CategoryDialogPresenter(
                 d2,
                 catOptComboRepository,
                 withAccessControl,
-                date
-            ).map { catOptionCombo -> catOptCombMapper.map(catOptionCombo) }
+                date,
+            ).map { catOptionCombo -> catOptCombMapper.map(catOptionCombo) },
         )
     }
 
-    private fun filterByDate(options: MutableList<CategoryOption>): MutableList<CategoryOption>? {
-        val iterator = options.iterator()
-        while (iterator.hasNext()) {
-            val option = iterator.next()
-            if (date != null &&
-                (isBeforeDate(option) || isAfterDate(option))
-            ) {
-                iterator.remove()
-            }
+    private fun filterByDate(options: List<CategoryOption>): List<CategoryOption> {
+        return options.filter {
+            date == null ||
+                (!isBeforeDate(it) && !isAfterDate(it))
         }
-        return options
     }
 
     private fun isBeforeDate(option: CategoryOption): Boolean {

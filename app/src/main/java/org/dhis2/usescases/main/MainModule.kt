@@ -4,14 +4,17 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
@@ -34,7 +37,9 @@ class MainModule(val view: MainView) {
         userManager: UserManager,
         deleteUserData: DeleteUserData,
         syncIsPerformedInteractor: SyncIsPerformedInteractor,
-        syncStatusController: SyncStatusController
+        syncStatusController: SyncStatusController,
+        versionRepository: VersionRepository,
+        dispatcherProvider: DispatcherProvider,
     ): MainPresenter {
         return MainPresenter(
             view,
@@ -48,7 +53,9 @@ class MainModule(val view: MainView) {
             userManager,
             deleteUserData,
             syncIsPerformedInteractor,
-            syncStatusController
+            syncStatusController,
+            versionRepository,
+            dispatcherProvider,
         )
     }
 
@@ -60,8 +67,12 @@ class MainModule(val view: MainView) {
 
     @Provides
     @PerActivity
-    fun provideHomeRepository(d2: D2, charts: Charts?): HomeRepository {
-        return HomeRepositoryImpl(d2, charts)
+    fun provideHomeRepository(
+        d2: D2,
+        charts: Charts?,
+        featureConfigRepositoryImpl: FeatureConfigRepository,
+    ): HomeRepository {
+        return HomeRepositoryImpl(d2, charts, featureConfigRepositoryImpl)
     }
 
     @Provides
@@ -80,12 +91,12 @@ class MainModule(val view: MainView) {
     @PerActivity
     fun provideDeleteUserData(
         workManagerController: WorkManagerController,
-        preferencesProvider: PreferenceProvider
+        preferencesProvider: PreferenceProvider,
     ): DeleteUserData {
         return DeleteUserData(
             workManagerController,
             FilterManager.getInstance(),
-            preferencesProvider
+            preferencesProvider,
         )
     }
 }

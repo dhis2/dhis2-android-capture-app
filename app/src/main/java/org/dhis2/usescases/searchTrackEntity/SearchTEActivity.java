@@ -3,6 +3,8 @@ package org.dhis2.usescases.searchTrackEntity;
 import static android.view.View.GONE;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -17,23 +19,25 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.ExtensionsKt;
+import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
-import org.dhis2.commons.network.NetworkUtils;
-import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
+import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
 import org.dhis2.form.model.SearchRecords;
 import org.dhis2.form.ui.FormView;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
@@ -42,10 +46,12 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,10 +61,9 @@ import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
-public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
+public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View {
 
     ActivitySearchBinding binding;
     SearchScreenConfigurator searchScreenConfigurator;
@@ -77,6 +82,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Inject
     NetworkUtils networkUtils;
+
+    @Inject
+    ThemeManager themeManager;
+
+    @Inject
+    FeatureConfigRepository featureConfig;
 
     private static final String INITIAL_PAGE = "initialPage";
 
@@ -119,6 +130,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private Content currentContent = null;
 
+    public static Intent getIntent(Context context, String programUid, String teiTypeToAdd, String teiUid, boolean fromRelationship) {
+        Intent intent = new Intent(context, SearchTEActivity.class);
+        Bundle extras = new Bundle();
+        extras.putBoolean("FROM_RELATIONSHIP", fromRelationship);
+        extras.putString("FROM_RELATIONSHIP_TEI", teiUid);
+        extras.putString(Extra.TEI_UID.key, teiTypeToAdd);
+        extras.putString(Extra.PROGRAM_UID.key, programUid);
+        intent.putExtras(extras);
+        return intent;
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,6 +148,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initializeVariables(savedInstanceState);
         inject();
 
+        if (initialProgram != null) {
+            themeManager.setProgramTheme(initialProgram);
+        }
         super.onCreate(savedInstanceState);
 
         viewModel = new ViewModelProvider(this, viewModelFactory).get(SearchTEIViewModel.class);
@@ -181,6 +206,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         configureBottomNavigation();
         observeScreenState();
         observeDownload();
+        observeLegacyInteractions();
+
+        if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
+            openSyncDialog();
+        }
     }
 
     private void initializeVariables(Bundle savedInstanceState) {
@@ -303,14 +333,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void openSyncDialog() {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.PROGRAM)
-                .setUid(initialProgram)
+        new SyncStatusDialog.Builder()
+                .withContext(this, null)
+                .withSyncContext(
+                        new SyncContext.TrackerProgram(initialProgram)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                })
-                .build();
-        syncDialog.show(getSupportFragmentManager(), "PROGRAM_SYNC");
+                }).show("PROGRAM_SYNC");
     }
 
     @Override
@@ -334,6 +364,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 })
                 .onFieldItemsRendered(isEmpty -> Unit.INSTANCE)
                 .needToForceUpdate(true)
+                .setActionIconsActivation(false)
                 .factory(getSupportFragmentManager())
                 .setRecords(new SearchRecords(
                         initialProgram,
@@ -411,6 +442,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             currentContent = Content.MAP;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.mainComponent, SearchTEMap.Companion.get(fromRelationship, tEType)).commit();
+            observeMapLoading();
         }
     }
 
@@ -468,6 +500,54 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 ));
     }
 
+    private void observeLegacyInteractions() {
+        viewModel.getLegacyInteraction().observe(this, legacyInteraction -> {
+            if (legacyInteraction != null) {
+                switch (legacyInteraction.getId()) {
+                    case ON_ENROLL_CLICK -> {
+                        LegacyInteraction.OnEnrollClick interaction = (LegacyInteraction.OnEnrollClick) legacyInteraction;
+                        presenter.onEnrollClick(new HashMap<>(interaction.getQueryData()));
+                    }
+                    case ON_ADD_RELATIONSHIP -> {
+                        LegacyInteraction.OnAddRelationship interaction = (LegacyInteraction.OnAddRelationship) legacyInteraction;
+                        presenter.addRelationship(interaction.getTeiUid(), interaction.getRelationshipTypeUid(), interaction.getOnline());
+                    }
+                    case ON_SYNC_CLICK -> {
+                        LegacyInteraction.OnSyncIconClick interaction = (LegacyInteraction.OnSyncIconClick) legacyInteraction;
+                        presenter.onSyncIconClick(interaction.getTeiUid());
+                    }
+                    case ON_ENROLL -> {
+                        LegacyInteraction.OnEnroll interaction = (LegacyInteraction.OnEnroll) legacyInteraction;
+                        presenter.enroll(
+                                interaction.getInitialProgramUid(),
+                                interaction.getTeiUid(),
+                                new HashMap<>(interaction.getQueryData())
+                        );
+                    }
+                    case ON_TEI_CLICK -> {
+                        LegacyInteraction.OnTeiClick interaction = (LegacyInteraction.OnTeiClick) legacyInteraction;
+                        presenter.onTEIClick(
+                                interaction.getTeiUid(),
+                                interaction.getEnrollmentUid(),
+                                interaction.getOnline()
+                        );
+                    }
+                }
+
+                viewModel.onLegacyInteractionConsumed();
+            }
+        });
+    }
+
+    private void observeMapLoading() {
+        viewModel.getRefreshData().observe(this, refresh -> {
+            if (currentContent == Content.MAP) {
+                binding.toolbarProgress.show();
+            }
+        });
+        viewModel.getMapResults().observe(this, result -> binding.toolbarProgress.hide());
+    }
+
     @Override
     public void clearList(String uid) {
         this.initialProgram = uid;
@@ -498,15 +578,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void showSyncDialog(String teiUid) {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.TEI)
-                .setUid(teiUid)
+    public void showSyncDialog(String enrollmentUid) {
+        new SyncStatusDialog.Builder()
+                .withContext(this, null)
+                .withSyncContext(
+                        new SyncContext.TrackerProgramTei(enrollmentUid)
+                )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                })
-                .build();
-        syncDialog.show(getSupportFragmentManager(), "TEI_SYNC");
+                }).show("TEI_SYNC");
     }
 
     private void setInitialProgram(List<ProgramSpinnerModel> programs) {
@@ -559,14 +639,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openOrgUnitTreeSelector() {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
-        ouTreeFragment.setSelectionCallback(this);
-        ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
-    }
-
-    @Override
-    public void onSelectionFinished(List<? extends OrganisationUnit> selectedOrgUnits) {
-        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+        new OUTreeFragment.Builder()
+                .showAsDialog()
+                .withPreselectedOrgUnits(
+                        FilterManager.getInstance().getOrgUnitUidsFilters()
+                )
+                .onSelection(selectedOrgUnits -> {
+                    presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
+                    return Unit.INSTANCE;
+                })
+                .build()
+                .show(getSupportFragmentManager(), "OUTreeFragment");
     }
 
     @Override

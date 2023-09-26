@@ -9,9 +9,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import javax.inject.Inject
-import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
+import org.dhis2.bindings.dp
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
@@ -21,6 +20,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
 import org.dhis2.usescases.programEventDetail.ProgramEventMapData
+import javax.inject.Inject
 
 class EventMapFragment :
     FragmentGlobalAbstract(),
@@ -47,7 +47,7 @@ class EventMapFragment :
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         (activity as ProgramEventDetailActivity).component
             ?.plus(EventMapModule(this))
@@ -71,7 +71,7 @@ class EventMapFragment :
                     } else {
                         LocationSettingLauncher.requestEnableLocationSetting(requireContext())
                     }
-                }
+                },
             )
             mapLayerButton.setOnClickListener {
                 eventMapManager?.let {
@@ -129,22 +129,23 @@ class EventMapFragment :
         eventMapManager?.onSaveInstanceState(outState)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         eventMapManager?.permissionsManager?.onRequestPermissionsResult(
             requestCode,
             permissions,
-            grantResults
+            grantResults,
         )
     }
 
     override fun setMap(mapData: ProgramEventMapData) {
         eventMapManager?.update(
             mapData.featureCollectionMap,
-            mapData.boundingBox
+            mapData.boundingBox,
         )
         if (binding.mapCarousel.adapter == null) {
             val carouselAdapter =

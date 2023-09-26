@@ -8,13 +8,13 @@ import org.dhis2.commons.resources.LocaleSelector
 class TroubleshootingViewModelFactory(
     private val localeSelector: LocaleSelector,
     private val troubleshootingRepository: TroubleshootingRepository,
-    private val openLanguageSection: Boolean
+    private val openLanguageSection: Boolean,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return TroubleshootingViewModel(
             localeSelector,
             troubleshootingRepository,
-            openLanguageSection
+            openLanguageSection,
         ) as T
     }
 }

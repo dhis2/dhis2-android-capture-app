@@ -216,8 +216,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catComboUid) {
-        return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catComboUid).get().toObservable();
+    public CategoryOptionCombo catOptionCombo(String catComboUid) {
+        return d2.categoryModule().categoryOptionCombos().uid(catComboUid).blockingGet();
     }
 
     @Override

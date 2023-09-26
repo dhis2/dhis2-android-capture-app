@@ -8,5 +8,5 @@ data class EventOrgUnit(
     val fixed: Boolean = false,
     val selectedOrgUnit: OrganisationUnit? = null,
     val orgUnits: List<OrganisationUnit> = emptyList(),
-    val programUid: String? = null
+    val programUid: String? = null,
 )

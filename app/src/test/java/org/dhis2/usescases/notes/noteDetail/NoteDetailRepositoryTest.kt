@@ -1,9 +1,5 @@
 package org.dhis2.usescases.notes.noteDetail
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.D2
@@ -14,6 +10,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class NoteDetailRepositoryTest {
 
@@ -59,8 +59,8 @@ class NoteDetailRepositoryTest {
                     .noteType(Note.NoteType.ENROLLMENT_NOTE)
                     .enrollment(enrollmentUid)
                     .value(message)
-                    .build()
-            )
+                    .build(),
+            ),
         ) doReturn Single.just(note.uid())
 
         val testObserver = repository.saveNote(noteType, teiUid, message).test()
@@ -83,8 +83,8 @@ class NoteDetailRepositoryTest {
                     .noteType(Note.NoteType.EVENT_NOTE)
                     .event(eventUid)
                     .value(message)
-                    .build()
-            )
+                    .build(),
+            ),
         ) doReturn Single.just(note.uid())
         val testObserver = repository.saveNote(NoteType.EVENT, eventUid, message).test()
 
@@ -94,38 +94,37 @@ class NoteDetailRepositoryTest {
         }
     }
 
-    private fun dummyNote() =
-        Note.builder()
-            .uid("noteId")
-            .value("Note value")
-            .build()
+    private fun dummyNote() = Note.builder()
+        .uid("noteId")
+        .value("Note value")
+        .build()
 
     private fun mockEnrollment(teiUid: String) {
         whenever(
             d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
+                .byProgram().eq(programUid),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .one()
+                .byTrackedEntityInstance().eq(teiUid),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .one().blockingGet()
+                .one(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .one().blockingGet(),
         ) doReturn Enrollment.builder().uid("EnrollmentUid").build()
     }
 }

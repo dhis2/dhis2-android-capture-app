@@ -3,24 +3,20 @@ package org.dhis2.usescases.events
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
-import java.util.Date
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber
+import java.util.Date
 
 class ScheduledEventPresenterImpl(
     val view: ScheduledEventContract.View,
     val d2: D2,
     val eventUid: String,
-    val eventUtils: DhisEventUtils
+    val eventUtils: DhisEventUtils,
 ) : ScheduledEventContract.Presenter {
 
     private lateinit var disposable: CompositeDisposable
@@ -34,11 +30,9 @@ class ScheduledEventPresenterImpl(
                     Single.zip(
                         d2.programModule().programStages().uid(it.programStage()).get(),
                         d2.programModule().programs().uid(it.program()).get(),
-                        BiFunction<ProgramStage, Program, Triple<ProgramStage, Program, Event>>
-                        { stage, program ->
-                            Triple(stage, program, it)
-                        }
-                    )
+                    ) { stage, program ->
+                        Triple(stage, program, it)
+                    }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -48,8 +42,8 @@ class ScheduledEventPresenterImpl(
                         view.setStage(stage)
                         view.setEvent(event)
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 
@@ -66,11 +60,11 @@ class ScheduledEventPresenterImpl(
             .get()
             .map {
                 d2.enrollmentModule().enrollments().uid(it.enrollment()).blockingGet()
-                    .trackedEntityInstance()
+                    ?.trackedEntityInstance()
             }.blockingGet()!!
     }
 
-    override fun getEnrollment(): Enrollment {
+    override fun getEnrollment(): Enrollment? {
         return d2.eventModule().events().uid(eventUid)
             .get()
             .map { it.enrollment() }
@@ -99,10 +93,7 @@ class ScheduledEventPresenterImpl(
         view.back()
     }
 
-    override fun setCatOptionCombo(
-        catComboUid: String,
-        arrayList: ArrayList<CategoryOption>
-    ) {
+    override fun setCatOptionCombo(catComboUid: String, arrayList: ArrayList<CategoryOption>) {
         val catOptComboUid = d2
             .categoryModule()
             .categoryOptionCombos()
@@ -111,7 +102,7 @@ class ScheduledEventPresenterImpl(
             .eq(catComboUid)
             .one()
             .blockingGet()
-            .uid()
+            ?.uid()
         d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(catOptComboUid)
     }
 }

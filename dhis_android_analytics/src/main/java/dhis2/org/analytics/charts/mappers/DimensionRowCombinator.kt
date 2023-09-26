@@ -8,13 +8,13 @@ class DimensionRowCombinator {
         currentList: MutableList<String>,
         currentValueIndex: Int = -1,
         currentValue: String? = null,
-        hasMoreRows: Boolean = true
+        hasMoreRows: Boolean = true,
     ) {
         if (hasMoreRows) {
             val nextValueIndex = currentValueIndex + 1
             val isFinalRow = nextValueIndex == gridAnalyticsResponse.headers.rows.size - 1
             gridAnalyticsResponse.headers.rows[nextValueIndex].forEach {
-                val newValue = gridAnalyticsResponse.metadata[it.id]!!.displayName
+                val newValue = gridAnalyticsResponse.metadata[it.id]?.displayName
                 val nextValue = if (currentValueIndex == -1) {
                     newValue
                 } else {
@@ -25,7 +25,7 @@ class DimensionRowCombinator {
                     currentList,
                     nextValueIndex,
                     nextValue,
-                    !isFinalRow
+                    !isFinalRow,
                 )
             }
         } else {

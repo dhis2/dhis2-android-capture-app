@@ -1,6 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import org.dhis2.Bindings.maxLengthLabel
+import org.dhis2.bindings.maxLengthLabel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 
 data class TableData(
@@ -10,8 +10,7 @@ data class TableData(
     val accessDataWrite: Boolean,
     val showRowTotals: Boolean = false,
     val showColumnTotals: Boolean = false,
-    val overriddenMeasure: TableMeasure,
-    val hasDataElementDecoration: Boolean
+    val hasDataElementDecoration: Boolean,
 ) {
     fun columnHeaders() = dataTableModel.header
     fun catCombo() = dataTableModel.catCombo
@@ -19,5 +18,3 @@ data class TableData(
     fun maxColumns() = dataTableModel.header!![dataTableModel.header.size - 1].size
     fun rows() = dataTableModel.rows
 }
-
-data class TableMeasure(val width: Int, val height: Int)

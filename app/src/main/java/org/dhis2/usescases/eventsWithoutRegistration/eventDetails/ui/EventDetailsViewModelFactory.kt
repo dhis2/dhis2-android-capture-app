@@ -23,10 +23,11 @@ class EventDetailsViewModelFactory(
     private val configureEventCatCombo: ConfigureEventCatCombo,
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
+    private val eventUid: String?,
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
-    private val eventDetailResourcesProvider: EventDetailResourcesProvider
+    private val eventDetailResourcesProvider: EventDetailResourcesProvider,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -38,10 +39,11 @@ class EventDetailsViewModelFactory(
             configureEventCatCombo,
             configureEventTemp,
             periodType,
+            eventUid,
             geometryController,
             locationProvider,
             createOrUpdateEventDetails,
-            eventDetailResourcesProvider
+            eventDetailResourcesProvider,
         ) as T
     }
 }

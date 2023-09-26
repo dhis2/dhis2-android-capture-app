@@ -18,13 +18,13 @@ class MapRelationshipsToFeatureCollection(
     private val mapLineToFeature: @NotNull MapLineRelationshipToFeature,
     private val mapPointToFeature: @NotNull MapPointToFeature,
     private val mapPolygonToFeature: MapPolygonToFeature,
-    private val bounds: @NotNull GetBoundingBox
+    private val bounds: @NotNull GetBoundingBox,
 ) {
     fun map(
-        relationships: List<RelationshipUiComponentModel>
-    ): Pair<Map<String?, FeatureCollection>, BoundingBox> {
+        relationships: List<RelationshipUiComponentModel>,
+    ): Pair<Map<String, FeatureCollection>, BoundingBox> {
         val relationshipByName = relationships
-            .groupBy { it.displayName }
+            .groupBy { it.displayName!! }
             .mapValues { relationModels ->
                 val lineFeatures = relationModels.value.mapNotNull {
                     val feature = mapLineToFeature.map(it)
@@ -55,13 +55,13 @@ class MapRelationshipsToFeatureCollection(
 
         val latLongList = relationshipByName.values.flatten().getLatLngPointList()
 
-        return Pair<Map<String?, FeatureCollection>, BoundingBox>(
+        return Pair<Map<String, FeatureCollection>, BoundingBox>(
             relationshipByName.mapValues {
                 FeatureCollection.fromFeatures(
-                    it.value
+                    it.value,
                 )
             },
-            bounds.getEnclosingBoundingBox(latLongList)
+            bounds.getEnclosingBoundingBox(latLongList),
         )
     }
 

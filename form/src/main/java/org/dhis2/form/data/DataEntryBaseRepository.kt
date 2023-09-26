@@ -1,38 +1,44 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.bindings.allowCollapsableSectionsInProgram
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
 
 abstract class DataEntryBaseRepository(
     private val d2: D2,
-    private val fieldFactory: FieldViewModelFactory
+    private val fieldFactory: FieldViewModelFactory,
+    private val enableCollapsableFeature: Boolean,
 ) : DataEntryRepository {
+
+    abstract val programUid: String?
+
     override fun updateSection(
         sectionToUpdate: FieldUiModel,
-        isSectionOpen: Boolean,
+        isSectionOpen: Boolean?,
         totalFields: Int,
         fieldsWithValue: Int,
         errorCount: Int,
-        warningCount: Int
+        warningCount: Int,
     ): FieldUiModel {
         return (sectionToUpdate as SectionUiModelImpl).copy(
             isOpen = isSectionOpen,
             totalFields = totalFields,
             completedFields = fieldsWithValue,
             errors = errorCount,
-            warnings = warningCount
+            warnings = warningCount,
         )
     }
 
     override fun updateField(
         fieldUiModel: FieldUiModel,
         warningMessage: String?,
-        optionsToHide: MutableList<String>,
-        optionGroupsToHide: MutableList<String>,
-        optionGroupsToShow: MutableList<String>
+        optionsToHide: List<String>,
+        optionGroupsToHide: List<String>,
+        optionGroupsToShow: List<String>,
     ): FieldUiModel {
         val optionsInGroupsToHide = optionsFromGroups(optionGroupsToHide)
         val optionsInGroupsToShow = optionsFromGroups(optionGroupsToShow)
@@ -43,10 +49,11 @@ abstract class DataEntryBaseRepository(
                     this.optionSetConfiguration =
                         optionSetConfiguration?.updateOptionsToHideAndShow(
                             optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten(),
-                            optionsToShow = optionsInGroupsToShow
+                            optionsToShow = optionsInGroupsToShow,
                         )
                 }
             }
+
             else -> {
                 fieldUiModel
             }
@@ -78,7 +85,7 @@ abstract class DataEntryBaseRepository(
         sectionDescription: String? = null,
         isOpen: Boolean = false,
         totalFields: Int = 0,
-        completedFields: Int = 0
+        completedFields: Int = 0,
     ): FieldUiModel {
         return fieldFactory.createSection(
             sectionUid,
@@ -87,7 +94,21 @@ abstract class DataEntryBaseRepository(
             isOpen,
             totalFields,
             completedFields,
-            SectionRenderingType.LISTING.name
+            SectionRenderingType.LISTING.name,
         )
+    }
+
+    internal fun getError(conflict: TrackerImportConflict?, dataValue: String?) = conflict?.let {
+        if (it.value() == dataValue) {
+            it.displayDescription()
+        } else {
+            null
+        }
+    }
+
+    override fun allowCollapsableSections(): Boolean? {
+        return programUid?.let { d2.allowCollapsableSectionsInProgram(programUid = it) }.takeIf {
+            enableCollapsableFeature
+        }
     }
 }

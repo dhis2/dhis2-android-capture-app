@@ -10,12 +10,12 @@ import org.dhis2.usescases.searchTrackEntity.ui.SearchResultUi
 
 class SearchResultHolder(
     val binding: ResultSearchListBinding,
-    private val onSearchOutsideProgram: () -> Unit
+    private val onSearchOutsideProgram: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeView.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -32,7 +32,7 @@ class SearchResultHolder(
             MdcTheme {
                 SearchResultUi(
                     searchResult = item,
-                    onSearchOutsideClick = onSearchOutsideProgram
+                    onSearchOutsideClick = onSearchOutsideProgram,
                 )
             }
         }

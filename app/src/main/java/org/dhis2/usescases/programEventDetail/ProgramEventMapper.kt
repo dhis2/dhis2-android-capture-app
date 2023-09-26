@@ -1,9 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
-import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
-import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
@@ -19,11 +16,14 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import java.util.Date
+import java.util.Locale
+import javax.inject.Inject
 
 class ProgramEventMapper @Inject constructor(
     val d2: D2,
     val periodUtils: DhisPeriodUtils,
-    val crashReportController: CrashReportController
+    val crashReportController: CrashReportController,
 ) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
@@ -32,7 +32,7 @@ class ProgramEventMapper @Inject constructor(
 
         crashReportController.addBreadCrumb(
             "ProgramEventMapper.eventToEventViewModel",
-            "Event: $event"
+            "Event: $event",
         )
 
         val eventDate = event.eventDate() ?: event.dueDate()
@@ -47,17 +47,17 @@ class ProgramEventMapper @Inject constructor(
             canAddNewEvent = true,
             orgUnitName = d2.organisationUnitModule().organisationUnits()
                 .uid(event.organisationUnit())
-                .blockingGet().displayName() ?: "-",
+                .blockingGet()?.displayName() ?: "-",
             catComboName = getCatComboName(event.attributeOptionCombo()),
             dataElementValues = getEventValues(event.uid(), event.programStage()!!),
             groupedByStage = true,
             displayDate = eventDate?.let {
                 periodUtils.getPeriodUIString(
-                    programStage.periodType() ?: PeriodType.Daily,
+                    programStage?.periodType() ?: PeriodType.Daily,
                     it,
-                    Locale.getDefault()
+                    Locale.getDefault(),
                 )
-            }
+            },
         )
     }
 
@@ -75,7 +75,7 @@ class ProgramEventMapper @Inject constructor(
         val data = getData(
             event.trackedEntityDataValues(),
             showInReportsDataElements,
-            event.programStage()
+            event.programStage(),
         )
         val hasExpired = isExpired(event)
         val inOrgUnitRange = checkOrgUnitRange(event.organisationUnit(), event.eventDate()!!)
@@ -99,7 +99,7 @@ class ProgramEventMapper @Inject constructor(
             hasExpired || !inOrgUnitRange,
             attrOptCombo,
             event.geometry(),
-            d2.eventModule().eventService().blockingIsEditable(event.uid())
+            d2.eventModule().eventService().blockingIsEditable(event.uid()),
         )
     }
 
@@ -108,7 +108,7 @@ class ProgramEventMapper @Inject constructor(
     }
 
     private fun getOrgUnitName(orgUnitUid: String?) =
-        d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet().displayName()
+        d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()?.displayName()
 
     private fun getProgramStageDataElements(programStageUid: String?) =
         d2.programModule().programStageDataElements()
@@ -118,13 +118,12 @@ class ProgramEventMapper @Inject constructor(
     private fun getData(
         dataValues: List<TrackedEntityDataValue>?,
         showInReportsDataElements: MutableList<String>,
-        programStage: String?
+        programStage: String?,
     ): List<Pair<String, String>> {
         val data: MutableList<Pair<String, String>> = mutableListOf()
 
         dataValues?.let {
-            val stageSections = getStageSections(programStage)
-            stageSections.sortBy { it.sortOrder() }
+            val stageSections = getStageSections(programStage).sortedBy { it.sortOrder() }
             val dataElementsOrder = mutableListOf<String>()
             if (stageSections.isEmpty()) {
                 val programStageDataElements = getProgramStageDataElements(programStage)
@@ -136,7 +135,7 @@ class ProgramEventMapper @Inject constructor(
             } else {
                 stageSections.forEach {
                     dataElementsOrder.addAll(
-                        UidsHelper.getUidsList(it.dataElements() as Collection<DataElement>)
+                        UidsHelper.getUidsList(it.dataElements() as Collection<DataElement>),
                     )
                 }
             }
@@ -146,7 +145,7 @@ class ProgramEventMapper @Inject constructor(
                     val pos1 = dataElementsOrder.indexOf(de1.dataElement())
                     val pos2 = dataElementsOrder.indexOf(de2.dataElement())
                     pos1.compareTo(pos2)
-                }
+                },
             ).forEach {
                 val dataElement = getDataElement(it.dataElement())
                 if (dataElement != null && showInReportsDataElements.contains(dataElement.uid())) {
@@ -176,19 +175,19 @@ class ProgramEventMapper @Inject constructor(
             event.eventDate(),
             event.completedDate(),
             event.status(),
-            program.completeEventsExpiryDays() ?: -1,
-            program.expiryPeriodType(),
-            program.expiryDays() ?: -1
+            program?.completeEventsExpiryDays() ?: -1,
+            program?.expiryPeriodType(),
+            program?.expiryDays() ?: -1,
         )
     }
 
     private fun checkOrgUnitRange(orgUnitUid: String?, eventDate: Date): Boolean {
         var inRange = true
         val orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()
-        if (orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate())) {
+        if (orgUnit?.openingDate() != null && eventDate.before(orgUnit.openingDate())) {
             inRange = false
         }
-        if (orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate())) {
+        if (orgUnit?.closedDate() != null && eventDate.after(orgUnit.closedDate())) {
             inRange = false
         }
 
@@ -198,18 +197,17 @@ class ProgramEventMapper @Inject constructor(
     private fun getDataElement(dataElement: String?) =
         d2.dataElementModule().dataElements().uid(dataElement).blockingGet()
 
-    private fun getStageSections(programStage: String?) =
-        d2.programModule().programStageSections()
-            .byProgramStageUid().eq(programStage)
-            .withDataElements()
-            .blockingGet()
+    private fun getStageSections(programStage: String?) = d2.programModule().programStageSections()
+        .byProgramStageUid().eq(programStage)
+        .withDataElements()
+        .blockingGet()
 
     private fun getCategoryOptionCombo(attributeOptionCombo: String?) =
         d2.categoryModule().categoryOptionCombos().uid(attributeOptionCombo).blockingGet()
 
     private fun getEventValues(
         eventUid: String,
-        stageUid: String
+        stageUid: String,
     ): List<kotlin.Pair<String, String?>> {
         val displayInListDataElements = d2.programModule().programStageDataElements()
             .byProgramStage().eq(stageUid)
@@ -224,12 +222,12 @@ class ProgramEventMapper @Inject constructor(
                 val de = d2.dataElementModule().dataElements()
                     .uid(it).blockingGet()
                 Pair(
-                    de.displayFormName() ?: de.displayName() ?: "",
+                    de?.displayFormName() ?: de?.displayName() ?: "",
                     if (valueRepo.blockingExists()) {
                         valueRepo.blockingGet().userFriendlyValue(d2)
                     } else {
                         "-"
-                    }
+                    },
                 )
             }
         } else {
@@ -240,7 +238,7 @@ class ProgramEventMapper @Inject constructor(
     private fun getCatComboName(categoryOptionComboUid: String?): String? {
         return categoryOptionComboUid?.let {
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
-                .displayName()
+                ?.displayName()
         }
     }
 }

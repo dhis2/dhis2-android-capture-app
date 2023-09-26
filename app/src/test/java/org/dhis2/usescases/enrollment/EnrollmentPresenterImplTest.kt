@@ -1,15 +1,11 @@
 package org.dhis2.usescases.enrollment
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.EnrollmentRepository
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -23,6 +19,8 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -30,6 +28,11 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class EnrollmentPresenterImplTest {
 
@@ -44,6 +47,8 @@ class EnrollmentPresenterImplTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val eventCollectionRepository: EventCollectionRepository = mock()
+    private val teiAttributesProvider: TeiAttributesProvider = mock()
 
     @Before
     fun setUp() {
@@ -57,7 +62,9 @@ class EnrollmentPresenterImplTest {
             schedulers,
             enrollmentFormRepository,
             analyticsHelper,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            eventCollectionRepository,
+            teiAttributesProvider,
         )
     }
 
@@ -92,8 +99,8 @@ class EnrollmentPresenterImplTest {
                 Access.builder()
                     .data(
                         DataAccess.builder().write(true)
-                            .build()
-                    ).build()
+                            .build(),
+                    ).build(),
             ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
         verify(enrollmentRepository).setStatus(EnrollmentStatus.ACTIVE)
@@ -107,8 +114,8 @@ class EnrollmentPresenterImplTest {
                 Access.builder()
                     .data(
                         DataAccess.builder().write(false)
-                            .build()
-                    ).build()
+                            .build(),
+                    ).build(),
             ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
 
@@ -168,7 +175,7 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollmentService()
-                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.WRITE_ACCESS
 
         presenter.showOrHideSaveButton()
@@ -191,12 +198,39 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollmentService()
-                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.NO_ACCESS
 
         presenter.showOrHideSaveButton()
 
         verify(enrollmentView).setSaveButtonVisible(false)
+    }
+
+    @Test
+    fun `Should return true if event status is SCHEDULE`() {
+        val event = Event.builder().uid("uid").status(EventStatus.SCHEDULE).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(presenter.isEventScheduleOrSkipped("uid"))
+    }
+
+    @Test
+    fun `Should return true if event status is SKIPPED`() {
+        val event = Event.builder().uid("uid").status(EventStatus.SKIPPED).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(presenter.isEventScheduleOrSkipped("uid"))
+    }
+
+    @Test
+    fun `Should return false if event status is ACTIVE`() {
+        val event = Event.builder().uid("uid").status(EventStatus.ACTIVE).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(!presenter.isEventScheduleOrSkipped("uid"))
     }
 
     private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
@@ -213,14 +247,14 @@ class EnrollmentPresenterImplTest {
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("")) doReturn mock()
         whenever(
-            d2.programModule().programStages().uid("").blockingGet()
+            d2.programModule().programStages().uid("").blockingGet(),
         ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
 
         whenever(d2.categoryModule()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
         whenever(
-            d2.categoryModule().categoryCombos().uid("").blockingGet()
+            d2.categoryModule().categoryCombos().uid("").blockingGet(),
         ) doReturn CategoryCombo.builder()
             .isDefault(catCombo)
             .uid("")

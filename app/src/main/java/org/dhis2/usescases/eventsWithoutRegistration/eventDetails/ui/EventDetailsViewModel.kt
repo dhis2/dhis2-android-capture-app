@@ -2,12 +2,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import java.util.Calendar
-import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
@@ -34,6 +31,8 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Calendar
+import java.util.Date
 
 class EventDetailsViewModel(
     private val configureEventDetails: ConfigureEventDetails,
@@ -43,10 +42,11 @@ class EventDetailsViewModel(
     private val configureEventCatCombo: ConfigureEventCatCombo,
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
+    private val eventUid: String?,
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
-    private val resourcesProvider: EventDetailResourcesProvider
+    private val resourcesProvider: EventDetailResourcesProvider,
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -114,8 +114,8 @@ class EventDetailsViewModel(
                             },
                             mapRequest = { _, featureType, initCoordinate ->
                                 requestLocationByMap?.invoke(featureType, initCoordinate)
-                            }
-                        )
+                            },
+                        ),
                     )
                     _eventCoordinates.value = eventCoordinates
                 }
@@ -130,7 +130,7 @@ class EventDetailsViewModel(
                 catOptionComboUid = eventCatCombo.value.uid,
                 isCatComboCompleted = eventCatCombo.value.isCompleted,
                 coordinates = eventCoordinates.value.model?.value,
-                tempCreate = eventTemp.value.status?.name
+                tempCreate = eventTemp.value.status?.name,
             )
                 .collect {
                     _eventDetails.value = it
@@ -147,7 +147,7 @@ class EventDetailsViewModel(
                 catOptionComboUid = eventCatCombo.value.uid,
                 isCatComboCompleted = eventCatCombo.value.isCompleted,
                 coordinates = eventCoordinates.value.model?.value,
-                tempCreate = eventTemp.value.status?.name
+                tempCreate = eventTemp.value.status?.name,
             )
                 .flowOn(Dispatchers.IO)
                 .collect {
@@ -171,10 +171,7 @@ class EventDetailsViewModel(
         }
     }
 
-    fun setUpOrgUnit(
-        selectedDate: Date? = null,
-        selectedOrgUnit: String? = null
-    ) {
+    fun setUpOrgUnit(selectedDate: Date? = null, selectedOrgUnit: String? = null) {
         viewModelScope.launch {
             configureOrgUnit(selectedDate, selectedOrgUnit)
                 .flowOn(Dispatchers.IO)
@@ -214,8 +211,8 @@ class EventDetailsViewModel(
                             },
                             mapRequest = { _, featureType, initCoordinate ->
                                 requestLocationByMap?.invoke(featureType, initCoordinate)
-                            }
-                        )
+                            },
+                        ),
                     )
                     _eventCoordinates.value = eventCoordinates
                     setUpEventDetails()
@@ -281,23 +278,26 @@ class EventDetailsViewModel(
             },
             onLocationDisabled = {
                 showEnableLocationMessage?.invoke()
-            }
+            },
         )
     }
 
     fun onLocationByMapSelected(featureType: FeatureType, coordinates: String?) {
         val geometry: Geometry? = geometryController.generateLocationFromCoordinates(
             featureType,
-            coordinates
+            coordinates,
         )
         geometry?.let { setUpCoordinates(it.coordinates()) }
     }
 
     fun onButtonClick() {
+        if (eventUid != null) {
+            updateEventDetails()
+        }
         onButtonClickCallback?.invoke()
     }
 
-    fun onActionButtonClick() {
+    fun updateEventDetails() {
         viewModelScope.launch {
             eventDetails.value.apply {
                 selectedDate?.let { date ->
@@ -305,7 +305,7 @@ class EventDetailsViewModel(
                         selectedDate = date,
                         selectedOrgUnit = selectedOrgUnit,
                         catOptionComboUid = catOptionComboUid,
-                        coordinates = coordinates
+                        coordinates = coordinates,
                     ).flowOn(Dispatchers.IO)
                         .collect { result ->
                             result.onFailure {
@@ -326,7 +326,7 @@ class EventDetailsViewModel(
                 loadEventDetails()
                 onReopenSuccess?.invoke(resourcesProvider.provideReOpened())
             },
-            onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
+            onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } },
         )
     }
 
@@ -337,7 +337,7 @@ class EventDetailsViewModel(
 
 inline fun <R, reified T> Result<T>.mockSafeFold(
     onSuccess: (value: T) -> R,
-    onFailure: (exception: Throwable) -> R
+    onFailure: (exception: Throwable) -> R,
 ): R = when {
     isSuccess -> {
         val value = getOrNull()

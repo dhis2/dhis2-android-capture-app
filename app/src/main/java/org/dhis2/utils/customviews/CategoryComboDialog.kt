@@ -6,22 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import com.google.android.material.textfield.TextInputEditText
-import java.util.ArrayList
-import java.util.HashMap
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.databinding.CatComboDialogNewBinding
 import org.dhis2.databinding.CategorySelectorBinding
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
+import java.util.ArrayList
+import java.util.HashMap
+import javax.inject.Inject
 
 class CategoryComboDialog(
     private val mContext: Context,
     private val categoryCombo: CategoryCombo,
     val requestCode: Int,
     private val listenerNew: OnCatOptionComboSelected,
-    private val title: String? = categoryCombo.displayName()
+    private val title: String? = categoryCombo.displayName(),
 ) : AlertDialog(mContext) {
 
     @Inject
@@ -59,7 +59,7 @@ class CategoryComboDialog(
                 openSelector(
                     category,
                     catSelectorBinding.catCombo,
-                    catSelectorBinding.root
+                    catSelectorBinding.root,
                 )
             }
 
@@ -70,7 +70,7 @@ class CategoryComboDialog(
     private fun openSelector(
         category: Category,
         categoryEditText: TextInputEditText,
-        anchor: View
+        anchor: View,
     ) {
         CategoryOptionPopUp.getInstance()
             .setCategory(category)
@@ -83,7 +83,7 @@ class CategoryComboDialog(
                 categoryEditText.setText(item?.displayName())
                 if (selectedCatOption.size == categoryCombo.categories()!!.size) {
                     listenerNew.onCatOptionComboSelected(
-                        presenter!!.getCatOptionCombo(ArrayList(selectedCatOption.values))
+                        presenter!!.getCatOptionCombo(ArrayList(selectedCatOption.values)),
                     )
                     dismiss()
                 }

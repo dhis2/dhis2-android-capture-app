@@ -2,8 +2,6 @@ package org.dhis2.composetable.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -11,15 +9,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,49 +31,48 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
+import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.ValidationResult
+import org.dhis2.composetable.ui.compositions.LocalCurrentCellValue
+import org.dhis2.composetable.ui.compositions.LocalInteraction
+import org.dhis2.composetable.ui.compositions.LocalUpdatingCell
+import org.dhis2.composetable.ui.extensions.collapseIfExpanded
+import org.dhis2.composetable.ui.extensions.expandIfCollapsed
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DataSetTableScreen(
     tableScreenState: TableScreenState,
-    onCellClick: (tableId: String, TableCell) -> TextInputModel?,
+    onCellClick: (
+        tableId: String,
+        TableCell,
+        updateCellValue: (TableCell) -> Unit,
+    ) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
-    onCellValueChange: (TableCell) -> Unit,
-    onSaveValue: (TableCell, selectNext: Boolean) -> Unit
+    onSaveValue: (TableCell) -> Unit,
+    bottomContent: @Composable (() -> Unit)? = null,
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed),
     )
 
-    var currentCell by remember {
-        mutableStateOf<TableCell?>(
-            null
-        )
-    }
-    var currentInputType by remember {
-        mutableStateOf(
-            TextInputModel()
-        )
-    }
+    var currentCell by remember { mutableStateOf<TableCell?>(null) }
+    var updatingCell by remember { mutableStateOf<TableCell?>(null) }
+    var currentInputType by remember { mutableStateOf(TextInputModel()) }
     var displayDescription by remember { mutableStateOf<TableDialogModel?>(null) }
     val coroutineScope = rememberCoroutineScope()
-
-    var tableSelection by remember {
-        mutableStateOf<TableSelection>(TableSelection.Unselected())
-    }
-
-    val tableColors = TableColors(
-        primary = MaterialTheme.colors.primary,
-        primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-    )
+    var tableSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
 
     val focusManager = LocalFocusManager.current
+    val tableConfiguration = LocalTableConfiguration.current
     val focusRequester = remember { FocusRequester() }
 
     var alreadyFinish by remember { mutableStateOf(false) }
+
+    val isKeyboardOpen by keyboardAsState()
 
     fun finishEdition() {
         focusManager.clearFocus(true)
@@ -104,25 +101,11 @@ fun DataSetTableScreen(
 
     fun updateError(tableCell: TableCell) {
         currentInputType = currentInputType.copy(error = tableCell.error)
-        currentCell = currentCell?.copy(error = tableCell.error)?.also {
-            onCellValueChange(it)
-        }
+        currentCell = currentCell?.copy(error = tableCell.error)
     }
 
-    val selectNextCell: (
-        Pair<TableCell, TableSelection.CellSelection>,
-        TableSelection.CellSelection
-    ) -> Unit = { (tableCell, nextCell), cellSelected ->
-        if (nextCell != cellSelected) {
-            tableSelection = nextCell
-            onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
-                currentCell = tableCell
-                currentInputType = inputModel
-                focusRequester.requestFocus()
-            } ?: collapseBottomSheet()
-        } else {
-            updateError(tableCell)
-        }
+    fun updateCellValue(tableCell: TableCell?) {
+        currentCell = tableCell
     }
 
     var saveClicked by remember { mutableStateOf(false) }
@@ -136,23 +119,14 @@ fun DataSetTableScreen(
             }
         }
     }
-
+    bottomSheetState.bottomSheetState.progress
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-            !bottomSheetState.bottomSheetState.isAnimationRunning
+            bottomSheetState.bottomSheetState.progress == 1f,
     ) {
         collapseBottomSheet(finish = true)
     }
-    LaunchedEffect(tableScreenState) {
-        if (tableScreenState.selectNext) {
-            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-                val currentTable = tableScreenState.tables.first { it.id == cellSelected.tableId }
-                currentTable.getNextCell(cellSelected, false)?.let {
-                    selectNextCell(it, cellSelected)
-                } ?: collapseBottomSheet(finish = true)
-            }
-        }
-    }
+
     LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
         if (
             bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed &&
@@ -161,74 +135,21 @@ fun DataSetTableScreen(
             finishEdition()
         }
     }
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetState,
-        sheetContent = {
-            TextInput(
-                textInputModel = currentInputType,
-                tableColors = tableColors,
-                onTextChanged = { textInputModel ->
-                    currentInputType = textInputModel
-                    currentCell = currentCell?.copy(
-                        value = textInputModel.currentValue,
-                        error = null
-                    )?.also {
-                        onCellValueChange(it)
-                    }
-                },
-                onSave = {
-                    currentCell?.let {
-                        onSaveValue(it, false)
-                    }
-                    saveClicked = true
-                },
-                onNextSelected = {
-                    currentCell?.let { tableCell ->
-                        if (tableCell.error == null) {
-                            onSaveValue(tableCell, true)
-                        } else {
-                            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-                                val currentTable =
-                                    tableScreenState.tables.first { it.id == cellSelected.tableId }
-                                currentTable.getNextCell(cellSelected, true)?.let {
-                                    selectNextCell(it, cellSelected)
-                                } ?: collapseBottomSheet(finish = true)
-                            }
-                        }
-                    }
-                },
-                focusRequester = focusRequester
-            )
-        },
-        sheetPeekHeight = 0.dp,
-        sheetShape = RoundedCornerShape(
-            topStart = 16.dp,
-            topEnd = 16.dp
-        )
-    ) {
-        AnimatedVisibility(
-            visible = tableScreenState.tables.isEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+
+    LaunchedEffect(isKeyboardOpen) {
+        if (isKeyboardOpen == Keyboard.Closed) {
+            if (tableConfiguration.textInputViewMode) {
+                focusManager.clearFocus(true)
+            } else if (bottomSheetState.bottomSheetState.isExpanded) {
+                collapseBottomSheet(true)
+                bottomSheetState.bottomSheetState.collapse()
             }
         }
-        DataTable(
-            tableList = tableScreenState.tables,
-            editable = true,
-            tableColors = tableColors,
-            tableDimensions = TableTheme.dimensions.copy(
-                cellVerticalPadding = 11.dp
-            ),
-            tableSelection = tableSelection,
-            tableInteractions = object : TableInteractions {
+    }
+
+    val iter by remember {
+        mutableStateOf(
+            object : TableInteractions {
                 override fun onSelectionChange(newTableSelection: TableSelection) {
                     tableSelection = newTableSelection
                 }
@@ -238,18 +159,126 @@ fun DataSetTableScreen(
                 }
 
                 override fun onClick(tableCell: TableCell) {
-                    currentCell?.takeIf { it != tableCell }?.let {
-                        onSaveValue(it, false)
-                    }
-                    onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
+                    currentCell?.takeIf { it != tableCell }?.let { onSaveValue(it) }
+                    updatingCell = currentCell
+                    onCellClick(
+                        tableSelection.tableId,
+                        tableCell,
+                    ) { updateCellValue(it) }?.let { inputModel ->
                         currentCell = tableCell
-                        currentInputType = inputModel.copy(currentValue = currentCell?.value)
+                        currentInputType =
+                            inputModel.copy(currentValue = currentCell?.value)
                         startEdition()
                         focusRequester.requestFocus()
                     } ?: collapseBottomSheet()
                 }
-            }
+
+                override fun onOptionSelected(cell: TableCell, code: String, label: String) {
+                    currentCell = cell.copy(
+                        value = label,
+                        error = null,
+                    ).also {
+                        onSaveValue(cell.copy(value = code))
+                    }
+                }
+            },
         )
+    }
+
+    BottomSheetScaffold(
+        scaffoldState = bottomSheetState,
+        sheetContent = {
+            val validator = TableTheme.validator
+            val textInputInteractions by remember(tableScreenState) {
+                derivedStateOf {
+                    object : TextInputInteractions {
+                        override fun onTextChanged(textInputModel: TextInputModel) {
+                            currentInputType = textInputModel
+                            currentCell = currentCell?.copy(
+                                value = textInputModel.currentValue,
+                                error = null,
+                            )
+                        }
+
+                        override fun onSave() {
+                            if (!tableConfiguration.textInputViewMode) {
+                                collapseBottomSheet(true)
+                            }
+                            currentCell?.let { onSaveValue(it) }
+                            saveClicked = true
+                        }
+
+                        override fun onNextSelected() {
+                            currentCell?.let { tableCell ->
+                                val result = validator.validate(tableCell)
+                                onSaveValue(tableCell)
+                                (tableSelection as? TableSelection.CellSelection)
+                                    ?.let { cellSelected ->
+                                        val currentTable = tableScreenState.tables.first {
+                                            it.id == cellSelected.tableId
+                                        }
+                                        currentTable.getNextCell(
+                                            cellSelection = cellSelected,
+                                            successValidation = result is ValidationResult.Success,
+                                        )?.let { (tableCell, nextCell) ->
+                                            if (nextCell != cellSelected) {
+                                                updatingCell = currentCell
+                                                tableSelection = nextCell
+                                                onCellClick(
+                                                    tableSelection.tableId,
+                                                    tableCell,
+                                                ) { updateCellValue(it) }?.let { inputModel ->
+                                                    currentCell = tableCell
+                                                    currentInputType = inputModel
+                                                    focusRequester.requestFocus()
+                                                } ?: collapseBottomSheet()
+                                            } else {
+                                                updateError(tableCell)
+                                            }
+                                        } ?: collapseBottomSheet(finish = true)
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+            TextInput(
+                textInputModel = currentInputType,
+                textInputInteractions = textInputInteractions,
+                focusRequester = focusRequester,
+            )
+        },
+        sheetPeekHeight = 0.dp,
+        sheetShape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+        ),
+    ) {
+        AnimatedVisibility(
+            visible = tableScreenState.tables.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        CompositionLocalProvider(
+            LocalTableSelection provides tableSelection,
+            LocalCurrentCellValue provides { currentCell?.value },
+            LocalUpdatingCell provides updatingCell,
+            LocalInteraction provides iter,
+        ) {
+            DataTable(
+                tableList = tableScreenState.tables,
+                bottomContent = bottomContent,
+            )
+        }
         displayDescription?.let {
             TableDialog(
                 dialogModel = it,
@@ -258,24 +287,8 @@ fun DataSetTableScreen(
                 },
                 onPrimaryButtonClick = {
                     displayDescription = null
-                }
+                },
             )
         }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-private suspend fun BottomSheetState.collapseIfExpanded(onCollapse: () -> Unit) {
-    if (isExpanded) {
-        onCollapse()
-        animateTo(BottomSheetValue.Collapsed, tween(400))
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-private suspend fun BottomSheetState.expandIfCollapsed(onExpand: () -> Unit) {
-    if (isCollapsed) {
-        onExpand()
-        animateTo(BottomSheetValue.Expanded, tween(400))
     }
 }

@@ -1,9 +1,9 @@
 package org.dhis2.usescases.about
 
-import org.hisp.dhis.android.core.user.UserCredentials
+import org.hisp.dhis.android.core.user.User
 
 interface AboutView {
-    fun renderUserCredentials(userCredentialsModel: UserCredentials?)
+    fun renderUserCredentials(userModel: User?)
     fun renderServerUrl(serverUrl: String?)
     fun navigateToPrivacyPolicy()
 }

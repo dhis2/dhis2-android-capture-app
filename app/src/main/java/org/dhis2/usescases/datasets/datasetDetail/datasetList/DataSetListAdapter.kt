@@ -24,14 +24,14 @@ class DataSetListAdapter(val viewModel: DataSetListViewModel) :
 class ItemDiffCallback : DiffUtil.ItemCallback<DataSetDetailModel>() {
     override fun areItemsTheSame(
         oldItem: DataSetDetailModel,
-        newItem: DataSetDetailModel
+        newItem: DataSetDetailModel,
     ): Boolean {
         return oldItem == newItem
     }
 
     override fun areContentsTheSame(
         oldItem: DataSetDetailModel,
-        newItem: DataSetDetailModel
+        newItem: DataSetDetailModel,
     ): Boolean {
         return oldItem == newItem
     }

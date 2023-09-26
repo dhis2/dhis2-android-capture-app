@@ -2,6 +2,7 @@ package org.dhis2.usescases.settingsprogram
 
 import dagger.Module
 import dagger.Provides
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
@@ -14,7 +15,10 @@ class SettingsProgramModule(val view: ProgramSettingsView) {
     }
 
     @Provides
-    fun provideAdapter(resourceManager: ResourceManager): SettingsProgramAdapter {
-        return SettingsProgramAdapter(resourceManager)
+    fun provideAdapter(
+        resourceManager: ResourceManager,
+        colorUtils: ColorUtils,
+    ): SettingsProgramAdapter {
+        return SettingsProgramAdapter(resourceManager, colorUtils)
     }
 }

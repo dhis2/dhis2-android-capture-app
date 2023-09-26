@@ -1,9 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
-import java.util.Locale
-import org.dhis2.Bindings.applyFilters
-import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.bindings.applyFilters
+import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
@@ -26,13 +25,14 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import java.util.Locale
 
 class TeiDataRepositoryImpl(
     private val d2: D2,
     private val programUid: String?,
     private val teiUid: String,
     private val enrollmentUid: String?,
-    private val periodUtils: DhisPeriodUtils
+    private val periodUtils: DhisPeriodUtils,
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -44,7 +44,7 @@ class TeiDataRepositoryImpl(
         assignedToMe: Boolean,
         eventStatusFilters: MutableList<EventStatus>,
         catOptComboFilters: MutableList<CategoryOptionCombo>,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
@@ -53,12 +53,12 @@ class TeiDataRepositoryImpl(
             orgUnitFilters,
             stateFilters,
             if (assignedToMe) {
-                d2.userModule().user().blockingGet().uid()
+                d2.userModule().user().blockingGet()?.uid()
             } else {
                 null
             },
             eventStatusFilters,
-            catOptComboFilters
+            catOptComboFilters,
         )
 
         return if (groupedByStage) {
@@ -68,15 +68,15 @@ class TeiDataRepositoryImpl(
         }
     }
 
-    override fun getEnrollment(): Single<Enrollment> {
+    override fun getEnrollment(): Single<Enrollment?> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
     }
 
-    override fun getEnrollmentProgram(): Single<Program> {
+    override fun getEnrollmentProgram(): Single<Program?> {
         return d2.programModule().programs().uid(programUid).get()
     }
 
-    override fun getTrackedEntityInstance(): Single<TrackedEntityInstance> {
+    override fun getTrackedEntityInstance(): Single<TrackedEntityInstance?> {
         return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
     }
 
@@ -97,10 +97,69 @@ class TeiDataRepositoryImpl(
             }
     }
 
+    override fun eventsWithoutCatCombo(): Single<List<EventViewModel>> {
+        return getEnrollmentProgram()
+            .flatMap { program ->
+                d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get()
+            }
+            .flatMap { categoryCombo ->
+                if (categoryCombo.isDefault == true) {
+                    Single.just(emptyList())
+                } else {
+                    val defaultCatOptCombo = d2.categoryModule().categoryOptionCombos()
+                        .byDisplayName().eq("default")
+                        .one()
+                        .blockingGet()
+                    val eventsWithDefaultCatCombo = d2.eventModule().events()
+                        .byEnrollmentUid().eq(enrollmentUid)
+                        .byAttributeOptionComboUid().eq(defaultCatOptCombo?.uid())
+                        .get()
+                    val eventsWithNoCatCombo = d2.eventModule().events()
+                        .byEnrollmentUid().eq(enrollmentUid)
+                        .byAttributeOptionComboUid().isNull
+                        .get()
+                    val eventSource = Single.zip(
+                        eventsWithDefaultCatCombo,
+                        eventsWithNoCatCombo,
+                    ) { sourceA, sourceB ->
+                        mutableListOf<Event>().apply {
+                            addAll(sourceA)
+                            addAll(sourceB)
+                        }
+                    }
+                    return@flatMap eventSource.map { events ->
+                        events.map {
+                            val stage = d2.programModule().programStages()
+                                .uid(it.programStage())
+                                .blockingGet()
+                            EventViewModel(
+                                type = EventViewModelType.EVENT,
+                                stage = stage,
+                                event = it,
+                                eventCount = 0,
+                                lastUpdate = null,
+                                isSelected = false,
+                                canAddNewEvent = false,
+                                orgUnitName = it.organisationUnit()!!,
+                                catComboName = null,
+                                dataElementValues = null,
+                                displayDate = null,
+                            )
+                        }
+                    }
+                }
+            }
+    }
+
+    override fun getOrgUnitName(orgUnitUid: String): String {
+        return d2.organisationUnitModule()
+            .organisationUnits().uid(orgUnitUid).blockingGet()?.displayName() ?: ""
+    }
+
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
@@ -123,7 +182,7 @@ class TeiDataRepositoryImpl(
                         programStage.access()?.data()?.write() == true &&
                             d2.eventModule().eventService().blockingCanAddEventToEnrollment(
                                 it,
-                                programStage.uid()
+                                programStage.uid(),
                             )
                     } ?: false
 
@@ -140,8 +199,8 @@ class TeiDataRepositoryImpl(
                             catComboName = "",
                             dataElementValues = emptyList(),
                             groupedByStage = true,
-                            displayDate = null
-                        )
+                            displayDate = null,
+                        ),
                     )
                     if (isSelected) {
                         checkEventStatus(eventList).forEachIndexed { index, event ->
@@ -157,21 +216,22 @@ class TeiDataRepositoryImpl(
                                     isSelected = true,
                                     canAddNewEvent = true,
                                     orgUnitName = d2.organisationUnitModule().organisationUnits()
-                                        .uid(event.organisationUnit()).blockingGet().displayName()
+                                        .uid(event.organisationUnit()).blockingGet()?.displayName()
                                         ?: "",
                                     catComboName = getCatComboName(event.attributeOptionCombo()),
                                     dataElementValues = getEventValues(
                                         event.uid(),
-                                        programStage.uid()
+                                        programStage.uid(),
                                     ),
                                     groupedByStage = true,
                                     showTopShadow = showTopShadow,
                                     showBottomShadow = showBottomShadow,
                                     displayDate = periodUtils.getPeriodUIString(
                                         programStage.periodType() ?: PeriodType.Daily,
-                                        event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
-                                    )
-                                )
+                                        event.eventDate() ?: event.dueDate()!!,
+                                        Locale.getDefault(),
+                                    ),
+                                ),
                             )
                         }
                     }
@@ -182,7 +242,7 @@ class TeiDataRepositoryImpl(
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo = eventRepository
@@ -209,16 +269,17 @@ class TeiDataRepositoryImpl(
                             isSelected = true,
                             canAddNewEvent = true,
                             orgUnitName = d2.organisationUnitModule().organisationUnits()
-                                .uid(event.organisationUnit()).blockingGet().displayName()
+                                .uid(event.organisationUnit()).blockingGet()?.displayName()
                                 ?: "",
                             catComboName = getCatComboName(event.attributeOptionCombo()),
-                            dataElementValues = getEventValues(event.uid(), programStage.uid()),
+                            dataElementValues = getEventValues(event.uid(), programStage?.uid()),
                             groupedByStage = false,
                             displayDate = periodUtils.getPeriodUIString(
-                                programStage.periodType() ?: PeriodType.Daily,
-                                event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
-                            )
-                        )
+                                programStage?.periodType() ?: PeriodType.Daily,
+                                event.eventDate() ?: event.dueDate()!!,
+                                Locale.getDefault(),
+                            ),
+                        ),
                     )
                 }
                 eventViewModels
@@ -227,7 +288,7 @@ class TeiDataRepositoryImpl(
 
     private fun eventRepoSorting(
         sortingItem: SortingItem?,
-        eventRepo: EventCollectionRepository
+        eventRepo: EventCollectionRepository,
     ): EventCollectionRepository {
         return if (sortingItem != null) {
             when (sortingItem.filterSelectedForSorting) {
@@ -257,7 +318,7 @@ class TeiDataRepositoryImpl(
     }
 
     private fun checkEventStatus(events: List<Event>): List<Event> {
-        return events.map { event ->
+        return events.mapNotNull { event ->
             if (event.status() == EventStatus.SCHEDULE &&
                 event.dueDate()?.before(DateUtils.getInstance().today) == true
             ) {
@@ -269,7 +330,7 @@ class TeiDataRepositoryImpl(
         }
     }
 
-    private fun getEventValues(eventUid: String, stageUid: String): List<Pair<String, String?>> {
+    private fun getEventValues(eventUid: String, stageUid: String?): List<Pair<String, String?>> {
         val displayInListDataElements = d2.programModule().programStageDataElements()
             .byProgramStage().eq(stageUid)
             .byDisplayInReports().isTrue
@@ -283,12 +344,12 @@ class TeiDataRepositoryImpl(
                 val de = d2.dataElementModule().dataElements()
                     .uid(it).blockingGet()
                 Pair(
-                    de.displayFormName() ?: de.displayName() ?: "",
+                    de?.displayFormName() ?: de?.displayName() ?: "",
                     if (valueRepo.blockingExists()) {
                         valueRepo.blockingGet().userFriendlyValue(d2)
                     } else {
                         "-"
-                    }
+                    },
                 )
             }
         } else {
@@ -299,7 +360,7 @@ class TeiDataRepositoryImpl(
     private fun getCatComboName(categoryOptionComboUid: String?): String? {
         return categoryOptionComboUid?.let {
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
-                .displayName()
+                ?.displayName()
         }
     }
 }

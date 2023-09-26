@@ -19,7 +19,7 @@ class DataSetListViewModel(
     dataSetDetailRepository: DataSetDetailRepository,
     schedulerProvider: SchedulerProvider,
     val filterManager: FilterManager,
-    val matomoAnalyticsController: MatomoAnalyticsController
+    val matomoAnalyticsController: MatomoAnalyticsController,
 ) : ViewModel() {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -42,19 +42,19 @@ class DataSetListViewModel(
                         filterManager.orgUnitUidsFilters,
                         filterManager.periodFilters,
                         filterManager.stateFilters,
-                        filterManager.catOptComboFilters
+                        filterManager.catOptComboFilters,
                     )
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe({ _datasets.value = it }) { t: Throwable? -> Timber.d(t) }
+                .subscribe({ _datasets.value = it }) { t: Throwable? -> Timber.d(t) },
         )
 
         disposable.add(
             dataSetDetailRepository.canWriteAny()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe({ _canWrite.value = it }) { t: Throwable? -> Timber.e(t) }
+                .subscribe({ _canWrite.value = it }) { t: Throwable? -> Timber.e(t) },
         )
     }
 
@@ -66,7 +66,7 @@ class DataSetListViewModel(
         matomoAnalyticsController.trackEvent(
             Categories.DATASET_LIST,
             Actions.SYNC_DATASET,
-            Labels.CLICK
+            Labels.CLICK,
         )
         selectedSync.postValue(Action(dataset))
     }

@@ -12,7 +12,7 @@ class SectionHandlerTest {
         val result = sectionHandler.getSectionPositionFromVisiblePosition(
             12,
             true,
-            mockedSectionPositions()
+            mockedSectionPositions(),
         )
 
         assertTrue(result == 12)
@@ -24,7 +24,7 @@ class SectionHandlerTest {
             val result = sectionHandler.getSectionPositionFromVisiblePosition(
                 visiblePosition,
                 false,
-                mockedSectionPositions()
+                mockedSectionPositions(),
             )
             assertTrue(result == mockedSectionPositions()[index])
         }
@@ -35,7 +35,7 @@ class SectionHandlerTest {
         val result = sectionHandler.getSectionPositionFromVisiblePosition(
             5,
             false,
-            arrayListOf()
+            arrayListOf(),
         )
         assertTrue(result == -1)
     }

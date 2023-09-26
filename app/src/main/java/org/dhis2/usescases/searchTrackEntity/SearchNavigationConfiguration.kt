@@ -1,9 +1,9 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import java.util.Date
 
 class SearchNavigationConfiguration(val d2: D2) {
     private var openedTei: TrackedEntityInstance? = null

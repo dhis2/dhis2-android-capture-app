@@ -13,7 +13,7 @@ class MapStyleConfiguration(private val d2: D2) {
 
                 val tileUrls = mapLayer.imageUrl().mapTileUrls(
                     mapLayer.subdomainPlaceholder(),
-                    mapLayer.subdomains()
+                    mapLayer.subdomains(),
                 )
                 val attribution = mapLayer.imageryProviders().mapAttribution()
                 build(id, tileUrls, attribution)
@@ -21,10 +21,7 @@ class MapStyleConfiguration(private val d2: D2) {
     }
 }
 
-fun String.mapTileUrls(
-    subdomainPlaceholder: String?,
-    subdomains: List<String>?
-): List<String> {
+fun String.mapTileUrls(subdomainPlaceholder: String?, subdomains: List<String>?): List<String> {
     return subdomains
         .takeIf { subdomainPlaceholder != null && !it.isNullOrEmpty() }
         ?.map { subdomain ->
