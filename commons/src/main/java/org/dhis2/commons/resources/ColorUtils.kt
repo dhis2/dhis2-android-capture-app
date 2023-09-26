@@ -166,21 +166,25 @@ class ColorUtils {
 
     /**/
     fun getPrimaryColor(context: Context, colorType: ColorType): Int {
-        val id = when (colorType) {
-            ColorType.ACCENT -> R.attr.colorAccent
-            ColorType.PRIMARY_DARK -> R.attr.colorPrimaryDark
-            ColorType.PRIMARY_LIGHT -> R.attr.colorPrimaryLight
-            ColorType.PRIMARY -> R.attr.colorPrimary
-            else -> R.attr.colorPrimary
-        }
-        val typedValue = TypedValue()
-        val a = context.obtainStyledAttributes(typedValue.data, intArrayOf(id))
-        val colorToReturn = a.getColor(0, 0)
-        a.recycle()
-        return colorToReturn
+        return context.getPrimaryColor(colorType)
     }
 }
 
 enum class ColorType {
     PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
+}
+
+fun Context.getPrimaryColor(colorType: ColorType): Int {
+    val id = when (colorType) {
+        ColorType.ACCENT -> R.attr.colorAccent
+        ColorType.PRIMARY_DARK -> R.attr.colorPrimaryDark
+        ColorType.PRIMARY_LIGHT -> R.attr.colorPrimaryLight
+        ColorType.PRIMARY -> R.attr.colorPrimary
+        else -> R.attr.colorPrimary
+    }
+    val typedValue = TypedValue()
+    val a = obtainStyledAttributes(typedValue.data, intArrayOf(id))
+    val colorToReturn = a.getColor(0, 0)
+    a.recycle()
+    return colorToReturn
 }
