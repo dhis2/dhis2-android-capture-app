@@ -409,7 +409,7 @@ class DataSetTableRepositoryImpl(
                 dataToReview.add(
                     DataToReview(
                         de.uid(),
-                        de.displayName(),
+                        de.displayFormName(),
                         catOptCombo.uid(),
                         catOptCombo.displayName(),
                         value,
