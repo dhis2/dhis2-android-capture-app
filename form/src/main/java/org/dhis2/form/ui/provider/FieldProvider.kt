@@ -35,6 +35,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
 @Composable
 internal fun FieldProvider(
@@ -323,6 +324,7 @@ private fun ProvideNumber(
                 ),
             )
         },
+        notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
     )
 }
 
