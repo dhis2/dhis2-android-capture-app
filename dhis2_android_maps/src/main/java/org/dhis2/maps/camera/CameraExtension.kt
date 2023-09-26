@@ -18,11 +18,6 @@ import timber.log.Timber
 
 const val DEFAULT_BOUND_PADDING = 50
 const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
-const val KM_100 = 100
-const val KM_500 = 500
-const val ZOOM_12 = 12.0
-const val ZOOM_14 = 14.0
-const val ZOOM_18 = 18.0
 
 fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBounds) {
     if (bounds.latitudeNorth == 0.0 && bounds.latitudeSouth == 0.0 &&
@@ -33,51 +28,8 @@ fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBound
             .build()
         context?.let { Toast.makeText(context, "No data to load on map", LENGTH_LONG).show() }
     } else {
-        zoomOutAnimation(targetPosition = bounds.center) { zoomInToLanLngBoundsAnimation(bounds) }
+        zoomInToLanLngBoundsAnimation(bounds)
     }
-}
-
-private fun MapboxMap.zoomOutAnimation(
-    currentPosition: LatLng = cameraPosition.target ?: LatLng(),
-    targetPosition: LatLng,
-    onZoomOutFinished: () -> Unit,
-) {
-    val targetZoom = calculateZoomLevel(cameraPosition.zoom, currentPosition, targetPosition)
-    Timber.tag("ZOOM").d("Zooming out from ${cameraPosition.zoom} to $targetZoom")
-
-    val maxZoomOutPosition = CameraPosition.Builder()
-        .target(currentPosition)
-        .zoom(targetZoom)
-        .build()
-
-    this.animateCamera(
-        CameraUpdateFactory.newCameraPosition(maxZoomOutPosition),
-        DEFAULT_EASE_CAMERA_ANIM_DURATION,
-        object : CancelableCallback {
-            override fun onCancel() {
-                Timber.tag("ZOOM").d("Zooming out cancelled at ${cameraPosition.zoom}. Expected: $targetZoom")
-            }
-
-            override fun onFinish() {
-                Timber.tag("ZOOM").d("Zooming out finished at ${cameraPosition.zoom}. Expected: $targetZoom")
-                onZoomOutFinished()
-            }
-        },
-    )
-}
-
-private fun calculateZoomLevel(
-    currentZoom: Double,
-    currentPosition: LatLng,
-    targetPosition: LatLng,
-): Double {
-    val distance = currentPosition.distanceTo(targetPosition)
-    val newZoom = when {
-        distance < KM_100 -> ZOOM_12
-        distance >= KM_100 && distance < KM_500 -> ZOOM_14
-        else -> ZOOM_18
-    }
-    return newZoom.takeIf { newZoom > currentZoom } ?: currentZoom
 }
 
 private fun calculateDurationFraction(
@@ -150,37 +102,6 @@ fun MapboxMap.moveCameraToDevicePosition(latLng: LatLng) {
         )
         .build()
     this.easeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-}
-
-fun MapboxMap.centerCameraOnFeature(feature: Feature) {
-    when (val geometry = feature.geometry()) {
-        is Point -> {
-            this.easeCamera(
-                CameraUpdateFactory.newLatLng(
-                    LatLng(
-                        geometry.latitude(),
-                        geometry.longitude(),
-                    ),
-                ),
-            )
-        }
-
-        is Polygon -> {
-            val boundsBuilder = LatLngBounds.Builder()
-            (geometry.outer() as LineString).coordinates().forEach {
-                boundsBuilder.include(LatLng(it.latitude(), it.longitude()))
-            }
-            this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
-        }
-
-        is LineString -> {
-            val boundsBuilder = LatLngBounds.Builder()
-            geometry.coordinates().forEach {
-                boundsBuilder.include(LatLng(it.latitude(), it.longitude()))
-            }
-            this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
-        }
-    }
 }
 
 fun MapboxMap.centerCameraOnFeatures(features: List<Feature>) {
