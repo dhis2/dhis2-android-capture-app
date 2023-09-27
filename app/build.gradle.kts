@@ -75,7 +75,7 @@ android {
         val mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") ?: defMapboxToken
         val bitriseSentryDSN = System.getenv("SENTRY_DSN") ?: ""
 
-        buildConfigField("String", "SDK_VERSION", "\"" + libs.versions.dhis2sdk + "\"")
+        buildConfigField("String", "SDK_VERSION", "\"" + libs.versions.dhis2sdk.get() + "\"")
         buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\"")
         buildConfigField("String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\"")
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
