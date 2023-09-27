@@ -144,9 +144,6 @@ private fun ProvideInputText(
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
     InputText(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -156,7 +153,7 @@ private fun ProvideInputText(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -183,10 +180,6 @@ private fun ProvideIntegerPositive(
         mutableStateOf(fieldUiModel.value)
     }
 
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
-
     InputPositiveInteger(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -196,7 +189,7 @@ private fun ProvideIntegerPositive(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -222,9 +215,7 @@ private fun ProvideIntegerPositiveOrZero(
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
+
     InputPositiveIntegerOrZero(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -234,7 +225,7 @@ private fun ProvideIntegerPositiveOrZero(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -260,9 +251,7 @@ private fun ProvidePercentage(
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
+
     InputPercentage(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -272,7 +261,7 @@ private fun ProvidePercentage(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -298,9 +287,7 @@ private fun ProvideNumber(
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
+
     InputNumber(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -310,7 +297,7 @@ private fun ProvideNumber(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -337,9 +324,7 @@ private fun ProvideIntegerNegative(
     var value by remember {
         mutableStateOf(fieldUiModel.value?.replace("-", ""))
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
+
     InputNegativeInteger(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -349,7 +334,7 @@ private fun ProvideIntegerNegative(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -375,9 +360,7 @@ private fun ProvideLongText(
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
+
     InputLongText(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -387,7 +370,7 @@ private fun ProvideLongText(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -414,9 +397,7 @@ private fun ProvideLetter(
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
+
     InputLetter(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -426,7 +407,7 @@ private fun ProvideLetter(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
@@ -452,9 +433,7 @@ private fun ProvideInteger(
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-    val supportingText by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.supportingText())
-    }
+
     InputInteger(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -464,7 +443,7 @@ private fun ProvideInteger(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = supportingText,
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
