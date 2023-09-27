@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
@@ -11,6 +14,8 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.filters.WorkingListFilter
+import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -18,6 +23,7 @@ import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailLiveAdapter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -97,6 +103,19 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
                 } else {
                     binding.emptyTeis.visibility = View.GONE
                     binding.recycler.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    override fun configureWorkingList(workingListFilter: WorkingListFilter?) {
+        binding.filterLayout.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+            )
+            setContent {
+                workingListFilter?.let {
+                    WorkingListChipGroup(Modifier.padding(Spacing.Spacing16), it)
                 }
             }
         }

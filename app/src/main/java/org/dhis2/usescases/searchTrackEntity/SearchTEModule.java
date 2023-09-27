@@ -245,7 +245,9 @@ public class SearchTEModule {
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
-            D2 d2) {
+            D2 d2,
+            FilterRepository filterRepository
+    ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
                 new SearchPageConfigurator(searchRepository),
@@ -254,7 +256,8 @@ public class SearchTEModule {
                 mapDataRepository,
                 networkUtils,
                 new SearchDispatchers(),
-                new MapStyleConfiguration(d2)
+                new MapStyleConfiguration(d2),
+                filterRepository
         );
     }
 

@@ -1,7 +1,9 @@
 package org.dhis2.usescases.programEventDetail.eventList
 
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
@@ -15,6 +17,7 @@ class EventListPresenter(
     val eventRepository: ProgramEventDetailRepository,
     val preferences: PreferenceProvider,
     val schedulerProvider: SchedulerProvider,
+    val filterRepository: FilterRepository,
 ) {
 
     val disposable = CompositeDisposable()
@@ -27,6 +30,20 @@ class EventListPresenter(
                     schedulerProvider,
                     { view.setLiveData(it) },
                     { Timber.e(it) },
+                ),
+        )
+
+        disposable.add(
+            Observable.fromCallable {
+                program()?.uid()?.let {
+                    filterRepository.workingListFilter(it)
+                }
+            }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { workingList -> view.configureWorkingList(workingList) },
+                    { t -> Timber.e(t) },
                 ),
         )
     }

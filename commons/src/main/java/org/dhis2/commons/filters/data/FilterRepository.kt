@@ -275,6 +275,21 @@ class FilterRepository @Inject constructor(
             }.blockingGet()
     }
 
+    fun workingListFilter(programUid: String): WorkingListFilter? = try {
+        d2.programModule().programs().uid(programUid).get()
+            .map {
+                if (it.programType() ==
+                    org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
+                ) {
+                    getTrackerWorkingList(it)
+                } else {
+                    getEventWorkingList(it)
+                }
+            }.blockingGet()
+    } catch (e: Exception) {
+        null
+    }
+
     fun dashboardFilters(programUid: String): List<FilterItem> {
         return d2.programModule().programs().uid(programUid).get().map {
             getEventFilters(it, ProgramType.TRACKER)
@@ -453,16 +468,10 @@ class FilterRepository @Inject constructor(
 
     private fun getTrackerFilters(program: Program): List<FilterItem> {
         val defaultFilters = createGetDefaultTrackerFilter(program)
-        val workingListFilter = getTrackerWorkingList(program)
 
         if (webAppIsNotConfigured()) {
             if (orgUnitsCount == 1) {
                 defaultFilters.remove(ProgramFilter.ORG_UNIT)
-            }
-            if (workingListFilter != null) {
-                return defaultFilters.values.toMutableList().apply {
-                    add(0, workingListFilter)
-                }
             }
             return defaultFilters.values.toList()
         }
@@ -477,18 +486,11 @@ class FilterRepository @Inject constructor(
         val filterPreList =
             getFiltersApplyingWebAppConfig.execute(defaultFilters, trackerFiltersWebApp)
 
-        if (filterPreList.isEmpty() && workingListFilter == null) {
+        if (filterPreList.isEmpty()) {
             return mutableListOf()
         }
 
-        val filtersToShow = setupUpFollowUpFilter(program, filterPreList.toMutableList())
-
-        if (workingListFilter != null) {
-            return filtersToShow.toMutableList().apply {
-                add(0, workingListFilter)
-            }
-        }
-        return filtersToShow
+        return setupUpFollowUpFilter(program, filterPreList.toMutableList())
     }
 
     private fun setupUpFollowUpFilter(
@@ -611,18 +613,9 @@ class FilterRepository @Inject constructor(
 
     private fun getEventFilters(program: Program, programType: ProgramType): List<FilterItem> {
         val defaultFilters = createDefaultGetEventFilters(program, programType)
-        val workingListFilter = when (programType) {
-            ProgramType.EVENT -> getEventWorkingList(program)
-            else -> null
-        }
         if (webAppIsNotConfigured()) {
             if (orgUnitsCount == 1) {
                 defaultFilters.remove(ProgramFilter.ORG_UNIT)
-            }
-            if (workingListFilter != null) {
-                return defaultFilters.values.toMutableList().apply {
-                    add(0, workingListFilter)
-                }
             }
             return defaultFilters.values.toMutableList()
         }
@@ -637,15 +630,10 @@ class FilterRepository @Inject constructor(
         val filtersToShow =
             getFiltersApplyingWebAppConfig.execute(defaultFilters, eventFiltersWebApp)
 
-        if (filtersToShow.isEmpty() && workingListFilter == null) {
+        if (filtersToShow.isEmpty()) {
             return mutableListOf()
         }
 
-        if (workingListFilter != null) {
-            return filtersToShow.toMutableList().apply {
-                add(0, workingListFilter)
-            }
-        }
         return filtersToShow.toList()
     }
 
