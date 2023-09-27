@@ -24,17 +24,13 @@ data class Graph(
     val errorMessage: String? = null,
 ) {
 
-    private fun minDate() = series.minOf { serie ->
+    private fun minDate() = series.minOfOrNull { serie ->
         serie.coordinates.minOf { point -> point.eventDate }
-    }.toInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDate()
+    }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
 
-    private fun maxDate() = series.maxOf { serie ->
+    private fun maxDate() = series.maxOfOrNull { serie ->
         serie.coordinates.maxOf { point -> point.eventDate }
-    }.toInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDate()
+    }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
 
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
@@ -137,22 +133,19 @@ data class Graph(
     }
 
     fun maxValue(): Float {
-        return series.map {
-            it.coordinates.map { points -> points.fieldValue }.maxOrNull() ?: 0f
-        }.maxOrNull()
-            ?: 0f
+        return series.maxOfOrNull {
+            it.coordinates.maxOfOrNull { points -> points.fieldValue } ?: 0f
+        } ?: 0f
     }
 
     fun minValue(): Float {
-        return series.map {
-            it.coordinates.map { points -> points.fieldValue }.minOrNull() ?: 0f
-        }
-            .minOrNull()
-            ?: 0f
+        return series.minOfOrNull {
+            it.coordinates.minOfOrNull { points -> points.fieldValue } ?: 0f
+        } ?: 0f
     }
 
     private fun baseSeries(): List<SerieData> = if (chartType == ChartType.NUTRITION) {
-        listOf(series.last())
+        listOfNotNull(series.lastOrNull())
     } else {
         series
     }
