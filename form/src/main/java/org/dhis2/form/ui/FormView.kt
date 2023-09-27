@@ -279,6 +279,7 @@ class FormView : Fragment() {
             repositoryRecords = arguments?.serializable(RECORDS)
                 ?: throw RepositoryRecordsException(),
             openErrorLocation = openErrorLocation,
+            useCompose = useCompose,
             forceDisableCollapsibleSections = forceDisableCollapsibleSections,
         )
     }

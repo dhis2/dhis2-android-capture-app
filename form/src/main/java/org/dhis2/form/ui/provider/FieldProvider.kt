@@ -13,21 +13,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import org.dhis2.form.BR
 import org.dhis2.form.R
+import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
+import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
+import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
+import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
+import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
+import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
+import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
+import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
-import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
-import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
 @Composable
 internal fun FieldProvider(
@@ -42,7 +51,66 @@ internal fun FieldProvider(
 ) {
     when {
         fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.TEXT -> {
-            ProvideInputText(fieldUiModel, intentHandler, uiEventHandler)
+            ProvideInputText(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_POSITIVE -> {
+            ProvideIntegerPositive(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_ZERO_OR_POSITIVE -> {
+            ProvideIntegerPositiveOrZero(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.PERCENTAGE -> {
+            ProvidePercentage(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.NUMBER -> {
+            ProvideNumber(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_NEGATIVE -> {
+            ProvideIntegerNegative(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.LONG_TEXT -> {
+            ProvideLongText(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.LETTER -> {
+            ProvideLetter(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER -> {
+            ProvideInteger(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
         }
 
         else -> {
@@ -72,12 +140,10 @@ internal fun FieldProvider(
 private fun ProvideInputText(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }
-
     InputText(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -87,39 +153,301 @@ private fun ProvideInputText(
             fieldUiModel.focused -> InputShellState.FOCUSED
             else -> InputShellState.UNFOCUSED
         },
-        supportingText = mutableListOf<SupportingTextData>().apply {
-            fieldUiModel.error?.let {
-                add(
-                    SupportingTextData(
-                        it,
-                        SupportingTextState.ERROR,
-                    ),
-                )
-            }
-            fieldUiModel.warning?.let {
-                add(
-                    SupportingTextData(
-                        it,
-                        SupportingTextState.WARNING,
-                    ),
-                )
-            }
-            fieldUiModel.description?.let {
-                add(
-                    SupportingTextData(
-                        it,
-                        SupportingTextState.DEFAULT,
-                    ),
-                )
-            }
-        },
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend?.let {
             LegendData(Color(it.color), it.label ?: "", null)
         },
         inputText = value ?: "",
-        onNextClicked = {
-            intentHandler.invoke(FormIntent.OnNext(fieldUiModel.uid, value))
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
         },
+    )
+}
+
+@Composable
+private fun ProvideIntegerPositive(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPositiveInteger(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideIntegerPositiveOrZero(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPositiveIntegerOrZero(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvidePercentage(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPercentage(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideNumber(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputNumber(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
+    )
+}
+
+@Composable
+private fun ProvideIntegerNegative(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value?.replace("-", ""))
+    }
+
+    InputNegativeInteger(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    "-$value",
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideLongText(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputLongText(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        imeAction = ImeAction.Default,
+    )
+}
+
+@Composable
+private fun ProvideLetter(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputLetter(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideInteger(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputInteger(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
         onValueChanged = {
             value = it
             intentHandler(
