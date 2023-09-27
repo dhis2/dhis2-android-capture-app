@@ -18,6 +18,7 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
+import org.dhis2.commons.filters.WorkingListFilter
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
