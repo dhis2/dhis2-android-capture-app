@@ -33,7 +33,7 @@
             android:background="@color/white"
             android:orientation="vertical"
             android:paddingTop="8dp"
-            android:paddingBottom="@dimen/default_top_margin">
+            android:paddingBottom="98dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/settingsItemData"
