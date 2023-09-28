@@ -6,7 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -103,9 +105,13 @@ fun Form(
                                 uiEventHandler = uiEventHandler,
                                 intentHandler = intentHandler,
                             )
+                            Spacer(modifier = Modifier.height(24.dp))
                         }
                     },
                 )
+            }
+            item(sections.size - 1) {
+                Spacer(modifier = Modifier.height(120.dp))
             }
         }
     }
