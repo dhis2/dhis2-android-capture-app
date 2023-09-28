@@ -75,7 +75,7 @@ class StockManagerImpl @Inject constructor(
             .also { teiRepository = it }
 
         val dataSource: DataSource<TrackedEntityInstance, StockItem> = teiRepository.dataSource
-            .mapByPage(this::filterDeleted)
+            .mapByPage { filterDeleted(it.toMutableList()) }
             .mapByPage { transform(it, config) }
 
         val totalCount = teiRepository.blockingCount()
