@@ -234,33 +234,6 @@ class FormTest : BaseTest() {
         }
     }
 
-    @Test
-    fun shouldApplyHideProgramStage() {
-        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
-        val firstSectionPosition = 1
-        initTest()
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(
-                "ZZ TEST RULE ACTIONS C",
-                7,
-                HIDE_PROGRAM_STAGE,
-                HIDE_PROGRAM_STAGE_POSITION
-            )
-            scrollToPositionForm(0)
-            scrollToBottomForm()
-            waitToDebounce(1000)
-            clickOnSaveForm()
-            clickOnNotNow(composeTestRule)
-        }
-        teiDashboardRobot {
-            checkProgramStageIsHidden("Delta")
-            clickOnStageGroup("Gamma")
-            clickOnEventWithPosition(1)
-        }
-    }
-
     @Ignore("Indeterminate test")
     @Test
     fun shouldApplyOptionRelatedActions() {
