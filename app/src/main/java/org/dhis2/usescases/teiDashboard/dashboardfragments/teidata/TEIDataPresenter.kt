@@ -189,7 +189,7 @@ class TEIDataPresenter(
                         )
                     }, Timber.Forest::e),
             )
-            eventsWithoutCatCombo
+            getEventsWithoutCatCombo()
             compositeDisposable.add(
                 FilterManager.getInstance().catComboRequest
                     .subscribeOn(schedulerProvider.io())
@@ -273,19 +273,18 @@ class TEIDataPresenter(
         return events
     }
 
-    @get:VisibleForTesting
-    val eventsWithoutCatCombo: Unit
-        get() {
-            compositeDisposable.add(
-                teiDataRepository.eventsWithoutCatCombo()
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        view::displayCatComboOptionSelectorForEvents,
-                        Timber.Forest::e,
-                    ),
-            )
-        }
+    @VisibleForTesting
+    fun getEventsWithoutCatCombo() {
+        compositeDisposable.add(
+            teiDataRepository.eventsWithoutCatCombo()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    view::displayCatComboOptionSelectorForEvents,
+                    Timber.Forest::e,
+                ),
+        )
+    }
 
     fun changeCatOption(eventUid: String?, catOptionComboUid: String?) {
         dashboardRepository.saveCatOption(eventUid, catOptionComboUid)
@@ -538,10 +537,9 @@ class TEIDataPresenter(
         return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it) } ?: emptyList()
     }
 
-    val newEventOptionsByTimeline: List<DialItem>
-        get() {
-            val options = programUid?.let { getNewEventCreationTypeOptions.invoke(null, it) }
-            return options?.let { eventCreationOptionsMapper.mapToEventsByTimeLine(it) }
-                ?: emptyList()
-        }
+    fun newEventOptionsByTimeline(): List<DialItem> {
+        val options = programUid?.let { getNewEventCreationTypeOptions.invoke(null, it) }
+        return options?.let { eventCreationOptionsMapper.mapToEventsByTimeLine(it) }
+            ?: emptyList()
+    }
 }

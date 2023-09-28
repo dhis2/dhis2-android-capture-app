@@ -148,7 +148,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     private fun updateFabItems() {
-        val dialItems = presenter.newEventOptionsByTimeline
+        val dialItems = presenter.newEventOptionsByTimeline()
         binding.dialFabLayout.addDialItems(dialItems) { clickedId: Int? ->
             when (clickedId) {
                 REFERAL_ID -> createEvent(EventCreationType.REFERAL, 0)
