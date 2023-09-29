@@ -253,7 +253,7 @@ fun D2.period(periodId: String) = periodModule().periods()
     .blockingGet()
 
 fun D2.allowCollapsableSectionsInProgram(programUid: String): Boolean? {
-    val globalSettingEnabled: Boolean? =
+    /*val globalSettingEnabled: Boolean? =
         settingModule().appearanceSettings()
             .globalProgramConfigurationSetting
             ?.collapsibleSections()
@@ -267,5 +267,6 @@ fun D2.allowCollapsableSectionsInProgram(programUid: String): Boolean? {
         specificSettingEnabled == true -> true
         globalSettingEnabled != null && specificSettingEnabled != null -> false
         else -> null
-    }
+    }*/
+    return true
 }
