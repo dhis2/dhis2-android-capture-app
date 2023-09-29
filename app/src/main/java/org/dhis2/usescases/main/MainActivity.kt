@@ -569,9 +569,9 @@ class MainActivity :
             confirmButton = ButtonUiModel(
                 getString(R.string.download_now),
                 onClick = {
-                    if(hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
+                    if (hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
                         onDownloadNewVersion()
-                    }else{
+                    } else {
                         requestWritePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     }
                 },
@@ -579,7 +579,7 @@ class MainActivity :
         ).show(supportFragmentManager)
     }
 
-    private fun onDownloadNewVersion(){
+    private fun onDownloadNewVersion() {
         presenter.downloadVersion(
             context = context,
             onDownloadCompleted = ::installAPK,
