@@ -5,7 +5,7 @@ import org.dhis2.commons.filters.sorting.FilteredOrgUnitResult
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
 import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
 import javax.inject.Inject
 
 const val ORG_UNT_FILTER_MIN_CHAR = 3
@@ -35,13 +35,13 @@ class FilterPresenter @Inject constructor(
         return eventProgramFilterSearchHelper.getFilteredEventRepository(program)
     }
 
-    fun filteredTrackerProgram(program: Program): TrackedEntityInstanceQueryCollectionRepository {
+    fun filteredTrackerProgram(program: Program): TrackedEntitySearchCollectionRepository {
         return trackerFilterSearchHelper.getFilteredProgramRepository(program.uid())
     }
 
     fun filteredTrackedEntityTypes(
         trackedEntityTypeUid: String,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return trackerFilterSearchHelper
             .getFilteredTrackedEntityTypeRepository(trackedEntityTypeUid)
     }
@@ -49,7 +49,7 @@ class FilterPresenter @Inject constructor(
     fun filteredTrackedEntityInstances(
         program: Program?,
         trackedEntityTypeUid: String,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return program?.let { filteredTrackerProgram(program) }
             ?: filteredTrackedEntityTypes(trackedEntityTypeUid)
     }

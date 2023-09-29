@@ -40,7 +40,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.settings.DataSetFilter
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
 import javax.inject.Inject
 
 class FilterRepository @Inject constructor(
@@ -66,15 +66,15 @@ class FilterRepository @Inject constructor(
 
     fun trackedEntityInstanceQueryByProgram(
         programUid: String,
-    ): TrackedEntityInstanceQueryCollectionRepository {
-        return d2.trackedEntityModule().trackedEntityInstanceQuery()
+    ): TrackedEntitySearchCollectionRepository {
+        return d2.trackedEntityModule().trackedEntitySearch()
             .byProgram().eq(programUid)
     }
 
     fun trackedEntityInstanceQueryByType(
         trackedEntityTypeUid: String,
-    ): TrackedEntityInstanceQueryCollectionRepository {
-        return d2.trackedEntityModule().trackedEntityInstanceQuery()
+    ): TrackedEntitySearchCollectionRepository {
+        return d2.trackedEntityModule().trackedEntitySearch()
             .byTrackedEntityType().eq(trackedEntityTypeUid)
     }
 
@@ -85,16 +85,16 @@ class FilterRepository @Inject constructor(
     }
 
     fun applyEnrollmentStatusFilter(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         enrollmentStatuses: List<EnrollmentStatus>,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byEnrollmentStatus().`in`(enrollmentStatuses)
     }
 
     fun applyEventStatusFilter(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         eventStatuses: List<EventStatus>,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byEventStatus().`in`(eventStatuses)
     }
 
@@ -115,72 +115,72 @@ class FilterRepository @Inject constructor(
     }
 
     fun applyOrgUnitFilter(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         ouMode: OrganisationUnitMode,
         orgUnitUis: List<String>,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byOrgUnitMode().eq(ouMode)
             .byOrgUnits().`in`(orgUnitUis)
     }
 
     fun applyStateFilter(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         states: List<State>,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byStates().`in`(states)
     }
 
     fun applyDateFilter(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         datePeriod: DatePeriod,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byEventDate().inDatePeriod(datePeriod)
     }
 
     fun applyEnrollmentDateFilter(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         datePeriod: DatePeriod,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byProgramDate().inDatePeriod(datePeriod)
     }
 
     fun applyAssignToMe(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        repository: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byAssignedUserMode().eq(AssignedUserMode.CURRENT)
     }
 
     fun applyFollowUp(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        repository: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return repository.byFollowUp().isTrue
     }
 
     fun sortByPeriod(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         orderDirection: RepositoryScope.OrderByDirection,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.orderByEventDate().eq(orderDirection)
     }
 
     fun sortByOrgUnit(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         orderDirection: RepositoryScope.OrderByDirection,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.orderByOrganisationUnitName().eq(orderDirection)
     }
 
     fun sortByEnrollmentDate(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         orderDirection: RepositoryScope.OrderByDirection,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.orderByEnrollmentDate().eq(orderDirection)
     }
 
     fun sortByEnrollmentStatus(
-        repository: TrackedEntityInstanceQueryCollectionRepository,
+        repository: TrackedEntitySearchCollectionRepository,
         orderDirection: RepositoryScope.OrderByDirection,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return repository.orderByEnrollmentStatus().eq(orderDirection)
     }
 
@@ -735,9 +735,9 @@ class FilterRepository @Inject constructor(
     }
 
     fun applyWorkingList(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository,
+        teiQuery: TrackedEntitySearchCollectionRepository,
         currentWorkingList: WorkingListItem?,
-    ): TrackedEntityInstanceQueryCollectionRepository {
+    ): TrackedEntitySearchCollectionRepository {
         return currentWorkingList?.let {
             when (it) {
                 is EventWorkingList ->
