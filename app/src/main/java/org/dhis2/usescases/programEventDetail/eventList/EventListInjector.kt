@@ -5,7 +5,6 @@ import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
@@ -27,7 +26,6 @@ class EventListModule(
         programEventDetailRepository: ProgramEventDetailRepository,
         preferences: PreferenceProvider,
         schedulers: SchedulerProvider,
-        filterRepository: FilterRepository,
     ): EventListPresenter {
         return EventListPresenter(
             view,
@@ -35,7 +33,6 @@ class EventListModule(
             programEventDetailRepository,
             preferences,
             schedulers,
-            filterRepository,
         )
     }
 }

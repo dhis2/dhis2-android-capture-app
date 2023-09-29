@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -75,23 +76,27 @@ class WorkingListChipGroup @JvmOverloads constructor(
 @Composable
 fun WorkingListChipGroup(
     modifier: Modifier = Modifier,
-    workingListFilter: WorkingListFilter,
+    workingListViewModel: WorkingListViewModel,
 ) {
+    val workingListFilterState = workingListViewModel.workingListFilter.observeAsState()
     var selectedWorkingList by remember { mutableStateOf<WorkingListItem?>(null) }
-    LazyRow(modifier) {
-        items(workingListFilter.workingLists) { workingList ->
-            Chip(
-                modifier = Modifier.padding(end = Spacing.Spacing8),
-                label = workingList.label,
-                selected = selectedWorkingList == workingList,
-                onSelected = { _ -> workingListFilter.onChecked(workingList.id()) },
-            )
-        }
-    }
-    workingListFilter.observeScope()
-        .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                selectedWorkingList = FilterManager.getInstance().currentWorkingList()
+
+    workingListFilterState.value?.let { workingListFilter ->
+        LazyRow(modifier) {
+            items(workingListFilter.workingLists) { workingList ->
+                Chip(
+                    modifier = Modifier.padding(end = Spacing.Spacing8),
+                    label = workingList.label,
+                    selected = selectedWorkingList == workingList,
+                    onSelected = { _ -> workingListFilter.onChecked(workingList.id()) },
+                )
             }
-        })
+        }
+        workingListFilter.observeScope()
+            .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                    selectedWorkingList = FilterManager.getInstance().currentWorkingList()
+                }
+            })
+    }
 }

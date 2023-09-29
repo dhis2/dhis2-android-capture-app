@@ -11,6 +11,7 @@ import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
@@ -245,9 +246,7 @@ public class SearchTEModule {
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
-            D2 d2,
-            FilterRepository filterRepository
-    ) {
+            D2 d2) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
                 new SearchPageConfigurator(searchRepository),
@@ -256,8 +255,7 @@ public class SearchTEModule {
                 mapDataRepository,
                 networkUtils,
                 new SearchDispatchers(),
-                new MapStyleConfiguration(d2),
-                filterRepository
+                new MapStyleConfiguration(d2)
         );
     }
 
@@ -292,5 +290,13 @@ public class SearchTEModule {
             ResourceManager resourceManager
     ) {
         return new TEICardMapper(context, resourceManager);
+    }
+
+    @Provides
+    @PerActivity
+    WorkingListViewModelFactory provideWorkingListViewModelFactory(
+            FilterRepository filterRepository
+    ) {
+        return new WorkingListViewModelFactory(initialProgram, filterRepository);
     }
 }

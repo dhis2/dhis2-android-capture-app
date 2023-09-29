@@ -8,14 +8,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
-import org.dhis2.commons.filters.WorkingListFilter
 import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
+import org.dhis2.commons.filters.workingLists.WorkingListViewModel
+import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -43,6 +45,9 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
     @Inject
     lateinit var cardMapper: EventCardMapper
+
+    @Inject
+    lateinit var workingListViewModelFactory: WorkingListViewModelFactory
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,6 +86,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
             .apply {
                 binding = this
                 recycler.adapter = liveAdapter
+                configureWorkingList()
             }.root
     }
 
@@ -108,15 +114,14 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
         }
     }
 
-    override fun configureWorkingList(workingListFilter: WorkingListFilter?) {
+    private fun configureWorkingList() {
         binding.filterLayout.apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
-                workingListFilter?.let {
-                    WorkingListChipGroup(Modifier.padding(Spacing.Spacing16), it)
-                }
+                val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
+                WorkingListChipGroup(Modifier.padding(Spacing.Spacing16), workingListViewModel)
             }
         }
     }

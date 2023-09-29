@@ -18,12 +18,15 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
+import org.dhis2.commons.filters.workingLists.WorkingListViewModel
+import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -49,12 +52,17 @@ class SearchTEList : FragmentGlobalAbstract() {
     lateinit var viewModelFactory: SearchTeiViewModelFactory
 
     @Inject
+    lateinit var workingListViewModelFactory: WorkingListViewModelFactory
+
+    @Inject
     lateinit var colorUtils: ColorUtils
 
     @Inject
     lateinit var teiCardMapper: TEICardMapper
 
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
+
+    private val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
 
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
@@ -236,19 +244,16 @@ class SearchTEList : FragmentGlobalAbstract() {
             )
             setContent {
                 val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
-                val workingListFilter = viewModel.workingListFilter.observeAsState()
-                workingListFilter.value?.let {
-                    WorkingListChipGroup(
-                        Modifier
-                            .background(SurfaceColor.SurfaceBright)
-                            .padding(
-                                top = if (isScrollingDown) Spacing.Spacing16 else Spacing.Spacing0,
-                                start = Spacing.Spacing16,
-                                bottom = Spacing.Spacing16,
-                            ),
-                        it,
-                    )
-                }
+                WorkingListChipGroup(
+                    Modifier
+                        .background(SurfaceColor.SurfaceBright)
+                        .padding(
+                            top = if (isScrollingDown) Spacing.Spacing16 else Spacing.Spacing0,
+                            start = Spacing.Spacing16,
+                            bottom = Spacing.Spacing16,
+                        ),
+                    workingListViewModel,
+                )
             }
         }
     }
@@ -283,7 +288,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun updateRecycler() {
-        val paddingTop = if (viewModel.workingListFilter.value != null) 130.dp else 80.dp
+        val paddingTop = if (workingListViewModel.workingListFilter.value != null) 130.dp else 80.dp
         recycler.setPaddingRelative(
             0,
             when {

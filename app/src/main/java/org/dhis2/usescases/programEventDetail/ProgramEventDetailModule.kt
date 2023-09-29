@@ -12,6 +12,7 @@ import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
+import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -162,5 +163,13 @@ class ProgramEventDetailModule(
         resourceManager: ResourceManager,
     ): EventCardMapper {
         return EventCardMapper(context, resourceManager)
+    }
+
+    @Provides
+    @PerActivity
+    fun provideWorkingListViewModelFactory(
+        filterRepository: FilterRepository,
+    ): WorkingListViewModelFactory {
+        return WorkingListViewModelFactory(programUid, filterRepository)
     }
 }
