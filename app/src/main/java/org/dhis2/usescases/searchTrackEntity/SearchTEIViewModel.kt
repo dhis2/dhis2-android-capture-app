@@ -9,8 +9,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.data.SearchTeiModel
-import org.dhis2.commons.filters.WorkingListFilter
-import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -36,7 +34,6 @@ class SearchTEIViewModel(
     private val networkUtils: NetworkUtils,
     private val dispatchers: DispatcherProvider,
     private val mapStyleConfig: MapStyleConfiguration,
-    private val filterRepository: FilterRepository,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -73,18 +70,12 @@ class SearchTEIViewModel(
     private val _filtersOpened = MutableLiveData(false)
     val filtersOpened: LiveData<Boolean> = _filtersOpened
 
-    private val _workingListFilter = MutableLiveData<WorkingListFilter?>()
-    val workingListFilter: LiveData<WorkingListFilter?> = _workingListFilter
-
     init {
         viewModelScope.launch(dispatchers.io()) {
             createButtonScrollVisibility.postValue(
                 searchRepository.canCreateInProgramWithoutSearch(),
             )
             _pageConfiguration.postValue(searchNavPageConfigurator.initVariables())
-            initialProgramUid?.let {
-                _workingListFilter.postValue(filterRepository.workingListFilter(it))
-            }
         }
     }
 
