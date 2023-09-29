@@ -112,16 +112,16 @@ class EventRepository(
         val de = d2.dataElementModule().dataElements().uid(
             programStageDataElement.dataElement()!!.uid(),
         ).blockingGet()
-        val valueRepository =
-            d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de?.uid())
-        val programStageSection: ProgramStageSection? = sectionMap.values.firstOrNull { section ->
-            section.dataElements()?.map { it.uid() }?.contains(de?.uid()) ?: false
-        }
         val uid = de?.uid() ?: ""
         val displayName = de?.displayName() ?: ""
         val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false
         val optionSet = de?.optionSetUid()
+        val valueRepository =
+            d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid)
+        val programStageSection: ProgramStageSection? = sectionMap.values.firstOrNull { section ->
+            section.dataElements()?.map { it.uid() }?.contains(de?.uid()) ?: false
+        }
         var dataValue = when {
             valueRepository.blockingExists() -> valueRepository.blockingGet()?.value()
             else -> null

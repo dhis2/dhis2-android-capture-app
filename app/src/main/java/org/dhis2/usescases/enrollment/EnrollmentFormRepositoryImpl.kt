@@ -119,14 +119,14 @@ class EnrollmentFormRepositoryImpl(
                         d2.trackedEntityModule().trackedEntityAttributeValues()
                             .value(
                                 it.trackedEntityAttribute()!!.uid(),
-                                enrollmentRepository.blockingGet()?.trackedEntityInstance(),
+                                enrollmentRepository.blockingGet()?.trackedEntityInstance()!!,
                             )
                             .blockingExists()
                     }.mapNotNull {
                         d2.trackedEntityModule().trackedEntityAttributeValues()
                             .value(
                                 it.trackedEntityAttribute()!!.uid(),
-                                enrollmentRepository.blockingGet()?.trackedEntityInstance(),
+                                enrollmentRepository.blockingGet()?.trackedEntityInstance()!!,
                             )
                             .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
                     }.toRuleAttributeValue(d2, program.uid())

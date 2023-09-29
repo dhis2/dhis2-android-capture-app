@@ -87,14 +87,14 @@ class EnrollmentRuleEngineRepository(
                 d2.trackedEntityModule().trackedEntityAttributeValues()
                     .value(
                         it.trackedEntityAttribute()!!.uid(),
-                        enrollment.trackedEntityInstance(),
+                        enrollment.trackedEntityInstance()!!,
                     )
                     .blockingExists()
             }.mapNotNull {
                 d2.trackedEntityModule().trackedEntityAttributeValues()
                     .value(
                         it.trackedEntityAttribute()!!.uid(),
-                        enrollment.trackedEntityInstance(),
+                        enrollment.trackedEntityInstance()!!,
                     )
                     .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
             }.toRuleAttributeValue(d2, program.uid())
