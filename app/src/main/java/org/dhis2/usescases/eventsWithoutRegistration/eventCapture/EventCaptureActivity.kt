@@ -11,6 +11,7 @@ import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -18,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
+import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
@@ -26,17 +28,23 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.ThemeManager
+import org.dhis2.utils.isPortrait
+import org.dhis2.utils.isLandscape
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventTEIDetails.EventTeiDetailsFragment
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.teiDashboard.DashboardProgramModel
+import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.CLICK
@@ -51,6 +59,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import javax.inject.Inject
 
+
 const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
 
 class EventCaptureActivity :
@@ -63,6 +72,13 @@ class EventCaptureActivity :
     @JvmField
     @Inject
     var presenter: EventCaptureContract.Presenter? = null
+
+    var programStageUid: String? = null
+
+    var enrollmentUid: String? = null
+    var teiUid: String? = null
+
+    private var dashboardViewModel: DashboardViewModel? = null
 
     @JvmField
     @Inject
@@ -87,8 +103,25 @@ class EventCaptureActivity :
             EventCaptureModule(
                 this,
                 eventUid,
+                    isPortrait()
             ),
         )
+
+        teiUid = intent.getStringExtra(Constants.TEI_UID)
+
+        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
+
+        programUid = intent.getStringExtra(Constants.PROGRAM_UID)
+
+        programStageUid = intent.getStringExtra(Constants.PROGRAM_STAGE_UID)
+
+        // TODO: fails due to lack of dynamism
+//        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+
+
+        // TODO: fails due to lack of dynamism
+//        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+
         eventCaptureComponent!!.inject(this)
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
@@ -102,7 +135,20 @@ class EventCaptureActivity :
             }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter(navigationInitialPage)
+        presenter!!.programStageUid();
         setUpNavigationBar(navigationInitialPage)
+        setUpViewPagerAdapter(navigationInitialPage)
+
+        if (isLandscape()) {
+            val stageUid: String = presenter!!.programStageUidString
+            if (stageUid != null) {
+                programStageUid = stageUid
+            }
+            dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel::class.java)
+            supportFragmentManager.beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid)).commitAllowingStateLoss()
+            supportFragmentManager.beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, eventUid, programStageUid, HashSet<E>() //                    setOfAttributeNames
+            )).commitAllowingStateLoss()
+        }
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
@@ -114,40 +160,90 @@ class EventCaptureActivity :
     }
 
     private fun setUpViewPagerAdapter(initialPage: Int) {
-        binding!!.eventViewPager.isUserInputEnabled = false
-        adapter = EventCapturePagerAdapter(
-            this,
-            intent.getStringExtra(Constants.PROGRAM_UID),
-            intent.getStringExtra(Constants.EVENT_UID),
-            pageConfigurator!!.displayAnalytics(),
-            pageConfigurator!!.displayRelationships(),
-            intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
-        )
-        binding!!.eventViewPager.adapter = adapter
-        binding!!.eventViewPager.setCurrentItem(initialPage, false)
-        binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                if (position == 0 && eventMode !== EventMode.NEW) {
-                    binding!!.syncButton.visibility = View.VISIBLE
-                } else {
-                    binding!!.syncButton.visibility = View.GONE
+        if (isLandscape()) {
+            binding!!.eventViewLandPager.setUserInputEnabled(false)
+            binding!!.eventViewLandPager.setAdapter(null)
+            adapter = EventCapturePagerAdapter(this, intent.getStringExtra(PROGRAM_UID), intent.getStringExtra(Constants.EVENT_UID), pageConfigurator!!.displayAnalytics(), pageConfigurator!!.displayRelationships(), false, teiUid, enrollmentUid)
+            binding!!.eventViewLandPager.setAdapter(adapter)
+            binding!!.eventViewLandPager.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
+            ViewExtensionsKt.clipWithRoundedCorners(binding!!.layoutContainer, ExtensionsKt.getDp(16))
+            binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    if (position == 0 && eventMode !== EventMode.NEW) {
+                        binding!!.syncButton.visibility = View.VISIBLE
+                    } else {
+                        binding!!.syncButton.visibility = View.GONE
+                    }
+                    if (position != 1) {
+                        hideProgress()
+                    }
                 }
-                if (position != 1) {
-                    hideProgress()
+            })
+        } else {
+            binding!!.eventViewPager.isUserInputEnabled = false
+            binding!!.eventViewPager.adapter = null
+
+            // TODO: refactor the null parameters passed
+            adapter = EventCapturePagerAdapter(
+                    this,
+                    intent.getStringExtra(Constants.PROGRAM_UID),
+                    intent.getStringExtra(Constants.EVENT_UID),
+                    pageConfigurator!!.displayAnalytics(),
+                    pageConfigurator!!.displayRelationships(),
+                    intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
+            )
+
+            binding!!.eventViewPager.adapter = adapter
+            binding!!.eventViewPager.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
+            ViewExtensionsKt.clipWithRoundedCorners(binding!!.eventViewPager, ExtensionsKt.getDp(16))
+            binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    if (position == 0 && eventMode !== EventMode.NEW) {
+                        binding!!.syncButton.visibility = View.VISIBLE
+                    } else {
+                        binding!!.syncButton.visibility = View.GONE
+                    }
+                    if (position != 1) {
+                        hideProgress()
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     private fun setUpNavigationBar(initialPage: Int) {
         binding!!.navigationBar.setInitialPage(initialPage)
         binding!!.navigationBar.pageConfiguration(pageConfigurator!!)
-        binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
-            binding!!.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+        binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem -> run {
+            if (OrientationUtilsKt.isLandscape(this)) {
+                binding!!.eventViewLandPager.setCurrentItem(adapter!!.getDynamicTabIndex(item.itemId))
+            } else {
+                binding!!.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+            }
+        }
+
             true
         }
     }
+
+    fun restoreAdapter(programUid: String?, eventUid: String?) {
+        adapter = null
+        this.programUid = programUid
+        this.eventUid = eventUid
+        presenter!!.init()
+    }
+
+    override fun onPause() {
+        presenter!!.onDettach()
+        super.onPause()
+    }
+
+    override fun preselectStage(programStageUid: String?) {}
+
+
+    override fun setData(program: DashboardProgramModel?) {}
 
     fun openDetails() {
         binding?.navigationBar?.selectItemAt(0)
@@ -232,27 +328,62 @@ class EventCaptureActivity :
         emptyMandatoryFields: Map<String, String>,
         eventCompletionDialog: EventCompletionDialog,
     ) {
-        if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
-            val dialog = BottomSheetDialog(
-                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                onMainButtonClicked = {
-                    setAction(eventCompletionDialog.mainButtonAction)
-                },
-                onSecondaryButtonClicked = {
-                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                },
-                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                    { bottomSheetDialog ->
-                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                            bottomSheetDialog.dismiss()
-                        }
-                    }
-                } else {
-                    null
-                },
-            )
-            dialog.show(supportFragmentManager, SHOW_OPTIONS)
+        if (isPortrait()) {
+            if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
+                val dialog = BottomSheetDialog(
+                        bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                        onMainButtonClicked = {
+                            setAction(eventCompletionDialog.mainButtonAction)
+                        },
+                        onSecondaryButtonClicked = {
+                            eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+                        },
+                        content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                            { bottomSheetDialog ->
+                                ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                                    bottomSheetDialog.dismiss()
+                                }
+                            }
+                        } else {
+                            null
+                        },
+                )
+                dialog.show(supportFragmentManager, SHOW_OPTIONS)
+            }
         }
+
+            if (isLandscape()) {
+                if (
+                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_data_entry ||
+                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_details ||
+                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_analytics ||
+                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_notes
+                ) {
+                    if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
+                        val dialog = BottomSheetDialog(
+                                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                                onMainButtonClicked = {
+                                    setAction(eventCompletionDialog.mainButtonAction)
+                                },
+                                onSecondaryButtonClicked = {
+                                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+                                },
+                                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                                    { bottomSheetDialog ->
+                                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                                            bottomSheetDialog.dismiss()
+                                        }
+                                    }
+                                } else {
+                                    null
+                                },
+                        )
+                        dialog.show(supportFragmentManager, SHOW_OPTIONS)
+                        EventCaptureFormFragment.getBinding().progress.setVisibility(View.GONE);
+                        EventCaptureFormFragment.getBinding().actionButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
     }
 
     override fun SaveAndFinish() {
@@ -266,7 +397,12 @@ class EventCaptureActivity :
             .setIsExpired(presenter!!.hasExpired())
             .setSkip(true)
             .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
-            .show(supportFragmentManager, SHOW_OPTIONS)
+            .show(supportFragmentManager, SHOW_OPTIONS);
+    }
+
+    fun executeRules() {
+        val fragement: EventTeiDetailsFragment? = supportFragmentManager.findFragmentById(R.id.tei_column) as EventTeiDetailsFragment?
+        fragement.onResume()
     }
 
     override fun attemptToReschedule() {
@@ -421,7 +557,9 @@ class EventCaptureActivity :
     }
 
     override fun hideNavigationBar() {
-        binding!!.navigationBar.hide()
+        if (isPortrait()) {
+            binding!!.navigationBar.hide()
+        }
     }
 
     override fun relationshipMap(): LiveData<Boolean> {
@@ -451,12 +589,25 @@ class EventCaptureActivity :
         private const val SHOW_OPTIONS = "SHOW_OPTIONS"
 
         @JvmStatic
-        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode): Bundle {
+        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode, teiUid: String?, enrollmentUid: String?): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.EVENT_UID, eventUid)
             bundle.putString(Constants.PROGRAM_UID, programUid)
             bundle.putSerializable(Constants.EVENT_MODE, eventMode)
+
+            if (teiUid != null) {
+                bundle.putString(Constants.TEI_UID, teiUid);
+            }
+
+            if (enrollmentUid != null) {
+
+                bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
+            }
             return bundle
+        }
+
+        fun onSaveInstanceState(savedInstanceState: Bundle?) {
+            super.onSaveInstanceState(savedInstanceState)
         }
 
         fun intent(

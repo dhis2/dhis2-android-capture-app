@@ -61,7 +61,23 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import androidx.fragment.app.Fragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
+import org.dhis2.commons.Constants;
+import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.form.model.EnrollmentMode;
+import org.dhis2.form.model.EnrollmentRecords;
+import org.dhis2.form.ui.FormView;
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.TeiEventCaptureFormFragment;
 import org.jetbrains.annotations.NotNull;
+import java.util.List;
+import javax.inject.Provider;
 
 import javax.inject.Inject;
 
@@ -73,6 +89,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public static final int OVERVIEW_POS = 0;
 
     private int currentOrientation = -1;
+
+    private FormView formView;
 
     @Inject
     public TeiDashboardContracts.Presenter presenter;
@@ -97,6 +115,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     ActivityDashboardMobileBinding binding;
     protected DashboardPagerAdapter adapter;
+
+    public TeiDashboardComponent teiDashboardComponent;
+    private OnEditionListener onEditionListener;
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
@@ -135,7 +156,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait(this))).inject(this);
+        teiDashboardComponent = ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait(this)));
+        teiDashboardComponent.inject(this);
         setTheme(themeManager.getProgramTheme());
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
@@ -222,8 +244,82 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             openSyncDialog();
         });
 
+
+        if (OrientationUtilsKt.isLandscape()) {
+            formView = new FormView.Builder().locationProvider(locationProvider).onItemChangeListener(action -> {
+                        presenter.updateEnrollmentFields(action);
+
+                        // TODO : investigate the return
+                        return Unit.INSTANCE;
+                    }).onLoadingListener(loading -> {
+                        if (loading) {
+                            // TODO : activity.showProgress();
+                        } else {// TODO : activity.hideProgress();
+                        }
+                        return Unit.INSTANCE;
+                    })
+                    .onFinishDataEntry(
+                            () -> presenter.fininshEnrollmentDataEntry()
+                    )
+                    .resultDialogUiProvider(new EnrollmentResultDialogUiProvider(new ResourceManager(this.getContext())))
+                    .factory(getSupportFragmentManager()).setRecords(new EnrollmentRecords(enrollmentUid, EnrollmentMode.NEW)).build();
+
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.tei_form_view, formView)
+                    .commitAllowingStateLoss();
+
+            // logics for a save FAB button on enrollment data
+            FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.saveLand);
+
+            saveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    formView.onSaveClick();
+//                    showToast(getString(R.string.saved));
+                }
+            });
+        }
+
+        if (OrientationUtilsKt.isLandscape()) {
+            ViewExtensionsKt.clipWithRoundedCorners(binding.mainView, ExtensionsKt.getDp(16));
+        }
+
         if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
             openSyncDialog();
+        }
+    }
+
+
+    public void showProgress() {
+    }
+
+    public void hideProgress() {
+    }
+
+    public void hideNavigationBar() {
+    }
+
+    public void updatePercentage(float primaryValue) {
+    }
+
+    public void setFormEditionListener(OnEditionListener onEditionListener) {
+        this.onEditionListener = onEditionListener;
+    }
+
+    public String getEnrollmentUid() {
+        return enrollmentUid;
+    }
+
+    public void openEventForm(String eventUidFromFragment) {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof FormView) {
+//                getSupportFragmentManager().beginTransaction().replace(fragment.getId(), EventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction().replace(fragment.getId(), TeiEventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
+
+            }
         }
     }
 

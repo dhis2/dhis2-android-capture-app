@@ -16,10 +16,12 @@ import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
+import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.util.Date
+
 
 class EventCapturePresenterImpl(
     private val view: EventCaptureContract.View,
@@ -28,6 +30,7 @@ class EventCapturePresenterImpl(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog,
+//    dashboardProgramModel: DashboardProgramModel,
 ) : ViewModel(), EventCaptureContract.Presenter {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -159,6 +162,17 @@ class EventCapturePresenterImpl(
 
     override fun isEnrollmentOpen(): Boolean {
         return eventCaptureRepository.isEnrollmentOpen
+    }
+
+    override fun programStageUid() {
+        compositeDisposable.add(eventCaptureRepository.programStage().subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        { result: String? -> view.preselectStage(result) }) { t: Throwable? -> Timber.e(t) })
+    }
+
+    override fun getProgramStageUidString(): String? {
+        return eventCaptureRepository.programStageUid
     }
 
     override fun completeEvent(addNew: Boolean) {

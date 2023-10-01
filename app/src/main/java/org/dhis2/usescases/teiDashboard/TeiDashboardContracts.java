@@ -3,6 +3,8 @@ package org.dhis2.usescases.teiDashboard;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.dhis2.form.model.RowAction;
+import kotlin.Unit;
 
 public class TeiDashboardContracts {
 
@@ -15,6 +17,11 @@ public class TeiDashboardContracts {
         void goToEnrollmentList();
 
         void restoreAdapter(String programUid);
+
+
+        Unit updateEnrollmentFields(RowAction action);
+
+        Unit fininshEnrollmentDataEntry();
 
         void handleTeiDeletion();
 

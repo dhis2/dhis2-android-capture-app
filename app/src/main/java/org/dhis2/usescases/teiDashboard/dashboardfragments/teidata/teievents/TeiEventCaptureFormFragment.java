@@ -1,12 +1,10 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents;
 
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt.OPEN_ERROR_LOCATION;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,69 +16,61 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
-import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormModule;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormView;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
 import kotlin.Unit;
 
-public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView,
+public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView,
         OnEditionListener {
 
     @Inject
     EventCaptureFormPresenter presenter;
 
-    @Inject
-    FeatureConfigRepository featureConfig;
-
-    private EventCaptureActivity activity;
-    private static SectionSelectorFragmentBinding binding;
+    private TeiDashboardMobileActivity activity;
+    private SectionSelectorFragmentBinding binding;
     private FormView formView;
 
-    public static EventCaptureFormFragment newInstance(String eventUid, Boolean openErrorSection) {
-        EventCaptureFormFragment fragment = new EventCaptureFormFragment();
+    public static TeiEventCaptureFormFragment newInstance(String eventUid) {
+        TeiEventCaptureFormFragment fragment = new TeiEventCaptureFormFragment();
         Bundle args = new Bundle();
         args.putString(Constants.EVENT_UID, eventUid);
-        args.putBoolean(OPEN_ERROR_LOCATION, openErrorSection);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public static SectionSelectorFragmentBinding getBinding() {
-        return binding;
     }
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        this.activity = (EventCaptureActivity) context;
-        activity.eventCaptureComponent.plus(
-                new EventCaptureFormModule(
-                        this,
-                        getArguments().getString(Constants.EVENT_UID))
-        ).inject(this);
+        this.activity = (TeiDashboardMobileActivity) context;
+
+//        TODO: reversed
+//        activity.teiDashboardComponent.plus(
+//                new EventCaptureFormModule(
+//                        this,
+//                        getArguments().getString(Constants.EVENT_UID))
+//        ).inject(this);
         setRetainInstance(true);
-        binding.setPresenter(activity.getPresenter());
-        binding.actionButton.setOnClickListener(view -> {
-            closeKeyboard(view);
-            binding.actionButton.setVisibility(View.GONE);
-            binding.progress.setVisibility(View.VISIBLE);
-            performSaveClick();
-        });
     }
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+
+        System.out.println("whats happening humu?");
+        System.out.println(locationProvider);
+
         formView = new FormView.Builder()
                 .locationProvider(locationProvider)
                 .onLoadingListener(loading -> {
@@ -105,11 +95,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 })
                 .factory(activity.getSupportFragmentManager())
                 .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
-                .openErrorLocation(getArguments().getBoolean(OPEN_ERROR_LOCATION, false))
-                .useComposeForm(
-                        featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
-                        featureConfig.isFeatureEnable(Feature.DISABLE_COLLAPSIBLE_SECTIONS)
-                )
                 .build();
         activity.setFormEditionListener(this);
         super.onCreate(savedInstanceState);
@@ -119,17 +104,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
-        EventCaptureContract.Presenter activityPresenter = activity.getPresenter();
-        binding.setPresenter(activityPresenter);
-
-        activityPresenter.observeActions().observe(getViewLifecycleOwner(), action ->
-        {
-            if (action == EventCaptureAction.ON_BACK) {
-                formView.onSaveClick();
-                activityPresenter.emitAction(EventCaptureAction.NONE);
-            }
-        });
-
+//        binding.setPresenter(activity.getPresenter());
         binding.actionButton.setOnClickListener(view -> {
             closeKeyboard(view);
             performSaveClick();
@@ -170,7 +145,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void performSaveClick() {
         formView.onSaveClick();
-        this.activity.executeRules();
+//        this.activity.executeRules();
+
     }
 
     @Override

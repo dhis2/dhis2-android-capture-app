@@ -155,6 +155,30 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
+    public boolean setSpecificFollowupStatus(Boolean followUp, String enrollmentUid) {
+        try {
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(followUp);
+            return !followUp;
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error);
+            return followUp;
+        }
+    }
+
+    @Override
+    public boolean getFollowupStatus(String enrollmentUid) {
+        Boolean followUp = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().followUp();
+
+        if (followUp == null) {
+            return false;
+        } else if (followUp == true || followUp == false) {
+            return followUp;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public Integer getObjectStyle(String uid) {
         TrackedEntityType teType = d2.trackedEntityModule().trackedEntityTypes().uid(uid).blockingGet();
         return resources.getObjectStyleDrawableResource(

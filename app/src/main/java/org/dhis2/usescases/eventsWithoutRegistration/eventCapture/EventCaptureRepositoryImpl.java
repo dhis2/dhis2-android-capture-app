@@ -8,6 +8,16 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ValidationStrategy;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.dhis2.utils.ValueUtils;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.event.EventNonEditableReason;
@@ -19,6 +29,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +48,96 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         this.eventUid = eventUid;
         this.d2 = d2;
     }
+
+    private TrackedEntityAttributeValue getTrackedEntityAttributeValue(
+            String trackedEntityInstanceUid,
+            String trackedEntityAttributeUid
+    ) {
+        return d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(trackedEntityInstanceUid)
+                .byTrackedEntityAttribute().eq(trackedEntityAttributeUid)
+                .one()
+                .blockingGet();
+    }
+
+    private Enrollment getCurrentEnrollment() {
+        return d2.enrollmentModule().enrollments().uid(getCurrentEvent().enrollment()).blockingGet();
+    }
+
+    @Override
+    public Flowable<ProgramStage> programStageObject() {
+        return d2.programModule().programStages().uid(getCurrentEvent().programStage()).get().toFlowable();
+    }
+
+    @Override
+    public Observable<Enrollment> getEnrollmentObject() {
+        return d2.enrollmentModule().enrollments().uid(getCurrentEvent().enrollment()).get().toObservable();
+    }
+
+    @Override
+    public Observable<TrackedEntityInstance> getTrackedEntityInstance() {
+        //TODO : soft code
+        Enrollment enrollment = getCurrentEnrollment();
+
+//        return null;
+        return Observable.fromCallable(
+                () -> d2.trackedEntityModule().trackedEntityInstances().byUid().eq(enrollment.trackedEntityInstance()).one().blockingGet());
+
+    }
+
+
+    @Override
+    public Observable<List<Event>> getTEIEnrollmentEvents() {
+
+        //TODO : soft code
+        Enrollment enrollment = getCurrentEnrollment();
+
+        return
+                d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid())
+                        .byDeleted().isFalse()
+                        .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
+                        .get().toFlowable().flatMapIterable(events -> events).map(event -> {
+                            if (Boolean.FALSE
+                                    .equals(d2.programModule().programs().uid("WSGAb5XwJ3Y").blockingGet().ignoreOverdueEvents()))
+                                if (event.status() == EventStatus.SCHEDULE
+                                        && event.dueDate().before(DateUtils.getInstance().getToday()))
+//                            event = updateState(event, EventStatus.OVERDUE);
+                                    System.out.println("");
+
+                            return event;
+                        }).toList().toObservable();
+
+    }
+
+    @Override
+    public Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes() {
+
+        // TODO : softcode
+        return d2.programModule().programTrackedEntityAttributes().byProgram().eq("WSGAb5XwJ3Y")
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toObservable();
+    }
+    @Override
+    public Observable<List<OrganisationUnit>> getTeiOrgUnits() {
+//        return null;
+
+        Enrollment enrollment = getCurrentEnrollment();
+        return d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).get().toObservable();
+
+    }
+
+    @Override
+    public String getProgramStageUid(){
+        return getCurrentEvent().programStage();
+    }
+
+    @Override
+    public Observable<List<Program>> getTeiActivePrograms() {
+//        return null;
+
+        // TODO: remove hardcodeing
+        return d2.programModule().programs().byUid().eq("WSGAb5XwJ3Y").get().toObservable();
+    }
+
 
     private Event getCurrentEvent() {
         return d2.eventModule().events().uid(eventUid).blockingGet();

@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.composethemeadapter.MdcTheme
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
+import org.dhis2.Bindings.clipWithAllRoundedCorners
+import org.dhis2.Bindings.dp
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.date.toDateSpan
@@ -23,6 +25,7 @@ internal class StageViewHolder(
     private val stageSelector: FlowableProcessor<StageSection>,
     private val presenter: TEIDataPresenter,
     private val colorUtils: ColorUtils,
+    private val stageSelected: String
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
@@ -89,6 +92,12 @@ internal class StageViewHolder(
 
         itemView.setOnClickListener { stageSelector.onNext(StageSection(stage.uid(), false)) }
 
+        if (stageSelected == stage.uid()) {
+            binding.sectionSelectedMark.visibility = View.VISIBLE;
+
+            binding.sectionSelectedMark.clipWithAllRoundedCorners(2.dp)
+            stageSelector.onNext(StageSection(stage.uid(), false))
+        }
         if (eventItem.isSelected) {
             eventItem.isSelected = false
         }

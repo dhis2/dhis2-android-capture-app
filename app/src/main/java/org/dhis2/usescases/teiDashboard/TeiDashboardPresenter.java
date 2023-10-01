@@ -13,6 +13,7 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.dhis2.form.model.RowAction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -129,6 +130,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 Timber::e
                         )
         );
+    }
+
+    @Override
+    public kotlin.Unit updateEnrollmentFields(RowAction action) {
+        return null;
+    }
+
+    @Override
+    public kotlin.Unit fininshEnrollmentDataEntry() {
+        return null;
     }
 
     @Override

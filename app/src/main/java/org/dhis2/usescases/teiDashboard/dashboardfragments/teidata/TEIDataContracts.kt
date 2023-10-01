@@ -16,7 +16,10 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+
 
 class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
@@ -27,12 +30,20 @@ class TEIDataContracts {
         fun switchFollowUp(followUp: Boolean)
         fun displayGenerateEvent(eventUid: String)
         fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String)
+
+        fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?)
+
+        fun setAttributeValues(attributeValues: List<TrackedEntityAttributeValue?>?)
         fun seeDetails(intent: Intent, options: ActivityOptionsCompat)
         fun openEventDetails(intent: Intent, options: ActivityOptionsCompat)
         fun openEventInitial(intent: Intent)
         fun openEventCapture(intent: Intent)
         fun showTeiImage(filePath: String, defaultIcon: String)
         fun setFilters(filterItems: List<FilterItem>)
+
+        fun setRiskColor(risk: String?)
+
+        fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute?>?)
         fun hideFilters()
         fun observeStageSelection(
             currentProgram: Program,

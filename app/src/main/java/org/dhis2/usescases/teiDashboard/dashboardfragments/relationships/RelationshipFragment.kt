@@ -255,7 +255,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
         val bundle = EventCaptureActivity.getActivityBundle(
             eventUid,
             programUid,
-            EventMode.CHECK,
+            EventMode.CHECK, "", ""
         )
         val intent = Intent(context, EventCaptureActivity::class.java)
         intent.putExtras(bundle)

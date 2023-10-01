@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
 interface TeiDataRepository {
     fun getTEIEnrollmentEvents(
@@ -32,4 +33,5 @@ interface TeiDataRepository {
     fun enrollingOrgUnit(): Single<OrganisationUnit>
     fun eventsWithoutCatCombo(): Single<List<EventViewModel>>
     fun getOrgUnitName(orgUnitUid: String): String
+    fun getAttributeValues(teiUid :String): List<TrackedEntityAttributeValue>
 }

@@ -35,8 +35,36 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     private final boolean shouldOpenErrorSection;
 
+    private final String teiUid;
+    private final String enrollmentUid;
+
     public boolean isFormScreenShown(@Nullable Integer currentItem) {
         return currentItem!=null && pages.get(currentItem) == EventPageType.DATA_ENTRY;
+    }
+
+
+    public int getNavigationPagePosition(int navigationId) {
+
+        int i = navigationId;
+        EventPageType pageType = null;
+
+        if (i == R.id.navigation_details) {
+            pageType = EventPageType.DETAILS;
+        }
+        if (i == R.id.navigation_analytics) {
+            pageType = EventPageType.ANALYTICS;
+        }
+        if (i == R.id.navigation_relationships) {
+            pageType = EventPageType.RELATIONSHIPS;
+        }
+        if (i == R.id.navigation_notes) {
+            pageType = EventPageType.NOTES;
+        }
+        if (i == R.id.navigation_data_entry) {
+            pageType = EventPageType.DATA_ENTRY;
+        }
+
+        return pages.indexOf(pageType);
     }
 
     private enum EventPageType {
@@ -48,19 +76,28 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String eventUid,
                                     boolean displayAnalyticScreen,
                                     boolean displayRelationshipScreen,
-                                    boolean openErrorSection
+                                    boolean displayDataEntryScreen,
+                                    boolean openErrorSection,
+                                    String teiUid,
+                                    String enrollmentUid
 
     ) {
         super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
         this.shouldOpenErrorSection = openErrorSection;
+        this.enrollmentUid = enrollmentUid;
+        this.teiUid = teiUid;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
         pages.add(EventPageType.DATA_ENTRY);
 
         if (displayAnalyticScreen) {
             pages.add(EventPageType.ANALYTICS);
+        }
+
+        if (displayDataEntryScreen) {
+            pages.add(EventPageType.DATA_ENTRY);
         }
 
         if (displayRelationshipScreen) {

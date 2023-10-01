@@ -361,7 +361,7 @@ class ProgramEventDetailActivity :
         bundle.putString(Constants.ORG_UNIT, orgUnit)
         startActivity(
             EventCaptureActivity::class.java,
-            EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK),
+            EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK, "", ""),
             false,
             false,
             null,

@@ -7,6 +7,7 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,9 +49,12 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private ItemEventBinding binding;
     private ColorUtils colorUtils;
 
+    private String selectedEvent;
+
     public EventViewHolder(ItemEventBinding binding,
                            Program program,
                            ColorUtils colorUtils,
+                           String eventSelected,
                            Function1<String, Unit> syncClick,
                            Function2<String, View, Unit> scheduleClick,
                            Function4<String, String, EventStatus, View, Unit> onEventSelected
@@ -62,6 +66,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
         this.colorUtils = colorUtils;
+        this.selectedEvent = eventSelected;
         MetadataIconKt.handleComposeDispose(binding.composeStageIcon);
     }
 
@@ -73,6 +78,10 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.setEnrollment(enrollment);
         binding.setProgram(program);
         binding.executePendingBindings();
+
+        if(event.uid().equals(this.selectedEvent)){
+            binding.sharedView.setBackgroundColor(Color.rgb(234,245,253));
+        }
 
         if (eventModel.getGroupedByStage()) {
             binding.eventCard.setCardBackgroundColor(

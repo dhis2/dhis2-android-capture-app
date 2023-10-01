@@ -24,6 +24,7 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import java.util.Locale
 
 class TeiDataRepositoryImpl(
@@ -69,6 +70,10 @@ class TeiDataRepositoryImpl(
 
     override fun getEnrollment(): Single<Enrollment?> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+    }
+
+    override fun getAttributeValues(teiUid: String): List<TrackedEntityAttributeValue> {
+        return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).blockingGet()
     }
 
     override fun getEnrollmentProgram(): Single<Program?> {
