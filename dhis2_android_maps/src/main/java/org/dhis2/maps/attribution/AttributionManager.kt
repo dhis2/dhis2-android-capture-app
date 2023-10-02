@@ -43,7 +43,7 @@ class AttributionManager(
             } catch (exception: ActivityNotFoundException) {
                 Toast.makeText(
                     context,
-                    R.string.mapbox_attributionErrorNoBrowser,
+                    R.string.map_attributionErrorNoBrowser,
                     Toast.LENGTH_LONG,
                 )
                     .show()
