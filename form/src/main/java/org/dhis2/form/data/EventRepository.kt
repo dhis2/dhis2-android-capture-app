@@ -90,6 +90,7 @@ class EventRepository(
                     transformSection(
                         programStageSection.uid(),
                         programStageSection.displayName(),
+                        programStageSection.displayDescription(),
                     ),
                 )
                 programStageSection.dataElements()?.forEach { dataElement ->
