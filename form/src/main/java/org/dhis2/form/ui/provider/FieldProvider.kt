@@ -49,90 +49,111 @@ internal fun FieldProvider(
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    when {
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.TEXT -> {
-            ProvideInputText(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+    if (fieldUiModel.optionSet == null) {
+        when (fieldUiModel.valueType) {
+            ValueType.TEXT -> {
+                ProvideInputText(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_POSITIVE -> {
-            ProvideIntegerPositive(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER_POSITIVE -> {
+                ProvideIntegerPositive(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_ZERO_OR_POSITIVE -> {
-            ProvideIntegerPositiveOrZero(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER_ZERO_OR_POSITIVE -> {
+                ProvideIntegerPositiveOrZero(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.PERCENTAGE -> {
-            ProvidePercentage(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.PERCENTAGE -> {
+                ProvidePercentage(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.NUMBER -> {
-            ProvideNumber(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.NUMBER -> {
+                ProvideNumber(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_NEGATIVE -> {
-            ProvideIntegerNegative(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER_NEGATIVE -> {
+                ProvideIntegerNegative(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.LONG_TEXT -> {
-            ProvideLongText(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.LONG_TEXT -> {
+                ProvideLongText(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.LETTER -> {
-            ProvideLetter(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.LETTER -> {
+                ProvideLetter(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER -> {
-            ProvideInteger(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER -> {
+                ProvideInteger(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        else -> {
-            AndroidViewBinding(
-                modifier = modifier.fillMaxWidth(),
-                factory = { inflater, viewgroup, add ->
-                    getFieldView(
-                        context,
-                        inflater,
-                        viewgroup,
-                        add,
-                        fieldUiModel.layoutId,
-                        needToForceUpdate,
-                    )
-                },
-                update = {
-                    this.setVariable(BR.textWatcher, textWatcher)
-                    this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                    this.setVariable(BR.item, fieldUiModel)
-                },
-            )
+            else -> {
+                AndroidViewBinding(
+                    modifier = modifier.fillMaxWidth(),
+                    factory = { inflater, viewgroup, add ->
+                        getFieldView(
+                            context,
+                            inflater,
+                            viewgroup,
+                            add,
+                            fieldUiModel.layoutId,
+                            needToForceUpdate,
+                        )
+                    },
+                    update = {
+                        this.setVariable(BR.textWatcher, textWatcher)
+                        this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
+                        this.setVariable(BR.item, fieldUiModel)
+                    },
+                )
+            }
         }
+    } else {
+        AndroidViewBinding(
+            modifier = modifier.fillMaxWidth(),
+            factory = { inflater, viewgroup, add ->
+                getFieldView(
+                    context,
+                    inflater,
+                    viewgroup,
+                    add,
+                    fieldUiModel.layoutId,
+                    needToForceUpdate,
+                )
+            },
+            update = {
+                this.setVariable(BR.textWatcher, textWatcher)
+                this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
+                this.setVariable(BR.item, fieldUiModel)
+            },
+        )
     }
 }
 
