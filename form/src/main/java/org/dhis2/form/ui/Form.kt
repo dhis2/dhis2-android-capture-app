@@ -34,7 +34,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.form.ui.provider.FieldProvider
+import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
 
 @OptIn(ExperimentalFoundationApi::class)
