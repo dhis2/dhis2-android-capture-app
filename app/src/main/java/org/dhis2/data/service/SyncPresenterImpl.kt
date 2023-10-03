@@ -403,7 +403,7 @@ class SyncPresenterImpl(
         Completable.fromObservable(
             d2.trackedEntityModule().trackedEntityInstances()
                 .byUid().eq(enrollment?.trackedEntityInstance())
-                .byProgramUids(listOf(enrollment?.program()))
+                .byProgramUids(enrollment?.program()?.let { listOf(it) } ?: emptyList())
                 .upload(),
         ).blockingAwait()
         return d2.trackedEntityModule().trackedEntityInstanceDownloader()

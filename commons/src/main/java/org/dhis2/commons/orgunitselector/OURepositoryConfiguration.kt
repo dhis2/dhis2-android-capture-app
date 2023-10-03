@@ -35,11 +35,11 @@ class OURepositoryConfiguration(
             is OrgUnitSelectorScope.DataSetCaptureScope,
             is OrgUnitSelectorScope.DataSetSearchScope,
             ->
-                orgUnitRepository.byDataSetUids(listOf(orgUnitSelectorScope.uid))
+                orgUnitRepository.byDataSetUids(listOf(orgUnitSelectorScope.uid!!))
             is OrgUnitSelectorScope.ProgramCaptureScope,
             is OrgUnitSelectorScope.ProgramSearchScope,
             ->
-                orgUnitRepository.byProgramUids(listOf(orgUnitSelectorScope.uid))
+                orgUnitRepository.byProgramUids(listOf(orgUnitSelectorScope.uid!!))
             is OrgUnitSelectorScope.UserCaptureScope,
             is OrgUnitSelectorScope.UserSearchScope,
             ->

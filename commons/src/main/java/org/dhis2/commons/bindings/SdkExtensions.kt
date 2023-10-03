@@ -70,7 +70,7 @@ fun D2.teisBy(
     aggregatedSynStates: List<State>? = null,
 ): List<TrackedEntityInstance> {
     var repository = trackedEntityModule().trackedEntityInstances()
-    repository = programs.let { repository.byProgramUids(programs) } ?: repository
+    repository = programs?.let { repository.byProgramUids(programs) } ?: repository
     repository =
         aggregatedSynStates.let { repository.byAggregatedSyncState().`in`(aggregatedSynStates) }
             ?: repository
@@ -256,11 +256,11 @@ fun D2.allowCollapsableSectionsInProgram(programUid: String): Boolean? {
     val globalSettingEnabled: Boolean? =
         settingModule().appearanceSettings()
             .globalProgramConfigurationSetting
-            ?.collapsibleSections()
+            ?.disableCollapsibleSections()
     val specificSettingEnabled: Boolean? =
         settingModule().appearanceSettings()
             .getProgramConfigurationByUid(programUid)
-            ?.collapsibleSections()
+            ?.disableCollapsibleSections()
 
     return when {
         globalSettingEnabled == true -> true

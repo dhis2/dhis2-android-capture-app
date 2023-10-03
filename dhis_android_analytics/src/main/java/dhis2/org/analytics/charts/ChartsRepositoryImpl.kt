@@ -234,7 +234,7 @@ class ChartsRepositoryImpl(
                         val genderValue =
                             d2.trackedEntityModule().trackedEntityAttributeValues().value(
                                 nutritionGenderData.attributeUid,
-                                enrollment.trackedEntityInstance(),
+                                enrollment.trackedEntityInstance()!!,
                             ).blockingGet()
                         nutritionGenderData.isFemale(genderValue?.value())
                     },
