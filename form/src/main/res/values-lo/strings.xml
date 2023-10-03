@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="invalid_percentage">ອະຍາດໃຫ້ປ້ອນແຕ່ຄ່າ 0 ຫາ 100 ເທົ່ານັ້ນ </string>
+    <string name="invalid_field">ກະລຸນາກວດສອບຊ່ອງປ້ອນຂໍ້ມູນນີ້</string>
+    <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
     <string name="invalid_possitive">ອະນຸຍາດໃຫ້ປ້ອນແຕ່ຄ່າບວກເທົ່ານັ້ນ</string>
     <string name="invalid_phone_number">ເບີໂທລະສັບບໍ່ຖືກຕ້ອງ</string>
     <string name="invalid_email">ຊື່ອີແມ໋ວບໍ່ຖືກ</string>
@@ -10,6 +12,7 @@
     <string name="validation_url">ຊື່ url ບໍ່ຖຶກຕ້ອງ</string>
     <string name="invalid_integer">ຄ່າຕ້ອງເປັນຈຳນວນຖ້ວນ</string>
     <string name="error">ເກີດການຜິດພາດ</string>
+    <string name="select_time">ເລືອກເວລາ</string>
     <string name="choose_date">ເລືອກວັນທີ</string>
     <string name="choose_ou">ເລືອກຫົວໜ່ວຍອົງກອນ</string>
     <string name="date">ວັນທີ່</string>
@@ -19,18 +22,35 @@
     <string name="polygon">Polygon</string>
     <string name="latitude">ເສັ້ນຂະໜານ</string>
     <string name="longitude">ເສັ້ນແວງ</string>
+    <string name="enter_value">ປ້ອນຄ່າ</string>
+    <string name="enter_url">ປ້ອນ url</string>
+    <string name="enter_email">ປ້ອນອີເມລ</string>
+    <string name="enter_phone_number">ປ້ອນເບີໂທລະສັບ</string>
     <string name="enter_positive_integer_or_zero">ຕື່ມຕົວເລກ</string>
     <string name="enter_negative_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າລົບ</string>
     <string name="enter_positive_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າບວກ</string>
     <string name="enter_number">ຕື່ມຕົວເລກ</string>
+    <string name="enter_percentage">ປ້ອນເປີເຊັນ</string>
+    <string name="enter_unit_interval">ປ້ອນຕົວເລກຈາກ 0 ຫາ 1</string>
+    <string name="enter_letter">ປ້ອນຕົວອັກສອນ</string>
     <string name="enter_long_text">ປ້ອນຂໍ້ມູນເປັນຂໍ້ຄວາມຍາວ</string>
     <string name="enter_text">ຂຽນຄໍາຕອບ</string>
     <string name="due_date">ວັນທີຕ້ອງແລ້ວ</string>
     <string name="event_date">ວັນທີເຫດການ</string>
+    <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="review">ທົບທວນຄືນ</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
+    <string name="discard_changes">ລຶບການປ່ຽນແປງ</string>
+    <string name="saved">ບັນທຶກແລ້ວ!</string>
+    <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
+    <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
     <string name="share">ເຜີຍແຜ່</string>
     <string name="action_close">ປິດ</string>
+    <string name="copied_text">ສຳເນົາແລ້ວ</string>
+    <string name="take_photo">ຖ່າຍຮູບ</string>
+    <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
     <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>
+    <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
     <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>
