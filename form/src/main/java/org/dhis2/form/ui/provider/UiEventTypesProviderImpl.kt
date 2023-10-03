@@ -33,7 +33,7 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
                 ValueTypeRenderingType.CANVAS ->
                     UiRenderType.CANVAS
                 ValueTypeRenderingType.TOGGLE ->
-                    UiRenderType.TOOGLE
+                    UiRenderType.TOGGLE
                 else -> when (featureType) {
                     FeatureType.POINT -> UiRenderType.POINT
                     FeatureType.POLYGON -> UiRenderType.POLYGON

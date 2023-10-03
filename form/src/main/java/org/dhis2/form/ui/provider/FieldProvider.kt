@@ -145,7 +145,7 @@ internal fun FieldProvider(
 
             ValueType.TRUE_ONLY -> {
                 when (fieldUiModel.renderingType) {
-                    UiRenderType.TOOGLE -> {
+                    UiRenderType.TOGGLE -> {
                         ProvideYesOnlySwitchInput(
                             fieldUiModel = fieldUiModel,
                         )

@@ -15,7 +15,7 @@ enum class UiRenderType {
     QR_CODE,
     BAR_CODE,
     CANVAS,
-    TOOGLE,
+    TOGGLE,
     ;
 
     fun isRadioButton() = this == VERTICAL_RADIOBUTTONS || this == HORIZONTAL_RADIOBUTTONS
