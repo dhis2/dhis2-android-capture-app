@@ -40,7 +40,7 @@ class FormRepositoryImpl(
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
 
-    private val allowCollapsableSections: Boolean? = dataEntryRepository?.allowCollapsableSections()
+    private val disableCollapsableSections: Boolean? = dataEntryRepository?.disableCollapsableSections()
 
     override fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
@@ -50,7 +50,7 @@ class FormRepositoryImpl(
     }
 
     private fun getInitialOpenedSection(shouldOpenErrorLocation: Boolean) = when {
-        allowCollapsableSections == false ->
+        disableCollapsableSections == true ->
             null
 
         shouldOpenErrorLocation ->
@@ -274,7 +274,7 @@ class FormRepositoryImpl(
                         field.isSectionWithFields()
 
                     else ->
-                        useCompose || allowCollapsableSections == false ||
+                        useCompose || disableCollapsableSections == true ||
                             field.programStageSection == openedSectionUid
                 }
             }
@@ -287,7 +287,7 @@ class FormRepositoryImpl(
         var total = 0
         var values = 0
         val isOpen = (sectionFieldUiModel.uid == openedSectionUid)
-            .takeIf { allowCollapsableSections != false }
+            .takeIf { disableCollapsableSections != true }
         fields.filter {
             it.programStageSection.equals(sectionFieldUiModel.uid) && it.valueType != null
         }.forEach {
@@ -449,7 +449,7 @@ class FormRepositoryImpl(
     }
 
     override fun areSectionCollapsable(): Boolean {
-        return allowCollapsableSections ?: true
+        return disableCollapsableSections ?: false
     }
 
     override fun setFocusedItem(action: RowAction) {
@@ -469,7 +469,7 @@ class FormRepositoryImpl(
     }
 
     override fun updateSectionOpened(action: RowAction) {
-        if (allowCollapsableSections != false) {
+        if (disableCollapsableSections != true) {
             openedSectionUid = action.id
         }
     }

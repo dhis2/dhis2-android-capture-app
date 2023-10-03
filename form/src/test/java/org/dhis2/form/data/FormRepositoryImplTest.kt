@@ -43,7 +43,7 @@ class FormRepositoryImplTest {
 
     @Before
     fun setUp() {
-        whenever(dataEntryRepository.allowCollapsableSections()) doReturn null
+        whenever(dataEntryRepository.disableCollapsableSections()) doReturn null
         whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
         repository = FormRepositoryImpl(
@@ -370,6 +370,55 @@ class FormRepositoryImplTest {
             label = "field2",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
+            uiEventFactory = null,
+            optionSetConfiguration = null,
+        ),
+    )
+
+    private fun provideMultipleSectionItemList() = listOf<FieldUiModel>(
+        section1(),
+        FieldUiModelImpl(
+            uid = "uid001",
+            layoutId = 1,
+            value = "value",
+            displayName = "displayValue",
+            label = "field1",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null,
+            optionSetConfiguration = null,
+        ),
+        FieldUiModelImpl(
+            uid = "uid002",
+            layoutId = 2,
+            value = "value",
+            displayName = "displayValue",
+            label = "field2",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null,
+            optionSetConfiguration = null,
+        ),
+        FieldUiModelImpl(
+            uid = "uid003",
+            layoutId = 3,
+            value = "value",
+            displayName = "displayValue",
+            label = "field3",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null,
+            optionSetConfiguration = null,
+        ),
+        section2(),
+        FieldUiModelImpl(
+            uid = "uid004",
+            layoutId = 4,
+            value = "value",
+            displayName = "displayValue",
+            label = "field4",
+            valueType = ValueType.TEXT,
+            programStageSection = "section2",
             uiEventFactory = null,
             optionSetConfiguration = null,
         ),
