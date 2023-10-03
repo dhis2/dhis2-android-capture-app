@@ -192,9 +192,9 @@ internal fun FieldProvider(
                 )
             }
 
-            //"Remaining option sets" are in fun getLayoutForOptionSet
+            // "Remaining option sets" are in fun getLayoutForOptionSet
 
-            else -> { //Remove when all optionsets
+            else -> { // Remove when all optionsets
                 AndroidViewBinding(
                     modifier = modifier.fillMaxWidth(),
                     factory = { inflater, viewgroup, add ->
