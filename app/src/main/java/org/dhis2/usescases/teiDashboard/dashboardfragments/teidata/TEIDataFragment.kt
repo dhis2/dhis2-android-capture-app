@@ -109,9 +109,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private var dashboardModel: DashboardProgramModel? = null
-    var teiModel: SearchTeiModel? = null
+    private var teiModel: SearchTeiModel? = null
     var programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>? = null
-    var internalAttributeValues: List<TrackedEntityAttributeValue>? = null
+    private var internalAttributeValues: List<TrackedEntityAttributeValue>? = null
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
 
     private val detailsLauncher = registerForActivityResult(
@@ -302,17 +302,20 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    fun setTrackedEntityInstance(
-        trackedEntityInstance: TrackedEntityInstance,
-        organisationUnit: OrganisationUnit,
-        trackedEntityAttributeValues: List<TrackedEntityAttributeValue>
-    ) {
+    override fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?) {
         binding.trackEntity = trackedEntityInstance
-        binding.cardFront!!.orgUnit.text = organisationUnit.displayName()
+
+        if (isPortrait()) {
+            if (organisationUnit != null) {
+                binding.cardFront!!.orgUnit.text = organisationUnit.displayName()
+            }
+        }
 
         if (isLandscape()) {
-            binding.cardFrontLand!!.orgUnit = organisationUnit.name()
-            this.internalAttributeValues = trackedEntityAttributeValues
+            if (organisationUnit != null) {
+                binding.cardFrontLand!!.orgUnit = organisationUnit.name()
+            }
+            this.internalAttributeValues = trackedEntityAttributeValues as List<TrackedEntityAttributeValue>?
 
             if (this.programTrackedEntityAttributes != null) {
 
@@ -326,7 +329,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
 
         teiModel!!.tei = trackedEntityInstance
-        teiModel!!.enrolledOrgUnit = organisationUnit.displayName()
+        if (organisationUnit != null) {
+            teiModel!!.enrolledOrgUnit = organisationUnit.displayName()
+        }
 
         if (teiModel!!.selectedEnrollment != null) {
         }
@@ -437,7 +442,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     .filter { attr: ProgramTrackedEntityAttribute? -> attr?.displayInList()!! }
                     .collect(Collectors.toList()) as List<ProgramTrackedEntityAttribute>?
         }
-        Collections.sort<ProgramTrackedEntityAttribute>(this.programTrackedEntityAttributes, CustomComparator())
+        Collections.sort(this.programTrackedEntityAttributes, CustomComparator())
         if (isLandscape()) {
             if (internalAttributeValues != null) {
                 setAttributesAndValues(internalAttributeValues, this.programTrackedEntityAttributes)
@@ -615,10 +620,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             ),
         )
         dashboardActivity.finish()
-    }
-
-    override fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance, organisationUnit: OrganisationUnit) {
-        TODO("Not yet implemented")
     }
 
     override fun seeDetails(intent: Intent, options: ActivityOptionsCompat) =

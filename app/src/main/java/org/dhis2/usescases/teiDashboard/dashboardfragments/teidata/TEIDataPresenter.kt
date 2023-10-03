@@ -84,6 +84,9 @@ class TEIDataPresenter(
     private var stagesToHide: List<String> = emptyList()
 
     fun init() {
+        val attributes = dashboardRepository.getProgramTrackedEntityAttributes(programUid).blockingFirst()
+        view.setProgramAttributes(attributes)
+
         compositeDisposable.add(
             filterManager.asFlowable().startWith(filterManager)
                 .flatMap {
@@ -217,6 +220,7 @@ class TEIDataPresenter(
                         view.setTrackedEntityInstance(
                             teiAndOrgUnit.first,
                             teiAndOrgUnit.second,
+                                teiDataRepository.getAttributeValues(teiUid)
                         )
                     },
                     Timber.Forest::e,

@@ -56,10 +56,7 @@ class TEIDataContracts {
         ): Flowable<StageSection>
 
         fun setEnrollmentData(program: Program?, enrollment: Enrollment?)
-        fun setTrackedEntityInstance(
-            trackedEntityInstance: TrackedEntityInstance,
-            organisationUnit: OrganisationUnit,
-        )
+        fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?)
 
         fun showPeriodRequest(periodRequest: PeriodRequest)
         fun openOrgUnitTreeSelector(programUid: String)

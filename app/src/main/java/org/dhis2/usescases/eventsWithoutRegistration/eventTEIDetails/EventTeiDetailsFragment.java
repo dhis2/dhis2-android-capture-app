@@ -496,8 +496,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
 
 //    @Override
-//    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<? extends TrackedEntityAttributeValue> trackedEntityAttributeValues) {
-//
+//    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
 //        if (OrientationUtilsKt.isLandscape()) {
 //            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
 //            this.attributeValues = trackedEntityAttributeValues;
@@ -518,8 +517,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 //        this.teiModel.setTei(trackedEntityInstance);
 //        this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
 //
-//        if (teiModel.getSelectedEnrollment() != null) {
-//        }
 //    }
 
 
@@ -1004,10 +1001,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 
-//    @Override
-//    public void setTrackedEntityInstance(@Nullable TrackedEntityInstance trackedEntityInstance, @Nullable OrganisationUnit organisationUnit, @Nullable List<? extends TrackedEntityAttributeValue> trackedEntityAttributeValues) {
-//
-//    }
 
     @Override
     public void setAttributeValues(@Nullable List<? extends TrackedEntityAttributeValue> attributeValues) {
@@ -1030,10 +1023,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 //
 //    }
 
-//    @Override
-//    public void setTrackedEntityInstance(@NonNull TrackedEntityInstance trackedEntityInstance, @NonNull OrganisationUnit organisationUnit) {
-//
-//    }
 
     @Override
     public void showSyncDialog(@NonNull String eventUid, @NonNull String enrollmentUid) {
@@ -1061,7 +1050,25 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     }
 
     @Override
-    public void setTrackedEntityInstance(@NonNull TrackedEntityInstance trackedEntityInstance, @NonNull OrganisationUnit organisationUnit) {
+    public void setTrackedEntityInstance(@Nullable TrackedEntityInstance trackedEntityInstance, @Nullable OrganisationUnit organisationUnit, @Nullable List<? extends TrackedEntityAttributeValue> trackedEntityAttributeValues) {
+        if (OrientationUtilsKt.isLandscape()) {
+            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
+            this.attributeValues = (List<TrackedEntityAttributeValue>) trackedEntityAttributeValues;
 
+            if (this.programTrackedEntityAttributes != null) {
+
+                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+
+            }
+        }
+
+        binding.setTrackEntity(trackedEntityInstance);
+
+        if (this.teiModel == null) {
+            this.teiModel = new SearchTeiModel();
+        }
+
+        this.teiModel.setTei(trackedEntityInstance);
+        this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
     }
 }
