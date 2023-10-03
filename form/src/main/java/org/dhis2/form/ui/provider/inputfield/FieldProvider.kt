@@ -20,6 +20,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import org.dhis2.form.BR
 import org.dhis2.form.R
+import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
@@ -64,7 +65,6 @@ internal fun FieldProvider(
             ValueType.INTEGER_POSITIVE -> {
                 ProvideIntegerPositive(
                     fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
                 )
             }
 
@@ -256,7 +256,6 @@ private fun ProvideInputText(
 @Composable
 private fun ProvideIntegerPositive(
     fieldUiModel: FieldUiModel,
-    intentHandler: (FormIntent) -> Unit,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -272,20 +271,20 @@ private fun ProvideIntegerPositive(
             else -> InputShellState.UNFOCUSED
         },
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
-            intentHandler(
-                FormIntent.OnSave(
-                    fieldUiModel.uid,
-                    value,
-                    fieldUiModel.valueType,
-                ),
-            )
         },
+        onFocusChanged = { focused ->
+            if (!focused) {
+                fieldUiModel.onSave(value)
+            }
+            else {
+                fieldUiModel.onItemClick()
+            }
+        }
     )
 }
 
