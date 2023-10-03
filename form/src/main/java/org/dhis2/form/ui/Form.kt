@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ViewTreeObserver
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -45,6 +46,7 @@ fun Form(
     textWatcher: TextWatcher,
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     needToForceUpdate: Boolean,
+    resources: Resources,
 ) {
     val scrollState = rememberLazyListState()
     val context = LocalContext.current
@@ -112,6 +114,7 @@ fun Form(
                                 coordinateTextWatcher = coordinateTextWatcher,
                                 uiEventHandler = uiEventHandler,
                                 intentHandler = intentHandler,
+                                resources = resources,
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                         }

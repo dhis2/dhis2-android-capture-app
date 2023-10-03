@@ -1,6 +1,7 @@
 package org.dhis2.form.ui.provider
 
 import android.content.Context
+import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -21,9 +22,14 @@ import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.inputfield.ProvideCheckBoxInput
+import org.dhis2.form.ui.provider.inputfield.ProvideRadioButtonInput
+import org.dhis2.form.ui.provider.inputfield.ProvideYesNoCheckBoxInput
+import org.dhis2.form.ui.provider.inputfield.ProvideYesNoRadioButtonInput
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -48,6 +54,7 @@ internal fun FieldProvider(
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
+    resources: Resources,
 ) {
     if (fieldUiModel.optionSet == null) {
         when (fieldUiModel.valueType) {
@@ -114,6 +121,36 @@ internal fun FieldProvider(
                 )
             }
 
+            ValueType.BOOLEAN -> {
+                when (fieldUiModel.renderingType) {
+                    UiRenderType.HORIZONTAL_CHECKBOXES,
+                    UiRenderType.VERTICAL_CHECKBOXES,
+                    -> {
+                        ProvideYesNoCheckBoxInput(
+                            fieldUiModel = fieldUiModel,
+                            resources = resources,
+                        )
+                    }
+
+                    else -> {
+                        ProvideYesNoRadioButtonInput(
+                            fieldUiModel = fieldUiModel,
+                            resources = resources,
+                        )
+                    }
+                }
+            }
+
+            ValueType.TRUE_ONLY -> {
+                // TODO
+                /*When
+                ValueTypeRenderingType.TOGGLE -> Yesonlyswitch
+                ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> Yesonlycheckbox
+
+                 else -> YesonlyRadioButton?? exists?*/
+            }
+
             else -> {
                 AndroidViewBinding(
                     modifier = modifier.fillMaxWidth(),
@@ -136,24 +173,46 @@ internal fun FieldProvider(
             }
         }
     } else {
-        AndroidViewBinding(
-            modifier = modifier.fillMaxWidth(),
-            factory = { inflater, viewgroup, add ->
-                getFieldView(
-                    context,
-                    inflater,
-                    viewgroup,
-                    add,
-                    fieldUiModel.layoutId,
-                    needToForceUpdate,
+        when (fieldUiModel.renderingType) {
+            UiRenderType.HORIZONTAL_RADIOBUTTONS,
+            UiRenderType.VERTICAL_RADIOBUTTONS,
+            -> {
+                ProvideRadioButtonInput(
+                    fieldUiModel = fieldUiModel,
                 )
-            },
-            update = {
-                this.setVariable(BR.textWatcher, textWatcher)
-                this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                this.setVariable(BR.item, fieldUiModel)
-            },
-        )
+            }
+
+            UiRenderType.HORIZONTAL_CHECKBOXES,
+            UiRenderType.VERTICAL_CHECKBOXES,
+            -> {
+                ProvideCheckBoxInput(
+                    fieldUiModel = fieldUiModel,
+                )
+            }
+
+            // TODO ("Remaining option sets")
+
+            else -> { // TODO (Remove when all optionsets)
+                AndroidViewBinding(
+                    modifier = modifier.fillMaxWidth(),
+                    factory = { inflater, viewgroup, add ->
+                        getFieldView(
+                            context,
+                            inflater,
+                            viewgroup,
+                            add,
+                            fieldUiModel.layoutId,
+                            needToForceUpdate,
+                        )
+                    },
+                    update = {
+                        this.setVariable(BR.textWatcher, textWatcher)
+                        this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
+                        this.setVariable(BR.item, fieldUiModel)
+                    },
+                )
+            }
+        }
     }
 }
 
