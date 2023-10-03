@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
-import org.dhis2.usescases.general.AbstractActivityContracts;
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -89,7 +88,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     lateinit var binding: FragmentTeiDataBinding
 
-    private val activity: TeiDashboardMobileActivity? = null
+//    private val activity: TeiDashboardMobileActivity? = null
 
     @Inject
     lateinit var presenter: TEIDataPresenter
@@ -175,13 +174,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false)
         binding.presenter = presenter
-        activity?.observeGrouping()?.observe(viewLifecycleOwner, Observer<Boolean> { group: Boolean? ->
+        dashboardActivity.observeGrouping()?.observe(viewLifecycleOwner, Observer<Boolean> { group: Boolean? ->
             showLoadingProgress(true)
             binding.isGrouping = group
             presenter.onGroupingChanged(group!!)
         })
-        activity?.observeFilters()?.observe(viewLifecycleOwner, Observer<Boolean> { showFilters: Boolean -> showHideFilters(showFilters) })
-        activity?.updatedEnrollment()?.observe(viewLifecycleOwner, Observer<String> { enrollmentUid: String? -> updateEnrollment(enrollmentUid!!) })
+        dashboardActivity.observeFilters()?.observe(viewLifecycleOwner, Observer<Boolean> { showFilters: Boolean -> showHideFilters(showFilters) })
+        dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner, Observer<String> { enrollmentUid: String? -> updateEnrollment(enrollmentUid!!) })
 
         try {
             binding.filterLayout.adapter = filtersAdapter
@@ -368,15 +367,15 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 presenter.seeDetails(binding.cardFront!!.cardData, dashboardModel)
             }
         } else {
-            binding.cardFrontLand!!.detailsButton.setButtonContent(activity?.presenter!!.teType) { Unit }
+            binding.cardFrontLand!!.detailsButton.setButtonContent(dashboardActivity.presenter.teType) { Unit }
 
 
-            binding.cardFrontLand!!.followupButton.setFollowupButtonContent(activity.presenter.teType, followUp.get()) {
+            binding.cardFrontLand!!.followupButton.setFollowupButtonContent(dashboardActivity.presenter.teType, followUp.get()) {
                 presenter.onFollowUp(dashboardModel)
                 presenter.init()
             }
 
-            binding.cardFrontLand!!.lockButton.setLockButtonContent(activity.presenter.teType) {
+            binding.cardFrontLand!!.lockButton.setLockButtonContent(dashboardActivity.presenter.teType) {
                 showEnrollmentStatusOptions()
             }
         }
@@ -408,9 +407,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 .onMenuInflated { popupMenu: PopupMenu? -> KParameter.Kind.INSTANCE }
                 .onMenuItemClicked { itemId: Int? ->
                     when (itemId) {
-                        R.id.complete -> activity?.getPresenter()?.updateEnrollmentStatus(activity.enrollmentUid, EnrollmentStatus.COMPLETED)
-                        R.id.deactivate -> activity?.getPresenter()?.updateEnrollmentStatus(activity.enrollmentUid, EnrollmentStatus.CANCELLED)
-                        R.id.reOpen -> activity?.getPresenter()?.updateEnrollmentStatus(activity.enrollmentUid, EnrollmentStatus.ACTIVE)
+                        R.id.complete -> dashboardActivity.getPresenter()?.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.COMPLETED)
+                        R.id.deactivate -> dashboardActivity.getPresenter()?.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.CANCELLED)
+                        R.id.reOpen -> dashboardActivity.getPresenter()?.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.ACTIVE)
                     }
                     true
                 }
@@ -633,30 +632,56 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun openEventCapture(intent: Intent) = eventCaptureLauncher.launch(intent)
 
     override fun showTeiImage(filePath: String, defaultIcon: String) {
+
         if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-            binding.cardFront!!.teiImage.visibility = View.GONE
+            if (isPortrait()) {
+                if (filePath.isEmpty() && defaultIcon.isEmpty()) {
+                    binding.cardFront!!.teiImage.visibility = View.GONE
+                } else {
+                    binding.cardFront!!.teiImage.visibility = View.VISIBLE
+                    Glide.with(this)
+                            .load(File(filePath))
+                            .error(
+                                    getIconResource(
+                                            requireContext(),
+                                            defaultIcon,
+                                            R.drawable.photo_temp_gray,
+                                            colorUtils,
+                                    ),
+                            )
+                            .transition(DrawableTransitionOptions.withCrossFade())
+                            .transform(CircleCrop())
+                            .into(binding.cardFront!!.teiImage)
+                    binding.cardFront!!.teiImage.setOnClickListener {
+                        val fileToShow = File(filePath)
+                        if (fileToShow.exists()) {
+                            ImageDetailBottomDialog(
+                                    null,
+                                    fileToShow,
+                            ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+                        }
+                    }
+                }
+            }
         } else {
-            binding.cardFront!!.teiImage.visibility = View.VISIBLE
-            Glide.with(this)
-                .load(File(filePath))
-                .error(
-                    getIconResource(
-                        requireContext(),
-                        defaultIcon,
-                        R.drawable.photo_temp_gray,
-                        colorUtils,
-                    ),
-                )
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .transform(CircleCrop())
-                .into(binding.cardFront!!.teiImage)
-            binding.cardFront!!.teiImage.setOnClickListener {
-                val fileToShow = File(filePath)
-                if (fileToShow.exists()) {
-                    ImageDetailBottomDialog(
-                        null,
-                        fileToShow,
-                    ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+            if (isLandscape()) {
+                binding.cardFrontLand!!.trackedEntityImage.visibility = View.VISIBLE
+                Glide.with(this)
+                        .load(File(filePath))
+                        .error(
+                                getIconResource(requireContext(), defaultIcon, R.drawable.photo_temp_gray, colorUtils)
+                        )
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .transform(CircleCrop())
+                        .into(binding.cardFrontLand!!.trackedEntityImage)
+                binding.cardFrontLand!!.trackedEntityImage.setOnClickListener { view ->
+                    val fileToShow = File(filePath)
+                    if (fileToShow.exists()) {
+                        ImageDetailBottomDialog(
+                                null,
+                                fileToShow
+                        ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+                    }
                 }
             }
         }
