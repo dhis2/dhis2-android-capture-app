@@ -26,12 +26,6 @@ import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.form.ui.provider.inputfield.ProvideCheckBoxInput
-import org.dhis2.form.ui.provider.inputfield.ProvideRadioButtonInput
-import org.dhis2.form.ui.provider.inputfield.ProvideYesNoCheckBoxInput
-import org.dhis2.form.ui.provider.inputfield.ProvideYesNoRadioButtonInput
-import org.dhis2.form.ui.provider.inputfield.ProvideYesOnlyCheckBoxInput
-import org.dhis2.form.ui.provider.inputfield.ProvideYesOnlySwitchInput
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -198,9 +192,9 @@ internal fun FieldProvider(
                 )
             }
 
-            // "Remaining option sets" are in fun getLayoutForOptionSet
+            //"Remaining option sets" are in fun getLayoutForOptionSet
 
-            else -> { // Remove when all optionsets
+            else -> { //Remove when all optionsets
                 AndroidViewBinding(
                     modifier = modifier.fillMaxWidth(),
                     factory = { inflater, viewgroup, add ->
