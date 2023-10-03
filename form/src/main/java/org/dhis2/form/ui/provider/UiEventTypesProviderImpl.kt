@@ -32,6 +32,8 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
                     UiRenderType.BAR_CODE
                 ValueTypeRenderingType.CANVAS ->
                     UiRenderType.CANVAS
+                ValueTypeRenderingType.TOGGLE ->
+                    UiRenderType.TOOGLE
                 else -> when (featureType) {
                     FeatureType.POINT -> UiRenderType.POINT
                     FeatureType.POLYGON -> UiRenderType.POLYGON

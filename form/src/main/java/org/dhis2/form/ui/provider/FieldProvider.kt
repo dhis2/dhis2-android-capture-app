@@ -30,6 +30,8 @@ import org.dhis2.form.ui.provider.inputfield.ProvideCheckBoxInput
 import org.dhis2.form.ui.provider.inputfield.ProvideRadioButtonInput
 import org.dhis2.form.ui.provider.inputfield.ProvideYesNoCheckBoxInput
 import org.dhis2.form.ui.provider.inputfield.ProvideYesNoRadioButtonInput
+import org.dhis2.form.ui.provider.inputfield.ProvideYesOnlyCheckBoxInput
+import org.dhis2.form.ui.provider.inputfield.ProvideYesOnlySwitchInput
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -142,13 +144,19 @@ internal fun FieldProvider(
             }
 
             ValueType.TRUE_ONLY -> {
-                // TODO
-                /*When
-                ValueTypeRenderingType.TOGGLE -> Yesonlyswitch
-                ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> Yesonlycheckbox
+                when (fieldUiModel.renderingType) {
+                    UiRenderType.TOOGLE -> {
+                        ProvideYesOnlySwitchInput(
+                            fieldUiModel = fieldUiModel,
+                        )
+                    }
 
-                 else -> YesonlyRadioButton?? exists?*/
+                    else -> {
+                        ProvideYesOnlyCheckBoxInput(
+                            fieldUiModel = fieldUiModel,
+                        )
+                    }
+                }
             }
 
             else -> {
@@ -190,7 +198,7 @@ internal fun FieldProvider(
                 )
             }
 
-            // TODO ("Remaining option sets")
+            // TODO ("Remaining option sets" fun getLayoutForOptionSet)
 
             else -> { // TODO (Remove when all optionsets)
                 AndroidViewBinding(

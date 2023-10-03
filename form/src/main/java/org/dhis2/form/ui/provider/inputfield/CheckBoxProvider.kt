@@ -9,6 +9,7 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
+import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 
 @Composable
 internal fun ProvideCheckBoxInput(
@@ -78,6 +79,32 @@ internal fun ProvideYesNoCheckBoxInput(
         },
         onClearSelection = {
             fieldUiModel.onClear()
+        },
+    )
+}
+
+@Composable
+internal fun ProvideYesOnlyCheckBoxInput(
+    fieldUiModel: FieldUiModel,
+) {
+    val cbData = CheckBoxData(
+        uid = "",
+        checked = fieldUiModel.isAffirmativeChecked,
+        enabled = true,
+        textInput = fieldUiModel.label,
+    )
+
+    InputYesOnlyCheckBox(
+        checkBoxData = cbData,
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        isRequired = fieldUiModel.mandatory,
+        onClick = {
+            if (!fieldUiModel.isAffirmativeChecked) {
+                fieldUiModel.onSaveBoolean(true)
+            } else {
+                fieldUiModel.onClear()
+            }
         },
     )
 }
