@@ -365,12 +365,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (program.displayFrontPageList()) {
                 searchTei.addProgramInfo(program);
             }
-            searchTei.addEnrollmentInfo(getProgramInfo(enrollment.program()));
+            searchTei.addEnrollmentInfo(getProgramInfo(program));
         }
     }
 
-    private Trio<String, String, String> getProgramInfo(String programUid) {
-        Program program = d2.programModule().programs().byUid().eq(programUid).one().blockingGet();
+    private Trio<String, String, String> getProgramInfo(Program program) {
         String programColor = program.style() != null && program.style().color() != null ? program.style().color() : "";
         String programIcon = program.style() != null && program.style().icon() != null ? program.style().icon() : "";
         return Trio.create(program.displayName(), programColor, programIcon);
@@ -792,6 +791,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         ObjectStyle os = searchItem.getType().style();
         searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
 
+        searchTei.setHeader(searchItem.getHeader());
         searchTei.setSortingValue(sortingValueSetter.setSortingItem(searchTei, sortingItem));
         searchTei.setTEType(searchItem.getType().displayName());
         return searchTei;
