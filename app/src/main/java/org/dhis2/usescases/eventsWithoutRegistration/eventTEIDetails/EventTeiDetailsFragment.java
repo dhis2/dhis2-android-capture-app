@@ -15,6 +15,7 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModelProviders;
@@ -28,6 +29,8 @@ import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
+import org.dhis2.commons.resources.ColorType;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.StageSection;
@@ -38,7 +41,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
+//import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
@@ -46,6 +49,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataModule;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
@@ -58,7 +62,6 @@ import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -106,7 +109,7 @@ import static org.dhis2.commons.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
-public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
+public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -122,8 +125,11 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     private FragmentEventTeiDetailsBinding binding;
 
+//    @Inject
+//    TEIDataContracts.Presenter presenter;
+
     @Inject
-    TEIDataContracts.Presenter presenter;
+    TEIDataPresenter presenter;
 
     @Inject
     FilterManager filterManager;
@@ -335,9 +341,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         super.onPause();
     }
 
-    @Override
-    public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
-    }
+//  @Override
+//    public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
+//    }
 
     public TrackedEntityAttributeValue getMatchingAttriburteValue(List<TrackedEntityAttributeValue> attributeValues, String attributeUid) {
         for (TrackedEntityAttributeValue attributeValue : attributeValues) {
@@ -389,8 +395,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         int teiAttributesLoopCounter = 0;
         while (teiAttributesLoopCounter < programTrackedEntityAttributes.size()) {
 
-            System.out.println("-------------------------");
-            System.out.println(programTrackedEntityAttributes.get(teiAttributesLoopCounter).uid());
             TrackedEntityAttributeValue value = getAttributeValue(programTrackedEntityAttributes.get(teiAttributesLoopCounter).trackedEntityAttribute().uid());
 
             linkedHashMapOfAttrValues.put(programTrackedEntityAttributes.get(teiAttributesLoopCounter).displayShortName().replace("Mother program ", "").replace("Newborn program ", ""), value);
@@ -491,32 +495,32 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     }
 
 
-    @Override
-    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
-
-        if (OrientationUtilsKt.isLandscape()) {
-            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
-            this.attributeValues = trackedEntityAttributeValues;
-
-            if (this.programTrackedEntityAttributes != null) {
-
-                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
-
-            }
-        }
-
-        binding.setTrackEntity(trackedEntityInstance);
-
-        if (this.teiModel == null) {
-            this.teiModel = new SearchTeiModel();
-        }
-
-        this.teiModel.setTei(trackedEntityInstance);
-        this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
-
-        if (teiModel.getSelectedEnrollment() != null) {
-        }
-    }
+//    @Override
+//    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<? extends TrackedEntityAttributeValue> trackedEntityAttributeValues) {
+//
+//        if (OrientationUtilsKt.isLandscape()) {
+//            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
+//            this.attributeValues = trackedEntityAttributeValues;
+//
+//            if (this.programTrackedEntityAttributes != null) {
+//
+//                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+//
+//            }
+//        }
+//
+//        binding.setTrackEntity(trackedEntityInstance);
+//
+//        if (this.teiModel == null) {
+//            this.teiModel = new SearchTeiModel();
+//        }
+//
+//        this.teiModel.setTei(trackedEntityInstance);
+//        this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
+//
+//        if (teiModel.getSelectedEnrollment() != null) {
+//        }
+//    }
 
 
     public void setData(DashboardProgramModel nprogram) {
@@ -602,10 +606,10 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         }
     }
 
-    @Override
-    public void setFilters(List<FilterItem> filterItems) {
-        filtersAdapter.submitList(filterItems);
-    }
+//    @Override
+//    public void setFilters(List<FilterItem> filterItems) {
+//        filtersAdapter.submitList(filterItems);
+//    }
 
     @Override
     public void hideFilters() {
@@ -616,7 +620,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
 
         if (adapter == null) {
-            adapter = new EventAdapter(presenter, currentProgram, programStageUid, activity.eventUid);
+            adapter = new EventAdapter(presenter, currentProgram, new ColorUtils());
             adapter.setEnrollment(currentEnrollment);
 
             binding.teiRecycler.setAdapter(adapter);
@@ -777,7 +781,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         }
     }
 
-    @Override
+
     public void showCatComboDialog(String eventId, Date eventDate, String categoryComboUid) {
         CategoryDialog categoryDialog = new CategoryDialog(
                 CategoryDialog.Type.CATEGORY_OPTION_COMBO,
@@ -812,12 +816,10 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         activity.finish();
     }
 
-    @Override
     public void seeDetails(Intent intent, Bundle bundle) {
         this.startActivityForResult(intent, REQ_DETAILS, bundle);
     }
 
-    @Override
     public void openEventDetails(Intent intent, Bundle bundle) {
         this.startActivityForResult(intent, REQ_EVENT, bundle);
     }
@@ -841,14 +843,14 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             Glide.with(this)
                     .load(new File(filePath))
                     .error(
-                            ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+                            ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray, new ColorUtils())
                     )
                     .transition(withCrossFade())
                     .transform(new CircleCrop());
         }
     }
 
-    @Override
+//    @Override
     public void showNewEventOptions(View anchor, ProgramStage stage) {
         popupMenu = new PopupMenu(context, anchor);
         popupMenu.inflate(R.menu.dashboard_event_creation);
@@ -871,12 +873,11 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     }
 
-    @Override
     public void hideDueDate() {
         popupMenu.getMenu().findItem(R.id.schedulenew).setVisible(false);
     }
 
-    private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
+    public void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
 
         Intent intent = new Intent(activity, EventInitialActivity.class);
         Bundle bundle = new Bundle();
@@ -939,11 +940,10 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
         OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
-        ouTreeFragment.setSelectionCallback(this);
+//        ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getChildFragmentManager(), "OUTreeFragment");
     }
 
-    @Override
     public void showSyncDialog(String uid) {
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
                 .setConflictType(ConflictType.TEI)
@@ -978,7 +978,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     }
 
     @Override
-    public void setProgramAttributes(List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
+    public void setProgramAttributes(List<? extends ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
 
         System.out.println("attributes size");
         System.out.println(programTrackedEntityAttributes.size());
@@ -1000,9 +1000,68 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         }
     }
 
-    @Override
     public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
         presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 
+//    @Override
+//    public void setTrackedEntityInstance(@Nullable TrackedEntityInstance trackedEntityInstance, @Nullable OrganisationUnit organisationUnit, @Nullable List<? extends TrackedEntityAttributeValue> trackedEntityAttributeValues) {
+//
+//    }
+
+    @Override
+    public void setAttributeValues(@Nullable List<? extends TrackedEntityAttributeValue> attributeValues) {
+
+    }
+
+    @Override
+    public void seeDetails(@NonNull Intent intent, @NonNull ActivityOptionsCompat options) {
+
+    }
+
+    @Override
+    public void openEventDetails(@NonNull Intent intent, @NonNull ActivityOptionsCompat options) {
+
+    }
+
+
+//    @Override
+//    public void setProgramAttributes(@Nullable List<? extends ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
+//
+//    }
+
+//    @Override
+//    public void setTrackedEntityInstance(@NonNull TrackedEntityInstance trackedEntityInstance, @NonNull OrganisationUnit organisationUnit) {
+//
+//    }
+
+    @Override
+    public void showSyncDialog(@NonNull String eventUid, @NonNull String enrollmentUid) {
+
+    }
+
+    @Override
+    public void displayCatComboOptionSelectorForEvents(@NonNull List<EventViewModel> data) {
+
+    }
+
+    @Override
+    public void showProgramRuleErrorMessage(@NonNull String message) {
+
+    }
+
+    @Override
+    public void showCatOptComboDialog(@NonNull String catComboUid) {
+
+    }
+
+    @Override
+    public void setFilters(@NonNull List<? extends FilterItem> filterItems) {
+
+    }
+
+    @Override
+    public void setTrackedEntityInstance(@NonNull TrackedEntityInstance trackedEntityInstance, @NonNull OrganisationUnit organisationUnit) {
+
+    }
 }

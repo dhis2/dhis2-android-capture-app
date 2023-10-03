@@ -24,6 +24,7 @@ class ProgramEventDetailLiveAdapter(
             binding,
             program,
             colorUtils,
+                "",
             { eventUid ->
                 eventViewModel.eventSyncClicked.value = eventUid
             },

@@ -47,7 +47,9 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -384,7 +386,7 @@ class TEIDataPresenter(
 
     fun onScheduleSelected(uid: String?, sharedView: View?) {
         uid?.let {
-            val intent = getIntent(view.context, uid)
+            val intent = getIntent(view.context, uid, "", "")
             val options = sharedView?.let { it1 ->
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                     view.abstractActivity,
@@ -404,6 +406,8 @@ class TEIDataPresenter(
                     eventUid = uid,
                     programUid = programUid ?: throw IllegalStateException(),
                     eventMode = EventMode.CHECK,
+                        "",
+                        ""
                 ),
             )
             view.openEventCapture(intent)
@@ -541,5 +545,15 @@ class TEIDataPresenter(
         val options = programUid?.let { getNewEventCreationTypeOptions.invoke(null, it) }
         return options?.let { eventCreationOptionsMapper.mapToEventsByTimeLine(it) }
             ?: emptyList()
+    }
+
+    fun getCatComboOptions(event: Event) {
+        if (dashboardRepository.isStageFromProgram(event.programStage())) {
+            compositeDisposable.add(dashboardRepository.catComboForProgram(event.program()).filter { categoryCombo: CategoryCombo -> categoryCombo.isDefault !== java.lang.Boolean.TRUE && categoryCombo.name() != "default" }.subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe({ categoryCombo: CategoryCombo -> view.showCatComboDialog(event.uid(), if (event.eventDate() == null) event.dueDate() else event.eventDate(), categoryCombo.uid()) }) { t: Throwable? -> Timber.e(t) })
+        }
+    }
+
+    fun setDefaultCatOptCombToEvent(eventUid: String?) {
+        dashboardRepository.setDefaultCatOptCombToEvent(eventUid)
     }
 }

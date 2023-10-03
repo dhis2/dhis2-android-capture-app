@@ -11,19 +11,24 @@ import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import java.util.Date
 
 
 class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
         fun setEvents(events: List<EventViewModel>, canAddEvents: Boolean)
+
+        fun showCatComboDialog(eventUid: String?, eventDate: Date?, categoryComboUid: String?)
         fun displayGenerateEvent(): Consumer<ProgramStage>
         fun areEventsCompleted(): Consumer<Single<Boolean>>
         fun enrollmentCompleted(): Consumer<EnrollmentStatus>
@@ -31,7 +36,7 @@ class TEIDataContracts {
         fun displayGenerateEvent(eventUid: String)
         fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String)
 
-        fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?)
+//        fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?)
 
         fun setAttributeValues(attributeValues: List<TrackedEntityAttributeValue?>?)
         fun seeDetails(intent: Intent, options: ActivityOptionsCompat)
@@ -65,5 +70,30 @@ class TEIDataContracts {
         fun showProgramRuleErrorMessage(message: String)
         fun showCatOptComboDialog(catComboUid: String)
         fun goToEventInitial(eventCreationType: EventCreationType, programStage: ProgramStage)
+    }
+
+    interface Presenter : AbstractActivityContracts.Presenter {
+        fun init()
+//        fun getCatComboOptions(event: Event?)
+        fun setDefaultCatOptCombToEvent(eventUid: String?)
+        fun changeCatOption(eventUid: String?, catOptionComboUid: String?)
+        fun areEventsCompleted()
+        fun displayGenerateEvent(eventUid: String?)
+        fun completeEnrollment()
+        fun onFollowUp(dashboardProgramModel: DashboardProgramModel?)
+        fun seeDetails(sharedView: android.view.View?, dashboardProgramModel: DashboardProgramModel?)
+        fun onScheduleSelected(uid: String?, sharedView: android.view.View?)
+        fun onEventSelected(uid: String?, eventStatus: EventStatus?, sharedView: android.view.View?)
+        fun setDashboardProgram(dashboardModel: DashboardProgramModel?)
+        fun setProgram(program: Program?, enrollmentUid: String?)
+        fun showDescription(description: String?)
+        fun onGroupingChanged(shouldGroup: Boolean?)
+        fun onAddNewEvent(anchor: android.view.View?, programStage: ProgramStage?)
+        fun getEnrollment(enrollmentUid: String?)
+        fun hasAssignment(): Boolean
+        fun onSyncDialogClick()
+        fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String?): Boolean
+        fun setOpeningFilterToNone()
+        fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit?>?)
     }
 }

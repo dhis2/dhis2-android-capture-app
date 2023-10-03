@@ -18,8 +18,13 @@
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
 
         <variable
+            name="attributeValues"
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue&gt;" />
+
+        <variable
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter" />
+
 
         <variable
             name="dashboardModel"
@@ -32,6 +37,10 @@
         <variable
             name="followup"
             type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="attributeNames"
+            type="java.util.Set&lt;String&gt;" />
 
         <variable
             name="isGrouping"
@@ -54,6 +63,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:id="@+id/cardLayout"
             android:layout_width="match_parent"
@@ -65,42 +75,19 @@
                 android:id="@+id/tei_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:cardElevation="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
-                    android:id="@+id/sectionSelectedMark"
-                    android:layout_marginTop="18dp"
-                    android:layout_width="4dp"
-                    android:layout_height="60dp"
-                    android:background="?colorPrimary"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"></LinearLayout>
-
-                <!--                <include-->
-                <!--                    android:id="@+id/card_front"-->
-                <!--                    layout="@layout/fragment_tei_data_card_front"-->
-                <!--                    app:dashboardModel="@{dashboardModel}"-->
-                <!--                    app:enrollment="@{enrollment}"-->
-                <!--                    app:followup="@{followup}"-->
-                <!--                    app:presenter="@{presenter}"-->
-                <!--                    app:highRisk="@{highRisk}"-->
-                <!--                    app:lowRisk="@{lowRisk}"-->
-                <!--                    app:program="@{program}"-->
-                <!--                    app:trackEntity="@{trackEntity}" />-->
-
                 <include
                     android:id="@+id/card_front_land"
                     layout="@layout/item_search_tracked_entity"
-                    app:teiSyncState="@{trackEntity.syncState()}"
+                    app:followUp="@{enrollment.followUp()}"
                     app:highRisk="@{highRisk}"
                     app:lowRisk="@{lowRisk}"
-                    app:followUp="@{enrollment.followUp()}"/>
+                    app:teiSyncState="@{trackEntity.syncState()}" />
             </androidx.cardview.widget.CardView>
-
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/filterLayout"
@@ -143,6 +130,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardLayout" />
+
 
         <include
             android:id="@+id/loading_progress"

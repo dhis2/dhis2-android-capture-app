@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.composethemeadapter.MdcTheme
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
-import org.dhis2.Bindings.clipWithAllRoundedCorners
-import org.dhis2.Bindings.dp
+import org.dhis2.bindings.clipWithAllRoundedCorners
+import org.dhis2.bindings.dp
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.date.toDateSpan

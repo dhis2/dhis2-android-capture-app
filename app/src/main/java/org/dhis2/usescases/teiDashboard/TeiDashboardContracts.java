@@ -48,6 +48,10 @@ public class TeiDashboardContracts {
 
         void init();
 
+        Unit updateEnrollmentFields(RowAction action);
+
+        Unit fininshEnrollmentDataEntry();
+
         void showDescription(String description);
 
         void onBackPressed();

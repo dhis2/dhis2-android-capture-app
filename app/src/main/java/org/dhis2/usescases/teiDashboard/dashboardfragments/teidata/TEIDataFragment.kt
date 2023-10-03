@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import org.dhis2.usescases.general.AbstractActivityContracts;
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,10 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
+import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -54,12 +57,17 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Cat
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
+import org.dhis2.usescases.teiDashboard.ui.setFollowupButtonContent
+import org.dhis2.usescases.teiDashboard.ui.setLockButtonContent
+import org.dhis2.utils.CustomComparator
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.dhis2.utils.isLandscape
+import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -68,15 +76,20 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import timber.log.Timber
 import java.io.File
 import java.util.Collections
+import java.util.Date
 import java.util.stream.Collectors
 import javax.inject.Inject
+import kotlin.reflect.KParameter
 
 
 class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     lateinit var binding: FragmentTeiDataBinding
+
+    private val activity: TeiDashboardMobileActivity? = null
 
     @Inject
     lateinit var presenter: TEIDataPresenter
@@ -99,7 +112,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private var dashboardModel: DashboardProgramModel? = null
     var teiModel: SearchTeiModel? = null
     var programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>? = null
-    var attributeValues: List<TrackedEntityAttributeValue>? = null
+    var internalAttributeValues: List<TrackedEntityAttributeValue>? = null
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
 
     private val detailsLauncher = registerForActivityResult(
@@ -140,52 +153,71 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+//        if (teiModel == null) {
+//            teiModel = SearchTeiModel()
+//        }
+//        return FragmentTeiDataBinding.inflate(inflater, container, false).also { binding ->
+//            this.binding = binding
+//            binding.presenter = presenter
+//            dashboardActivity.observeGrouping().observe(viewLifecycleOwner) { group ->
+//                showLoadingProgress(true)
+//                binding.isGrouping = group
+//                presenter.onGroupingChanged(group)
+//            }
+//            dashboardActivity.observeFilters()
+//                .observe(viewLifecycleOwner, ::showHideFilters)
+//            dashboardActivity.updatedEnrollment()
+//                .observe(viewLifecycleOwner, ::updateEnrollment)
+//
+//            binding.filterLayout.adapter = filtersAdapter
         if (teiModel == null) {
             teiModel = SearchTeiModel()
         }
-        return FragmentTeiDataBinding.inflate(inflater, container, false).also { binding ->
-            this.binding = binding
-            binding.presenter = presenter
-            dashboardActivity.observeGrouping().observe(viewLifecycleOwner) { group ->
-                showLoadingProgress(true)
-                binding.isGrouping = group
-                presenter.onGroupingChanged(group)
-            }
-            dashboardActivity.observeFilters()
-                .observe(viewLifecycleOwner, ::showHideFilters)
-            dashboardActivity.updatedEnrollment()
-                .observe(viewLifecycleOwner, ::updateEnrollment)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false)
+        binding.presenter = presenter
+        activity?.observeGrouping()?.observe(viewLifecycleOwner, Observer<Boolean> { group: Boolean? ->
+            showLoadingProgress(true)
+            binding.isGrouping = group
+            presenter.onGroupingChanged(group!!)
+        })
+        activity?.observeFilters()?.observe(viewLifecycleOwner, Observer<Boolean> { showFilters: Boolean -> showHideFilters(showFilters) })
+        activity?.updatedEnrollment()?.observe(viewLifecycleOwner, Observer<String> { enrollmentUid: String? -> updateEnrollment(enrollmentUid!!) })
 
+        try {
             binding.filterLayout.adapter = filtersAdapter
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
 
-            if (OrientationUtilsKt.isLandscape()) {
-                binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END)
-                binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END)
-                binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END)
-                binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END)
-                binding.cardFrontLand.setAttributeListOpened(false)
-                binding.cardFrontLand.showAttributesButton.setOnClickListener { event ->
-                    val imageView: ImageView = activity!!.findViewById(R.id.showAttributesButton)
-                    val layoutParams = imageView.layoutParams as MarginLayoutParams
-                    if (binding.cardFrontLand.getAttributeListOpened()) {
-                        binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_up)
-                        binding.cardFrontLand.setAttributeListOpened(false)
-                        layoutParams.bottomMargin = 0
-                        binding.cardFrontLand.showAttributesButton.setLayoutParams(layoutParams)
-                    } else {
-                        binding.cardFrontLand.showAttributesButton.setImageResource(R.drawable.ic_arrow_down)
-                        binding.cardFrontLand.setAttributeListOpened(true)
-                        binding.cardFrontLand.entityAttribute1.setGravity(Gravity.END)
-                        binding.cardFrontLand.entityAttribute2.setGravity(Gravity.END)
-                        binding.cardFrontLand.entityAttribute3.setGravity(Gravity.END)
-                        binding.cardFrontLand.entityAttribute4.setGravity(Gravity.END)
-                        layoutParams.bottomMargin = 90
-                        binding.cardFrontLand.showAttributesButton.setLayoutParams(layoutParams)
-                    }
+        if (isLandscape()) {
+            binding.cardFrontLand!!.entityAttribute1.gravity = Gravity.END
+            binding.cardFrontLand!!.entityAttribute2.gravity = Gravity.END
+            binding.cardFrontLand!!.entityAttribute3.gravity = Gravity.END
+            binding.cardFrontLand!!.entityAttribute4.gravity = Gravity.END
+            binding.cardFrontLand!!.attributeListOpened = false
+            binding.cardFrontLand!!.showAttributesButton.setOnClickListener { event ->
+                val imageView = requireActivity().findViewById<ImageView>(R.id.showAttributesButton)
+                val layoutParams = imageView.layoutParams as MarginLayoutParams
+                if (binding.cardFrontLand!!.attributeListOpened  == true) {
+                    binding.cardFrontLand!!.showAttributesButton.setImageResource(R.drawable.ic_arrow_up)
+                    binding.cardFrontLand!!.attributeListOpened = false
+                    layoutParams.bottomMargin = 0
+                    binding.cardFrontLand!!.showAttributesButton.layoutParams = layoutParams
+                } else {
+                    binding.cardFrontLand!!.showAttributesButton.setImageResource(R.drawable.ic_arrow_down)
+                    binding.cardFrontLand!!.attributeListOpened = true
+                    binding.cardFrontLand!!.entityAttribute1.gravity = Gravity.END
+                    binding.cardFrontLand!!.entityAttribute2.gravity = Gravity.END
+                    binding.cardFrontLand!!.entityAttribute3.gravity = Gravity.END
+                    binding.cardFrontLand!!.entityAttribute4.gravity = Gravity.END
+                    layoutParams.bottomMargin = 90
+                    binding.cardFrontLand!!.showAttributesButton.layoutParams = layoutParams
                 }
-                ViewExtensionsKt.clipWithAllRoundedCorners(binding.sectionSelectedMark, ExtensionsKt.getDp(2))
             }
-        }.root
+//            ViewExtensionsKt.clipWithAllRoundedCorners(binding.sectionSelectedMark, ExtensionsKt.getDp(2))
+        }
+
+        return binding.root
     }
 
     private fun updateEnrollment(enrollmentUid: String) {
@@ -216,7 +248,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     fun getAttributeValue(attributeUid: String): TrackedEntityAttributeValue? {
-        val filteredValue = attributeValues!!.stream().filter { value: TrackedEntityAttributeValue ->
+        val filteredValue = internalAttributeValues!!.stream().filter { value: TrackedEntityAttributeValue ->
             println(value.trackedEntityAttribute().toString() + "===================" + attributeUid)
             value.trackedEntityAttribute() == attributeUid
         }.collect(Collectors.toList())
@@ -233,9 +265,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             teiAttributesLoopCounter++
         }
         teiModel!!.attributeValues = linkedHashMapOfAttrValues
-        if (OrientationUtilsKt.isLandscape()) {
-            binding.cardFrontLand.setAttributeNames(teiModel!!.attributeValues.keys)
-            binding.cardFrontLand.setAttribute(teiModel!!.attributeValues.values.stream().collect(Collectors.toList()))
+        if (isLandscape()) {
+            binding.cardFrontLand!!.attributeNames = teiModel!!.attributeValues.keys
+            binding.cardFrontLand!!.attribute = teiModel!!.attributeValues.values.stream().collect(Collectors.toList())
         }
     }
 
@@ -271,21 +303,21 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun setTrackedEntityInstance(
+    fun setTrackedEntityInstance(
         trackedEntityInstance: TrackedEntityInstance,
         organisationUnit: OrganisationUnit,
         trackedEntityAttributeValues: List<TrackedEntityAttributeValue>
     ) {
         binding.trackEntity = trackedEntityInstance
-        binding.cardFront.orgUnit.text = organisationUnit.displayName()
+        binding.cardFront!!.orgUnit.text = organisationUnit.displayName()
 
-        if (OrientationUtilsKt.isLandscape()) {
-            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
-            this.attributeValues = trackedEntityAttributeValues;
+        if (isLandscape()) {
+            binding.cardFrontLand!!.orgUnit = organisationUnit.name()
+            this.internalAttributeValues = trackedEntityAttributeValues
 
             if (this.programTrackedEntityAttributes != null) {
 
-                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+                setAttributesAndValues(this.internalAttributeValues, this.programTrackedEntityAttributes);
 
             }
         }
@@ -301,7 +333,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun setAttributeValues(attributeValues: List<TrackedEntityAttributeValue?>?) {}
+    override fun setAttributeValues(attributeValues: List<TrackedEntityAttributeValue?>?) {
+
+    }
 
     fun setData(dashboardModel: DashboardProgramModel) {
         this.dashboardModel = dashboardModel
@@ -329,28 +363,21 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             showLoadingProgress(false)
         }
 
-        if (OrientationUtilsKt.isPortrait())) {
-            binding.cardFront.detailsButton.setButtonContent(dashboardActivity.presenter.teType) {
-                presenter.seeDetails(binding.cardFront.cardData, dashboardModel)
+        if (isPortrait()) {
+            binding.cardFront!!.detailsButton.setButtonContent(dashboardActivity.presenter.teType) {
+                presenter.seeDetails(binding.cardFront!!.cardData, dashboardModel)
             }
         } else {
-            DetailsButtonKt.setButtonContent(
-                    binding.cardFrontLand.detailsButton,
-                    activity.presenter.getTEType()
-            ) { Unit.INSTANCE }
+            binding.cardFrontLand!!.detailsButton.setButtonContent(activity?.presenter!!.teType) { Unit }
 
 
-            FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, activity.presenter.getTEType(), followUp.get()) {
+            binding.cardFrontLand!!.followupButton.setFollowupButtonContent(activity.presenter.teType, followUp.get()) {
                 presenter.onFollowUp(dashboardModel)
                 presenter.init()
-                Unit.INSTANCE
             }
 
-            LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, activity.presenter.getTEType()) {
-
-//                presenter.onFollowUp(dashboardModel);
+            binding.cardFrontLand!!.lockButton.setLockButtonContent(activity.presenter.teType) {
                 showEnrollmentStatusOptions()
-                Unit.INSTANCE
             }
         }
 
@@ -377,13 +404,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
         AppMenuHelper.Builder()
                 .anchor(binding.teiData)
-                .menu(activity!!, menu)
-                .onMenuInflated { popupMenu: PopupMenu? -> Unit.INSTANCE }
+                .menu(requireActivity(), menu)
+                .onMenuInflated { popupMenu: PopupMenu? -> KParameter.Kind.INSTANCE }
                 .onMenuItemClicked { itemId: Int? ->
                     when (itemId) {
-                        R.id.complete -> activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.COMPLETED)
-                        R.id.deactivate -> activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.CANCELLED)
-                        R.id.reOpen -> activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.ACTIVE)
+                        R.id.complete -> activity?.getPresenter()?.updateEnrollmentStatus(activity.enrollmentUid, EnrollmentStatus.COMPLETED)
+                        R.id.deactivate -> activity?.getPresenter()?.updateEnrollmentStatus(activity.enrollmentUid, EnrollmentStatus.CANCELLED)
+                        R.id.reOpen -> activity?.getPresenter()?.updateEnrollmentStatus(activity.enrollmentUid, EnrollmentStatus.ACTIVE)
                     }
                     true
                 }
@@ -392,6 +419,31 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun setFilters(filterItems: List<FilterItem>) {
         filtersAdapter.submitList(filterItems)
+    }
+
+    override fun setRiskColor(risk: String?) {
+        if (risk === "High Risk") {
+            binding.highRisk = true
+            binding.lowRisk = false
+        }
+        if (risk === "Low Risk") {
+            binding.lowRisk = true
+            binding.highRisk = false
+        }
+    }
+
+    override fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute?>?) {
+        if (programTrackedEntityAttributes != null) {
+            this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
+                    .filter { attr: ProgramTrackedEntityAttribute? -> attr?.displayInList()!! }
+                    .collect(Collectors.toList()) as List<ProgramTrackedEntityAttribute>?
+        }
+        Collections.sort<ProgramTrackedEntityAttribute>(this.programTrackedEntityAttributes, CustomComparator())
+        if (isLandscape()) {
+            if (internalAttributeValues != null) {
+                setAttributesAndValues(internalAttributeValues, this.programTrackedEntityAttributes)
+            }
+        }
     }
 
     override fun hideFilters() {
@@ -430,6 +482,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             }
         }
         showLoadingProgress(false)
+    }
+
+    override fun showCatComboDialog(eventUid: String?, eventDate: Date?, categoryComboUid: String?) {
+        TODO("Not yet implemented")
     }
 
     private fun showLoadingProgress(showProgress: Boolean) {
@@ -562,6 +618,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         dashboardActivity.finish()
     }
 
+    override fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance, organisationUnit: OrganisationUnit) {
+        TODO("Not yet implemented")
+    }
+
     override fun seeDetails(intent: Intent, options: ActivityOptionsCompat) =
         detailsLauncher.launch(intent, options)
 
@@ -574,9 +634,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun showTeiImage(filePath: String, defaultIcon: String) {
         if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-            binding.cardFront.teiImage.visibility = View.GONE
+            binding.cardFront!!.teiImage.visibility = View.GONE
         } else {
-            binding.cardFront.teiImage.visibility = View.VISIBLE
+            binding.cardFront!!.teiImage.visibility = View.VISIBLE
             Glide.with(this)
                 .load(File(filePath))
                 .error(
@@ -589,8 +649,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .transform(CircleCrop())
-                .into(binding.cardFront.teiImage)
-            binding.cardFront.teiImage.setOnClickListener {
+                .into(binding.cardFront!!.teiImage)
+            binding.cardFront!!.teiImage.setOnClickListener {
                 val fileToShow = File(filePath)
                 if (fileToShow.exists()) {
                     ImageDetailBottomDialog(
@@ -704,52 +764,48 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         )
     }
 
-    fun setRiskColor(risk: String) {
-        println("999999999999999999999999999999999")
-        println(risk)
-        if (risk === "High Risk") {
-            println("High")
-            binding.setHighRisk(true)
-            binding.setLowRisk(false)
-        }
-        if (risk === "Low Risk") {
-            println("Low")
-            binding.setLowRisk(true)
-            binding.setHighRisk(false)
-        }
-    }
+//    fun setRiskColor(risk: String) {
+//        if (risk === "High Risk") {
+//            binding.highRisk = true
+//            binding.lowRisk = false
+//        }
+//        if (risk === "Low Risk") {
+//            binding.lowRisk = true
+//            binding.highRisk = false
+//        }
+//    }
 
-    fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>) {
-        println(programTrackedEntityAttributes.size)
-        this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
-                .filter { attr: ProgramTrackedEntityAttribute -> attr.displayInList()!! }
-                .collect(Collectors.toList())
-        Collections.sort<ProgramTrackedEntityAttribute>(this.programTrackedEntityAttributes, CustomComparator())
-        if (OrientationUtilsKt.isLandscape()) {
-            if (attributeValues != null) {
-                setAttributesAndValues(attributeValues, this.programTrackedEntityAttributes)
-            }
-        }
-    }
+//    fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>) {
+//        println(programTrackedEntityAttributes.size)
+//        this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
+//                .filter { attr: ProgramTrackedEntityAttribute -> attr.displayInList()!! }
+//                .collect(Collectors.toList())
+//        Collections.sort<ProgramTrackedEntityAttribute>(this.programTrackedEntityAttributes, CustomComparator())
+//        if (isLandscape()) {
+//            if (attributeValues != null) {
+//                setAttributesAndValues(attributeValues, this.programTrackedEntityAttributes)
+//            }
+//        }
+//    }
 
     private fun showAttributeList() {
-        binding.cardFrontLand.attributeBName.setVisibility(View.GONE)
-        binding.cardFrontLand.enrolledOrgUnit.setVisibility(View.GONE)
-        binding.cardFrontLand.sortingFieldName.setVisibility(View.GONE)
-        binding.cardFrontLand.entityAttribute2.setVisibility(View.GONE)
-        binding.cardFrontLand.entityOrgUnit.setVisibility(View.GONE)
-        binding.cardFrontLand.sortingFieldValue.setVisibility(View.GONE)
-        binding.cardFrontLand.attributeList.setVisibility(View.VISIBLE)
+        binding.cardFrontLand!!.attributeBName.visibility = View.GONE
+        binding.cardFrontLand!!.enrolledOrgUnit.visibility = View.GONE
+        binding.cardFrontLand!!.sortingFieldName.visibility = View.GONE
+        binding.cardFrontLand!!.entityAttribute2.visibility = View.GONE
+        binding.cardFrontLand!!.entityOrgUnit.visibility = View.GONE
+        binding.cardFrontLand!!.sortingFieldValue.visibility = View.GONE
+        binding.cardFrontLand!!.attributeList.visibility = View.VISIBLE
     }
 
     private fun hideAttributeList() {
-        binding.cardFrontLand.attributeList.setVisibility(View.GONE)
-        binding.cardFrontLand.attributeBName.setVisibility(View.VISIBLE)
-        binding.cardFrontLand.enrolledOrgUnit.setVisibility(View.VISIBLE)
-        binding.cardFrontLand.sortingFieldName.setVisibility(View.VISIBLE)
-        binding.cardFrontLand.entityAttribute2.setVisibility(View.VISIBLE)
-        binding.cardFrontLand.entityOrgUnit.setVisibility(View.VISIBLE)
-        binding.cardFrontLand.sortingFieldValue.setVisibility(View.VISIBLE)
+        binding.cardFrontLand!!.attributeList.visibility = View.GONE
+        binding.cardFrontLand!!.attributeBName.visibility = View.VISIBLE
+        binding.cardFrontLand!!.enrolledOrgUnit.visibility = View.VISIBLE
+        binding.cardFrontLand!!.sortingFieldName.visibility = View.VISIBLE
+        binding.cardFrontLand!!.entityAttribute2.visibility = View.VISIBLE
+        binding.cardFrontLand!!.entityOrgUnit.visibility = View.VISIBLE
+        binding.cardFrontLand!!.sortingFieldValue.visibility = View.VISIBLE
     }
 
 

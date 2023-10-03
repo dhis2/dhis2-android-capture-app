@@ -30,6 +30,7 @@ import org.dhis2.bindings.checkSMSPermission
 import org.dhis2.bindings.showSMS
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
@@ -320,6 +321,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     class Builder {
         private var context: Context? = null
         private var fm: FragmentManager? = null
+        private lateinit var conflictType: ConflictType
+        private lateinit var recordUid: String
         private var navigator: SyncStatusDialogNavigator? = null
         private lateinit var syncContext: SyncContext
         private var dismissListener: OnDismissListener? = null
@@ -334,6 +337,16 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 onSyncNavigationListener = onSyncNavigationListener,
             )
             this.fm = context.supportFragmentManager
+            return this
+        }
+
+        fun setConflictType(conflictType: ConflictType): Builder {
+            this.conflictType = conflictType
+            return this
+        }
+
+        fun setUid(uid: String): Builder {
+            this.recordUid = uid
             return this
         }
 
@@ -360,7 +373,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return this
         }
 
-        private fun build(): SyncStatusDialog {
+        public fun build(): SyncStatusDialog {
             return SyncStatusDialog().apply {
                 arguments = Bundle().apply {
                     putParcelable(SYNC_CONTEXT, syncContext)

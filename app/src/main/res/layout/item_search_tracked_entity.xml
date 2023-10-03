@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="android.view.Gravity" />
 
         <variable
             name="followUp"
@@ -40,8 +41,20 @@
             type="java.lang.Boolean" />
 
         <variable
+            name="gravityPosition"
+            type="String" />
+
+        <variable
             name="orgUnit"
             type="String" />
+
+        <variable
+            name="highRisk"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="lowRisk"
+            type="java.lang.Boolean" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -59,17 +72,25 @@
             android:animateLayoutChanges="true"
             android:minHeight="92dp">
 
-            <ImageView
-                android:id="@+id/tracked_entity_image"
+            <LinearLayout
+                android:id="@+id/tei_image_back_ground"
+                android:background="@{highRisk? @drawable/tei_image_background_high_risk: lowRisk? @drawable/tei_image_background_low_risk: null }"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_tei_default"
-                tools:background="@drawable/photo_temp_gray"
-                tools:ignore="ContentDescription" />
+                app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/tracked_entity_image"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_tei_default"
+                    tools:background="@drawable/photo_temp_gray"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/imageText"
@@ -78,10 +99,10 @@
                 android:includeFontPadding="true"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@id/tracked_entity_image"
-                app:layout_constraintEnd_toEndOf="@id/tracked_entity_image"
-                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
-                app:layout_constraintTop_toTopOf="@id/tracked_entity_image"
+                app:layout_constraintBottom_toBottomOf="@id/tei_image_back_ground"
+                app:layout_constraintEnd_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintStart_toStartOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toTopOf="@id/tei_image_back_ground"
                 tools:text="A"
                 tools:textColor="@color/white" />
 
@@ -92,7 +113,7 @@
                 android:layout_marginStart="27dp"
                 android:layout_marginTop="14dp"
                 android:visibility="@{overdue? View.VISIBLE: View.GONE}"
-                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
+                app:layout_constraintStart_toStartOf="@id/tei_image_back_ground"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_overdue" />
 
@@ -104,7 +125,7 @@
                 android:layout_marginStart="27dp"
                 android:layout_marginTop="34dp"
                 android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
-                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
+                app:layout_constraintStart_toStartOf="@id/tei_image_back_ground"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_follow_up"
                 tools:ignore="ContentDescription" />
@@ -125,9 +146,9 @@
                 android:textColor="#8A333333"
                 android:textSize="9sp"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/tracked_entity_image"
-                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
-                app:layout_constraintTop_toBottomOf="@id/tracked_entity_image"
+                app:layout_constraintEnd_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintStart_toStartOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toBottomOf="@id/tei_image_back_ground"
                 tools:text="Completed"
                 tools:visibility="visible" />
 
@@ -146,13 +167,14 @@
                 android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
                 app:layout_constraintEnd_toStartOf="@+id/infoLayout"
                 app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
-                app:layout_constraintTop_toTopOf="@id/tracked_entity_image"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toTopOf="@id/tei_image_back_ground"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintWidth_max="wrap"
-                app:layout_constraintWidth_percent="0.2"
+                app:layout_constraintWidth_percent="0.7"
                 tools:text="Attribute 1:" />
 
+            <!--            android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"-->
             <TextView
                 android:id="@+id/attribute_b_name"
                 android:layout_width="wrap_content"
@@ -169,12 +191,58 @@
                 android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@+id/infoLayout"
                 app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
                 app:layout_constraintTop_toBottomOf="@id/attribute_a_name"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintWidth_max="wrap"
-                app:layout_constraintWidth_percent="0.2"
+                app:layout_constraintWidth_percent="0.9"
                 tools:text="Attribute 2:" />
+
+            <TextView
+                android:id="@+id/attribute_c_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="@{attributeNames.size()>2?attributeNames.toArray()[2]:null}"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.9"
+                tools:text="Attribute 3:" />
+
+            <TextView
+                android:id="@+id/attribute_d_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="@{attributeNames.size()>3?attributeNames.toArray()[3]:null}"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 3 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.9"
+                tools:text="Attribute 4:" />
 
             <TextView
                 android:id="@+id/enrolled_orgUnit"
@@ -187,11 +255,11 @@
                 android:text="@string/enrolled_in"
                 android:textColor="@color/textPrimary"
                 android:textSize="12sp"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
-                app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
+                app:layout_constraintTop_toBottomOf="@id/attribute_d_name"
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.2"
-                tools:text="Attribute 3:" />
+                tools:text="Attribute:" />
 
             <TextView
                 android:id="@+id/sorting_field_name"
@@ -204,7 +272,7 @@
                 android:textColor="@color/sorting_attribute_key_color"
                 android:textSize="12sp"
                 android:visibility='@{sortingValue !=null &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
                 app:layout_constraintTop_toBottomOf="@id/enrolled_orgUnit"
                 tools:text="Sorting field:" />
 
@@ -220,11 +288,12 @@
                 android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
                 android:textColor="@color/textSecondary"
                 android:textSize="14sp"
+                android:layout_weight="1"
                 android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/attribute_a_name"
                 app:layout_constraintTop_toTopOf="@id/attribute_a_name"
-                tools:text="dfsgsdfgsdfgsdfgsdfgsdfgsdfg" />
+                tools:text="attribute 1" />
 
             <TextView
                 android:id="@+id/entity_attribute_2"
@@ -239,11 +308,52 @@
                 android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
                 android:textColor="@color/textSecondary"
                 android:textSize="12sp"
+                android:layout_weight="1"
                 android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/attribute_b_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+
+            <TextView
+                android:id="@+id/entity_attribute_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "" , default="attribute 3"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:layout_weight="1"
+                android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_c_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
+
+            <TextView
+                android:id="@+id/entity_attribute_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 3 ? attribute.get(3).value() : "" , default="attribute 4"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:layout_weight="1"
+                android:visibility='@{attribute.size() > 3 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_d_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_3" />
 
             <TextView
                 android:id="@+id/entity_orgUnit"
@@ -259,8 +369,8 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/enrolled_orgUnit"
-                app:layout_constraintTop_toBottomOf="@id/entity_attribute_2"
-                tools:text="attribute 3" />
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_4"
+                tools:text="OrgUnit" />
 
             <TextView
                 android:id="@+id/sorting_field_value"
@@ -345,7 +455,7 @@
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/actionLayout"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -380,6 +490,92 @@
                     app:tint="#61333333" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_03125"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".03125" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_0625"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".0625" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".5" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_625"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".65" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_65625"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".65625" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_6875"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".6875" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_71875"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".71875" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/detailsButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@id/guideline_625"
+                app:layout_constraintStart_toStartOf="@id/guideline_03125"
+                app:layout_constraintTop_toBottomOf="@id/sorting_field_name" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_69"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".69" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_9375"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".9375" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/followupButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@id/guideline_69"
+                app:layout_constraintTop_toBottomOf="@id/sorting_field_name" />
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/lockButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:layout_constraintEnd_toStartOf="@id/guideline_9375"
+                app:layout_constraintTop_toBottomOf="@id/sorting_field_name" />
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="1dp"
@@ -387,7 +583,7 @@
                 android:background="@color/divider_bg"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image" />
+                app:layout_constraintStart_toEndOf="@id/tei_image_back_ground" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

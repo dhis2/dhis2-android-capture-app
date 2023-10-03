@@ -51,11 +51,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
+                android:maxLines="1"
                 android:text='@{title}'
                 android:textColor="?colorAccent"
-                android:ellipsize="end"
-                android:maxLines="1"
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintStart_toEndOf="@id/backArrow"
                 app:layout_constraintTop_toTopOf="parent"
@@ -113,8 +113,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_map"
                 app:tint="@color/white"
-                tools:visibility="visible"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/moreOptions"
@@ -146,54 +146,127 @@
                 tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline25"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".25" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".50" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline75"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".75" />
-
-        <FrameLayout
-            android:id="@+id/tei_main_view"
-            android:layout_width="0dp"
+        <View
+            android:id="@+id/top_dummy_view"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
+            android:background="?colorPrimary"
+            app:layout_constraintBottom_toTopOf="@id/bottom_dummy_view"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/tei_table_pager"
-            android:layout_width="0dp"
+        <View
+            android:id="@+id/bottom_dummy_view"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/navigationBar"
+            android:background="@color/form_field_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_dummy_view" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
-            android:id="@+id/navigationBar"
-            style="@style/DhisBottomNavigationView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/guideline75"
-            app:layout_constraintStart_toStartOf="@id/guideline25"
-            app:forceShowAnalytics="true"
-            app:menu="@menu/navigation_dashboard_landscape_menu" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline25"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".3" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".50" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline625"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".70" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline75"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".75" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tei_primary_color_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toStartOf="@id/guideline25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <FrameLayout
+                    android:id="@+id/tei_main_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <FrameLayout
+                android:id="@+id/tei_form_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/white"
+                android:elevation="3dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline625"
+                app:layout_constraintStart_toEndOf="@id/guideline25"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/saveLand"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    app:backgroundTint="?colorPrimary"
+                    app:srcCompat="@drawable/ic_save"
+                    app:tint="@color/white" />
+            </FrameLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/tei_table_pager"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@id/navigationBar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline625"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
+                android:id="@+id/navigationBar"
+                style="@style/DhisBottomNavigationView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:forceShowAnalytics="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline625"
+                app:menu="@menu/navigation_dashboard_landscape_menu" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

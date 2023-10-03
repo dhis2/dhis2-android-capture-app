@@ -69,6 +69,7 @@ class EventAdapter(
                     stageSelector,
                     presenter,
                     colorUtils,
+                        ""
                 )
             }
             EVENT -> {
@@ -82,6 +83,7 @@ class EventAdapter(
                     binding,
                     program,
                     colorUtils,
+                        "",
                     { presenter.onSyncDialogClick(it) },
                     { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
                     { eventUid, _, eventStatus, _ ->

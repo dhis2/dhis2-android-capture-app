@@ -29,6 +29,20 @@ const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
 
 class OUTreeFragment private constructor() : DialogFragment() {
 
+    companion object {
+        fun newInstance(
+                showAsDialog: Boolean = false,
+                preselectedOrgUnits: MutableList<String> = mutableListOf()
+        ): OUTreeFragment {
+            return OUTreeFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean(ARG_SHOW_AS_DIALOG, showAsDialog)
+                    putStringArrayList(ARG_PRE_SELECTED_OU, ArrayList(preselectedOrgUnits))
+                }
+            }
+        }
+    }
+
     class Builder {
         private var showAsDialog = false
         private var preselectedOrgUnits = listOf<String>()

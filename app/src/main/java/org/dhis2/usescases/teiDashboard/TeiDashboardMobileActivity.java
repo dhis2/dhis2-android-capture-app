@@ -45,8 +45,10 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -63,8 +65,8 @@ import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ViewExtensionsKt;
+import org.dhis2.bindings.ExtensionsKt;
+import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.ResourceManager;
@@ -261,7 +263,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .onFinishDataEntry(
                             () -> presenter.fininshEnrollmentDataEntry()
                     )
-                    .resultDialogUiProvider(new EnrollmentResultDialogUiProvider(new ResourceManager(this.getContext())))
+                    .resultDialogUiProvider(new EnrollmentResultDialogUiProvider(new ResourceManager(this.getContext(), new ColorUtils())))
                     .factory(getSupportFragmentManager()).setRecords(new EnrollmentRecords(enrollmentUid, EnrollmentMode.NEW)).build();
 
 
@@ -495,6 +497,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.adapter = null;
         this.programUid = programUid;
         presenter.init();
+    }
+
+    @Override
+    public Unit updateEnrollmentFields(RowAction action) {
+        return null;
+    }
+
+    @Override
+    public Unit fininshEnrollmentDataEntry() {
+        return null;
     }
 
     @Override

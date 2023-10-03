@@ -264,6 +264,10 @@ class NavigationBottomBar @JvmOverloads constructor(
     fun currentPage(): Int {
         return visibleItemCount().indexOfFirst { it.itemId == currentItemId }
     }
+
+    fun getInitialPage(): Int {
+       return this.initialPage
+    }
 }
 
 @BindingAdapter("initialPage")

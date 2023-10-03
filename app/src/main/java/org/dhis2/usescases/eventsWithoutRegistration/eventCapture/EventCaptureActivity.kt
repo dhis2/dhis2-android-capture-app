@@ -19,6 +19,8 @@ import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
+import org.dhis2.bindings.clipWithRoundedCorners
+import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
@@ -76,6 +78,7 @@ class EventCaptureActivity :
     var programStageUid: String? = null
 
     var enrollmentUid: String? = null
+    var setOfAttributeNames: Set<String>? = null
     var teiUid: String? = null
 
     private var dashboardViewModel: DashboardViewModel? = null
@@ -116,7 +119,7 @@ class EventCaptureActivity :
         programStageUid = intent.getStringExtra(Constants.PROGRAM_STAGE_UID)
 
         // TODO: fails due to lack of dynamism
-//        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+        setOfAttributeNames = intent.getStringArrayExtra("ATTRIBUTE_NAMES") as Set<String>
 
 
         // TODO: fails due to lack of dynamism
@@ -145,8 +148,8 @@ class EventCaptureActivity :
                 programStageUid = stageUid
             }
             dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel::class.java)
-            supportFragmentManager.beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid)).commitAllowingStateLoss()
-            supportFragmentManager.beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, eventUid, programStageUid, HashSet<E>() //                    setOfAttributeNames
+            supportFragmentManager.beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false)).commitAllowingStateLoss()
+            supportFragmentManager.beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, eventUid, programStageUid, setOfAttributeNames
             )).commitAllowingStateLoss()
         }
         showProgress()
@@ -161,13 +164,13 @@ class EventCaptureActivity :
 
     private fun setUpViewPagerAdapter(initialPage: Int) {
         if (isLandscape()) {
-            binding!!.eventViewLandPager.setUserInputEnabled(false)
-            binding!!.eventViewLandPager.setAdapter(null)
-            adapter = EventCapturePagerAdapter(this, intent.getStringExtra(PROGRAM_UID), intent.getStringExtra(Constants.EVENT_UID), pageConfigurator!!.displayAnalytics(), pageConfigurator!!.displayRelationships(), false, teiUid, enrollmentUid)
-            binding!!.eventViewLandPager.setAdapter(adapter)
-            binding!!.eventViewLandPager.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
-            ViewExtensionsKt.clipWithRoundedCorners(binding!!.layoutContainer, ExtensionsKt.getDp(16))
-            binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            binding!!.eventViewLandPager!!.isUserInputEnabled = false
+            binding!!.eventViewLandPager!!.adapter = null
+            adapter = EventCapturePagerAdapter(this, intent.getStringExtra(PROGRAM_UID), intent.getStringExtra(Constants.EVENT_UID), pageConfigurator!!.displayAnalytics(), pageConfigurator!!.displayRelationships(), false, false, teiUid, enrollmentUid)
+            binding!!.eventViewLandPager!!.adapter = adapter
+            binding!!.eventViewLandPager!!.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
+            binding!!.eventViewLandPager!!.clipWithRoundedCorners(16.dp)
+            binding!!.eventViewPager!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     if (position == 0 && eventMode !== EventMode.NEW) {
@@ -181,8 +184,8 @@ class EventCaptureActivity :
                 }
             })
         } else {
-            binding!!.eventViewPager.isUserInputEnabled = false
-            binding!!.eventViewPager.adapter = null
+            binding!!.eventViewPager!!.isUserInputEnabled = false
+            binding!!.eventViewPager!!.adapter = null
 
             // TODO: refactor the null parameters passed
             adapter = EventCapturePagerAdapter(
@@ -192,12 +195,15 @@ class EventCaptureActivity :
                     pageConfigurator!!.displayAnalytics(),
                     pageConfigurator!!.displayRelationships(),
                     intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
+                    false,
+                    teiUid,
+                    enrollmentUid
             )
 
-            binding!!.eventViewPager.adapter = adapter
-            binding!!.eventViewPager.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
-            ViewExtensionsKt.clipWithRoundedCorners(binding!!.eventViewPager, ExtensionsKt.getDp(16))
-            binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            binding!!.eventViewPager!!.adapter = adapter
+            binding!!.eventViewPager!!.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
+            binding!!.eventViewLandPager!!.clipWithRoundedCorners(16.dp)
+            binding!!.eventViewPager!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     if (position == 0 && eventMode !== EventMode.NEW) {
@@ -217,10 +223,10 @@ class EventCaptureActivity :
         binding!!.navigationBar.setInitialPage(initialPage)
         binding!!.navigationBar.pageConfiguration(pageConfigurator!!)
         binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem -> run {
-            if (OrientationUtilsKt.isLandscape(this)) {
-                binding!!.eventViewLandPager.setCurrentItem(adapter!!.getDynamicTabIndex(item.itemId))
+            if (isLandscape()) {
+                binding!!.eventViewLandPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
             } else {
-                binding!!.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+                binding!!.eventViewPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
             }
         }
 
@@ -354,10 +360,10 @@ class EventCaptureActivity :
 
             if (isLandscape()) {
                 if (
-                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_data_entry ||
-                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_details ||
-                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_analytics ||
-                        binding!!.navigationBar.getSelectedItemId() == R.id.navigation_notes
+                        binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry ||
+                        binding!!.navigationBar.selectedItemId == R.id.navigation_details ||
+                        binding!!.navigationBar.selectedItemId == R.id.navigation_analytics ||
+                        binding!!.navigationBar.selectedItemId == R.id.navigation_notes
                 ) {
                     if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
                         val dialog = BottomSheetDialog(
@@ -379,8 +385,8 @@ class EventCaptureActivity :
                                 },
                         )
                         dialog.show(supportFragmentManager, SHOW_OPTIONS)
-                        EventCaptureFormFragment.getBinding().progress.setVisibility(View.GONE);
-                        EventCaptureFormFragment.getBinding().actionButton.setVisibility(View.VISIBLE);
+                        EventCaptureFormFragment.getBinding().progress.visibility = View.GONE;
+                        EventCaptureFormFragment.getBinding().actionButton.visibility = View.VISIBLE;
                     }
                 }
             }
@@ -402,7 +408,7 @@ class EventCaptureActivity :
 
     fun executeRules() {
         val fragement: EventTeiDetailsFragment? = supportFragmentManager.findFragmentById(R.id.tei_column) as EventTeiDetailsFragment?
-        fragement.onResume()
+        fragement!!.onResume()
     }
 
     override fun attemptToReschedule() {
@@ -606,9 +612,9 @@ class EventCaptureActivity :
             return bundle
         }
 
-        fun onSaveInstanceState(savedInstanceState: Bundle?) {
-            super.onSaveInstanceState(savedInstanceState)
-        }
+//        fun onSaveInstanceState(savedInstanceState: Bundle?) {
+//            super.onSaveInstanceState(savedInstanceState)
+//        }
 
         fun intent(
             context: Context,
