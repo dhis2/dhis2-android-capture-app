@@ -30,6 +30,8 @@ import org.dhis2.form.ui.provider.inputfield.ProvideCheckBoxInput
 import org.dhis2.form.ui.provider.inputfield.ProvideRadioButtonInput
 import org.dhis2.form.ui.provider.inputfield.ProvideYesNoCheckBoxInput
 import org.dhis2.form.ui.provider.inputfield.ProvideYesNoRadioButtonInput
+import org.dhis2.form.ui.provider.inputfield.ProvideYesOnlyCheckBoxInput
+import org.dhis2.form.ui.provider.inputfield.ProvideYesOnlySwitchInput
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
