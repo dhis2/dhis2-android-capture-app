@@ -7,7 +7,7 @@ import org.dhis2.commons.filters.WorkingListFilter
 import org.dhis2.commons.filters.data.FilterRepository
 
 class WorkingListViewModel(
-    programUid: String,
+    programUid: String?,
     filterRepository: FilterRepository,
 ) : ViewModel() {
 
@@ -15,6 +15,8 @@ class WorkingListViewModel(
     val workingListFilter: LiveData<WorkingListFilter?> = _workingListFilter
 
     init {
-        _workingListFilter.postValue(filterRepository.workingListFilter(programUid))
+        programUid?.let {
+            _workingListFilter.postValue(filterRepository.workingListFilter(it))
+        }
     }
 }
