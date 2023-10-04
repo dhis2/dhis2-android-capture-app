@@ -78,7 +78,7 @@ class EventCaptureActivity :
     var programStageUid: String? = null
 
     var enrollmentUid: String? = null
-    var setOfAttributeNames: Set<String>? = null
+    private var setOfAttributeNames: Set<String> = emptySet()
     var teiUid: String? = null
 
     private var dashboardViewModel: DashboardViewModel? = null
@@ -119,8 +119,7 @@ class EventCaptureActivity :
         programStageUid = intent.getStringExtra(Constants.PROGRAM_STAGE_UID)
 
         // TODO: fails due to lack of dynamism
-        setOfAttributeNames = intent.getStringArrayExtra("ATTRIBUTE_NAMES") as Set<String>
-
+//        setOfAttributeNames = intent.getStringArrayExtra("ATTRIBUTE_NAMES") as Set<String>
 
         // TODO: fails due to lack of dynamism
 //        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
@@ -170,7 +169,7 @@ class EventCaptureActivity :
             binding!!.eventViewLandPager!!.adapter = adapter
             binding!!.eventViewLandPager!!.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
             binding!!.eventViewLandPager!!.clipWithRoundedCorners(16.dp)
-            binding!!.eventViewPager!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            binding!!.eventViewLandPager!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     if (position == 0 && eventMode !== EventMode.NEW) {

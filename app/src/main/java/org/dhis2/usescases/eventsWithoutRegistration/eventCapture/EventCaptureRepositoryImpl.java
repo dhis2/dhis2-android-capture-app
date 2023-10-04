@@ -88,8 +88,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<List<Event>> getTEIEnrollmentEvents() {
-
-        //TODO : soft code
         Enrollment enrollment = getCurrentEnrollment();
 
         return
@@ -101,9 +99,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     .equals(d2.programModule().programs().uid("WSGAb5XwJ3Y").blockingGet().ignoreOverdueEvents()))
                                 if (event.status() == EventStatus.SCHEDULE
                                         && event.dueDate().before(DateUtils.getInstance().getToday()))
-//                            event = updateState(event, EventStatus.OVERDUE);
                                     System.out.println("");
-
                             return event;
                         }).toList().toObservable();
 

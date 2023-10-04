@@ -67,10 +67,6 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-
-        System.out.println("whats happening humu?");
-        System.out.println(locationProvider);
-
         formView = new FormView.Builder()
                 .locationProvider(locationProvider)
                 .onLoadingListener(loading -> {

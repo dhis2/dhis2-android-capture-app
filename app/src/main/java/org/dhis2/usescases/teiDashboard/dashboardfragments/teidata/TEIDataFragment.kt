@@ -25,6 +25,8 @@ import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import org.dhis2.R
 import org.dhis2.bindings.app
+import org.dhis2.bindings.clipWithAllRoundedCorners
+import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
 import org.dhis2.commons.animations.collapse
 import org.dhis2.commons.animations.expand
@@ -152,23 +154,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-//        if (teiModel == null) {
-//            teiModel = SearchTeiModel()
-//        }
-//        return FragmentTeiDataBinding.inflate(inflater, container, false).also { binding ->
-//            this.binding = binding
-//            binding.presenter = presenter
-//            dashboardActivity.observeGrouping().observe(viewLifecycleOwner) { group ->
-//                showLoadingProgress(true)
-//                binding.isGrouping = group
-//                presenter.onGroupingChanged(group)
-//            }
-//            dashboardActivity.observeFilters()
-//                .observe(viewLifecycleOwner, ::showHideFilters)
-//            dashboardActivity.updatedEnrollment()
-//                .observe(viewLifecycleOwner, ::updateEnrollment)
-//
-//            binding.filterLayout.adapter = filtersAdapter
         if (teiModel == null) {
             teiModel = SearchTeiModel()
         }
@@ -193,6 +178,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.cardFrontLand!!.entityAttribute2.gravity = Gravity.END
             binding.cardFrontLand!!.entityAttribute3.gravity = Gravity.END
             binding.cardFrontLand!!.entityAttribute4.gravity = Gravity.END
+//            binding.cardFrontLand!!.detailsButton.setRoundedCorners(45.dp)
             binding.cardFrontLand!!.attributeListOpened = false
             binding.cardFrontLand!!.showAttributesButton.setOnClickListener { event ->
                 val imageView = requireActivity().findViewById<ImageView>(R.id.showAttributesButton)

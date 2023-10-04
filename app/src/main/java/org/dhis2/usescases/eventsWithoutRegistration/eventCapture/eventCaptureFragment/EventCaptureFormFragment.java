@@ -70,13 +70,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                         getArguments().getString(Constants.EVENT_UID))
         ).inject(this);
         setRetainInstance(true);
-        binding.setPresenter(activity.getPresenter());
-        binding.actionButton.setOnClickListener(view -> {
-            closeKeyboard(view);
-            binding.actionButton.setVisibility(View.GONE);
-            binding.progress.setVisibility(View.VISIBLE);
-            performSaveClick();
-        });
     }
 
     @Override

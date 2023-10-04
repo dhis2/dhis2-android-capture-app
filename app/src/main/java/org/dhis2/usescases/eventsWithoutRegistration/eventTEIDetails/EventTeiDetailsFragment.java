@@ -379,7 +379,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     TrackedEntityAttributeValue getAttributeValue(String attributeUid) {
         List<TrackedEntityAttributeValue> filteredValue = this.attributeValues.stream().filter(value -> {
-            System.out.println(value.trackedEntityAttribute().toString() + "===================" + attributeUid.toString());
             return value.trackedEntityAttribute().equals(attributeUid);
         }).collect(Collectors.toList());
 
@@ -885,9 +884,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             bundle.putString(ORG_UNIT, "V5XvX1wr1kF");
         }
         if (attributeNames != null) {
-
-            System.out.println("hellooooooo");
-            System.out.println(attributeNames);
             ArrayList<String> x = new ArrayList<>(attributeNames);
 
         }
@@ -959,7 +955,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public void setRiskColor(String risk) {
 
         if (risk == "High Risk") {
-            System.out.println("High");
 
             binding.setHighRisk(true);
             binding.setLowRisk(false);
@@ -967,7 +962,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
         if (risk == "Low Risk") {
 
-            System.out.println("Low");
             binding.setLowRisk(true);
             binding.setHighRisk(false);
         }
@@ -977,9 +971,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void setProgramAttributes(List<? extends ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
 
-        System.out.println("attributes size");
-        System.out.println(programTrackedEntityAttributes.size());
-
         this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
                 .filter(attr -> attr.displayInList())
                 .collect(Collectors.toList());
@@ -987,8 +978,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         Collections.sort(this.programTrackedEntityAttributes, new CustomComparator());
 
         if (OrientationUtilsKt.isLandscape()) {
-
-            System.out.println("do i have attr values");
             if (this.attributeValues != null) {
 
                 setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
