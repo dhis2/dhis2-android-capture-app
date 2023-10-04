@@ -69,6 +69,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             is RelationshipResult.Success -> {
                 presenter.addRelationship(it.teiUidToAddAsRelationship, relationshipType!!.uid())
             }
+
+            else -> {}
         }
     }
 
