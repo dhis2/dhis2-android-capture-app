@@ -34,6 +34,8 @@
     <string name="data_sync_warning_program">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຂໍ້ຄວນລະວັງຍັງຄົງຢູ່ ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ໂປຣແກຣມ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
     <string name="data_sync_error">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານ ບໍສາມາດຊິ້ງໄດ້. ກວດສອບສະຖານະການຊິ້ງ: ສາຍງານທີ່ມີຂໍ້ຜິດພາດຈະຖຶກໝາຍເປັນ @, TEI\'s ແລະ ເຫດການເປັນ $.</string>
     <string name="data_sync_error_program">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານບໍສາມາດຊິ້ງໄດ້. ກວດສອບເບີ່ງສະຖານະການຊິ້ງ: TEI\'s ແລະ ເຫດການທີມີຂໍ້ຂັດແຍ້ງທີມີເຄື່ອງໝາຍເປັນ $.</string>
+    <string name="server_sync_error">ເກີດຂໍ້ຜິດພາດ ແລະເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍ່ຕອບສະໜອງ. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
     <string name="add_new">ເພີ່ມໃໝ່</string>
     <string name="add">ເພີ່ມ</string>
@@ -145,6 +147,8 @@
     <string name="confirm_delete_event">ທ່ານໝັ້ນໃຈບໍ ວ່າທ່ານຕ້ອງການລືບກໍລະນີນີ້ອອກ?</string>
     <string name="event_was_deleted">ກໍລະນີນີ້ໄດ້ຖືກລືບອອກຮຽບຮ້ອຍແລ້ວ</string>
     <string name="total">ລວມ</string>
+    <string name="most_recent_event_date">ວັນທີເຫດການຄັ້ງຫຼ້າສຸດ</string>
+
     <!--TEI Enrollment list-->
     <string name="enrollment_list">ລາຍລະອຽດການລົງທບຽນ</string>
     <string name="active_programs">ໂປຣແກຣທີ່ເປີດນໍາໃຊ້</string>
@@ -202,6 +206,9 @@
     <string name="settings_sms_receiver_number_hint">ຈຳນວນ</string>
     <string name="settings_sms_module_switch">ເປິດໃຊ້ການສົ່ງຂໍ້ຄວາມ</string>
     <string name="settings_sms_response_wait_switch">ລໍຖ້າການຕອບກັບທາງຂໍ້ຄວາມ</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="other">ມີ%s ສາຍງານທີ່ມີການຕັ້ງຄ່າສະເພາະ</item>
+    </plurals>
     <string name="settings_sync_period">ໄລຍະເວລາການອັບເດດຂໍ້ມູນ</string>
     <string name="settings_limit_scope">ຈໍາກັດການຕັ້ງຄ່າ</string>
     <string name="settings_limit_globally">ໃນທົ່ວໂລກ</string>
@@ -488,6 +495,7 @@
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="state_uploading">ກຳລັງອັບໂຫຼດ</string>
     <string name="state_relationship">ຄວາມສໍາພັນ</string>
+    <string name="sent_by_sms">ສົ່ງຂໍ້ຄວາມ</string>
     <string name="no_conflicts_message">ສາຍງານນີ້ບໍມີຂໍ້ຂັດແຍ້ງ</string>
     <string name="network_unavailable_sms">ບໍ່ມີການເຊື່ອຕໍ່ກັບເຄື່ອຂ່າຍ, ແຕ່ເບີ່ງຄືວ່າມີບໍລິການໂທລະສັບ - ທ່ານສາມາດໃຊ້ຂໍ້ຄວາມໄດ້</string>
     <string name="network_unavailable">ການເຊື່ອມຕໍ່ກັບເຄື່ອຂ່າຍບໍສາມາດໃຊ້ໄດ້</string>
