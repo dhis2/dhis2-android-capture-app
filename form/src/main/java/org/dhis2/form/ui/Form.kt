@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ViewTreeObserver
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -33,7 +34,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.form.ui.provider.FieldProvider
+import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -45,6 +46,7 @@ fun Form(
     textWatcher: TextWatcher,
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     needToForceUpdate: Boolean,
+    resources: Resources,
 ) {
     val scrollState = rememberLazyListState()
     val context = LocalContext.current
@@ -112,6 +114,7 @@ fun Form(
                                 coordinateTextWatcher = coordinateTextWatcher,
                                 uiEventHandler = uiEventHandler,
                                 intentHandler = intentHandler,
+                                resources = resources,
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                         }

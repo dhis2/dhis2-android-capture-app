@@ -1,6 +1,7 @@
-package org.dhis2.form.ui.provider
+package org.dhis2.form.ui.provider.inputfield
 
 import android.content.Context
+import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
@@ -48,90 +50,170 @@ internal fun FieldProvider(
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
+    resources: Resources,
 ) {
-    when {
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.TEXT -> {
-            ProvideInputText(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+    if (fieldUiModel.optionSet == null) {
+        when (fieldUiModel.valueType) {
+            ValueType.TEXT -> {
+                ProvideInputText(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_POSITIVE -> {
-            ProvideIntegerPositive(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER_POSITIVE -> {
+                ProvideIntegerPositive(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_ZERO_OR_POSITIVE -> {
-            ProvideIntegerPositiveOrZero(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER_ZERO_OR_POSITIVE -> {
+                ProvideIntegerPositiveOrZero(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.PERCENTAGE -> {
-            ProvidePercentage(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.PERCENTAGE -> {
+                ProvidePercentage(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.NUMBER -> {
-            ProvideNumber(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.NUMBER -> {
+                ProvideNumber(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER_NEGATIVE -> {
-            ProvideIntegerNegative(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER_NEGATIVE -> {
+                ProvideIntegerNegative(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.LONG_TEXT -> {
-            ProvideLongText(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.LONG_TEXT -> {
+                ProvideLongText(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.LETTER -> {
-            ProvideLetter(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.LETTER -> {
+                ProvideLetter(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        fieldUiModel.optionSet == null && fieldUiModel.valueType == ValueType.INTEGER -> {
-            ProvideInteger(
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-            )
-        }
+            ValueType.INTEGER -> {
+                ProvideInteger(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
 
-        else -> {
-            AndroidViewBinding(
-                modifier = modifier.fillMaxWidth(),
-                factory = { inflater, viewgroup, add ->
-                    getFieldView(
-                        context,
-                        inflater,
-                        viewgroup,
-                        add,
-                        fieldUiModel.layoutId,
-                        needToForceUpdate,
-                    )
-                },
-                update = {
-                    this.setVariable(BR.textWatcher, textWatcher)
-                    this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                    this.setVariable(BR.item, fieldUiModel)
-                },
-            )
+            ValueType.BOOLEAN -> {
+                when (fieldUiModel.renderingType) {
+                    UiRenderType.HORIZONTAL_CHECKBOXES,
+                    UiRenderType.VERTICAL_CHECKBOXES,
+                    -> {
+                        ProvideYesNoCheckBoxInput(
+                            fieldUiModel = fieldUiModel,
+                            resources = resources,
+                        )
+                    }
+
+                    else -> {
+                        ProvideYesNoRadioButtonInput(
+                            fieldUiModel = fieldUiModel,
+                            resources = resources,
+                        )
+                    }
+                }
+            }
+
+            ValueType.TRUE_ONLY -> {
+                when (fieldUiModel.renderingType) {
+                    UiRenderType.TOGGLE -> {
+                        ProvideYesOnlySwitchInput(
+                            fieldUiModel = fieldUiModel,
+                        )
+                    }
+
+                    else -> {
+                        ProvideYesOnlyCheckBoxInput(
+                            fieldUiModel = fieldUiModel,
+                        )
+                    }
+                }
+            }
+
+            else -> {
+                AndroidViewBinding(
+                    modifier = modifier.fillMaxWidth(),
+                    factory = { inflater, viewgroup, add ->
+                        getFieldView(
+                            context,
+                            inflater,
+                            viewgroup,
+                            add,
+                            fieldUiModel.layoutId,
+                            needToForceUpdate,
+                        )
+                    },
+                    update = {
+                        this.setVariable(BR.textWatcher, textWatcher)
+                        this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
+                        this.setVariable(BR.item, fieldUiModel)
+                    },
+                )
+            }
+        }
+    } else {
+        when (fieldUiModel.renderingType) {
+            UiRenderType.HORIZONTAL_RADIOBUTTONS,
+            UiRenderType.VERTICAL_RADIOBUTTONS,
+            -> {
+                ProvideRadioButtonInput(
+                    fieldUiModel = fieldUiModel,
+                )
+            }
+
+            UiRenderType.HORIZONTAL_CHECKBOXES,
+            UiRenderType.VERTICAL_CHECKBOXES,
+            -> {
+                ProvideCheckBoxInput(
+                    fieldUiModel = fieldUiModel,
+                )
+            }
+
+            // "Remaining option sets" are in fun getLayoutForOptionSet
+
+            else -> { // Remove when all optionsets
+                AndroidViewBinding(
+                    modifier = modifier.fillMaxWidth(),
+                    factory = { inflater, viewgroup, add ->
+                        getFieldView(
+                            context,
+                            inflater,
+                            viewgroup,
+                            add,
+                            fieldUiModel.layoutId,
+                            needToForceUpdate,
+                        )
+                    },
+                    update = {
+                        this.setVariable(BR.textWatcher, textWatcher)
+                        this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
+                        this.setVariable(BR.item, fieldUiModel)
+                    },
+                )
+            }
         }
     }
 }

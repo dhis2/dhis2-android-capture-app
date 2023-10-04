@@ -353,6 +353,7 @@ class FormView : Fragment() {
                         textWatcher = textWatcher,
                         coordinateTextWatcher = coordinateTextWatcher,
                         needToForceUpdate = needToForceUpdate,
+                        resources = resources,
                     )
                 }
             }
