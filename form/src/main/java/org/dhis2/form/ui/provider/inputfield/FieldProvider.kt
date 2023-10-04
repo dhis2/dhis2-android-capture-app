@@ -232,6 +232,7 @@ private fun ProvideInputText(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -264,28 +265,13 @@ private fun ProvideIntegerPositive(
         isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
-            if (it.isNullOrEmpty()) {
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            }
-        },
-        onFocusChanged = { focused ->
-            if (!focused) {
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            } else {
-                fieldUiModel.onItemClick()
-            }
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
         },
     )
 }
@@ -306,6 +292,7 @@ private fun ProvideIntegerPositiveOrZero(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -335,6 +322,7 @@ private fun ProvidePercentage(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -364,6 +352,7 @@ private fun ProvideNumber(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -394,6 +383,7 @@ private fun ProvideIntegerNegative(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -423,6 +413,7 @@ private fun ProvideLongText(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -453,6 +444,7 @@ private fun ProvideLetter(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -482,6 +474,7 @@ private fun ProvideInteger(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
