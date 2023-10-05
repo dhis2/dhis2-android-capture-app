@@ -124,7 +124,7 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
 
         <service
