@@ -159,7 +159,7 @@ class EnrollmentRepository(
         val attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(
                 attribute!!.uid(),
-                enrollmentRepository.blockingGet()!!.trackedEntityInstance(),
+                enrollmentRepository.blockingGet()!!.trackedEntityInstance()!!,
             )
 
         val valueType = attribute.valueType()
@@ -331,9 +331,10 @@ class EnrollmentRepository(
                 ),
             )
         }
+        val programUids = enrollmentRepository.blockingGet()?.program()?.let { listOf(it) } ?: emptyList()
         val orgUnits = d2.organisationUnitModule().organisationUnits()
             .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-            .byProgramUids(listOf(enrollmentRepository.blockingGet()?.program())).blockingCount()
+            .byProgramUids(programUids).blockingCount()
         enrollmentDataList.add(
             getOrgUnitField(enrollmentMode == EnrollmentMode.NEW && orgUnits > 1),
         )

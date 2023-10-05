@@ -5,6 +5,10 @@ import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import org.dhis2.maps.geometry.bound.GetBoundingBox
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 fun List<List<List<Double>>>.polygonToLatLngBounds(getBoundingBox: GetBoundingBox): LatLngBounds? {
     return firstOrNull()?.let { polygon ->
@@ -29,4 +33,27 @@ fun BoundingBox.toLatLngBounds(): LatLngBounds {
 
 fun Point.toLatLn(): LatLng {
     return LatLng(latitude(), longitude())
+}
+
+fun LatLng.distanceTo(latLng: LatLng): Double {
+    val earthRadiusKm = 6371
+    val lat1 = Math.toRadians(this.latitude)
+    val lon1 = Math.toRadians(this.longitude)
+    val lat2 = Math.toRadians(latLng.latitude)
+    val lon2 = Math.toRadians(latLng.longitude)
+
+    val dLat = lat2 - lat1
+    val dLon = lon2 - lon1
+
+    val a = (
+        sin(dLat / 2) * sin(dLat / 2) +
+            (
+                cos(lat1) * cos(lat2) *
+                    sin(dLon / 2) * sin(dLon / 2)
+                )
+        )
+
+    val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    return earthRadiusKm * c
 }

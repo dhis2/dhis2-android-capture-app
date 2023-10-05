@@ -79,6 +79,15 @@ class MainActivity :
             binding.navigationBar.pageConfiguration(pageConfigurator)
         }
 
+    private val requestWritePermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            if (granted) {
+                onDownloadNewVersion()
+            }
+        }
+
     private var isPinLayoutVisible = false
 
     private var backDropActive = false
@@ -136,10 +145,6 @@ class MainActivity :
             binding.presenter = presenter
         } else {
             navigateTo<LoginActivity>(true)
-        }
-
-        if (forceToNotSynced && presenter.hasOneHomeItem()) {
-            navigateToSingleProgram()
         }
 
         binding.navView.setNavigationItemSelectedListener { item ->
@@ -564,14 +569,22 @@ class MainActivity :
             confirmButton = ButtonUiModel(
                 getString(R.string.download_now),
                 onClick = {
-                    presenter.downloadVersion(
-                        context = context,
-                        onDownloadCompleted = ::installAPK,
-                        onLaunchUrl = ::launchUrl,
-                    )
+                    if (hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
+                        onDownloadNewVersion()
+                    } else {
+                        requestWritePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    }
                 },
             ),
         ).show(supportFragmentManager)
+    }
+
+    private fun onDownloadNewVersion() {
+        presenter.downloadVersion(
+            context = context,
+            onDownloadCompleted = ::installAPK,
+            onLaunchUrl = ::launchUrl,
+        )
     }
 
     private fun installAPK(apkUri: Uri) {
@@ -609,22 +622,14 @@ class MainActivity :
                     Toast.LENGTH_LONG,
                 ).show()
             } else {
-                presenter.downloadVersion(
-                    context,
-                    onDownloadCompleted = { installAPK(it) },
-                    onLaunchUrl = ::launchUrl,
-                )
+                onDownloadNewVersion()
             }
         }
 
     private val requestReadStoragePermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
-                presenter.downloadVersion(
-                    context,
-                    onDownloadCompleted = { installAPK(it) },
-                    onLaunchUrl = ::launchUrl,
-                )
+                onDownloadNewVersion()
             } else {
                 Toast.makeText(
                     context,

@@ -8,11 +8,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mapbox.geojson.Feature
@@ -20,7 +20,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-import com.mapbox.mapboxsdk.location.engine.LocationEngineProvider
+import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
@@ -67,7 +67,7 @@ class MapSelectorActivity :
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
     var style: Style? = null
-    private lateinit var location_type: FeatureType
+    private lateinit var locationType: FeatureType
     lateinit var binding: ActivityMapSelectorBinding
     private val arrayOfIds = mutableListOf<String>()
     var init: Boolean = false
@@ -81,8 +81,8 @@ class MapSelectorActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
-        binding.back.setOnClickListener { v -> finish() }
-        location_type = intent.getStringExtra(LOCATION_TYPE_EXTRA)?.let { featureName ->
+        binding.back.setOnClickListener { finish() }
+        locationType = intent.getStringExtra(LOCATION_TYPE_EXTRA)?.let { featureName ->
             FeatureType.valueOf(featureName)
         } ?: FeatureType.POINT
 
@@ -101,7 +101,7 @@ class MapSelectorActivity :
                 this.style = style
                 enableLocationComponent()
                 centerMapOnCurrentLocation()
-                when (location_type) {
+                when (locationType) {
                     FeatureType.POINT -> bindPoint(initialCoordinates)
                     FeatureType.POLYGON -> bindPolygon(initialCoordinates)
                     else -> finish()
@@ -127,14 +127,14 @@ class MapSelectorActivity :
             locationComponent.renderMode = RenderMode.COMPASS
             locationComponent.zoomWhileTracking(13.0)
 
-            LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
+            LocationEngineDefault.getDefaultLocationEngine(this).getLastLocation(
                 MapActivityLocationCallback(this),
             )
         }
     }
 
-    private fun bindPoint(initial_coordinates: String?) {
-        val viewModel = ViewModelProviders.of(this).get(PointViewModel::class.java)
+    private fun bindPoint(initialCoordinates: String?) {
+        val viewModel = ViewModelProvider(this)[PointViewModel::class.java]
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = PointAdapter(viewModel)
         map.addOnMapClickListener {
@@ -149,9 +149,9 @@ class MapSelectorActivity :
             }
         }
 
-        if (initial_coordinates != null) {
+        if (initialCoordinates != null) {
             val initGeometry =
-                Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
+                Geometry.builder().coordinates(initialCoordinates).type(locationType).build()
             val pointGeometry = GeometryHelper.getPoint(initGeometry)
             pointGeometry.let { sdkPoint ->
                 val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
@@ -173,7 +173,7 @@ class MapSelectorActivity :
             viewModel.source!!,
             viewModel.layer!!,
             viewModel.getId(),
-            R.drawable.mapbox_marker_icon_default,
+            R.drawable.maplibre_marker_icon_default,
         )
     }
 
@@ -227,19 +227,18 @@ class MapSelectorActivity :
         )
     }
 
-    private fun bindPolygon(initial_coordinates: String?) {
-        val viewModel = ViewModelProviders.of(this).get(PolygonViewModel::class.java)
+    private fun bindPolygon(initialCoordinates: String?) {
+        val viewModel = ViewModelProvider(this)[PolygonViewModel::class.java]
         viewModel.onMessage = {
             Toast.makeText(this@MapSelectorActivity, it, Toast.LENGTH_SHORT).show()
         }
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         viewModel.response.observe(
             this,
-            Observer<MutableList<PolygonViewModel.PolygonPoint>> {
-                binding.recycler.adapter = PolygonAdapter(it, viewModel)
-                updateVector(it)
-            },
-        )
+        ) {
+            binding.recycler.adapter = PolygonAdapter(it, viewModel)
+            updateVector(it)
+        }
         map.addOnMapClickListener {
             val point = Point.fromLngLat(it.longitude, it.latitude)
             val polygonPoint = viewModel.createPolygonPoint()
@@ -255,9 +254,9 @@ class MapSelectorActivity :
                 finishResult(it)
             }
         }
-        if (initial_coordinates != null) {
+        if (initialCoordinates != null) {
             val initGeometry =
-                Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
+                Geometry.builder().coordinates(initialCoordinates).type(locationType).build()
             val polygons = GeometryHelper.getPolygon(initGeometry)
             polygons.forEach {
                 it.forEach { sdkPoint ->
@@ -309,7 +308,7 @@ class MapSelectorActivity :
                     style.addSource(GeoJsonSource(sourceName, Polygon.fromLngLats(points)))
                     style.addLayerBelow(
                         FillLayer(sourceName, sourceName).withProperties(
-                            fillColor(resources.getColor(R.color.green_7ed)),
+                            fillColor(ContextCompat.getColor(this, R.color.green_7ed)),
                         ),
                         "settlement-label",
                     )
@@ -434,7 +433,7 @@ class MapSelectorActivity :
         val intent = Intent()
         intent.putExtra(FIELD_UID, fieldUid)
         intent.putExtra(DATA_EXTRA, value)
-        intent.putExtra(LOCATION_TYPE_EXTRA, location_type.toString())
+        intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
         setResult(RESULT_OK, intent)
         finish()
     }
