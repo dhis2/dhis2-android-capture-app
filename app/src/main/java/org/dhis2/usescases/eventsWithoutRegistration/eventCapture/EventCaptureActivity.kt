@@ -186,15 +186,14 @@ class EventCaptureActivity :
             binding!!.eventViewPager!!.isUserInputEnabled = false
             binding!!.eventViewPager!!.adapter = null
 
-            // TODO: refactor the null parameters passed
             adapter = EventCapturePagerAdapter(
                     this,
                     intent.getStringExtra(Constants.PROGRAM_UID),
                     intent.getStringExtra(Constants.EVENT_UID),
                     pageConfigurator!!.displayAnalytics(),
                     pageConfigurator!!.displayRelationships(),
+                    true,
                     intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
-                    false,
                     teiUid,
                     enrollmentUid
             )

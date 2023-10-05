@@ -90,7 +90,6 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         this.teiUid = teiUid;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
-        pages.add(EventPageType.DATA_ENTRY);
 
         if (displayAnalyticScreen) {
             pages.add(EventPageType.ANALYTICS);

@@ -7,11 +7,12 @@ class EventPageConfigurator(
     val isPortrait: Boolean
 ) : NavigationPageConfigurator {
     override fun displayDetails(): Boolean {
-        return isPortrait
+        return !isPortrait
     }
 
     override fun displayDataEntry(): Boolean {
-        return true
+//        return true
+        return isPortrait
     }
 
     override fun displayAnalytics(): Boolean {
