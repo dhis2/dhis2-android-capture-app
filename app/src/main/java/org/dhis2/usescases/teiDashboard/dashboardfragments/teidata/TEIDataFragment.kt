@@ -383,11 +383,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    fun showEnrollmentStatusOptions() {
-        val menu: Int
-        menu = if (teiModel!!.selectedEnrollment.status() == EnrollmentStatus.ACTIVE) {
+    private fun showEnrollmentStatusOptions() {
+        val menu: Int = if (teiModel!!.selectedEnrollment?.status() == EnrollmentStatus.ACTIVE) {
             R.menu.tei_detail_options_active
-        } else if (teiModel!!.selectedEnrollment.status() == EnrollmentStatus.COMPLETED) {
+        } else if (teiModel!!.selectedEnrollment?.status() == EnrollmentStatus.COMPLETED) {
             R.menu.tei_detail_options_completed
         } else {
             R.menu.tei_detail_options_cancelled
