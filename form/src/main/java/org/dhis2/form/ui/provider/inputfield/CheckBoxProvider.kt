@@ -39,6 +39,7 @@ internal fun ProvideCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
+            fieldUiModel.onItemClick()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -49,6 +50,7 @@ internal fun ProvideCheckBoxInput(
             )
         },
         onClearSelection = {
+            fieldUiModel.onItemClick()
             intentHandler(
                 FormIntent.ClearValue(fieldUiModel.uid),
             )
@@ -88,6 +90,7 @@ internal fun ProvideYesNoCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
+            fieldUiModel.onItemClick()
             when (item.uid) {
                 "true" -> {
                     intentHandler(
@@ -113,6 +116,7 @@ internal fun ProvideYesNoCheckBoxInput(
             }
         },
         onClearSelection = {
+            fieldUiModel.onItemClick()
             intentHandler(
                 FormIntent.ClearValue(fieldUiModel.uid),
             )
@@ -141,6 +145,7 @@ internal fun ProvideYesOnlyCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onClick = {
+            fieldUiModel.onItemClick()
             if (!fieldUiModel.isAffirmativeChecked) {
                 intentHandler(
                     FormIntent.OnSave(

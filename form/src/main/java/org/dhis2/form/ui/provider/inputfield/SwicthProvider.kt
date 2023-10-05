@@ -24,6 +24,7 @@ internal fun ProvideYesOnlySwitchInput(
         isRequired = fieldUiModel.mandatory,
         isChecked = fieldUiModel.isAffirmativeChecked,
         onClick = {
+            fieldUiModel.onItemClick()
             if (!fieldUiModel.isAffirmativeChecked) {
                 intentHandler(
                     FormIntent.OnSave(

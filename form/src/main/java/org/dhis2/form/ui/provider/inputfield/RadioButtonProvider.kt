@@ -39,6 +39,7 @@ internal fun ProvideRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
+            fieldUiModel.onItemClick()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -84,6 +85,7 @@ internal fun ProvideYesNoRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
+            fieldUiModel.onItemClick()
             when (item?.uid) {
                 "true" -> {
                     intentHandler(
