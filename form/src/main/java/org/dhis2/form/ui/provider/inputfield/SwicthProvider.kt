@@ -6,12 +6,14 @@ import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlySwitch
 
 @Composable
 internal fun ProvideYesOnlySwitchInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
 ) {
     InputYesOnlySwitch(
         modifier = modifier,
@@ -23,9 +25,17 @@ internal fun ProvideYesOnlySwitchInput(
         isChecked = fieldUiModel.isAffirmativeChecked,
         onClick = {
             if (!fieldUiModel.isAffirmativeChecked) {
-                fieldUiModel.onSaveBoolean(true)
+                intentHandler(
+                    FormIntent.OnSave(
+                        fieldUiModel.uid,
+                        true.toString(),
+                        fieldUiModel.valueType,
+                    ),
+                )
             } else {
-                fieldUiModel.onClear()
+                intentHandler(
+                    FormIntent.ClearValue(fieldUiModel.uid),
+                )
             }
         },
     )

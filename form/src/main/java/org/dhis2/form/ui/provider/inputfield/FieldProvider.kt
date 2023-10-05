@@ -153,6 +153,7 @@ internal fun FieldProvider(
                         ProvideYesNoCheckBoxInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
@@ -161,6 +162,7 @@ internal fun FieldProvider(
                         ProvideYesNoRadioButtonInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
@@ -173,6 +175,7 @@ internal fun FieldProvider(
                         ProvideYesOnlySwitchInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                         )
                     }
 
@@ -180,6 +183,7 @@ internal fun FieldProvider(
                         ProvideYesOnlyCheckBoxInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                         )
                     }
                 }
@@ -214,6 +218,7 @@ internal fun FieldProvider(
                 ProvideRadioButtonInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
                 )
             }
 
@@ -223,6 +228,7 @@ internal fun FieldProvider(
                 ProvideCheckBoxInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
                 )
             }
 
