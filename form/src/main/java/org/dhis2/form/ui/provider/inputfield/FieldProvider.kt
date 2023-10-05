@@ -604,7 +604,6 @@ private fun ProvideInputPhoneNumber(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -613,15 +612,8 @@ private fun ProvideInputPhoneNumber(
     InputPhoneNumber(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        state = fieldUiModel.inputState(),
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
         onValueChanged = {
             value = it
