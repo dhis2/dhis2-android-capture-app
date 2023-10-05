@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import android.content.res.Resources
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import org.dhis2.form.R
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.orientation
@@ -13,6 +14,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 
 @Composable
 internal fun ProvideCheckBoxInput(
+    modifier: Modifier,
     fieldUiModel: FieldUiModel,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
@@ -25,6 +27,7 @@ internal fun ProvideCheckBoxInput(
     } ?: emptyList()
 
     InputCheckBox(
+        modifier = modifier,
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
@@ -45,6 +48,7 @@ internal fun ProvideCheckBoxInput(
 
 @Composable
 internal fun ProvideYesNoCheckBoxInput(
+    modifier: Modifier,
     fieldUiModel: FieldUiModel,
     resources: Resources,
 ) {
@@ -64,6 +68,7 @@ internal fun ProvideYesNoCheckBoxInput(
     )
 
     InputCheckBox(
+        modifier = modifier,
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
@@ -85,6 +90,7 @@ internal fun ProvideYesNoCheckBoxInput(
 
 @Composable
 internal fun ProvideYesOnlyCheckBoxInput(
+    modifier: Modifier,
     fieldUiModel: FieldUiModel,
 ) {
     val cbData = CheckBoxData(
@@ -95,6 +101,7 @@ internal fun ProvideYesOnlyCheckBoxInput(
     )
 
     InputYesOnlyCheckBox(
+        modifier = modifier,
         checkBoxData = cbData,
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),

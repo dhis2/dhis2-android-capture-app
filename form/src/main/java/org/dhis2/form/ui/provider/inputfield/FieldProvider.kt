@@ -18,7 +18,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
@@ -206,7 +205,7 @@ internal fun FieldProvider(
                     },
                 )
             }
-            }
+        }
     } else {
         when (fieldUiModel.renderingType) {
             UiRenderType.HORIZONTAL_RADIOBUTTONS,
@@ -250,313 +249,313 @@ internal fun FieldProvider(
                 )
             }
         }
-        }
     }
+}
 
-    @Composable
-    private fun ProvideInputText(
+@Composable
+private fun ProvideInputText(
     modifier: Modifier = Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
-        }
-        InputText(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-        )
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
     }
-
-    @Composable
-    private fun ProvideIntegerPositive(
-    modifier: Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
-        }
-
-        InputPositiveInteger(
+    InputText(
         modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
+        title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
+        inputText = value ?: "",
         isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-        )
-    }
-
-    @Composable
-    private fun ProvideIntegerPositiveOrZero(
-    modifier: Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
-        }
-
-        InputPositiveIntegerOrZero(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-        )
-    }
-
-    @Composable
-    private fun ProvidePercentage(
-    modifier: Modifier = Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
-        }
-
-        InputPercentage(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-        )
-    }
-
-    @Composable
-    private fun ProvideNumber(
-    modifier: Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
-        }
-
-        InputNumber(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-            notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
-        )
-    }
-
-    @Composable
-    private fun ProvideIntegerNegative(
-    modifier: Modifier = Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value?.replace("-", ""))
-        }
-
-        InputNegativeInteger(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
                     value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-        )
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideIntegerPositive(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
     }
 
-    @Composable
-    private fun ProvideLongText(
+    InputPositiveInteger(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideIntegerPositiveOrZero(
     modifier: Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPositiveIntegerOrZero(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvidePercentage(
+    modifier: Modifier = Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPercentage(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideNumber(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputNumber(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
+    )
+}
+
+@Composable
+private fun ProvideIntegerNegative(
+    modifier: Modifier = Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value?.replace("-", ""))
+    }
+
+    InputNegativeInteger(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideLongText(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputLongText(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        imeAction = ImeAction.Default,
+    )
+}
+
+@Composable
+private fun ProvideLetter(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputLetter(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideInteger(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputInteger(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+private fun getFieldView(
+    context: Context,
+    inflater: LayoutInflater,
+    viewgroup: ViewGroup,
+    add: Boolean,
+    layoutId: Int,
+    needToForceUpdate: Boolean,
+): ViewDataBinding {
+    val layoutInflater =
+        if (needToForceUpdate) {
+            inflater.cloneInContext(
+                ContextThemeWrapper(
+                    context,
+                    R.style.searchFormInputText,
+                ),
+            )
+        } else {
+            inflater.cloneInContext(
+                ContextThemeWrapper(
+                    context,
+                    R.style.formInputText,
+                ),
+            )
         }
 
-        InputLongText(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-            imeAction = ImeAction.Default,
-        )
-    }
-
-    @Composable
-    private fun ProvideLetter(
-    modifier: Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
-        }
-
-        InputLetter(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-        )
-    }
-
-    @Composable
-    private fun ProvideInteger(
-    modifier: Modifier,
-        fieldUiModel: FieldUiModel,
-        intentHandler: (FormIntent) -> Unit,
-    ) {
-        var value by remember {
-            mutableStateOf(fieldUiModel.value)
-        }
-
-        InputInteger(
-        modifier = modifier.fillMaxWidth(),
-            title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-            inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-            onValueChanged = {
-                value = it
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        value,
-                        fieldUiModel.valueType,
-                    ),
-                )
-            },
-        )
-    }
-
-    private fun getFieldView(
-        context: Context,
-        inflater: LayoutInflater,
-        viewgroup: ViewGroup,
-        add: Boolean,
-        layoutId: Int,
-        needToForceUpdate: Boolean,
-    ): ViewDataBinding {
-        val layoutInflater =
-            if (needToForceUpdate) {
-                inflater.cloneInContext(
-                    ContextThemeWrapper(
-                        context,
-                        R.style.searchFormInputText,
-                    ),
-                )
-            } else {
-                inflater.cloneInContext(
-                    ContextThemeWrapper(
-                        context,
-                        R.style.formInputText,
-                    ),
-                )
-            }
-
-        return DataBindingUtil.inflate(layoutInflater, layoutId, viewgroup, add)
-    }
+    return DataBindingUtil.inflate(layoutInflater, layoutId, viewgroup, add)
+}

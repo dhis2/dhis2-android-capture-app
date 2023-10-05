@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import android.content.res.Resources
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import org.dhis2.form.R
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.orientation
@@ -12,6 +13,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
 @Composable
 internal fun ProvideRadioButtonInput(
+    modifier: Modifier,
     fieldUiModel: FieldUiModel,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
@@ -24,6 +26,7 @@ internal fun ProvideRadioButtonInput(
     } ?: emptyList()
 
     InputRadioButton(
+        modifier = modifier,
         title = fieldUiModel.label,
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),
@@ -42,6 +45,7 @@ internal fun ProvideRadioButtonInput(
 
 @Composable
 internal fun ProvideYesNoRadioButtonInput(
+    modifier: Modifier,
     fieldUiModel: FieldUiModel,
     resources: Resources,
 ) {
@@ -61,6 +65,7 @@ internal fun ProvideYesNoRadioButtonInput(
     )
 
     InputRadioButton(
+        modifier = modifier,
         title = fieldUiModel.label,
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),
