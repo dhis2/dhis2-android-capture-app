@@ -42,6 +42,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
+import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
@@ -198,6 +199,14 @@ internal fun FieldProvider(
                         )
                     }
                 }
+            }
+
+            ValueType.PHONE_NUMBER -> {
+                ProvideInputPhoneNumber(
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
             }
 
             else -> {
@@ -582,6 +591,52 @@ private fun ProvideEmail(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SENDTO,
+                    value,
+                    fieldUiModel.uid,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideInputPhoneNumber(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPhoneNumber(
+        modifier = Modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = when {
+            fieldUiModel.error != null -> InputShellState.ERROR
+            !fieldUiModel.editable -> InputShellState.DISABLED
+            fieldUiModel.focused -> InputShellState.FOCUSED
+            else -> InputShellState.UNFOCUSED
+        },
+        legendData = fieldUiModel.legend?.let {
+            LegendData(Color(it.color), it.label ?: "", null)
+        },
+        inputText = value ?: "",
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnTextChange(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onCallActionClicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_DIAL,
                     value,
                     fieldUiModel.uid,
                 ),
