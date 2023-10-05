@@ -13,13 +13,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import org.dhis2.form.BR
 import org.dhis2.form.R
+import org.dhis2.form.extensions.inputState
+import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
@@ -35,9 +36,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
-import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
-import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
 @Composable
@@ -229,17 +228,11 @@ private fun ProvideInputText(
     InputText(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -265,17 +258,11 @@ private fun ProvideIntegerPositive(
     InputPositiveInteger(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -301,17 +288,11 @@ private fun ProvideIntegerPositiveOrZero(
     InputPositiveIntegerOrZero(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -337,17 +318,11 @@ private fun ProvidePercentage(
     InputPercentage(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -373,17 +348,11 @@ private fun ProvideNumber(
     InputNumber(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -410,23 +379,17 @@ private fun ProvideIntegerNegative(
     InputNegativeInteger(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
-                    "-$value",
+                    value,
                     fieldUiModel.valueType,
                 ),
             )
@@ -446,17 +409,11 @@ private fun ProvideLongText(
     InputLongText(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -483,17 +440,11 @@ private fun ProvideLetter(
     InputLetter(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
@@ -519,17 +470,11 @@ private fun ProvideInteger(
     InputInteger(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
-        state = when {
-            fieldUiModel.error != null -> InputShellState.ERROR
-            !fieldUiModel.editable -> InputShellState.DISABLED
-            fieldUiModel.focused -> InputShellState.FOCUSED
-            else -> InputShellState.UNFOCUSED
-        },
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend?.let {
-            LegendData(Color(it.color), it.label ?: "", null)
-        },
+        legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
