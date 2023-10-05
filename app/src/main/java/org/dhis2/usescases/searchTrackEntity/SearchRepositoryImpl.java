@@ -182,16 +182,15 @@ public class SearchRepositoryImpl implements SearchRepository {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.excludeUids().in(new ArrayList<>(fetchedTeiUids));
         }
 
-        List<State> stateFilters = FilterManager.getInstance().getStateFilters();
-        SortingItem sortingItem = FilterManager.getInstance().getSortingItem();
+        DataSource<TrackedEntitySearchItem, SearchTeiModel> dataSource;
 
-        boolean offlineOnly = !isOnline || !stateFilters.isEmpty();
-
-        DataSource<TrackedEntitySearchItem, SearchTeiModel> dataSource = trackedEntityInstanceQuery
-                .allowOnlineCache().eq(allowCache)
-                .offlineFirst()
-                .getResultDataSource()
-                .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), offlineOnly, sortingItem));
+        if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty()) {
+            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getResultDataSource()
+                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()));
+        } else {
+            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getResultDataSource()
+                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()));
+        }
 
         return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntitySearchItem, SearchTeiModel>() {
             @NonNull
