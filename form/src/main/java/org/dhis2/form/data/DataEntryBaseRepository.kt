@@ -1,6 +1,6 @@
 package org.dhis2.form.data
 
-import org.dhis2.commons.bindings.allowCollapsableSectionsInProgram
+import org.dhis2.commons.bindings.disableCollapsableSectionsInProgram
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -106,8 +106,8 @@ abstract class DataEntryBaseRepository(
         }
     }
 
-    override fun allowCollapsableSections(): Boolean? {
-        return programUid?.let { d2.allowCollapsableSectionsInProgram(programUid = it) }.takeIf {
+    override fun disableCollapsableSections(): Boolean? {
+        return programUid?.let { d2.disableCollapsableSectionsInProgram(programUid = it) }.takeIf {
             enableCollapsableFeature
         }
     }

@@ -25,5 +25,5 @@ interface DataEntryRepository {
 
     fun isEvent(): Boolean
 
-    fun allowCollapsableSections(): Boolean?
+    fun disableCollapsableSections(): Boolean?
 }
