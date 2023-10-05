@@ -69,6 +69,7 @@ fun TableItemRow(
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
                 headerExtraSize = TableTheme.dimensions.extraSize(
+                    tableModel.id ?: "",
                     tableModel.tableHeaderModel.tableMaxColumns(),
                     tableModel.tableHeaderModel.hasTotals,
                 ),
