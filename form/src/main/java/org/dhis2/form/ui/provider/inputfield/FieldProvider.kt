@@ -613,8 +613,10 @@ private fun ProvideInputPhoneNumber(
         modifier = Modifier.fillMaxWidth(),
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             value = it
             intentHandler(
