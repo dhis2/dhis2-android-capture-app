@@ -14,7 +14,7 @@ hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
 
 designSystem = "1.0-20231003.154434-54"
-dhis2sdk = "1.9.0-20231003.120316-40"
+dhis2sdk = "1.9.0-20231006.122641-44"
 ruleEngine = "2.1.9"
 appcompat = "1.6.1"
 annotation = "1.6.0"
