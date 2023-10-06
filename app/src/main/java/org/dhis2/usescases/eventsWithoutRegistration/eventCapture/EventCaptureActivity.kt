@@ -363,7 +363,6 @@ class EventCaptureActivity :
                         binding!!.navigationBar.selectedItemId == R.id.navigation_analytics ||
                         binding!!.navigationBar.selectedItemId == R.id.navigation_notes
                 ) {
-                    if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
                         val dialog = BottomSheetDialog(
                                 bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
                                 onMainButtonClicked = {
@@ -383,9 +382,6 @@ class EventCaptureActivity :
                                 },
                         )
                         dialog.show(supportFragmentManager, SHOW_OPTIONS)
-                        EventCaptureFormFragment.getBinding().progress.visibility = View.GONE;
-                        EventCaptureFormFragment.getBinding().actionButton.visibility = View.VISIBLE;
-                    }
                 }
             }
     }
