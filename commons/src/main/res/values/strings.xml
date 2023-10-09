@@ -214,9 +214,6 @@
     <string name="add_image">Add Image</string>
     <string name="add_signature">Add signature</string>
     <string name="add_file">Add file</string>
-    <string name="download">Download</string>
-    <string name="scan">Scan</string>
-    <string name="qr_code">QR code</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
     <string name="keep_editing">Keep editing</string>
