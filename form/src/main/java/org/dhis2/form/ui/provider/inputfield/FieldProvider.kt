@@ -153,6 +153,7 @@ internal fun FieldProvider(
                         ProvideYesNoCheckBoxInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
@@ -161,6 +162,7 @@ internal fun FieldProvider(
                         ProvideYesNoRadioButtonInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
@@ -173,6 +175,7 @@ internal fun FieldProvider(
                         ProvideYesOnlySwitchInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                         )
                     }
 
@@ -180,6 +183,7 @@ internal fun FieldProvider(
                         ProvideYesOnlyCheckBoxInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                         )
                     }
                 }
@@ -214,6 +218,7 @@ internal fun FieldProvider(
                 ProvideRadioButtonInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
                 )
             }
 
@@ -223,6 +228,7 @@ internal fun FieldProvider(
                 ProvideCheckBoxInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
                 )
             }
 
@@ -272,7 +278,7 @@ private fun ProvideInputText(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -303,7 +309,7 @@ private fun ProvideIntegerPositive(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -334,7 +340,7 @@ private fun ProvideIntegerPositiveOrZero(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -365,7 +371,7 @@ private fun ProvidePercentage(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -396,7 +402,7 @@ private fun ProvideNumber(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -428,7 +434,7 @@ private fun ProvideIntegerNegative(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -459,7 +465,7 @@ private fun ProvideLongText(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -491,7 +497,7 @@ private fun ProvideLetter(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -522,7 +528,7 @@ private fun ProvideInteger(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,

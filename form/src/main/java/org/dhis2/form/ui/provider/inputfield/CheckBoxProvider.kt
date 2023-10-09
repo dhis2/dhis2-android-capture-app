@@ -9,6 +9,7 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.orientation
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
@@ -17,6 +18,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 internal fun ProvideCheckBoxInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
         CheckBoxData(
@@ -37,13 +39,21 @@ internal fun ProvideCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
-            fieldUiModel.onSave(
-                fieldUiModel.optionSetConfiguration?.optionsToDisplay()
-                    ?.find { it.uid() == item.uid }?.code(),
+            fieldUiModel.onItemClick()
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    fieldUiModel.optionSetConfiguration?.optionsToDisplay()
+                        ?.find { it.uid() == item.uid }?.code(),
+                    fieldUiModel.valueType,
+                ),
             )
         },
         onClearSelection = {
-            fieldUiModel.onClear()
+            fieldUiModel.onItemClick()
+            intentHandler(
+                FormIntent.ClearValue(fieldUiModel.uid),
+            )
         },
     )
 }
@@ -52,6 +62,7 @@ internal fun ProvideCheckBoxInput(
 internal fun ProvideYesNoCheckBoxInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
     resources: Resources,
 ) {
     val data = listOf(
@@ -79,14 +90,36 @@ internal fun ProvideYesNoCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
+            fieldUiModel.onItemClick()
             when (item.uid) {
-                "true" -> fieldUiModel.onSaveBoolean(true)
-                "false" -> fieldUiModel.onSaveBoolean(false)
+                "true" -> {
+                    intentHandler(
+                        FormIntent.OnSave(
+                            fieldUiModel.uid,
+                            true.toString(),
+                            fieldUiModel.valueType,
+                        ),
+                    )
+                }
+
+                "false" -> {
+                    intentHandler(
+                        FormIntent.OnSave(
+                            fieldUiModel.uid,
+                            false.toString(),
+                            fieldUiModel.valueType,
+                        ),
+                    )
+                }
+
                 else -> fieldUiModel.onClear()
             }
         },
         onClearSelection = {
-            fieldUiModel.onClear()
+            fieldUiModel.onItemClick()
+            intentHandler(
+                FormIntent.ClearValue(fieldUiModel.uid),
+            )
         },
     )
 }
@@ -95,6 +128,7 @@ internal fun ProvideYesNoCheckBoxInput(
 internal fun ProvideYesOnlyCheckBoxInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
 ) {
     val cbData = CheckBoxData(
         uid = "",
@@ -111,10 +145,19 @@ internal fun ProvideYesOnlyCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onClick = {
+            fieldUiModel.onItemClick()
             if (!fieldUiModel.isAffirmativeChecked) {
-                fieldUiModel.onSaveBoolean(true)
+                intentHandler(
+                    FormIntent.OnSave(
+                        fieldUiModel.uid,
+                        true.toString(),
+                        fieldUiModel.valueType,
+                    ),
+                )
             } else {
-                fieldUiModel.onClear()
+                intentHandler(
+                    FormIntent.ClearValue(fieldUiModel.uid),
+                )
             }
         },
     )
