@@ -91,99 +91,96 @@ QRDetailBottomDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        when {
-            useComposeDialog -> {
-                binding =
-                    DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
+        return if (useComposeDialog) {
+            binding =
+                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
 
-                viewModel.qrBitmap.observe(this) { result ->
-                    result.fold(
-                        onSuccess = { renderBitmap(it) },
-                        onFailure = { dismiss() },
-                    )
-                }
-                return ComposeView(requireContext()).apply {
-                    setViewCompositionStrategy(
-                        ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
-                    )
-                    setContent {
-                        ProvideQRBottomSheet(value = value)
-                    }
+            viewModel.qrBitmap.observe(this) { result ->
+                result.fold(
+                    onSuccess = { renderBitmap(it) },
+                    onFailure = { dismiss() },
+                )
+            }
+            ComposeView(requireContext()).apply {
+                setViewCompositionStrategy(
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+                )
+                setContent {
+                    ProvideQRBottomSheet(value = value)
                 }
             }
-            else -> {
-                binding =
-                    DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
+        } else {
+            binding =
+                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
 
-                binding.clearButton.apply {
-                    isEnabled = editable == true
-                    visibility = if (editable) {
-                        View.VISIBLE
-                    } else {
-                        View.GONE
-                    }
-                    setImageDrawable(
-                        colorUtils.tintDrawableWithColor(
-                            drawable,
-                            primaryColor!!,
-                        ),
-                    )
-                    setOnClickListener {
-                        onClear()
-                        dismiss()
-                    }
+            binding.clearButton.apply {
+                isEnabled = editable == true
+                visibility = if (editable) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
                 }
+                setImageDrawable(
+                    colorUtils.tintDrawableWithColor(
+                        drawable,
+                        primaryColor!!,
+                    ),
+                )
+                setOnClickListener {
+                    onClear()
+                    dismiss()
+                }
+            }
 
-                binding.shareButton.apply {
-                    setImageDrawable(
-                        colorUtils.tintDrawableWithColor(
-                            drawable,
-                            primaryColor!!,
-                        ),
-                    )
-                    setOnClickListener {
-                        qrContentUri?.let { uri ->
-                            Intent().apply {
-                                action = Intent.ACTION_SEND
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                setDataAndType(uri, context.contentResolver.getType(uri))
-                                putExtra(Intent.EXTRA_STREAM, uri)
-                                startActivity(Intent.createChooser(this, context.getString(R.string.share)))
-                            }
+            binding.shareButton.apply {
+                setImageDrawable(
+                    colorUtils.tintDrawableWithColor(
+                        drawable,
+                        primaryColor!!,
+                    ),
+                )
+                setOnClickListener {
+                    qrContentUri?.let { uri ->
+                        Intent().apply {
+                            action = Intent.ACTION_SEND
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            setDataAndType(uri, context.contentResolver.getType(uri))
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            startActivity(Intent.createChooser(this, context.getString(R.string.share)))
                         }
                     }
                 }
-
-                binding.scanButton.apply {
-                    isEnabled = editable == true
-                    visibility = if (editable) {
-                        View.VISIBLE
-                    } else {
-                        View.GONE
-                    }
-                    setImageDrawable(
-                        colorUtils.tintDrawableWithColor(
-                            drawable,
-                            primaryColor!!,
-                        ),
-                    )
-                    setOnClickListener {
-                        onScan()
-                        dismiss()
-                    }
-                }
-
-                binding.root.clipWithRoundedCorners()
-
-                viewModel.qrBitmap.observe(this) { result ->
-                    result.fold(
-                        onSuccess = { renderBitmap(it) },
-                        onFailure = { dismiss() },
-                    )
-                }
-
-                return binding.root
             }
+
+            binding.scanButton.apply {
+                isEnabled = editable == true
+                visibility = if (editable) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+                setImageDrawable(
+                    colorUtils.tintDrawableWithColor(
+                        drawable,
+                        primaryColor!!,
+                    ),
+                )
+                setOnClickListener {
+                    onScan()
+                    dismiss()
+                }
+            }
+
+            binding.root.clipWithRoundedCorners()
+
+            viewModel.qrBitmap.observe(this) { result ->
+                result.fold(
+                    onSuccess = { renderBitmap(it) },
+                    onFailure = { dismiss() },
+                )
+            }
+
+            binding.root
         }
     }
 
