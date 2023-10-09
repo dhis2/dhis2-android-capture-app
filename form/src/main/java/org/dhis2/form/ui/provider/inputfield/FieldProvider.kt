@@ -46,6 +46,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
+import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
@@ -78,11 +79,20 @@ internal fun FieldProvider(
     if (fieldUiModel.optionSet == null) {
         when (fieldUiModel.valueType) {
             ValueType.TEXT -> {
-                ProvideInputText(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                )
+                if (fieldUiModel.renderingType == UiRenderType.QR_CODE) {
+                    ProvideQRInput(
+                        modifier = modifierWithFocus,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                        uiEventHandler = uiEventHandler,
+                    )
+                } else {
+                    ProvideInputText(
+                        modifier = modifierWithFocus,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                    )
+                }
             }
 
             ValueType.INTEGER_POSITIVE -> {
@@ -688,6 +698,59 @@ private fun ProvideInputLink(
                     fieldUiModel.uid,
                 ),
             )
+        },
+    )
+}
+
+@Composable
+private fun ProvideQRInput(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+) {
+    var value by remember(fieldUiModel.value) {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputQRCode(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnTextChange(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onQRButtonClicked = {
+            if (value.isNullOrEmpty()) {
+                uiEventHandler.invoke(
+                    RecyclerViewUiEvents.ScanQRCode(
+                        fieldUiModel.uid,
+                        optionSet = fieldUiModel.optionSet,
+                        fieldUiModel.renderingType,
+                    ),
+                )
+            } else {
+                uiEventHandler.invoke(
+                    RecyclerViewUiEvents.DisplayQRCode(
+                        fieldUiModel.uid,
+                        optionSet = fieldUiModel.optionSet,
+                        value = value!!,
+                        renderingType = fieldUiModel.renderingType,
+                        editable = fieldUiModel.editable,
+                    ),
+                )
+            }
         },
     )
 }
