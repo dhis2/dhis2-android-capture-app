@@ -19,78 +19,75 @@ import org.dhis2.R
 
 @Composable
 fun FollowupButton(
-        trackedEntityName: String,
-        followUp: Boolean,
-        onButtonClicked: () -> Unit,
+    trackedEntityName: String,
+    followUp: Boolean,
+    onButtonClicked: () -> Unit,
 
-        ) {
+) {
     if (followUp) {
         OutlinedButton(
-                border = BorderStroke(1.dp, MaterialTheme.colors.error),
-                shape = RoundedCornerShape(20.dp),
-                contentPadding = PaddingValues(0.dp),
-                onClick = onButtonClicked,
-                modifier = Modifier
-                        .size(height = 72.dp, width = 40.dp)
-                        .padding(vertical = 16.dp)
+            border = BorderStroke(1.dp, MaterialTheme.colors.error),
+            shape = RoundedCornerShape(20.dp),
+            contentPadding = PaddingValues(0.dp),
+            onClick = onButtonClicked,
+            modifier = Modifier
+                .size(height = 72.dp, width = 40.dp)
+                .padding(vertical = 16.dp),
 
         ) {
-
-            trackedEntityName.replaceFirstChar { it.uppercase() };
+            trackedEntityName.replaceFirstChar { it.uppercase() }
             Icon(
-                    painter = painterResource(id = R.drawable.ic_follow_up_outlined_warn),
+                painter = painterResource(id = R.drawable.ic_follow_up_outlined_warn),
 //                painter = painterResource(id = R.drawable.ic_follow_up),
-                    contentDescription = "details",
-                    tint = MaterialTheme.colors.error
+                contentDescription = "details",
+                tint = MaterialTheme.colors.error,
             )
         }
     } else {
         OutlinedButton(
-                border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-                shape = RoundedCornerShape(20.dp),
-                contentPadding = PaddingValues(0.dp),
-                onClick = onButtonClicked,
-                modifier = Modifier
-                        .size(height = 72.dp, width = 40.dp)
-                        .padding(vertical = 16.dp)
+            border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+            shape = RoundedCornerShape(20.dp),
+            contentPadding = PaddingValues(0.dp),
+            onClick = onButtonClicked,
+            modifier = Modifier
+                .size(height = 72.dp, width = 40.dp)
+                .padding(vertical = 16.dp),
 
         ) {
-
-            trackedEntityName.replaceFirstChar { it.uppercase() };
+            trackedEntityName.replaceFirstChar { it.uppercase() }
             Icon(
 //                painter = painterResource(id = R.drawable.ic_follow_up_outlined_warn),
-                    painter = painterResource(id = R.drawable.ic_follow_up_outlined),
-                    contentDescription = "details",
-                    tint = MaterialTheme.colors.primary
+                painter = painterResource(id = R.drawable.ic_follow_up_outlined),
+                contentDescription = "details",
+                tint = MaterialTheme.colors.primary,
             )
         }
     }
 }
 
 fun ComposeView?.setFollowupButtonContent(
-        trackedEntityName: String,
-        followUp: Boolean,
-        onButtonClicked: () -> Unit,
+    trackedEntityName: String,
+    followUp: Boolean,
+    onButtonClicked: () -> Unit,
 
-        ) {
+) {
     this?.setContent {
         MdcTheme {
             FollowupButton(
-                    trackedEntityName = trackedEntityName,
-                    followUp = followUp,
-                    onButtonClicked = onButtonClicked,
+                trackedEntityName = trackedEntityName,
+                followUp = followUp,
+                onButtonClicked = onButtonClicked,
 
-                    )
+            )
         }
     }
 }
-
 
 @Preview
 @Composable
 fun FollowupButtonPreview() {
     FollowupButton(
-            "PERSON",
-            false
+        "PERSON",
+        false,
     ) {}
 }

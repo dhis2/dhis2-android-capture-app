@@ -23,7 +23,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import java.util.Date
 
-
 class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
         fun setEvents(events: List<EventViewModel>, canAddEvents: Boolean)
@@ -71,6 +70,7 @@ class TEIDataContracts {
 
     interface Presenter : AbstractActivityContracts.Presenter {
         fun init()
+
 //        fun getCatComboOptions(event: Event?)
         fun setDefaultCatOptCombToEvent(eventUid: String?)
         fun changeCatOption(eventUid: String?, catOptionComboUid: String?)

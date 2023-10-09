@@ -108,7 +108,7 @@ internal fun ProvideYesOnlyCheckBoxInput(
         checkBoxData = cbData,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-            state = fieldUiModel.inputState(),
+        state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onClick = {

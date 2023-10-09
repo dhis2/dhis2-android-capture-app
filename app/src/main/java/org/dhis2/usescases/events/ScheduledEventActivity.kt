@@ -69,11 +69,11 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         binding.presenter = presenter
 
         teiUid = intent.extras!!.getString(
-                TEI_UID
+            TEI_UID,
         )
 
         enrollmentUid = intent.extras!!.getString(
-                ENROLLMENT_UID
+            ENROLLMENT_UID,
         )
     }
 
@@ -251,8 +251,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             event.uid(),
             program.uid(),
             EventMode.CHECK,
-                this.teiUid,
-                this.enrollmentUid
+            this.teiUid,
+            this.enrollmentUid,
         )
         Intent(activity, EventCaptureActivity::class.java).apply {
             putExtras(bundle)

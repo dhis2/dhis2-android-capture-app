@@ -18,7 +18,7 @@ internal fun ProvideYesOnlySwitchInput(
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
-            state = fieldUiModel.inputState(),
+        state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         isChecked = fieldUiModel.isAffirmativeChecked,

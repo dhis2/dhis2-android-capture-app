@@ -220,7 +220,7 @@ class TEIDataPresenter(
                         view.setTrackedEntityInstance(
                             teiAndOrgUnit.first,
                             teiAndOrgUnit.second,
-                                teiDataRepository.getAttributeValues(teiUid)
+                            teiDataRepository.getAttributeValues(teiUid),
                         )
                     },
                     Timber.Forest::e,
@@ -410,8 +410,8 @@ class TEIDataPresenter(
                     eventUid = uid,
                     programUid = programUid ?: throw IllegalStateException(),
                     eventMode = EventMode.CHECK,
-                        teiUid,
-                        enrollmentUid
+                    teiUid,
+                    enrollmentUid,
                 ),
             )
             view.openEventCapture(intent)

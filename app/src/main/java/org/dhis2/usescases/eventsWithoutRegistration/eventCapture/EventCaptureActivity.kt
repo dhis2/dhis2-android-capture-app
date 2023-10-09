@@ -18,9 +18,9 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.bindings.app
-import org.dhis2.commons.Constants
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
+import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
@@ -30,8 +30,6 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.ThemeManager
-import org.dhis2.utils.isPortrait
-import org.dhis2.utils.isLandscape
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
@@ -59,8 +57,9 @@ import org.dhis2.utils.customviews.navigationbar.setInitialPage
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
+import org.dhis2.utils.isLandscape
+import org.dhis2.utils.isPortrait
 import javax.inject.Inject
-
 
 const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
 
@@ -106,7 +105,7 @@ class EventCaptureActivity :
             EventCaptureModule(
                 this,
                 eventUid,
-                    isPortrait()
+                isPortrait(),
             ),
         )
 
@@ -137,7 +136,7 @@ class EventCaptureActivity :
             }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter(navigationInitialPage)
-        presenter!!.programStageUid();
+        presenter!!.programStageUid()
         setUpNavigationBar(navigationInitialPage)
         setUpViewPagerAdapter(navigationInitialPage)
 
@@ -148,8 +147,17 @@ class EventCaptureActivity :
             }
             dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel::class.java)
             supportFragmentManager.beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false)).commitAllowingStateLoss()
-            supportFragmentManager.beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, eventUid, programStageUid, setOfAttributeNames
-            )).commitAllowingStateLoss()
+            supportFragmentManager.beginTransaction().replace(
+                R.id.tei_column,
+                EventTeiDetailsFragment.newInstance(
+                    programUid,
+                    teiUid,
+                    enrollmentUid,
+                    eventUid,
+                    programStageUid,
+                    setOfAttributeNames,
+                ),
+            ).commitAllowingStateLoss()
         }
         showProgress()
         presenter!!.initNoteCounter()
@@ -187,15 +195,15 @@ class EventCaptureActivity :
             binding!!.eventViewPager!!.adapter = null
 
             adapter = EventCapturePagerAdapter(
-                    this,
-                    intent.getStringExtra(Constants.PROGRAM_UID),
-                    intent.getStringExtra(Constants.EVENT_UID),
-                    pageConfigurator!!.displayAnalytics(),
-                    pageConfigurator!!.displayRelationships(),
-                    true,
-                    intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
-                    teiUid,
-                    enrollmentUid
+                this,
+                intent.getStringExtra(Constants.PROGRAM_UID),
+                intent.getStringExtra(Constants.EVENT_UID),
+                pageConfigurator!!.displayAnalytics(),
+                pageConfigurator!!.displayRelationships(),
+                true,
+                intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
+                teiUid,
+                enrollmentUid,
             )
 
             binding!!.eventViewPager!!.adapter = adapter
@@ -220,13 +228,14 @@ class EventCaptureActivity :
     private fun setUpNavigationBar(initialPage: Int) {
         binding!!.navigationBar.setInitialPage(initialPage)
         binding!!.navigationBar.pageConfiguration(pageConfigurator!!)
-        binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem -> run {
-            if (isLandscape()) {
-                binding!!.eventViewLandPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
-            } else {
-                binding!!.eventViewPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+        binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
+            run {
+                if (isLandscape()) {
+                    binding!!.eventViewLandPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+                } else {
+                    binding!!.eventViewPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+                }
             }
-        }
 
             true
         }
@@ -245,7 +254,6 @@ class EventCaptureActivity :
     }
 
     override fun preselectStage(programStageUid: String?) {}
-
 
     override fun setData(program: DashboardProgramModel?) {}
 
@@ -335,55 +343,55 @@ class EventCaptureActivity :
         if (isPortrait()) {
             if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
                 val dialog = BottomSheetDialog(
-                        bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                        onMainButtonClicked = {
-                            setAction(eventCompletionDialog.mainButtonAction)
-                        },
-                        onSecondaryButtonClicked = {
-                            eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                        },
-                        content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                            { bottomSheetDialog ->
-                                ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                                    bottomSheetDialog.dismiss()
-                                }
+                    bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                    onMainButtonClicked = {
+                        setAction(eventCompletionDialog.mainButtonAction)
+                    },
+                    onSecondaryButtonClicked = {
+                        eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+                    },
+                    content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                        { bottomSheetDialog ->
+                            ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                                bottomSheetDialog.dismiss()
                             }
-                        } else {
-                            null
-                        },
+                        }
+                    } else {
+                        null
+                    },
                 )
                 dialog.show(supportFragmentManager, SHOW_OPTIONS)
             }
         }
 
-            if (isLandscape()) {
-                if (
-                        binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry ||
-                        binding!!.navigationBar.selectedItemId == R.id.navigation_details ||
-                        binding!!.navigationBar.selectedItemId == R.id.navigation_analytics ||
-                        binding!!.navigationBar.selectedItemId == R.id.navigation_notes
-                ) {
-                        val dialog = BottomSheetDialog(
-                                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                                onMainButtonClicked = {
-                                    setAction(eventCompletionDialog.mainButtonAction)
-                                },
-                                onSecondaryButtonClicked = {
-                                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                                },
-                                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                                    { bottomSheetDialog ->
-                                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                                            bottomSheetDialog.dismiss()
-                                        }
-                                    }
-                                } else {
-                                    null
-                                },
-                        )
-                        dialog.show(supportFragmentManager, SHOW_OPTIONS)
-                }
+        if (isLandscape()) {
+            if (
+                binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry ||
+                binding!!.navigationBar.selectedItemId == R.id.navigation_details ||
+                binding!!.navigationBar.selectedItemId == R.id.navigation_analytics ||
+                binding!!.navigationBar.selectedItemId == R.id.navigation_notes
+            ) {
+                val dialog = BottomSheetDialog(
+                    bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                    onMainButtonClicked = {
+                        setAction(eventCompletionDialog.mainButtonAction)
+                    },
+                    onSecondaryButtonClicked = {
+                        eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+                    },
+                    content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                        { bottomSheetDialog ->
+                            ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                                bottomSheetDialog.dismiss()
+                            }
+                        }
+                    } else {
+                        null
+                    },
+                )
+                dialog.show(supportFragmentManager, SHOW_OPTIONS)
             }
+        }
     }
 
     override fun SaveAndFinish() {
@@ -397,7 +405,7 @@ class EventCaptureActivity :
             .setIsExpired(presenter!!.hasExpired())
             .setSkip(true)
             .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
-            .show(supportFragmentManager, SHOW_OPTIONS);
+            .show(supportFragmentManager, SHOW_OPTIONS)
     }
 
     fun executeRules() {
@@ -596,12 +604,11 @@ class EventCaptureActivity :
             bundle.putSerializable(Constants.EVENT_MODE, eventMode)
 
             if (teiUid != null) {
-                bundle.putString(Constants.TEI_UID, teiUid);
+                bundle.putString(Constants.TEI_UID, teiUid)
             }
 
             if (enrollmentUid != null) {
-
-                bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
+                bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid)
             }
             return bundle
         }

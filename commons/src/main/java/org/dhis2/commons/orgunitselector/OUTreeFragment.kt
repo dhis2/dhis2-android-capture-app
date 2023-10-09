@@ -31,8 +31,8 @@ class OUTreeFragment private constructor() : DialogFragment() {
 
     companion object {
         fun newInstance(
-                showAsDialog: Boolean = false,
-                preselectedOrgUnits: MutableList<String> = mutableListOf()
+            showAsDialog: Boolean = false,
+            preselectedOrgUnits: MutableList<String> = mutableListOf(),
         ): OUTreeFragment {
             return OUTreeFragment().apply {
                 arguments = Bundle().apply {

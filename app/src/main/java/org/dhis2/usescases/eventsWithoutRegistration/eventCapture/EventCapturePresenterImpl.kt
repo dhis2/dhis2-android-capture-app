@@ -16,12 +16,10 @@ import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.util.Date
-
 
 class EventCapturePresenterImpl(
     private val view: EventCaptureContract.View,
@@ -165,10 +163,13 @@ class EventCapturePresenterImpl(
     }
 
     override fun programStageUid() {
-        compositeDisposable.add(eventCaptureRepository.programStage().subscribeOn(schedulerProvider.io())
+        compositeDisposable.add(
+            eventCaptureRepository.programStage().subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        { result: String? -> view.preselectStage(result) }) { t: Throwable? -> Timber.e(t) })
+                    { result: String? -> view.preselectStage(result) },
+                ) { t: Throwable? -> Timber.e(t) },
+        )
     }
 
     override fun getProgramStageUidString(): String? {

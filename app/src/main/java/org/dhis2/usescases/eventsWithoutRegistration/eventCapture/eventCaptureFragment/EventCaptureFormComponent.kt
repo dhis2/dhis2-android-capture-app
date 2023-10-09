@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataModule
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.TeiEventCaptureFormFragment
 
 @PerFragment

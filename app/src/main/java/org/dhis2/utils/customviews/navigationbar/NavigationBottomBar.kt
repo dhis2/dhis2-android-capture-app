@@ -266,7 +266,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     }
 
     fun getInitialPage(): Int {
-       return this.initialPage
+        return this.initialPage
     }
 }
 

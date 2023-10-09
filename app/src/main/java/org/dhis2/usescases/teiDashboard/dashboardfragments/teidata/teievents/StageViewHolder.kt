@@ -25,7 +25,7 @@ internal class StageViewHolder(
     private val stageSelector: FlowableProcessor<StageSection>,
     private val presenter: TEIDataPresenter,
     private val colorUtils: ColorUtils,
-    private val stageSelected: String
+    private val stageSelected: String,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
@@ -93,7 +93,7 @@ internal class StageViewHolder(
         itemView.setOnClickListener { stageSelector.onNext(StageSection(stage.uid(), false)) }
 
         if (stageSelected == stage.uid()) {
-            binding.sectionSelectedMark.visibility = View.VISIBLE;
+            binding.sectionSelectedMark.visibility = View.VISIBLE
 
             binding.sectionSelectedMark.clipWithAllRoundedCorners(2.dp)
             stageSelector.onNext(StageSection(stage.uid(), false))
