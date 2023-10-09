@@ -956,4 +956,10 @@
     <string name="dashboard_menu_delete_person">Delete Person</string>
     <string name="permission_notification_denied">Notification permission is denied.</string>
     <string name="permission_notification_granted">Notification permission granted.</string>
+    <string name="not_synced">Not synced</string>
+    <string name="sync_retry">Retry sync</string>
+    <string name="enrollment_completed">Enrollment completed</string>
+    <string name="enrollment_cancelled">Enrollment cancelled</string>
+    <string name="marked_follow_up">Marked for follow-up</string>
+    <string name="overdue">Overdue %s</string>
 </resources>

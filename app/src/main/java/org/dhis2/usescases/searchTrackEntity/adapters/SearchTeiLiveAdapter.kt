@@ -1,17 +1,24 @@
 package org.dhis2.usescases.searchTrackEntity.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
+import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchErrorBinding
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
+import org.dhis2.usescases.searchTrackEntity.ui.ProvideTEIListCard
+import org.dhis2.usescases.searchTrackEntity.ui.mapper.ListCardMapper
 
 class SearchTeiLiveAdapter(
     private val fromRelationship: Boolean,
     private val colorUtils: ColorUtils,
+    private val cardMapper: ListCardMapper,
     private val onAddRelationship: (
         teiUid: String,
         relationshipTypeUid: String?,
@@ -39,11 +46,13 @@ class SearchTeiLiveAdapter(
                 colorUtils,
                 onTeiClick,
             )
+
             SearchItem.RELATIONSHIP_TEI -> SearchRelationshipViewHolder(
                 ItemSearchTrackedEntityBinding.inflate(inflater, parent, false),
                 colorUtils,
                 onAddRelationship,
             )
+
             SearchItem.ONLINE_ERROR -> SearchErrorViewHolder(
                 ItemSearchErrorBinding.inflate(inflater, parent, false),
             )
@@ -60,7 +69,35 @@ class SearchTeiLiveAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is BaseTeiViewHolder ->
+            is SearchTEViewHolder -> {
+                getItem(position)?.let {
+                    val materialCardView =
+                        holder.itemView.findViewById<MaterialCardView>(R.id.cardView)
+                    materialCardView.visibility = View.GONE
+                    val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
+                    composeView.setContent {
+                        ProvideTEIListCard(
+                            card = cardMapper.map(
+                                searchTEIModel = it,
+                            ) {
+                                onSyncIconClick.invoke(it.selectedEnrollment.uid())
+                            },
+                            onDownloadTei = {
+                                onDownloadTei.invoke(it.tei.uid(), it.selectedEnrollment.uid())
+                            },
+                            onTeiClick = {
+                                onTeiClick.invoke(
+                                    it.tei.uid(),
+                                    it.selectedEnrollment.uid(),
+                                    it.isOnline,
+                                )
+                            },
+                        )
+                    }
+                }
+            }
+
+            is SearchRelationshipViewHolder ->
                 holder.bind(
                     getItem(position)!!,
                     {
@@ -70,6 +107,7 @@ class SearchTeiLiveAdapter(
                 ) { path: String? ->
                     path?.let { onImageClick(path) }
                 }
+
             is SearchErrorViewHolder -> holder.bind(getItem(position)!!)
         }
     }
