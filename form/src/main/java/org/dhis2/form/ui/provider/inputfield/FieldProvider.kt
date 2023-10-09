@@ -1,6 +1,7 @@
 package org.dhis2.form.ui.provider.inputfield
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ContextThemeWrapper
@@ -34,6 +35,7 @@ import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
@@ -142,6 +144,15 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                )
+            }
+
+            ValueType.EMAIL -> {
+                ProvideEmail(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
                 )
             }
 
@@ -532,6 +543,47 @@ private fun ProvideInteger(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideEmail(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputEmail(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnTextChange(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onEmailActionCLicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_SENDTO,
+                    value,
+                    fieldUiModel.uid,
                 ),
             )
         },
