@@ -264,58 +264,60 @@ class TeiDashboardMobileActivity :
                 pageConfigurator.displayRelationships(),
             )
         }
-        if (this.isPortrait()) {
-            binding.teiPager?.adapter = null
-            binding.teiPager?.isUserInputEnabled = false
-            binding.teiPager?.adapter = adapter
-            binding.teiPager?.registerOnPageChangeCallback(
-                object : ViewPager2.OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        showLoadingProgress(false)
-                        val pageType = adapter?.pageType(position)
-                        if (pageType === DashboardPageType.RELATIONSHIPS) {
-                            binding.relationshipMapIcon.visibility = View.VISIBLE
-                        } else {
-                            binding.relationshipMapIcon.visibility = View.GONE
-                        }
-                        if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
-                            binding.toolbarTitle.visibility = View.GONE
-                            binding.editButton.visibility = View.VISIBLE
-                            binding.syncButton.visibility = View.VISIBLE
-                        } else {
-                            binding.toolbarTitle.visibility = View.VISIBLE
-                            binding.editButton.visibility = View.GONE
-                            binding.syncButton.visibility = View.GONE
-                        }
-                        binding.navigationBar.selectItemAt(position)
-                    }
-                },
-            )
-            if (fromRelationship) binding.teiPager?.setCurrentItem(2, false)
-        } else {
-            binding.teiTablePager?.adapter = adapter
-            binding.teiTablePager?.isUserInputEnabled = false
-            binding.teiTablePager?.registerOnPageChangeCallback(
-                object : ViewPager2.OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        showLoadingProgress(false)
-                        when (adapter?.pageType(position)) {
-                            DashboardPageType.ANALYTICS, DashboardPageType.NOTES ->
-                                binding.relationshipMapIcon.visibility =
-                                    View.GONE
-
-                            DashboardPageType.RELATIONSHIPS ->
-                                binding.relationshipMapIcon.visibility =
-                                    View.VISIBLE
-
-                            else -> {}
-                        }
-                        binding.navigationBar.selectItemAt(position)
-                    }
-                },
-            )
-            if (fromRelationship) binding.teiTablePager?.setCurrentItem(1, false)
+        when {
+            this.isPortrait() -> setPortraitPager()
+            else -> setLandscapePager()
         }
+    }
+
+    private fun setPortraitPager() {
+        binding.teiPager?.adapter = null
+        binding.teiPager?.isUserInputEnabled = false
+        binding.teiPager?.adapter = adapter
+        binding.teiPager?.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    showLoadingProgress(false)
+                    val pageType = adapter?.pageType(position)
+                    if (pageType === DashboardPageType.RELATIONSHIPS) {
+                        binding.relationshipMapIcon.visibility = View.VISIBLE
+                    } else {
+                        binding.relationshipMapIcon.visibility = View.GONE
+                    }
+                    if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
+                        binding.toolbarTitle.visibility = View.GONE
+                        binding.editButton.visibility = View.VISIBLE
+                        binding.syncButton.visibility = View.VISIBLE
+                    } else {
+                        binding.toolbarTitle.visibility = View.VISIBLE
+                        binding.editButton.visibility = View.GONE
+                        binding.syncButton.visibility = View.GONE
+                    }
+                    binding.navigationBar.selectItemAt(position)
+                }
+            },
+        )
+        if (fromRelationship) {
+            binding.teiPager?.setCurrentItem(2, false)
+        }
+    }
+
+    private fun setLandscapePager() {
+        binding.teiTablePager?.adapter = adapter
+        binding.teiTablePager?.isUserInputEnabled = false
+        binding.teiTablePager?.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    showLoadingProgress(false)
+                    binding.relationshipMapIcon.visibility = when (adapter?.pageType(position)) {
+                        DashboardPageType.RELATIONSHIPS -> View.VISIBLE
+                        else -> View.GONE
+                    }
+                    binding.navigationBar.selectItemAt(position)
+                }
+            },
+        )
+        if (fromRelationship) binding.teiTablePager?.setCurrentItem(1, false)
     }
 
     private fun showLoadingProgress(showProgress: Boolean) {
@@ -567,7 +569,7 @@ class TeiDashboardMobileActivity :
             .onMenuItemClicked { itemId: Int? ->
                 when (itemId) {
                     R.id.showHelp -> {
-                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                        analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         showTutorial(true)
                     }
 
@@ -649,7 +651,7 @@ class TeiDashboardMobileActivity :
     }
 
     private fun startQRActivity() {
-        analyticsHelper().trackMatomoEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI)
+        analyticsHelper.trackMatomoEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI)
         val intent = Intent(context, QrActivity::class.java)
         intent.putExtra(Constants.TEI_UID, teiUid)
         startActivity(intent)
