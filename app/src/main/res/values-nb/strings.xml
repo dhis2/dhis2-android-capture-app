@@ -163,7 +163,7 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VIS MER</string>
-    <string name="edit">REDIGER</string>
+    <string name="edit">Rediger</string>
     <string name="enrolling_ou">Registrerer OU:</string>
     <string name="follow_up">Oppfølging</string>
     <string name="follow_up_enabled">Oppfølging er aktivert</string>

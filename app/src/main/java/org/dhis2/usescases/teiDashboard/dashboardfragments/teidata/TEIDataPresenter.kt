@@ -28,8 +28,6 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
-import org.dhis2.usescases.enrollment.EnrollmentActivity
-import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
 import org.dhis2.usescases.events.ScheduledEventActivity.Companion.getIntent
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
@@ -360,26 +358,6 @@ class TEIDataPresenter(
             },
         )
         view.switchFollowUp(followup)
-    }
-
-    fun seeDetails(sharedView: View?, dashboardProgramModel: DashboardProgramModel) {
-        val options = sharedView?.let {
-            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                view.abstractActivity,
-                sharedView,
-                "user_info",
-            )
-        } ?: ActivityOptionsCompat.makeBasic()
-        view.seeDetails(
-            getIntent(
-                view.context,
-                dashboardProgramModel.currentEnrollment.uid(),
-                dashboardProgramModel.currentProgram.uid(),
-                EnrollmentActivity.EnrollmentMode.CHECK,
-                false,
-            ),
-            options,
-        )
     }
 
     fun onScheduleSelected(uid: String?, sharedView: View?) {

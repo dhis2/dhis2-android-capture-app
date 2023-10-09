@@ -57,15 +57,6 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent=".5" />
 
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/detailsButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/data_layout"
-            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
         <ImageView
             android:id="@+id/follow_up"
             android:layout_width="24dp"
@@ -177,7 +168,6 @@
             app:alignContent="stretch"
             app:alignItems="stretch"
             app:flexWrap="wrap"
-            app:layout_constraintBottom_toTopOf="@id/detailsButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/teiData">
