@@ -75,6 +75,7 @@ QRDetailBottomDialog(
         QRImageViewModelFactory()
     }
 
+    private var showBottomSheet: Boolean = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
@@ -90,7 +91,25 @@ QRDetailBottomDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        if (!useComposeDialog) {
+        if (useComposeDialog) {
+            binding =
+                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
+
+            viewModel.qrBitmap.observe(this) { result ->
+                result.fold(
+                    onSuccess = { renderBitmap(it) },
+                    onFailure = { dismiss() },
+                )
+            }
+            return ComposeView(requireContext()).apply {
+                setViewCompositionStrategy(
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+                )
+                setContent {
+                    ProvideQRBottomSheet(value = value)
+                }
+            }
+        } else {
             binding =
                 DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
 
@@ -162,24 +181,6 @@ QRDetailBottomDialog(
             }
 
             return binding.root
-        } else {
-            binding =
-                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
-
-            viewModel.qrBitmap.observe(this) { result ->
-                result.fold(
-                    onSuccess = { renderBitmap(it) },
-                    onFailure = { dismiss() },
-                )
-            }
-            return ComposeView(requireContext()).apply {
-                setViewCompositionStrategy(
-                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
-                )
-                setContent {
-                    ProvideQRBottomSheet(value = value)
-                }
-            }
         }
     }
 
@@ -189,76 +190,11 @@ QRDetailBottomDialog(
         value: String,
 
     ) {
-        var showDialog by rememberSaveable {
-            mutableStateOf(true)
+        var showDialog by rememberSaveable(showBottomSheet) {
+            mutableStateOf(showBottomSheet)
         }
         if (showDialog) {
-            val scanItem = CarouselButtonData(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.QrCodeScanner,
-                        contentDescription = "Carousel Button",
-                    )
-                },
-                enabled = true,
-                text = resources.getString(R.string.scan),
-                onClick = {
-                    showDialog = false
-                    onScan()
-                    dismiss()
-                },
-            )
-            val buttonList = mutableListOf(
-                CarouselButtonData(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Share,
-                            contentDescription = "Carousel Button",
-                        )
-                    },
-                    enabled = true,
-                    text = resources.getString(R.string.share),
-                    onClick = {
-                        qrContentUri?.let { uri ->
-                            Intent().apply {
-                                action = Intent.ACTION_SEND
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                setDataAndType(uri, context?.contentResolver?.getType(uri))
-                                putExtra(Intent.EXTRA_STREAM, uri)
-                                startActivity(Intent.createChooser(this, context?.getString(R.string.share)))
-                            }
-                        }
-                    },
-                ),
-                scanItem,
-
-                CarouselButtonData(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.FileDownload,
-                            contentDescription = "Carousel Button",
-                        )
-                    },
-                    enabled = true,
-                    text = resources.getString(R.string.download),
-                    onClick = {
-                        qrContentUri?.let { uri ->
-                            startActivity(
-                                Intent().apply {
-                                    action = Intent.ACTION_VIEW
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    setDataAndType(uri, context?.contentResolver?.getType(uri))
-                                    putExtra(Intent.EXTRA_STREAM, uri)
-                                },
-                            )
-                            // implement download action here
-                        }
-                    },
-                ),
-            )
-            if (!editable) {
-                buttonList.remove(scanItem)
-            }
+            val buttonList = getComposeButtonList()
             BottomSheetShell(
                 modifier = modifier,
                 title = resources.getString(R.string.qr_code),
@@ -284,6 +220,76 @@ QRDetailBottomDialog(
                 },
             )
         }
+    }
+
+    private fun getComposeButtonList(): List<CarouselButtonData> {
+        val scanItem = CarouselButtonData(
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.QrCodeScanner,
+                    contentDescription = "Carousel Button",
+                )
+            },
+            enabled = true,
+            text = resources.getString(R.string.scan),
+            onClick = {
+                showBottomSheet = false
+                onScan()
+                dismiss()
+            },
+        )
+        val buttonList = mutableListOf(
+            CarouselButtonData(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = "Carousel Button",
+                    )
+                },
+                enabled = true,
+                text = resources.getString(R.string.share),
+                onClick = {
+                    qrContentUri?.let { uri ->
+                        Intent().apply {
+                            action = Intent.ACTION_SEND
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            setDataAndType(uri, context?.contentResolver?.getType(uri))
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            startActivity(Intent.createChooser(this, context?.getString(R.string.share)))
+                        }
+                    }
+                },
+            ),
+            scanItem,
+
+            CarouselButtonData(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.FileDownload,
+                        contentDescription = "Carousel Button",
+                    )
+                },
+                enabled = true,
+                text = resources.getString(R.string.download),
+                onClick = {
+                    qrContentUri?.let { uri ->
+                        startActivity(
+                            Intent().apply {
+                                action = Intent.ACTION_VIEW
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                setDataAndType(uri, context?.contentResolver?.getType(uri))
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                            },
+                        )
+                        // implement download action here
+                    }
+                },
+            ),
+        )
+        if (!editable) {
+            buttonList.remove(scanItem)
+        }
+        return buttonList
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
