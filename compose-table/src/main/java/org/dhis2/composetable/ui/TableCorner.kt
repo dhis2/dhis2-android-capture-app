@@ -51,10 +51,17 @@ fun TableCorner(
                     .align(Alignment.CenterEnd)
                     .zIndex(1f),
                 checkMaxMinCondition = { dimensions, currentOffsetX ->
-                    dimensions.canUpdateAllWidths(
-                        tableId = tableId,
-                        widthOffset = currentOffsetX,
-                    )
+                    if (tableCornerUiState.singleValueTable) {
+                        dimensions.canUpdateRowHeaderWidth(
+                            tableId = tableId,
+                            widthOffset = currentOffsetX,
+                        )
+                    } else {
+                        dimensions.canUpdateAllWidths(
+                            tableId = tableId,
+                            widthOffset = currentOffsetX,
+                        )
+                    }
                 },
                 onHeaderResize = { newValue ->
                     tableCornerUiState.onTableResize(newValue)
