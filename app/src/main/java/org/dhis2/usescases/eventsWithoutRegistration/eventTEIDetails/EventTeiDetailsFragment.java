@@ -441,6 +441,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             );
 
             FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
+                System.out.println("***********************");
+                System.out.println("**********WE GOT IN*************");
+                System.out.println("***********************");
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();
                 return Unit.INSTANCE;
