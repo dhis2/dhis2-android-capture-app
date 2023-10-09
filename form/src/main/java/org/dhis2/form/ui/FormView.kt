@@ -617,6 +617,12 @@ class FormView : Fragment() {
                     Intent.ACTION_SENDTO -> {
                         data = Uri.parse("mailto:${currentValue.value}")
                     }
+
+                    Intent.ACTION_VIEW -> {
+                        if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith("https://")) {
+                            data = Uri.parse("http://" + currentValue.value)
+                        }
+                    }
                 }
             }
 

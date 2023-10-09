@@ -38,6 +38,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
+import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
@@ -157,6 +158,14 @@ internal fun FieldProvider(
                 )
             }
 
+            ValueType.URL -> {
+                ProvideInputLink(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
+            }
             ValueType.BOOLEAN -> {
                 when (fieldUiModel.renderingType) {
                     UiRenderType.HORIZONTAL_CHECKBOXES,
@@ -633,6 +642,48 @@ private fun ProvideInputPhoneNumber(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_DIAL,
+                    value,
+                    fieldUiModel.uid,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideInputLink(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputLink(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onLinkActionCLicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_VIEW,
                     value,
                     fieldUiModel.uid,
                 ),
