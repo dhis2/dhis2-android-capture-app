@@ -79,20 +79,12 @@ internal fun FieldProvider(
     if (fieldUiModel.optionSet == null) {
         when (fieldUiModel.valueType) {
             ValueType.TEXT -> {
-                if (fieldUiModel.renderingType == UiRenderType.QR_CODE) {
-                    ProvideQRInput(
-                        modifier = modifierWithFocus,
-                        fieldUiModel = fieldUiModel,
-                        intentHandler = intentHandler,
-                        uiEventHandler = uiEventHandler,
-                    )
-                } else {
-                    ProvideInputText(
-                        modifier = modifierWithFocus,
-                        fieldUiModel = fieldUiModel,
-                        intentHandler = intentHandler,
-                    )
-                }
+                ProvideInputText(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
             }
 
             ValueType.INTEGER_POSITIVE -> {
@@ -303,29 +295,41 @@ private fun ProvideInputText(
     modifier: Modifier = Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
-    var value by remember {
-        mutableStateOf(fieldUiModel.value)
-    }
-    InputText(
-        modifier = modifier.fillMaxWidth(),
-        title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
-        supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
-        isRequiredField = fieldUiModel.mandatory,
-        onValueChanged = {
-            value = it
-            intentHandler(
-                FormIntent.OnTextChange(
-                    fieldUiModel.uid,
-                    value,
-                    fieldUiModel.valueType,
-                ),
+    when (fieldUiModel.renderingType) {
+        UiRenderType.QR_CODE -> {
+            ProvideQRInput(
+                modifier = modifier,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                uiEventHandler = uiEventHandler,
             )
-        },
-    )
+        } else -> {
+            var value by remember {
+                mutableStateOf(fieldUiModel.value)
+            }
+            InputText(
+                modifier = modifier.fillMaxWidth(),
+                title = fieldUiModel.label,
+                state = fieldUiModel.inputState(),
+                supportingText = fieldUiModel.supportingText(),
+                legendData = fieldUiModel.legend(),
+                inputText = value ?: "",
+                isRequiredField = fieldUiModel.mandatory,
+                onValueChanged = {
+                    value = it
+                    intentHandler(
+                        FormIntent.OnTextChange(
+                            fieldUiModel.uid,
+                            value,
+                            fieldUiModel.valueType,
+                        ),
+                    )
+                },
+            )
+        }
+    }
 }
 
 @Composable
