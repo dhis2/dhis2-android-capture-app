@@ -4,6 +4,7 @@ import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.form.R
+import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.orientation
 import org.dhis2.form.extensions.supportingText
@@ -31,6 +32,7 @@ internal fun ProvideCheckBoxInput(
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
@@ -72,6 +74,7 @@ internal fun ProvideYesNoCheckBoxInput(
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
@@ -103,6 +106,7 @@ internal fun ProvideYesOnlyCheckBoxInput(
     InputYesOnlyCheckBox(
         modifier = modifier,
         checkBoxData = cbData,
+        state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
