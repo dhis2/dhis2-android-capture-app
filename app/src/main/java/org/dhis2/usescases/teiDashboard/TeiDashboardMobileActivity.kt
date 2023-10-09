@@ -18,7 +18,7 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import org.dhis2.App
 import org.dhis2.R
@@ -36,6 +36,7 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.qrCodes.QrActivity
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter
+import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.Companion.NO_POSITION
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.DashboardPageType
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
@@ -118,37 +119,14 @@ class TeiDashboardMobileActivity :
         super.onCreate(savedInstanceState)
         groupByStage = MutableLiveData(presenter.programGrouping)
         currentEnrollment = MutableLiveData()
-        dashboardViewModel = ViewModelProviders.of(this)[DashboardViewModel::class.java]
+        dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
         showLoadingProgress(true)
         binding.presenter = presenter
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS)
-        binding.navigationBar.visibility = if (programUid != null) View.VISIBLE else View.GONE
-        binding.navigationBar.pageConfiguration(pageConfigurator)
-        binding.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
-            adapter?.let {
-                when (item.itemId) {
-                    R.id.navigation_analytics -> presenter.trackDashboardAnalytics()
-                    R.id.navigation_relationships -> presenter.trackDashboardRelationships()
-                    R.id.navigation_notes -> presenter.trackDashboardNotes()
-                    else -> {}
-                }
-                val pagePosition = it.getNavigationPagePosition(item.itemId)
-                if (pagePosition != -1) {
-                    if (this.isLandscape()) {
-                        binding.teiTablePager?.currentItem = pagePosition
-                    } else {
-                        binding.syncButton.visibility =
-                            if (pagePosition == 0 && programUid != null) View.VISIBLE else View.GONE
-                        binding.teiPager?.currentItem = pagePosition
-                    }
-                }
-            }
-            true
-        }
         presenter.prefSaveCurrentProgram(programUid)
         elevation = ViewCompat.getElevation(binding.toolbar)
-        binding.relationshipMapIcon.setOnClickListener { v: View? ->
+        binding.relationshipMapIcon.setOnClickListener {
             networkUtils.performIfOnline(
                 this,
                 {
@@ -162,7 +140,7 @@ class TeiDashboardMobileActivity :
                         binding.toolbarProgress.visibility = View.VISIBLE
                         binding.toolbarProgress.hide()
                     }
-                    relationshipMap.setValue(showMap)
+                    relationshipMap.value = showMap
                     null
                 },
                 { null },
@@ -170,10 +148,11 @@ class TeiDashboardMobileActivity :
             )
         }
         binding.syncButton.visibility = if (programUid != null) View.VISIBLE else View.GONE
-        binding.syncButton.setOnClickListener { v: View? -> openSyncDialog() }
+        binding.syncButton.setOnClickListener { openSyncDialog() }
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()
         }
+        setNavigationBar()
         setEditButton()
     }
 
@@ -192,6 +171,33 @@ class TeiDashboardMobileActivity :
                     )
                 }
             }
+        }
+    }
+
+    private fun setNavigationBar() {
+        if (programUid != null) {
+            binding.navigationBar.visibility = View.VISIBLE
+            binding.navigationBar.pageConfiguration(pageConfigurator)
+            binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
+                adapter?.let { pagerAdapter ->
+                    when (item.itemId) {
+                        R.id.navigation_analytics -> presenter.trackDashboardAnalytics()
+                        R.id.navigation_relationships -> presenter.trackDashboardRelationships()
+                        R.id.navigation_notes -> presenter.trackDashboardNotes()
+                    }
+                    pagerAdapter.getNavigationPagePosition(item.itemId)
+                        .takeIf { it != NO_POSITION }
+                        ?.let {
+                            when {
+                                this.isLandscape() -> binding.teiTablePager?.currentItem = it
+                                else -> binding.teiPager?.currentItem = it
+                            }
+                        }
+                }
+                true
+            }
+        } else {
+            binding.navigationBar.visibility = View.GONE
         }
     }
 
@@ -275,9 +281,11 @@ class TeiDashboardMobileActivity :
                         if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
                             binding.toolbarTitle.visibility = View.GONE
                             binding.editButton.visibility = View.VISIBLE
+                            binding.syncButton.visibility = View.VISIBLE
                         } else {
                             binding.toolbarTitle.visibility = View.VISIBLE
                             binding.editButton.visibility = View.GONE
+                            binding.syncButton.visibility = View.GONE
                         }
                         binding.navigationBar.selectItemAt(position)
                     }
