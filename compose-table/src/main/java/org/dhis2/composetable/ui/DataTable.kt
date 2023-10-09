@@ -34,12 +34,20 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
                 cornerUiState = TableCornerUiState(
                     isSelected = tableSelection.isCornerSelected(tableModel.id ?: ""),
                     onTableResize = {
-                        tableResizeActions.onTableDimensionResize(
-                            tableModel.id ?: "",
-                            it,
-                        )
+                        if (tableModel.tableRows.first().values.size == 1) {
+                            tableResizeActions.onRowHeaderResize(
+                                tableModel.id ?: "",
+                                it,
+                            )
+                        } else {
+                            tableResizeActions.onTableDimensionResize(
+                                tableModel.id ?: "",
+                                it,
+                            )
+                        }
                     },
                     onResizing = { resizingCell = it },
+                    singleValueTable = tableModel.tableRows.first().values.size == 1,
                 ),
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollStates[index],

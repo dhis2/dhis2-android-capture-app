@@ -28,6 +28,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private TrackedEntityInstance tei;
     private String profilePicturePath;
     private String defaultTypeIcon;
+    private String header;
 
     private Enrollment selectedEnrollment;
     private List<Enrollment> enrollments;
@@ -140,6 +141,15 @@ public class SearchTeiModel implements CarouselItemModel {
     @Nullable
     public String getDefaultTypeIcon() {
         return defaultTypeIcon;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    @Nullable
+    public String getHeader() {
+        return header;
     }
 
     public void setCurrentEnrollment(Enrollment enrollment) {

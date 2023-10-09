@@ -15,7 +15,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
 import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
@@ -85,23 +85,23 @@ class TrackerFilterSearchHelperTest {
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
         verify(filterRepository, times(0)).applyEnrollmentStatusFilter(any(), any())
         verify(filterRepository, times(0)).applyEventStatusFilter(
-            any<TrackedEntityInstanceQueryCollectionRepository>(),
+            any<TrackedEntitySearchCollectionRepository>(),
             any(),
         )
         verify(filterRepository, times(1)).rootOrganisationUnitUids()
         verify(
             filterRepository,
             times(0),
-        ).applyStateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
+        ).applyStateFilter(any<TrackedEntitySearchCollectionRepository>(), any())
         verify(
             filterRepository,
             times(0),
-        ).applyDateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
+        ).applyDateFilter(any<TrackedEntitySearchCollectionRepository>(), any())
         verify(filterRepository, times(0)).applyEnrollmentDateFilter(any(), any())
         verify(
             filterRepository,
             times(0),
-        ).applyAssignToMe(any<TrackedEntityInstanceQueryCollectionRepository>())
+        ).applyAssignToMe(any<TrackedEntitySearchCollectionRepository>())
     }
 
     @Ignore
@@ -123,20 +123,20 @@ class TrackerFilterSearchHelperTest {
         whenever(filterRepository.applyEnrollmentStatusFilter(any(), any())) doReturn mock()
         whenever(
             filterRepository.applyEventStatusFilter(
-                any<TrackedEntityInstanceQueryCollectionRepository>(),
+                any<TrackedEntitySearchCollectionRepository>(),
                 any(),
             ),
         ) doReturn mock()
         whenever(filterRepository.applyOrgUnitFilter(any(), any(), any())) doReturn mock()
         whenever(
             filterRepository.applyStateFilter(
-                any<TrackedEntityInstanceQueryCollectionRepository>(),
+                any<TrackedEntitySearchCollectionRepository>(),
                 any(),
             ),
         ) doReturn mock()
         whenever(
             filterRepository.applyDateFilter(
-                any<TrackedEntityInstanceQueryCollectionRepository>(),
+                any<TrackedEntitySearchCollectionRepository>(),
                 any(),
             ),
         ) doReturn mock()
@@ -144,7 +144,7 @@ class TrackerFilterSearchHelperTest {
             filterRepository.applyEnrollmentDateFilter(any(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyAssignToMe(any<TrackedEntityInstanceQueryCollectionRepository>()),
+            filterRepository.applyAssignToMe(any<TrackedEntitySearchCollectionRepository>()),
         ) doReturn mock()
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
 
@@ -152,7 +152,7 @@ class TrackerFilterSearchHelperTest {
         verify(
             filterRepository,
             times(1),
-        ).applyEventStatusFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
+        ).applyEventStatusFilter(any<TrackedEntitySearchCollectionRepository>(), any())
         verify(filterRepository, times(1)).applyOrgUnitFilter(
             any(),
             any(),
@@ -161,16 +161,16 @@ class TrackerFilterSearchHelperTest {
         verify(
             filterRepository,
             times(1),
-        ).applyStateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
+        ).applyStateFilter(any<TrackedEntitySearchCollectionRepository>(), any())
         verify(
             filterRepository,
             times(1),
-        ).applyDateFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
+        ).applyDateFilter(any<TrackedEntitySearchCollectionRepository>(), any())
         verify(filterRepository, times(1)).applyEnrollmentDateFilter(any(), any())
         verify(
             filterRepository,
             times(1),
-        ).applyAssignToMe(any<TrackedEntityInstanceQueryCollectionRepository>())
+        ).applyAssignToMe(any<TrackedEntitySearchCollectionRepository>())
     }
 
     @Ignore("Null pointer exception in bitrise")

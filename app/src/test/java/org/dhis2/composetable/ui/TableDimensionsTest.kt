@@ -22,6 +22,7 @@ class TableDimensionsTest {
             val tableDimensions = TableDimensions()
 
             val tableWidth = tableDimensions.tableWidth(
+                tableId = "tableId",
                 totalColumns = testScenario.totalColumns,
                 hasTotal = testScenario.hasTotal,
             )
@@ -43,12 +44,17 @@ class TableDimensionsTest {
 
     @Test
     fun `Should add extra spacing to cell width if table is smaller than screen`() {
+        val tableId = "tableId"
         val totalColumns = 4
         val hasTotal = false
 
         val tableDimensions = TableDimensions()
         val tableWidth =
-            tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
+            tableDimensions.tableWidth(
+                tableId = tableId,
+                totalColumns = totalColumns,
+                hasTotal = hasTotal,
+            )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
         val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100)
@@ -68,11 +74,16 @@ class TableDimensionsTest {
 
     @Test
     fun `Should add extra spacing to cell width if table with totals is smaller than screen`() {
+        val tableId = "tableId"
         val totalColumns = 4
         val hasTotal = true
         val tableDimensions = TableDimensions()
         val tableWidth =
-            tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
+            tableDimensions.tableWidth(
+                tableId = tableId,
+                totalColumns = totalColumns,
+                hasTotal = hasTotal,
+            )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
         val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100)
@@ -93,11 +104,16 @@ class TableDimensionsTest {
 
     @Test
     fun `Should not add extra spacing to cell width if table is bigger than screen width`() {
+        val tableId = "tableId"
         val totalColumns = 4
         val hasTotal = false
         val tableDimensions = TableDimensions()
         val tableWidth =
-            tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
+            tableDimensions.tableWidth(
+                tableId = tableId,
+                totalColumns = totalColumns,
+                hasTotal = hasTotal,
+            )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
         val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100)
@@ -123,11 +139,16 @@ class TableDimensionsTest {
 
     @Test
     fun `Should not add extra spacing to cell width if table with totals is bigger than screen`() {
+        val tableId = "tableId"
         val totalColumns = 4
         val hasTotal = false
         val tableDimensions = TableDimensions()
         val tableWidth =
-            tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
+            tableDimensions.tableWidth(
+                tableId = tableId,
+                totalColumns = totalColumns,
+                hasTotal = hasTotal,
+            )
         val headerRowColumns = intArrayOf(2, totalColumns)
 
         val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100)
