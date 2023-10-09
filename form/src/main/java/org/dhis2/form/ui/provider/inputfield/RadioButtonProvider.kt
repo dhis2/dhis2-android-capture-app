@@ -4,6 +4,7 @@ import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.form.R
+import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.orientation
 import org.dhis2.form.extensions.supportingText
@@ -31,6 +32,7 @@ internal fun ProvideRadioButtonInput(
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),
         supportingText = fieldUiModel.supportingText(),
+            state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
@@ -70,6 +72,7 @@ internal fun ProvideYesNoRadioButtonInput(
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),
         supportingText = fieldUiModel.supportingText(),
+            state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
