@@ -13,9 +13,9 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
-import org.dhis2.usescases.searchTrackEntity.ui.ProvideTEIListCard
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 
 class ProgramEventDetailLiveAdapter(
     private val program: Program,
@@ -47,21 +47,29 @@ class ProgramEventDetailLiveAdapter(
             materialView.visibility = View.GONE
             val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
             composeView.setContent {
-                ProvideTEIListCard(
-                    card = cardMapper.map(
-                        event = it,
-                        editable = it.event?.uid()
-                            ?.let { eventViewModel.isEditable(it) } ?: true,
-                        onSyncIconClick = {
-                            eventViewModel.eventSyncClicked.value = it.event?.uid()
-                        },
-                        onCardCLick = {
-                            it.event?.let { event ->
-                                eventViewModel.eventClicked.value =
-                                    Pair(event.uid(), event.organisationUnit() ?: "")
-                            }
-                        },
-                    ),
+                val card = cardMapper.map(
+                    event = it,
+                    editable = it.event?.uid()
+                        ?.let { eventViewModel.isEditable(it) } ?: true,
+                    onSyncIconClick = {
+                        eventViewModel.eventSyncClicked.value = it.event?.uid()
+                    },
+                    onCardCLick = {
+                        it.event?.let { event ->
+                            eventViewModel.eventClicked.value =
+                                Pair(event.uid(), event.organisationUnit() ?: "")
+                        }
+                    },
+                )
+                ListCard(
+                    listAvatar = card.avatar,
+                    title = card.title,
+                    lastUpdated = card.lastUpdated,
+                    additionalInfoList = card.additionalInfo,
+                    actionButton = card.actionButton,
+                    expandLabelText = card.expandLabelText,
+                    shrinkLabelText = card.shrinkLabelText,
+                    onCardClick = card.onCardCLick,
                 )
             }
         }

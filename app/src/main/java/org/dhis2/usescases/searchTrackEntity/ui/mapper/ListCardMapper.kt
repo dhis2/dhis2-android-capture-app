@@ -33,8 +33,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
-import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.io.File
@@ -77,7 +75,7 @@ class ListCardMapper(
             )
         } else {
             Avatar(
-                textAvatar = getTitle(item).firstOrNull()?.toString() ?: "?",
+                textAvatar = getTitle(item).firstOrNull()?.uppercaseChar()?.toString() ?: "?",
                 style = AvatarStyle.TEXT,
             )
         }
@@ -317,7 +315,11 @@ class ListCardMapper(
             State.UPLOADING -> {
                 AdditionalInfoItem(
                     icon = {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        Icon(
+                            imageVector = Icons.Outlined.Sync,
+                            contentDescription = resourceManager.getString(R.string.syncing),
+                            tint = SurfaceColor.Primary,
+                        )
                     },
                     value = resourceManager.getString(R.string.syncing),
                     color = SurfaceColor.Primary,

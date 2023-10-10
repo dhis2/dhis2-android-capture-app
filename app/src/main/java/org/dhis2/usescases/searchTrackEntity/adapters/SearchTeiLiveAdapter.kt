@@ -12,8 +12,8 @@ import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchErrorBinding
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
-import org.dhis2.usescases.searchTrackEntity.ui.ProvideTEIListCard
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.ListCardMapper
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 
 class SearchTeiLiveAdapter(
     private val fromRelationship: Boolean,
@@ -76,27 +76,35 @@ class SearchTeiLiveAdapter(
                     materialCardView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
-                        ProvideTEIListCard(
-                            card = cardMapper.map(
-                                searchTEIModel = it,
-                                onSyncIconClick = {
-                                    onSyncIconClick.invoke(it.selectedEnrollment.uid())
-                                },
-                                onCardClick = {
-                                    if (it.isOnline) {
-                                        onDownloadTei.invoke(
-                                            it.tei.uid(),
-                                            it.selectedEnrollment.uid(),
-                                        )
-                                    } else {
-                                        onTeiClick.invoke(
-                                            it.tei.uid(),
-                                            it.selectedEnrollment.uid(),
-                                            it.isOnline,
-                                        )
-                                    }
-                                },
-                            ),
+                        val card = cardMapper.map(
+                            searchTEIModel = it,
+                            onSyncIconClick = {
+                                onSyncIconClick.invoke(it.selectedEnrollment.uid())
+                            },
+                            onCardClick = {
+                                if (it.isOnline) {
+                                    onDownloadTei.invoke(
+                                        it.tei.uid(),
+                                        it.selectedEnrollment.uid(),
+                                    )
+                                } else {
+                                    onTeiClick.invoke(
+                                        it.tei.uid(),
+                                        it.selectedEnrollment.uid(),
+                                        it.isOnline,
+                                    )
+                                }
+                            },
+                        )
+                        ListCard(
+                            listAvatar = card.avatar,
+                            title = card.title,
+                            lastUpdated = card.lastUpdated,
+                            additionalInfoList = card.additionalInfo,
+                            actionButton = card.actionButton,
+                            expandLabelText = card.expandLabelText,
+                            shrinkLabelText = card.shrinkLabelText,
+                            onCardClick = card.onCardCLick,
                         )
                     }
                 }

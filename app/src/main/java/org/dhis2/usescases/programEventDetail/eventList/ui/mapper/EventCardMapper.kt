@@ -132,7 +132,8 @@ class EventCardMapper(
         if (event.catComboName?.isNotEmpty() == true && !event.catComboName.equals("default")) {
             list.add(
                 AdditionalInfoItem(
-                    value = event.catComboName ?: "",
+                    key = event.catComboName ?: "",
+                    value = event.event?.attributeOptionCombo() ?: "",
                     isConstantItem = true,
                 ),
             )
