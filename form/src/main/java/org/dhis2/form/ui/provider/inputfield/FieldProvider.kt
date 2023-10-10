@@ -673,7 +673,7 @@ private fun ProvideInputLink(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
