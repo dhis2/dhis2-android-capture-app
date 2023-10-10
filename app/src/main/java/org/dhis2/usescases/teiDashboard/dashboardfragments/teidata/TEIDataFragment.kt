@@ -245,10 +245,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         filtersAdapter.submitList(filterItems)
     }
 
-    override fun hideFilters() {
-        dashboardActivity.hideFilter()
-    }
-
     override fun observeStageSelection(
         currentProgram: Program,
         currentEnrollment: Enrollment,

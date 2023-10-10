@@ -29,7 +29,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
@@ -108,7 +107,6 @@ class TeiDashboardPresenterTest {
         presenter.init()
 
         verify(view).setData(presenter.dashboardProgramModel)
-        verify(view, times(2)).updateTotalFilters(any())
     }
 
     @Test
@@ -148,7 +146,6 @@ class TeiDashboardPresenterTest {
         presenter.init()
 
         verify(view).setDataWithOutProgram(presenter.dashboardProgramModel)
-        verify(view, times(2)).updateTotalFilters(any())
     }
 
     @Test
@@ -360,13 +357,6 @@ class TeiDashboardPresenterTest {
         val isGrouped = presenter.programGrouping
 
         assert(isGrouped == false)
-    }
-
-    @Test
-    fun `Should handle filters icon click`() {
-        presenter.generalFiltersClick()
-
-        verify(view).setFiltersLayoutState()
     }
 
     @Test

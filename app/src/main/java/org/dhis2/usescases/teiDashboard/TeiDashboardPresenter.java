@@ -113,22 +113,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             Timber::e)
             );
         }
-        setTotalFilters();
-    }
-
-    @Override
-    public void setTotalFilters() {
-        compositeDisposable.add(
-                filterManager.asFlowable()
-                        .startWith(filterManager)
-                        .map(FilterManager::getTotalFilters)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                totalFilters -> view.updateTotalFilters(totalFilters),
-                                Timber::e
-                        )
-        );
     }
 
     @Override
@@ -263,11 +247,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         } else {
             return false;
         }
-    }
-
-    @Override
-    public void generalFiltersClick() {
-        view.setFiltersLayoutState();
     }
 
     @Override

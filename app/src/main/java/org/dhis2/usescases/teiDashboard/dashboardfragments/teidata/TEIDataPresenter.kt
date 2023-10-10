@@ -91,9 +91,7 @@ class TEIDataPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { filters ->
-                        if (filters.isEmpty()) {
-                            view.hideFilters()
-                        } else {
+                        if (filters.isNotEmpty()) {
                             view.setFilters(filters)
                         }
                     },

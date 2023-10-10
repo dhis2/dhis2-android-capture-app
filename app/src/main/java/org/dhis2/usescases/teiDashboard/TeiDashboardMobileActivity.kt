@@ -141,9 +141,8 @@ class TeiDashboardMobileActivity :
                         binding.toolbarProgress.hide()
                     }
                     relationshipMap.value = showMap
-                    null
                 },
-                { null },
+                {},
                 getString(R.string.msg_network_connection_maps),
             )
         }
@@ -509,7 +508,6 @@ class TeiDashboardMobileActivity :
             { programColor: Int ->
                 binding.toolbar.setBackgroundColor(programColor)
                 binding.navigationBar.setIconsColor(programColor)
-                Unit
             },
         ) { themeColorRes: Int ->
             binding.toolbar.setBackgroundColor(
@@ -524,7 +522,6 @@ class TeiDashboardMobileActivity :
                     themeColorRes,
                 ),
             )
-            Unit
         }
         binding.executePendingBindings()
         setTheme(themeManager.getProgramTheme())
@@ -604,14 +601,9 @@ class TeiDashboardMobileActivity :
         binding.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes)
     }
 
-    override fun setFiltersLayoutState() {}
-
     fun observeFilters(): LiveData<Boolean>? {
         return null
     }
-    override fun updateTotalFilters(totalFilters: Int?) {}
-
-    fun hideFilter() {}
 
     fun observeGrouping(): LiveData<Boolean>? {
         return groupByStage
