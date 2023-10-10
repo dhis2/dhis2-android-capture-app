@@ -154,7 +154,6 @@ internal fun FieldProvider(
                 ProvideOrgUnitInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
                 )
             }
@@ -693,12 +692,12 @@ private fun ProvideInputLink(
 private fun ProvideOrgUnitInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
-    intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-
+) {
+    var inputFieldvalue by remember(
+        fieldUiModel,
     ) {
-    var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(fieldUiModel.displayName)
     }
 
     InputOrgUnit(
@@ -707,27 +706,32 @@ private fun ProvideOrgUnitInput(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputText = inputFieldvalue ?: "",
         isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
-            value = it
-            intentHandler(
-                FormIntent.OnTextChange(
-                    fieldUiModel.uid,
-                    value,
-                    fieldUiModel.valueType,
-                ),
-            )
+            inputFieldvalue = it
         },
         onOrgUnitActionCLicked = {
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenOrgUnitDialog(
                     fieldUiModel.uid,
                     fieldUiModel.label,
-                    value,
+                    fieldUiModel.value,
                 ),
             )
         },
+        onFocusChanged = { focused ->
+            if (focused) {
+                uiEventHandler.invoke(
+                    RecyclerViewUiEvents.OpenOrgUnitDialog(
+                        fieldUiModel.uid,
+                        fieldUiModel.label,
+                        fieldUiModel.value,
+                    ),
+                )
+            }
+        },
+
     )
 }
 private fun getFieldView(
