@@ -57,7 +57,7 @@ QRDetailBottomDialog(
     private val value: String,
     private val renderingType: UiRenderType?,
     private val editable: Boolean,
-    useCompose: Boolean,
+    private val useCompose: Boolean,
     private val onClear: () -> Unit,
     private val onScan: () -> Unit,
 ) : BottomSheetDialogFragment() {
@@ -69,7 +69,6 @@ QRDetailBottomDialog(
 
     private lateinit var binding: QrDetailDialogBinding
     private var qrContentUri: Uri? = null
-    private var useComposeDialog: Boolean = useCompose
     private var primaryColor: Int? = -1
     private val viewModel by viewModels<QRImageViewModel> {
         QRImageViewModelFactory()
@@ -91,7 +90,7 @@ QRDetailBottomDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        return if (useComposeDialog) {
+        return if (useCompose) {
             binding =
                 DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
 
