@@ -9,6 +9,7 @@ import org.dhis2.maps.usecases.MapStyleConfiguration
 
 class ProgramEventDetailViewModel(
     private val mapStyleConfig: MapStyleConfiguration,
+    val eventRepository: ProgramEventDetailRepository,
 ) : ViewModel() {
     private val progress = MutableLiveData(true)
     val writePermission = MutableLiveData(false)
@@ -54,5 +55,9 @@ class ProgramEventDetailViewModel(
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
+    }
+
+    fun isEditable(eventUid: String): Boolean {
+        return eventRepository.isEventEditable(eventUid)
     }
 }

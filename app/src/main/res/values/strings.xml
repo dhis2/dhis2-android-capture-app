@@ -962,4 +962,8 @@
     <string name="enrollment_cancelled">Enrollment cancelled</string>
     <string name="marked_follow_up">Marked for follow-up</string>
     <string name="overdue">Overdue %s</string>
+    <string name="registered_in">Registered in:</string>
+    <string name="view_only">View only</string>
+    <string name="scheduled">Scheduled: %</string>
+    <string name="skipped">Skipped</string>
 </resources>

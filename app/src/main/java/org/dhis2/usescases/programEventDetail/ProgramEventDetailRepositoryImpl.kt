@@ -173,4 +173,8 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     override fun programHasAnalytics(): Boolean {
         return charts != null && charts.getProgramVisualizations(null, programUid).isNotEmpty()
     }
+
+    override fun isEventEditable(eventUid: String): Boolean {
+        return d2.eventModule().eventService().blockingIsEditable(eventUid)
+    }
 }
