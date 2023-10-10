@@ -9,8 +9,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 @Composable
 fun ProvideTEIListCard(
     card: ListCardUiModel,
-    onDownloadTei: () -> Unit,
-    onTeiClick: () -> Unit,
 ) {
     ListCard(
         listAvatar = card.avatar,
@@ -20,13 +18,7 @@ fun ProvideTEIListCard(
         actionButton = card.actionButton,
         expandLabelText = card.expandLabelText,
         shrinkLabelText = card.shrinkLabelText,
-        onCardClick = {
-            if (card.isOnline) {
-                onDownloadTei()
-            } else {
-                onTeiClick()
-            }
-        },
+        onCardClick = card.onCardCLick,
     )
 }
 

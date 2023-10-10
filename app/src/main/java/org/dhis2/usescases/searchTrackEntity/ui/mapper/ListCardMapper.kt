@@ -45,7 +45,12 @@ class ListCardMapper(
     val resourceManager: ResourceManager,
 ) {
 
-    fun map(searchTEIModel: SearchTeiModel, onSyncIconClick: () -> Unit): ListCardUiModel {
+    fun map(
+        searchTEIModel:
+        SearchTeiModel,
+        onSyncIconClick: () -> Unit,
+        onCardClick: () -> Unit,
+    ): ListCardUiModel {
         return ListCardUiModel(
             avatar = { ProvideAvatar(searchTEIModel) },
             title = getTitle(searchTEIModel),
@@ -55,6 +60,7 @@ class ListCardMapper(
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
             isOnline = searchTEIModel.isOnline,
+            onCardCLick = onCardClick,
         )
     }
 
@@ -157,43 +163,41 @@ class ListCardMapper(
         list: MutableList<AdditionalInfoItem>,
         status: EnrollmentStatus?,
     ) {
-        when (status) {
+        val item = when (status) {
             EnrollmentStatus.COMPLETED -> {
-                list.add(
-                    AdditionalInfoItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = resourceManager.getString(R.string.enrollment_completed),
-                                tint = AdditionalInfoItemColor.SUCCESS.color,
-                            )
-                        },
-                        value = resourceManager.getString(R.string.enrollment_completed),
-                        isConstantItem = true,
-                        color = AdditionalInfoItemColor.SUCCESS.color,
-                    ),
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Check,
+                            contentDescription = resourceManager.getString(R.string.enrollment_completed),
+                            tint = AdditionalInfoItemColor.SUCCESS.color,
+                        )
+                    },
+                    value = resourceManager.getString(R.string.enrollment_completed),
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.SUCCESS.color,
                 )
             }
 
             EnrollmentStatus.CANCELLED -> {
-                list.add(
-                    AdditionalInfoItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Close,
-                                contentDescription = resourceManager.getString(R.string.enrollment_cancelled),
-                                tint = AdditionalInfoItemColor.DISABLED.color,
-                            )
-                        },
-                        value = resourceManager.getString(R.string.enrollment_cancelled),
-                        isConstantItem = true,
-                        color = AdditionalInfoItemColor.DISABLED.color,
-                    ),
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = resourceManager.getString(R.string.enrollment_cancelled),
+                            tint = AdditionalInfoItemColor.DISABLED.color,
+                        )
+                    },
+                    value = resourceManager.getString(R.string.enrollment_cancelled),
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.DISABLED.color,
                 )
             }
 
-            else -> {}
+            else -> null
         }
+
+        item?.let { list.add(it) }
     }
 
     private fun checkEnrolledPrograms(

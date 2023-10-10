@@ -38,7 +38,7 @@ class SearchTeiLiveAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return when (SearchItem.values()[viewType]) {
+        return when (SearchItem.entries[viewType]) {
             SearchItem.TEI -> SearchTEViewHolder(
                 ItemSearchTrackedEntityBinding.inflate(inflater, parent, false),
                 onSyncIconClick,
@@ -79,19 +79,24 @@ class SearchTeiLiveAdapter(
                         ProvideTEIListCard(
                             card = cardMapper.map(
                                 searchTEIModel = it,
-                            ) {
-                                onSyncIconClick.invoke(it.selectedEnrollment.uid())
-                            },
-                            onDownloadTei = {
-                                onDownloadTei.invoke(it.tei.uid(), it.selectedEnrollment.uid())
-                            },
-                            onTeiClick = {
-                                onTeiClick.invoke(
-                                    it.tei.uid(),
-                                    it.selectedEnrollment.uid(),
-                                    it.isOnline,
-                                )
-                            },
+                                onSyncIconClick = {
+                                    onSyncIconClick.invoke(it.selectedEnrollment.uid())
+                                },
+                                onCardClick = {
+                                    if (it.isOnline) {
+                                        onDownloadTei.invoke(
+                                            it.tei.uid(),
+                                            it.selectedEnrollment.uid(),
+                                        )
+                                    } else {
+                                        onTeiClick.invoke(
+                                            it.tei.uid(),
+                                            it.selectedEnrollment.uid(),
+                                            it.isOnline,
+                                        )
+                                    }
+                                },
+                            ),
                         )
                     }
                 }

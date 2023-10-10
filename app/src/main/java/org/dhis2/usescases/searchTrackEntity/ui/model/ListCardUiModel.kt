@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 
 data class ListCardUiModel(
-    val avatar: (@Composable () -> Unit),
+    val avatar: (@Composable () -> Unit)? = null,
     val title: String,
     val lastUpdated: String,
     val additionalInfo: List<AdditionalInfoItem>,
@@ -12,4 +12,5 @@ data class ListCardUiModel(
     val expandLabelText: String,
     val shrinkLabelText: String,
     val isOnline: Boolean,
+    val onCardCLick: () -> Unit,
 )
