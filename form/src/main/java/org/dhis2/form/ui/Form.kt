@@ -16,10 +16,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -40,6 +42,7 @@ fun Form(
 ) {
     val scrollState = rememberLazyListState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val callback = remember {
         object : FieldUiModel.Callback {
             override fun intent(intent: FormIntent) {
@@ -75,11 +78,17 @@ fun Form(
                     warningCount = section.warningCount(),
                     onNextSection = {
                         getNextSection(section, sections)?.let {
-                            intentHandler.invoke(FormIntent.OnSection(it.uid))
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(sections.indexOf(it))
+                                intentHandler.invoke(FormIntent.OnSection(it.uid))
+                            }
                         }
                     },
                     onSectionClick = {
-                        intentHandler.invoke(FormIntent.OnSection(section.uid))
+                        coroutineScope.launch {
+                            scrollState.animateScrollToItem(sections.indexOf(section))
+                            intentHandler.invoke(FormIntent.OnSection(section.uid))
+                        }
                     },
                     content = {
                         section.fields.forEach { fieldUiModel ->
