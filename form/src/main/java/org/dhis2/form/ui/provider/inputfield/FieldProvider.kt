@@ -79,7 +79,7 @@ internal fun FieldProvider(
     if (fieldUiModel.optionSet == null) {
         when (fieldUiModel.valueType) {
             ValueType.TEXT -> {
-                ProvideInputText(
+                ProvideFieldsForvalueTypeText(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
@@ -291,7 +291,7 @@ internal fun FieldProvider(
 }
 
 @Composable
-private fun ProvideInputText(
+private fun ProvideFieldsForvalueTypeText(
     modifier: Modifier = Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
