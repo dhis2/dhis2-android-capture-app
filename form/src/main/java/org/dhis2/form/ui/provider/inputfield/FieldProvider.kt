@@ -42,6 +42,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
+import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
@@ -198,6 +199,15 @@ internal fun FieldProvider(
                         )
                     }
                 }
+            }
+
+            ValueType.PHONE_NUMBER -> {
+                ProvideInputPhoneNumber(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
             }
 
             else -> {
@@ -582,6 +592,47 @@ private fun ProvideEmail(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SENDTO,
+                    value,
+                    fieldUiModel.uid,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideInputPhoneNumber(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPhoneNumber(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnTextChange(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onCallActionClicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_DIAL,
                     value,
                     fieldUiModel.uid,
                 ),
