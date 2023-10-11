@@ -95,6 +95,9 @@ class SearchTeiLiveAdapter(
                                     )
                                 }
                             },
+                            onImageClick = { path ->
+                                onImageClick(path)
+                            },
                         )
                         ListCard(
                             listAvatar = card.avatar,

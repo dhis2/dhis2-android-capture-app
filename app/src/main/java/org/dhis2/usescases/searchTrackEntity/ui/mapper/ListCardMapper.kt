@@ -48,9 +48,10 @@ class ListCardMapper(
         SearchTeiModel,
         onSyncIconClick: () -> Unit,
         onCardClick: () -> Unit,
+        onImageClick: (String) -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
-            avatar = { ProvideAvatar(searchTEIModel) },
+            avatar = { ProvideAvatar(searchTEIModel, onImageClick) },
             title = getTitle(searchTEIModel),
             lastUpdated = searchTEIModel.tei.lastUpdated().toDateSpan(context),
             additionalInfo = getAdditionalInfoList(searchTEIModel),
@@ -62,7 +63,7 @@ class ListCardMapper(
     }
 
     @Composable
-    private fun ProvideAvatar(item: SearchTeiModel) {
+    private fun ProvideAvatar(item: SearchTeiModel, onImageClick: ((String) -> Unit)) {
         if (item.profilePicturePath.isNotEmpty()) {
             val file = File(item.profilePicturePath)
             val bitmap = BitmapFactory.decodeFile(file.absolutePath).asImageBitmap()
@@ -71,13 +72,21 @@ class ListCardMapper(
             Avatar(
                 imagePainter = painter,
                 style = AvatarStyle.IMAGE,
+                onImageClick = { onImageClick(item.profilePicturePath) },
             )
         } else {
             Avatar(
-                textAvatar = getTitle(item).firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                textAvatar = getTitleFirstLetter(item),
                 style = AvatarStyle.TEXT,
             )
         }
+    }
+
+    private fun getTitleFirstLetter(item: SearchTeiModel): String {
+        val firstLetter: Char? = item.header?.firstOrNull()
+            ?: item.attributeValues.values.firstOrNull()?.value()?.firstOrNull()
+
+        return firstLetter?.uppercaseChar()?.toString() ?: "?"
     }
 
     private fun getTitle(item: SearchTeiModel): String {
