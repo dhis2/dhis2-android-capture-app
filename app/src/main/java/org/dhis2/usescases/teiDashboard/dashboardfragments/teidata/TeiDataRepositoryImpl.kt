@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
@@ -293,6 +294,7 @@ class TeiDataRepositoryImpl(
                     } else {
                         eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.DESC)
                     }
+
                 Filters.PERIOD -> {
                     if (sortingItem.sortingStatus === SortingStatus.ASC) {
                         eventRepo
@@ -302,6 +304,7 @@ class TeiDataRepositoryImpl(
                             .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
                     }
                 }
+
                 else -> {
                     eventRepo
                 }
@@ -333,22 +336,33 @@ class TeiDataRepositoryImpl(
                 it.dataElement()?.uid()!!
             }
         return if (displayInListDataElements.isNotEmpty()) {
-            displayInListDataElements.map {
+            displayInListDataElements.mapNotNull {
                 val valueRepo = d2.trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, it)
                 val de = d2.dataElementModule().dataElements()
                     .uid(it).blockingGet()
-                Pair(
-                    de?.displayFormName() ?: de?.displayName() ?: "",
-                    if (valueRepo.blockingExists()) {
-                        valueRepo.blockingGet().userFriendlyValue(d2)
-                    } else {
-                        "-"
-                    },
-                )
+                if (isAcceptedValueType(de?.valueType())) {
+                    Pair(
+                        de?.displayFormName() ?: de?.displayName() ?: "",
+                        if (valueRepo.blockingExists()) {
+                            valueRepo.blockingGet().userFriendlyValue(d2)
+                        } else {
+                            "-"
+                        },
+                    )
+                } else {
+                    null
+                }
             }
         } else {
             emptyList()
+        }
+    }
+
+    private fun isAcceptedValueType(valueType: ValueType?): Boolean {
+        return when (valueType) {
+            ValueType.IMAGE, ValueType.COORDINATE, ValueType.FILE_RESOURCE -> false
+            else -> true
         }
     }
 

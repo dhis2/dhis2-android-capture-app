@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
@@ -216,22 +217,33 @@ class ProgramEventMapper @Inject constructor(
                 it.dataElement()?.uid()!!
             }
         return if (displayInListDataElements.isNotEmpty()) {
-            displayInListDataElements.map {
+            displayInListDataElements.mapNotNull {
                 val valueRepo = d2.trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, it)
                 val de = d2.dataElementModule().dataElements()
                     .uid(it).blockingGet()
-                Pair(
-                    de?.displayFormName() ?: de?.displayName() ?: "",
-                    if (valueRepo.blockingExists()) {
-                        valueRepo.blockingGet().userFriendlyValue(d2)
-                    } else {
-                        "-"
-                    },
-                )
+                if (isAcceptedValueType(de?.valueType())) {
+                    Pair(
+                        de?.displayFormName() ?: de?.displayName() ?: "",
+                        if (valueRepo.blockingExists()) {
+                            valueRepo.blockingGet().userFriendlyValue(d2)
+                        } else {
+                            "-"
+                        },
+                    )
+                } else {
+                    null
+                }
             }
         } else {
             emptyList()
+        }
+    }
+
+    private fun isAcceptedValueType(valueType: ValueType?): Boolean {
+        return when (valueType) {
+            ValueType.IMAGE, ValueType.COORDINATE, ValueType.FILE_RESOURCE -> false
+            else -> true
         }
     }
 

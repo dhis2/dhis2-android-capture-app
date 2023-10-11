@@ -84,14 +84,14 @@ class EventCardMapper(
             dueDate = event.event?.dueDate(),
         )
 
-        checkViewOnly(
-            list = list,
-            editable = editable,
-        )
-
         checkSyncStatus(
             list = list,
             state = event.event?.aggregatedSyncState(),
+        )
+
+        checkViewOnly(
+            list = list,
+            editable = editable,
         )
 
         return list
