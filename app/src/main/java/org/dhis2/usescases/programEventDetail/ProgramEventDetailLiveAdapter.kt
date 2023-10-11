@@ -72,6 +72,11 @@ class ProgramEventDetailLiveAdapter(
                     onCardClick = card.onCardCLick,
                 )
             }
+
+            holder.bind(it, null) {
+                getItem(holder.bindingAdapterPosition)?.toggleValueList()
+                notifyItemChanged(holder.bindingAdapterPosition)
+            }
         }
     }
 

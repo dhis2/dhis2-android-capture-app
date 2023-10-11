@@ -107,6 +107,13 @@ class SearchTeiLiveAdapter(
                             onCardClick = card.onCardCLick,
                         )
                     }
+
+                    holder.bind(it, {
+                        getItem(holder.absoluteAdapterPosition)?.toggleAttributeList()
+                        notifyItemChanged(holder.absoluteAdapterPosition)
+                    }) { path: String? ->
+                        path?.let { onImageClick(path) }
+                    }
                 }
             }
 
