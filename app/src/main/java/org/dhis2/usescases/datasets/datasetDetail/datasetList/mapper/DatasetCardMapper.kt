@@ -90,6 +90,7 @@ class DatasetCardMapper(
                 AdditionalInfoItem(
                     key = "${dataset.nameCategoryOptionCombo()}:",
                     value = dataset.nameCatCombo(),
+                    isConstantItem = true
                 ),
             )
         }
