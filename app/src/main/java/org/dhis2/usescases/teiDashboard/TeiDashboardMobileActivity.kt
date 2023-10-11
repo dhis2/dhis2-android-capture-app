@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -23,6 +24,7 @@ import androidx.viewpager2.widget.ViewPager2
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
+import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
@@ -97,12 +99,43 @@ class TeiDashboardMobileActivity :
     ) {
         presenter.init()
     }
+
+    private val teiProgramListLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == RESULT_OK) {
+            it.data?.let { dataIntent ->
+                if (dataIntent.hasExtra(GO_TO_ENROLLMENT)) {
+                    val intent = getIntent(
+                        this,
+                        dataIntent.getStringExtra(GO_TO_ENROLLMENT) ?: "",
+                        dataIntent.getStringExtra(GO_TO_ENROLLMENT_PROGRAM) ?: "",
+                        EnrollmentActivity.EnrollmentMode.NEW,
+                        false,
+                    )
+                    startActivity(intent)
+                    finish()
+                }
+                if (dataIntent.hasExtra(CHANGE_PROGRAM)) {
+                    startActivity(
+                        intent(
+                            this,
+                            teiUid,
+                            dataIntent.getStringExtra(CHANGE_PROGRAM),
+                            dataIntent.getStringExtra(CHANGE_PROGRAM_ENROLLMENT),
+                        ),
+                    )
+                    finish()
+                }
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE)
             programUid = savedInstanceState.getString(Constants.PROGRAM_UID)
         } else {
-            teiUid = intent.getStringExtra(Constants.TEI_UID)
+            teiUid = intent.getStringExtra(TEI_UID)
             programUid = intent.getStringExtra(Constants.PROGRAM_UID)
             enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         }
@@ -240,12 +273,13 @@ class TeiDashboardMobileActivity :
                     override fun onDismiss(hasChanged: Boolean) {
                         if (hasChanged && !restartingActivity) {
                             restartingActivity = true
-                            startActivity(intent(context, teiUid, programUid, enrollmentUid))
-                            finish()
-                            overridePendingTransition(
+                            val activityOptions = ActivityOptions.makeCustomAnimation(
+                                context,
                                 android.R.anim.fade_in,
-                                android.R.anim.fade_out,
+                                android.R.anim.fade_out
                             )
+                            startActivity(intent(context, teiUid, programUid, enrollmentUid), activityOptions.toBundle())
+                            finish()
                         }
                     }
                 }).show(TEI_SYNC)
@@ -444,38 +478,8 @@ class TeiDashboardMobileActivity :
 
     override fun goToEnrollmentList() {
         val intent = Intent(this, TeiProgramListActivity::class.java)
-        intent.putExtra("TEI_UID", teiUid)
-        startActivityForResult(intent, Constants.RQ_ENROLLMENTS)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
-            data?.let { dataIntent ->
-                if (dataIntent.hasExtra(GO_TO_ENROLLMENT)) {
-                    val intent = getIntent(
-                        this,
-                        dataIntent.getStringExtra(GO_TO_ENROLLMENT) ?: "",
-                        dataIntent.getStringExtra(GO_TO_ENROLLMENT_PROGRAM) ?: "",
-                        EnrollmentActivity.EnrollmentMode.NEW,
-                        false,
-                    )
-                    startActivity(intent)
-                    finish()
-                }
-                if (dataIntent.hasExtra(CHANGE_PROGRAM)) {
-                    startActivity(
-                        intent(
-                            this,
-                            teiUid,
-                            dataIntent.getStringExtra(CHANGE_PROGRAM),
-                            dataIntent.getStringExtra(CHANGE_PROGRAM_ENROLLMENT),
-                        ),
-                    )
-                    finish()
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
+        intent.putExtra(TEI_UID, teiUid)
+        teiProgramListLauncher.launch(intent)
     }
 
     override fun setTutorial() {
@@ -645,12 +649,11 @@ class TeiDashboardMobileActivity :
     private fun startQRActivity() {
         analyticsHelper.trackMatomoEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI)
         val intent = Intent(context, QrActivity::class.java)
-        intent.putExtra(Constants.TEI_UID, teiUid)
+        intent.putExtra(TEI_UID, teiUid)
         startActivity(intent)
     }
 
     companion object {
-        const val OVERVIEW_POS = 0
         private const val TEI_SYNC = "SYNC_TEI"
 
         @JvmStatic
@@ -661,7 +664,7 @@ class TeiDashboardMobileActivity :
             enrollmentUid: String?,
         ): Intent {
             val intent = Intent(context, TeiDashboardMobileActivity::class.java)
-            intent.putExtra(Constants.TEI_UID, teiUid)
+            intent.putExtra(TEI_UID, teiUid)
             intent.putExtra(Constants.PROGRAM_UID, programUid)
             intent.putExtra(Constants.ENROLLMENT_UID, enrollmentUid)
             return intent

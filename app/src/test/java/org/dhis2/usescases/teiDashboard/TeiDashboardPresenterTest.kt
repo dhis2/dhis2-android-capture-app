@@ -44,7 +44,6 @@ class TeiDashboardPresenterTest {
     private val filterManager: FilterManager = mock()
     private val programUid = "programUid"
     private val teiUid = "teiUid"
-    private val enrollmentUid = "enrollmentUid"
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
@@ -53,12 +52,10 @@ class TeiDashboardPresenterTest {
             view,
             teiUid,
             programUid,
-            enrollmentUid,
             repository,
             schedulers,
             analyticsHelper,
             preferenceProvider,
-            filterManager,
             matomoAnalyticsController,
         )
     }
@@ -345,12 +342,10 @@ class TeiDashboardPresenterTest {
             view,
             teiUid,
             null,
-            enrollmentUid,
             repository,
             schedulers,
             analyticsHelper,
             preferenceProvider,
-            filterManager,
             matomoAnalyticsController,
         )
 

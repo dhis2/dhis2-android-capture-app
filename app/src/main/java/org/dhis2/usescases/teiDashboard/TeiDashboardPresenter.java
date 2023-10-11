@@ -8,7 +8,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -36,7 +35,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
     private final PreferenceProvider preferenceProvider;
-    private final FilterManager filterManager;
     private final TeiDashboardContracts.View view;
 
     private String teiUid;
@@ -49,12 +47,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     public TeiDashboardPresenter(
             TeiDashboardContracts.View view,
-            String teiUid, String programUid, String enrollmentUid,
+            String teiUid, String programUid,
             DashboardRepository dashboardRepository,
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper,
             PreferenceProvider preferenceProvider,
-            FilterManager filterManager,
             MatomoAnalyticsController matomoAnalyticsController
     ) {
         this.view = view;
@@ -64,7 +61,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
-        this.filterManager = filterManager;
         this.matomoAnalyticsController = matomoAnalyticsController;
         compositeDisposable = new CompositeDisposable();
         notesCounterProcessor = PublishProcessor.create();
