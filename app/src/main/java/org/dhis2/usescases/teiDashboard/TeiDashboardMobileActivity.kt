@@ -101,7 +101,7 @@ class TeiDashboardMobileActivity :
     }
 
     private val teiProgramListLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {
         if (it.resultCode == RESULT_OK) {
             it.data?.let { dataIntent ->
@@ -276,7 +276,7 @@ class TeiDashboardMobileActivity :
                             val activityOptions = ActivityOptions.makeCustomAnimation(
                                 context,
                                 android.R.anim.fade_in,
-                                android.R.anim.fade_out
+                                android.R.anim.fade_out,
                             )
                             startActivity(intent(context, teiUid, programUid, enrollmentUid), activityOptions.toBundle())
                             finish()
