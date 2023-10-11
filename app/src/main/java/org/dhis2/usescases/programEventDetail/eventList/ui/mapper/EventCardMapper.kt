@@ -45,10 +45,14 @@ class EventCardMapper(
             title = event.displayDate ?: "",
             lastUpdated = event.lastUpdate.toDateSpan(context),
             additionalInfo = getAdditionalInfoList(event, editable),
-            actionButton = { ProvideSyncButton(event, onSyncIconClick) },
+            actionButton = {
+                ProvideSyncButton(
+                    state = event.event?.aggregatedSyncState(),
+                    onSyncIconClick = onSyncIconClick,
+                )
+            },
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
-            isOnline = false,
             onCardCLick = onCardCLick,
         )
     }
@@ -220,8 +224,8 @@ class EventCardMapper(
     }
 
     @Composable
-    private fun ProvideSyncButton(event: EventViewModel, onSyncIconClick: () -> Unit) {
-        val buttonText = when (event.event?.aggregatedSyncState()) {
+    private fun ProvideSyncButton(state: State?, onSyncIconClick: () -> Unit) {
+        val buttonText = when (state) {
             State.TO_POST,
             State.TO_UPDATE,
             -> {

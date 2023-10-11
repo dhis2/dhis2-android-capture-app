@@ -11,6 +11,5 @@ data class ListCardUiModel(
     val actionButton: @Composable (() -> Unit),
     val expandLabelText: String,
     val shrinkLabelText: String,
-    val isOnline: Boolean,
     val onCardCLick: () -> Unit,
 )

@@ -57,7 +57,6 @@ class ListCardMapper(
             actionButton = { ProvideSyncButton(searchTEIModel, onSyncIconClick) },
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
-            isOnline = searchTEIModel.isOnline,
             onCardCLick = onCardClick,
         )
     }
