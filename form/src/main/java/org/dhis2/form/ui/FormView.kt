@@ -619,8 +619,10 @@ class FormView : Fragment() {
                     }
 
                     Intent.ACTION_VIEW -> {
-                        if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith("https://")) {
-                            data = Uri.parse("http://" + currentValue.value)
+                        data = if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith("https://")) {
+                            Uri.parse("http://${currentValue.value}")
+                        } else {
+                            Uri.parse(currentValue.value)
                         }
                     }
                 }
