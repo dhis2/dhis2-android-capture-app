@@ -38,7 +38,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.io.File
 import java.util.Date
 
-class ListCardMapper(
+class TEICardMapper(
     val context: Context,
     val resourceManager: ResourceManager,
 ) {
@@ -125,15 +125,15 @@ class ListCardMapper(
                 status = searchTEIModel.selectedEnrollment.status(),
             )
 
-            checkFollowUp(
-                list = list,
-                enrollments = searchTEIModel.enrollments,
-            )
-
             checkOverdue(
                 list = list,
                 hasOverdue = searchTEIModel.isHasOverdue,
                 overdueDate = searchTEIModel.overdueDate,
+            )
+
+            checkFollowUp(
+                list = list,
+                enrollments = searchTEIModel.enrollments,
             )
 
             checkSyncStatus(

@@ -59,7 +59,7 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
-import org.dhis2.usescases.searchTrackEntity.ui.mapper.ListCardMapper;
+import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -284,10 +284,10 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    ListCardMapper provideListCardMapper(
+    TEICardMapper provideListCardMapper(
             Context context,
             ResourceManager resourceManager
     ) {
-        return new ListCardMapper(context, resourceManager);
+        return new TEICardMapper(context, resourceManager);
     }
 }

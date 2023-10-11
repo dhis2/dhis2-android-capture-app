@@ -12,13 +12,13 @@ import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchErrorBinding
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
-import org.dhis2.usescases.searchTrackEntity.ui.mapper.ListCardMapper
+import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 
 class SearchTeiLiveAdapter(
     private val fromRelationship: Boolean,
     private val colorUtils: ColorUtils,
-    private val cardMapper: ListCardMapper,
+    private val cardMapper: TEICardMapper,
     private val onAddRelationship: (
         teiUid: String,
         relationshipTypeUid: String?,

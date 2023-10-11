@@ -30,7 +30,7 @@ import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
 import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButton
-import org.dhis2.usescases.searchTrackEntity.ui.mapper.ListCardMapper
+import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.dhis2.utils.isLandscape
 import java.io.File
 import javax.inject.Inject
@@ -47,7 +47,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     lateinit var colorUtils: ColorUtils
 
     @Inject
-    lateinit var listCardMapper: ListCardMapper
+    lateinit var teiCardMapper: TEICardMapper
 
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
@@ -61,7 +61,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         SearchTeiLiveAdapter(
             fromRelationship,
             colorUtils,
-            cardMapper = listCardMapper,
+            cardMapper = teiCardMapper,
             onAddRelationship = viewModel::onAddRelationship,
             onSyncIconClick = viewModel::onSyncIconClick,
             onDownloadTei = viewModel::onDownloadTei,
@@ -74,7 +74,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         SearchTeiLiveAdapter(
             fromRelationship,
             colorUtils,
-            cardMapper = listCardMapper,
+            cardMapper = teiCardMapper,
             onAddRelationship = viewModel::onAddRelationship,
             onSyncIconClick = viewModel::onSyncIconClick,
             onDownloadTei = viewModel::onDownloadTei,
