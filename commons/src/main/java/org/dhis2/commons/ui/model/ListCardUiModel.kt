@@ -1,4 +1,4 @@
-package org.dhis2.usescases.searchTrackEntity.ui.model
+package org.dhis2.commons.ui.model
 
 import androidx.compose.runtime.Composable
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem

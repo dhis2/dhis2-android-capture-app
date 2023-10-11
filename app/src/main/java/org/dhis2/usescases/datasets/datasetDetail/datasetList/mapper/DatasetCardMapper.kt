@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.model.ListCardUiModel
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
-import org.dhis2.usescases.searchTrackEntity.ui.model.ListCardUiModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
