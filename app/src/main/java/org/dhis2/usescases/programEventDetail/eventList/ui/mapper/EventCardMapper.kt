@@ -133,11 +133,13 @@ class EventCardMapper(
         list: MutableList<AdditionalInfoItem>,
         event: EventViewModel,
     ) {
-        if (event.catComboName?.isNotEmpty() == true && !event.catComboName.equals("default")) {
+        if (!event.nameCategoryOptionCombo.isNullOrEmpty() &&
+            event.nameCategoryOptionCombo != "default"
+        ) {
             list.add(
                 AdditionalInfoItem(
-                    key = event.catComboName ?: "",
-                    value = event.event?.attributeOptionCombo() ?: "",
+                    key = "${event.nameCategoryOptionCombo}:",
+                    value = event.catComboName ?: "",
                     isConstantItem = true,
                 ),
             )

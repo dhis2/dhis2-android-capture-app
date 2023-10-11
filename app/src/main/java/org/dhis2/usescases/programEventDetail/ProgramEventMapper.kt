@@ -11,6 +11,7 @@ import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -49,7 +50,7 @@ class ProgramEventMapper @Inject constructor(
             orgUnitName = d2.organisationUnitModule().organisationUnits()
                 .uid(event.organisationUnit())
                 .blockingGet()?.displayName() ?: "-",
-            catComboName = getCatComboName(event.attributeOptionCombo()),
+            catComboName = getCatOptionComboName(event.attributeOptionCombo()),
             dataElementValues = getEventValues(event.uid(), event.programStage()!!),
             groupedByStage = true,
             displayDate = eventDate?.let {
@@ -59,7 +60,25 @@ class ProgramEventMapper @Inject constructor(
                     Locale.getDefault(),
                 )
             },
+            nameCategoryOptionCombo =
+            getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
         )
+    }
+
+    private fun getCategoryComboFromOptionCombo(categoryOptionComboUid: String?): CategoryCombo? {
+        val catOptionComboUid = categoryOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryOptionCombos()
+                .uid(it)
+                .blockingGet()?.categoryCombo()?.uid()
+        }
+
+        return catOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryCombos()
+                .uid(it)
+                .blockingGet()
+        }
     }
 
     fun eventToProgramEvent(event: Event): ProgramEventViewModel {
@@ -247,7 +266,7 @@ class ProgramEventMapper @Inject constructor(
         }
     }
 
-    private fun getCatComboName(categoryOptionComboUid: String?): String? {
+    private fun getCatOptionComboName(categoryOptionComboUid: String?): String? {
         return categoryOptionComboUid?.let {
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
                 ?.displayName()

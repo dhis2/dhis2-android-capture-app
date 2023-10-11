@@ -13,6 +13,7 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
@@ -140,6 +141,7 @@ class TeiDataRepositoryImpl(
                                 catComboName = null,
                                 dataElementValues = null,
                                 displayDate = null,
+                                nameCategoryOptionCombo = null,
                             )
                         }
                     }
@@ -196,6 +198,7 @@ class TeiDataRepositoryImpl(
                             dataElementValues = emptyList(),
                             groupedByStage = true,
                             displayDate = null,
+                            nameCategoryOptionCombo = null,
                         ),
                     )
                     if (isSelected) {
@@ -214,7 +217,7 @@ class TeiDataRepositoryImpl(
                                     orgUnitName = d2.organisationUnitModule().organisationUnits()
                                         .uid(event.organisationUnit()).blockingGet()?.displayName()
                                         ?: "",
-                                    catComboName = getCatComboName(event.attributeOptionCombo()),
+                                    catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                     dataElementValues = getEventValues(
                                         event.uid(),
                                         programStage.uid(),
@@ -227,6 +230,8 @@ class TeiDataRepositoryImpl(
                                         event.eventDate() ?: event.dueDate()!!,
                                         Locale.getDefault(),
                                     ),
+                                    nameCategoryOptionCombo =
+                                    getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
                                 ),
                             )
                         }
@@ -253,8 +258,6 @@ class TeiDataRepositoryImpl(
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
-                    val showTopShadow = index == 0
-                    val showBottomShadow = index == eventList.size - 1
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
@@ -267,7 +270,7 @@ class TeiDataRepositoryImpl(
                             orgUnitName = d2.organisationUnitModule().organisationUnits()
                                 .uid(event.organisationUnit()).blockingGet()?.displayName()
                                 ?: "",
-                            catComboName = getCatComboName(event.attributeOptionCombo()),
+                            catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                             dataElementValues = getEventValues(event.uid(), programStage?.uid()),
                             groupedByStage = false,
                             displayDate = periodUtils.getPeriodUIString(
@@ -275,11 +278,29 @@ class TeiDataRepositoryImpl(
                                 event.eventDate() ?: event.dueDate()!!,
                                 Locale.getDefault(),
                             ),
+                            nameCategoryOptionCombo =
+                            getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
                         ),
                     )
                 }
                 eventViewModels
             }
+    }
+
+    private fun getCategoryComboFromOptionCombo(categoryOptionComboUid: String?): CategoryCombo? {
+        val catOptionComboUid = categoryOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryOptionCombos()
+                .uid(it)
+                .blockingGet()?.categoryCombo()?.uid()
+        }
+
+        return catOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryCombos()
+                .uid(it)
+                .blockingGet()
+        }
     }
 
     private fun eventRepoSorting(
@@ -366,7 +387,7 @@ class TeiDataRepositoryImpl(
         }
     }
 
-    private fun getCatComboName(categoryOptionComboUid: String?): String? {
+    private fun getCatOptionComboName(categoryOptionComboUid: String?): String? {
         return categoryOptionComboUid?.let {
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
                 ?.displayName()
