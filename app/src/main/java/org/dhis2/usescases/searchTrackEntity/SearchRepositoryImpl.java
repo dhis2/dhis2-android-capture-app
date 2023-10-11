@@ -376,9 +376,20 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private void setAttributesInfo(SearchTeiModel searchTei, TrackedEntitySearchItem searchTeiItem) {
         for (TrackedEntitySearchItemAttribute attribute : searchTeiItem.getAttributeValues()) {
-            if (attribute.getDisplayInList()) {
+            if (attribute.getDisplayInList() && isAcceptedValueType(attribute.getValueType())) {
                 setAttributeValue(searchTei, attribute);
             }
+        }
+    }
+
+    private boolean isAcceptedValueType(ValueType valueType) {
+        switch (valueType) {
+            case IMAGE:
+            case COORDINATE:
+            case FILE_RESOURCE:
+                return false;
+            default:
+                return true;
         }
     }
 
