@@ -3,7 +3,7 @@ ndk = "21.4.7075529"
 sdk = "33"
 minSdk = "21"
 vCode = "127"
-vName = "2.8.2"
+vName = "2.8.2-psi-fork-1"
 kotlinCompilerExtensionVersion = "1.4.7"
 
 
