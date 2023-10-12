@@ -20,6 +20,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -196,7 +197,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     networkUtils.performIfOnline(
                             this,
                             () -> {
-                                if (!relationshipMap.getValue()) {
+                                if (Boolean.FALSE.equals(relationshipMap.getValue())) {
                                     binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
                                 } else {
                                     binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
@@ -446,8 +447,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
             binding.filterCounter.setVisibility(View.GONE);
             binding.searchFilterGeneral.setVisibility(View.GONE);
-
         }
+        showLoadingProgress(false);
     }
 
     @Override
@@ -486,7 +487,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setTutorial() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (getAbstractActivity() != null)
                 HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.TEI_DASHBOARD, null);
         }, 500);
@@ -559,7 +560,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         int menu;
         if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
-        } else if (groupByStage.getValue()) {
+        } else if (Boolean.TRUE.equals(groupByStage.getValue())) {
             menu = R.menu.dashboard_menu_group;
         } else {
             menu = R.menu.dashboard_menu;

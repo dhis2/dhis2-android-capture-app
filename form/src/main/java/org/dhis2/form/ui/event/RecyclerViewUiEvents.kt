@@ -96,6 +96,7 @@ sealed class RecyclerViewUiEvents {
 
     data class OpenChooserIntent(
         val action: String,
-        val value: String?
+        val value: String?,
+        val uid: String
     ) : RecyclerViewUiEvents()
 }

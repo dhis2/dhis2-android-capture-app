@@ -2,12 +2,6 @@ package org.dhis2.usescases.searchTrackEntity
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.mapbox.geojson.BoundingBox
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +23,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SearchTEIViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -37,7 +37,6 @@ class SearchTEIViewModelTest {
     private lateinit var viewModel: SearchTEIViewModel
     private val initialProgram = "programUid"
     private val initialQuery = mutableMapOf<String, String>()
-    private val presenter: SearchTEContractsModule.Presenter = mock()
     private val repository: SearchRepository = mock()
     private val pageConfigurator: SearchPageConfigurator = mock()
     private val mapDataRepository: MapDataRepository = mock()
@@ -59,7 +58,6 @@ class SearchTEIViewModelTest {
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
-            presenter,
             repository,
             pageConfigurator,
             mapDataRepository,
@@ -336,19 +334,22 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should enroll on click`() {
         viewModel.onEnrollClick()
-        verify(presenter).onEnrollClick(any())
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.legacyInteraction.value is LegacyInteraction.OnEnrollClick)
     }
 
     @Test
     fun `Should add relationship`() {
         viewModel.onAddRelationship("teiUd", "relationshipTypeUid", false)
-        verify(presenter).addRelationship("teiUd", "relationshipTypeUid", false)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.legacyInteraction.value is LegacyInteraction.OnAddRelationship)
     }
 
     @Test
     fun `Should show sync icon`() {
         viewModel.onSyncIconClick("teiUid")
-        verify(presenter).onSyncIconClick("teiUid")
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.legacyInteraction.value is LegacyInteraction.OnSyncIconClick)
     }
 
     @ExperimentalCoroutinesApi
@@ -362,7 +363,8 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should click on TEI`() {
         viewModel.onTeiClick("teiUid", null, true)
-        verify(presenter).onTEIClick("teiUid", null, true)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.legacyInteraction.value is LegacyInteraction.OnTeiClick)
     }
 
     @Test
@@ -584,11 +586,8 @@ class SearchTEIViewModelTest {
         viewModel.onDownloadTei("teiUid", null)
         testingDispatcher.scheduler.advanceUntilIdle()
         assertTrue(viewModel.downloadResult.value == null)
-        verify(presenter, times(1)).enroll(
-            "initialProgram",
-            "teiUid",
-            hashMapOf<String, String>().apply { putAll(viewModel.queryData) }
-        )
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.legacyInteraction.value is LegacyInteraction.OnEnroll)
     }
 
     @Test

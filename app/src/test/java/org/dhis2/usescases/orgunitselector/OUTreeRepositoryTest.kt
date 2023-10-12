@@ -1,16 +1,15 @@
 package org.dhis2.usescases.orgunitselector
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.UUID
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class OUTreeRepositoryTest {
 
@@ -32,22 +31,22 @@ class OUTreeRepositoryTest {
         val result = repository.orgUnits()
 
         assertTrue(result.isNotEmpty())
-        assertTrue(result == orgUnits.map { it.uid() })
+        assertTrue(result == orgUnits)
     }
 
     @Test
     fun `Should return all children orgUnits`() {
-        val orgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
         val parentUid = UUID.randomUUID().toString()
+        val orgUnits = mutableListOf(
+            dummyOrgUnit(parents = listOf(parentUid)),
+            dummyOrgUnit(parents = listOf(parentUid)),
+            dummyOrgUnit(parents = listOf(parentUid))
+        )
 
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
             ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
-        ) doReturn orgUnits
-
-        whenever(
-            ouRepositoryConfiguration.childrenOrgUnits(any())
         ) doReturn orgUnits
 
         repository.orgUnits()
@@ -71,7 +70,7 @@ class OUTreeRepositoryTest {
         val result = repository.orgUnits(name)
 
         assertTrue(result.isNotEmpty())
-        assertTrue(result == orgUnits.map { it.uid() })
+        assertTrue(result == orgUnits)
     }
 
     @Test
@@ -80,8 +79,10 @@ class OUTreeRepositoryTest {
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
-            ouRepositoryConfiguration.orgUnit(orgUnit.uid())
-        ) doReturn orgUnit
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+        ) doReturn listOf(orgUnit)
+
+        repository.orgUnits()
 
         assert(repository.orgUnit(orgUnit.uid()) == orgUnit)
     }
@@ -90,15 +91,70 @@ class OUTreeRepositoryTest {
     fun `Should return if organisation unit has children`() {
         val parentUid = UUID.randomUUID().toString()
         val repository = OUTreeRepository(ouRepositoryConfiguration)
-
+        val orgUnits = mutableListOf(
+            dummyOrgUnit(parents = listOf(parentUid)),
+            dummyOrgUnit(parents = listOf(parentUid)),
+            dummyOrgUnit(parents = listOf(parentUid))
+        )
         whenever(
-            ouRepositoryConfiguration.hasChildren(
-                parentUid = any(),
-                byScope = any()
-            )
-        ) doReturn true
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+        ) doReturn orgUnits
+
+        repository.orgUnits()
 
         assert(repository.orgUnitHasChildren(parentUid))
+    }
+
+    @Test
+    fun `Should return initial orgUnits ordered to display`() {
+        val ou1 = dummyOrderOrgUnit(uid = "ou1", level = 1)
+        val ou11 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou11", level = 2)
+        val ou12 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou12", level = 2)
+        val ou13 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou13", level = 2)
+        val ou121 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou121", level = 3)
+        val ou122 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou122", level = 3)
+
+        val orgUnits = listOf(ou1, ou11, ou12, ou13, ou121, ou122)
+
+        val orderedOus = listOf(ou1, ou11, ou12, ou121, ou122, ou13)
+        val repository = OUTreeRepository(ouRepositoryConfiguration)
+
+        whenever(
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+        ) doReturn orgUnits
+
+        val result = repository.orgUnits()
+
+        assertTrue(result.isNotEmpty())
+        assertTrue(result == orderedOus)
+    }
+
+    @Test
+    fun `Should return initial orgUnits with parents`() {
+        val ou1 = dummyOrderOrgUnit(uid = "ou1", level = 1)
+        val ou12 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou12", level = 2)
+        val ou121 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou121", level = 3)
+        val ou122 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou122", level = 3)
+
+        val orgUnits = listOf(ou121, ou122)
+
+        val ousWithParents = listOf(ou1, ou12, ou121, ou122)
+        val repository = OUTreeRepository(ouRepositoryConfiguration)
+
+        whenever(
+            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull())
+        ) doReturn orgUnits
+        whenever(
+            ouRepositoryConfiguration.orgUnit("ou1")
+        ) doReturn ou1
+        whenever(
+            ouRepositoryConfiguration.orgUnit("ou12")
+        ) doReturn ou12
+
+        val result = repository.orgUnits()
+
+        assertTrue(result.isNotEmpty())
+        assertTrue(result == ousWithParents)
     }
 
     private fun dummyOrgUnit(
@@ -109,5 +165,16 @@ class OUTreeRepositoryTest {
         .uid(uid)
         .level(level)
         .path((parents + uid).joinToString("/"))
+        .build()
+
+    private fun dummyOrderOrgUnit(
+        parents: List<String> = emptyList(),
+        uid: String = UUID.randomUUID().toString(),
+        level: Int = 1
+    ) = OrganisationUnit.builder()
+        .uid(uid)
+        .level(level)
+        .path((parents + uid).joinToString("/"))
+        .displayNamePath(parents.plus(uid))
         .build()
 }

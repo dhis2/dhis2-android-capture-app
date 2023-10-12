@@ -37,13 +37,14 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.composetable.ui.MAX_CELL_WIDTH_SPACE
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
+import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
@@ -140,66 +141,74 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         )
                     }
 
+                    val tableResizeActions = object : TableResizeActions {
+                        override fun onTableWidthChanged(width: Int) {
+                            val tableEndExtraScroll = with(localDensity) {
+                                dimensions.tableEndExtraScroll.toPx().toInt()
+                            }
+                            dimensions = dimensions.copy(
+                                totalWidth = width - tableEndExtraScroll
+                            )
+                        }
+
+                        override fun onRowHeaderResize(tableId: String, newValue: Float) {
+                            with(localDensity) {
+                                dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+                                val widthDpValue =
+                                    dimensions.getRowHeaderWidth(tableId).toDp().value
+                                presenterFragment.saveWidth(tableId, widthDpValue)
+                            }
+                        }
+
+                        override fun onColumnHeaderResize(
+                            tableId: String,
+                            column: Int,
+                            newValue: Float
+                        ) {
+                            with(localDensity) {
+                                dimensions =
+                                    dimensions.updateColumnWidth(tableId, column, newValue)
+                                val widthDpValue =
+                                    dimensions.getColumnWidth(tableId, column).toDp().value
+                                presenterFragment.saveColumnWidth(tableId, column, widthDpValue)
+                            }
+                        }
+
+                        override fun onTableDimensionResize(tableId: String, newValue: Float) {
+                            with(localDensity) {
+                                dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                                val widthDpValue =
+                                    dimensions.getExtraWidths(tableId).toDp().value
+                                presenterFragment.saveTableWidth(tableId, widthDpValue)
+                            }
+                        }
+
+                        override fun onTableDimensionReset(tableId: String) {
+                            dimensions = dimensions.resetWidth(tableId)
+                            presenterFragment.resetTableDimensions(tableId)
+                        }
+                    }
+
                     TableTheme(
                         tableColors = TableColors(
                             primary = MaterialTheme.colors.primary,
-                            primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                            primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                            disabledSelectedBackground = MaterialTheme.colors.primary.copy(
+                                alpha = 0.5f
+                            )
                         ),
                         tableDimensions = dimensions,
                         tableConfiguration = TableConfiguration(),
-                        tableValidator = presenterFragment
+                        tableValidator = presenterFragment,
+                        tableResizeActions = tableResizeActions
                     ) {
                         val screenState by presenterFragment.currentState().collectAsState()
-                        val tableEndExtraScroll = with(LocalDensity.current) {
-                            TableTheme.dimensions.tableEndExtraScroll.toPx().toInt()
-                        }
 
                         DataSetTableScreen(
                             tableScreenState = screenState,
-                            onCellClick = { _, cell, updateCellValue ->
-                                presenterFragment.onCellClick(
-                                    cell = cell,
-                                    updateCellValue = updateCellValue
-                                )
-                            },
-                            onEdition = { isEditing ->
-                                presenter.editingCellValue(isEditing)
-                            },
-                            onSaveValue = presenterFragment::onSaveValueChange,
-                            onTableWidthChanged = { width ->
-                                dimensions = dimensions.copy(
-                                    totalWidth = width - tableEndExtraScroll
-                                )
-                            },
-                            onRowHeaderResize = { tableId, newValue ->
-                                with(localDensity) {
-                                    dimensions = dimensions.updateHeaderWidth(tableId, newValue)
-                                    val widthDpValue =
-                                        dimensions.rowHeaderWidths[tableId]!!.toDp().value
-                                    presenterFragment.saveWidth(tableId, widthDpValue)
-                                }
-                            },
-                            onColumnHeaderResize = { tableId, column, newValue ->
-                                with(localDensity) {
-                                    dimensions =
-                                        dimensions.updateColumnWidth(tableId, column, newValue)
-                                    val widthDpValue =
-                                        dimensions.columnWidth[tableId]!![column]!!.toDp().value
-                                    presenterFragment.saveColumnWidth(tableId, column, widthDpValue)
-                                }
-                            },
-                            onTableDimensionResize = { tableId, newValue ->
-                                with(localDensity) {
-                                    dimensions = dimensions.updateAllWidthBy(tableId, newValue)
-                                    val widthDpValue =
-                                        dimensions.extraWidths[tableId]!!.toDp().value
-                                    presenterFragment.saveTableWidth(tableId, widthDpValue)
-                                }
-                            },
-                            onTableDimensionReset = { tableId ->
-                                dimensions = dimensions.resetWidth(tableId)
-                                presenterFragment.resetTableDimensions(tableId)
-                            }
+                            onCellClick = presenterFragment::onCellClick,
+                            onEdition = presenter::editingCellValue,
+                            onSaveValue = presenterFragment::onSaveValueChange
                         )
                     }
                 }
@@ -246,14 +255,14 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             }
 
             override fun onPositiveClick(datePicker: DatePicker) {
-                calendar.set(Calendar.YEAR, datePicker.year)
-                calendar.set(Calendar.MONTH, datePicker.month)
-                calendar.set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
+                calendar[Calendar.YEAR] = datePicker.year
+                calendar[Calendar.MONTH] = datePicker.month
+                calendar[Calendar.DAY_OF_MONTH] = datePicker.dayOfMonth
                 if (showTimePicker) {
                     showDateTime(dataElement, cell, calendar, updateCellValue)
                 } else {
-                    calendar.set(Calendar.HOUR_OF_DAY, 0)
-                    calendar.set(Calendar.MINUTE, 0)
+                    calendar[Calendar.HOUR_OF_DAY] = 0
+                    calendar[Calendar.MINUTE] = 0
                     val selectedDate: Date = calendar.time
                     val result = DateUtils.oldUiDateFormat().format(selectedDate)
                     val updatedCellValue = cell.copy(value = result)
@@ -280,8 +289,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             .setTitleText(dataElement.displayFormName())
             .build().apply {
                 addOnPositiveButtonClickListener {
-                    calendar.set(Calendar.HOUR_OF_DAY, hour)
-                    calendar.set(Calendar.MINUTE, minute)
+                    calendar[Calendar.HOUR_OF_DAY] = hour
+                    calendar[Calendar.MINUTE] = minute
                     val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
                     val updatedCellValue = cell.copy(value = result)
                     updateCellValue(updatedCellValue)

@@ -7,6 +7,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.bindings.datePattern
 import dhis2.org.analytics.charts.charts.ChartMarker
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
@@ -37,7 +38,11 @@ class GraphToBarChart {
                 valueFormatter = if (graph.categories.isNotEmpty()) {
                     CategoryFormatter(graph.categories)
                 } else {
-                    DateLabelFormatter { graph.dateFromSteps(it) }
+                    DateLabelFormatter(
+                        datePattern = graph.eventPeriodType.datePattern(),
+                        dateFromValue = graph::dateFromSteps,
+                        localDateFromValue = graph::localDateFromSteps
+                    )
                 }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN

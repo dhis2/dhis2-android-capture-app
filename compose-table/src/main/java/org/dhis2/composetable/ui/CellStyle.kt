@@ -1,6 +1,5 @@
 package org.dhis2.composetable.ui
 
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -27,7 +26,7 @@ fun styleForColumnHeader(
 ): CellStyle = when {
     isSelected -> CellStyle.HeaderStyle(
         backgroundColor = LocalTableColors.current.primary,
-        textColor = contentColorFor(LocalTableColors.current.primary)
+        textColor = LocalTableColors.current.onPrimary
     )
     isParentSelected -> CellStyle.HeaderStyle(
         backgroundColor = LocalTableColors.current.primaryLight,
@@ -48,7 +47,7 @@ fun styleForColumnHeader(
 fun styleForRowHeader(isSelected: Boolean, isOtherRowSelected: Boolean): CellStyle = when {
     isSelected -> CellStyle.HeaderStyle(
         TableTheme.colors.primary,
-        contentColorFor(TableTheme.colors.primary)
+        TableTheme.colors.onPrimary
     )
     isOtherRowSelected -> CellStyle.HeaderStyle(
         TableTheme.colors.primaryLight,
@@ -60,8 +59,8 @@ fun styleForRowHeader(isSelected: Boolean, isOtherRowSelected: Boolean): CellSty
     )
 }
 
-@Composable
 fun styleForCell(
+    tableColorProvider: () -> TableColors,
     isSelected: Boolean,
     isParentSelected: Boolean,
     hasError: Boolean,
@@ -70,18 +69,17 @@ fun styleForCell(
     legendColor: Int?
 ) = CellStyle.CellBorderStyle(
     borderColor = when {
-        isSelected && hasError -> TableTheme.colors.errorColor
-        isSelected && hasWarning -> TableTheme.colors.warningColor
-        isSelected -> TableTheme.colors.primary
+        isSelected && hasError -> tableColorProvider().errorColor
+        isSelected && hasWarning -> tableColorProvider().warningColor
+        isSelected -> tableColorProvider().primary
         else -> Color.Transparent
     },
     backgroundColor = when {
         legendColor != null -> Color.Transparent
-        !isEditable -> TableTheme.colors.disabledCellBackground
-        else -> when {
-            isSelected -> TableTheme.colors.tableBackground
-            isParentSelected -> TableTheme.colors.primaryLight
-            else -> TableTheme.colors.tableBackground
-        }
+        !isEditable && isParentSelected -> tableColorProvider().disabledSelectedBackground
+        isParentSelected -> tableColorProvider().primaryLight
+        !isEditable -> tableColorProvider().disabledCellBackground
+        isSelected -> tableColorProvider().tableBackground
+        else -> tableColorProvider().tableBackground
     }
 )

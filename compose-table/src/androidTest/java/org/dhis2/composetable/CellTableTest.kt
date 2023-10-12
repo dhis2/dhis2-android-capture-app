@@ -53,7 +53,6 @@ class CellTableTest {
         }
     }
 
-    @Ignore("It is failing something related added coroutine")
     @Test
     fun shouldSaveValue() {
         var savedValue: TableCell? = null
@@ -133,7 +132,7 @@ class CellTableTest {
         }
     }
 
-    @Ignore("It is failing something related added coroutine")
+    @Ignore("indeterminate test")
     @Test
     fun shouldHideInputComponentIfSelectedCellDoesNotRequireIt() {
         val testingTableId = "PjKGwf9WxBE"

@@ -49,6 +49,7 @@ import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -200,6 +201,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         configureBottomNavigation();
         observeScreenState();
         observeDownload();
+        observeLegacyInteractions();
 
         if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
             openSyncDialog();
@@ -490,6 +492,45 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             return Unit.INSTANCE;
                         }
                 ));
+    }
+
+    private void observeLegacyInteractions() {
+        viewModel.getLegacyInteraction().observe(this, legacyInteraction -> {
+            if (legacyInteraction != null) {
+                switch (legacyInteraction.getId()) {
+                    case ON_ENROLL_CLICK -> {
+                        LegacyInteraction.OnEnrollClick interaction = (LegacyInteraction.OnEnrollClick) legacyInteraction;
+                        presenter.onEnrollClick(new HashMap<>(interaction.getQueryData()));
+                    }
+                    case ON_ADD_RELATIONSHIP -> {
+                        LegacyInteraction.OnAddRelationship interaction = (LegacyInteraction.OnAddRelationship) legacyInteraction;
+                        presenter.addRelationship(interaction.getTeiUid(), interaction.getRelationshipTypeUid(), interaction.getOnline());
+                    }
+                    case ON_SYNC_CLICK -> {
+                        LegacyInteraction.OnSyncIconClick interaction = (LegacyInteraction.OnSyncIconClick) legacyInteraction;
+                        presenter.onSyncIconClick(interaction.getTeiUid());
+                    }
+                    case ON_ENROLL -> {
+                        LegacyInteraction.OnEnroll interaction = (LegacyInteraction.OnEnroll) legacyInteraction;
+                        presenter.enroll(
+                                interaction.getInitialProgramUid(),
+                                interaction.getTeiUid(),
+                                new HashMap<>(interaction.getQueryData())
+                        );
+                    }
+                    case ON_TEI_CLICK -> {
+                        LegacyInteraction.OnTeiClick interaction = (LegacyInteraction.OnTeiClick) legacyInteraction;
+                        presenter.onTEIClick(
+                                interaction.getTeiUid(),
+                                interaction.getEnrollmentUid(),
+                                interaction.getOnline()
+                        );
+                    }
+                }
+
+                viewModel.onLegacyInteractionConsumed();
+            }
+        });
     }
 
     private void observeMapLoading() {

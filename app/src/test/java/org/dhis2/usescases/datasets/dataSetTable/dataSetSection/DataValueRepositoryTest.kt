@@ -1,8 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
@@ -28,6 +25,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DataValueRepositoryTest {
 

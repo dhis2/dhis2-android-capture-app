@@ -31,9 +31,16 @@ sealed class FormIntent : MviIntent {
         val fieldMask: String? = null
     ) : FormIntent()
 
+    data class OnStoreFile(
+        val uid: String,
+        val filePath: String,
+        val valueType: ValueType?
+    ) : FormIntent()
+
     data class OnTextChange(
         val uid: String,
-        val value: String?
+        val value: String?,
+        val valueType: ValueType?
     ) : FormIntent()
 
     data class ClearValue(

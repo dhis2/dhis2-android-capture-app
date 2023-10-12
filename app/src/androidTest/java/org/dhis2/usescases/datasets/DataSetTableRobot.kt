@@ -15,9 +15,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.composetable.ui.CELL_TEST_TAG
-import org.dhis2.composetable.ui.CellSelected
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CellSelected
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.junit.Assert.assertTrue
 

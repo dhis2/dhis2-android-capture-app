@@ -23,8 +23,8 @@ class TestingDatabase : BaseTest() {
         const val password = "Android123"
     }
 
-    @Test
     @Ignore
+    @Test
     fun copyDatabase() {
 
         /* Download db */

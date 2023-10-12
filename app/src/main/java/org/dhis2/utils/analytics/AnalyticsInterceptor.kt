@@ -40,9 +40,7 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
         val request = chain.request()
         val response = chain.proceed(request)
 
-        if (response.code() >= 400 && !isLogged) {
-            isLogged = D2Manager.getD2().userModule().blockingIsLogged()
-        }
+        isLogged = D2Manager.getD2().userModule().blockingIsLogged()
 
         if (response.code() >= 400 && isLogged) {
             analyticHelper.trackMatomoEvent(

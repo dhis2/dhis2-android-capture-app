@@ -14,15 +14,11 @@ import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
 class FormValueStore(
     private val d2: D2,
@@ -31,20 +27,67 @@ class FormValueStore(
     private val enrollmentRepository: EnrollmentObjectRepository?,
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
+    private val fileController: FileController = FileController(),
+    private val uniqueAttributeController: UniqueAttributeController = UniqueAttributeController(
+        d2,
+        crashReportController
+    )
 ) {
 
     fun save(uid: String, value: String?, extraData: String?): StoreResult {
         return when (entryMode) {
             EntryMode.DE ->
                 saveDataElement(uid, value).blockingSingle()
+
             EntryMode.ATTR ->
                 checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
+
             EntryMode.DV ->
                 throw IllegalArgumentException(
                     resourceManager.getString(R.string.data_values_save_error)
                 )
         }
+    }
+
+    fun storeFile(uid: String, filePath: String?): StoreResult {
+        val valueType = when (entryMode) {
+            EntryMode.DE ->
+                d2.dataElementModule().dataElements()
+                    .uid(uid)
+                    .blockingGet()
+                    .valueType()
+
+            EntryMode.ATTR ->
+                d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(uid)
+                    .blockingGet()
+                    .valueType()
+
+            EntryMode.DV ->
+                throw IllegalArgumentException(
+                    resourceManager.getString(R.string.data_values_save_error)
+                )
+        }
+        return filePath?.let {
+            try {
+                saveFileResource(filePath, valueType == ValueType.IMAGE)
+            } catch (e: Exception) {
+                return StoreResult(
+                    uid = uid,
+                    valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                    valueStoreResultMessage = e.localizedMessage
+                )
+            }
+        }?.let { fileResourceUid ->
+            StoreResult(
+                uid = fileResourceUid,
+                valueStoreResult = ValueStoreResult.FILE_SAVED
+            )
+        } ?: StoreResult(
+            uid = uid,
+            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE
+        )
     }
 
     private fun checkStoreEnrollmentDetail(
@@ -65,6 +108,7 @@ class FormValueStore(
                     )
                 )
             }
+
             EnrollmentDetail.INCIDENT_DATE_UID.name -> {
                 enrollmentRepository?.setIncidentDate(
                     value?.toDate()
@@ -77,6 +121,7 @@ class FormValueStore(
                     )
                 )
             }
+
             EnrollmentDetail.ORG_UNIT_UID.name -> {
                 Flowable.just(
                     StoreResult(
@@ -85,6 +130,7 @@ class FormValueStore(
                     )
                 )
             }
+
             EnrollmentDetail.TEI_COORDINATES_UID.name -> {
                 val geometry = value?.let {
                     extraData?.let {
@@ -102,6 +148,7 @@ class FormValueStore(
                     )
                 )
             }
+
             EnrollmentDetail.ENROLLMENT_COORDINATES_UID.name -> {
                 val geometry = value?.let {
                     extraData?.let {
@@ -130,6 +177,7 @@ class FormValueStore(
                     )
                 }
             }
+
             else -> saveAttribute(uid, value)
         }
     }
@@ -153,6 +201,7 @@ class FormValueStore(
                         .uid(event.enrollment()).blockingGet()
                     enrollment.trackedEntityInstance()
                 }
+
                 EntryMode.ATTR -> recordUid
                 EntryMode.DV -> null
             }
@@ -166,21 +215,7 @@ class FormValueStore(
             .value(uid, teiUid)
         val attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()
         val valueType = attribute.valueType()
-        val optionSet = attribute.optionSet()
-        var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (optionSet == null && isFile(valueType) && value != null) {
-            try {
-                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
-            } catch (e: Exception) {
-                return Flowable.just(
-                    StoreResult(
-                        uid = uid,
-                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                        valueStoreResultMessage = e.localizedMessage
-                    )
-                )
-            }
-        }
+        val newValue = value.withValueTypeCheck(valueType) ?: ""
 
         val currentValue = if (valueRepository.blockingExists()) {
             valueRepository.blockingGet().value().withValueTypeCheck(valueType)
@@ -229,70 +264,16 @@ class FormValueStore(
         val isUnique = attribute.unique() ?: false
         val orgUnitScope = attribute.orgUnitScope() ?: false
 
-        if (isUnique && !orgUnitScope) {
-            try {
-                val teiList = d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                    .allowOnlineCache()
-                    .eq(true)
-                    .byOrgUnitMode()
-                    .eq(OrganisationUnitMode.ACCESSIBLE)
-                    .byProgram()
-                    .eq(programUid)
-                    .byAttribute(attribute.uid()).eq(value).blockingGet()
-
-                if (teiList.isNullOrEmpty()) {
-                    return true
-                }
-
-                return teiList.none { it.uid() != teiUid }
-            } catch (e: Exception) {
-                return trackSentryError(e, programUid, attribute, value)
-            }
-        } else if (isUnique && orgUnitScope) {
-            val orgUnit = getOrgUnit(teiUid)
-
-            val teiList = d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache()
-                .eq(true)
-                .byProgram()
-                .eq(programUid)
-                .byAttribute(attribute.uid())
-                .eq(value)
-                .byOrgUnitMode()
-                .eq(OrganisationUnitMode.DESCENDANTS)
-                .byOrgUnits()
-                .`in`(orgUnit)
-                .blockingGet()
-
-            if (teiList.isNullOrEmpty()) {
-                return true
-            }
-
-            return teiList.none { it.uid() != teiUid }
+        if (isUnique) {
+            return uniqueAttributeController.checkAttributeOnline(
+                orgUnitScope,
+                programUid,
+                teiUid,
+                attribute.uid(),
+                value
+            )
         }
-        return true
-    }
 
-    private fun trackSentryError(
-        e: Exception,
-        programUid: String?,
-        attribute: TrackedEntityAttribute,
-        value: String?
-    ): Boolean {
-        val exception = if (e.cause != null && e.cause is D2Error) {
-            val d2Error = e.cause as D2Error
-            "component: ${d2Error.errorComponent()}," +
-                " code: ${d2Error.errorCode()}," +
-                " description: ${d2Error.errorDescription()}"
-        } else {
-            "No d2 Error"
-        }
-        crashReportController.addBreadCrumb(
-            "SearchTEIRepositoryImpl.isUniqueAttribute",
-            "programUid: $programUid ," +
-                " attruid: ${attribute.uid()} ," +
-                " attrvalue: $value, $exception"
-        )
         return true
     }
 
@@ -314,39 +295,12 @@ class FormValueStore(
             return true
         }
 
-        return if (!orgUnitScope) {
-            val hasValue = getTrackedEntityAttributeValues(uid, value, teiUid).isNotEmpty()
-            !hasValue
-        } else {
-            val enrollingOrgUnit = getOrgUnit(teiUid)
-            val hasValue = getTrackedEntityAttributeValues(uid, value, teiUid)
-                .map {
-                    getOrgUnit(it.trackedEntityInstance()!!)
-                }
-                .all { it != enrollingOrgUnit }
-            hasValue
-        }
-    }
-
-    fun getOrgUnit(teiUid: String): String? {
-        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
-            .organisationUnit()
-    }
-
-    private fun getTrackedEntityAttributeValues(
-        uid: String,
-        value: String,
-        teiUid: String
-    ): List<TrackedEntityAttributeValue> {
-        return d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityAttribute().eq(uid)
-            .byTrackedEntityInstance().neq(teiUid)
-            .byValue().eq(value).blockingGet()
+        return uniqueAttributeController.checkAttributeLocal(orgUnitScope, teiUid, uid, value)
     }
 
     private fun saveFileResource(path: String, resize: Boolean): String {
         val file = if (resize) {
-            FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+            fileController.resize(path)
         } else {
             File(path)
         }
@@ -358,21 +312,7 @@ class FormValueStore(
             .value(recordUid, uid)
         val dataElement = d2.dataElementModule().dataElements().uid(uid).blockingGet()
         val valueType = dataElement.valueType()
-        val optionSet = dataElement.optionSet()
-        var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (optionSet == null && isFile(valueType) && value != null) {
-            try {
-                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
-            } catch (e: Exception) {
-                return Flowable.just(
-                    StoreResult(
-                        uid = uid,
-                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                        valueStoreResultMessage = e.localizedMessage
-                    )
-                )
-            }
-        }
+        val newValue = value.withValueTypeCheck(valueType) ?: ""
 
         val currentValue = if (valueRepository.blockingExists()) {
             valueRepository.blockingGet().value().withValueTypeCheck(valueType)
@@ -400,8 +340,10 @@ class FormValueStore(
         return when {
             d2.dataElementModule().dataElements().uid(uid).blockingExists() ->
                 saveDataElement(uid, value)
+
             d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists() ->
                 saveAttribute(uid, value)
+
             else -> Flowable.just(StoreResult(uid, ValueStoreResult.UID_IS_NOT_DE_OR_ATTR))
         }
     }
@@ -464,11 +406,13 @@ class FormValueStore(
                 optionsInGroup,
                 isInGroup
             )
+
             EntryMode.ATTR -> deleteAttributeValueIfNotInGroup(
                 field,
                 optionsInGroup,
                 isInGroup
             )
+
             EntryMode.DV
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one."
@@ -506,9 +450,5 @@ class FormValueStore(
         } else {
             StoreResult(field, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
         }
-    }
-
-    private fun isFile(valueType: ValueType?): Boolean {
-        return valueType == ValueType.IMAGE || valueType?.isFile == true
     }
 }

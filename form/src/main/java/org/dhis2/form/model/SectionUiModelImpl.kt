@@ -141,7 +141,7 @@ data class SectionUiModelImpl(
     override val textColor: Int?
         get() = style?.textColor(error, warning)
 
-    override val backGroundColor: Pair<Array<Int>, Int>?
+    override val backGroundColor: Pair<Array<Int>, Int?>?
         get() =
             valueType?.let {
                 style?.backgroundColor(it, error, warning)

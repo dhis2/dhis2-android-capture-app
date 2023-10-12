@@ -25,7 +25,8 @@ class ConfigureEventCompletionDialog(
         mandatoryFields: Map<String, String>,
         warningFields: List<FieldWithIssue>,
         canComplete: Boolean,
-        onCompleteMessage: String?
+        onCompleteMessage: String?,
+        canSkipErrorFix: Boolean
     ): EventCompletionDialog {
         val dialogType = getDialogType(
             errorFields,
@@ -34,22 +35,26 @@ class ConfigureEventCompletionDialog(
             !canComplete && onCompleteMessage != null
         )
         val mainButton = getMainButton(dialogType)
-        val secondaryButton = EventCompletionButtons(
-            SecondaryButton(provider.provideNotNow()),
-            FormBottomDialog.ActionType.FINISH
-        )
+        val secondaryButton = if (canSkipErrorFix) {
+            EventCompletionButtons(
+                SecondaryButton(provider.provideNotNow()),
+                FormBottomDialog.ActionType.FINISH
+            )
+        } else {
+            null
+        }
         val bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = getTitle(dialogType),
             message = getSubtitle(dialogType),
             iconResource = getIcon(dialogType),
             mainButton = mainButton.buttonStyle,
-            secondaryButton = secondaryButton.buttonStyle
+            secondaryButton = secondaryButton?.buttonStyle
         )
 
         return EventCompletionDialog(
             bottomSheetDialogUiModel = bottomSheetDialogUiModel,
             mainButtonAction = mainButton.action,
-            secondaryButtonAction = secondaryButton.action,
+            secondaryButtonAction = secondaryButton?.action,
             fieldsWithIssues = getFieldsWithIssues(
                 errorFields = errorFields,
                 mandatoryFields = mandatoryFields.keys.toList(),
@@ -86,6 +91,7 @@ class ConfigureEventCompletionDialog(
             MainButton(provider.provideReview()),
             FormBottomDialog.ActionType.CHECK_FIELDS
         )
+
         WARNING,
         SUCCESSFUL -> EventCompletionButtons(
             CompleteButton(),
@@ -140,15 +146,19 @@ class ConfigureEventCompletionDialog(
         errorOnComplete -> {
             COMPLETE_ERROR
         }
+
         errorFields.isNotEmpty() -> {
             ERROR
         }
+
         mandatoryFields.isNotEmpty() -> {
             MANDATORY
         }
+
         warningFields.isNotEmpty() -> {
             WARNING
         }
+
         else -> {
             SUCCESSFUL
         }

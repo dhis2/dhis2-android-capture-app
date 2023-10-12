@@ -11,5 +11,5 @@ interface FormUiModelStyle {
         valueType: ValueType,
         error: String?,
         warning: String?
-    ): Pair<Array<Int>, Int>
+    ): Pair<Array<Int>, Int?>
 }

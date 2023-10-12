@@ -3,7 +3,12 @@ package org.dhis2.usescases.searchTrackEntity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
+import java.util.UUID
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
@@ -13,26 +18,30 @@ class SearchNavigator(
     private val searchNavigationConfiguration: SearchNavigationConfiguration
 ) {
 
-    private val dashboardLauncher = activity.registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (searchNavigationConfiguration.refreshDataOnBackFromDashboard()) {
-            activity.refreshData()
-        }
-    }
-
-    private val enrollmentLauncher = activity.registerForActivityResult(EnrollmentContract()) {
-        when (it) {
-            is EnrollmentResult.RelationshipResult -> {
-                activity.setResult(Activity.RESULT_OK, it.data())
-                activity.finish()
+    private val dashboardLauncher: ActivityResultLauncher<Intent>
+        get() = activity.registerActivityResultLauncher(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (searchNavigationConfiguration.refreshDataOnBackFromDashboard()) {
+                activity.refreshData()
             }
-            is EnrollmentResult.Success ->
-                if (searchNavigationConfiguration.refreshDataOnBackFromEnrollment()) {
-                    activity.refreshData()
-                }
+            dashboardLauncher.unregister()
         }
-    }
+
+    private val enrollmentLauncher: ActivityResultLauncher<EnrollmentInput>
+        get() = activity.registerActivityResultLauncher(contract = EnrollmentContract()) {
+            when (it) {
+                is EnrollmentResult.RelationshipResult -> {
+                    activity.setResult(Activity.RESULT_OK, it.data())
+                    activity.finish()
+                }
+                is EnrollmentResult.Success ->
+                    if (searchNavigationConfiguration.refreshDataOnBackFromEnrollment()) {
+                        activity.refreshData()
+                    }
+            }
+            enrollmentLauncher.unregister()
+        }
 
     fun changeProgram(
         programUid: String?,
@@ -90,3 +99,8 @@ class SearchNavigator(
         } ?: Bundle()
     }
 }
+fun <I, O> ComponentActivity.registerActivityResultLauncher(
+    key: String = UUID.randomUUID().toString(),
+    contract: ActivityResultContract<I, O>,
+    callback: ActivityResultCallback<O>
+): ActivityResultLauncher<I> = activityResultRegistry.register(key, contract, callback)

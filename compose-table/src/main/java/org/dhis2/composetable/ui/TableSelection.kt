@@ -36,6 +36,13 @@ sealed class TableSelection(open val tableId: String) {
         val globalIndex: Int
     ) : TableSelection(tableId)
 
+    fun getSelectedCellRowIndex(selectedTableId: String): Int =
+        if (selectedTableId == tableId && this is CellSelection) {
+            this.rowIndex
+        } else {
+            -1
+        }
+
     fun isCornerSelected(selectedTableId: String) =
         selectedTableId == tableId && (this is AllCellSelection)
 

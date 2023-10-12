@@ -41,7 +41,7 @@ fun ComposeView.setPicture(fieldUiModel: FieldUiModel) {
                 }
             ) {
                 PictureInput(
-                    imageValue = fieldUiModel.value?.getBitmap(),
+                    imageValue = fieldUiModel.displayName?.getBitmap(),
                     enabled = fieldUiModel.editable,
                     addButtonData =
                     when (fieldUiModel.renderingType != UiRenderType.CANVAS) {

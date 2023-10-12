@@ -1,9 +1,6 @@
 package org.dhis2.form.ui.validation
 
 import android.content.Context
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.form.R
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerNegativeFailure
@@ -13,6 +10,9 @@ import org.hisp.dhis.android.core.common.valuetype.validation.failures.NumberFai
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class FieldErrorMessageProviderTest {
 

@@ -22,11 +22,14 @@ fun LineDataSet.withGlobalStyle(): LineDataSet {
     }
 }
 
-fun BarData.withGlobalStyle(): BarData {
+fun BarData.withGlobalStyle(width: Float?): BarData {
     return this.apply {
         setValueTextSize(default_value_text_size)
-        if (dataSetCount > 1) {
-            barWidth = default_bar_group_space / dataSetCount.toFloat()
+        when {
+            dataSetCount > 1 ->
+                barWidth = default_bar_group_space / dataSetCount.toFloat()
+            width != null ->
+                barWidth = width
         }
     }
 }

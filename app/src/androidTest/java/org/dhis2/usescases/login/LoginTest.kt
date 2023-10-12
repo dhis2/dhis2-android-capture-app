@@ -7,6 +7,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.rule.ActivityTestRule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -18,10 +23,8 @@ import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-
 class LoginTest : BaseTest() {
 
     @get:Rule
@@ -38,35 +41,34 @@ class LoginTest : BaseTest() {
         setupMockServer()
         D2Manager.removeCredentials()
     }
-    
+
     @Test
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, PATH_WEBAPP_GENERAL_SETTINGS, API_METADATA_SETTINGS_RESPONSE_ERROR, 404)
         mockWebServerRobot.addResponse(GET, PATH_WEBAPP_INFO, API_METADATA_SETTINGS_INFO_ERROR, 404)
-
-        enableIntents()
         startLoginActivity()
-
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clickLoginButton()
-            acceptTrackerDialog(composeTestRule)
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(2000)
+                withContext(Dispatchers.Main) {
+                    acceptTrackerDialog(composeTestRule)
+                }
+            }
         }
-
         cleanDatabase()
     }
 
     @Test
     fun shouldGetAuthErrorWhenCredentialsAreWrong() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
-
         startLoginActivity()
-
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
@@ -95,7 +97,6 @@ class LoginTest : BaseTest() {
     fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
         enableIntents()
         startLoginActivity()
-
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
@@ -212,7 +213,6 @@ class LoginTest : BaseTest() {
         const val PATH_APPS = "/api/apps?.*"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
         const val PIN_PASSWORD = 1234
-
         const val USERNAME = "test"
         const val PASSWORD = "Android123"
     }

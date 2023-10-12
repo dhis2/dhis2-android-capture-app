@@ -50,6 +50,10 @@ class EventRobot : BaseRobot() {
         composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
     }
 
+    fun checkSecondaryButtonNotVisible(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).assertDoesNotExist()
+    }
+
     fun clickOnReopen() {
         onView(withId(R.id.reopenButton)).perform(click())
     }

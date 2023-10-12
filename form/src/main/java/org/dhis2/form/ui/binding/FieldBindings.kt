@@ -90,11 +90,13 @@ fun TextView.setInputStyle(styleItem: FieldUiModel?) {
         uiModel.textColor?.let {
             setTextColor(it)
         }
-        uiModel.backGroundColor?.let {
-            ViewCompat.setBackgroundTintList(
-                this,
-                ColorStateList.valueOf(it.second)
-            )
+        uiModel.backGroundColor?.let { pair ->
+            pair.second?.let { color ->
+                ViewCompat.setBackgroundTintList(
+                    this,
+                    ColorStateList.valueOf(color)
+                )
+            }
         }
     }
 

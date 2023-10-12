@@ -1,10 +1,7 @@
 package org.dhis2.data.fingerprint
 
-import android.content.Context
-import co.infinum.goldfinger.rx.RxGoldfinger
 import dagger.Module
 import dagger.Provides
-import org.dhis2.BuildConfig
 import org.dhis2.commons.di.dagger.PerActivity
 
 @Module
@@ -13,17 +10,8 @@ object FingerPrintModule {
     @JvmStatic
     @Provides
     @PerActivity
-    fun provideFingerPrintController(
-        goldfinger: RxGoldfinger,
-        mapper: FingerPrintMapper
-    ): FingerPrintController {
-        return FingerPrintControllerImpl(goldfinger, mapper)
-    }
-
-    @JvmStatic
-    @Provides
-    fun provideFingerPrintModule(context: Context): RxGoldfinger {
-        return RxGoldfinger.Builder(context).logEnabled(BuildConfig.DEBUG).build()
+    fun provideFingerPrintController(mapper: FingerPrintMapper): FingerPrintController {
+        return FingerPrintControllerImpl(mapper)
     }
 
     @JvmStatic

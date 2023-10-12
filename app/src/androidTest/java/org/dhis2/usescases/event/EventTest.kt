@@ -1,5 +1,6 @@
 package org.dhis2.usescases.event
 
+import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -10,6 +11,10 @@ import org.dhis2.usescases.event.entity.ProgramStageUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.form.formRobot
+import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
+import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
+import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
@@ -29,6 +34,9 @@ class EventTest: BaseTest() {
 
     @get:Rule
     val ruleEventDetail = ActivityTestRule(EventInitialActivity::class.java, false, false)
+
+    @get:Rule
+    val eventListRule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -83,8 +91,8 @@ class EventTest: BaseTest() {
         }
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldSuccessfullyUpdateAndSaveEvent() {
         val labMonitoring = "Lab monitoring"
         val eventDate = "1/6/2020"
@@ -106,6 +114,27 @@ class EventTest: BaseTest() {
         teiDashboardRobot {
             clickOnStageGroup(labMonitoring)
             checkEventStateStageGroup(labMonitoringStatus)
+        }
+    }
+
+    @Test
+    @Ignore("We need to change configuration in the program")
+    fun shouldAvoidLeavingFormWithErrors() {
+        val atenatalCare = "lxAQ7Zs9VYR"
+
+        prepareProgramAndLaunchActivity(atenatalCare)
+        disableRecyclerViewAnimations()
+
+        programEventsRobot {
+            clickOnAddEvent()
+        }
+        eventRegistrationRobot {
+            clickNextButton()
+        }
+        eventRobot {
+            typeOnRequiredEventForm("125", 1)
+            clickOnFormFabButton()
+            checkSecondaryButtonNotVisible(composeTestRule)
         }
     }
 
@@ -148,4 +177,19 @@ class EventTest: BaseTest() {
         "1/6/2020",
         "Ngelehun CHC"
     )
+
+    private fun prepareProgramAndLaunchActivity(programUid: String) {
+        Intent().apply {
+            putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, programUid)
+        }.also { eventListRule.launchActivity(it) }
+    }
+
+    private fun disableRecyclerViewAnimations() {
+        val activity = eventListRule.activity
+        activity.runOnUiThread {
+            activity.supportFragmentManager.findFragmentByTag("EVENT_LIST").apply {
+                (this as EventListFragment).binding.recycler.itemAnimator = null
+            }
+        }
+    }
 }

@@ -954,4 +954,7 @@
     <string name="storage_denied">Storage permission is denied.\nYou need to enable it to install version.</string>
     <string name="app_version">App version</string>
     <string name="error_applying_rule_effects">"Something went wrong with the program configuration, we cannot load this event. Please contact your system admin."</string>
+    <string name="dashboard_menu_delete_person">Delete Person</string>
+    <string name="permission_notification_denied">Notification permission is denied.</string>
+    <string name="permission_notification_granted">Notification permission granted.</string>
 </resources>

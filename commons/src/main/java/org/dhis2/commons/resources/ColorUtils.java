@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.commons.R;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -52,7 +53,7 @@ public class ColorUtils {
         int colorToReturn = Color.BLACK;
 
         if (!isEmpty(hexColor)) {
-            colorToReturn = parseColor(hexColor);
+            colorToReturn = parseColor(Objects.requireNonNull(hexColor));
         }
         if (isEmpty(hexColor) || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
             colorToReturn = defaultPrimaryColor;

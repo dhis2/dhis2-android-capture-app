@@ -8,6 +8,7 @@ import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,13 +19,14 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.actions.TableInteractions
+import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.data.input_error_message
 import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
-import org.junit.Ignore
+import org.dhis2.composetable.ui.compositions.LocalInteraction
 import org.junit.Rule
 import org.junit.Test
 
@@ -63,7 +65,6 @@ class TextInputUiTest {
         }
     }
 
-    @Ignore("It is not deterministic, to fix on https://dhis2.atlassian.net/browse/ANDROAPP-4987")
     @Test
     fun shouldClearFocusWhenKeyboardIsHidden() {
         tableRobot(composeTestRule) {
@@ -102,17 +103,28 @@ class TextInputUiTest {
         BottomSheetScaffold(
             scaffoldState = bottomSheetState,
             sheetContent = {
+                val textInputInteractions by remember(tableData) {
+                    derivedStateOf {
+                        object : TextInputInteractions {
+                            override fun onTextChanged(inputModel: TextInputModel) {
+                                currentInputType = inputModel
+                                currentCell = currentCell?.copy(
+                                    value = inputModel.currentValue,
+                                    error = null
+                                )
+                            }
+
+                            override fun onSave() {
+                                currentCell?.let { onSave(it) }
+                            }
+
+
+                        }
+                    }
+                }
                 TextInput(
                     textInputModel = currentInputType,
-                    onTextChanged = { textInputModel ->
-                        currentInputType = textInputModel
-                        currentCell = currentCell?.copy(
-                            value = textInputModel.currentValue,
-                            error = null
-                        )
-                    },
-                    onSave = { currentCell?.let { onSave(it) } },
-                    onNextSelected = {},
+                    textInputInteractions = textInputInteractions,
                     focusRequester = FocusRequester()
                 )
             },
@@ -122,32 +134,35 @@ class TextInputUiTest {
                 topEnd = 16.dp
             )
         ) {
-            CompositionLocalProvider(
-                LocalTableSelection provides tableSelection
-            ) {
-                DataTable(
-                    tableList = tableData,
-                    tableInteractions = object : TableInteractions {
-                        override fun onSelectionChange(newTableSelection: TableSelection) {
-                            tableSelection = newTableSelection
-                        }
 
-                        override fun onClick(tableCell: TableCell) {
-                            currentCell = tableCell
-                            currentInputType = TextInputModel(
-                                id = tableCell.id!!,
-                                mainLabel = "Main Label",
-                                secondaryLabels = listOf("Second Label 1", "Second Label 2"),
-                                tableCell.value,
-                                error = currentCell?.error
-                            )
-                            coroutineScope.launch {
-                                if (bottomSheetState.bottomSheetState.isCollapsed) {
-                                    bottomSheetState.bottomSheetState.expand()
-                                }
-                            }
+            val iteractions = object : TableInteractions {
+                override fun onSelectionChange(newTableSelection: TableSelection) {
+                    tableSelection = newTableSelection
+                }
+
+                override fun onClick(tableCell: TableCell) {
+                    currentCell = tableCell
+                    currentInputType = TextInputModel(
+                        id = tableCell.id!!,
+                        mainLabel = "Main Label",
+                        secondaryLabels = listOf("Second Label 1", "Second Label 2"),
+                        tableCell.value,
+                        error = currentCell?.error
+                    )
+                    coroutineScope.launch {
+                        if (bottomSheetState.bottomSheetState.isCollapsed) {
+                            bottomSheetState.bottomSheetState.expand()
                         }
                     }
+                }
+            }
+
+            CompositionLocalProvider(
+                LocalTableSelection provides tableSelection,
+                LocalInteraction provides iteractions
+            ) {
+                DataTable(
+                    tableList = tableData
                 )
             }
         }

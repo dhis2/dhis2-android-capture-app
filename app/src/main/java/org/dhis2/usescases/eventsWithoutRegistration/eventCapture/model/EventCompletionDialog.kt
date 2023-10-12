@@ -7,6 +7,6 @@ import org.dhis2.utils.customviews.FormBottomDialog
 data class EventCompletionDialog(
     val bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     val mainButtonAction: FormBottomDialog.ActionType,
-    val secondaryButtonAction: FormBottomDialog.ActionType,
+    val secondaryButtonAction: FormBottomDialog.ActionType?,
     val fieldsWithIssues: List<FieldWithIssue>
 )

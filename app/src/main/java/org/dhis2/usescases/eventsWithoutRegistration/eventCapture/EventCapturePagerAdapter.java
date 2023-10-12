@@ -19,6 +19,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.Indicators
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.commons.Constants;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,10 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     private EventCaptureFormFragment formFragment;
 
     private final boolean shouldOpenErrorSection;
+
+    public boolean isFormScreenShown(@Nullable Integer currentItem) {
+        return currentItem!=null && pages.get(currentItem) == EventPageType.DATA_ENTRY;
+    }
 
     private enum EventPageType {
         DETAILS, DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES

@@ -4,11 +4,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.addEnrollmentIcons
+import org.dhis2.Bindings.getEnrollmentIconsData
 import org.dhis2.Bindings.hasFollowUp
+import org.dhis2.Bindings.paintAllEnrollmentIcons
 import org.dhis2.Bindings.setAttributeList
 import org.dhis2.Bindings.setStatusText
 import org.dhis2.Bindings.setTeiImage
+import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.maps.R
@@ -60,10 +62,13 @@ class CarouselTeiHolder(
 
         data.apply {
             binding.setFollowUp(enrollments.hasFollowUp())
-            programInfo.addEnrollmentIcons(
-                itemView.context,
-                binding.composeProgramList,
-                selectedEnrollment?.program()
+            val enrollmentIconDataList: List<EnrollmentIconData> =
+                programInfo.getEnrollmentIconsData(
+                    itemView.context,
+                    if (selectedEnrollment != null) selectedEnrollment.program() else null
+                )
+            enrollmentIconDataList.paintAllEnrollmentIcons(
+                binding.composeProgramList
             )
             selectedEnrollment?.setStatusText(
                 itemView.context,
@@ -142,8 +147,10 @@ class CarouselTeiHolder(
     }
 
     override fun showNavigateButton() {
-        dataModel?.setShowNavigationButton(true)
-        binding.mapNavigateFab.show()
+        if (dataModel?.tei?.geometry() != null) {
+            dataModel?.setShowNavigationButton(true)
+            binding.mapNavigateFab.show()
+        }
     }
 
     override fun hideNavigateButton() {
