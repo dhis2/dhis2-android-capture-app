@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,6 +42,7 @@ import org.dhis2.ui.items.SyncStatusItem
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.MessageAmountDialog
+import org.hisp.dhis.android.core.common.State
 import javax.inject.Inject
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
@@ -96,6 +98,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     val syncState by viewModel.currentState.collectAsState()
                     syncState?.let { syncUiState ->
                         if (syncUiState.shouldDismissOnUpdate) dismiss()
+                        if (syncing && syncUiState.syncState == State.SYNCED) {
+                            dismiss()
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.sync_successful),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                                 title = syncUiState.title,
