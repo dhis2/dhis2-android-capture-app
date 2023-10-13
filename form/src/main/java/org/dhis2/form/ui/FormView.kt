@@ -977,6 +977,7 @@ class FormView : Fragment() {
             event.value,
             event.renderingType,
             event.editable,
+            useCompose,
             {
                 intentHandler(FormIntent.OnNext(event.uid, null))
             },

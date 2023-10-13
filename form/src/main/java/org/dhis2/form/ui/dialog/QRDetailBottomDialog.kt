@@ -9,6 +9,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -26,26 +42,30 @@ import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.databinding.QrDetailDialogBinding
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
+import org.hisp.dhis.mobile.ui.designsystem.component.CarouselButtonData
+import org.hisp.dhis.mobile.ui.designsystem.component.QrCodeBlock
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import javax.inject.Inject
 
 class
 QRDetailBottomDialog(
     private val value: String,
     private val renderingType: UiRenderType?,
     private val editable: Boolean,
+    private val useCompose: Boolean,
     private val onClear: () -> Unit,
     private val onScan: () -> Unit,
 ) : BottomSheetDialogFragment() {
+
+    var colorUtils: ColorUtils = ColorUtils()
     companion object {
         const val TAG: String = "QR_DETAIL_DIALOG"
     }
-
-    @Inject
-    lateinit var colorUtils: ColorUtils
 
     private lateinit var binding: QrDetailDialogBinding
     private var qrContentUri: Uri? = null
@@ -54,6 +74,7 @@ QRDetailBottomDialog(
         QRImageViewModelFactory()
     }
 
+    private var showBottomSheet: Boolean = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
@@ -69,77 +90,205 @@ QRDetailBottomDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
+        return if (useCompose) {
+            binding =
+                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
 
-        binding.clearButton.apply {
-            isEnabled = editable == true
-            visibility = if (editable) {
-                View.VISIBLE
-            } else {
-                View.GONE
+            viewModel.qrBitmap.observe(this) { result ->
+                result.fold(
+                    onSuccess = { renderBitmap(it) },
+                    onFailure = { dismiss() },
+                )
             }
-            setImageDrawable(
-                colorUtils.tintDrawableWithColor(
-                    drawable,
-                    primaryColor!!,
-                ),
-            )
-            setOnClickListener {
-                onClear()
-                dismiss()
+            ComposeView(requireContext()).apply {
+                setViewCompositionStrategy(
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+                )
+                setContent {
+                    ProvideQRBottomSheet(value = value)
+                }
             }
-        }
+        } else {
+            binding =
+                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
 
-        binding.shareButton.apply {
-            setImageDrawable(
-                colorUtils.tintDrawableWithColor(
-                    drawable,
-                    primaryColor!!,
-                ),
-            )
-            setOnClickListener {
-                qrContentUri?.let { uri ->
-                    Intent().apply {
-                        action = Intent.ACTION_SEND
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        setDataAndType(uri, context.contentResolver.getType(uri))
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        startActivity(Intent.createChooser(this, context.getString(R.string.share)))
+            binding.clearButton.apply {
+                isEnabled = editable == true
+                visibility = if (editable) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+                setImageDrawable(
+                    colorUtils.tintDrawableWithColor(
+                        drawable,
+                        primaryColor!!,
+                    ),
+                )
+                setOnClickListener {
+                    onClear()
+                    dismiss()
+                }
+            }
+
+            binding.shareButton.apply {
+                setImageDrawable(
+                    colorUtils.tintDrawableWithColor(
+                        drawable,
+                        primaryColor!!,
+                    ),
+                )
+                setOnClickListener {
+                    qrContentUri?.let { uri ->
+                        Intent().apply {
+                            action = Intent.ACTION_SEND
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            setDataAndType(uri, context.contentResolver.getType(uri))
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            startActivity(Intent.createChooser(this, context.getString(R.string.share)))
+                        }
                     }
                 }
             }
-        }
 
-        binding.scanButton.apply {
-            isEnabled = editable == true
-            visibility = if (editable) {
-                View.VISIBLE
-            } else {
-                View.GONE
+            binding.scanButton.apply {
+                isEnabled = editable == true
+                visibility = if (editable) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+                setImageDrawable(
+                    colorUtils.tintDrawableWithColor(
+                        drawable,
+                        primaryColor!!,
+                    ),
+                )
+                setOnClickListener {
+                    onScan()
+                    dismiss()
+                }
             }
-            setImageDrawable(
-                colorUtils.tintDrawableWithColor(
-                    drawable,
-                    primaryColor!!,
-                ),
+
+            binding.root.clipWithRoundedCorners()
+
+            viewModel.qrBitmap.observe(this) { result ->
+                result.fold(
+                    onSuccess = { renderBitmap(it) },
+                    onFailure = { dismiss() },
+                )
+            }
+
+            binding.root
+        }
+    }
+
+    @Composable
+    private fun ProvideQRBottomSheet(
+        modifier: Modifier = Modifier,
+        value: String,
+
+    ) {
+        var showDialog by rememberSaveable(showBottomSheet) {
+            mutableStateOf(showBottomSheet)
+        }
+        if (showDialog) {
+            val buttonList = getComposeButtonList()
+            BottomSheetShell(
+                modifier = modifier,
+                title = resources.getString(R.string.qr_code),
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = "Button",
+                        tint = SurfaceColor.Primary,
+                    )
+                },
+                content = {
+                    Row(horizontalArrangement = Arrangement.Center) {
+                        // maybe add control for barcode block here
+                        QrCodeBlock(data = value)
+                    }
+                },
+                buttonBlock = {
+                    ButtonCarousel(buttonList)
+                },
+                onDismiss = {
+                    dismiss()
+                    showDialog = false
+                },
             )
-            setOnClickListener {
+        }
+    }
+
+    private fun getComposeButtonList(): List<CarouselButtonData> {
+        val scanItem = CarouselButtonData(
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.QrCodeScanner,
+                    contentDescription = "QR scan Button",
+                )
+            },
+            enabled = true,
+            text = resources.getString(R.string.scan),
+            onClick = {
+                showBottomSheet = false
                 onScan()
                 dismiss()
-            }
+            },
+        )
+        val buttonList = mutableListOf(
+            CarouselButtonData(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = "QR Share Button",
+                    )
+                },
+                enabled = true,
+                text = resources.getString(R.string.share),
+                onClick = {
+                    qrContentUri?.let { uri ->
+                        Intent().apply {
+                            action = Intent.ACTION_SEND
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            setDataAndType(uri, context?.contentResolver?.getType(uri))
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            startActivity(Intent.createChooser(this, context?.getString(R.string.share)))
+                        }
+                    }
+                },
+            ),
+            scanItem,
+
+            CarouselButtonData(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.FileDownload,
+                        contentDescription = "QR download Button",
+                    )
+                },
+                enabled = true,
+                text = resources.getString(R.string.download),
+                onClick = {
+                    qrContentUri?.let { uri ->
+                        startActivity(
+                            Intent().apply {
+                                action = Intent.ACTION_VIEW
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                setDataAndType(uri, context?.contentResolver?.getType(uri))
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                            },
+                        )
+                        // implement download action here
+                    }
+                },
+            ),
+        )
+        if (!editable) {
+            buttonList.remove(scanItem)
         }
-
-        binding.root.clipWithRoundedCorners()
-
-        viewModel.qrBitmap.observe(this) { result ->
-            result.fold(
-                onSuccess = { renderBitmap(it) },
-                onFailure = { dismiss() },
-            )
-        }
-
-        return binding.root
+        return buttonList
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
