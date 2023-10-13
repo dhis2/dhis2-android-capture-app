@@ -9,6 +9,7 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.orientation
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
@@ -16,6 +17,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 internal fun ProvideRadioButtonInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
         RadioButtonData(
@@ -37,9 +39,14 @@ internal fun ProvideRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            fieldUiModel.onSave(
-                fieldUiModel.optionSetConfiguration?.optionsToDisplay()
-                    ?.find { it.uid() == item?.uid }?.code(),
+            fieldUiModel.onItemClick()
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    fieldUiModel.optionSetConfiguration?.optionsToDisplay()
+                        ?.find { it.uid() == item?.uid }?.code(),
+                    fieldUiModel.valueType,
+                ),
             )
         },
     )
@@ -49,6 +56,7 @@ internal fun ProvideRadioButtonInput(
 internal fun ProvideYesNoRadioButtonInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
     resources: Resources,
 ) {
     val data = listOf(
@@ -77,10 +85,33 @@ internal fun ProvideYesNoRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
+            fieldUiModel.onItemClick()
             when (item?.uid) {
-                "true" -> fieldUiModel.onSaveBoolean(true)
-                "false" -> fieldUiModel.onSaveBoolean(false)
-                else -> fieldUiModel.onClear()
+                "true" -> {
+                    intentHandler(
+                        FormIntent.OnSave(
+                            fieldUiModel.uid,
+                            true.toString(),
+                            fieldUiModel.valueType,
+                        ),
+                    )
+                }
+
+                "false" -> {
+                    intentHandler(
+                        FormIntent.OnSave(
+                            fieldUiModel.uid,
+                            false.toString(),
+                            fieldUiModel.valueType,
+                        ),
+                    )
+                }
+
+                else -> {
+                    intentHandler(
+                        FormIntent.ClearValue(fieldUiModel.uid),
+                    )
+                }
             }
         },
     )

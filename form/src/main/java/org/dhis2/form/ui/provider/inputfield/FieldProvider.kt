@@ -1,6 +1,7 @@
 package org.dhis2.form.ui.provider.inputfield
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ContextThemeWrapper
@@ -34,12 +35,15 @@ import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
+import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
+import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
@@ -145,6 +149,23 @@ internal fun FieldProvider(
                 )
             }
 
+            ValueType.EMAIL -> {
+                ProvideEmail(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
+            }
+
+            ValueType.URL -> {
+                ProvideInputLink(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
+            }
             ValueType.BOOLEAN -> {
                 when (fieldUiModel.renderingType) {
                     UiRenderType.HORIZONTAL_CHECKBOXES,
@@ -153,6 +174,7 @@ internal fun FieldProvider(
                         ProvideYesNoCheckBoxInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
@@ -161,6 +183,7 @@ internal fun FieldProvider(
                         ProvideYesNoRadioButtonInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
@@ -173,6 +196,7 @@ internal fun FieldProvider(
                         ProvideYesOnlySwitchInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                         )
                     }
 
@@ -180,9 +204,19 @@ internal fun FieldProvider(
                         ProvideYesOnlyCheckBoxInput(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                         )
                     }
                 }
+            }
+
+            ValueType.PHONE_NUMBER -> {
+                ProvideInputPhoneNumber(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
             }
 
             else -> {
@@ -214,6 +248,7 @@ internal fun FieldProvider(
                 ProvideRadioButtonInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
                 )
             }
 
@@ -223,6 +258,7 @@ internal fun FieldProvider(
                 ProvideCheckBoxInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
                 )
             }
 
@@ -272,7 +308,7 @@ private fun ProvideInputText(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -303,7 +339,7 @@ private fun ProvideIntegerPositive(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -334,7 +370,7 @@ private fun ProvideIntegerPositiveOrZero(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -365,7 +401,7 @@ private fun ProvidePercentage(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -396,7 +432,7 @@ private fun ProvideNumber(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -428,7 +464,7 @@ private fun ProvideIntegerNegative(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -459,7 +495,7 @@ private fun ProvideLongText(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -491,7 +527,7 @@ private fun ProvideLetter(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
@@ -522,10 +558,134 @@ private fun ProvideInteger(
         onValueChanged = {
             value = it
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnTextChange(
                     fieldUiModel.uid,
                     value,
                     fieldUiModel.valueType,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideEmail(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputEmail(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnTextChange(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onEmailActionCLicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_SENDTO,
+                    value,
+                    fieldUiModel.uid,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideInputPhoneNumber(
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputPhoneNumber(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnTextChange(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onCallActionClicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_DIAL,
+                    value,
+                    fieldUiModel.uid,
+                ),
+            )
+        },
+    )
+}
+
+@Composable
+private fun ProvideInputLink(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+
+) {
+    var value by remember {
+        mutableStateOf(fieldUiModel.value)
+    }
+
+    InputLink(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = value ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            value = it
+            intentHandler(
+                FormIntent.OnTextChange(
+                    fieldUiModel.uid,
+                    value,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onLinkActionCLicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_VIEW,
+                    value,
+                    fieldUiModel.uid,
                 ),
             )
         },
