@@ -383,14 +383,10 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private boolean isAcceptedValueType(ValueType valueType) {
-        switch (valueType) {
-            case IMAGE:
-            case COORDINATE:
-            case FILE_RESOURCE:
-                return false;
-            default:
-                return true;
-        }
+        return switch (valueType) {
+            case IMAGE, COORDINATE, FILE_RESOURCE -> false;
+            default -> true;
+        };
     }
 
     private void setAttributeValue(SearchTeiModel searchTei, TrackedEntitySearchItemAttribute attribute) {

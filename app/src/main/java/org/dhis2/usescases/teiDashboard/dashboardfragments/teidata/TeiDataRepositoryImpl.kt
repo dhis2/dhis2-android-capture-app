@@ -254,7 +254,7 @@ class TeiDataRepositoryImpl(
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                checkEventStatus(eventList).forEachIndexed { index, event ->
+                checkEventStatus(eventList).forEachIndexed { _, event ->
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
