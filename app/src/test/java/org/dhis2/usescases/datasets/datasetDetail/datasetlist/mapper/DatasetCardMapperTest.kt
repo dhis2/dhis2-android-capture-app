@@ -19,7 +19,7 @@ class DatasetCardMapperTest {
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
 
-    private lateinit var mapperTest: DatasetCardMapper
+    private lateinit var mapper: DatasetCardMapper
 
     @Before
     fun setUp() {
@@ -28,7 +28,7 @@ class DatasetCardMapperTest {
         whenever(resourceManager.getString(org.dhis2.R.string.show_less)) doReturn "Show less"
         whenever(resourceManager.getString(org.dhis2.R.string.completed)) doReturn "Completed"
 
-        mapperTest = DatasetCardMapper(context, resourceManager)
+        mapper = DatasetCardMapper(context, resourceManager)
     }
 
     @Test
@@ -52,7 +52,7 @@ class DatasetCardMapperTest {
         )
 
         // When dataset is mapped to card item
-        val result = mapperTest.map(
+        val result = mapper.map(
             dataset = datasetModel,
             onSyncIconClick = {},
             onCardCLick = {},

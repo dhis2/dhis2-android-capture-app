@@ -44,8 +44,7 @@ class TEICardMapper(
 ) {
 
     fun map(
-        searchTEIModel:
-        SearchTeiModel,
+        searchTEIModel: SearchTeiModel,
         onSyncIconClick: () -> Unit,
         onCardClick: () -> Unit,
         onImageClick: (String) -> Unit,
