@@ -54,7 +54,7 @@ class ProgramEventDetailLiveAdapter(
                     onSyncIconClick = {
                         eventViewModel.eventSyncClicked.value = it.event?.uid()
                     },
-                    onCardCLick = {
+                    onCardClick = {
                         it.event?.let { event ->
                             eventViewModel.eventClicked.value =
                                 Pair(event.uid(), event.organisationUnit() ?: "")

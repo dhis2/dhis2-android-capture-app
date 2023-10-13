@@ -39,7 +39,7 @@ class EventCardMapper(
         event: EventViewModel,
         editable: Boolean,
         onSyncIconClick: () -> Unit,
-        onCardCLick: () -> Unit,
+        onCardClick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
             title = event.displayDate ?: "",
@@ -53,7 +53,7 @@ class EventCardMapper(
             },
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
-            onCardCLick = onCardCLick,
+            onCardCLick = onCardClick,
         )
     }
 
