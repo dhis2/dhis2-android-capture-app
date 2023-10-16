@@ -20,8 +20,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
-import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
@@ -121,7 +119,11 @@ class DatasetCardMapper(
             State.UPLOADING -> {
                 AdditionalInfoItem(
                     icon = {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        Icon(
+                            imageVector = Icons.Outlined.Sync,
+                            contentDescription = "Icon Button",
+                            tint = SurfaceColor.Primary,
+                        )
                     },
                     value = resourceManager.getString(R.string.syncing),
                     color = SurfaceColor.Primary,
