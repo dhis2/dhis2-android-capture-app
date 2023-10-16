@@ -181,8 +181,6 @@ class EventCaptureActivity :
             })
         } else {
             binding!!.eventViewPager!!.isUserInputEnabled = false
-            binding!!.eventViewPager!!.adapter = null
-
             adapter = EventCapturePagerAdapter(
                 this,
                 intent.getStringExtra(PROGRAM_UID),
