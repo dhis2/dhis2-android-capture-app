@@ -76,10 +76,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<TrackedEntityInstance> getTrackedEntityInstance() {
-        //TODO : soft code
         Enrollment enrollment = getCurrentEnrollment();
-
-//        return null;
         return Observable.fromCallable(
                 () -> d2.trackedEntityModule().trackedEntityInstances().byUid().eq(enrollment.trackedEntityInstance()).one().blockingGet());
 
@@ -107,15 +104,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes() {
-
-        // TODO : softcode
         return d2.programModule().programTrackedEntityAttributes().byProgram().eq("WSGAb5XwJ3Y")
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toObservable();
     }
     @Override
     public Observable<List<OrganisationUnit>> getTeiOrgUnits() {
-//        return null;
-
         Enrollment enrollment = getCurrentEnrollment();
         return d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).get().toObservable();
 
@@ -128,9 +121,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<List<Program>> getTeiActivePrograms() {
-//        return null;
-
-        // TODO: remove hardcodeing
         return d2.programModule().programs().byUid().eq("WSGAb5XwJ3Y").get().toObservable();
     }
 

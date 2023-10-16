@@ -11,7 +11,6 @@ class EventPageConfigurator(
     }
 
     override fun displayDataEntry(): Boolean {
-//        return true
         return isPortrait
     }
 

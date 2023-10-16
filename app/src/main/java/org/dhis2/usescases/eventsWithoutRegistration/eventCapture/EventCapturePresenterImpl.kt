@@ -28,7 +28,6 @@ class EventCapturePresenterImpl(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog,
-//    dashboardProgramModel: DashboardProgramModel,
 ) : ViewModel(), EventCaptureContract.Presenter {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()

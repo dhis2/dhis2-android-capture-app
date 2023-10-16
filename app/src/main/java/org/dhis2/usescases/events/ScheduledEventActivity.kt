@@ -68,11 +68,11 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_scheduled)
         binding.presenter = presenter
 
-        teiUid = intent.extras!!.getString(
+        teiUid = intent.extras?.getString(
             TEI_UID,
         )
 
-        enrollmentUid = intent.extras!!.getString(
+        enrollmentUid = intent.extras?.getString(
             ENROLLMENT_UID,
         )
     }

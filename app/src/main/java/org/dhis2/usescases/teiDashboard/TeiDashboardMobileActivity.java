@@ -250,13 +250,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (OrientationUtilsKt.isLandscape()) {
             formView = new FormView.Builder().locationProvider(locationProvider).onItemChangeListener(action -> {
                         presenter.updateEnrollmentFields(action);
-
-                        // TODO : investigate the return
                         return Unit.INSTANCE;
                     }).onLoadingListener(loading -> {
                         if (loading) {
-                            // TODO : activity.showProgress();
-                        } else {// TODO : activity.hideProgress();
+                        } else {
                         }
                         return Unit.INSTANCE;
                     })
@@ -270,15 +267,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_form_view, formView)
                     .commitAllowingStateLoss();
-
-            // logics for a save FAB button on enrollment data
             FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.saveLand);
 
             saveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     formView.onSaveClick();
-//                    showToast(getString(R.string.saved));
                 }
             });
         }
@@ -318,7 +312,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         for (Fragment fragment : fragments) {
             if (fragment instanceof FormView) {
-//                getSupportFragmentManager().beginTransaction().replace(fragment.getId(), EventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
                 getSupportFragmentManager().beginTransaction().replace(fragment.getId(), TeiEventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
 
             }

@@ -9,13 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ImageView
-import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -86,9 +84,6 @@ import kotlin.reflect.KParameter
 class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     lateinit var binding: FragmentTeiDataBinding
-
-//    private val activity: TeiDashboardMobileActivity? = null
-
     @Inject
     lateinit var presenter: TEIDataPresenter
 
@@ -158,14 +153,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         binding.presenter = presenter
         dashboardActivity.observeGrouping()?.observe(
             viewLifecycleOwner,
-            Observer<Boolean> { group: Boolean? ->
-                showLoadingProgress(true)
-                binding.isGrouping = group
-                presenter.onGroupingChanged(group!!)
-            },
-        )
-        dashboardActivity.observeFilters()?.observe(viewLifecycleOwner, Observer<Boolean> { showFilters: Boolean -> showHideFilters(showFilters) })
-        dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner, Observer<String> { enrollmentUid: String? -> updateEnrollment(enrollmentUid!!) })
+        ) { group: Boolean? ->
+            showLoadingProgress(true)
+            binding.isGrouping = group
+            presenter.onGroupingChanged(group!!)
+        }
+        dashboardActivity.observeFilters()?.observe(viewLifecycleOwner) { showFilters: Boolean -> showHideFilters(showFilters) }
+        dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner) { enrollmentUid: String? -> updateEnrollment(enrollmentUid!!) }
 
         try {
             binding.filterLayout.adapter = filtersAdapter
@@ -178,9 +172,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.cardFrontLand!!.entityAttribute2.gravity = Gravity.END
             binding.cardFrontLand!!.entityAttribute3.gravity = Gravity.END
             binding.cardFrontLand!!.entityAttribute4.gravity = Gravity.END
-//            binding.cardFrontLand!!.detailsButton.setRoundedCorners(45.dp)
             binding.cardFrontLand!!.attributeListOpened = false
-            binding.cardFrontLand!!.showAttributesButton.setOnClickListener { event ->
+            binding.cardFrontLand!!.showAttributesButton.setOnClickListener {
                 val imageView = requireActivity().findViewById<ImageView>(R.id.showAttributesButton)
                 val layoutParams = imageView.layoutParams as MarginLayoutParams
                 if (binding.cardFrontLand!!.attributeListOpened == true) {
@@ -199,7 +192,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     binding.cardFrontLand!!.showAttributesButton.layoutParams = layoutParams
                 }
             }
-//            ViewExtensionsKt.clipWithAllRoundedCorners(binding.sectionSelectedMark, ExtensionsKt.getDp(2))
         }
 
         return binding.root
@@ -232,7 +224,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         teiModel!!.setCurrentEnrollment(enrollment)
     }
 
-    fun getAttributeValue(attributeUid: String): TrackedEntityAttributeValue? {
+    private fun getAttributeValue(attributeUid: String): TrackedEntityAttributeValue? {
         val filteredValue = internalAttributeValues!!.stream().filter { value: TrackedEntityAttributeValue ->
             println(value.trackedEntityAttribute().toString() + "===================" + attributeUid)
             value.trackedEntityAttribute() == attributeUid
@@ -240,7 +232,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return if (filteredValue.size > 0) filteredValue[0] else null
     }
 
-    fun setAttributesAndValues(trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?, programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>?) {
+    private fun setAttributesAndValues(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>?) {
         val linkedHashMapOfAttrValues = LinkedHashMap<String, TrackedEntityAttributeValue?>()
         var teiAttributesLoopCounter = 0
         while (teiAttributesLoopCounter < programTrackedEntityAttributes!!.size) {
@@ -303,7 +295,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             this.internalAttributeValues = trackedEntityAttributeValues as List<TrackedEntityAttributeValue>?
 
             if (this.programTrackedEntityAttributes != null) {
-                setAttributesAndValues(this.internalAttributeValues, this.programTrackedEntityAttributes)
+                setAttributesAndValues(this.programTrackedEntityAttributes)
             }
         }
 
@@ -314,9 +306,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         teiModel!!.tei = trackedEntityInstance
         if (organisationUnit != null) {
             teiModel!!.enrolledOrgUnit = organisationUnit.displayName()
-        }
-
-        if (teiModel!!.selectedEnrollment != null) {
         }
     }
 
@@ -389,7 +378,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         AppMenuHelper.Builder()
             .anchor(binding.teiData)
             .menu(requireActivity(), menu)
-            .onMenuInflated { popupMenu: PopupMenu? -> KParameter.Kind.INSTANCE }
+            .onMenuInflated { KParameter.Kind.INSTANCE }
             .onMenuItemClicked { itemId: Int? ->
                 when (itemId) {
                     R.id.complete -> dashboardActivity.getPresenter()?.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.COMPLETED)
@@ -425,7 +414,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         Collections.sort(this.programTrackedEntityAttributes, CustomComparator())
         if (isLandscape()) {
             if (internalAttributeValues != null) {
-                setAttributesAndValues(internalAttributeValues, this.programTrackedEntityAttributes)
+                setAttributesAndValues(this.programTrackedEntityAttributes)
             }
         }
     }
@@ -654,7 +643,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .transform(CircleCrop())
                     .into(binding.cardFrontLand!!.trackedEntityImage)
-                binding.cardFrontLand!!.trackedEntityImage.setOnClickListener { view ->
+                binding.cardFrontLand!!.trackedEntityImage.setOnClickListener {
                     val fileToShow = File(filePath)
                     if (fileToShow.exists()) {
                         ImageDetailBottomDialog(
@@ -768,51 +757,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             TAG,
         )
     }
-
-//    fun setRiskColor(risk: String) {
-//        if (risk === "High Risk") {
-//            binding.highRisk = true
-//            binding.lowRisk = false
-//        }
-//        if (risk === "Low Risk") {
-//            binding.lowRisk = true
-//            binding.highRisk = false
-//        }
-//    }
-
-//    fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>) {
-//        println(programTrackedEntityAttributes.size)
-//        this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
-//                .filter { attr: ProgramTrackedEntityAttribute -> attr.displayInList()!! }
-//                .collect(Collectors.toList())
-//        Collections.sort<ProgramTrackedEntityAttribute>(this.programTrackedEntityAttributes, CustomComparator())
-//        if (isLandscape()) {
-//            if (attributeValues != null) {
-//                setAttributesAndValues(attributeValues, this.programTrackedEntityAttributes)
-//            }
-//        }
-//    }
-
-    private fun showAttributeList() {
-        binding.cardFrontLand!!.attributeBName.visibility = View.GONE
-        binding.cardFrontLand!!.enrolledOrgUnit.visibility = View.GONE
-        binding.cardFrontLand!!.sortingFieldName.visibility = View.GONE
-        binding.cardFrontLand!!.entityAttribute2.visibility = View.GONE
-        binding.cardFrontLand!!.entityOrgUnit.visibility = View.GONE
-        binding.cardFrontLand!!.sortingFieldValue.visibility = View.GONE
-        binding.cardFrontLand!!.attributeList.visibility = View.VISIBLE
-    }
-
-    private fun hideAttributeList() {
-        binding.cardFrontLand!!.attributeList.visibility = View.GONE
-        binding.cardFrontLand!!.attributeBName.visibility = View.VISIBLE
-        binding.cardFrontLand!!.enrolledOrgUnit.visibility = View.VISIBLE
-        binding.cardFrontLand!!.sortingFieldName.visibility = View.VISIBLE
-        binding.cardFrontLand!!.entityAttribute2.visibility = View.VISIBLE
-        binding.cardFrontLand!!.entityOrgUnit.visibility = View.VISIBLE
-        binding.cardFrontLand!!.sortingFieldValue.visibility = View.VISIBLE
-    }
-
     companion object {
         const val RC_GENERATE_EVENT = 1501
         const val RC_EVENTS_COMPLETED = 1601

@@ -113,18 +113,11 @@ class EventCaptureActivity :
 
         enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
 
-        programUid = intent.getStringExtra(Constants.PROGRAM_UID)
+        programUid = intent.getStringExtra(PROGRAM_UID)
 
         programStageUid = intent.getStringExtra(Constants.PROGRAM_STAGE_UID)
-
-        // TODO: fails due to lack of dynamism
-//        setOfAttributeNames = intent.getStringArrayExtra("ATTRIBUTE_NAMES") as Set<String>
-
-        // TODO: fails due to lack of dynamism
-//        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
-
         eventCaptureComponent!!.inject(this)
-        themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
+        themeManager!!.setProgramTheme(intent.getStringExtra(PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
         binding?.presenter = presenter
@@ -135,17 +128,15 @@ class EventCaptureActivity :
                 1
             }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
-        setUpViewPagerAdapter(navigationInitialPage)
+        setUpViewPagerAdapter()
         presenter!!.programStageUid()
         setUpNavigationBar(navigationInitialPage)
-        setUpViewPagerAdapter(navigationInitialPage)
+        setUpViewPagerAdapter()
 
         if (isLandscape()) {
             val stageUid: String = presenter!!.programStageUidString
-            if (stageUid != null) {
-                programStageUid = stageUid
-            }
-            dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel::class.java)
+            programStageUid = stageUid
+            dashboardViewModel = ViewModelProviders.of(this)[DashboardViewModel::class.java]
             supportFragmentManager.beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false)).commitAllowingStateLoss()
             supportFragmentManager.beginTransaction().replace(
                 R.id.tei_column,
@@ -153,8 +144,7 @@ class EventCaptureActivity :
                     programUid,
                     teiUid,
                     enrollmentUid,
-                    eventUid,
-                    programStageUid,
+                        programStageUid,
                     setOfAttributeNames,
                 ),
             ).commitAllowingStateLoss()
@@ -169,10 +159,9 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpViewPagerAdapter(initialPage: Int) {
+    private fun setUpViewPagerAdapter() {
         if (isLandscape()) {
             binding!!.eventViewLandPager!!.isUserInputEnabled = false
-            binding!!.eventViewLandPager!!.adapter = null
             adapter = EventCapturePagerAdapter(this, intent.getStringExtra(PROGRAM_UID), intent.getStringExtra(Constants.EVENT_UID), pageConfigurator!!.displayAnalytics(), pageConfigurator!!.displayRelationships(), false, false, teiUid, enrollmentUid)
             binding!!.eventViewLandPager!!.adapter = adapter
             binding!!.eventViewLandPager!!.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
@@ -196,7 +185,7 @@ class EventCaptureActivity :
 
             adapter = EventCapturePagerAdapter(
                 this,
-                intent.getStringExtra(Constants.PROGRAM_UID),
+                intent.getStringExtra(PROGRAM_UID),
                 intent.getStringExtra(Constants.EVENT_UID),
                 pageConfigurator!!.displayAnalytics(),
                 pageConfigurator!!.displayRelationships(),
@@ -474,7 +463,7 @@ class EventCaptureActivity :
     ) {
         binding!!.programStageName.text = stageName
         val eventDataString = StringBuilder(String.format("%s | %s", eventDate, orgUnit))
-        if (catOption != null && !catOption.isEmpty()) {
+        if (catOption.isNotEmpty()) {
             eventDataString.append(String.format(" | %s", catOption))
         }
         binding!!.eventSecundaryInfo.text = eventDataString
@@ -490,7 +479,6 @@ class EventCaptureActivity :
                 popupMenu.menu.findItem(R.id.menu_delete).isVisible =
                     presenter!!.canWrite() && presenter!!.isEnrollmentOpen
                 popupMenu.menu.findItem(R.id.menu_share).isVisible = false
-                Unit
             }
             .onMenuItemClicked { itemId: Int? ->
                 when (itemId) {
@@ -600,7 +588,7 @@ class EventCaptureActivity :
         fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode, teiUid: String?, enrollmentUid: String?): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.EVENT_UID, eventUid)
-            bundle.putString(Constants.PROGRAM_UID, programUid)
+            bundle.putString(PROGRAM_UID, programUid)
             bundle.putSerializable(Constants.EVENT_MODE, eventMode)
 
             if (teiUid != null) {
@@ -613,10 +601,6 @@ class EventCaptureActivity :
             return bundle
         }
 
-//        fun onSaveInstanceState(savedInstanceState: Bundle?) {
-//            super.onSaveInstanceState(savedInstanceState)
-//        }
-
         fun intent(
             context: Context,
             eventUid: String,
@@ -626,7 +610,7 @@ class EventCaptureActivity :
         ): Intent {
             return Intent(context, EventCaptureActivity::class.java).apply {
                 putExtra(Constants.EVENT_UID, eventUid)
-                putExtra(Constants.PROGRAM_UID, programUid)
+                putExtra(PROGRAM_UID, programUid)
                 putExtra(EXTRA_DETAILS_AS_FIRST_PAGE, openDetailsAsFirstPage)
                 putExtra(Constants.EVENT_MODE, eventMode)
             }

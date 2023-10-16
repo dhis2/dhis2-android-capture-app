@@ -36,14 +36,6 @@ fun LockButton(
             contentDescription = "details",
             tint = MaterialTheme.colors.primary,
         )
-//        Text(
-//                text = stringResource(id = R.string.open_details)
-//                        .format(trackedEntityName),
-//                fontSize = 12.sp,
-//                fontWeight = FontWeight.Bold,
-//                color = MaterialTheme.colors.primary,
-//                modifier = Modifier.padding(start = 11.dp)
-//        )
     }
 }
 

@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,10 +25,8 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.data.EventViewModel;
@@ -41,7 +38,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-//import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
@@ -85,6 +81,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -125,9 +122,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     private FragmentEventTeiDetailsBinding binding;
 
-//    @Inject
-//    TEIDataContracts.Presenter presenter;
-
     @Inject
     TEIDataPresenter presenter;
 
@@ -149,7 +143,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
     private EventCaptureActivity activity;
-    private PopupMenu popupMenu;
     private Set<String> attributeNames;
     String teiUid;
     String programUid;
@@ -159,7 +152,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes;
     List<TrackedEntityAttributeValue> attributeValues;
 
-    public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid, String eventUid, String stageUid, Set<String> attributeNames) {
+    public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid, String stageUid, Set<String> attributeNames) {
         EventTeiDetailsFragment fragment = new EventTeiDetailsFragment();
         Bundle args = new Bundle();
         args.putString("PROGRAM_UID", programUid);
@@ -282,10 +275,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     }
 
-//    private void updateEnrollment(String enrollmentUid) {
-//        presenter.getEnrollment(enrollmentUid);
-//    }
-
     private void updateFabItems() {
         List<DialItem> dialItems = new ArrayList<>();
         dialItems.add(
@@ -340,22 +329,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         presenter.onDettach();
         super.onPause();
     }
-
-//  @Override
-//    public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
-//    }
-
-    public TrackedEntityAttributeValue getMatchingAttriburteValue(List<TrackedEntityAttributeValue> attributeValues, String attributeUid) {
-        for (TrackedEntityAttributeValue attributeValue : attributeValues) {
-            if (attributeValue.trackedEntityAttribute().equals(attributeUid)) {
-                return attributeValue;
-            }
-        }
-        return null;
-    }
-
-    ;
-
 
     @Override
     public void setEnrollmentData(Program program, Enrollment enrollment) {
@@ -425,7 +398,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             });
 
             LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
-//                presenter.onFollowUp(dashboardModel);
                 showEnrollmentStatusOptions();
                 return Unit.INSTANCE;
             });
@@ -435,22 +407,18 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                     binding.cardFrontLand.detailsButton,
                     "Person",
                     () -> {
-//                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
+                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
                         return Unit.INSTANCE;
                     }
             );
 
             FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
-                System.out.println("***********************");
-                System.out.println("**********WE GOT IN*************");
-                System.out.println("***********************");
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();
                 return Unit.INSTANCE;
             });
 
             LockButtonKt.setLockButtonContent(binding.cardFrontLand.lockButton, "Person", () -> {
-//                presenter.onFollowUp(dashboardModel);
                 showEnrollmentStatusOptions();
                 return Unit.INSTANCE;
             });
@@ -481,13 +449,10 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                 .onMenuItemClicked(itemId -> {
                     switch (itemId) {
                         case R.id.complete:
-//                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.COMPLETED);
                             break;
                         case R.id.deactivate:
-//                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.CANCELLED);
                             break;
                         case R.id.reOpen:
-//                            activity.getPresenter().updateEnrollmentStatus(activity.getEnrollmentUid(), EnrollmentStatus.ACTIVE);
                             break;
                     }
                     return true;
@@ -495,32 +460,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                 .build().show();
 
     }
-
-
-//    @Override
-//    public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit, List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
-//        if (OrientationUtilsKt.isLandscape()) {
-//            binding.cardFrontLand.setOrgUnit(organisationUnit.name());
-//            this.attributeValues = trackedEntityAttributeValues;
-//
-//            if (this.programTrackedEntityAttributes != null) {
-//
-//                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
-//
-//            }
-//        }
-//
-//        binding.setTrackEntity(trackedEntityInstance);
-//
-//        if (this.teiModel == null) {
-//            this.teiModel = new SearchTeiModel();
-//        }
-//
-//        this.teiModel.setTei(trackedEntityInstance);
-//        this.teiModel.setEnrolledOrgUnit(organisationUnit.displayName());
-//
-//    }
-
 
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
@@ -605,14 +544,8 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         }
     }
 
-//    @Override
-//    public void setFilters(List<FilterItem> filterItems) {
-//        filtersAdapter.submitList(filterItems);
-//    }
-
     @Override
     public void hideFilters() {
-//        activity.hideFilter();
     }
 
     @Override
@@ -815,14 +748,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         activity.finish();
     }
 
-    public void seeDetails(Intent intent, Bundle bundle) {
-        this.startActivityForResult(intent, REQ_DETAILS, bundle);
-    }
-
-    public void openEventDetails(Intent intent, Bundle bundle) {
-        this.startActivityForResult(intent, REQ_EVENT, bundle);
-    }
-
     @Override
     public void openEventInitial(Intent intent) {
         this.startActivityForResult(intent, REQ_EVENT, null);
@@ -835,10 +760,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public void showTeiImage(String filePath, String defaultIcon) {
-        if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-//            binding.cardFront.teiImage.setVisibility(View.GONE);
-        } else {
-//            binding.cardFront.teiImage.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(new File(filePath))
                     .error(
@@ -846,35 +767,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                     )
                     .transition(withCrossFade())
                     .transform(new CircleCrop());
-        }
     }
 
-//    @Override
-    public void showNewEventOptions(View anchor, ProgramStage stage) {
-        popupMenu = new PopupMenu(context, anchor);
-        popupMenu.inflate(R.menu.dashboard_event_creation);
 
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.schedulenew:
-                    goToEventInitial(EventCreationType.SCHEDULE, stage);
-                    break;
-                case R.id.addnew:
-                    goToEventInitial(EventCreationType.ADDNEW, stage);
-                    break;
-                case R.id.referral:
-                    goToEventInitial(EventCreationType.REFERAL, stage);
-                    break;
-            }
-            return true;
-        });
-        popupMenu.show();
-
-    }
-
-    public void hideDueDate() {
-        popupMenu.getMenu().findItem(R.id.schedulenew).setVisible(false);
-    }
 
     public void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
 
@@ -882,7 +777,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, this.programUid);
         bundle.putString(TRACKED_ENTITY_INSTANCE, this.teiUid);
-        // TODO: remove hardcoded ous
         if (presenter.enrollmentOrgUnitInCaptureScope("V5XvX1wr1kF")) {
             bundle.putString(ORG_UNIT, "V5XvX1wr1kF");
         }
@@ -898,25 +792,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() != null ? programStage.standardInterval() : 0);
         intent.putExtras(bundle);
         startActivityForResult(intent, REQ_EVENT);
-    }
-
-    private void showHideFilters(boolean showFilters) {
-        if (showFilters) {
-            ViewAnimationsKt.expand(binding.filterLayout, false, () -> {
-                binding.teiData.setVisibility(View.GONE);
-                binding.filterLayout.setVisibility(View.VISIBLE);
-                return Unit.INSTANCE;
-            });
-
-        } else {
-            ViewAnimationsKt.collapse(binding.filterLayout, () -> {
-                binding.teiData.setVisibility(View.VISIBLE);
-                binding.filterLayout.setVisibility(View.GONE);
-                return Unit.INSTANCE;
-            });
-
-
-        }
     }
 
     @Override
@@ -936,7 +811,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
         OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
-//        ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getChildFragmentManager(), "OUTreeFragment");
     }
 
@@ -957,13 +831,13 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void setRiskColor(String risk) {
 
-        if (risk == "High Risk") {
+        if (Objects.equals(risk, "High Risk")) {
 
             binding.setHighRisk(true);
             binding.setLowRisk(false);
         }
 
-        if (risk == "Low Risk") {
+        if (Objects.equals(risk, "Low Risk")) {
 
             binding.setLowRisk(true);
             binding.setHighRisk(false);
@@ -989,11 +863,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         }
     }
 
-    public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
-        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
-    }
-
-
     @Override
     public void setAttributeValues(@Nullable List<? extends TrackedEntityAttributeValue> attributeValues) {
 
@@ -1008,13 +877,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public void openEventDetails(@NonNull Intent intent, @NonNull ActivityOptionsCompat options) {
 
     }
-
-
-//    @Override
-//    public void setProgramAttributes(@Nullable List<? extends ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
-//
-//    }
-
 
     @Override
     public void showSyncDialog(@NonNull String eventUid, @NonNull String enrollmentUid) {

@@ -38,7 +38,6 @@ fun FollowupButton(
             trackedEntityName.replaceFirstChar { it.uppercase() }
             Icon(
                 painter = painterResource(id = R.drawable.ic_follow_up_outlined_warn),
-//                painter = painterResource(id = R.drawable.ic_follow_up),
                 contentDescription = "details",
                 tint = MaterialTheme.colors.error,
             )
@@ -56,7 +55,6 @@ fun FollowupButton(
         ) {
             trackedEntityName.replaceFirstChar { it.uppercase() }
             Icon(
-//                painter = painterResource(id = R.drawable.ic_follow_up_outlined_warn),
                 painter = painterResource(id = R.drawable.ic_follow_up_outlined),
                 contentDescription = "details",
                 tint = MaterialTheme.colors.primary,

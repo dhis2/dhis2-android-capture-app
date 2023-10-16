@@ -34,9 +34,6 @@ class TEIDataContracts {
         fun switchFollowUp(followUp: Boolean)
         fun displayGenerateEvent(eventUid: String)
         fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String)
-
-//        fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?)
-
         fun setAttributeValues(attributeValues: List<TrackedEntityAttributeValue?>?)
         fun seeDetails(intent: Intent, options: ActivityOptionsCompat)
         fun openEventDetails(intent: Intent, options: ActivityOptionsCompat)
@@ -70,26 +67,9 @@ class TEIDataContracts {
 
     interface Presenter : AbstractActivityContracts.Presenter {
         fun init()
-
-//        fun getCatComboOptions(event: Event?)
-        fun setDefaultCatOptCombToEvent(eventUid: String?)
-        fun changeCatOption(eventUid: String?, catOptionComboUid: String?)
-        fun areEventsCompleted()
-        fun displayGenerateEvent(eventUid: String?)
-        fun completeEnrollment()
-        fun onFollowUp(dashboardProgramModel: DashboardProgramModel?)
-        fun seeDetails(sharedView: android.view.View?, dashboardProgramModel: DashboardProgramModel?)
-        fun onScheduleSelected(uid: String?, sharedView: android.view.View?)
-        fun onEventSelected(uid: String?, eventStatus: EventStatus?, sharedView: android.view.View?)
-        fun setDashboardProgram(dashboardModel: DashboardProgramModel?)
         fun setProgram(program: Program?, enrollmentUid: String?)
         fun showDescription(description: String?)
-        fun onGroupingChanged(shouldGroup: Boolean?)
-        fun onAddNewEvent(anchor: android.view.View?, programStage: ProgramStage?)
         fun getEnrollment(enrollmentUid: String?)
-        fun hasAssignment(): Boolean
-        fun onSyncDialogClick()
-        fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String?): Boolean
         fun setOpeningFilterToNone()
         fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit?>?)
     }
