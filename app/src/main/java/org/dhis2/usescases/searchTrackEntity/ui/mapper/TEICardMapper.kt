@@ -214,7 +214,7 @@ class TEICardMapper(
         if (programNames.size > 1) {
             list.add(
                 AdditionalInfoItem(
-                    key = "Programs:",
+                    key = resourceManager.getString(R.string.programs),
                     value = programNames.joinToString(", "),
                     isConstantItem = true,
                 ),

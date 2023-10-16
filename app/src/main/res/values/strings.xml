@@ -966,4 +966,5 @@
     <string name="view_only">View only</string>
     <string name="scheduled">Scheduled: %</string>
     <string name="skipped">Skipped</string>
+    <string name="programs">Programs:</string>
 </resources>
