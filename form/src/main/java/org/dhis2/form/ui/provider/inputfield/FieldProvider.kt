@@ -19,13 +19,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import kotlinx.coroutines.launch
-import org.dhis2.commons.resources.ObjectStyleUtils
 import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -42,7 +40,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
-import org.hisp.dhis.mobile.ui.designsystem.component.InputMatrix
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
@@ -50,9 +47,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
-import org.hisp.dhis.mobile.ui.designsystem.component.InputSequential
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.IconCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -642,132 +637,6 @@ private fun ProvideEmail(
                 ),
             )
         },
-    )
-}
-
-@Composable
-private fun ProvideMatrixInput(
-    modifier: Modifier,
-    fieldUiModel: FieldUiModel,
-    context: Context,
-    intentHandler: (FormIntent) -> Unit,
-) {
-    val inputCardDataList = remember {
-        mutableListOf<IconCardData>()
-    }
-    var matrixSelectedItem by remember(fieldUiModel) { mutableStateOf<IconCardData?>(null) }
-
-    fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.forEach() { option ->
-        val color =
-            ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
-        option.style().icon()?.let {
-        }
-        var icon = option.style().icon() ?: "dhis2_dhis2_logo_positive"
-        if (!icon.startsWith("dhis2_")) {
-            icon = "dhis2_$icon"
-        }
-        val iconCardItem = IconCardData(
-            uid = fieldUiModel.uid,
-            label = option.displayName() ?: "",
-            iconRes = icon,
-            iconTint = Color(color),
-        )
-        if (!inputCardDataList.contains(iconCardItem)) {
-            inputCardDataList.add(
-                iconCardItem,
-            )
-        }
-        if (fieldUiModel.displayName == option.displayName()) matrixSelectedItem = iconCardItem
-    }
-
-    InputMatrix(
-        title = fieldUiModel.label,
-        data = inputCardDataList,
-        state = fieldUiModel.inputState(),
-        selectedData = matrixSelectedItem,
-        onSelectionChanged = { newSelectedItem ->
-            matrixSelectedItem = if (matrixSelectedItem == newSelectedItem) {
-                null
-            } else {
-                newSelectedItem
-            }
-            fieldUiModel.onItemClick()
-            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.label
-            intentHandler(
-                FormIntent.OnSave(
-                    fieldUiModel.uid,
-                    valueToSave,
-                    fieldUiModel.valueType,
-                ),
-            )
-        },
-        supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-        isRequired = fieldUiModel.mandatory,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun ProvideSequentialInput(
-    modifier: Modifier,
-    fieldUiModel: FieldUiModel,
-    context: Context,
-    intentHandler: (FormIntent) -> Unit,
-) {
-    val inputCardDataList = remember {
-        mutableListOf<IconCardData>()
-    }
-    var matrixSelectedItem by remember(fieldUiModel) { mutableStateOf<IconCardData?>(null) }
-
-    fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.forEach() { option ->
-        val color =
-            ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
-        option.style().icon()?.let {
-        }
-        var icon = option.style().icon() ?: "dhis2_default_outline"
-        if (!icon.startsWith("dhis2_")) {
-            icon = "dhis2_$icon"
-        }
-        val iconCardItem = IconCardData(
-            uid = fieldUiModel.uid,
-            label = option.displayName() ?: "",
-            iconRes = icon,
-            iconTint = Color(color),
-        )
-        if (!inputCardDataList.contains(iconCardItem)) {
-            inputCardDataList.add(
-                iconCardItem,
-            )
-        }
-        if (fieldUiModel.displayName == option.displayName()) matrixSelectedItem = iconCardItem
-    }
-
-    InputSequential(
-        title = fieldUiModel.label,
-        data = inputCardDataList,
-        state = fieldUiModel.inputState(),
-        selectedData = matrixSelectedItem,
-        onSelectionChanged = { newSelectedItem ->
-            matrixSelectedItem = if (matrixSelectedItem == newSelectedItem) {
-                null
-            } else {
-                newSelectedItem
-            }
-            fieldUiModel.onItemClick()
-            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.label
-            intentHandler(
-                FormIntent.OnSave(
-                    fieldUiModel.uid,
-                    valueToSave,
-                    fieldUiModel.valueType,
-                ),
-            )
-        },
-        supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-        isRequired = fieldUiModel.mandatory,
-        modifier = modifier,
     )
 }
 
