@@ -103,7 +103,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                             Toast.makeText(
                                 requireContext(),
                                 getString(R.string.sync_successful),
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_SHORT,
                             ).show()
                         }
                         BottomSheetDialogUi(
