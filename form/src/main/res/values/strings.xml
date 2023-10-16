@@ -102,5 +102,7 @@
     <string name="location_permission_denied">The location permission is needed for capturing coordinates. Please, enable them in the application settings</string>
     <string name="open_with">Open with</string>
     <string name="no_option_found">No option found</string>
-
+    <string name="download">Download</string>
+    <string name="scan">Scan</string>
+    <string name="qr_code">QR code</string>
 </resources>
