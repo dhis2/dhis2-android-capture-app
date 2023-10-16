@@ -655,7 +655,7 @@ private fun ProvideMatrixInput(
     val inputCardDataList = remember {
         mutableListOf<IconCardData>()
     }
-    var matrixSelectedItem by remember { mutableStateOf<IconCardData?>(null) }
+    var matrixSelectedItem by remember(fieldUiModel) { mutableStateOf<IconCardData?>(null) }
 
     fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.forEach() { option ->
         val color =
@@ -692,11 +692,11 @@ private fun ProvideMatrixInput(
                 newSelectedItem
             }
             fieldUiModel.onItemClick()
+            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.label
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
-                    fieldUiModel.optionSetConfiguration?.optionsToDisplay()
-                        ?.find { it.uid() == matrixSelectedItem!!.uid }?.code(),
+                    valueToSave,
                     fieldUiModel.valueType,
                 ),
             )
@@ -755,11 +755,11 @@ private fun ProvideSequentialInput(
                 newSelectedItem
             }
             fieldUiModel.onItemClick()
+            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.label
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
-                    fieldUiModel.optionSetConfiguration?.optionsToDisplay()
-                        ?.find { it.uid() == newSelectedItem.uid }?.code(),
+                    valueToSave,
                     fieldUiModel.valueType,
                 ),
             )
