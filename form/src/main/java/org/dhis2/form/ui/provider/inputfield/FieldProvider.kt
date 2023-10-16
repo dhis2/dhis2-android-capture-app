@@ -49,8 +49,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
-import org.hisp.dhis.mobile.ui.designsystem.component.InputSequential
 import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
+import org.hisp.dhis.mobile.ui.designsystem.component.InputSequential
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.IconCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
