@@ -91,6 +91,8 @@ class TEICardMapper(
     private fun getTitle(item: SearchTeiModel): String {
         return if (item.header != null) {
             item.header!!
+        } else if (item.attributeValues.isEmpty()) {
+            ""
         } else {
             val key = item.attributeValues.keys.firstOrNull()
             val value = item.attributeValues.values.firstOrNull()?.value()
