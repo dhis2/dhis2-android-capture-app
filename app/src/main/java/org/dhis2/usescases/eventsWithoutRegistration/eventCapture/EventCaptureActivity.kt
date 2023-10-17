@@ -195,7 +195,7 @@ class EventCaptureActivity :
 
             binding!!.eventViewPager!!.adapter = adapter
             binding!!.eventViewPager!!.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
-            binding!!.eventViewLandPager!!.clipWithRoundedCorners(16.dp)
+            binding!!.eventViewPager!!.clipWithRoundedCorners(16.dp)
             binding!!.eventViewPager!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
@@ -396,8 +396,8 @@ class EventCaptureActivity :
     }
 
     fun executeRules() {
-        val fragement: EventTeiDetailsFragment? = supportFragmentManager.findFragmentById(R.id.tei_column) as EventTeiDetailsFragment?
-        fragement!!.onResume()
+        val fragment: EventTeiDetailsFragment? = supportFragmentManager.findFragmentById(R.id.tei_column) as EventTeiDetailsFragment?
+        fragment?.onResume()
     }
 
     override fun attemptToReschedule() {
