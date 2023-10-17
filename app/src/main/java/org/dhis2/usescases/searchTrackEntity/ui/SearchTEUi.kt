@@ -64,9 +64,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.R
+import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
+import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
 fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
@@ -140,13 +143,14 @@ fun WrappedSearchButton(onClick: () -> Unit) {
 
 @ExperimentalAnimationApi
 @Composable
-fun FullSearchButton(
+fun FullSearchButtonAndWorkingList(
     modifier: Modifier,
     visible: Boolean = true,
     closeFilterVisibility: Boolean = false,
     isLandscape: Boolean = false,
     onClick: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
+    workingListViewModel: WorkingListViewModel? = null,
 ) {
     AnimatedVisibility(
         modifier = modifier,
@@ -154,37 +158,48 @@ fun FullSearchButton(
         enter = slideInVertically(initialOffsetY = { -it }),
         exit = slideOutVertically(targetOffsetY = { -it }),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SearchButton(
-                modifier = Modifier
-                    .weight(weight = 1f)
-                    .height(48.dp),
-                onClick = onClick,
-            )
-            if (!isLandscape && closeFilterVisibility) {
-                Spacer(modifier = Modifier.size(16.dp))
-                Box(
+        Column {
+            Row(
+                modifier = Modifier.padding(
+                    top = Spacing.Spacing16,
+                    start = Spacing.Spacing16,
+                    end = Spacing.Spacing16,
+                    bottom = Spacing.Spacing8,
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SearchButton(
                     modifier = Modifier
-                        .size(48.dp)
-                        .shadow(2.dp, CircleShape, clip = false)
-                        .clip(CircleShape)
-                        .background(Color.White),
-                ) {
-                    IconButton(onClick = onCloseFilters) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_up),
-                            contentDescription = "",
-                            tint = Color(
-                                ColorUtils().getPrimaryColor(
-                                    LocalContext.current,
-                                    ColorType.PRIMARY,
+                        .weight(weight = 1f)
+                        .height(48.dp),
+                    onClick = onClick,
+                )
+                if (!isLandscape && closeFilterVisibility) {
+                    Spacer(modifier = Modifier.size(16.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .shadow(2.dp, CircleShape, clip = false)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                    ) {
+                        IconButton(onClick = onCloseFilters) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_up),
+                                contentDescription = "",
+                                tint = Color(
+                                    ColorUtils().getPrimaryColor(
+                                        LocalContext.current,
+                                        ColorType.PRIMARY,
+                                    ),
                                 ),
-                            ),
-                        )
+                            )
+                        }
                     }
                 }
+            }
+            workingListViewModel?.let {
+                WorkingListChipGroup(workingListViewModel = it)
             }
         }
     }
@@ -589,8 +604,7 @@ fun MinAttributesSnackbar(minAttributes: Int) {
 @Preview(showBackground = true, backgroundColor = 0x2C98F0)
 @Composable
 fun SearchFullWidthPreview() {
-    FullSearchButton(modifier = Modifier) {
-    }
+    FullSearchButtonAndWorkingList(modifier = Modifier)
 }
 
 @Preview(showBackground = true, backgroundColor = 0x2C98F0)

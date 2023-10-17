@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.widget.HorizontalScrollView
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -83,9 +83,16 @@ fun WorkingListChipGroup(
 
     workingListFilterState.value?.let { workingListFilter ->
         LazyRow(modifier) {
-            items(workingListFilter.workingLists) { workingList ->
+            itemsIndexed(workingListFilter.workingLists) { index, workingList ->
                 Chip(
-                    modifier = Modifier.padding(end = Spacing.Spacing8),
+                    modifier = Modifier.padding(
+                        start = if (index == 0) Spacing.Spacing16 else Spacing.Spacing0,
+                        end = if (index == workingListFilter.workingLists.size - 1) {
+                            Spacing.Spacing16
+                        } else {
+                            Spacing.Spacing8
+                        },
+                    ),
                     label = workingList.label,
                     selected = selectedWorkingList == workingList,
                     onSelected = { _ -> workingListFilter.onChecked(workingList.id()) },

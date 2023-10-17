@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -24,7 +22,6 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
-import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.resources.ColorUtils
@@ -35,11 +32,9 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
 import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
-import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButton
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
+import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButtonAndWorkingList
 import org.dhis2.utils.isLandscape
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.io.File
 import javax.inject.Inject
 
@@ -141,7 +136,6 @@ class SearchTEList : FragmentGlobalAbstract() {
             configureList(scrollView)
             configureOpenSearchButton(openSearchButton)
             configureCreateButton(createButton)
-            configureWorkingList(filterLayout)
         }.root.also {
             observeNewData()
         }
@@ -192,15 +186,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                 ) {
                     val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
-                    FullSearchButton(
-                        modifier = Modifier
-                            .background(SurfaceColor.SurfaceBright)
-                            .padding(Spacing.Spacing16),
+                    FullSearchButtonAndWorkingList(
+                        modifier = Modifier,
                         visible = !isScrollingDown,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
                         onClick = { viewModel.setSearchScreen() },
                         onCloseFilters = { viewModel.onFiltersClick(isLandscape()) },
+                        workingListViewModel = workingListViewModel,
                     )
                 }
             }
@@ -233,27 +226,6 @@ class SearchTEList : FragmentGlobalAbstract() {
                         onClick = viewModel::onEnrollClick,
                     )
                 }
-            }
-        }
-    }
-
-    private fun configureWorkingList(filterLayout: ComposeView) {
-        filterLayout.apply {
-            setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
-            )
-            setContent {
-                val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
-                WorkingListChipGroup(
-                    Modifier
-                        .background(SurfaceColor.SurfaceBright)
-                        .padding(
-                            top = if (isScrollingDown) Spacing.Spacing16 else Spacing.Spacing0,
-                            start = Spacing.Spacing16,
-                            bottom = Spacing.Spacing16,
-                        ),
-                    workingListViewModel,
-                )
             }
         }
     }

@@ -301,7 +301,7 @@ data class WorkingListFilter(
     fun onChecked(checkedId: Int) {
         openFilter.set(null)
         workingLists.forEach {
-            if (it.id() == checkedId && !it.isSelected()) {
+            if (it.id() == checkedId) {
                 it.select()
             } else {
                 it.deselect()

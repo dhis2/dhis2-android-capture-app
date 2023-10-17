@@ -121,7 +121,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
             )
             setContent {
                 val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
-                WorkingListChipGroup(Modifier.padding(Spacing.Spacing16), workingListViewModel)
+                WorkingListChipGroup(Modifier.padding(top = Spacing.Spacing16), workingListViewModel)
             }
         }
     }
