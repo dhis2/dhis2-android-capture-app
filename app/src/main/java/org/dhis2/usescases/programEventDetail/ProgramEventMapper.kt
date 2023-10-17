@@ -247,7 +247,7 @@ class ProgramEventMapper @Inject constructor(
                         if (valueRepo.blockingExists()) {
                             valueRepo.blockingGet().userFriendlyValue(d2)
                         } else {
-                            "-"
+                            null
                         },
                     )
                 } else {

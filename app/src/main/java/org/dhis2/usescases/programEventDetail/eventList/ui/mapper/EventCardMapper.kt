@@ -61,7 +61,9 @@ class EventCardMapper(
         event: EventViewModel,
         editable: Boolean,
     ): List<AdditionalInfoItem> {
-        val list = event.dataElementValues?.map {
+        val list = event.dataElementValues?.filter {
+            !it.second.isNullOrEmpty()
+        }?.map {
             AdditionalInfoItem(
                 key = "${it.first}:",
                 value = it.second ?: "",
