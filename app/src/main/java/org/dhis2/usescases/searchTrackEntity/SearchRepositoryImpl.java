@@ -376,10 +376,17 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private void setAttributesInfo(SearchTeiModel searchTei, TrackedEntitySearchItem searchTeiItem) {
         for (TrackedEntitySearchItemAttribute attribute : searchTeiItem.getAttributeValues()) {
-            if (attribute.getDisplayInList()) {
+            if (attribute.getDisplayInList() && isAcceptedValueType(attribute.getValueType())) {
                 setAttributeValue(searchTei, attribute);
             }
         }
+    }
+
+    private boolean isAcceptedValueType(ValueType valueType) {
+        return switch (valueType) {
+            case IMAGE, COORDINATE, FILE_RESOURCE -> false;
+            default -> true;
+        };
     }
 
     private void setAttributeValue(SearchTeiModel searchTei, TrackedEntitySearchItemAttribute attribute) {
@@ -648,7 +655,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                             false,
                             false,
                             false,
-                            periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault())
+                            periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
+                            null
                     ));
         }
 
@@ -693,7 +701,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 false,
                 false,
                 false,
-                periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()));
+                periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
+                null
+        );
     }
 
     @Override

@@ -24,239 +24,255 @@
             type="org.hisp.dhis.android.core.program.Program" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/shadow_top"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/composeView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:background="@color/form_field_background"
-            android:src="@drawable/inner_shadow_top"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/eventCard"
-            tools:visibility="visible" />
+            android:paddingLeft="@dimen/dp_8"
+            android:paddingRight="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_8" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/eventCard"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/materialView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:rippleColor="@color/rippleColor"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toBottomOf="@id/shadow_top">
+            android:layout_height="wrap_content">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/shared_view"
+            <ImageView
+                android:id="@+id/shadow_top"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:background="@color/form_field_background"
+                android:scaleType="fitXY"
+                android:src="@drawable/inner_shadow_top"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/eventCard"
+                tools:visibility="visible" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/eventCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/shadow_top"
+                app:rippleColor="@color/rippleColor">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/stage_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:id="@+id/shared_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/composeStageIcon"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/stage_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.compose.ui.platform.ComposeView
+                            android:id="@+id/composeStageIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/eventStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            app:enrollmentStatusIcon="@{enrollment}"
+                            app:eventProgram="@{program}"
+                            app:eventProgramStage="@{stage}"
+                            app:eventStatusIcon="@{event}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_event_status_open"
+                            tools:ignore="ContentDescription" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/stageIconStatusImage"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="38dp"
+                        android:layout_marginTop="30dp"
+                        android:shadowColor="@color/light_shadow"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardElevation="1dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:enrollmentStatusIcon="@{enrollment}"
+                            app:eventProgram="@{program}"
+                            app:eventProgramStage="@{stage}"
+                            app:eventStatusIcon="@{event}"
+                            app:srcCompat="@drawable/ic_event_status_open"
+                            tools:ignore="ContentDescription" />
+                    </com.google.android.material.card.MaterialCardView>
+
+
+                    <TextView
+                        android:id="@+id/event_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="16dp"
+                        android:gravity="bottom"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        app:layout_constraintStart_toEndOf="@id/stage_image"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="03/10/2017" />
+
+                    <TextView
+                        android:id="@+id/programStageName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="@{stage.displayName()}"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toStartOf="@id/sync_icon"
+                        app:layout_constraintStart_toEndOf="@id/stage_image"
+                        app:layout_constraintTop_toBottomOf="@id/event_date"
+                        tools:text="Program stage name" />
+
+                    <TextView
+                        android:id="@+id/organisationUnit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toStartOf="@id/sync_icon"
+                        app:layout_constraintStart_toEndOf="@id/stage_image"
+                        app:layout_constraintTop_toBottomOf="@id/programStageName"
+                        tools:text="Kono" />
+
+                    <TextView
+                        android:id="@+id/catCombo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toStartOf="@id/sync_icon"
+                        app:layout_constraintStart_toEndOf="@id/stage_image"
+                        app:layout_constraintTop_toBottomOf="@id/organisationUnit"
+                        tools:text="Category Combo" />
+
+                    <TextView
+                        android:id="@+id/eventInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="16dp"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toStartOf="@id/showValuesButton"
+                        app:layout_constraintStart_toEndOf="@id/stage_image"
+                        app:layout_constraintTop_toBottomOf="@id/catCombo"
+                        tools:text="Negative P- Relapse Exclusive IPT 3 Dose2" />
+
+                    <View
+                        android:id="@+id/dataElementListGuideline"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="11dp"
+                        android:layout_marginEnd="14dp"
+                        android:background="#1F000000"
+                        app:layout_constraintEnd_toStartOf="@id/showValuesButton"
+                        app:layout_constraintStart_toEndOf="@id/stage_image"
+                        app:layout_constraintTop_toBottomOf="@id/catCombo" />
+
 
                     <ImageView
-                        android:id="@+id/eventStatus"
+                        android:id="@+id/showValuesButton"
+                        style="@style/ActionIconSmallPadding"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        app:enrollmentStatusIcon="@{enrollment}"
-                        app:eventProgram="@{program}"
-                        app:eventProgramStage="@{stage}"
-                        app:eventStatusIcon="@{event}"
+                        android:layout_marginEnd="10dp"
+                        app:layout_constraintBottom_toBottomOf="@id/dataElementListGuideline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/dataElementListGuideline"
+                        app:srcCompat="@drawable/ic_arrow_down"
+                        app:tint="#61333333" />
+
+                    <LinearLayout
+                        android:id="@+id/dataElementList"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginTop="11dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="15dp"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/stage_image"
+                        app:layout_constraintTop_toBottomOf="@id/eventInfo" />
+
+                    <ImageView
+                        android:id="@+id/sync_icon"
+                        style="@style/ActionIconSmallPadding"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_event_status_open"
-                        tools:ignore="ContentDescription" />
+                        app:stateIcon='@{event.state()}'
+                        tools:ignore="ContentDescription"
+                        tools:src="@drawable/ic_sync" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="16dp"
+                        android:background="@color/divider_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/stage_image" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/stageIconStatusImage"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="38dp"
-                    android:layout_marginTop="30dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardElevation="1dp"
-                    android:shadowColor="@color/light_shadow"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+            </com.google.android.material.card.MaterialCardView>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:enrollmentStatusIcon="@{enrollment}"
-                        app:eventProgram="@{program}"
-                        app:eventProgramStage="@{stage}"
-                        app:eventStatusIcon="@{event}"
-                        app:srcCompat="@drawable/ic_event_status_open"
-                        tools:ignore="ContentDescription" />
-                </com.google.android.material.card.MaterialCardView>
+            <ImageView
+                android:id="@+id/shadow_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/form_field_background"
+                android:scaleType="fitXY"
+                android:src="@drawable/inner_shadow_bottom"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/eventCard"
+                tools:visibility="visible" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-                <TextView
-                    android:id="@+id/event_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="16dp"
-                    android:gravity="bottom"
-                    android:textColor="@color/textPrimary"
-                    android:textSize="14sp"
-                    android:textStyle="normal"
-                    app:layout_constraintStart_toEndOf="@id/stage_image"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="03/10/2017" />
-
-                <TextView
-                    android:id="@+id/programStageName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@{stage.displayName()}"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/sync_icon"
-                    app:layout_constraintStart_toEndOf="@id/stage_image"
-                    app:layout_constraintTop_toBottomOf="@id/event_date"
-                    tools:text="Program stage name" />
-
-                <TextView
-                    android:id="@+id/organisationUnit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="16dp"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@id/sync_icon"
-                    app:layout_constraintStart_toEndOf="@id/stage_image"
-                    app:layout_constraintTop_toBottomOf="@id/programStageName"
-                    tools:text="Kono" />
-
-                <TextView
-                    android:id="@+id/catCombo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="16dp"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/sync_icon"
-                    app:layout_constraintStart_toEndOf="@id/stage_image"
-                    app:layout_constraintTop_toBottomOf="@id/organisationUnit"
-                    tools:text="Category Combo" />
-
-                <TextView
-                    android:id="@+id/eventInfo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="16dp"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@id/showValuesButton"
-                    app:layout_constraintStart_toEndOf="@id/stage_image"
-                    app:layout_constraintTop_toBottomOf="@id/catCombo"
-                    tools:text="Negative P- Relapse Exclusive IPT 3 Dose2" />
-
-                <View
-                    android:id="@+id/dataElementListGuideline"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="11dp"
-                    android:layout_marginEnd="14dp"
-                    android:background="#1F000000"
-                    app:layout_constraintEnd_toStartOf="@id/showValuesButton"
-                    app:layout_constraintStart_toEndOf="@id/stage_image"
-                    app:layout_constraintTop_toBottomOf="@id/catCombo" />
-
-
-                <ImageView
-                    android:id="@+id/showValuesButton"
-                    style="@style/ActionIconSmallPadding"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    app:layout_constraintBottom_toBottomOf="@id/dataElementListGuideline"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/dataElementListGuideline"
-                    app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="#61333333" />
-
-                <LinearLayout
-                    android:id="@+id/dataElementList"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="11dp"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/stage_image"
-                    app:layout_constraintTop_toBottomOf="@id/eventInfo"
-                    android:layout_marginBottom="15dp"/>
-
-                <ImageView
-                    android:id="@+id/sync_icon"
-                    style="@style/ActionIconSmallPadding"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:stateIcon='@{event.state()}'
-                    tools:ignore="ContentDescription"
-                    tools:src="@drawable/ic_sync" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="16dp"
-                    android:background="@color/divider_bg"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/stage_image" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <ImageView
-            android:id="@+id/shadow_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:background="@color/form_field_background"
-            android:src="@drawable/inner_shadow_bottom"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/eventCard"
-            tools:visibility="visible" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>

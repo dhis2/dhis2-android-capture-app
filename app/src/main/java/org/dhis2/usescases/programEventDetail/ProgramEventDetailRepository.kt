@@ -25,4 +25,5 @@ interface ProgramEventDetailRepository {
     fun programStage(): Single<ProgramStage?>
     fun programHasCoordinates(): Boolean
     fun programHasAnalytics(): Boolean
+    fun isEventEditable(eventUid: String): Boolean
 }
