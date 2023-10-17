@@ -122,7 +122,7 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VISA MER</string>
-    <string name="edit">REDIGERA</string>
+    <string name="edit">Redigera</string>
     <string name="enrolling_ou">Inskrivningsorganisationsenhet</string>
     <string name="follow_up">Följ upp</string>
     <string name="follow_up_enabled">Uppföljning aktiverad</string>
