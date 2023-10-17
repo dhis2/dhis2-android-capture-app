@@ -98,6 +98,7 @@ class ProgramEventDetailPresenterTest {
             groupedByStage = false,
             valueListIsOpen = false,
             displayDate = "2/01/2021",
+            nameCategoryOptionCombo = "Category Option Combo",
         )
         val events =
             MutableLiveData<PagedList<EventViewModel>>().also {

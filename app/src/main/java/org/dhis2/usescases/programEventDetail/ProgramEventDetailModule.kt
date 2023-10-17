@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
@@ -12,6 +13,7 @@ import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
@@ -24,6 +26,7 @@ import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
+import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
@@ -62,8 +65,14 @@ class ProgramEventDetailModule(
 
     @Provides
     @PerActivity
-    fun provideViewModelFactory(d2: D2): ProgramEventDetailViewModelFactory {
-        return ProgramEventDetailViewModelFactory(MapStyleConfiguration(d2))
+    fun provideViewModelFactory(
+        d2: D2,
+        eventDetailRepository: ProgramEventDetailRepository,
+    ): ProgramEventDetailViewModelFactory {
+        return ProgramEventDetailViewModelFactory(
+            MapStyleConfiguration(d2),
+            eventDetailRepository,
+        )
     }
 
     @Provides
@@ -144,5 +153,14 @@ class ProgramEventDetailModule(
         repository: ProgramEventDetailRepository,
     ): NavigationPageConfigurator {
         return ProgramEventPageConfigurator(repository)
+    }
+
+    @Provides
+    @PerActivity
+    fun providesEventCardMapper(
+        context: Context,
+        resourceManager: ResourceManager,
+    ): EventCardMapper {
+        return EventCardMapper(context, resourceManager)
     }
 }

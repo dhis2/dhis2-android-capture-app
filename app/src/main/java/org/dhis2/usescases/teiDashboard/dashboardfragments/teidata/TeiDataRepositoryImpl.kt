@@ -13,8 +13,10 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
@@ -144,6 +146,7 @@ class TeiDataRepositoryImpl(
                                 catComboName = null,
                                 dataElementValues = null,
                                 displayDate = null,
+                                nameCategoryOptionCombo = null,
                             )
                         }
                     }
@@ -200,6 +203,7 @@ class TeiDataRepositoryImpl(
                             dataElementValues = emptyList(),
                             groupedByStage = true,
                             displayDate = null,
+                            nameCategoryOptionCombo = null,
                         ),
                     )
                     if (isSelected) {
@@ -218,7 +222,7 @@ class TeiDataRepositoryImpl(
                                     orgUnitName = d2.organisationUnitModule().organisationUnits()
                                         .uid(event.organisationUnit()).blockingGet()?.displayName()
                                         ?: "",
-                                    catComboName = getCatComboName(event.attributeOptionCombo()),
+                                    catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                     dataElementValues = getEventValues(
                                         event.uid(),
                                         programStage.uid(),
@@ -231,6 +235,8 @@ class TeiDataRepositoryImpl(
                                         event.eventDate() ?: event.dueDate()!!,
                                         Locale.getDefault(),
                                     ),
+                                    nameCategoryOptionCombo =
+                                    getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
                                 ),
                             )
                         }
@@ -253,12 +259,10 @@ class TeiDataRepositoryImpl(
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                checkEventStatus(eventList).forEachIndexed { index, event ->
+                checkEventStatus(eventList).forEachIndexed { _, event ->
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
-                    val showTopShadow = index == 0
-                    val showBottomShadow = index == eventList.size - 1
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
@@ -271,7 +275,7 @@ class TeiDataRepositoryImpl(
                             orgUnitName = d2.organisationUnitModule().organisationUnits()
                                 .uid(event.organisationUnit()).blockingGet()?.displayName()
                                 ?: "",
-                            catComboName = getCatComboName(event.attributeOptionCombo()),
+                            catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                             dataElementValues = getEventValues(event.uid(), programStage?.uid()),
                             groupedByStage = false,
                             displayDate = periodUtils.getPeriodUIString(
@@ -279,11 +283,29 @@ class TeiDataRepositoryImpl(
                                 event.eventDate() ?: event.dueDate()!!,
                                 Locale.getDefault(),
                             ),
+                            nameCategoryOptionCombo =
+                            getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
                         ),
                     )
                 }
                 eventViewModels
             }
+    }
+
+    private fun getCategoryComboFromOptionCombo(categoryOptionComboUid: String?): CategoryCombo? {
+        val catOptionComboUid = categoryOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryOptionCombos()
+                .uid(it)
+                .blockingGet()?.categoryCombo()?.uid()
+        }
+
+        return catOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryCombos()
+                .uid(it)
+                .blockingGet()
+        }
     }
 
     private fun eventRepoSorting(
@@ -298,6 +320,7 @@ class TeiDataRepositoryImpl(
                     } else {
                         eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.DESC)
                     }
+
                 Filters.PERIOD -> {
                     if (sortingItem.sortingStatus === SortingStatus.ASC) {
                         eventRepo
@@ -307,6 +330,7 @@ class TeiDataRepositoryImpl(
                             .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
                     }
                 }
+
                 else -> {
                     eventRepo
                 }
@@ -338,26 +362,37 @@ class TeiDataRepositoryImpl(
                 it.dataElement()?.uid()!!
             }
         return if (displayInListDataElements.isNotEmpty()) {
-            displayInListDataElements.map {
+            displayInListDataElements.mapNotNull {
                 val valueRepo = d2.trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, it)
                 val de = d2.dataElementModule().dataElements()
                     .uid(it).blockingGet()
-                Pair(
-                    de?.displayFormName() ?: de?.displayName() ?: "",
-                    if (valueRepo.blockingExists()) {
-                        valueRepo.blockingGet().userFriendlyValue(d2)
-                    } else {
-                        "-"
-                    },
-                )
+                if (isAcceptedValueType(de?.valueType())) {
+                    Pair(
+                        de?.displayFormName() ?: de?.displayName() ?: "",
+                        if (valueRepo.blockingExists()) {
+                            valueRepo.blockingGet().userFriendlyValue(d2)
+                        } else {
+                            "-"
+                        },
+                    )
+                } else {
+                    null
+                }
             }
         } else {
             emptyList()
         }
     }
 
-    private fun getCatComboName(categoryOptionComboUid: String?): String? {
+    private fun isAcceptedValueType(valueType: ValueType?): Boolean {
+        return when (valueType) {
+            ValueType.IMAGE, ValueType.COORDINATE, ValueType.FILE_RESOURCE -> false
+            else -> true
+        }
+    }
+
+    private fun getCatOptionComboName(categoryOptionComboUid: String?): String? {
         return categoryOptionComboUid?.let {
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
                 ?.displayName()

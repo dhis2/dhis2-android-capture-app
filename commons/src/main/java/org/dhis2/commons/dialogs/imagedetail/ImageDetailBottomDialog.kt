@@ -20,7 +20,6 @@ import org.dhis2.commons.databinding.DetailImageBottomDialogBinding
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import java.io.File
-import javax.inject.Inject
 
 class ImageDetailBottomDialog(
     val label: String?,
@@ -32,17 +31,16 @@ class ImageDetailBottomDialog(
 
     private lateinit var binding: DetailImageBottomDialogBinding
 
-    @Inject
-    lateinit var colorUtils: ColorUtils
+    val colorUtils: ColorUtils = ColorUtils()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.detail_image_bottom_dialog, container, false)
-        binding.setTitle(label)
+        binding.title = label
         binding.closeButton.setImageDrawable(
             colorUtils.tintDrawableWithColor(
                 binding.closeButton.drawable,

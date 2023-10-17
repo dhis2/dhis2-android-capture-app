@@ -22,6 +22,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class DataSetListViewModelTest {
     @get:Rule
@@ -105,5 +106,7 @@ class DataSetListViewModelTest {
         "",
         true,
         false,
+        Date(),
+        "",
     )
 }
