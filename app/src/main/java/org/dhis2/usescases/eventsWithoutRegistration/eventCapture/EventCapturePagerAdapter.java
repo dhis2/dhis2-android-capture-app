@@ -41,32 +41,6 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     public boolean isFormScreenShown(@Nullable Integer currentItem) {
         return currentItem!=null && pages.get(currentItem) == EventPageType.DATA_ENTRY;
     }
-
-
-    public int getNavigationPagePosition(int navigationId) {
-
-        int i = navigationId;
-        EventPageType pageType = null;
-
-        if (i == R.id.navigation_details) {
-            pageType = EventPageType.DETAILS;
-        }
-        if (i == R.id.navigation_analytics) {
-            pageType = EventPageType.ANALYTICS;
-        }
-        if (i == R.id.navigation_relationships) {
-            pageType = EventPageType.RELATIONSHIPS;
-        }
-        if (i == R.id.navigation_notes) {
-            pageType = EventPageType.NOTES;
-        }
-        if (i == R.id.navigation_data_entry) {
-            pageType = EventPageType.DATA_ENTRY;
-        }
-
-        return pages.indexOf(pageType);
-    }
-
     private enum EventPageType {
         DETAILS, DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
     }
