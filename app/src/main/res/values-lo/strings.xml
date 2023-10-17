@@ -85,14 +85,6 @@
     <string name="program_inactive">ໂປຣແກຣມທີ່ບໍ່ໄດ້ເປີດໃຊ້ງານ</string>
 
     <string name="event_open">ເປີດ</string>
-    <string name="event_completed">ຂໍ້ມູນຂອງແຕ່ລະກໍລະນີຖືກດໍາເນີນການສໍາເລັດແລ້ວ</string>
-    <string name="event_skipped">ຂໍ້ມູນຂອງກໍລະນີຖືກຂ້າມໄປ</string>
-    <string name="event_schedule">ລາຍລະອຽດຂອງກໍລະນີ</string>
-    <string name="event_expired">ຂໍ້ມູນຂອງກໍລະນີໝົດກໍານົດ</string>
-    <string name="event_editing_expired">ການດັດແປງໝົດກໍານົດ</string>
-    <string name="event_accepted">ກໍລະນີທີ່ຖືກຮັບຮອງແລ້ວ</string>
-    <string name="event_approved">ກໍລະນີທີ່ໄດ້ຢັ້ງຢືນແລ້ວ</string>
-    <string name="event_inactive">ກໍລະນີທີ່ບໍ່ໄດ້ຖືກນໍາໃຊ້</string>
     <string name="read_only">ອ່ານໄດ້ເທົ່ານັ້ນ</string>
     <string name="finish_and_complete">ສີ້ນສຸດ ແລະ ສໍາເລັດ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
@@ -160,7 +152,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">ເບິ່ງຂໍ້ມູນເພີ່ມຕື່ມ</string>
     <string name="view_more">ເບີ່ງຕື່ມ</string>
-    <string name="edit">ດັດແປງ</string>
     <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
     <string name="follow_up">ຕິດຕາມ</string>
     <string name="follow_up_enabled">ເປີດການຕິດຕາມ</string>

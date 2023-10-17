@@ -91,14 +91,6 @@
     <string name="program_inactive">Programma inactief</string>
 
     <string name="event_open">Open</string>
-    <string name="event_completed">Evenement voltooid</string>
-    <string name="event_skipped">Evenement overgeslagen</string>
-    <string name="event_schedule">Evenementenplanning</string>
-    <string name="event_expired">Evenement verlopen</string>
-    <string name="event_editing_expired">Bewerking verlopen</string>
-    <string name="event_accepted">Evenement geaccepteerd</string>
-    <string name="event_approved">Evenement goedgekeurd</string>
-    <string name="event_inactive">Evenement inactief</string>
     <string name="read_only">Alleen lezen</string>
     <string name="finish_and_complete">Afwerken en voltooi</string>
     <string name="completed">Voltooid</string>
@@ -168,7 +160,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Zie de details</string>
     <string name="view_more">BEKIJK MEER</string>
-    <string name="edit">BEWERKING</string>
     <string name="enrolling_ou">OU inschrijven:</string>
     <string name="follow_up">Volg op</string>
     <string name="follow_up_enabled">Vervolg ingeschakeld</string>

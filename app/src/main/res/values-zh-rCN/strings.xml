@@ -85,14 +85,6 @@
     <string name="program_inactive">项目不活跃</string>
 
     <string name="event_open">开放</string>
-    <string name="event_completed">事件已经完成</string>
-    <string name="event_skipped">跳过的事件</string>
-    <string name="event_schedule">事件调度</string>
-    <string name="event_expired">事件过期</string>
-    <string name="event_editing_expired">过期的事件</string>
-    <string name="event_accepted">接受的事件</string>
-    <string name="event_approved">审核的事件</string>
-    <string name="event_inactive">不活跃的事件</string>
     <string name="read_only">只读</string>
     <string name="finish_and_complete">完成</string>
     <string name="completed">已完成</string>
@@ -162,7 +154,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">查看详情</string>
     <string name="view_more">更多</string>
-    <string name="edit">编辑</string>
     <string name="enrolling_ou">注册机构</string>
     <string name="follow_up">后续跟踪</string>
     <string name="follow_up_enabled">使能后续跟踪</string>

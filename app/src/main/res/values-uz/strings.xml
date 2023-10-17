@@ -87,14 +87,6 @@
     <string name="program_inactive">Дастур нофаол</string>
 
     <string name="event_open">Очиш</string>
-    <string name="event_completed">Ҳодиса/Тадбир тугалланди</string>
-    <string name="event_skipped">Тадбир ўтказиб юборилди</string>
-    <string name="event_schedule">Тадбир режаси</string>
-    <string name="event_expired">Тадбир муддати тугаган</string>
-    <string name="event_editing_expired">Таҳрирлаш муддати тугаган</string>
-    <string name="event_accepted">Тадбир қабул қилинган</string>
-    <string name="event_approved">Тадбир тасдиқланди</string>
-    <string name="event_inactive">Тадбир нофаол</string>
     <string name="read_only">Фақат ўқиш учун</string>
     <string name="finish_and_complete">Якунлаш ва тўлдириш</string>
     <string name="completed">Тўлдирилди</string>
@@ -164,7 +156,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Тафсилотларни кўринг</string>
     <string name="view_more">КЎПРОҚ КЎРИШ</string>
-    <string name="edit">ТАҲРИРЛАШ</string>
     <string name="enrolling_ou">OUга рўйхатга олиш</string>
     <string name="follow_up">Кузатиб бориш</string>
     <string name="follow_up_enabled">Кузатув ёқилган</string>
