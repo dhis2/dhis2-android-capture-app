@@ -13,7 +13,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 fun ComposeView?.setButtonContent(trackedEntityName: String, onButtonClicked: () -> Unit) {
     this?.setContent {
         Button(
-            text = "${stringResource(id = R.string.edit)} $trackedEntityName",
+            text = "${stringResource(id = R.string.edit)} ${trackedEntityName.lowercase()}",
             style = ButtonStyle.TEXT_LIGHT,
             icon = {
                 Icon(
