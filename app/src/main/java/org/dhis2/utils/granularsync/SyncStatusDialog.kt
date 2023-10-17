@@ -97,14 +97,16 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 Mdc3Theme {
                     val syncState by viewModel.currentState.collectAsState()
                     syncState?.let { syncUiState ->
-                        if (syncUiState.shouldDismissOnUpdate) dismiss()
-                        if (syncing && syncUiState.syncState == State.SYNCED) {
-                            dismiss()
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.sync_successful),
-                                Toast.LENGTH_SHORT,
-                            ).show()
+                        when {
+                            syncUiState.shouldDismissOnUpdate -> dismiss()
+                            syncing && syncUiState.syncState == State.SYNCED -> {
+                                dismiss()
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.sync_successful),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            }
                         }
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
