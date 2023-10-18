@@ -64,8 +64,6 @@ fun ProvideInputAge(
         dateOfBirthLabel = resources.getString(R.string.date_birth),
         orLabel = resources.getString(R.string.or),
         ageLabel = resources.getString(R.string.age),
-        onFocusChanged = {
-        },
         onValueChanged = { ageInputType ->
             inputType = ageInputType
             when (val type = inputType) {
