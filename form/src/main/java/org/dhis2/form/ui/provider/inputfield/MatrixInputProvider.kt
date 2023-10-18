@@ -33,8 +33,6 @@ internal fun ProvideMatrixInput(
     fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.forEach() { option ->
         val color =
             ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
-        option.style().icon()?.let {
-        }
         var icon = option.style().icon() ?: "dhis2_dhis2_logo_positive"
         if (!icon.startsWith("dhis2_")) {
             icon = "dhis2_$icon"
