@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import android.content.res.Resources
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
 
@@ -32,7 +34,7 @@ fun ProvideInputAge(
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: Resources,
 ) {
-    var inputType by remember(fieldUiModel.value) {
+    var inputType by remember {
         mutableStateOf(
             if (!fieldUiModel.value.isNullOrEmpty()) {
                 formatStoredDateToUI(fieldUiModel.value!!)?.let {
@@ -42,6 +44,30 @@ fun ProvideInputAge(
                 AgeInputType.None
             },
         )
+    }
+
+    DisposableEffect(fieldUiModel.value) {
+        inputType = if (fieldUiModel.value.isNullOrEmpty()) {
+            AgeInputType.None
+        } else {
+            when (inputType) {
+                is AgeInputType.Age ->
+                    calculateAgeFromDate(
+                        fieldUiModel.value!!,
+                        (inputType as AgeInputType.Age).unit,
+                    )?.let {
+                        (inputType as AgeInputType.Age).copy(value = it)
+                    } ?: AgeInputType.None
+
+                is AgeInputType.DateOfBirth ->
+                    formatStoredDateToUI(fieldUiModel.value!!)?.let {
+                        (inputType as AgeInputType.DateOfBirth).copy(value = it)
+                    } ?: AgeInputType.None
+
+                AgeInputType.None -> inputType
+            }
+        }
+        onDispose { }
     }
 
     InputAge(
@@ -68,7 +94,7 @@ fun ProvideInputAge(
             inputType = ageInputType
             when (val type = inputType) {
                 is AgeInputType.Age -> {
-                    calculateDateFromCurrent(type)?.let { calculatedDate ->
+                    calculateDateFromAge(type)?.let { calculatedDate ->
                         intentHandler.invoke(
                             FormIntent.OnTextChange(
                                 fieldUiModel.uid,
@@ -149,7 +175,7 @@ private fun isValidDate(dateString: String): Boolean {
     return pattern.matcher(dateString).matches()
 }
 
-private fun calculateDateFromCurrent(age: AgeInputType.Age): String? {
+private fun calculateDateFromAge(age: AgeInputType.Age): String? {
     val calendar = Calendar.getInstance()
     return try {
         when (age.unit) {
@@ -160,6 +186,46 @@ private fun calculateDateFromCurrent(age: AgeInputType.Age): String? {
 
         val dateFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())
         dateFormat.format(calendar.time)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+private fun calculateAgeFromDate(dateString: String, timeUnit: TimeUnitValues): String? {
+    return try {
+        val inputFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())
+
+        val birthDate = inputFormat.parse(dateString)
+        val calendarBirthDate = Calendar.getInstance()
+        calendarBirthDate.time = birthDate
+
+        val currentDate = Date()
+        val calendarCurrentDate = Calendar.getInstance()
+        calendarCurrentDate.time = currentDate
+
+        when (timeUnit) {
+            TimeUnitValues.YEARS -> {
+                var diff = calendarCurrentDate[Calendar.YEAR] - calendarBirthDate[Calendar.YEAR]
+                if (calendarCurrentDate[Calendar.DAY_OF_YEAR] < calendarBirthDate[Calendar.DAY_OF_YEAR]) {
+                    diff--
+                }
+                diff.toString()
+            }
+
+            TimeUnitValues.MONTHS -> {
+                var diff = calendarCurrentDate[Calendar.MONTH] - calendarBirthDate[Calendar.MONTH]
+                if (calendarCurrentDate[Calendar.DAY_OF_YEAR] < calendarBirthDate[Calendar.DAY_OF_YEAR]) {
+                    diff--
+                }
+                diff.toString()
+            }
+
+            TimeUnitValues.DAYS -> {
+                var diff = currentDate.time - birthDate.time
+                diff /= (1000 * 60 * 60 * 24)
+                diff.toString()
+            }
+        }
     } catch (e: Exception) {
         null
     }
