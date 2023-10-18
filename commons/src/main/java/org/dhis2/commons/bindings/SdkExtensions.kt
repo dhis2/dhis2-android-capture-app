@@ -252,10 +252,10 @@ fun D2.period(periodId: String) = periodModule().periods()
     .one()
     .blockingGet()
 
-fun D2.disableCollapsableSectionsInProgram(programUid: String): Boolean? {
+fun D2.disableCollapsableSectionsInProgram(programUid: String): Boolean {
     val globalSettingEnabled: Boolean? =
         settingModule().appearanceSettings()
-            .globalProgramConfigurationSetting
+            .getGlobalProgramConfigurationSetting()
             ?.disableCollapsibleSections()
     val specificSettingEnabled: Boolean? =
         settingModule().appearanceSettings()

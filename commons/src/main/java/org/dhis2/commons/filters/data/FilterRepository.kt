@@ -292,7 +292,9 @@ class FilterRepository @Inject constructor(
         }
 
         val globalTrackedEntityTypeFiltersWebApp =
-            d2.settingModule().appearanceSettings().trackedEntityTypeFilters
+            d2.settingModule().appearanceSettings().getTrackedEntityTypeFilters()
+                ?.toMutableMap() ?: mutableMapOf()
+
         globalTrackedEntityTypeFiltersWebApp.remove(ProgramFilter.ASSIGNED_TO_ME)
         globalTrackedEntityTypeFiltersWebApp.remove(ProgramFilter.ENROLLMENT_DATE)
 
@@ -336,6 +338,7 @@ class FilterRepository @Inject constructor(
 
         val datasetFiltersWebApp =
             d2.settingModule().appearanceSettings().getDataSetFiltersByUid(dataSetUid)
+                ?.toMutableMap() ?: mutableMapOf()
 
         if (orgUnitsCount == 1) {
             datasetFiltersWebApp.remove(DataSetFilter.ORG_UNIT)
@@ -398,7 +401,8 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        val homeFiltersWebApp = d2.settingModule().appearanceSettings().homeFilters
+        val homeFiltersWebApp = d2.settingModule().appearanceSettings().getHomeFilters()
+            ?.toMutableMap() ?: mutableMapOf()
 
         if (orgUnitsCount == 1) {
             homeFiltersWebApp.remove(HomeFilter.ORG_UNIT)
@@ -469,6 +473,7 @@ class FilterRepository @Inject constructor(
 
         val trackerFiltersWebApp =
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
+                ?.toMutableMap() ?: mutableMapOf()
 
         if (orgUnitsCount == 1) {
             trackerFiltersWebApp.remove(ProgramFilter.ORG_UNIT)
@@ -629,6 +634,7 @@ class FilterRepository @Inject constructor(
 
         val eventFiltersWebApp =
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
+                ?.toMutableMap() ?: mutableMapOf()
 
         if (orgUnitsCount == 1) {
             eventFiltersWebApp.remove(ProgramFilter.ORG_UNIT)
