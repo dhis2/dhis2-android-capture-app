@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 
 @Composable
 fun NewEventOptions(
@@ -29,11 +30,12 @@ fun NewEventOptions(
 
     Column {
         IconButton(
+            style = IconButtonStyle.FILLED,
             icon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_add_accent),
-                    contentDescription = "",
-                    tint = MaterialTheme.colors.primary,
+                    contentDescription = "New event",
+                    tint = MaterialTheme.colors.onPrimary,
                 )
             },
             onClick = { expanded = !expanded },

@@ -11,7 +11,9 @@ import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
@@ -48,7 +50,7 @@ class ProgramEventMapper @Inject constructor(
             orgUnitName = d2.organisationUnitModule().organisationUnits()
                 .uid(event.organisationUnit())
                 .blockingGet()?.displayName() ?: "-",
-            catComboName = getCatComboName(event.attributeOptionCombo()),
+            catComboName = getCatOptionComboName(event.attributeOptionCombo()),
             dataElementValues = getEventValues(event.uid(), event.programStage()!!),
             groupedByStage = true,
             displayDate = eventDate?.let {
@@ -58,7 +60,25 @@ class ProgramEventMapper @Inject constructor(
                     Locale.getDefault(),
                 )
             },
+            nameCategoryOptionCombo =
+            getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
         )
+    }
+
+    private fun getCategoryComboFromOptionCombo(categoryOptionComboUid: String?): CategoryCombo? {
+        val catOptionComboUid = categoryOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryOptionCombos()
+                .uid(it)
+                .blockingGet()?.categoryCombo()?.uid()
+        }
+
+        return catOptionComboUid?.let {
+            d2.categoryModule()
+                .categoryCombos()
+                .uid(it)
+                .blockingGet()
+        }
     }
 
     fun eventToProgramEvent(event: Event): ProgramEventViewModel {
@@ -216,26 +236,37 @@ class ProgramEventMapper @Inject constructor(
                 it.dataElement()?.uid()!!
             }
         return if (displayInListDataElements.isNotEmpty()) {
-            displayInListDataElements.map {
+            displayInListDataElements.mapNotNull {
                 val valueRepo = d2.trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, it)
                 val de = d2.dataElementModule().dataElements()
                     .uid(it).blockingGet()
-                Pair(
-                    de?.displayFormName() ?: de?.displayName() ?: "",
-                    if (valueRepo.blockingExists()) {
-                        valueRepo.blockingGet().userFriendlyValue(d2)
-                    } else {
-                        "-"
-                    },
-                )
+                if (isAcceptedValueType(de?.valueType())) {
+                    Pair(
+                        de?.displayFormName() ?: de?.displayName() ?: "",
+                        if (valueRepo.blockingExists()) {
+                            valueRepo.blockingGet().userFriendlyValue(d2)
+                        } else {
+                            null
+                        },
+                    )
+                } else {
+                    null
+                }
             }
         } else {
             emptyList()
         }
     }
 
-    private fun getCatComboName(categoryOptionComboUid: String?): String? {
+    private fun isAcceptedValueType(valueType: ValueType?): Boolean {
+        return when (valueType) {
+            ValueType.IMAGE, ValueType.COORDINATE, ValueType.FILE_RESOURCE -> false
+            else -> true
+        }
+    }
+
+    private fun getCatOptionComboName(categoryOptionComboUid: String?): String? {
         return categoryOptionComboUid?.let {
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
                 ?.displayName()

@@ -29,7 +29,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
@@ -45,7 +44,6 @@ class TeiDashboardPresenterTest {
     private val filterManager: FilterManager = mock()
     private val programUid = "programUid"
     private val teiUid = "teiUid"
-    private val enrollmentUid = "enrollmentUid"
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
@@ -54,12 +52,10 @@ class TeiDashboardPresenterTest {
             view,
             teiUid,
             programUid,
-            enrollmentUid,
             repository,
             schedulers,
             analyticsHelper,
             preferenceProvider,
-            filterManager,
             matomoAnalyticsController,
         )
     }
@@ -108,7 +104,6 @@ class TeiDashboardPresenterTest {
         presenter.init()
 
         verify(view).setData(presenter.dashboardProgramModel)
-        verify(view, times(2)).updateTotalFilters(any())
     }
 
     @Test
@@ -148,7 +143,6 @@ class TeiDashboardPresenterTest {
         presenter.init()
 
         verify(view).setDataWithOutProgram(presenter.dashboardProgramModel)
-        verify(view, times(2)).updateTotalFilters(any())
     }
 
     @Test
@@ -348,25 +342,16 @@ class TeiDashboardPresenterTest {
             view,
             teiUid,
             null,
-            enrollmentUid,
             repository,
             schedulers,
             analyticsHelper,
             preferenceProvider,
-            filterManager,
             matomoAnalyticsController,
         )
 
         val isGrouped = presenter.programGrouping
 
         assert(isGrouped == false)
-    }
-
-    @Test
-    fun `Should handle filters icon click`() {
-        presenter.generalFiltersClick()
-
-        verify(view).setFiltersLayoutState()
     }
 
     @Test

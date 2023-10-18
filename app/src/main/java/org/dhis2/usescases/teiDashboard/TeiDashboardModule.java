@@ -13,7 +13,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
@@ -53,17 +52,14 @@ public class TeiDashboardModule {
                                                      SchedulerProvider schedulerProvider,
                                                      AnalyticsHelper analyticsHelper,
                                                      PreferenceProvider preferenceProvider,
-                                                     FilterManager filterManager,
                                                      MatomoAnalyticsController matomoAnalyticsController) {
         return new TeiDashboardPresenter(view,
                 teiUid,
                 programUid,
-                enrollmentUid,
                 dashboardRepository,
                 schedulerProvider,
                 analyticsHelper,
                 preferenceProvider,
-                filterManager,
                 matomoAnalyticsController);
     }
 

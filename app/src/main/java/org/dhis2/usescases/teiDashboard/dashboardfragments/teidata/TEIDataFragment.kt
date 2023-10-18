@@ -47,7 +47,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.CategoryDialogInteractions
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
-import org.dhis2.usescases.teiDashboard.ui.setButtonContent
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
@@ -91,7 +90,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) {
-        dashboardActivity.getPresenter().init()
+        dashboardActivity.presenter.init()
     }
 
     private val eventCreationLauncher =
@@ -129,15 +128,15 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return FragmentTeiDataBinding.inflate(inflater, container, false).also { binding ->
             this.binding = binding
             binding.presenter = presenter
-            dashboardActivity.observeGrouping().observe(viewLifecycleOwner) { group ->
+            dashboardActivity.observeGrouping()?.observe(viewLifecycleOwner) { group ->
                 showLoadingProgress(true)
                 binding.isGrouping = group
                 presenter.onGroupingChanged(group)
             }
             dashboardActivity.observeFilters()
-                .observe(viewLifecycleOwner, ::showHideFilters)
+                ?.observe(viewLifecycleOwner, ::showHideFilters)
             dashboardActivity.updatedEnrollment()
-                .observe(viewLifecycleOwner, ::updateEnrollment)
+                ?.observe(viewLifecycleOwner, ::updateEnrollment)
 
             binding.filterLayout.adapter = filtersAdapter
         }.root
@@ -230,9 +229,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.dashboardModel = dashboardModel
             showLoadingProgress(false)
         }
-        binding.cardFront.detailsButton.setButtonContent(dashboardActivity.presenter.teType) {
-            presenter.seeDetails(binding.cardFront.cardData, dashboardModel)
-        }
         binding.executePendingBindings()
         if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
             presenter.displayGenerateEvent(
@@ -247,10 +243,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun setFilters(filterItems: List<FilterItem>) {
         filtersAdapter.submitList(filterItems)
-    }
-
-    override fun hideFilters() {
-        dashboardActivity.hideFilter()
     }
 
     override fun observeStageSelection(

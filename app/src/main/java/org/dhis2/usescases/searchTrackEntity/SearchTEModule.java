@@ -17,7 +17,6 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -60,6 +59,7 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
+import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -280,5 +280,14 @@ public class SearchTEModule {
     @PerActivity
     SearchNavigator searchNavigator(D2 d2) {
         return new SearchNavigator((SearchTEActivity) moduleContext, new SearchNavigationConfiguration(d2));
+    }
+
+    @Provides
+    @PerActivity
+    TEICardMapper provideListCardMapper(
+            Context context,
+            ResourceManager resourceManager
+    ) {
+        return new TEICardMapper(context, resourceManager);
     }
 }

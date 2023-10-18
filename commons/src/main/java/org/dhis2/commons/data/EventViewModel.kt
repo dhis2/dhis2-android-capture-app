@@ -20,6 +20,7 @@ data class EventViewModel(
     val showTopShadow: Boolean = false,
     val showBottomShadow: Boolean = false,
     val displayDate: String?,
+    val nameCategoryOptionCombo: String?,
 ) {
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen

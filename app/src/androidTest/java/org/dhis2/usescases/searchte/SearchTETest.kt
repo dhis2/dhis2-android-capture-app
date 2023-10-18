@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchte
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,8 +12,8 @@ import androidx.test.uiautomator.Until
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
-import org.dhis2.bindings.app
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.TeiFlowTest
@@ -41,13 +42,17 @@ class SearchTETest : BaseTest() {
     private var mapIdlingResource: MapIdlingResource? = null
     private var map: MapboxMap? = null
 
-    val customDispatcherProvider = context.applicationContext.app().appComponent().customDispatcherProvider()
+    private val customDispatcherProvider =
+        context.applicationContext.app().appComponent().customDispatcherProvider()
 
     @JvmField
     @Rule
     val idlingRule = IdlingDispatcherProviderRule {
         IdlingDispatcherProvider(customDispatcherProvider)
     }
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Test
     fun shouldSuccessfullySearchByName() {
@@ -132,7 +137,10 @@ class SearchTETest : BaseTest() {
             selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
             acceptDate()
             clickOnSearch()
-            checkFieldsFromDisplayList(displayInListData)
+            checkFieldsFromDisplayList(
+                composeTestRule,
+                displayInListData,
+            )
         }
     }
 
@@ -427,7 +435,7 @@ class SearchTETest : BaseTest() {
 
     private fun createOverdueDate() = DateRegistrationUIModel(
         currentDate.year,
-        currentDate.month-1,
+        currentDate.month - 1,
         currentDate.day
     )
 
