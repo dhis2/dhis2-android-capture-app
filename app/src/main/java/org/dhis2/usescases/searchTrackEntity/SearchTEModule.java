@@ -257,8 +257,7 @@ public class SearchTEModule {
                 mapDataRepository,
                 networkUtils,
                 new SearchDispatchers(),
-                new MapStyleConfiguration(d2),
-                filterRepository
+                new MapStyleConfiguration(d2)
         );
     }
 
