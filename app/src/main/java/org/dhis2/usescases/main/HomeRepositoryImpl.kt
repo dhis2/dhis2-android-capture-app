@@ -9,7 +9,6 @@ import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.programs
 import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.usescases.main.program.toAppConfig
 import org.hisp.dhis.android.core.D2
@@ -63,37 +62,12 @@ class HomeRepositoryImpl(
 
     override fun isPinStored() = d2.dataStoreModule().localDataStore().value(PIN).blockingExists()
     override fun homeItemCount(): Int {
-        val isSingleItemFeatureEnable =
-            featureConfig.isFeatureEnable(Feature.SINGLE_DATASET_HOME_ITEM) ||
-                featureConfig.isFeatureEnable(Feature.SINGLE_EVENT_HOME_ITEM) ||
-                featureConfig.isFeatureEnable(Feature.SINGLE_LMIS_HOME_ITEM) ||
-                featureConfig.isFeatureEnable(Feature.SINGLE_TRACKER_HOME_ITEM)
-        if (isSingleItemFeatureEnable) {
-            return 1
-        }
         return d2.programs().size + d2.dataSetInstanceSummaries().size
     }
 
     override fun singleHomeItemData(): HomeItemData? {
-        val program = d2.programs()?.firstOrNull { program ->
-            when {
-                featureConfig.isFeatureEnable(Feature.SINGLE_EVENT_HOME_ITEM) ->
-                    program.programType() == ProgramType.WITHOUT_REGISTRATION
-
-                featureConfig.isFeatureEnable(Feature.SINGLE_TRACKER_HOME_ITEM) ->
-                    program.programType() == ProgramType.WITH_REGISTRATION &&
-                        !d2.isStockProgram(program.uid())
-                featureConfig.isFeatureEnable(Feature.SINGLE_LMIS_HOME_ITEM) ->
-                    program.programType() == ProgramType.WITH_REGISTRATION &&
-                        d2.isStockProgram(program.uid())
-
-                featureConfig.isFeatureEnable(Feature.SINGLE_DATASET_HOME_ITEM) ->
-                    false
-
-                else -> true
-            }
-        }
-        val dataSetInstance = d2.dataSetInstanceSummaries()?.firstOrNull()
+        val program = d2.programs().firstOrNull()
+        val dataSetInstance = d2.dataSetInstanceSummaries().firstOrNull()
 
         return when {
             program?.programType() == ProgramType.WITH_REGISTRATION ->

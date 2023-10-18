@@ -14,7 +14,7 @@ class SearchRepository(
     override val programUid: String?,
     private val teiTypeUid: String,
     private val currentSearchValues: Map<String, String>,
-) : DataEntryBaseRepository(d2, fieldViewModelFactory, false) {
+) : DataEntryBaseRepository(d2, fieldViewModelFactory) {
 
     override fun list(): Flowable<List<FieldUiModel>> {
         return programUid?.let {

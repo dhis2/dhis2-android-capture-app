@@ -9,7 +9,7 @@ class FeatureConfigRepositoryImpl @Inject constructor(val preferences: Preferenc
     FeatureConfigRepository {
 
     override val featuresList: List<FeatureState>
-        get() = Feature.values().map {
+        get() = Feature.entries.map {
             FeatureState(it, isFeatureEnable(it))
         }
 

@@ -116,7 +116,6 @@ class FormView : Fragment() {
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
     private var useCompose = false
-    private var forceDisableCollapsibleSections = false
 
     val textWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -280,7 +279,6 @@ class FormView : Fragment() {
                 ?: throw RepositoryRecordsException(),
             openErrorLocation = openErrorLocation,
             useCompose = useCompose,
-            forceDisableCollapsibleSections = forceDisableCollapsibleSections,
         )
     }
 
@@ -1104,7 +1102,6 @@ class FormView : Fragment() {
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
         useCompose: Boolean,
-        forceDisableCollapsibleSections: Boolean,
     ) {
         this.locationProvider = locationProvider
         this.needToForceUpdate = needToForceUpdate
@@ -1113,7 +1110,6 @@ class FormView : Fragment() {
         this.actionIconsActivate = actionIconsActivate
         this.openErrorLocation = openErrorLocation
         this.useCompose = useCompose
-        this.forceDisableCollapsibleSections = forceDisableCollapsibleSections
     }
 
     internal fun setCallbackConfiguration(
@@ -1151,11 +1147,9 @@ class FormView : Fragment() {
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
         private var useComposeForms: Boolean = false
-        private var forceDisableCollapsibleSections: Boolean = false
 
-        fun useComposeForm(useCompose: Boolean, forceDisableCollapsibleSections: Boolean) = apply {
+        fun useComposeForm(useCompose: Boolean) = apply {
             this.useComposeForms = useCompose
-            this.forceDisableCollapsibleSections = forceDisableCollapsibleSections
         }
 
         /**
@@ -1247,7 +1241,6 @@ class FormView : Fragment() {
                     actionIconsActive,
                     openErrorLocation,
                     useComposeForms,
-                    forceDisableCollapsibleSections,
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(

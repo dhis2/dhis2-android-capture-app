@@ -33,8 +33,7 @@ class EnrollmentRepository(
     private val d2: D2,
     private val enrollmentMode: EnrollmentMode,
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
-    private val enableCollapsableFeature: Boolean,
-) : DataEntryBaseRepository(d2, fieldFactory, enableCollapsableFeature) {
+) : DataEntryBaseRepository(d2, fieldFactory) {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
@@ -331,7 +330,8 @@ class EnrollmentRepository(
                 ),
             )
         }
-        val programUids = enrollmentRepository.blockingGet()?.program()?.let { listOf(it) } ?: emptyList()
+        val programUids =
+            enrollmentRepository.blockingGet()?.program()?.let { listOf(it) } ?: emptyList()
         val orgUnits = d2.organisationUnitModule().organisationUnits()
             .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
             .byProgramUids(programUids).blockingCount()
