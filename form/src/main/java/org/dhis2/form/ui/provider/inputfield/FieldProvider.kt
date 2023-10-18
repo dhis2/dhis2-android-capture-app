@@ -284,7 +284,7 @@ internal fun FieldProvider(
             else -> {
                 ProvideDropdownInput(
                     modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel
+                    fieldUiModel = fieldUiModel,
                 )
             }
         }

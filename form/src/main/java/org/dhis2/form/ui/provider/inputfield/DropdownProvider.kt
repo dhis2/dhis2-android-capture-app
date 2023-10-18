@@ -1,8 +1,9 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,17 +19,21 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.UiEventType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProvideDropdownInput(
     modifier: Modifier,
-    fieldUiModel: FieldUiModel
+    fieldUiModel: FieldUiModel,
 ) {
     var selectedItem by remember(fieldUiModel) {
         mutableStateOf(fieldUiModel.displayName)
     }
     var expanded by remember { mutableStateOf(false) }
 
-    Column {
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {},
+    ) {
         InputDropDown(
             modifier = modifier,
             title = fieldUiModel.label,
@@ -41,7 +46,7 @@ fun ProvideDropdownInput(
             onArrowDropDownButtonClicked = {
                 fieldUiModel.onItemClick()
                 expanded = !expanded
-            }
+            },
         )
         if (expanded) {
             when (val optionSetConfig = fieldUiModel.optionSetConfiguration) {
@@ -51,6 +56,7 @@ fun ProvideDropdownInput(
                 }
                 is OptionSetConfiguration.DefaultOptionSet -> {
                     DropdownMenu(
+                        modifier = modifier.exposedDropdownSize(),
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                     ) {
