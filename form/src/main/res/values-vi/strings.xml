@@ -82,5 +82,4 @@
     <string name="no_reserved_values">Không có giá trị dành riêng nào nữa. Liên hệ với quản lý của bạn</string>
     <string name="enrollmment_date">Ngày đăng ký</string>
     <string name="incident_date">Ngày khởi phát</string>
-
-</resources>
+    </resources>

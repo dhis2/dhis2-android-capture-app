@@ -101,5 +101,4 @@
     <string name="location_permission_denied">De locatietoestemming is nodig voor het vastleggen van coördinaten. Schakel ze alstublieft in de applicatie-instellingen in</string>
     <string name="open_with">Openen met</string>
     <string name="no_option_found">Geen optie gevonden</string>
-
-</resources>
+    </resources>
