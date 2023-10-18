@@ -134,7 +134,7 @@ class FilterRepositoryTest {
                 .eq(true).blockingIsEmpty(),
         ) doReturn false
         whenever(
-            d2.settingModule().appearanceSettings().homeFilters,
+            d2.settingModule().appearanceSettings().getHomeFilters(),
         ) doReturn createWebAppHomeFilters()
         whenever(
             getFiltersApplyingWebAppConfig.execute(
@@ -165,7 +165,7 @@ class FilterRepositoryTest {
     fun `Should get global tracked entity filter when webapp is configured`() {
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
-            d2.settingModule().appearanceSettings().trackedEntityTypeFilters,
+            d2.settingModule().appearanceSettings().getTrackedEntityTypeFilters(),
         ) doReturn createWebAppTrackedEntityFilters()
         whenever(
             getFiltersApplyingWebAppConfig.execute(
