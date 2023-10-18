@@ -222,7 +222,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnSeeDetails() {
-        onView(withId(R.id.detailsButton)).perform(click())
+        onView(withId(R.id.editButton)).perform(click())
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {

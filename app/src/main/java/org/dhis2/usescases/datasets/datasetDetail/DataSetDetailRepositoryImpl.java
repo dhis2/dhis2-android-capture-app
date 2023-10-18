@@ -6,6 +6,7 @@ import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
@@ -80,17 +81,21 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                     boolean isCompleted = dscr != null && Boolean.FALSE.equals(dscr.deleted());
 
+                    //"Category Combination Name" + "Category option selected"
                     return DataSetDetailModel.create(
                             dataSetReport.organisationUnitUid(),
-                            dataSetReport.attributeOptionComboUid(),
+                            dataSetReport.attributeOptionComboUid(), //catComboUid
                             dataSetReport.period(),
                             dataSetReport.organisationUnitDisplayName(),
-                            dataSetReport.attributeOptionComboDisplayName(),
+                            dataSetReport.attributeOptionComboDisplayName(), //nameCatCombo Unicef.... basic educc
                             periodName,
                             state,
                             dataSetReport.periodType().name(),
                             dataSetOrgUnitNumber > 1,
-                            isCompleted);
+                            isCompleted,
+                            dataSetReport.lastUpdated(),
+                            getCategoryComboFromOptionCombo(dataSetReport.attributeOptionComboUid()).displayName()
+                    );
                 })
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toSortedList((dataSet1, dataSet2) -> {
@@ -159,5 +164,16 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         return visualizationSettings.dataSet().get(dataSetUid) != null &&
                 !Objects.requireNonNull(visualizationSettings.dataSet().get(dataSetUid)).isEmpty();
 
+    }
+
+    private CategoryCombo getCategoryComboFromOptionCombo(String categoryOptionComboUid) {
+        CategoryOptionCombo catOptionCombo = d2.categoryModule()
+                .categoryOptionCombos()
+                .uid(categoryOptionComboUid)
+                .blockingGet();
+        return d2.categoryModule()
+                .categoryCombos()
+                .uid(catOptionCombo.categoryCombo().uid())
+                .blockingGet();
     }
 }

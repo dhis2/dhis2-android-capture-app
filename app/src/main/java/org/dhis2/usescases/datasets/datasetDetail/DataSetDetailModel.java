@@ -5,6 +5,9 @@ import androidx.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.common.State;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
 
 @AutoValue
 public abstract class DataSetDetailModel {
@@ -39,9 +42,14 @@ public abstract class DataSetDetailModel {
     @NonNull
     public abstract Boolean isComplete();
 
-    @NonNull
-    public static DataSetDetailModel create(@NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state, String periodType, Boolean displayOrgUnitName, Boolean isComplete) {
-        return new AutoValue_DataSetDetailModel(orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state, periodType, displayOrgUnitName, isComplete);
-    }
+    @NotNull
+    public abstract Date lastUpdated();
 
+    @NotNull
+    public abstract String nameCategoryOptionCombo();
+
+    @NonNull
+    public static DataSetDetailModel create(@NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state, String periodType, Boolean displayOrgUnitName, Boolean isComplete, Date lastUpdated, String nameCategoryOptionCombo) {
+        return new AutoValue_DataSetDetailModel(orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state, periodType, displayOrgUnitName, isComplete, lastUpdated, nameCategoryOptionCombo);
+    }
 }

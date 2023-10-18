@@ -17,6 +17,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailLiveAdapter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
+import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -33,6 +34,9 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
     @Inject
     lateinit var colorUtils: ColorUtils
+
+    @Inject
+    lateinit var cardMapper: EventCardMapper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,6 +68,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
                 program,
                 programEventsViewModel,
                 colorUtils,
+                cardMapper,
                 config,
             )
         return FragmentProgramEventDetailListBinding.inflate(inflater, container, false)

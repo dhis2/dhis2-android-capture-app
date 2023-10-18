@@ -33,7 +33,6 @@ class TEIDataContracts {
         fun openEventCapture(intent: Intent)
         fun showTeiImage(filePath: String, defaultIcon: String)
         fun setFilters(filterItems: List<FilterItem>)
-        fun hideFilters()
         fun observeStageSelection(
             currentProgram: Program,
             currentEnrollment: Enrollment,

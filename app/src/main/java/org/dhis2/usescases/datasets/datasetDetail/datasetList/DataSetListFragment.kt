@@ -13,6 +13,7 @@ import org.dhis2.databinding.FragmentDataSetListBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
+import org.dhis2.usescases.datasets.datasetDetail.datasetList.mapper.DatasetCardMapper
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.ActionObserver
@@ -32,6 +33,9 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     @Inject
     lateinit var viewModelFactory: DataSetListViewModelFactory
 
+    @Inject
+    lateinit var datasetCardMapper: DatasetCardMapper
+
     private val viewModel: DataSetListViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
@@ -41,11 +45,11 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     ): View {
         activity = requireActivity() as DataSetDetailActivity
         activity.dataSetDetailComponent.plus(DataSetListModule()).inject(this)
-        adapter = DataSetListAdapter(viewModel)
+        adapter = DataSetListAdapter(viewModel, datasetCardMapper)
 
         with(viewModel) {
-            datasets.observe(viewLifecycleOwner, { setData(it) })
-            canWrite.observe(viewLifecycleOwner, { setWritePermission(it) })
+            datasets.observe(viewLifecycleOwner) { setData(it) }
+            canWrite.observe(viewLifecycleOwner) { setWritePermission(it) }
             selectedDataset.observe(viewLifecycleOwner, ActionObserver { startDataSet(it) })
             selectedSync.observe(viewLifecycleOwner, ActionObserver { showSyncDialog(it) })
         }

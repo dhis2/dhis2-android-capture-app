@@ -1,5 +1,9 @@
 package org.dhis2.usescases.searchte.robot
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -10,7 +14,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -26,6 +29,8 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 
 
 fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
@@ -145,14 +150,16 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkNoSearchResult() {
         onView(withId(R.id.scrollView))
-            .check(matches(
-                RecyclerviewMatchers.allElementsWithHolderTypeHave(
-                    SearchResult::class.java,
-                    allOf(
-                        hasNoMoreResultsInProgram()
+            .check(
+                matches(
+                    RecyclerviewMatchers.allElementsWithHolderTypeHave(
+                        SearchResult::class.java,
+                        allOf(
+                            hasNoMoreResultsInProgram()
+                        )
                     )
                 )
-            ))
+            )
     }
 
     fun clickOnProgramSpinner() {
@@ -168,28 +175,32 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.spinner_text)).check(matches(withText(program)))
     }
 
-    fun checkFieldsFromDisplayList(displayListFieldsUIModel: DisplayListFieldsUIModel) {
-        onView(withId(R.id.showAttributesButton)).perform(click())
 
-        onView(withId(R.id.scrollView))
-            .check(
-                matches(
-                    hasDescendant(
-                        allOf(
-                            hasDescendant(withText("First name")),
-                            hasDescendant(withText(displayListFieldsUIModel.name)),
-                            hasDescendant(withText("Last name")),
-                            hasDescendant(withText(displayListFieldsUIModel.lastName)),
-                            hasDescendant(withText("Email")),
-                            hasDescendant(withText(displayListFieldsUIModel.email)),
-                            hasDescendant(withText("Date of birth")),
-                            hasDescendant(withText(displayListFieldsUIModel.birthday)),
-                            hasDescendant(withText("Address")),
-                            hasDescendant(withText(displayListFieldsUIModel.address))
-                        )
-                    )
-                )
+    fun checkFieldsFromDisplayList(
+        composeTestRule: ComposeContentTestRule,
+        displayListFieldsUIModel: DisplayListFieldsUIModel
+    ) {
+        //Given the title is the first attribute
+        val title = "First name: ${displayListFieldsUIModel.name}"
+        val displayedAttributes = createAttributesList(displayListFieldsUIModel)
+
+        composeTestRule.setContent {
+            ListCard(
+                title = title,
+                additionalInfoList = displayedAttributes,
+                onCardClick = { }
             )
+        }
+
+        //When we expand all attribute list
+        composeTestRule.onNodeWithText("Show more").performClick()
+
+        //Then The title and all attributes are displayed
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+        displayedAttributes.forEach { item ->
+            item.key?.let { composeTestRule.onNodeWithText(it).assertIsDisplayed() }
+            composeTestRule.onNodeWithText(item.value).assertIsDisplayed()
+        }
     }
 
     fun clickOnShowMap() {
@@ -217,7 +228,26 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.accept_button)).perform(click())
     }
 
-    fun clickOnEnroll(){
+    fun clickOnEnroll() {
         onView(withId(R.id.createButton)).perform(click())
     }
+
+    private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(
+        AdditionalInfoItem(
+            key = "Last name:",
+            value = displayListFieldsUIModel.lastName,
+        ),
+        AdditionalInfoItem(
+            key = "Email:",
+            value = displayListFieldsUIModel.email,
+        ),
+        AdditionalInfoItem(
+            key = "Date of birth:",
+            value = displayListFieldsUIModel.birthday,
+        ),
+        AdditionalInfoItem(
+            key = "Address:",
+            value = displayListFieldsUIModel.address,
+        ),
+    )
 }

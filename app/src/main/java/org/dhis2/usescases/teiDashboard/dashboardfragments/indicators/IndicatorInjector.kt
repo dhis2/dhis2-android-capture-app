@@ -24,8 +24,8 @@ class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
         ((context.applicationContext) as App).dashboardComponent()!!
             .plus(
                 IndicatorsModule(
-                    activity.programUid,
-                    activity.teiUid,
+                    activity.programUid ?: "",
+                    activity.teiUid ?: "",
                     indicatorsFragment,
                     VisualizationType.TRACKER,
                 ),
