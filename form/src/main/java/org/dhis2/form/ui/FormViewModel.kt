@@ -481,6 +481,10 @@ class FormViewModel(
                     validateDateTimeFormat(fieldValue, valueType)
                 }
 
+                ValueType.AGE -> {
+                    validateDateFormats(fieldValue, valueType)
+                }
+
                 else -> {
                     valueType?.validator?.validate(value)
                 }

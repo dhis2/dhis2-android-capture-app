@@ -19,12 +19,10 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.regex.Pattern
 
 @Composable
 fun ProvideInputAge(
@@ -145,35 +143,31 @@ private fun saveValue(
 }
 
 private fun formatStoredDateToUI(inputDateString: String): String? {
-    val inputFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())
-    val outputFormat = SimpleDateFormat(UI_FORMAT, Locale.getDefault())
-
-    return try {
-        inputFormat.parse(inputDateString)?.let {
-            outputFormat.format(it)
-        }
-    } catch (e: ParseException) {
-        null
+    val components = inputDateString.split("-")
+    if (components.size != 3) {
+        return null
     }
+
+    val year = components[0]
+    val month = components[1]
+    val day = components[2]
+
+    return "$day$month$year"
 }
 
 private fun formatUIDateToStored(inputDateString: String): String? {
-    val inputFormat = SimpleDateFormat(UI_FORMAT, Locale.getDefault())
-    val outputFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())
-
-    return try {
-        inputFormat.parse(inputDateString)?.let {
-            outputFormat.format(it)
-        }
-    } catch (e: ParseException) {
-        null
+    if (inputDateString.length != 8) {
+        return null
     }
+
+    val year = inputDateString.substring(4, 8)
+    val month = inputDateString.substring(2, 4)
+    val day = inputDateString.substring(0, 2)
+
+    return "$year-$month-$day"
 }
 
-private fun isValidDate(dateString: String): Boolean {
-    val pattern = Pattern.compile("^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}$")
-    return pattern.matcher(dateString).matches()
-}
+private fun isValidDate(dateString: String) = dateString.length == 8
 
 private fun calculateDateFromAge(age: AgeInputType.Age): String? {
     val calendar = Calendar.getInstance()
