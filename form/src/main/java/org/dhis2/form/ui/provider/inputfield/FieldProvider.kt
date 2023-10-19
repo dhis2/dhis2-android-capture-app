@@ -155,6 +155,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     uiEventHandler = uiEventHandler,
+                    intentHandler = intentHandler,
                 )
             }
 
@@ -693,8 +694,9 @@ private fun ProvideOrgUnitInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    intentHandler: (FormIntent) -> Unit,
 ) {
-    var inputFieldvalue by remember(
+    var inputFieldValue by remember(
         fieldUiModel,
     ) {
         mutableStateOf(fieldUiModel.displayName)
@@ -706,10 +708,17 @@ private fun ProvideOrgUnitInput(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = inputFieldvalue ?: "",
+        inputText = inputFieldValue ?: "",
         isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
-            inputFieldvalue = it
+            inputFieldValue = it
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    it,
+                    fieldUiModel.valueType,
+                ),
+            )
         },
         onOrgUnitActionCLicked = {
             uiEventHandler.invoke(
