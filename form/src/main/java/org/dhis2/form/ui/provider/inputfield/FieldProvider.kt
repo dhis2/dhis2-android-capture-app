@@ -26,6 +26,7 @@ import androidx.databinding.ViewDataBinding
 import kotlinx.coroutines.launch
 import org.dhis2.form.BR
 import org.dhis2.form.R
+import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -385,6 +386,7 @@ private fun ProvidePercentage(
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
         isRequiredField = fieldUiModel.mandatory,
+        autoCompleteList = fieldUiModel.autocompleteList(),
         onValueChanged = {
             value = it
             intentHandler(

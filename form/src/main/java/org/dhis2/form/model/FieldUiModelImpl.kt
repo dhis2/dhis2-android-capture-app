@@ -33,6 +33,7 @@ data class FieldUiModelImpl(
     override val fieldMask: String? = null,
     override val isLoadingData: Boolean = false,
     override var optionSetConfiguration: OptionSetConfiguration?,
+    override var autocompleteList: List<String>?,
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null

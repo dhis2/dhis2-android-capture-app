@@ -103,7 +103,8 @@ public class EventInitialModule {
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
-                new LegendValueProviderImpl(d2, resourceManager)
+                new LegendValueProviderImpl(d2, resourceManager),
+                null
         );
     }
 

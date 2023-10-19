@@ -33,6 +33,7 @@ import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
+import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
@@ -184,7 +185,8 @@ public class SearchTEModule {
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
-                new LegendValueProviderImpl(d2, resourceManager));
+                new LegendValueProviderImpl(d2, resourceManager),
+                null);
     }
 
     @Provides

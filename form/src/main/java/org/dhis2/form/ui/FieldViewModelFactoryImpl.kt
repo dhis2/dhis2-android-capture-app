@@ -7,6 +7,7 @@ import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.UiEventFactoryImpl
+import org.dhis2.form.ui.provider.AutoCompleteProvider
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
@@ -31,6 +32,7 @@ class FieldViewModelFactoryImpl(
     private val uiEventTypesProvider: UiEventTypesProvider,
     private val keyboardActionProvider: KeyboardActionProvider,
     private val legendValueProvider: LegendValueProvider,
+    private val autoCompleteProvider: AutoCompleteProvider? = null,
 ) : FieldViewModelFactory {
     private val currentSection = ObservableField("")
 
@@ -51,6 +53,7 @@ class FieldViewModelFactoryImpl(
         fieldMask: String?,
         optionSetConfiguration: OptionSetConfiguration?,
         featureType: FeatureType?,
+        autoCompleteList: List<String>?,
     ): FieldUiModel {
         var isMandatory = mandatory
         isNull(valueType, "type must be supplied")
@@ -95,6 +98,7 @@ class FieldViewModelFactoryImpl(
             optionSetConfiguration = optionSetConfiguration,
             keyboardActionType = keyboardActionProvider.provideKeyboardAction(valueType),
             fieldMask = fieldMask,
+            autocompleteList = autoCompleteProvider?.provideAutoCompleteValues(id),
         )
     }
 

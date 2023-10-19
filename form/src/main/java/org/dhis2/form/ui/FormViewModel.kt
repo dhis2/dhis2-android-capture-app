@@ -4,12 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -25,6 +28,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.binding.getFeatureType
+import org.dhis2.form.ui.binding.saveListToPreference
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
@@ -39,6 +43,7 @@ class FormViewModel(
     private val dispatcher: DispatcherProvider,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
     private val openErrorLocation: Boolean = false,
+    private val preferenceProvider: PreferenceProvider,
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
@@ -268,6 +273,7 @@ class FormViewModel(
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         val error = checkFieldError(it.valueType, it.value, it.fieldMask)
         if (error != null) {
+            // save autocomplete form here
             val action = rowActionFromIntent(
                 FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
             )
@@ -277,6 +283,7 @@ class FormViewModel(
                 ValueStoreResult.VALUE_HAS_NOT_CHANGED,
             )
         } else {
+            checkAutoCompleteForLastFocusedItem(it)
             val intent = getSaveIntent(it)
             val action = rowActionFromIntent(intent)
             val result = repository.save(it.uid, it.value, action.extraData)
@@ -288,6 +295,17 @@ class FormViewModel(
         rowAction.id,
         ValueStoreResult.VALUE_HAS_NOT_CHANGED,
     )
+
+    private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) = getLastFocusedTextItem()?.let {
+        if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && fieldUidModel.value != null) {
+            val autoCompleteValues =
+                getListFromPreference(fieldUidModel.uid)
+            if (!autoCompleteValues.contains(fieldUidModel.value)) {
+                autoCompleteValues.add(fieldUidModel.value.toString())
+                saveListToPreference(fieldUidModel.uid, autoCompleteValues)
+            }
+        }
+    }
 
     fun valueTypeIsTextField(valueType: ValueType?, renderType: UiRenderType? = null): Boolean {
         return if (valueType == null) {
@@ -619,6 +637,18 @@ class FormViewModel(
                 type = ActionType.ON_SAVE,
             )
         }
+    }
+
+    private fun getListFromPreference(uid: String): MutableList<String> {
+        val gson = Gson()
+        val json = preferenceProvider.sharedPreferences().getString(uid, "[]")
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(json, type)
+    }
+    private fun saveListToPreference(uid: String, list: List<String>) {
+        val gson = Gson()
+        val json = gson.toJson(list)
+        preferenceProvider.sharedPreferences().edit().putString(uid, json).apply()
     }
 
     fun areSectionCollapsable(): Boolean {
