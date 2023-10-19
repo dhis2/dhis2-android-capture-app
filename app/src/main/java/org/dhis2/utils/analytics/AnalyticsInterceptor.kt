@@ -34,17 +34,12 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
 
     val appVersionName = BuildConfig.VERSION_NAME
     var serverVersionName: String? = null
-    var isLogged = false
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val response = chain.proceed(request)
 
-        if (response.code >= 400 && !isLogged) {
-            isLogged = D2Manager.getD2().userModule().blockingIsLogged()
-        }
-
-        if (response.code >= 400 && isLogged) {
+        if (response.code >= 400 && isLogged()) {
             analyticHelper.trackMatomoEvent(
                 API_CALL,
                 "${request.method}_${request.url}",
@@ -60,5 +55,9 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
                 D2Manager.getD2().systemInfoModule().systemInfo().blockingGet()?.version()
         }
         return serverVersionName
+    }
+
+    private fun isLogged(): Boolean {
+        return D2Manager.getD2().userModule().blockingIsLogged()
     }
 }
