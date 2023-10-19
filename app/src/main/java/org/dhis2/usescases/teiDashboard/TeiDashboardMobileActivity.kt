@@ -74,12 +74,15 @@ class TeiDashboardMobileActivity :
     lateinit var pageConfigurator: NavigationPageConfigurator
 
     @Inject
+    lateinit var viewModelFactory: DashboardViewModelFactory
+
+    @Inject
     lateinit var themeManager: ThemeManager
 
     @Inject
     lateinit var networkUtils: NetworkUtils
 
-    var programModel: DashboardProgramModel? = null
+    lateinit var programModel: DashboardProgramModel
     var teiUid: String? = null
     var programUid: String? = null
     var enrollmentUid: String? = null
@@ -152,7 +155,7 @@ class TeiDashboardMobileActivity :
         super.onCreate(savedInstanceState)
         groupByStage = MutableLiveData(presenter.programGrouping)
         currentEnrollment = MutableLiveData()
-        dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
+        dashboardViewModel = ViewModelProvider(this, viewModelFactory).get(DashboardViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
         showLoadingProgress(true)
         binding.presenter = presenter
@@ -186,6 +189,9 @@ class TeiDashboardMobileActivity :
         }
         setNavigationBar()
         setEditButton()
+        dashboardViewModel.showStatusErrorMessages.observe(this) {
+            displayStatusError(it)
+        }
     }
 
     private fun setEditButton() {
@@ -262,7 +268,7 @@ class TeiDashboardMobileActivity :
         super.onDestroy()
     }
 
-    private fun openSyncDialog() {
+    fun openSyncDialog() {
         enrollmentUid?.let { enrollmentUid ->
             SyncStatusDialog.Builder()
                 .withContext(this, null)
@@ -564,6 +570,9 @@ class TeiDashboardMobileActivity :
                     } else {
                         popupMenu.menu.findItem(R.id.activate).isVisible = false
                     }
+                    if (dashboardViewModel.showFollowUpBar.value) {
+                        popupMenu.menu.findItem(R.id.markForFollowUp).isVisible = false
+                    }
                 }
                 Unit
             }
@@ -573,27 +582,26 @@ class TeiDashboardMobileActivity :
                         analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         showTutorial(true)
                     }
-
+                    R.id.markForFollowUp -> dashboardViewModel.onFollowUp(programModel)
                     R.id.deleteTei -> presenter.deleteTei()
                     R.id.deleteEnrollment -> presenter.deleteEnrollment()
                     R.id.programSelector -> presenter.onEnrollmentSelectorClick()
                     R.id.groupEvents -> groupByStage?.setValue(true)
                     R.id.showTimeline -> groupByStage?.setValue(false)
-                    R.id.complete -> presenter.updateEnrollmentStatus(
-                        enrollmentUid,
-                        EnrollmentStatus.COMPLETED,
-                    )
-
-                    R.id.activate -> presenter.updateEnrollmentStatus(
-                        enrollmentUid,
+                    R.id.complete -> {
+                        dashboardViewModel.updateEnrollmentStatus(
+                            programModel,
+                            EnrollmentStatus.COMPLETED,
+                        )
+                    }
+                    R.id.activate -> dashboardViewModel.updateEnrollmentStatus(
+                        programModel,
                         EnrollmentStatus.ACTIVE,
                     )
-
-                    R.id.deactivate -> presenter.updateEnrollmentStatus(
-                        enrollmentUid,
+                    R.id.deactivate -> dashboardViewModel.updateEnrollmentStatus(
+                        programModel,
                         EnrollmentStatus.CANCELLED,
                     )
-
                     R.id.share -> startQRActivity()
                 }
                 true
@@ -638,7 +646,7 @@ class TeiDashboardMobileActivity :
             StatusChangeResultCode.FAILED -> displayMessage(getString(R.string.something_wrong))
             StatusChangeResultCode.ACTIVE_EXIST -> displayMessage(getString(R.string.status_change_error_active_exist))
             StatusChangeResultCode.WRITE_PERMISSION_FAIL -> displayMessage(getString(R.string.permission_denied))
-            else -> displayMessage(getString(R.string.something_wrong))
+            StatusChangeResultCode.CHANGED -> {}
         }
     }
 

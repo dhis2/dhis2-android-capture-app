@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard
 import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
 class TeiAttributesProvider(private val d2: D2) {
@@ -76,6 +77,23 @@ class TeiAttributesProvider(private val d2: D2) {
         }
     }
 
+    fun getProgramTrackedEntityAttributesByProgram(
+        programUid: String,
+        trackedEntityInstanceUid: String,
+    ): Single<List<Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?>>> {
+        val attrFromProgramTrackedEntityAttribute =
+            d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(programUid).byDisplayInList().isTrue
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet()
+
+        return Single.just(
+            attrFromProgramTrackedEntityAttribute.map {
+                transformAttributeToValueMap(trackedEntityInstanceUid, it.trackedEntityAttribute()?.uid())
+            },
+        )
+    }
+
     private fun getTrackedEntityAttributeValue(
         trackedEntityInstanceUid: String,
         trackedEntityAttributeUid: String?,
@@ -85,5 +103,20 @@ class TeiAttributesProvider(private val d2: D2) {
             .byTrackedEntityAttribute().eq(trackedEntityAttributeUid)
             .one()
             .blockingGet()
+    }
+
+    private fun transformAttributeToValueMap(
+        trackedEntityInstanceUid: String,
+        trackedEntityAttributeUid: String?,
+    ): Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?> {
+        val teiAttribute = d2.trackedEntityModule()
+            .trackedEntityAttributes().uid(trackedEntityAttributeUid).blockingGet()
+        val teiAttributeValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+            .byTrackedEntityInstance().eq(trackedEntityInstanceUid)
+            .byTrackedEntityAttribute().eq(trackedEntityAttributeUid)
+            .one()
+            .blockingGet()
+
+        return Pair(teiAttribute, teiAttributeValue)
     }
 }

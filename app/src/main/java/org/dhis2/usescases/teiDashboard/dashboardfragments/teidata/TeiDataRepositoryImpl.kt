@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.bindings.applyFilters
+import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
@@ -152,6 +153,15 @@ class TeiDataRepositoryImpl(
     override fun getOrgUnitName(orgUnitUid: String): String {
         return d2.organisationUnitModule()
             .organisationUnits().uid(orgUnitUid).blockingGet()?.displayName() ?: ""
+    }
+
+    override fun getTeiProfilePath(): String? {
+        val tei = d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
+        return tei?.profilePicturePath(d2, programUid)
+    }
+
+    override fun getTeiHeader(): String? {
+        return d2.trackedEntityModule().trackedEntitySearch().uid(teiUid).blockingGet()?.header
     }
 
     private fun getGroupedEvents(

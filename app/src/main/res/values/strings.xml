@@ -968,4 +968,8 @@
     <string name="skipped">Skipped</string>
     <string name="programs">Programs:</string>
     <string name="sync_successful">Sync successful</string>
+    <string name="sync_warning">Sync warning</string>
+    <string name="sync_error">Sync Error</string>
+    <string name="mark_follow_up">Mark for follow-up</string>
+    <string name="remove">Remove</string>
 </resources>

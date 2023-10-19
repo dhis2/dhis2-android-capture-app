@@ -74,5 +74,7 @@ public class TeiDashboardContracts {
         void trackDashboardRelationships();
 
         void trackDashboardNotes();
+
+        void onFollowUp(String enrollmentUid);
     }
 }
