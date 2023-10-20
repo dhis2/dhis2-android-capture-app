@@ -2,7 +2,6 @@ package org.dhis2.form.ui.provider.inputfield
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -25,6 +24,7 @@ import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import kotlinx.coroutines.launch
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.extensions.autocompleteList
@@ -62,7 +62,7 @@ internal fun FieldProvider(
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
-    resources: Resources,
+    resources: ResourceManager,
     focusManager: FocusManager,
 ) {
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
@@ -382,6 +382,7 @@ internal fun FieldProvider(
                     context = context,
                 )
             }
+
             UiRenderType.SEQUENCIAL -> {
                 ProvideSequentialInput(
                     modifier = modifierWithFocus,
@@ -792,7 +793,7 @@ private fun ProvideInputLink(
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
-) {
+    ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }

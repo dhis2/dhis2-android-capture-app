@@ -1,8 +1,8 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -57,7 +57,7 @@ internal fun ProvideYesNoRadioButtonInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    resources: Resources,
+    resources: ResourceManager,
 ) {
     val data = listOf(
         RadioButtonData(
