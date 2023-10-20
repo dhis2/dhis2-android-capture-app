@@ -32,7 +32,7 @@ class FieldViewModelFactoryImpl(
     private val uiEventTypesProvider: UiEventTypesProvider,
     private val keyboardActionProvider: KeyboardActionProvider,
     private val legendValueProvider: LegendValueProvider,
-    private val autoCompleteProvider: AutoCompleteProvider? = null,
+    private val autoCompleteProvider: AutoCompleteProvider,
 ) : FieldViewModelFactory {
     private val currentSection = ObservableField("")
 
@@ -98,7 +98,7 @@ class FieldViewModelFactoryImpl(
             optionSetConfiguration = optionSetConfiguration,
             keyboardActionType = keyboardActionProvider.provideKeyboardAction(valueType),
             fieldMask = fieldMask,
-            autocompleteList = autoCompleteProvider?.provideAutoCompleteValues(id),
+            autocompleteList = autoCompleteProvider.provideAutoCompleteValues(id),
         )
     }
 

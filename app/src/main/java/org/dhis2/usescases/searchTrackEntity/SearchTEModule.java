@@ -15,6 +15,7 @@ import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
@@ -186,7 +187,8 @@ public class SearchTEModule {
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
                 new LegendValueProviderImpl(d2, resourceManager),
-                null);
+                new AutoCompleteProviderImpl(new PreferenceProviderImpl(context))
+        );
     }
 
     @Provides
