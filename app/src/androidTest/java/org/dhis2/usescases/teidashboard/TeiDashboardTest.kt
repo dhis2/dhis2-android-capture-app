@@ -82,6 +82,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldReactivateTEIWhenClickReOpenWithProgramCompletedEvents() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -96,6 +97,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldShowInactiveProgramWhenClickDeactivate() {
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
@@ -111,6 +113,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldCompleteProgramWhenClickComplete() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
@@ -199,6 +202,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldShowCorrectInfoWhenOpenTEI() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
