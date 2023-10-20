@@ -192,6 +192,11 @@ class TeiDashboardMobileActivity :
         dashboardViewModel.showStatusErrorMessages.observe(this) {
             displayStatusError(it)
         }
+        dashboardViewModel.updateEnrollment.observe(this) {
+            if (it) {
+                updateStatus()
+            }
+        }
     }
 
     private fun setEditButton() {

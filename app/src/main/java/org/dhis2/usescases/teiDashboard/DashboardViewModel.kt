@@ -19,11 +19,13 @@ class DashboardViewModel(
     private val dashboardProgramModelLiveData = MutableLiveData<DashboardProgramModel>()
     private val eventUid = MutableLiveData<String>()
 
+    val updateEnrollment = MutableLiveData(false)
     val showFollowUpBar = MutableStateFlow(false)
     val showStatusBar = MutableStateFlow<EnrollmentStatus?>(null)
     val syncNeeded = MutableStateFlow(false)
     val showStatusErrorMessages = MutableLiveData(StatusChangeResultCode.CHANGED)
     val state = MutableStateFlow<State?>(null)
+
     fun dashboardModel(): LiveData<DashboardProgramModel> {
         return dashboardProgramModelLiveData
     }
@@ -75,6 +77,7 @@ class DashboardViewModel(
             syncNeeded.value = true
             state.value = State.TO_UPDATE
             updateDashboard(dashboardProgramModel)
+            updateEnrollment.value = true
         } else {
             showStatusErrorMessages.value = result
         }

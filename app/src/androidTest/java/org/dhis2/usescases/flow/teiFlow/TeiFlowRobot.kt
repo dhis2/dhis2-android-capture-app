@@ -73,7 +73,7 @@ class TeiFlowRobot : BaseRobot() {
         teiDashboardRobot {
             // Needs to be refactor to check new Infobar
             //checkLockCompleteIconIsDisplay()
-            //checkCanNotAddEvent()
+            checkCanNotAddEvent()
             checkAllEventsAreClosed(totalEvents)
         }
     }
@@ -85,7 +85,7 @@ class TeiFlowRobot : BaseRobot() {
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkCanNotAddEvent()
-            //checkAllEventsAreClosed(totalEvents)
+            checkAllEventsAreClosed(totalEvents)
         }
     }
 
