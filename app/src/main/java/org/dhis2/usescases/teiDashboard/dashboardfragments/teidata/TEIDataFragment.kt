@@ -315,7 +315,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 }
             }
         }
-        val title = resources.getString(org.dhis2.form.R.string.open_with)
+        val title = resources.getString(R.string.open_with)
         val chooser = Intent.createChooser(intent, title)
 
         try {
