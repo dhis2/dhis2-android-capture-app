@@ -215,9 +215,14 @@ class ChartsRepositoryTest {
 
     @Test
     fun `Should return empty list if no visualization configured`() {
+        val emptyVisualizations = AnalyticsDhisVisualizationsSetting.builder()
+            .home(emptyList())
+            .dataSet(emptyMap())
+            .program(emptyMap())
+            .build()
         whenever(
             d2.settingModule().analyticsSetting().visualizationsSettings().blockingGet(),
-        ) doReturn null
+        ) doReturn emptyVisualizations
         val result = repository.getVisualizationGroups("dataSetUid")
         assertTrue(result.isEmpty())
     }
