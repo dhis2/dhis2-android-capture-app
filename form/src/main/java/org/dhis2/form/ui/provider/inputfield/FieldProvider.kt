@@ -712,6 +712,7 @@ private fun ProvideOrgUnitInput(
         isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             inputFieldValue = it
+            fieldUiModel.onItemClick()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -721,6 +722,7 @@ private fun ProvideOrgUnitInput(
             )
         },
         onOrgUnitActionCLicked = {
+            fieldUiModel.onItemClick()
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenOrgUnitDialog(
                     fieldUiModel.uid,
@@ -728,18 +730,7 @@ private fun ProvideOrgUnitInput(
                     fieldUiModel.value,
                 ),
             )
-        },
-        onFocusChanged = { focused ->
-            if (focused) {
-                uiEventHandler.invoke(
-                    RecyclerViewUiEvents.OpenOrgUnitDialog(
-                        fieldUiModel.uid,
-                        fieldUiModel.label,
-                        fieldUiModel.value,
-                    ),
-                )
-            }
-        },
+        }
 
     )
 }
