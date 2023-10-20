@@ -17,7 +17,7 @@ class ProgramConfigurationRepository(private val d2: D2) {
     }
 
     private fun getGlobalConfigurationSettings() =
-        d2.settingModule().appearanceSettings().globalProgramConfigurationSetting
+        d2.settingModule().appearanceSettings().getGlobalProgramConfigurationSetting()
 
     private fun getSpecificProgramSettings(uid: String) = d2.settingModule()
         .appearanceSettings()

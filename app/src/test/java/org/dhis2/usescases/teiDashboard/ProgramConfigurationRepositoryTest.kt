@@ -32,7 +32,7 @@ class ProgramConfigurationRepositoryTest {
             d2.settingModule().appearanceSettings().getProgramConfigurationByUid("uid"),
         ) doReturn null
         whenever(
-            d2.settingModule().appearanceSettings().globalProgramConfigurationSetting,
+            d2.settingModule().appearanceSettings().getGlobalProgramConfigurationSetting(),
         ) doReturn globalConfiguration
 
         val result = programConfigurationRepository.getConfigurationByProgram("uid")
@@ -48,7 +48,7 @@ class ProgramConfigurationRepositoryTest {
             d2.settingModule().appearanceSettings().getProgramConfigurationByUid("uid"),
         ) doReturn specificConfiguration
         whenever(
-            d2.settingModule().appearanceSettings().globalProgramConfigurationSetting,
+            d2.settingModule().appearanceSettings().getGlobalProgramConfigurationSetting(),
         ) doReturn globalConfiguration
 
         val result = programConfigurationRepository.getConfigurationByProgram("uid")
@@ -62,7 +62,7 @@ class ProgramConfigurationRepositoryTest {
             d2.settingModule().appearanceSettings().getProgramConfigurationByUid("uid"),
         ) doReturn null
         whenever(
-            d2.settingModule().appearanceSettings().globalProgramConfigurationSetting,
+            d2.settingModule().appearanceSettings().getGlobalProgramConfigurationSetting(),
         ) doReturn null
 
         val result = programConfigurationRepository.getConfigurationByProgram("uid")
