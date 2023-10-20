@@ -299,23 +299,12 @@ internal fun FieldProvider(
                         )
                     }
                     else -> {
-                        AndroidViewBinding(
-                            modifier = modifier.fillMaxWidth(),
-                            factory = { inflater, viewgroup, add ->
-                                getFieldView(
-                                    context,
-                                    inflater,
-                                    viewgroup,
-                                    add,
-                                    fieldUiModel.layoutId,
-                                    needToForceUpdate,
-                                )
-                            },
-                            update = {
-                                this.setVariable(BR.textWatcher, textWatcher)
-                                this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                                this.setVariable(BR.item, fieldUiModel)
-                            },
+                        ProvideInputCoordinate(
+                            modifier = modifierWithFocus,
+                            fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
+                            uiEventHandler = uiEventHandler,
+                            resources = resources,
                         )
                     }
                 }
@@ -793,7 +782,7 @@ private fun ProvideInputLink(
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
-    ) {
+) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
     }

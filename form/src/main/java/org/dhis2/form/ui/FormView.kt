@@ -131,7 +131,7 @@ class FormView : Fragment() {
         }
     }
 
-    val coordinateTextWatcher = LatitudeLongitudeTextWatcher { coordinates ->
+    private val coordinateTextWatcher = LatitudeLongitudeTextWatcher { coordinates ->
         viewModel.items.value?.find { it.focused && it.valueType == ValueType.COORDINATE }
             ?.onTextChange(coordinates)
     }
@@ -351,7 +351,7 @@ class FormView : Fragment() {
                         textWatcher = textWatcher,
                         coordinateTextWatcher = coordinateTextWatcher,
                         needToForceUpdate = needToForceUpdate,
-                        resources = resources,
+                        resources = Injector.provideResourcesManager(context),
                     )
                 }
             }
