@@ -18,7 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
@@ -74,7 +76,7 @@ internal fun FieldProvider(
                 }
             }
         }
-
+    val focusManager = LocalFocusManager.current
     if (fieldUiModel.optionSet == null) {
         when (fieldUiModel.valueType) {
             ValueType.TEXT -> {
@@ -83,6 +85,7 @@ internal fun FieldProvider(
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -91,6 +94,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -99,6 +103,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -107,6 +112,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -115,6 +121,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -123,6 +130,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -131,6 +139,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -139,6 +148,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -147,6 +157,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -156,6 +167,7 @@ internal fun FieldProvider(
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -165,6 +177,7 @@ internal fun FieldProvider(
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
+                    focusManager = focusManager,
                 )
             }
             ValueType.BOOLEAN -> {
@@ -217,6 +230,7 @@ internal fun FieldProvider(
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
+                    focusManager = focusManager,
                 )
             }
 
@@ -311,6 +325,7 @@ private fun ProvideIntegerPositive(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -334,6 +349,10 @@ private fun ProvideIntegerPositive(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -342,6 +361,7 @@ private fun ProvideIntegerPositiveOrZero(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -365,6 +385,10 @@ private fun ProvideIntegerPositiveOrZero(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -373,6 +397,7 @@ private fun ProvidePercentage(
     modifier: Modifier = Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -386,7 +411,6 @@ private fun ProvidePercentage(
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
         isRequiredField = fieldUiModel.mandatory,
-        autoCompleteList = fieldUiModel.autocompleteList(),
         onValueChanged = {
             value = it
             intentHandler(
@@ -397,6 +421,10 @@ private fun ProvidePercentage(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -405,6 +433,7 @@ private fun ProvideNumber(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -429,6 +458,10 @@ private fun ProvideNumber(
             )
         },
         notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -437,6 +470,7 @@ private fun ProvideIntegerNegative(
     modifier: Modifier = Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value?.replace("-", ""))
@@ -460,6 +494,10 @@ private fun ProvideIntegerNegative(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -468,6 +506,7 @@ private fun ProvideLongText(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -492,6 +531,10 @@ private fun ProvideLongText(
             )
         },
         imeAction = ImeAction.Default,
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -500,6 +543,7 @@ private fun ProvideLetter(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -523,6 +567,10 @@ private fun ProvideLetter(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -531,6 +579,7 @@ private fun ProvideInteger(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -554,6 +603,10 @@ private fun ProvideInteger(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -563,6 +616,7 @@ private fun ProvideEmail(
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -595,6 +649,10 @@ private fun ProvideEmail(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -603,6 +661,7 @@ private fun ProvideInputPhoneNumber(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    focusManager: FocusManager,
     modifier: Modifier = Modifier,
 ) {
     var value by remember {
@@ -636,6 +695,10 @@ private fun ProvideInputPhoneNumber(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -645,7 +708,7 @@ private fun ProvideInputLink(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -677,6 +740,10 @@ private fun ProvideInputLink(
                     fieldUiModel.uid,
                 ),
             )
+        },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
         },
     )
 }
