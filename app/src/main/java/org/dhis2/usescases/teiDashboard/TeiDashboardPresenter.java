@@ -279,17 +279,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         );
     }
 
-    @Override
-    public void onFollowUp(String enrollmentUid) {
-        boolean followup = dashboardRepository.setFollowUp(enrollmentUid);
-        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, java.lang.Boolean.toString(followup), FOLLOW_UP);
-        if (followup) {
-            view.showToast(view.getContext().getString(R.string.follow_up_enabled));
-        } else {
-            view.showToast(view.getContext().getString(R.string.follow_up_disabled));
-        }
-    }
-
     private Map<String, Boolean> getGrouping() {
         TypeToken<HashMap<String, Boolean>> typeToken =
                 new TypeToken<HashMap<String, Boolean>>() {
