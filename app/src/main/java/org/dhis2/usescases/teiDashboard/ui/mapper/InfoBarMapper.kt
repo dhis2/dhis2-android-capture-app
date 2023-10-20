@@ -47,9 +47,9 @@ class InfoBarMapper(
     ): String {
         return when (infoBarType) {
             InfoBarType.SYNC -> {
-                if (item.currentEnrollment.aggregatedSyncState() == State.TO_UPDATE) {
+                if (item.enrollmentState == State.TO_UPDATE) {
                     resourceManager.getString(R.string.not_synced)
-                } else if (item.currentEnrollment.aggregatedSyncState() == State.WARNING) {
+                } else if (item.enrollmentState == State.WARNING) {
                     resourceManager.getString(R.string.sync_warning)
                 } else {
                     resourceManager.getString(R.string.sync_error)
@@ -73,13 +73,13 @@ class InfoBarMapper(
     ) {
         return when (infoBarType) {
             InfoBarType.SYNC -> {
-                if (item.currentEnrollment.aggregatedSyncState() == State.TO_UPDATE) {
+                if (item.enrollmentState == State.TO_UPDATE) {
                     Icon(
                         imageVector = Icons.Outlined.Sync,
                         contentDescription = "not synced",
                         tint = TextColor.OnSurfaceLight,
                     )
-                } else if (item.currentEnrollment.aggregatedSyncState() == State.WARNING) {
+                } else if (item.enrollmentState == State.WARNING) {
                     Icon(
                         imageVector = Icons.Outlined.SyncProblem,
                         contentDescription = "sync warning",
@@ -124,7 +124,7 @@ class InfoBarMapper(
     ): String? {
         return when (infoBarType) {
             InfoBarType.SYNC -> {
-                if (item.currentEnrollment.aggregatedSyncState() == State.TO_UPDATE) {
+                if (item.enrollmentState == State.TO_UPDATE) {
                     resourceManager.getString(R.string.sync)
                 } else {
                     resourceManager.getString(R.string.sync_retry)
@@ -141,9 +141,9 @@ class InfoBarMapper(
     ): Color {
         return when (infoBarType) {
             InfoBarType.SYNC -> {
-                if (item.currentEnrollment.aggregatedSyncState() == State.TO_UPDATE) {
+                if (item.enrollmentState == State.TO_UPDATE) {
                     TextColor.OnSurfaceLight
-                } else if (item.currentEnrollment.aggregatedSyncState() == State.WARNING) {
+                } else if (item.enrollmentState == State.WARNING) {
                     AdditionalInfoItemColor.WARNING.color
                 } else {
                     AdditionalInfoItemColor.ERROR.color
@@ -166,9 +166,9 @@ class InfoBarMapper(
     ): Color {
         return when (infoBarType) {
             InfoBarType.SYNC -> {
-                if (item.currentEnrollment.aggregatedSyncState() == State.TO_UPDATE) {
+                if (item.enrollmentState == State.TO_UPDATE) {
                     Color(0xFFEFF6FA)
-                } else if (item.currentEnrollment.aggregatedSyncState() == State.WARNING) {
+                } else if (item.enrollmentState == State.WARNING) {
                     AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f)
                 } else {
                     AdditionalInfoItemColor.ERROR.color.copy(alpha = 0.1f)

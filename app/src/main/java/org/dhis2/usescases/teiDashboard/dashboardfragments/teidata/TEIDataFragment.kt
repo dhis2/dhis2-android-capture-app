@@ -1,7 +1,9 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -59,13 +61,13 @@ import org.dhis2.utils.analytics.TYPE_EVENT_TEI
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -231,14 +233,16 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             dashboardModel.avatarPath = presenter.getTeiProfilePath()
             binding.detailCard?.setContent {
                 val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
-                // val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
+                val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
                 val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
+                val state by dashboardViewModel.state.collectAsState()
                 dashboardModel.currentEnrollmentStatus = enrollmentStatus
+                dashboardModel.enrollmentState = state
                 val syncInfoBar = infoBarMapper.map(
                     infoBarType = InfoBarType.SYNC,
                     item = dashboardModel,
                     actionCallback = { dashboardActivity.openSyncDialog() },
-                    showInfoBar = dashboardModel.currentEnrollment.aggregatedSyncState() != State.SYNCED,
+                    showInfoBar = syncNeeded,
                 )
                 val followUpInfoBar = infoBarMapper.map(
                     infoBarType = InfoBarType.FOLLOW_UP,
@@ -256,9 +260,18 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 )
                 val card = teiCardMapper.map(
                     dashboardModel = dashboardModel,
-                    phoneCallback = {},
-                    emailCallback = {},
-                    programsCallback = { dashboardActivity.goToEnrollmentList() },
+                    phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
+                    emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
+                    programsCallback = {
+                        startActivity(
+                            TeiDashboardMobileActivity.intent(
+                                dashboardActivity.context,
+                                dashboardActivity.teiUid,
+                                null,
+                                null,
+                            ),
+                        )
+                    },
                 )
                 TeiDetailDashboard(
                     syncData = syncInfoBar,
@@ -288,6 +301,27 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 ),
             )
             sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
+        }
+    }
+
+    private fun openChooser(value: String, action: String) {
+        val intent = Intent(action).apply {
+            when (action) {
+                Intent.ACTION_DIAL -> {
+                    data = Uri.parse("tel:$value")
+                }
+                Intent.ACTION_SENDTO -> {
+                    data = Uri.parse("mailto:$value")
+                }
+            }
+        }
+        val title = resources.getString(org.dhis2.form.R.string.open_with)
+        val chooser = Intent.createChooser(intent, title)
+
+        try {
+            startActivity(chooser)
+        } catch (e: ActivityNotFoundException) {
+            Timber.e("No activity found that can handle this action")
         }
     }
 

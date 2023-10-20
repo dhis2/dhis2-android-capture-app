@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.State.SYNCED
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -21,8 +22,8 @@ class DashboardViewModel(
     val showFollowUpBar = MutableStateFlow(false)
     val showStatusBar = MutableStateFlow<EnrollmentStatus?>(null)
     val syncNeeded = MutableStateFlow(false)
-
     val showStatusErrorMessages = MutableLiveData(StatusChangeResultCode.CHANGED)
+    val state = MutableStateFlow<State?>(null)
     fun dashboardModel(): LiveData<DashboardProgramModel> {
         return dashboardProgramModelLiveData
     }
@@ -40,6 +41,8 @@ class DashboardViewModel(
                 dashboardProgramModelLiveData
                     .value?.currentEnrollment?.aggregatedSyncState() != SYNCED
             showStatusBar.value = dashboardProgramModelLiveData.value?.currentEnrollment?.status()
+            state.value =
+                dashboardProgramModelLiveData.value?.currentEnrollment?.aggregatedSyncState()
         }
     }
 
@@ -52,6 +55,8 @@ class DashboardViewModel(
     fun onFollowUp(dashboardProgramModel: DashboardProgramModel) {
         showFollowUpBar.value =
             repository.setFollowUp(dashboardProgramModel.currentEnrollment?.uid())
+        syncNeeded.value = true
+        state.value = State.TO_UPDATE
         analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, showFollowUpBar.toString(), FOLLOW_UP)
         updateDashboard(dashboardProgramModel)
     }
@@ -67,6 +72,8 @@ class DashboardViewModel(
 
         if (result == StatusChangeResultCode.CHANGED) {
             showStatusBar.value = status
+            syncNeeded.value = true
+            state.value = State.TO_UPDATE
             updateDashboard(dashboardProgramModel)
         } else {
             showStatusErrorMessages.value = result

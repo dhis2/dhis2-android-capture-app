@@ -4,6 +4,7 @@ import androidx.databinding.BaseObservable;
 
 import org.dhis2.commons.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -43,6 +44,7 @@ public class DashboardProgramModel extends BaseObservable {
     private String avatarPath;
 
     private EnrollmentStatus currentEnrollmentStatus;
+    private State enrollmentState;
 
 
     public DashboardProgramModel(
@@ -64,6 +66,7 @@ public class DashboardProgramModel extends BaseObservable {
         this.trackedEntityAttributes = trackedEntityAttributes;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
         this.currentEnrollmentStatus = currentEnrollment.status();
+        this.enrollmentState = currentEnrollment.aggregatedSyncState();
     }
 
     public DashboardProgramModel(TrackedEntityInstance tei,
@@ -192,5 +195,13 @@ public class DashboardProgramModel extends BaseObservable {
 
     public EnrollmentStatus getCurrentEnrollmentStatus() {
         return currentEnrollmentStatus;
+    }
+
+    public void setEnrollmentState(State state){
+        enrollmentState = state;
+    }
+
+    public State getEnrollmentState() {
+        return enrollmentState;
     }
 }

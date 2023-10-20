@@ -75,12 +75,14 @@
             <ImageView
                 android:id="@+id/syncButton"
                 style="@style/ActionIcon"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/relationshipMapIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_sync"
                 app:tint="?colorOnPrimary"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/relationshipMapIcon"
@@ -92,7 +94,7 @@
                 app:srcCompat="@drawable/ic_map"
                 app:tint="@color/white"
                 tools:ignore="ContentDescription"
-                tools:visibility="visible"/>
+                tools:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/moreOptions"

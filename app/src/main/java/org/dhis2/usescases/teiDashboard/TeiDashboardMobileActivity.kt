@@ -326,7 +326,7 @@ class TeiDashboardMobileActivity :
                     if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
                         binding.toolbarTitle.visibility = View.GONE
                         binding.editButton.visibility = View.VISIBLE
-                        binding.syncButton.visibility = View.VISIBLE
+                        binding.syncButton.visibility = View.GONE
                     } else {
                         binding.toolbarTitle.visibility = View.VISIBLE
                         binding.editButton.visibility = View.GONE

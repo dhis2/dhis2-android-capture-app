@@ -57,18 +57,28 @@ class TeiCardMapper(
             )
         } else {
             Avatar(
-                textAvatar = getTitle(item).firstOrNull()?.uppercase() ?: "?",
+                textAvatar = getTitleForAvatar(item),
                 style = AvatarStyle.TEXT,
             )
         }
     }
 
+    private fun getTitleForAvatar(item: DashboardProgramModel): String {
+        val firstLetter = item.teiHeader?.firstOrNull()
+            ?: item.attributes.firstOrNull()?.val1()?.value()?.firstOrNull()
+
+        return firstLetter?.uppercase() ?: "?"
+    }
+
     private fun getTitle(item: DashboardProgramModel): String {
         return if (item.teiHeader != null) {
             item.teiHeader!!
+        } else if (item.attributes.isEmpty()) {
+            "-"
         } else {
+            val key = item.attributes.firstOrNull()?.val0()?.displayFormName()
             val value = item.attributes.firstOrNull()?.val1()?.value()
-            "$value"
+            "$key: $value"
         }
     }
 
@@ -165,7 +175,7 @@ class TeiCardMapper(
 
         list.add(
             AdditionalInfoItem(
-                key = "Programs: ",
+                key = resourceManager.getString(R.string.programs),
                 value = names.joinToString(", "),
                 isConstantItem = true,
                 action = { programsCallback.invoke() },
@@ -194,7 +204,7 @@ class TeiCardMapper(
         list.add(
             AdditionalInfoItem(
                 key = incidentDateLabel ?: resourceManager.getString(R.string.incident_date),
-                value = incidentDate.toUi() ?: "12/1/2023",
+                value = incidentDate.toUi() ?: "",
                 isConstantItem = true,
             ),
         )
