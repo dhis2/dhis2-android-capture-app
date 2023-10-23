@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarUiModel
 import org.dhis2.usescases.teiDashboard.ui.model.TeiCardUiModel
@@ -29,7 +30,8 @@ fun TeiDetailDashboard(
         if (syncData.showInfoBar) {
             item {
                 InfoBar(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp),
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
+                        .testTag(SYNC_INFO_BAR_TEST_TAG),
                     infoBarData =
                     InfoBarData(
                         text = syncData.text,
@@ -45,7 +47,8 @@ fun TeiDetailDashboard(
         if (followUpData.showInfoBar) {
             item {
                 InfoBar(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp),
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
+                        .testTag(FOLLOWUP_INFO_BAR_TEST_TAG),
                     infoBarData = InfoBarData(
                         text = followUpData.text,
                         icon = followUpData.icon,
@@ -60,7 +63,8 @@ fun TeiDetailDashboard(
         if (enrollmentData.showInfoBar) {
             item {
                 InfoBar(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp),
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
+                        .testTag(STATE_INFO_BAR_TEST_TAG),
                     infoBarData = InfoBarData(
                         text = enrollmentData.text,
                         icon = enrollmentData.icon,
@@ -84,3 +88,7 @@ fun TeiDetailDashboard(
         }
     }
 }
+
+const val SYNC_INFO_BAR_TEST_TAG = "sync"
+const val FOLLOWUP_INFO_BAR_TEST_TAG = "followUp"
+const val STATE_INFO_BAR_TEST_TAG = "state"

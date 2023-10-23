@@ -1,6 +1,11 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -27,6 +32,7 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.StageViewHolder
+import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.utils.dialFloatingActionButton.FAB_ID
@@ -70,12 +76,9 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText(R.string.re_open)).perform(click())
     }
 
-    fun checkLockIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.cancelled)))
-    }
-
-    fun checkUnlockIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.event_open)))
+    fun checkCancelledStateInfoBarIsDisplay(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(STATE_INFO_BAR_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Enrollment cancelled").assertIsDisplayed()
     }
 
     fun checkCanAddEvent() {
@@ -186,8 +189,9 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText(R.string.complete)).perform(click())
     }
 
-    fun checkLockCompleteIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.completed)))
+    fun checkCompleteStateInfoBarIsDisplay(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(STATE_INFO_BAR_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Enrollment completed").assertIsDisplayed()
     }
 
 

@@ -24,7 +24,7 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
-import org.dhis2.usescases.teiDashboard.ui.mapper.TeiCardMapper
+import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 
@@ -142,8 +142,8 @@ class TEIDataModule(
     @Provides
     fun provideTeiCardMapper(
         resourceManager: ResourceManager,
-    ): TeiCardMapper {
-        return TeiCardMapper(resourceManager)
+    ): TeiDashboardCardMapper {
+        return TeiDashboardCardMapper(resourceManager)
     }
 
     @Provides

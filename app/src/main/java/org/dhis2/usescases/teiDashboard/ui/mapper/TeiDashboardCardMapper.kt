@@ -23,7 +23,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.io.File
 import java.util.Date
 
-class TeiCardMapper(
+class TeiDashboardCardMapper(
     val resourceManager: ResourceManager,
 ) {
 

@@ -53,7 +53,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
-import org.dhis2.usescases.teiDashboard.ui.mapper.TeiCardMapper
+import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
@@ -88,7 +88,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     lateinit var colorUtils: ColorUtils
 
     @Inject
-    lateinit var teiCardMapper: TeiCardMapper
+    lateinit var teiDashboardCardMapper: TeiDashboardCardMapper
 
     @Inject
     lateinit var infoBarMapper: InfoBarMapper
@@ -109,13 +109,21 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     private val eventCreationLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
     private val eventCaptureLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
     private val eventDetailsLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
     private val eventInitialLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -258,7 +266,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     actionCallback = { },
                     showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
                 )
-                val card = teiCardMapper.map(
+                val card = teiDashboardCardMapper.map(
                     dashboardModel = dashboardModel,
                     phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
                     emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
