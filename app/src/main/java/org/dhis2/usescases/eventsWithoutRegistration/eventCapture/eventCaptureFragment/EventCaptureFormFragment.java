@@ -94,8 +94,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
                 .openErrorLocation(getArguments().getBoolean(OPEN_ERROR_LOCATION, false))
                 .useComposeForm(
-                        featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
-                        featureConfig.isFeatureEnable(Feature.DISABLE_COLLAPSIBLE_SECTIONS)
+                        featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS)
                 )
                 .build();
         activity.setFormEditionListener(this);

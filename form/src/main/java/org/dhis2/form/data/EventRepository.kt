@@ -22,8 +22,7 @@ class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
     private val d2: D2,
-    private val enableCollapsableFeature: Boolean,
-) : DataEntryBaseRepository(d2, fieldFactory, enableCollapsableFeature) {
+) : DataEntryBaseRepository(d2, fieldFactory) {
 
     private val event by lazy {
         d2.eventModule().events().uid(eventUid)
