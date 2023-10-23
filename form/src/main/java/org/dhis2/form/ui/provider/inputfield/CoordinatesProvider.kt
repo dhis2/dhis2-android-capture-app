@@ -12,7 +12,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPolygon
 @Composable
 fun ProvidePolygon(
     modifier: Modifier,
-    fieldUiModel: FieldUiModel
+    fieldUiModel: FieldUiModel,
 ) {
     InputPolygon(
         modifier = modifier,
@@ -23,6 +23,6 @@ fun ProvidePolygon(
         polygonAdded = !fieldUiModel.value.isNullOrEmpty(),
         isRequired = fieldUiModel.mandatory,
         onResetButtonClicked = { fieldUiModel.onClear() },
-        onUpdateButtonClicked = { fieldUiModel.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP) }
+        onUpdateButtonClicked = { fieldUiModel.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP) },
     )
 }
