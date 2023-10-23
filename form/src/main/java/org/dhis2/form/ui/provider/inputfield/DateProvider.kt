@@ -20,10 +20,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.TimeTransformation
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.regex.Pattern
 
 @Composable
 fun ProvideInputDate(
@@ -73,7 +69,7 @@ fun ProvideInputDate(
                     RecyclerViewUiEvents.OpenCustomCalendar(
                         uid = fieldUiModel.uid,
                         label = fieldUiModel.label,
-                        date = value?.let {
+                        date = formatUIDateToStored(value, fieldUiModel.valueType)?.let {
                             DateUtils.databaseDateFormatNoSeconds().parse(it)
                         },
                         allowFutureDates = fieldUiModel.allowFutureDates ?: true,
@@ -105,19 +101,31 @@ fun ProvideInputDate(
 }
 
 private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String? {
-    when (valueType) {
+    return when (valueType) {
         ValueType.DATETIME -> {
-            val (uiFormat, dbFormat) = getMappingFormats(valueType)
-            val inputFormat = SimpleDateFormat(dbFormat, Locale.getDefault())
-            val outputFormat = SimpleDateFormat(uiFormat, Locale.getDefault())
-
-            return try {
-                inputFormat.parse(inputDateString)?.let {
-                    outputFormat.format(it)
-                }
-            } catch (e: ParseException) {
-                inputDateString
+            val components = inputDateString.split("T")
+            if (components.size != 2) {
+                return null
             }
+
+            val date = components[0].split("-")
+            if (date.size != 3) {
+                return null
+            }
+
+            val year = date[0]
+            val month = date[1]
+            val day = date[2]
+
+            val time = components[1].split(":")
+            if (components.size != 2) {
+                return null
+            }
+
+            val hours = time[0]
+            val minutes = time[1]
+
+            "$day$month$year$hours$minutes"
         }
 
         ValueType.TIME -> {
@@ -129,7 +137,7 @@ private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?)
             val hours = components[0]
             val minutes = components[1]
 
-            return "$hours$minutes"
+            "$hours$minutes"
         }
 
         else -> {
@@ -142,26 +150,25 @@ private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?)
             val month = components[1]
             val day = components[2]
 
-            return "$day$month$year"
+            "$day$month$year"
         }
     }
 }
 
 private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?): String? {
-
-    when (valueType) {
+    return when (valueType) {
         ValueType.DATETIME -> {
-            val (uiFormat, dbFormat) = getMappingFormats(valueType)
-            val inputFormat = SimpleDateFormat(uiFormat, Locale.getDefault())
-            val outputFormat = SimpleDateFormat(dbFormat, Locale.getDefault())
-
-            return try {
-                inputFormat.parse(inputDateString)?.let {
-                    outputFormat.format(it)
-                }
-            } catch (e: ParseException) {
-                null
+            if (inputDateString?.length != 12) {
+                return null
             }
+
+            val minutes = inputDateString.substring(10, 12)
+            val hours = inputDateString.substring(8, 10)
+            val year = inputDateString.substring(4, 8)
+            val month = inputDateString.substring(2, 4)
+            val day = inputDateString.substring(0, 2)
+
+            "$year-$month-$day" + "T$hours:$minutes"
         }
 
         ValueType.TIME -> {
@@ -172,7 +179,7 @@ private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?
             val minutes = inputDateString.substring(2, 4)
             val hours = inputDateString.substring(0, 2)
 
-            return "$hours:$minutes"
+            "$hours:$minutes"
         }
 
         else -> {
@@ -184,39 +191,27 @@ private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?
             val month = inputDateString.substring(2, 4)
             val day = inputDateString.substring(0, 2)
 
-            return "$year-$month-$day"
+            "$year-$month-$day"
         }
     }
-}
-
-fun getMappingFormats(valueType: ValueType?) = when (valueType) {
-    ValueType.DATETIME -> DATE_TIME_UI_FORMAT to DATE_TIME_DB_FORMAT
-    ValueType.TIME -> TIME_UI_FORMAT to TIME_DB_FORMAT
-    else -> DATE_UI_FORMAT to DATE_DB_FORMAT
 }
 
 private fun isValid(valueString: String, valueType: ValueType?): Boolean {
-    return if (valueType == ValueType.DATE) {
-        valueString.length == 8
-    } else if (valueType == ValueType.TIME) {
-        valueString.length == 4
-    } else {
-        val regex = when (valueType) {
-            ValueType.DATETIME -> DATE_TIME_REGEX
-            else -> DATE_REGEX
+    return when (valueType) {
+        ValueType.DATE -> {
+            valueString.length == 8
         }
-        val pattern = Pattern.compile(regex)
-        pattern.matcher(valueString).matches()
+
+        ValueType.TIME -> {
+            valueString.length == 4
+        }
+
+        ValueType.DATETIME -> {
+            valueString.length == 12
+        }
+
+        else -> {
+            valueString.length == 8
+        }
     }
 }
-
-private const val DATE_DB_FORMAT = "yyyy-MM-dd"
-private const val DATE_UI_FORMAT = "ddMMyyyy"
-private const val DATE_REGEX = "^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}$"
-private const val DATE_TIME_DB_FORMAT = "yyyy-MM-dd'T'HH:mm"
-private const val DATE_TIME_UI_FORMAT = "ddMMyyyyhhmm"
-private const val DATE_TIME_REGEX =
-    "^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])$"
-private const val TIME_DB_FORMAT = "hh:mm"
-private const val TIME_UI_FORMAT = "hhmm"
-private const val TIME_REGEX = "^([01][0-9]|2[0-3])([0-5][0-9])$"

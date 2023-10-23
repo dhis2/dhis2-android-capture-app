@@ -33,9 +33,11 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateFailure
+import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateTimeFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.TimeFailure
 import timber.log.Timber
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
@@ -299,10 +301,10 @@ class FormViewModel(
             false
         } else {
             valueType.isNumeric ||
-                    valueType.isText && renderType?.isPolygon() != true ||
-                    valueType == ValueType.URL ||
-                    valueType == ValueType.EMAIL ||
-                    valueType == ValueType.PHONE_NUMBER
+                valueType.isText && renderType?.isPolygon() != true ||
+                valueType == ValueType.URL ||
+                valueType == ValueType.EMAIL ||
+                valueType == ValueType.PHONE_NUMBER
         }
     }
 
@@ -453,6 +455,10 @@ class FormViewModel(
                     validateTimeFormat(fieldValue, valueType)
                 }
 
+                ValueType.DATETIME -> {
+                    validateDateTimeFormat(fieldValue, valueType)
+                }
+
                 else -> {
                     valueType?.validator?.validate(value)
                 }
@@ -469,6 +475,26 @@ class FormViewModel(
                 }
             }
             error
+        }
+    }
+
+    private fun validateDateTimeFormat(
+        dateTimeString: String,
+        valueType: ValueType,
+    ): Result<String, Throwable> {
+        val regex = Regex("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")
+
+        if (!regex.matches(dateTimeString)) {
+            return Result.Failure(DateTimeFailure.ParseException)
+        }
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+
+        return try {
+            LocalDateTime.parse(dateTimeString, formatter)
+            valueType.validator.validate(dateTimeString)
+        } catch (e: DateTimeParseException) {
+            Result.Failure(DateTimeFailure.ParseException)
         }
     }
 
