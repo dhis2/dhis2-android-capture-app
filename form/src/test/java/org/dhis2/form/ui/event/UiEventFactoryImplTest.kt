@@ -70,5 +70,6 @@ class UiEventFactoryImplTest {
         layoutId = 1,
         valueType = ValueType.TEXT,
         optionSetConfiguration = null,
+        autocompleteList = null,
     )
 }
