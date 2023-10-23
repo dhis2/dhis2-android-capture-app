@@ -1,5 +1,6 @@
 package org.dhis2.usescases.flow.teiFlow
 
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
@@ -65,14 +66,17 @@ class TeiFlowRobot : BaseRobot() {
         }
     }
 
-    fun checkPastEventsAreClosed(totalEvents: Int, programPosition: Int) {
+    fun checkPastEventsAreClosed(
+        composeTestRule: ComposeContentTestRule,
+        totalEvents: Int,
+        programPosition: Int
+    ) {
         enrollmentRobot {
             clickOnEnrolledProgram(programPosition)
         }
 
         teiDashboardRobot {
-            // Needs to be refactor to check new Infobar
-            //checkLockCompleteIconIsDisplay()
+            checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent()
             checkAllEventsAreClosed(totalEvents)
         }

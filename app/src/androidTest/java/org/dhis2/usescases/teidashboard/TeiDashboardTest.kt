@@ -197,7 +197,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore
     @Test
     fun shouldShowCorrectInfoWhenOpenTEI() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
