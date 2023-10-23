@@ -39,14 +39,12 @@ fun ProvideInputDate(
     }
 
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(fieldUiModel.value?.let { formatStoredDateToUI(it, fieldUiModel.valueType) })
     }
 
     InputDateTime(
         title = fieldUiModel.label,
-        value = value?.let {
-            formatStoredDateToUI(it, fieldUiModel.valueType)
-        },
+        value = value,
         actionIconType = actionType,
         onActionClicked = {
             when (actionType) {
@@ -64,7 +62,9 @@ fun ProvideInputDate(
                     RecyclerViewUiEvents.OpenTimePicker(
                         uid = fieldUiModel.uid,
                         label = fieldUiModel.label,
-                        date = value?.let { DateUtils.timeFormat().parse(it) },
+                        date = formatUIDateToStored(value, fieldUiModel.valueType)?.let {
+                            DateUtils.timeFormat().parse(it)
+                        },
                         isDateTime = false,
                     ),
                 )
@@ -91,7 +91,7 @@ fun ProvideInputDate(
         onFocusChanged = {},
         onValueChanged = {
             value = it
-            if (it.isEmpty() || isValid(it, fieldUiModel.valueType)) {
+            if (isValid(it, fieldUiModel.valueType)) {
                 intentHandler.invoke(
                     FormIntent.OnSave(
                         uid = fieldUiModel.uid,
@@ -105,30 +105,87 @@ fun ProvideInputDate(
 }
 
 private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String? {
-    val (uiFormat, dbFormat) = getMappingFormats(valueType)
-    val inputFormat = SimpleDateFormat(dbFormat, Locale.getDefault())
-    val outputFormat = SimpleDateFormat(uiFormat, Locale.getDefault())
+    when (valueType) {
+        ValueType.DATETIME -> {
+            val (uiFormat, dbFormat) = getMappingFormats(valueType)
+            val inputFormat = SimpleDateFormat(dbFormat, Locale.getDefault())
+            val outputFormat = SimpleDateFormat(uiFormat, Locale.getDefault())
 
-    return try {
-        inputFormat.parse(inputDateString)?.let {
-            outputFormat.format(it)
+            return try {
+                inputFormat.parse(inputDateString)?.let {
+                    outputFormat.format(it)
+                }
+            } catch (e: ParseException) {
+                inputDateString
+            }
         }
-    } catch (e: ParseException) {
-        inputDateString
+
+        ValueType.TIME -> {
+            val components = inputDateString.split(":")
+            if (components.size != 2) {
+                return null
+            }
+
+            val hours = components[0]
+            val minutes = components[1]
+
+            return "$hours$minutes"
+        }
+
+        else -> {
+            val components = inputDateString.split("-")
+            if (components.size != 3) {
+                return null
+            }
+
+            val year = components[0]
+            val month = components[1]
+            val day = components[2]
+
+            return "$day$month$year"
+        }
     }
 }
 
-private fun formatUIDateToStored(inputDateString: String, valueType: ValueType?): String? {
-    val (uiFormat, dbFormat) = getMappingFormats(valueType)
-    val inputFormat = SimpleDateFormat(uiFormat, Locale.getDefault())
-    val outputFormat = SimpleDateFormat(dbFormat, Locale.getDefault())
+private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?): String? {
 
-    return try {
-        inputFormat.parse(inputDateString)?.let {
-            outputFormat.format(it)
+    when (valueType) {
+        ValueType.DATETIME -> {
+            val (uiFormat, dbFormat) = getMappingFormats(valueType)
+            val inputFormat = SimpleDateFormat(uiFormat, Locale.getDefault())
+            val outputFormat = SimpleDateFormat(dbFormat, Locale.getDefault())
+
+            return try {
+                inputFormat.parse(inputDateString)?.let {
+                    outputFormat.format(it)
+                }
+            } catch (e: ParseException) {
+                null
+            }
         }
-    } catch (e: ParseException) {
-        null
+
+        ValueType.TIME -> {
+            if (inputDateString?.length != 4) {
+                return null
+            }
+
+            val minutes = inputDateString.substring(2, 4)
+            val hours = inputDateString.substring(0, 2)
+
+            return "$hours:$minutes"
+        }
+
+        else -> {
+            if (inputDateString?.length != 8) {
+                return null
+            }
+
+            val year = inputDateString.substring(4, 8)
+            val month = inputDateString.substring(2, 4)
+            val day = inputDateString.substring(0, 2)
+
+            return "$year-$month-$day"
+        }
     }
 }
 
@@ -139,13 +196,18 @@ fun getMappingFormats(valueType: ValueType?) = when (valueType) {
 }
 
 private fun isValid(valueString: String, valueType: ValueType?): Boolean {
-    val regex = when (valueType) {
-        ValueType.DATETIME -> DATE_TIME_REGEX
-        ValueType.TIME -> TIME_REGEX
-        else -> DATE_REGEX
+    return if (valueType == ValueType.DATE) {
+        valueString.length == 8
+    } else if (valueType == ValueType.TIME) {
+        valueString.length == 4
+    } else {
+        val regex = when (valueType) {
+            ValueType.DATETIME -> DATE_TIME_REGEX
+            else -> DATE_REGEX
+        }
+        val pattern = Pattern.compile(regex)
+        pattern.matcher(valueString).matches()
     }
-    val pattern = Pattern.compile(regex)
-    return pattern.matcher(valueString).matches()
 }
 
 private const val DATE_DB_FORMAT = "yyyy-MM-dd"
