@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.provider.inputfield
 
+import androidx.compose.foundation.background
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -11,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -18,6 +20,8 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.UiEventType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -61,8 +65,23 @@ fun ProvideDropdownInput(
                         onDismissRequest = { expanded = false },
                     ) {
                         optionSetConfig.optionsToDisplay().forEach {
+                            val isSelected = it.displayName() == fieldUiModel.displayName
                             DropdownMenuItem(
-                                content = { Text(it.displayName() ?: it.code() ?: "") },
+                                modifier = Modifier.background(
+                                    when {
+                                        isSelected -> SurfaceColor.PrimaryContainer
+                                        else -> Color.Transparent
+                                    },
+                                ),
+                                content = {
+                                    Text(
+                                        text = it.displayName() ?: it.code() ?: "",
+                                        color = when {
+                                            isSelected -> TextColor.OnPrimaryContainer
+                                            else -> TextColor.OnSurface
+                                        },
+                                    )
+                                },
                                 onClick = {
                                     expanded = false
                                     selectedItem = it.displayName()
