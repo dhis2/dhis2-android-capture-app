@@ -8,6 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -27,12 +34,16 @@ import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
@@ -48,6 +59,9 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     @Inject
     lateinit var factory: EventDetailsViewModelFactory
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     private val requestLocationPermissions =
         registerForActivityResult(
@@ -119,6 +133,50 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         )
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        binding.fieldsContainer?.setContent {
+            val date by viewModel.eventDate.collectAsState()
+            val details by viewModel.eventDetails.collectAsState()
+            val orgUnit by viewModel.eventOrgUnit.collectAsState()
+            val catCombo by viewModel.eventCatCombo.collectAsState()
+            Column {
+                if (date.active) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideInputDate(
+                        eventDate = date,
+                        detailsEnabled = details.enabled,
+                        onDateClick = { viewModel.onDateClick() },
+                        onDateSet = { dateValues ->
+                            viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
+                        },
+                    )
+                }
+                if (orgUnit.visible) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideOrgUnit(
+                        orgUnit = orgUnit,
+                        detailsEnabled = details.enabled,
+                        onOrgUnitClick = { viewModel.onOrgUnitClick() },
+                        resources = resourceManager,
+                    )
+                }
+
+                catCombo.categories.forEach { category ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideCategorySelector(
+                        category = category,
+                        eventCatCombo = catCombo,
+                        detailsEnabled = details.enabled,
+                        onCatComboClick = {
+                            viewModel.onCatComboClick(it)
+                        },
+                        onClearCatCombo = {
+                            val selectedOption = Pair(category.uid, null)
+                            viewModel.setUpCategoryCombo(selectedOption)
+                        },
+                    )
+                }
+            }
+        }
         return binding.root
     }
 
@@ -247,7 +305,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 OrgUnitSelectorScope.ProgramCaptureScope(viewModel.eventOrgUnit.value.programUid!!),
             )
             .onSelection { selectedOrgUnits ->
-                viewModel.setUpOrgUnit(selectedOrgUnit = selectedOrgUnits.first().uid())
+                viewModel.setUpOrgUnit(selectedOrgUnit = selectedOrgUnits.firstOrNull()?.uid())
             }
             .build()
             .show(childFragmentManager, "ORG_UNIT_DIALOG")
