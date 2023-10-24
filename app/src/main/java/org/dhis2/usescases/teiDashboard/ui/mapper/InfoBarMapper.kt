@@ -104,13 +104,13 @@ class InfoBarMapper(
                 if (item.currentEnrollmentStatus == EnrollmentStatus.COMPLETED) {
                     Icon(
                         imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = "not synced",
+                        contentDescription = "enrollment complete",
                         tint = AdditionalInfoItemColor.SUCCESS.color,
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Filled.Block,
-                        contentDescription = "not synced",
+                        contentDescription = "enrollment cancelled",
                         tint = TextColor.OnSurfaceLight,
                     )
                 }

@@ -33,8 +33,14 @@ class TeiDashboardCardMapper(
         emailCallback: (String) -> Unit,
         programsCallback: () -> Unit,
     ): TeiCardUiModel {
+        val avatar: @Composable (() -> Unit)? = if (dashboardModel.avatarPath.isNotEmpty()) {
+            { ProvideAvatar(item = dashboardModel) }
+        } else {
+            null
+        }
+
         return TeiCardUiModel(
-            avatar = { ProvideAvatar(dashboardModel) },
+            avatar = avatar,
             title = getTitle(dashboardModel),
             additionalInfo = getAdditionalInfo(dashboardModel, phoneCallback, emailCallback, programsCallback),
             actionButton = {},
@@ -46,28 +52,14 @@ class TeiDashboardCardMapper(
 
     @Composable
     private fun ProvideAvatar(item: DashboardProgramModel) {
-        if (item.avatarPath.isNotEmpty()) {
-            val file = File(item.avatarPath)
-            val bitmap = BitmapFactory.decodeFile(file.absolutePath).asImageBitmap()
-            val painter = BitmapPainter(bitmap)
+        val file = File(item.avatarPath)
+        val bitmap = BitmapFactory.decodeFile(file.absolutePath).asImageBitmap()
+        val painter = BitmapPainter(bitmap)
 
-            Avatar(
-                imagePainter = painter,
-                style = AvatarStyle.IMAGE,
-            )
-        } else {
-            Avatar(
-                textAvatar = getTitleForAvatar(item),
-                style = AvatarStyle.TEXT,
-            )
-        }
-    }
-
-    private fun getTitleForAvatar(item: DashboardProgramModel): String {
-        val firstLetter = item.teiHeader?.firstOrNull()
-            ?: item.attributes.firstOrNull()?.val1()?.value()?.firstOrNull()
-
-        return firstLetter?.uppercase() ?: "?"
+        Avatar(
+            imagePainter = painter,
+            style = AvatarStyle.IMAGE,
+        )
     }
 
     private fun getTitle(item: DashboardProgramModel): String {
@@ -93,6 +85,7 @@ class TeiDashboardCardMapper(
             .filter { it.val0().valueType() != ValueType.IMAGE }
             .filter { it.val0().valueType() != ValueType.COORDINATE }
             .filter { it.val0().valueType() != ValueType.FILE_RESOURCE }
+            .filter { it.val1().value()?.isNotEmpty() == true }
             .map {
                 if (it.val0().valueType() == ValueType.PHONE_NUMBER) {
                     AdditionalInfoItem(
@@ -149,7 +142,7 @@ class TeiDashboardCardMapper(
                 item.currentEnrollment.enrollmentDate(),
             )
         }.also { list ->
-            if (item.orgUnits.size > 1) {
+            if (item.orgUnits.isNotEmpty()) {
                 addEnrollIn(
                     list,
                     item.currentOrgUnit,
@@ -189,7 +182,7 @@ class TeiDashboardCardMapper(
     ) {
         list.add(
             AdditionalInfoItem(
-                key = resourceManager.getString(R.string.enroll_in),
+                key = resourceManager.getString(R.string.enrolledIn),
                 value = currentOrgUnit?.displayName() ?: "",
                 isConstantItem = true,
             ),
@@ -203,7 +196,7 @@ class TeiDashboardCardMapper(
     ) {
         list.add(
             AdditionalInfoItem(
-                key = incidentDateLabel ?: resourceManager.getString(R.string.incident_date),
+                key = "${incidentDateLabel ?: resourceManager.getString(R.string.incident_date)}:",
                 value = incidentDate.toUi() ?: "",
                 isConstantItem = true,
             ),
@@ -217,7 +210,7 @@ class TeiDashboardCardMapper(
     ) {
         list.add(
             AdditionalInfoItem(
-                key = programLabel ?: resourceManager.getString(R.string.enrollment_date),
+                key = "${programLabel ?: resourceManager.getString(R.string.enrollment_date)}:",
                 value = enrollmentDate.toUi() ?: "",
                 isConstantItem = true,
             ),

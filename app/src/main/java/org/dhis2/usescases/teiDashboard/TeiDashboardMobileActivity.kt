@@ -155,7 +155,7 @@ class TeiDashboardMobileActivity :
         super.onCreate(savedInstanceState)
         groupByStage = MutableLiveData(presenter.programGrouping)
         currentEnrollment = MutableLiveData()
-        dashboardViewModel = ViewModelProvider(this, viewModelFactory).get(DashboardViewModel::class.java)
+        dashboardViewModel = ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
         showLoadingProgress(true)
         binding.presenter = presenter
@@ -335,7 +335,7 @@ class TeiDashboardMobileActivity :
                     } else {
                         binding.toolbarTitle.visibility = View.VISIBLE
                         binding.editButton.visibility = View.GONE
-                        binding.syncButton.visibility = View.GONE
+                        binding.syncButton.visibility = View.VISIBLE
                     }
                     binding.navigationBar.selectItemAt(position)
                 }

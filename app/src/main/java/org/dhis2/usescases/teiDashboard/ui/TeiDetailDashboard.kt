@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.ui
 
-import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,13 +23,12 @@ fun TeiDetailDashboard(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp),
-        verticalArrangement = spacedBy(8.dp),
+            .padding(top = 16.dp),
     ) {
-        if (syncData.showInfoBar) {
-            item {
+        item {
+            if (syncData.showInfoBar) {
                 InfoBar(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                         .testTag(SYNC_INFO_BAR_TEST_TAG),
                     infoBarData =
                     InfoBarData(
@@ -43,11 +41,10 @@ fun TeiDetailDashboard(
                     ),
                 )
             }
-        }
-        if (followUpData.showInfoBar) {
-            item {
+
+            if (followUpData.showInfoBar) {
                 InfoBar(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                         .testTag(FOLLOWUP_INFO_BAR_TEST_TAG),
                     infoBarData = InfoBarData(
                         text = followUpData.text,
@@ -59,11 +56,10 @@ fun TeiDetailDashboard(
                     ),
                 )
             }
-        }
-        if (enrollmentData.showInfoBar) {
-            item {
+
+            if (enrollmentData.showInfoBar) {
                 InfoBar(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 0.dp)
                         .testTag(STATE_INFO_BAR_TEST_TAG),
                     infoBarData = InfoBarData(
                         text = enrollmentData.text,
@@ -75,8 +71,10 @@ fun TeiDetailDashboard(
                 )
             }
         }
+
         item {
             CardDetail(
+                modifier = Modifier.padding(top = 0.dp),
                 title = card.title,
                 additionalInfoList = card.additionalInfo,
                 avatar = card.avatar,

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
@@ -20,11 +21,19 @@ class DashboardViewModel(
     private val eventUid = MutableLiveData<String>()
 
     val updateEnrollment = MutableLiveData(false)
-    val showFollowUpBar = MutableStateFlow(false)
-    val showStatusBar = MutableStateFlow<EnrollmentStatus?>(null)
-    val syncNeeded = MutableStateFlow(false)
     val showStatusErrorMessages = MutableLiveData(StatusChangeResultCode.CHANGED)
-    val state = MutableStateFlow<State?>(null)
+
+    private var _showFollowUpBar = MutableStateFlow(false)
+    val showFollowUpBar = _showFollowUpBar.asStateFlow()
+
+    private var _showStatusBar = MutableStateFlow<EnrollmentStatus?>(null)
+    val showStatusBar = _showStatusBar.asStateFlow()
+
+    private val _syncNeeded = MutableStateFlow(false)
+    val syncNeeded = _syncNeeded.asStateFlow()
+
+    private var _state = MutableStateFlow<State?>(null)
+    val state = _state.asStateFlow()
 
     fun dashboardModel(): LiveData<DashboardProgramModel> {
         return dashboardProgramModelLiveData
@@ -37,13 +46,13 @@ class DashboardViewModel(
     fun updateDashboard(dashboardProgramModel: DashboardProgramModel) {
         if (dashboardProgramModelLiveData.value != dashboardProgramModel) {
             dashboardProgramModelLiveData.value = dashboardProgramModel
-            showFollowUpBar.value =
+            _showFollowUpBar.value =
                 dashboardProgramModelLiveData.value?.currentEnrollment?.followUp() ?: false
-            syncNeeded.value =
+            _syncNeeded.value =
                 dashboardProgramModelLiveData
                     .value?.currentEnrollment?.aggregatedSyncState() != SYNCED
-            showStatusBar.value = dashboardProgramModelLiveData.value?.currentEnrollment?.status()
-            state.value =
+            _showStatusBar.value = dashboardProgramModelLiveData.value?.currentEnrollment?.status()
+            _state.value =
                 dashboardProgramModelLiveData.value?.currentEnrollment?.aggregatedSyncState()
         }
     }
@@ -55,11 +64,11 @@ class DashboardViewModel(
     }
 
     fun onFollowUp(dashboardProgramModel: DashboardProgramModel) {
-        showFollowUpBar.value =
+        _showFollowUpBar.value =
             repository.setFollowUp(dashboardProgramModel.currentEnrollment?.uid())
-        syncNeeded.value = true
-        state.value = State.TO_UPDATE
-        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, showFollowUpBar.toString(), FOLLOW_UP)
+        _syncNeeded.value = true
+        _state.value = State.TO_UPDATE
+        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, _showFollowUpBar.toString(), FOLLOW_UP)
         updateDashboard(dashboardProgramModel)
     }
 
@@ -73,9 +82,9 @@ class DashboardViewModel(
         ).blockingFirst()
 
         if (result == StatusChangeResultCode.CHANGED) {
-            showStatusBar.value = status
-            syncNeeded.value = true
-            state.value = State.TO_UPDATE
+            _showStatusBar.value = status
+            _syncNeeded.value = true
+            _state.value = State.TO_UPDATE
             updateDashboard(dashboardProgramModel)
             updateEnrollment.value = true
         } else {
