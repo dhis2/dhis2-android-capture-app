@@ -166,6 +166,7 @@ internal fun FieldProvider(
                     uiEventHandler = uiEventHandler,
                 )
             }
+
             ValueType.BOOLEAN -> {
                 when (fieldUiModel.renderingType) {
                     UiRenderType.HORIZONTAL_CHECKBOXES,
@@ -212,6 +213,18 @@ internal fun FieldProvider(
 
             ValueType.PHONE_NUMBER -> {
                 ProvideInputPhoneNumber(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
+            }
+
+            ValueType.DATE,
+            ValueType.DATETIME,
+            ValueType.TIME,
+            -> {
+                ProvideInputDate(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
