@@ -281,24 +281,10 @@ internal fun FieldProvider(
 
             // "Remaining option sets" are in fun getLayoutForOptionSet
 
-            else -> { // Remove when all optionsets
-                AndroidViewBinding(
-                    modifier = modifier.fillMaxWidth(),
-                    factory = { inflater, viewgroup, add ->
-                        getFieldView(
-                            context,
-                            inflater,
-                            viewgroup,
-                            add,
-                            fieldUiModel.layoutId,
-                            needToForceUpdate,
-                        )
-                    },
-                    update = {
-                        this.setVariable(BR.textWatcher, textWatcher)
-                        this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                        this.setVariable(BR.item, fieldUiModel)
-                    },
+            else -> {
+                ProvideDropdownInput(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
                 )
             }
         }
