@@ -93,14 +93,6 @@
     <string name="program_inactive">Програма неактивна</string>
 
     <string name="event_open">Відкрити</string>
-    <string name="event_completed">Випадок завершено</string>
-    <string name="event_skipped">Випадок пропущено</string>
-    <string name="event_schedule">Випадок заплановано</string>
-    <string name="event_expired">Термін дії випадку минув</string>
-    <string name="event_editing_expired">Термін дії можливості редагування минув</string>
-    <string name="event_accepted">Випадок прийнято</string>
-    <string name="event_approved">Випадок схвалено</string>
-    <string name="event_inactive">Випадок неактивний</string>
     <string name="read_only">Тільки читати</string>
     <string name="finish_and_complete">Закінчити і завершити</string>
     <string name="completed">Завершено</string>
@@ -170,7 +162,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Подивитись подробиці</string>
     <string name="view_more">ДИВИТИСЬ БІЛЬШЕ</string>
-    <string name="edit">РЕДАГУВАТИ</string>
     <string name="enrolling_ou">Організаційний підрозділ, який здійснює реєстрацію:</string>
     <string name="follow_up">Подальші дії</string>
     <string name="follow_up_enabled">Подальші дії увімкнено</string>

@@ -42,6 +42,7 @@ import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.databinding.QrDetailDialogBinding
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
+import org.hisp.dhis.mobile.ui.designsystem.component.BarcodeBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
 import org.hisp.dhis.mobile.ui.designsystem.component.CarouselButtonData
@@ -105,7 +106,7 @@ QRDetailBottomDialog(
                     ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
                 )
                 setContent {
-                    ProvideQRBottomSheet(value = value)
+                    ProvideQRorBarcodeBottomSheet(value = value)
                 }
             }
         } else {
@@ -184,7 +185,7 @@ QRDetailBottomDialog(
     }
 
     @Composable
-    private fun ProvideQRBottomSheet(
+    private fun ProvideQRorBarcodeBottomSheet(
         modifier: Modifier = Modifier,
         value: String,
 
@@ -196,7 +197,7 @@ QRDetailBottomDialog(
             val buttonList = getComposeButtonList()
             BottomSheetShell(
                 modifier = modifier,
-                title = resources.getString(R.string.qr_code),
+                title = if (renderingType == UiRenderType.QR_CODE) resources.getString(R.string.qr_code) else resources.getString(R.string.bar_code),
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -206,8 +207,11 @@ QRDetailBottomDialog(
                 },
                 content = {
                     Row(horizontalArrangement = Arrangement.Center) {
-                        // maybe add control for barcode block here
-                        QrCodeBlock(data = value)
+                        if (renderingType == UiRenderType.QR_CODE) {
+                            QrCodeBlock(data = value)
+                        } else {
+                            BarcodeBlock(data = value)
+                        }
                     }
                 },
                 buttonBlock = {

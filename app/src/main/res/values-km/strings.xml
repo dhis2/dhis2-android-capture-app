@@ -68,14 +68,6 @@
     <string name="program_inactive">កម្មវិធីមិនដំណើរការ</string>
 
     <string name="event_open">បើក</string>
-    <string name="event_completed">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
-    <string name="event_skipped">ព្រឹត្តិការណ៏បានរំលង</string>
-    <string name="event_schedule">កំណត់កាលវិភាគទៅលើព្រឹត្តិការណ៏</string>
-    <string name="event_expired">ព្រឹត្តិការណ៏ផុតកាលកំណត់</string>
-    <string name="event_editing_expired">ការកែប្រែបានផុតពេលកំណត់</string>
-    <string name="event_accepted">បានទទួលយកព្រឹត្តិការណ៏</string>
-    <string name="event_approved">ព្រឹត្តិការណ៏បានអនុម័ត</string>
-    <string name="event_inactive">ព្រឹត្តិការណ៏មិនដំណើរការ</string>
     <string name="read_only">បានត្រឹមតែអាន</string>
     <string name="completed">បានបញ្ចប់</string>
     <string name="cancelled">បានលុបចោល</string>
@@ -125,7 +117,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">មើលលំអិត</string>
     <string name="view_more">មើលច្រើនទៀត</string>
-    <string name="edit">កែប្រែ</string>
     <string name="enrolling_ou">ចុះឈ្មោះអង្គភាព</string>
     <string name="follow_up">តាមដាន</string>
     <string name="follow_up_enabled">ការតាមដានដំណើរការ</string>

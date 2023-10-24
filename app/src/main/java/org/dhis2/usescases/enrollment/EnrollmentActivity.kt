@@ -131,7 +131,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .openErrorLocation(openErrorLocation)
             .useComposeForm(
                 featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
-                featureConfig.isFeatureEnable(Feature.DISABLE_COLLAPSIBLE_SECTIONS),
             )
             .build()
 

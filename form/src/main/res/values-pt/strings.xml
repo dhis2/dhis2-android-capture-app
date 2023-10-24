@@ -58,5 +58,4 @@
     <string name="no_reserved_values">Não há mais valores reservados. Entre em contato com o administrador do sistema</string>
     <string name="enrollmment_date">Data de inscrição</string>
     <string name="incident_date">Data do incidente</string>
-
-</resources>
+    </resources>

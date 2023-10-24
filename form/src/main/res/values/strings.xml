@@ -105,4 +105,5 @@
     <string name="download">Download</string>
     <string name="scan">Scan</string>
     <string name="qr_code">QR code</string>
+    <string name="bar_code">Bar code</string>
 </resources>
