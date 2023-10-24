@@ -45,6 +45,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Prov
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
@@ -140,6 +141,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             val orgUnit by viewModel.eventOrgUnit.collectAsState()
             val catCombo by viewModel.eventCatCombo.collectAsState()
             val coordinates by viewModel.eventCoordinates.collectAsState()
+            val eventTemp by viewModel.eventTemp.collectAsState()
 
             Column {
                 if (date.active) {
@@ -187,6 +189,18 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                         coordinates = coordinates,
                         detailsEnabled = details.enabled,
                         resources = resourceManager,
+                    )
+                }
+
+                if (eventTemp.active) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideRadioButtons(
+                        eventTemp = eventTemp,
+                        detailsEnabled = details.enabled,
+                        resources = resourceManager,
+                        onEventTempSelected = {
+                            viewModel.setUpEventTemp(it)
+                        }
                     )
                 }
             }

@@ -13,6 +13,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
@@ -24,7 +26,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
+import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
+import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -224,4 +229,55 @@ fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
             longitude = GeometryHelper.getPoint(geometry)[1],
         )
     }
+}
+
+@Composable
+fun ProvideRadioButtons(
+    eventTemp: EventTemp,
+    detailsEnabled: Boolean,
+    resources: ResourceManager,
+    onEventTempSelected: (status: EventTempStatus?) -> Unit,
+) {
+
+    val radioButtonData = listOf(
+        RadioButtonData(
+            uid = EventTempStatus.ONE_TIME.name,
+            selected = eventTemp.status == EventTempStatus.ONE_TIME,
+            enabled = true,
+            textInput = resources.getString(R.string.one_time),
+        ),
+        RadioButtonData(
+            uid = EventTempStatus.PERMANENT.name,
+            selected = eventTemp.status == EventTempStatus.PERMANENT,
+            enabled = true,
+            textInput = resources.getString(R.string.permanent),
+        ),
+    )
+
+    InputRadioButton(
+        title = "",
+        radioButtonData = radioButtonData,
+        orientation = Orientation.HORIZONTAL,
+        state = if (detailsEnabled) {
+            InputShellState.UNFOCUSED
+        } else {
+            InputShellState.DISABLED
+        },
+        itemSelected = radioButtonData.find { it.selected },
+        onItemChange = { data ->
+            when (data?.uid) {
+                EventTempStatus.ONE_TIME.name -> {
+                    onEventTempSelected(EventTempStatus.ONE_TIME)
+                }
+
+                EventTempStatus.PERMANENT.name -> {
+                    onEventTempSelected(EventTempStatus.PERMANENT)
+                }
+
+                else -> {
+                    onEventTempSelected(null)
+                }
+            }
+        }
+    )
 }
