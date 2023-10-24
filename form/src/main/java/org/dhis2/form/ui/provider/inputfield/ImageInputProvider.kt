@@ -17,8 +17,6 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.binding.getBitmap
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
-import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 
