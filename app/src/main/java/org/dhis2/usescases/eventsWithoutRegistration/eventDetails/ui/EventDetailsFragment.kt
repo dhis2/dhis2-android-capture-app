@@ -49,7 +49,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Prov
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
-import org.dhis2.utils.customviews.CatOptionPopUp
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -135,7 +134,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         )
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        binding.fieldsContainer?.setContent {
+        binding.fieldsContainer.setContent {
             val date by viewModel.eventDate.collectAsState()
             val details by viewModel.eventDetails.collectAsState()
             val orgUnit by viewModel.eventOrgUnit.collectAsState()
@@ -172,11 +171,17 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                             category = category,
                             eventCatCombo = catCombo,
                             detailsEnabled = details.enabled,
-                            onCatComboClick = {
-                                viewModel.onCatComboClick(it)
+                            currentDate = date.currentDate,
+                            selectedOrgUnit = details.selectedOrgUnit,
+                            onShowCategoryDialog = {
+                                showCategoryDialog(it)
                             },
                             onClearCatCombo = {
                                 val selectedOption = Pair(category.uid, null)
+                                viewModel.setUpCategoryCombo(selectedOption)
+                            },
+                            onOptionSelected = {
+                                val selectedOption = Pair(category.uid, it?.uid())
                                 viewModel.setUpCategoryCombo(selectedOption)
                             },
                         )
@@ -200,7 +205,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                         resources = resourceManager,
                         onEventTempSelected = {
                             viewModel.setUpEventTemp(it)
-                        }
+                        },
                     )
                 }
             }
@@ -231,14 +236,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
         viewModel.showNoOrgUnits = {
             showNoOrgUnitsDialog()
-        }
-
-        viewModel.showCategoryDialog = { category ->
-            showCategoryDialog(category)
-        }
-
-        viewModel.showCategoryPopUp = { category ->
-            showCategoryPopUp(category)
         }
 
         viewModel.requestLocationPermissions = {
@@ -341,19 +338,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showNoOrgUnitsDialog() {
         showInfoDialog(getString(R.string.error), getString(R.string.no_org_units))
-    }
-
-    private fun showCategoryPopUp(category: EventCategory) {
-        CatOptionPopUp(
-            context = requireContext(),
-            anchor = binding.catComboLayout,
-            options = category.options,
-            date = viewModel.eventDate.value.currentDate,
-            orgUnitUid = viewModel.eventDetails.value.selectedOrgUnit,
-        ) { categoryOption ->
-            val selectedOption = Pair(category.uid, categoryOption?.uid())
-            viewModel.setUpCategoryCombo(selectedOption)
-        }.show()
     }
 
     private fun showCategoryDialog(category: EventCategory) {

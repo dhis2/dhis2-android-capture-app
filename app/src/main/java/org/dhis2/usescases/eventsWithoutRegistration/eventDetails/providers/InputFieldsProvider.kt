@@ -1,12 +1,22 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers
 
+import androidx.compose.foundation.background
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.data.dhislogic.inDateRange
+import org.dhis2.data.dhislogic.inOrgUnit
 import org.dhis2.form.model.UiEventType
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
@@ -15,8 +25,10 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
@@ -31,9 +43,12 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Date
 
 @Composable
 fun ProvideInputDate(
@@ -162,33 +177,96 @@ fun ProvideOrgUnit(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProvideCategorySelector(
+    modifier: Modifier = Modifier,
     category: EventCategory,
     eventCatCombo: EventCatCombo,
     detailsEnabled: Boolean,
-    onCatComboClick: (EventCategory) -> Unit,
+    currentDate: Date?,
+    selectedOrgUnit: String?,
+    onShowCategoryDialog: (EventCategory) -> Unit,
     onClearCatCombo: (EventCategory) -> Unit,
+    onOptionSelected: (CategoryOption?) -> Unit,
 ) {
-    val selectorDisplay =
-        eventCatCombo.selectedCategoryOptions[category.uid]?.displayName()
-            ?: eventCatCombo.categoryOptions?.get(category.uid)?.displayName()
+    var selectedItem by remember(eventCatCombo) {
+        mutableStateOf(
+            eventCatCombo.selectedCategoryOptions[category.uid]?.displayName()
+                ?: eventCatCombo.categoryOptions?.get(category.uid)?.displayName(),
+        )
+    }
 
-    InputDropDown(
-        title = category.name,
-        state = if (detailsEnabled) {
-            InputShellState.UNFOCUSED
-        } else {
-            InputShellState.DISABLED
-        },
-        selectedItem = selectorDisplay,
-        onResetButtonClicked = {
-            onClearCatCombo(category)
-        },
-        onArrowDropDownButtonClicked = {
-            onCatComboClick(category)
-        },
-    )
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {},
+    ) {
+        InputDropDown(
+            modifier = modifier,
+            title = category.name,
+            state = if (detailsEnabled) {
+                InputShellState.UNFOCUSED
+            } else {
+                InputShellState.DISABLED
+            },
+            selectedItem = selectedItem,
+            onResetButtonClicked = {
+                onClearCatCombo(category)
+            },
+            onArrowDropDownButtonClicked = {
+                expanded = !expanded
+            },
+        )
+
+        if (expanded) {
+            if (category.optionsSize > DEFAULT_COUNT_LIMIT) {
+                onShowCategoryDialog(category)
+                expanded = false
+            } else {
+                DropdownMenu(
+                    modifier = modifier.exposedDropdownSize(),
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    val selectableOptions = category.options
+                        .filter { option ->
+                            option.access().data().write()
+                        }.filter { option ->
+                            option.inDateRange(currentDate)
+                        }.filter { option ->
+                            option.inOrgUnit(selectedOrgUnit)
+                        }
+                    selectableOptions.forEach { option ->
+                        val isSelected = option.displayName() == selectedItem
+                        DropdownMenuItem(
+                            modifier = Modifier.background(
+                                when {
+                                    isSelected -> SurfaceColor.PrimaryContainer
+                                    else -> Color.Transparent
+                                },
+                            ),
+                            content = {
+                                Text(
+                                    text = option.displayName() ?: option.code() ?: "",
+                                    color = when {
+                                        isSelected -> TextColor.OnPrimaryContainer
+                                        else -> TextColor.OnSurface
+                                    },
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                selectedItem = option.displayName()
+                                onOptionSelected(option)
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -238,7 +316,6 @@ fun ProvideRadioButtons(
     resources: ResourceManager,
     onEventTempSelected: (status: EventTempStatus?) -> Unit,
 ) {
-
     val radioButtonData = listOf(
         RadioButtonData(
             uid = EventTempStatus.ONE_TIME.name,
@@ -278,6 +355,6 @@ fun ProvideRadioButtons(
                     onEventTempSelected(null)
                 }
             }
-        }
+        },
     )
 }
