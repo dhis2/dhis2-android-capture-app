@@ -27,8 +27,6 @@ internal fun ProvideInputImage(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     resources: Resources,
-    intentHandler: (FormIntent) -> Unit,
-    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
     var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel)) }
 
@@ -46,7 +44,7 @@ internal fun ProvideInputImage(
         load = {
             painter
         },
-        onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE) },
+        onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.SHOW_PICTURE) },
         onResetButtonClicked = { fieldUiModel.onClear() },
         onAddButtonClicked = {
             uploadState = UploadState.UPLOADING
