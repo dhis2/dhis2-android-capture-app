@@ -158,6 +158,14 @@ internal fun FieldProvider(
                 )
             }
 
+            ValueType.FILE_RESOURCE -> {
+                ProvideInputFileResource(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    resources = resources,
+                )
+            }
+
             ValueType.URL -> {
                 ProvideInputLink(
                     modifier = modifierWithFocus,
