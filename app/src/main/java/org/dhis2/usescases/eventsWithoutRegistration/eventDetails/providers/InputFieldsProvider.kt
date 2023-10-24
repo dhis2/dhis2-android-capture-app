@@ -7,13 +7,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.model.UiEventType
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
+import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
@@ -177,4 +184,44 @@ fun ProvideCategorySelector(
             onCatComboClick(category)
         },
     )
+}
+
+@Composable
+fun ProvideCoordinates(
+    coordinates: EventCoordinates,
+    detailsEnabled: Boolean,
+    resources: ResourceManager,
+) {
+    InputCoordinate(
+        title = coordinates.model?.label ?: "",
+        state = if (detailsEnabled && coordinates.model?.editable == true) {
+            InputShellState.UNFOCUSED
+        } else {
+            InputShellState.DISABLED
+        },
+        coordinates = mapGeometry(coordinates.model?.value, FeatureType.POINT),
+        latitudeText = resources.getString(R.string.latitude),
+        longitudeText = resources.getString(R.string.longitude),
+        addLocationBtnText = resources.getString(R.string.add_location),
+        onResetButtonClicked = {
+            coordinates.model?.onClear()
+        },
+        onUpdateButtonClicked = {
+            coordinates.model?.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP)
+        },
+    )
+}
+
+fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
+    return value?.let {
+        val geometry = Geometry.builder()
+            .coordinates(it)
+            .type(featureType)
+            .build()
+
+        Coordinates(
+            latitude = GeometryHelper.getPoint(geometry)[0],
+            longitude = GeometryHelper.getPoint(geometry)[1],
+        )
+    }
 }

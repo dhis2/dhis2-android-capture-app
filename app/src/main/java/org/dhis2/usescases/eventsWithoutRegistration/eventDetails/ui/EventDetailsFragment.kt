@@ -42,6 +42,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -138,6 +139,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             val details by viewModel.eventDetails.collectAsState()
             val orgUnit by viewModel.eventOrgUnit.collectAsState()
             val catCombo by viewModel.eventCatCombo.collectAsState()
+            val coordinates by viewModel.eventCoordinates.collectAsState()
+
             Column {
                 if (date.active) {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -160,19 +163,30 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     )
                 }
 
-                catCombo.categories.forEach { category ->
+                if (!catCombo.isDefault) {
+                    catCombo.categories.forEach { category ->
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ProvideCategorySelector(
+                            category = category,
+                            eventCatCombo = catCombo,
+                            detailsEnabled = details.enabled,
+                            onCatComboClick = {
+                                viewModel.onCatComboClick(it)
+                            },
+                            onClearCatCombo = {
+                                val selectedOption = Pair(category.uid, null)
+                                viewModel.setUpCategoryCombo(selectedOption)
+                            },
+                        )
+                    }
+                }
+
+                if (coordinates.active) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    ProvideCategorySelector(
-                        category = category,
-                        eventCatCombo = catCombo,
+                    ProvideCoordinates(
+                        coordinates = coordinates,
                         detailsEnabled = details.enabled,
-                        onCatComboClick = {
-                            viewModel.onCatComboClick(it)
-                        },
-                        onClearCatCombo = {
-                            val selectedOption = Pair(category.uid, null)
-                            viewModel.setUpCategoryCombo(selectedOption)
-                        },
+                        resources = resourceManager,
                     )
                 }
             }
