@@ -11,10 +11,8 @@ import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.usescases.general.AbstractActivityContracts
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage

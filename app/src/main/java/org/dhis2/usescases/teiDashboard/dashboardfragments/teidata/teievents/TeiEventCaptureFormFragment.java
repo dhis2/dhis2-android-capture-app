@@ -62,18 +62,18 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
                 .locationProvider(locationProvider)
                 .onLoadingListener(loading -> {
                     if (loading) {
-                        activity.showProgress();
+//                        activity.showProgress();
                     } else {
-                        activity.hideProgress();
+//                        activity.hideProgress();
                     }
                     return Unit.INSTANCE;
                 })
                 .onFocused(() -> {
-                    activity.hideNavigationBar();
+//                    activity.hideNavigationBar();
                     return Unit.INSTANCE;
                 })
                 .onPercentageUpdate(percentage -> {
-                    activity.updatePercentage(percentage);
+//                    activity.updatePercentage(percentage);
                     return Unit.INSTANCE;
                 })
                 .onDataIntegrityResult(result -> {
@@ -83,7 +83,7 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
                 .factory(activity.getSupportFragmentManager())
                 .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
                 .build();
-        activity.setFormEditionListener(this);
+//        activity.setFormEditionListener(this);
         super.onCreate(savedInstanceState);
     }
 

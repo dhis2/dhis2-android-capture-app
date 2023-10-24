@@ -84,6 +84,7 @@ import kotlin.reflect.KParameter
 class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     lateinit var binding: FragmentTeiDataBinding
+
     @Inject
     lateinit var presenter: TEIDataPresenter
 
@@ -111,7 +112,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) {
-        dashboardActivity.getPresenter().init()
+        dashboardActivity.presenter.init()
     }
 
     private val eventCreationLauncher =
@@ -338,11 +339,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             showLoadingProgress(false)
         }
 
-        if (isPortrait()) {
-            binding.cardFront!!.detailsButton.setButtonContent(dashboardActivity.presenter.teType) {
-                presenter.seeDetails(binding.cardFront!!.cardData, dashboardModel)
-            }
-        } else {
+        if (isLandscape()) {
             binding.cardFrontLand!!.detailsButton.setButtonContent(dashboardActivity.presenter.teType) { Unit }
 
             binding.cardFrontLand!!.followupButton.setFollowupButtonContent(dashboardActivity.presenter.teType, followUp.get()) {
@@ -381,9 +378,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             .onMenuInflated { KParameter.Kind.INSTANCE }
             .onMenuItemClicked { itemId: Int? ->
                 when (itemId) {
-                    R.id.complete -> dashboardActivity.getPresenter()?.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.COMPLETED)
-                    R.id.deactivate -> dashboardActivity.getPresenter()?.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.CANCELLED)
-                    R.id.reOpen -> dashboardActivity.getPresenter()?.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.ACTIVE)
+                    R.id.complete -> dashboardActivity.presenter.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.COMPLETED)
+                    R.id.deactivate -> dashboardActivity.presenter.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.CANCELLED)
+                    R.id.reOpen -> dashboardActivity.presenter.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.ACTIVE)
                 }
                 true
             }
@@ -420,7 +417,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun hideFilters() {
-        dashboardActivity.hideFilter()
     }
 
     override fun observeStageSelection(
@@ -757,6 +753,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             TAG,
         )
     }
+
     companion object {
         const val RC_GENERATE_EVENT = 1501
         const val RC_EVENTS_COMPLETED = 1601

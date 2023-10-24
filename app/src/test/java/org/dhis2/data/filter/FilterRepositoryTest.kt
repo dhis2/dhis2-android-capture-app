@@ -134,7 +134,7 @@ class FilterRepositoryTest {
                 .eq(true).blockingIsEmpty(),
         ) doReturn false
         whenever(
-            d2.settingModule().appearanceSettings().homeFilters,
+            d2.settingModule().appearanceSettings().getHomeFilters(),
         ) doReturn createWebAppHomeFilters()
         whenever(
             getFiltersApplyingWebAppConfig.execute(
@@ -165,7 +165,7 @@ class FilterRepositoryTest {
     fun `Should get global tracked entity filter when webapp is configured`() {
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
-            d2.settingModule().appearanceSettings().trackedEntityTypeFilters,
+            d2.settingModule().appearanceSettings().getTrackedEntityTypeFilters(),
         ) doReturn createWebAppTrackedEntityFilters()
         whenever(
             getFiltersApplyingWebAppConfig.execute(
@@ -308,7 +308,7 @@ class FilterRepositoryTest {
     }
 
     @Test
-    fun `Should get tracker filters with working list when webapp is configured`() {
+    fun `Should get tracker working list when webapp is configured`() {
         val program = Program.builder().uid("random")
             .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
             .trackedEntityType(
@@ -379,13 +379,9 @@ class FilterRepositoryTest {
                 .withAttributeValueFilters().blockingGet(),
         ) doReturn emptyList()
 
-        val result = filterRepository.programFilters(program.uid())
+        val result = filterRepository.workingListFilter(program.uid())
 
-        assert(result[0].type == Filters.WORKING_LIST)
-        assert(result[1].type == Filters.PERIOD)
-        assert(result[2].type == Filters.ENROLLMENT_STATUS)
-        assert(result[3].type == Filters.FOLLOW_UP)
-        assert(result.size == 4)
+        assert(result?.type == Filters.WORKING_LIST)
     }
 
     @Test

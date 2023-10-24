@@ -76,7 +76,7 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
         )
 
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            FullSearchButton(
+            FullSearchButtonAndWorkingList(
                 modifier = Modifier.constrainAs(searchButton) {
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)

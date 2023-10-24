@@ -17,6 +17,7 @@
         <item name="colorSurfaceInverse">#FF2F3033</item>
         <item name="colorOnSurfaceInverse">#FFF1F0F4</item>
         <item name="colorOutline">#FFFDFCFF</item>
+        <item name="colorOutlineVariant">#FFFDFCFF</item>
         <!--end of material colors-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight</item>

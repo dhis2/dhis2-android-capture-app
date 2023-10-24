@@ -82,10 +82,14 @@ class TEICardMapper(
     }
 
     private fun getTitleFirstLetter(item: SearchTeiModel): String {
-        val firstLetter: Char? = item.header?.firstOrNull()
+        val firstLetter = item.header?.firstOrNull()
             ?: item.attributeValues.values.firstOrNull()?.value()?.firstOrNull()
 
-        return firstLetter?.uppercaseChar()?.toString() ?: "?"
+        return when (firstLetter) {
+            null -> "?"
+            '-' -> "?"
+            else -> firstLetter.uppercaseChar().toString()
+        }
     }
 
     private fun getTitle(item: SearchTeiModel): String {
@@ -111,6 +115,7 @@ class TEICardMapper(
         if (searchTEIModel.header == null) {
             attributeList.removeFirstOrNull()
         }
+        attributeList.removeIf { it.value.isEmpty() || it.value == "-" }
 
         return attributeList.also { list ->
             checkEnrolledIn(

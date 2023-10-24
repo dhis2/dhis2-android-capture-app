@@ -264,6 +264,23 @@ internal fun FieldProvider(
                 )
             }
 
+            UiRenderType.MATRIX -> {
+                ProvideMatrixInput(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    context = context,
+                )
+            }
+            UiRenderType.SEQUENCIAL -> {
+                ProvideSequentialInput(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    context = context,
+                )
+            }
+
             // "Remaining option sets" are in fun getLayoutForOptionSet
 
             else -> { // Remove when all optionsets
