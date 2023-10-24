@@ -87,14 +87,6 @@
     <string name="program_inactive">Дастур нофаол</string>
 
     <string name="event_open">Очиш</string>
-    <string name="event_completed">Ҳодиса/Тадбир тугалланди</string>
-    <string name="event_skipped">Тадбир ўтказиб юборилди</string>
-    <string name="event_schedule">Тадбир режаси</string>
-    <string name="event_expired">Тадбир муддати тугаган</string>
-    <string name="event_editing_expired">Таҳрирлаш муддати тугаган</string>
-    <string name="event_accepted">Тадбир қабул қилинган</string>
-    <string name="event_approved">Тадбир тасдиқланди</string>
-    <string name="event_inactive">Тадбир нофаол</string>
     <string name="read_only">Фақат ўқиш учун</string>
     <string name="finish_and_complete">Якунлаш ва тўлдириш</string>
     <string name="completed">Тўлдирилди</string>
@@ -164,7 +156,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Тафсилотларни кўринг</string>
     <string name="view_more">КЎПРОҚ КЎРИШ</string>
-    <string name="edit">ТАҲРИРЛАШ</string>
     <string name="enrolling_ou">OUга рўйхатга олиш</string>
     <string name="follow_up">Кузатиб бориш</string>
     <string name="follow_up_enabled">Кузатув ёқилган</string>
@@ -525,7 +516,7 @@
     <string name="relationship_without_enrollment">Сиз кириб кўрмоқчи бўлган ёзув қайд этилмаган. Сиз бошқарув панелига кира олмайсиз</string>
     <string name="formatting_error">Форматлашда хатолик</string>
     <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириб ташлаш</string>
-    <string name="delete_authority_error">Ушбу ёзувни ўчириб ташлаш ҳуқуқига эга эмассиз</string>
+    <string name="delete_authority_error">Ҳуқуқингиз чегараланганлиги сабабни ушбу ёзувни ўчириб ташлолмайсиз</string>
     <string name="validation_url">Бу ҳақиқий URL эмас</string>
     <string name="uncomplete_authority_error">Ушбу ҳодиса/тадбирни қайта очишга ваколатингиз йўқ</string>
     <string name="adjusting_form">Шакл созланмоқда...</string>
@@ -683,7 +674,7 @@
     <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
     <string name="validation_success_title">Кўринишидан ҳаммаси яхши!</string>
     <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
-    <string name="dataset_completed">Тугалланган деб белгиланг</string>
+    <string name="dataset_completed">Тугалланган сифатида белгилансин</string>
     <string name="name">Исми</string>
     <string name="formula">Формула</string>
     <string name="complete_anyway">Барибир тўлдиринг</string>
