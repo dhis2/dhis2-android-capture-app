@@ -382,16 +382,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         }
 
         if (OrientationUtilsKt.isPortrait()) {
-
-//            DetailsButtonKt.setButtonContent(
-//                    binding.cardFrontLand.detailsButton,
-//                    "Person",
-//                    () -> {
-//                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
-//                        return Unit.INSTANCE;
-//                    }
-//            );
-
             FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get() ,() -> {
                 presenter.onFollowUp(dashboardModel);
                 return Unit.INSTANCE;
@@ -403,15 +393,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             });
 
         } else {
-//            DetailsButtonKt.setButtonContent(
-//                    binding.cardFrontLand.detailsButton,
-//                    "Person",
-//                    () -> {
-//                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
-//                        return Unit.INSTANCE;
-//                    }
-//            );
-
             FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();
@@ -480,16 +461,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         }
 
         if (OrientationUtilsKt.isPortrait()) {
-
-//            DetailsButtonKt.setButtonContent(
-//                    binding.cardFrontLand.detailsButton,
-//                    "Person",
-//                    () -> {
-//                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
-//                        return Unit.INSTANCE;
-//                    }
-//            );
-
             FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 return Unit.INSTANCE;
@@ -501,16 +472,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             });
 
         } else {
-
-//            DetailsButtonKt.setButtonContent(
-//                    binding.cardFrontLand.detailsButton,
-//                    "Person",
-//                    () -> {
-//                        presenter.seeDetails(binding.cardFrontLand.detailsButton, dashboardModel);
-//                        return Unit.INSTANCE;
-//                    }
-//            );
-
             FollowupButtonKt.setFollowupButtonContent(binding.cardFrontLand.followupButton, "Person",followUp.get(), () -> {
                 presenter.onFollowUp(dashboardModel);
                 presenter.init();

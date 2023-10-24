@@ -55,38 +55,6 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
         setRetainInstance(true);
     }
 
-    @Override
-    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        assert getArguments() != null;
-        formView = new FormView.Builder()
-                .locationProvider(locationProvider)
-                .onLoadingListener(loading -> {
-                    if (loading) {
-//                        activity.showProgress();
-                    } else {
-//                        activity.hideProgress();
-                    }
-                    return Unit.INSTANCE;
-                })
-                .onFocused(() -> {
-//                    activity.hideNavigationBar();
-                    return Unit.INSTANCE;
-                })
-                .onPercentageUpdate(percentage -> {
-//                    activity.updatePercentage(percentage);
-                    return Unit.INSTANCE;
-                })
-                .onDataIntegrityResult(result -> {
-                    presenter.handleDataIntegrityResult(result);
-                    return Unit.INSTANCE;
-                })
-                .factory(activity.getSupportFragmentManager())
-                .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
-                .build();
-//        activity.setFormEditionListener(this);
-        super.onCreate(savedInstanceState);
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
