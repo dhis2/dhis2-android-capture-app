@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -24,6 +26,7 @@ internal fun ProvideInputsForValueTypeText(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    focusManager: FocusManager,
 ) {
     when (fieldUiModel.renderingType) {
         UiRenderType.QR_CODE -> {
@@ -32,6 +35,7 @@ internal fun ProvideInputsForValueTypeText(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
+                focusManager = focusManager,
             )
         }
         UiRenderType.BAR_CODE -> {
@@ -40,12 +44,14 @@ internal fun ProvideInputsForValueTypeText(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
+                focusManager = focusManager,
             )
         } else -> {
             ProvideDefaultTextInput(
                 modifier = modifier,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
+                focusManager = focusManager,
             )
         }
     }
@@ -57,6 +63,7 @@ private fun ProvideQRInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
@@ -101,6 +108,10 @@ private fun ProvideQRInput(
                 )
             }
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -109,6 +120,7 @@ private fun ProvideDefaultTextInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -131,6 +143,10 @@ private fun ProvideDefaultTextInput(
                 ),
             )
         },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        onAutoCompleteItemSelected = {
+            focusManager.clearFocus()
+        },
     )
 }
 
@@ -140,6 +156,7 @@ private fun ProvideBarcodeInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    focusManager: FocusManager,
 ) {
     var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
@@ -183,6 +200,10 @@ private fun ProvideBarcodeInput(
                     ),
                 )
             }
+        },
+        autoCompleteList = fieldUiModel.autocompleteList(),
+        autoCompleteItemSelected = {
+            focusManager.clearFocus()
         },
     )
 }
