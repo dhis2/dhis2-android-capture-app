@@ -69,6 +69,7 @@ class TEIDetailMapperTest {
         )
 
         model.teiHeader = "header"
+        model.avatarPath = "avatarFilepath"
 
         return model
     }
