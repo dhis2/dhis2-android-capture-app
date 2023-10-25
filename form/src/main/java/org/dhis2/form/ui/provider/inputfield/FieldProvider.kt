@@ -321,6 +321,16 @@ internal fun FieldProvider(
                 }
             }
 
+            ValueType.AGE -> {
+                ProvideInputAge(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                    resources = resources,
+                )
+            }
+
             else -> {
                 AndroidViewBinding(
                     modifier = modifier.fillMaxWidth(),

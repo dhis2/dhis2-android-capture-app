@@ -326,7 +326,12 @@ class FormViewModel(
     }
 
     private fun getLastFocusedTextItem() = repository.currentFocusedItem()?.takeIf {
-        it.optionSet == null && valueTypeIsTextField(it.valueType, it.renderingType)
+        it.optionSet == null && (
+            valueTypeIsTextField(
+                it.valueType,
+                it.renderingType,
+            ) || it.valueType == ValueType.AGE
+            )
     }
 
     private fun getSaveIntent(field: FieldUiModel) = when (field.valueType) {
@@ -474,6 +479,10 @@ class FormViewModel(
 
                 ValueType.DATETIME -> {
                     validateDateTimeFormat(fieldValue, valueType)
+                }
+
+                ValueType.AGE -> {
+                    validateDateFormats(fieldValue, valueType)
                 }
 
                 else -> {
