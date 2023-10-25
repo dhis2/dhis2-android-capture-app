@@ -2,7 +2,6 @@ package org.dhis2.form.ui.provider.inputfield
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.text.TextWatcher
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -25,6 +24,7 @@ import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import kotlinx.coroutines.launch
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.BR
 import org.dhis2.form.R
 import org.dhis2.form.extensions.autocompleteList
@@ -62,7 +62,7 @@ internal fun FieldProvider(
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
-    resources: Resources,
+    resources: ResourceManager,
     focusManager: FocusManager,
 ) {
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
@@ -280,6 +280,7 @@ internal fun FieldProvider(
                             fieldUiModel = fieldUiModel,
                         )
                     }
+
                     else -> {
                         ProvideInputImage(
                             modifier = modifierWithFocus,
@@ -299,23 +300,12 @@ internal fun FieldProvider(
                         )
                     }
                     else -> {
-                        AndroidViewBinding(
-                            modifier = modifier.fillMaxWidth(),
-                            factory = { inflater, viewgroup, add ->
-                                getFieldView(
-                                    context,
-                                    inflater,
-                                    viewgroup,
-                                    add,
-                                    fieldUiModel.layoutId,
-                                    needToForceUpdate,
-                                )
-                            },
-                            update = {
-                                this.setVariable(BR.textWatcher, textWatcher)
-                                this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                                this.setVariable(BR.item, fieldUiModel)
-                            },
+                        ProvideInputCoordinate(
+                            modifier = modifierWithFocus,
+                            fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
+                            uiEventHandler = uiEventHandler,
+                            resources = resources,
                         )
                     }
                 }
@@ -382,6 +372,7 @@ internal fun FieldProvider(
                     context = context,
                 )
             }
+
             UiRenderType.SEQUENCIAL -> {
                 ProvideSequentialInput(
                     modifier = modifierWithFocus,
@@ -876,6 +867,7 @@ private fun ProvideOrgUnitInput(
 
     )
 }
+
 private fun getFieldView(
     context: Context,
     inflater: LayoutInflater,

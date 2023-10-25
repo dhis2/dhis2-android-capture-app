@@ -1,12 +1,12 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import android.content.res.Resources
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -22,7 +22,7 @@ import java.io.File
 internal fun ProvideInputFileResource(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
-    resources: Resources,
+    resources: ResourceManager,
 ) {
     val uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel)) }
 
