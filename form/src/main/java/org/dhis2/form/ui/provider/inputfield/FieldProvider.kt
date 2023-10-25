@@ -280,6 +280,7 @@ internal fun FieldProvider(
                             fieldUiModel = fieldUiModel,
                         )
                     }
+
                     else -> {
                         ProvideInputImage(
                             modifier = modifierWithFocus,
@@ -866,6 +867,7 @@ private fun ProvideOrgUnitInput(
 
     )
 }
+
 private fun getFieldView(
     context: Context,
     inflater: LayoutInflater,

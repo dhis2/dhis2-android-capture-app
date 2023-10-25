@@ -9,7 +9,6 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
-import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -45,40 +44,36 @@ fun ProvideInputCoordinate(
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: ResourceManager,
 ) {
-    if (fieldUiModel.renderingType == UiRenderType.POINT) {
-        InputCoordinate(
-            title = fieldUiModel.label,
-            state = fieldUiModel.inputState(),
-            supportingText = fieldUiModel.supportingText(),
-            legendData = fieldUiModel.legend(),
-            coordinates = mapGeometry(fieldUiModel.value, FeatureType.POINT),
-            latitudeText = resources.getString(R.string.latitude),
-            longitudeText = resources.getString(R.string.longitude),
-            addLocationBtnText = resources.getString(R.string.add_location),
-            isRequired = fieldUiModel.mandatory,
-            modifier = modifier,
-            onResetButtonClicked = {
-                intentHandler.invoke(
-                    FormIntent.OnSave(
-                        uid = fieldUiModel.uid,
-                        value = null,
-                        valueType = fieldUiModel.valueType,
-                    ),
-                )
-            },
-            onUpdateButtonClicked = {
-                uiEventHandler.invoke(
-                    RecyclerViewUiEvents.RequestLocationByMap(
-                        uid = fieldUiModel.uid,
-                        featureType = FeatureType.POINT,
-                        value = fieldUiModel.value,
-                    ),
-                )
-            },
-        )
-    } else {
-        // TODO(ImplementPOlygon)
-    }
+    InputCoordinate(
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        coordinates = mapGeometry(fieldUiModel.value, FeatureType.POINT),
+        latitudeText = resources.getString(R.string.latitude),
+        longitudeText = resources.getString(R.string.longitude),
+        addLocationBtnText = resources.getString(R.string.add_location),
+        isRequired = fieldUiModel.mandatory,
+        modifier = modifier,
+        onResetButtonClicked = {
+            intentHandler.invoke(
+                FormIntent.OnSave(
+                    uid = fieldUiModel.uid,
+                    value = null,
+                    valueType = fieldUiModel.valueType,
+                ),
+            )
+        },
+        onUpdateButtonClicked = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.RequestLocationByMap(
+                    uid = fieldUiModel.uid,
+                    featureType = FeatureType.POINT,
+                    value = fieldUiModel.value,
+                ),
+            )
+        },
+    )
 }
 
 fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {

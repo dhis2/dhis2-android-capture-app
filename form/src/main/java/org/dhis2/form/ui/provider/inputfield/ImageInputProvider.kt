@@ -1,6 +1,5 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import android.content.res.Resources
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -10,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -24,7 +24,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 internal fun ProvideInputImage(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
-    resources: Resources,
+    resources: ResourceManager,
 ) {
     var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel)) }
 
