@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -25,7 +24,7 @@ internal fun ProvideInputFileResource(
     fieldUiModel: FieldUiModel,
     resources: Resources,
 ) {
-    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel)) }
+    val uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel)) }
 
     val fileInputData = fieldUiModel.value?.let {
         val file = File(it)
@@ -57,7 +56,6 @@ internal fun ProvideInputFileResource(
         },
         onClear = { fieldUiModel.onClear() },
         onUploadFile = {
-            uploadState = UploadFileState.UPLOADING
             fieldUiModel.invokeUiEvent(UiEventType.OPEN_FILE)
         },
         legendData = fieldUiModel.legend(),
