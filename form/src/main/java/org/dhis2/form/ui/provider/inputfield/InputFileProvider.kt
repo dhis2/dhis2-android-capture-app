@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
+import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
@@ -35,11 +36,11 @@ internal fun ProvideInputFileResource(
         )
     }
 
-    val filename = remember(fieldUiModel) {
+    val filename by remember(fieldUiModel) {
         mutableStateOf(fileInputData?.fileName)
     }
 
-    val fileSize = remember(fieldUiModel) {
+    val fileSize by remember(fieldUiModel) {
         mutableStateOf(fileInputData?.fileSizeLabel)
     }
     InputFileResource(
@@ -59,6 +60,8 @@ internal fun ProvideInputFileResource(
             uploadState = UploadFileState.UPLOADING
             fieldUiModel.invokeUiEvent(UiEventType.OPEN_FILE)
         },
+        legendData = fieldUiModel.legend(),
+        isRequired = fieldUiModel.mandatory,
     )
 }
 
