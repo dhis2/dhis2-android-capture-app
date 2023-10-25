@@ -35,7 +35,14 @@ import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateFailure
+import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateTimeFailure
+import org.hisp.dhis.android.core.common.valuetype.validation.failures.TimeFailure
 import timber.log.Timber
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 class FormViewModel(
     private val repository: FormRepository,
@@ -457,21 +464,80 @@ class FormViewModel(
         }
 
         return fieldValue.let { value ->
-            var error =
-                when (
-                    val result = valueType?.validator?.validate(value)
-                ) {
-                    is Result.Failure -> result.failure
-                    else -> null
+            val result = when (valueType) {
+                ValueType.DATE -> {
+                    validateDateFormats(fieldValue, valueType)
+                }
+                ValueType.TIME -> {
+                    validateTimeFormat(fieldValue, valueType)
                 }
 
+                ValueType.DATETIME -> {
+                    validateDateTimeFormat(fieldValue, valueType)
+                }
+
+                else -> {
+                    valueType?.validator?.validate(value)
+                }
+            }
+            var error = when (result) {
+                is Result.Failure -> result.failure
+                else -> null
+            }
+
             fieldMask?.let { mask ->
-                error = when (val result = FieldMaskValidator(mask).validate(value)) {
-                    is Result.Failure -> result.failure
+                error = when (val validation = FieldMaskValidator(mask).validate(value)) {
+                    is Result.Failure -> validation.failure
                     else -> error
                 }
             }
             error
+        }
+    }
+
+    private fun validateDateTimeFormat(
+        dateTimeString: String,
+        valueType: ValueType,
+    ): Result<String, Throwable> {
+        val regex = Regex("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")
+
+        if (!regex.matches(dateTimeString)) {
+            return Result.Failure(DateTimeFailure.ParseException)
+        }
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+
+        return try {
+            LocalDateTime.parse(dateTimeString, formatter)
+            valueType.validator.validate(dateTimeString)
+        } catch (e: DateTimeParseException) {
+            Result.Failure(DateTimeFailure.ParseException)
+        }
+    }
+
+    private fun validateTimeFormat(
+        timeString: String,
+        valueType: ValueType,
+    ): Result<String, Throwable> {
+        val regex = Regex("([01][0-9]|2[0-3]):[0-5][0-9]")
+        return if (regex.matches(timeString)) {
+            valueType.validator.validate(timeString)
+        } else {
+            Result.Failure(TimeFailure.ParseException)
+        }
+    }
+
+    private fun validateDateFormats(
+        dateString: String,
+        valueType: ValueType,
+    ): Result<String, Throwable> {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        return try {
+            LocalDate.parse(dateString, formatter)
+            valueType.validator.validate(dateString)
+        } catch (e: DateTimeParseException) {
+            Result.Failure(DateFailure.ParseException)
         }
     }
 
