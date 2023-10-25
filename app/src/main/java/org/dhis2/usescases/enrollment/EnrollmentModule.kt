@@ -9,6 +9,7 @@ import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -28,6 +29,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.LayoutProviderImpl
+import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
@@ -131,6 +133,7 @@ class EnrollmentModule(
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl(),
             LegendValueProviderImpl(d2, resourceManager),
+            AutoCompleteProviderImpl(PreferenceProviderImpl(context)),
         )
     }
 

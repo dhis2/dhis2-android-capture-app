@@ -272,6 +272,7 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid002",
@@ -282,6 +283,7 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid003",
@@ -292,6 +294,7 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
     )
 
@@ -321,6 +324,7 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid002",
@@ -332,6 +336,7 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid003",
@@ -343,6 +348,7 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         section2(),
     )
@@ -360,6 +366,7 @@ class FormRepositoryImplTest {
             uiEventFactory = null,
             mandatory = true,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid002",
@@ -371,6 +378,7 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
         ),
     )
 }
