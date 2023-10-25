@@ -281,23 +281,10 @@ internal fun FieldProvider(
                         )
                     }
                     else -> {
-                        AndroidViewBinding(
-                            modifier = modifier.fillMaxWidth(),
-                            factory = { inflater, viewgroup, add ->
-                                getFieldView(
-                                    context,
-                                    inflater,
-                                    viewgroup,
-                                    add,
-                                    fieldUiModel.layoutId,
-                                    needToForceUpdate,
-                                )
-                            },
-                            update = {
-                                this.setVariable(BR.textWatcher, textWatcher)
-                                this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                                this.setVariable(BR.item, fieldUiModel)
-                            },
+                        ProvideInputImage(
+                            modifier = modifierWithFocus,
+                            fieldUiModel = fieldUiModel,
+                            resources = resources,
                         )
                     }
                 }
