@@ -1060,7 +1060,7 @@ class FormView : Fragment() {
                 out.flush()
             }
             intentHandler(
-                FormIntent.OnSave(
+                FormIntent.OnStoreFile(
                     uiEvent.uid,
                     file.path,
                     ValueType.IMAGE,
