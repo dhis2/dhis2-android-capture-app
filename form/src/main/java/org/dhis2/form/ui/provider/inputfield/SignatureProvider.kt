@@ -37,7 +37,10 @@ fun ProvideInputSignature(
         uploadState = if (fieldUiModel.value != null) UploadState.LOADED else UploadState.ADD,
         load = { imageBitmap },
         painterFor = imageBitmap?.let {
-            { image -> BitmapPainter(image!!) }
+            {
+                    image ->
+                BitmapPainter(image!!)
+            }
         },
         onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.SHOW_PICTURE) },
         onResetButtonClicked = { fieldUiModel.onClear() },
