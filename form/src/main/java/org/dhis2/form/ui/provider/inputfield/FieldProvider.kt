@@ -290,6 +290,37 @@ internal fun FieldProvider(
                 }
             }
 
+            ValueType.COORDINATE -> {
+                when (fieldUiModel.renderingType) {
+                    UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON -> {
+                        ProvidePolygon(
+                            modifier = modifierWithFocus,
+                            fieldUiModel = fieldUiModel,
+                        )
+                    }
+                    else -> {
+                        AndroidViewBinding(
+                            modifier = modifier.fillMaxWidth(),
+                            factory = { inflater, viewgroup, add ->
+                                getFieldView(
+                                    context,
+                                    inflater,
+                                    viewgroup,
+                                    add,
+                                    fieldUiModel.layoutId,
+                                    needToForceUpdate,
+                                )
+                            },
+                            update = {
+                                this.setVariable(BR.textWatcher, textWatcher)
+                                this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
+                                this.setVariable(BR.item, fieldUiModel)
+                            },
+                        )
+                    }
+                }
+            }
+
             else -> {
                 AndroidViewBinding(
                     modifier = modifier.fillMaxWidth(),
