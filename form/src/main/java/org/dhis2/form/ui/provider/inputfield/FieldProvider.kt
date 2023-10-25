@@ -176,6 +176,7 @@ internal fun FieldProvider(
                     uiEventHandler = uiEventHandler,
                 )
             }
+
             ValueType.BOOLEAN -> {
                 when (fieldUiModel.renderingType) {
                     UiRenderType.HORIZONTAL_CHECKBOXES,
@@ -222,6 +223,18 @@ internal fun FieldProvider(
 
             ValueType.PHONE_NUMBER -> {
                 ProvideInputPhoneNumber(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                    uiEventHandler = uiEventHandler,
+                )
+            }
+
+            ValueType.DATE,
+            ValueType.DATETIME,
+            ValueType.TIME,
+            -> {
+                ProvideInputDate(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
@@ -291,24 +304,10 @@ internal fun FieldProvider(
 
             // "Remaining option sets" are in fun getLayoutForOptionSet
 
-            else -> { // Remove when all optionsets
-                AndroidViewBinding(
-                    modifier = modifier.fillMaxWidth(),
-                    factory = { inflater, viewgroup, add ->
-                        getFieldView(
-                            context,
-                            inflater,
-                            viewgroup,
-                            add,
-                            fieldUiModel.layoutId,
-                            needToForceUpdate,
-                        )
-                    },
-                    update = {
-                        this.setVariable(BR.textWatcher, textWatcher)
-                        this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                        this.setVariable(BR.item, fieldUiModel)
-                    },
+            else -> {
+                ProvideDropdownInput(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
                 )
             }
         }
