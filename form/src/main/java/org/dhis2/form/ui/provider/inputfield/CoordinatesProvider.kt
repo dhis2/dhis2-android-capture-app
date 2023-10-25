@@ -84,8 +84,8 @@ fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
             .build()
 
         Coordinates(
-            latitude = GeometryHelper.getPoint(geometry)[0],
-            longitude = GeometryHelper.getPoint(geometry)[1],
+            latitude = GeometryHelper.getPoint(geometry)[1],
+            longitude = GeometryHelper.getPoint(geometry)[0],
         )
     }
 }
