@@ -69,6 +69,8 @@ interface FieldUiModel {
 
     val isLoadingData: Boolean
 
+    val autocompleteList: List<String>?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean

@@ -7,6 +7,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
+import org.dhis2.form.ui.provider.AutoCompleteProvider
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
@@ -71,6 +72,7 @@ class RulesUtilsProviderImplTest {
     private val keyboardActionProvider: KeyboardActionProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
     private val optionsRepository: OptionsRepository = mock()
+    private val autoCompleteProvider: AutoCompleteProvider = mock()
 
     private val testRuleEffects = ArrayList<RuleEffect>()
 
@@ -86,6 +88,7 @@ class RulesUtilsProviderImplTest {
             uiEventTypesProvider,
             keyboardActionProvider,
             legendValueProvider,
+            autoCompleteProvider,
         )
         testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid }.toMutableMap()
     }
@@ -602,6 +605,7 @@ class RulesUtilsProviderImplTest {
             null,
             false,
             null,
+            null,
         )
 
         whenever(valueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
@@ -657,6 +661,7 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             false,
+            null,
             null,
         )
 
@@ -721,6 +726,7 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             false,
+            null,
             null,
         )
 
