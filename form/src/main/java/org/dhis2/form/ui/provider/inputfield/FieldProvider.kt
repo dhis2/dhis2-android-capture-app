@@ -44,6 +44,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
+import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
@@ -157,6 +158,15 @@ internal fun FieldProvider(
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
+                )
+            }
+
+            ValueType.ORGANISATION_UNIT -> {
+                ProvideOrgUnitInput(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    uiEventHandler = uiEventHandler,
+                    intentHandler = intentHandler,
                 )
             }
 
@@ -746,6 +756,51 @@ private fun ProvideInputLink(
     )
 }
 
+@Composable
+private fun ProvideOrgUnitInput(
+    modifier: Modifier,
+    fieldUiModel: FieldUiModel,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    intentHandler: (FormIntent) -> Unit,
+) {
+    var inputFieldValue by remember(
+        fieldUiModel,
+    ) {
+        mutableStateOf(fieldUiModel.displayName)
+    }
+
+    InputOrgUnit(
+        modifier = modifier.fillMaxWidth(),
+        title = fieldUiModel.label,
+        state = fieldUiModel.inputState(),
+        supportingText = fieldUiModel.supportingText(),
+        legendData = fieldUiModel.legend(),
+        inputText = inputFieldValue ?: "",
+        isRequiredField = fieldUiModel.mandatory,
+        onValueChanged = {
+            inputFieldValue = it
+            fieldUiModel.onItemClick()
+            intentHandler(
+                FormIntent.OnSave(
+                    fieldUiModel.uid,
+                    it,
+                    fieldUiModel.valueType,
+                ),
+            )
+        },
+        onOrgUnitActionCLicked = {
+            fieldUiModel.onItemClick()
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenOrgUnitDialog(
+                    fieldUiModel.uid,
+                    fieldUiModel.label,
+                    fieldUiModel.value,
+                ),
+            )
+        },
+
+    )
+}
 private fun getFieldView(
     context: Context,
     inflater: LayoutInflater,
