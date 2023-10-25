@@ -170,6 +170,14 @@ internal fun FieldProvider(
                 )
             }
 
+            ValueType.UNIT_INTERVAL -> {
+                ProvideUnitIntervalInput(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler,
+                )
+            }
+
             ValueType.EMAIL -> {
                 ProvideEmail(
                     modifier = modifierWithFocus,
