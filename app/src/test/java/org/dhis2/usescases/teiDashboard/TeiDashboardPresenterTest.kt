@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.GROUPING
@@ -22,6 +23,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Before
@@ -67,7 +69,10 @@ class TeiDashboardPresenterTest {
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
         val events = listOf(Event.builder().uid("eventUid").build())
         val trackedEntityAttributes = listOf(
-            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build(),
+            Pair.create(
+                TrackedEntityAttribute.builder().uid("teiAttr").build(),
+                TrackedEntityAttributeValue.builder().build(),
+            ),
         )
         val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
@@ -86,7 +91,7 @@ class TeiDashboardPresenterTest {
             repository.getTEIEnrollmentEvents(programUid, teiUid),
         ) doReturn Observable.just(events)
         whenever(
-            repository.getProgramTrackedEntityAttributes(programUid),
+            repository.getAttributesMap(programUid, teiUid),
         ) doReturn Observable.just(trackedEntityAttributes)
         whenever(
             repository.getTEIAttributeValues(programUid, teiUid),
@@ -161,7 +166,10 @@ class TeiDashboardPresenterTest {
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
         val events = listOf(Event.builder().uid("eventUid").build())
         val trackedEntityAttributes = listOf(
-            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build(),
+            Pair.create(
+                TrackedEntityAttribute.builder().uid("teiAttr").build(),
+                TrackedEntityAttributeValue.builder().build(),
+            ),
         )
         val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
@@ -180,7 +188,7 @@ class TeiDashboardPresenterTest {
             repository.getTEIEnrollmentEvents(programUid, teiUid),
         ) doReturn Observable.just(events)
         whenever(
-            repository.getProgramTrackedEntityAttributes(programUid),
+            repository.getAttributesMap(programUid, teiUid),
         ) doReturn Observable.just(trackedEntityAttributes)
         whenever(
             repository.getTEIAttributeValues(programUid, teiUid),

@@ -32,4 +32,6 @@ interface TeiDataRepository {
     fun enrollingOrgUnit(): Single<OrganisationUnit>
     fun eventsWithoutCatCombo(): Single<List<EventViewModel>>
     fun getOrgUnitName(orgUnitUid: String): String
+    fun getTeiProfilePath(): String?
+    fun getTeiHeader(): String?
 }

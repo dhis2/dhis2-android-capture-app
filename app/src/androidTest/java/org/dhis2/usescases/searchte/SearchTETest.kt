@@ -291,7 +291,6 @@ class SearchTETest : BaseTest() {
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
-            checkUnlockIconIsDisplay()
             pressBack()
         }
 

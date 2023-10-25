@@ -518,4 +518,12 @@ class TEIDataPresenter(
         return options?.let { eventCreationOptionsMapper.mapToEventsByTimeLine(it) }
             ?: emptyList()
     }
+
+    fun getTeiProfilePath(): String? {
+        return teiDataRepository.getTeiProfilePath()
+    }
+
+    fun getTeiHeader(): String? {
+        return teiDataRepository.getTeiHeader()
+    }
 }

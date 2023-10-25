@@ -1,12 +1,16 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
@@ -47,6 +51,10 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.CategoryDialogInteractions
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
+import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
+import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
+import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
+import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
@@ -59,6 +67,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -78,13 +87,19 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     @Inject
     lateinit var colorUtils: ColorUtils
 
+    @Inject
+    lateinit var teiDashboardCardMapper: TeiDashboardCardMapper
+
+    @Inject
+    lateinit var infoBarMapper: InfoBarMapper
+
     private var eventAdapter: EventAdapter? = null
     private var dialog: CustomDialog? = null
     private var programStageFromEvent: ProgramStage? = null
     private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
-    private var dashboardModel: DashboardProgramModel? = null
+    private lateinit var dashboardModel: DashboardProgramModel
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
 
     private val detailsLauncher = registerForActivityResult(
@@ -94,13 +109,21 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     private val eventCreationLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
     private val eventCaptureLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
     private val eventDetailsLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
     private val eventInitialLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            dashboardActivity.presenter.init()
+        }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -133,10 +156,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 binding.isGrouping = group
                 presenter.onGroupingChanged(group)
             }
-            dashboardActivity.observeFilters()
-                ?.observe(viewLifecycleOwner, ::showHideFilters)
-            dashboardActivity.updatedEnrollment()
-                ?.observe(viewLifecycleOwner, ::updateEnrollment)
+            dashboardActivity.observeFilters()?.observe(viewLifecycleOwner, ::showHideFilters)
+            dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner, ::updateEnrollment)
 
             binding.filterLayout.adapter = filtersAdapter
         }.root
@@ -209,14 +230,64 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         if (dashboardModel.currentEnrollment != null) {
             binding.dialFabLayout.setFabVisible(true)
             presenter.setDashboardProgram(dashboardModel)
-            eventCatComboOptionSelector =
-                EventCatComboOptionSelector(
-                    dashboardModel.currentProgram.categoryComboUid(),
-                    childFragmentManager,
-                    object : CategoryDialogInteractions {},
-                )
+            eventCatComboOptionSelector = EventCatComboOptionSelector(
+                dashboardModel.currentProgram.categoryComboUid(),
+                childFragmentManager,
+                object : CategoryDialogInteractions {},
+            )
             binding.dashboardModel = dashboardModel
             updateFabItems()
+            dashboardModel.teiHeader = presenter.getTeiHeader()
+            dashboardModel.avatarPath = presenter.getTeiProfilePath()
+            binding.detailCard?.setContent {
+                val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
+                val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
+                val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
+                val state by dashboardViewModel.state.collectAsState()
+                dashboardModel.currentEnrollmentStatus = enrollmentStatus
+                dashboardModel.enrollmentState = state
+                val syncInfoBar = infoBarMapper.map(
+                    infoBarType = InfoBarType.SYNC,
+                    item = dashboardModel,
+                    actionCallback = { dashboardActivity.openSyncDialog() },
+                    showInfoBar = syncNeeded,
+                )
+                val followUpInfoBar = infoBarMapper.map(
+                    infoBarType = InfoBarType.FOLLOW_UP,
+                    item = dashboardModel,
+                    actionCallback = {
+                        dashboardViewModel.onFollowUp(dashboardModel)
+                    },
+                    showInfoBar = followUp,
+                )
+                val enrollmentInfoBar = infoBarMapper.map(
+                    infoBarType = InfoBarType.ENROLLMENT_STATUS,
+                    item = dashboardModel,
+                    actionCallback = { },
+                    showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
+                )
+                val card = teiDashboardCardMapper.map(
+                    dashboardModel = dashboardModel,
+                    phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
+                    emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
+                    programsCallback = {
+                        startActivity(
+                            TeiDashboardMobileActivity.intent(
+                                dashboardActivity.context,
+                                dashboardActivity.teiUid,
+                                null,
+                                null,
+                            ),
+                        )
+                    },
+                )
+                TeiDetailDashboard(
+                    syncData = syncInfoBar,
+                    followUpData = followUpInfoBar,
+                    enrollmentData = enrollmentInfoBar,
+                    card = card,
+                )
+            }
         } else {
             binding.dialFabLayout.setFabVisible(false)
             binding.teiRecycler.adapter = DashboardProgramAdapter(presenter, dashboardModel)
@@ -238,6 +309,27 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 ),
             )
             sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
+        }
+    }
+
+    private fun openChooser(value: String, action: String) {
+        val intent = Intent(action).apply {
+            when (action) {
+                Intent.ACTION_DIAL -> {
+                    data = Uri.parse("tel:$value")
+                }
+                Intent.ACTION_SENDTO -> {
+                    data = Uri.parse("mailto:$value")
+                }
+            }
+        }
+        val title = resources.getString(R.string.open_with)
+        val chooser = Intent.createChooser(intent, title)
+
+        try {
+            startActivity(chooser)
+        } catch (e: ActivityNotFoundException) {
+            Timber.e("No activity found that can handle this action")
         }
     }
 
@@ -374,8 +466,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             )
             bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
             dashboardModel?.currentOrgUnit?.uid()
-                ?.takeIf { presenter.enrollmentOrgUnitInCaptureScope(it) }
-                ?.let {
+                ?.takeIf { presenter.enrollmentOrgUnitInCaptureScope(it) }?.let {
                     bundle.putString(Constants.ORG_UNIT, it)
                 }
 
@@ -457,8 +548,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         val bundle = Bundle()
         bundle.putString(Constants.PROGRAM_UID, dashboardModel?.currentProgram?.uid())
         bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
-        dashboardModel?.currentOrgUnit?.uid()
-            ?.takeIf(presenter::enrollmentOrgUnitInCaptureScope)
+        dashboardModel?.currentOrgUnit?.uid()?.takeIf(presenter::enrollmentOrgUnitInCaptureScope)
             ?.let {
                 bundle.putString(Constants.ORG_UNIT, it)
             }

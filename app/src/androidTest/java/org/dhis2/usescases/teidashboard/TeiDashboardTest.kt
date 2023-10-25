@@ -7,7 +7,6 @@ import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
@@ -91,7 +90,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
-            checkUnlockIconIsDisplay()
             checkAllEventsCompleted(1)
         }
     }
@@ -105,7 +103,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuDeactivate()
-            checkLockIconIsDisplay()
+            checkCancelledStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent()
             checkAllEventsAreInactive(1)
         }
@@ -120,7 +118,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
-            checkLockCompleteIconIsDisplay()
+            checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent()
             checkAllEventsAreClosed(1)
         }
