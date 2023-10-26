@@ -125,7 +125,11 @@ private fun formatStoredDateToUI(dateValue: String): String? {
     }
 
     val year = components[2]
-    val month = components[1]
+    val month = if (components[1].length == 1) {
+        "0${components[1]}"
+    } else {
+        components[1]
+    }
     val day = if (components[0].length == 1) {
         "0${components[0]}"
     } else {
