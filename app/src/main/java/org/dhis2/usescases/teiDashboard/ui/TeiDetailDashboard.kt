@@ -23,12 +23,12 @@ fun TeiDetailDashboard(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp),
+            .padding(top = 8.dp),
     ) {
         item {
             if (syncData.showInfoBar) {
                 InfoBar(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                         .testTag(SYNC_INFO_BAR_TEST_TAG),
                     infoBarData =
                     InfoBarData(
@@ -44,7 +44,7 @@ fun TeiDetailDashboard(
 
             if (followUpData.showInfoBar) {
                 InfoBar(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                         .testTag(FOLLOWUP_INFO_BAR_TEST_TAG),
                     infoBarData = InfoBarData(
                         text = followUpData.text,
@@ -59,7 +59,7 @@ fun TeiDetailDashboard(
 
             if (enrollmentData.showInfoBar) {
                 InfoBar(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 0.dp)
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 0.dp)
                         .testTag(STATE_INFO_BAR_TEST_TAG),
                     infoBarData = InfoBarData(
                         text = enrollmentData.text,

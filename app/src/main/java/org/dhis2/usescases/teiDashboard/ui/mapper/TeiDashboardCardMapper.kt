@@ -29,12 +29,13 @@ class TeiDashboardCardMapper(
 
     fun map(
         dashboardModel: DashboardProgramModel,
+        onImageClick: (File) -> Unit,
         phoneCallback: (String) -> Unit,
         emailCallback: (String) -> Unit,
         programsCallback: () -> Unit,
     ): TeiCardUiModel {
         val avatar: @Composable (() -> Unit)? = if (dashboardModel.avatarPath.isNotEmpty()) {
-            { ProvideAvatar(item = dashboardModel) }
+            { ProvideAvatar(item = dashboardModel, onImageClick) }
         } else {
             null
         }
@@ -51,13 +52,14 @@ class TeiDashboardCardMapper(
     }
 
     @Composable
-    private fun ProvideAvatar(item: DashboardProgramModel) {
+    private fun ProvideAvatar(item: DashboardProgramModel, onImageClick: (File) -> Unit) {
         val file = File(item.avatarPath)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath).asImageBitmap()
         val painter = BitmapPainter(bitmap)
 
         Avatar(
             imagePainter = painter,
+            onImageClick = { onImageClick.invoke(file) },
             style = AvatarStyle.IMAGE,
         )
     }
