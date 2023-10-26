@@ -11,7 +11,7 @@ import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -136,7 +136,7 @@ class EventCaptureActivity :
         if (isLandscape()) {
             val stageUid: String = presenter!!.programStageUidString
             programStageUid = stageUid
-            dashboardViewModel = ViewModelProviders.of(this)[DashboardViewModel::class.java]
+            dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
             supportFragmentManager.beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false)).commitAllowingStateLoss()
             supportFragmentManager.beginTransaction().replace(
                 R.id.tei_column,

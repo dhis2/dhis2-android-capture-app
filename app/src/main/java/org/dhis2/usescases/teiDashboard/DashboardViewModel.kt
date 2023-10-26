@@ -13,9 +13,13 @@ import org.hisp.dhis.android.core.common.State.SYNCED
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
 class DashboardViewModel(
-    private val repository: DashboardRepository,
-    private val analyticsHelper: AnalyticsHelper,
+    private val repository: DashboardRepository?,
+    private val analyticsHelper: AnalyticsHelper?,
 ) : ViewModel() {
+
+    constructor() : this(null, null) {
+        // Initialize any default values here if needed
+    }
 
     private val dashboardProgramModelLiveData = MutableLiveData<DashboardProgramModel>()
     private val eventUid = MutableLiveData<String>()
@@ -65,10 +69,10 @@ class DashboardViewModel(
 
     fun onFollowUp(dashboardProgramModel: DashboardProgramModel) {
         _showFollowUpBar.value =
-            repository.setFollowUp(dashboardProgramModel.currentEnrollment?.uid())
+            repository!!.setFollowUp(dashboardProgramModel.currentEnrollment?.uid())
         _syncNeeded.value = true
         _state.value = State.TO_UPDATE
-        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, _showFollowUpBar.toString(), FOLLOW_UP)
+        analyticsHelper!!.setEvent(ACTIVE_FOLLOW_UP, _showFollowUpBar.toString(), FOLLOW_UP)
         updateDashboard(dashboardProgramModel)
     }
 
@@ -76,7 +80,7 @@ class DashboardViewModel(
         dashboardProgramModel: DashboardProgramModel,
         status: EnrollmentStatus,
     ) {
-        val result = repository.updateEnrollmentStatus(
+        val result = repository!!.updateEnrollmentStatus(
             dashboardProgramModel.currentEnrollment.uid(),
             status,
         ).blockingFirst()

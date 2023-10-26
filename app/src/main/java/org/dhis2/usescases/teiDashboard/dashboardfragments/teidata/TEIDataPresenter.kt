@@ -348,20 +348,24 @@ class TEIDataPresenter(
         }
     }
 
-    fun onFollowUp(dashboardProgramModel: DashboardProgramModel) {
-        val followup =
-            dashboardRepository.setFollowUp(dashboardProgramModel.currentEnrollment.uid())
-        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, java.lang.Boolean.toString(followup), FOLLOW_UP)
-        view.showToast(
-            if (followup) {
-                view.context.getString(R.string.follow_up_enabled)
-            } else {
-                view.context.getString(
-                    R.string.follow_up_disabled,
-                )
-            },
-        )
-        view.switchFollowUp(followup)
+    fun onFollowUp(dashboardProgramModel: DashboardProgramModel?) {
+        if (dashboardProgramModel != null) {
+            val followup =
+                    dashboardRepository.setFollowUp(dashboardProgramModel.currentEnrollment.uid())
+            analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, java.lang.Boolean.toString(followup), FOLLOW_UP)
+            view.showToast(
+                    if (followup) {
+                        view.context.getString(R.string.follow_up_enabled)
+                    } else {
+                        view.context.getString(
+                                R.string.follow_up_disabled,
+                        )
+                    },
+            )
+            view.switchFollowUp(followup)
+        } else {
+
+        }
     }
 
     fun onScheduleSelected(uid: String?, sharedView: View?) {

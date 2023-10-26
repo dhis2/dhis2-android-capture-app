@@ -48,7 +48,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataModule
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.usescases.teiDashboard.ui.FollowupButtonKt;
 import org.dhis2.usescases.teiDashboard.ui.LockButtonKt;
@@ -360,7 +359,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     }
 
 
-    public void setAttributesAndValues(List<TrackedEntityAttributeValue> trackedEntityAttributeValues, List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
+    public void setAttributesAndValues(List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
 
         LinkedHashMap<String, TrackedEntityAttributeValue> linkedHashMapOfAttrValues = new LinkedHashMap<>();
 
@@ -550,11 +549,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
                         if (event.eventDate().after(DateUtils.getInstance().getToday()))
                             binding.teiRecycler.scrollToPosition(events.indexOf(event));
                     }
-                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                        presenter.getCatComboOptions(event);
-                        catComboShowed.add(event);
-                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                        presenter.setDefaultCatOptCombToEvent(event.uid());
                 }
             }
         }
@@ -818,7 +812,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         if (OrientationUtilsKt.isLandscape()) {
             if (this.attributeValues != null) {
 
-                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+                setAttributesAndValues(this.programTrackedEntityAttributes);
 
             }
         }
@@ -872,7 +866,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
             if (this.programTrackedEntityAttributes != null) {
 
-                setAttributesAndValues(this.attributeValues, this.programTrackedEntityAttributes);
+                setAttributesAndValues(this.programTrackedEntityAttributes);
 
             }
         }
