@@ -7,6 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FormRepository
@@ -40,6 +41,7 @@ class FormViewModelTest {
     private val dispatcher: DispatcherProvider = mock {
         on { io() } doReturn Dispatchers.IO
     }
+    private val preferenceProvider: PreferenceProvider = mock()
     private val geometryController: GeometryController = mock()
 
     private lateinit var viewModel: FormViewModel
@@ -52,6 +54,7 @@ class FormViewModelTest {
             repository,
             dispatcher,
             geometryController,
+            preferenceProvider = preferenceProvider,
         )
     }
 

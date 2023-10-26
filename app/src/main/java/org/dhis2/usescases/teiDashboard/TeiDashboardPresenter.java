@@ -1,7 +1,10 @@
 package org.dhis2.usescases.teiDashboard;
 
+import static androidx.core.content.ContextCompat.getString;
+
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.R;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -24,11 +27,13 @@ import timber.log.Timber;
 
 import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
 import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
 import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.commons.matomo.Categories.DASHBOARD;
+import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
@@ -75,7 +80,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getEnrollment(),
                     dashboardRepository.getProgramStages(programUid),
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
-                    dashboardRepository.getProgramTrackedEntityAttributes(programUid),
+                    dashboardRepository.getAttributesMap(programUid, teiUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teiUid),
                     dashboardRepository.getTeiOrgUnits(teiUid, programUid),
                     dashboardRepository.getTeiActivePrograms(teiUid, false),
@@ -94,7 +99,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         else {
             compositeDisposable.add(Observable.zip(
                     dashboardRepository.getTrackedEntityInstance(teiUid),
-                    dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teiUid),
                     dashboardRepository.getTeiOrgUnits(teiUid, null),
                     dashboardRepository.getTeiActivePrograms(teiUid, true),
@@ -285,7 +289,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         }, Timber::e)
         );
     }
-
 
     private Map<String, Boolean> getGrouping() {
         TypeToken<HashMap<String, Boolean>> typeToken =

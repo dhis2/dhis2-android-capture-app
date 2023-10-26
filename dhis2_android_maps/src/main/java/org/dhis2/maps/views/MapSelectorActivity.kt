@@ -35,6 +35,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.camera.initCameraToViewAllElements
+import org.dhis2.maps.camera.moveCameraToDevicePosition
 import org.dhis2.maps.camera.moveCameraToPosition
 import org.dhis2.maps.databinding.ActivityMapSelectorBinding
 import org.dhis2.maps.extensions.polygonToLatLngBounds
@@ -105,6 +106,32 @@ class MapSelectorActivity :
                     FeatureType.POINT -> bindPoint(initialCoordinates)
                     FeatureType.POLYGON -> bindPolygon(initialCoordinates)
                     else -> finish()
+                }
+            }
+        }
+        binding.mapPositionButton.setOnClickListener {
+            centerCameraOnMyPosition()
+        }
+    }
+
+    private fun centerCameraOnMyPosition() {
+        val isLocationActivated =
+            map.locationComponent.isLocationComponentActivated
+        if (isLocationActivated) {
+            val isLocationEnabled = map.locationComponent.isLocationComponentEnabled
+            if (isLocationEnabled) {
+                map.locationComponent.lastKnownLocation?.let {
+                    val latLong = LatLng(it)
+                    map.moveCameraToDevicePosition(latLong)
+                    if (locationType == FeatureType.POINT) {
+                        val viewModel = ViewModelProvider(this)[PointViewModel::class.java]
+                        val point =
+                            Point.fromLngLat(
+                                latLong.longitude.truncate(),
+                                latLong.latitude.truncate(),
+                            )
+                        setPointToViewModel(point, viewModel)
+                    }
                 }
             }
         }

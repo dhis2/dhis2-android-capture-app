@@ -49,7 +49,7 @@ class TeiFlowTest: BaseTest() {
             closeEnrollmentAndCheckEvents(totalEventsPerEnrollment)
             enrollToProgram(composeTestRule, ADULT_WOMAN_PROGRAM)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
-            checkPastEventsAreClosed(totalEventsPerEnrollment, pastProgramPosition)
+            checkPastEventsAreClosed(composeTestRule, totalEventsPerEnrollment, pastProgramPosition)
         }
     }
 

@@ -28,6 +28,7 @@ interface FieldViewModelFactory {
         fieldMask: String? = null,
         optionSetConfiguration: OptionSetConfiguration? = null,
         featureType: FeatureType? = null,
+        autoCompleteList: List<String>? = null,
     ): FieldUiModel
 
     fun createForAttribute(

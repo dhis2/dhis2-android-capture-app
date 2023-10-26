@@ -56,3 +56,10 @@ fun FieldUiModel.inputState() = when {
     focused -> InputShellState.FOCUSED
     else -> InputShellState.UNFOCUSED
 }
+
+fun FieldUiModel.autocompleteList() = when (renderingType) {
+    UiRenderType.AUTOCOMPLETE -> {
+        autocompleteList
+    }
+    else -> null
+}

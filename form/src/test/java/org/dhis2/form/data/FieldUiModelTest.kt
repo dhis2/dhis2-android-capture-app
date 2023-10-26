@@ -85,5 +85,6 @@ class FieldUiModelTest {
                 Option.builder().uid("5").build(),
             )
         },
+        autocompleteList = null,
     )
 }

@@ -527,13 +527,11 @@ class TEIDataPresenter(
             ?: emptyList()
     }
 
-    fun getCatComboOptions(event: Event) {
-        if (dashboardRepository.isStageFromProgram(event.programStage())) {
-            compositeDisposable.add(dashboardRepository.catComboForProgram(event.program()).filter { categoryCombo: CategoryCombo -> categoryCombo.isDefault !== java.lang.Boolean.TRUE && categoryCombo.name() != "default" }.subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe({ categoryCombo: CategoryCombo -> view.showCatComboDialog(event.uid(), if (event.eventDate() == null) event.dueDate() else event.eventDate(), categoryCombo.uid()) }) { t: Throwable? -> Timber.e(t) })
-        }
+    fun getTeiProfilePath(): String? {
+        return teiDataRepository.getTeiProfilePath()
     }
 
-    fun setDefaultCatOptCombToEvent(eventUid: String?) {
-        dashboardRepository.setDefaultCatOptCombToEvent(eventUid)
+    fun getTeiHeader(): String? {
+        return teiDataRepository.getTeiHeader()
     }
 }

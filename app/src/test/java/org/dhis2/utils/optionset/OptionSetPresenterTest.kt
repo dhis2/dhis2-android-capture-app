@@ -128,6 +128,7 @@ class OptionSetPresenterTest {
             programStageSection = null,
             valueType = ValueType.TEXT,
             optionSetConfiguration = null,
+            autocompleteList = null,
         )
     }
 

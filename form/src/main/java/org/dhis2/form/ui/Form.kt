@@ -1,6 +1,5 @@
 package org.dhis2.form.ui
 
-import android.content.res.Resources
 import android.text.TextWatcher
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -20,8 +19,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -38,11 +39,12 @@ fun Form(
     textWatcher: TextWatcher,
     coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     needToForceUpdate: Boolean,
-    resources: Resources,
+    resources: ResourceManager,
 ) {
     val scrollState = rememberLazyListState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
     val callback = remember {
         object : FieldUiModel.Callback {
             override fun intent(intent: FormIntent) {
@@ -108,6 +110,7 @@ fun Form(
                                 uiEventHandler = uiEventHandler,
                                 intentHandler = intentHandler,
                                 resources = resources,
+                                focusManager = focusManager,
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                         }

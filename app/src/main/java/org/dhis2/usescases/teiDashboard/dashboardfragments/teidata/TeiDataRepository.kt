@@ -34,4 +34,6 @@ interface TeiDataRepository {
     fun eventsWithoutCatCombo(): Single<List<EventViewModel>>
     fun getOrgUnitName(orgUnitUid: String): String
     fun getAttributeValues(teiUid: String): List<TrackedEntityAttributeValue>
+    fun getTeiProfilePath(): String?
+    fun getTeiHeader(): String?
 }

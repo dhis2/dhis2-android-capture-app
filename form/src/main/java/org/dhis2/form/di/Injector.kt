@@ -3,6 +3,7 @@ package org.dhis2.form.di
 import android.content.Context
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -32,6 +33,7 @@ import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
 import org.dhis2.form.ui.LayoutProviderImpl
+import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
@@ -61,6 +63,7 @@ object Injector {
             ),
             provideDispatchers(),
             openErrorLocation,
+            providePreferenceProvider(context),
         )
     }
 
@@ -192,6 +195,7 @@ object Injector {
         uiEventTypesProvider = provideUiEventTypesProvider(),
         keyboardActionProvider = provideKeyBoardActionProvider(),
         legendValueProvider = provideLegendValueProvider(context),
+        autoCompleteProvider = provideAutoCompleteProvider(context),
     )
 
     private fun provideKeyBoardActionProvider() = KeyboardActionProviderImpl()
@@ -253,7 +257,7 @@ object Injector {
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
-    private fun provideResourcesManager(context: Context) = ResourceManager(
+    fun provideResourcesManager(context: Context) = ResourceManager(
         context,
         provideColorUtils(),
     )
@@ -265,6 +269,8 @@ object Injector {
         OrgUnitConfiguration(provideD2()),
         FileResourceConfiguration(provideD2()),
     )
+
+    private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
 
     private fun provideRuleEngineRepository(
         entryMode: EntryMode?,
@@ -294,6 +300,8 @@ object Injector {
         provideD2(),
         provideResourcesManager(context),
     )
-
+    private fun provideAutoCompleteProvider(context: Context) = AutoCompleteProviderImpl(
+        providePreferenceProvider(context),
+    )
     private fun provideColorUtils() = ColorUtils()
 }

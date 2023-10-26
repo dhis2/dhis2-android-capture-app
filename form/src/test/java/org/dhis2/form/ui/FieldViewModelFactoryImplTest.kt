@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import org.dhis2.form.ui.provider.AutoCompleteProvider
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
@@ -28,6 +29,7 @@ class FieldViewModelFactoryImplTest {
     private val hintProvider: HintProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val uiEventTypesProvider: UiEventTypesProvider = mock()
+    private val autoCompleteProvider: AutoCompleteProvider = mock()
     private val keyboardActionProvider: KeyboardActionProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
     private val trackedEntityAttribute: TrackedEntityAttribute = mock {
@@ -48,6 +50,7 @@ class FieldViewModelFactoryImplTest {
             uiEventTypesProvider,
             keyboardActionProvider,
             legendValueProvider,
+            autoCompleteProvider,
         )
     }
 
