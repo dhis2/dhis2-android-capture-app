@@ -18,6 +18,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.inDateRange
 import org.dhis2.data.dhislogic.inOrgUnit
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
@@ -38,6 +39,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
+import org.hisp.dhis.mobile.ui.designsystem.component.InputPolygon
 import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
@@ -279,24 +281,44 @@ fun ProvideCoordinates(
     detailsEnabled: Boolean,
     resources: ResourceManager,
 ) {
-    InputCoordinate(
-        title = coordinates.model?.label ?: "",
-        state = if (detailsEnabled && coordinates.model?.editable == true) {
-            InputShellState.UNFOCUSED
-        } else {
-            InputShellState.DISABLED
-        },
-        coordinates = mapGeometry(coordinates.model?.value, FeatureType.POINT),
-        latitudeText = resources.getString(R.string.latitude),
-        longitudeText = resources.getString(R.string.longitude),
-        addLocationBtnText = resources.getString(R.string.add_location),
-        onResetButtonClicked = {
-            coordinates.model?.onClear()
-        },
-        onUpdateButtonClicked = {
-            coordinates.model?.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP)
-        },
-    )
+    when (coordinates.model?.renderingType) {
+        UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON -> {
+            InputPolygon(
+                title = coordinates.model.label,
+                state = if (detailsEnabled && coordinates.model.editable) {
+                    InputShellState.UNFOCUSED
+                } else {
+                    InputShellState.DISABLED
+                },
+                polygonAdded = !coordinates.model.value.isNullOrEmpty(),
+                onResetButtonClicked = { coordinates.model.onClear() },
+                onUpdateButtonClicked = {
+                    coordinates.model.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP)
+                },
+            )
+        }
+
+        else -> {
+            InputCoordinate(
+                title = coordinates.model?.label ?: "",
+                state = if (detailsEnabled && coordinates.model?.editable == true) {
+                    InputShellState.UNFOCUSED
+                } else {
+                    InputShellState.DISABLED
+                },
+                coordinates = mapGeometry(coordinates.model?.value, FeatureType.POINT),
+                latitudeText = resources.getString(R.string.latitude),
+                longitudeText = resources.getString(R.string.longitude),
+                addLocationBtnText = resources.getString(R.string.add_location),
+                onResetButtonClicked = {
+                    coordinates.model?.onClear()
+                },
+                onUpdateButtonClicked = {
+                    coordinates.model?.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP)
+                },
+            )
+        }
+    }
 }
 
 fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
