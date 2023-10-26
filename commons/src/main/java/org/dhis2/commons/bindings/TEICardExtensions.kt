@@ -246,7 +246,7 @@ fun SearchTeiModel.setTeiImage(
         teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
         val valueToShow = ArrayList(textAttributeValues.values)
-        if (valueToShow[0] == null) {
+        if (valueToShow[0]?.value()?.isEmpty() != false) {
             teiTextImageView.text = "?"
         } else {
             teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()

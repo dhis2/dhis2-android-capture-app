@@ -765,7 +765,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
 
-            searchTei.setOnline(false);
+            searchTei.setOnline(!searchItem.isOnline());
 
             if (offlineOnly)
                 searchTei.setOnline(!offlineOnly);
