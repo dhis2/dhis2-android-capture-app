@@ -209,19 +209,15 @@ QRDetailBottomDialog(
                 content = {
                     Row(horizontalArrangement = Arrangement.Center) {
                         when (renderingType) {
-                            UiRenderType.QR_CODE -> {
-                                QrCodeBlock(data = value)
-
-                            }
-                            UiRenderType.GS1_DATAMATRIX -> {
-
+                            UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
+                                val isGS1Matrix = value.startsWith(GS1Elements.GS1_d2_IDENTIFIER.element)
+                                val content = formattedContent(value)
+                                QrCodeBlock(data = content, isDataMatrix = isGS1Matrix)
                             }
                             else -> {
                                 BarcodeBlock(data = value)
-
                             }
                         }
-
                     }
                 },
                 buttonBlock = {
@@ -234,6 +230,10 @@ QRDetailBottomDialog(
             )
         }
     }
+
+    private fun formattedContent(value: String) =
+        value.removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
+            .removePrefix(GS1Elements.GS1_GROUP_SEPARATOR.element)
 
     private fun getComposeButtonList(): List<CarouselButtonData> {
         val scanItem = CarouselButtonData(
