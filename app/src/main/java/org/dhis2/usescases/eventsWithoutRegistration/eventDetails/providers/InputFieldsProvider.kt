@@ -64,13 +64,7 @@ fun ProvideInputDate(
     }
 
     var state by remember {
-        mutableStateOf(
-            if (detailsEnabled) {
-                InputShellState.UNFOCUSED
-            } else {
-                InputShellState.DISABLED
-            },
-        )
+        mutableStateOf(getInputState(detailsEnabled))
     }
 
     InputDateTime(
@@ -162,11 +156,7 @@ fun ProvideOrgUnit(
     onOrgUnitClick: () -> Unit,
     resources: ResourceManager,
 ) {
-    val state = if (detailsEnabled && orgUnit.enable && orgUnit.orgUnits.size > 1) {
-        InputShellState.UNFOCUSED
-    } else {
-        InputShellState.DISABLED
-    }
+    val state = getInputState(detailsEnabled && orgUnit.enable && orgUnit.orgUnits.size > 1)
 
     var inputFieldValue by remember(orgUnit.selectedOrgUnit) {
         mutableStateOf(orgUnit.selectedOrgUnit?.displayName())
@@ -212,11 +202,7 @@ fun ProvideCategorySelector(
         InputDropDown(
             modifier = modifier,
             title = category.name,
-            state = if (detailsEnabled) {
-                InputShellState.UNFOCUSED
-            } else {
-                InputShellState.DISABLED
-            },
+            state = getInputState(detailsEnabled),
             selectedItem = selectedItem,
             onResetButtonClicked = {
                 onClearCatCombo(category)
@@ -275,6 +261,12 @@ fun ProvideCategorySelector(
     }
 }
 
+private fun getInputState(enabled: Boolean) = if (enabled) {
+    InputShellState.UNFOCUSED
+} else {
+    InputShellState.DISABLED
+}
+
 @Composable
 fun ProvideCoordinates(
     coordinates: EventCoordinates,
@@ -285,11 +277,7 @@ fun ProvideCoordinates(
         UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON -> {
             InputPolygon(
                 title = coordinates.model.label,
-                state = if (detailsEnabled && coordinates.model.editable) {
-                    InputShellState.UNFOCUSED
-                } else {
-                    InputShellState.DISABLED
-                },
+                state = getInputState(detailsEnabled && coordinates.model.editable),
                 polygonAdded = !coordinates.model.value.isNullOrEmpty(),
                 onResetButtonClicked = { coordinates.model.onClear() },
                 onUpdateButtonClicked = {
@@ -301,11 +289,7 @@ fun ProvideCoordinates(
         else -> {
             InputCoordinate(
                 title = coordinates.model?.label ?: "",
-                state = if (detailsEnabled && coordinates.model?.editable == true) {
-                    InputShellState.UNFOCUSED
-                } else {
-                    InputShellState.DISABLED
-                },
+                state = getInputState(detailsEnabled && coordinates.model?.editable == true),
                 coordinates = mapGeometry(coordinates.model?.value, FeatureType.POINT),
                 latitudeText = resources.getString(R.string.latitude),
                 longitudeText = resources.getString(R.string.longitude),
@@ -361,11 +345,7 @@ fun ProvideRadioButtons(
         title = "",
         radioButtonData = radioButtonData,
         orientation = Orientation.HORIZONTAL,
-        state = if (detailsEnabled) {
-            InputShellState.UNFOCUSED
-        } else {
-            InputShellState.DISABLED
-        },
+        state = getInputState(detailsEnabled),
         itemSelected = radioButtonData.find { it.selected },
         onItemChange = { data ->
             when (data?.uid) {
