@@ -90,7 +90,7 @@ class SearchTeiLiveAdapter(
                                 } else {
                                     onTeiClick.invoke(
                                         it.tei.uid(),
-                                        it.selectedEnrollment.uid(),
+                                        it.selectedEnrollment?.uid(),
                                         it.isOnline,
                                     )
                                 }
