@@ -128,7 +128,7 @@ class TEICardMapper(
             )
             checkEnrollmentStatus(
                 list = list,
-                status = searchTEIModel.selectedEnrollment.status(),
+                status = searchTEIModel.selectedEnrollment?.status(),
             )
 
             checkOverdue(
