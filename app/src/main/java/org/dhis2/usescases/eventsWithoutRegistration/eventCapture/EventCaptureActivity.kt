@@ -144,7 +144,7 @@ class EventCaptureActivity :
                     programUid,
                     teiUid,
                     enrollmentUid,
-                        programStageUid,
+                    programStageUid,
                     setOfAttributeNames,
                 ),
             ).commitAllowingStateLoss()

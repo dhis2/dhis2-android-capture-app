@@ -45,9 +45,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -351,20 +349,19 @@ class TEIDataPresenter(
     fun onFollowUp(dashboardProgramModel: DashboardProgramModel?) {
         if (dashboardProgramModel != null) {
             val followup =
-                    dashboardRepository.setFollowUp(dashboardProgramModel.currentEnrollment.uid())
+                dashboardRepository.setFollowUp(dashboardProgramModel.currentEnrollment.uid())
             analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, java.lang.Boolean.toString(followup), FOLLOW_UP)
             view.showToast(
-                    if (followup) {
-                        view.context.getString(R.string.follow_up_enabled)
-                    } else {
-                        view.context.getString(
-                                R.string.follow_up_disabled,
-                        )
-                    },
+                if (followup) {
+                    view.context.getString(R.string.follow_up_enabled)
+                } else {
+                    view.context.getString(
+                        R.string.follow_up_disabled,
+                    )
+                },
             )
             view.switchFollowUp(followup)
         } else {
-
         }
     }
 

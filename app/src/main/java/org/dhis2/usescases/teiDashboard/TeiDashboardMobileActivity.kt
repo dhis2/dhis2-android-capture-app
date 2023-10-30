@@ -206,12 +206,12 @@ class TeiDashboardMobileActivity :
                 } else {
                 }
             }
-                    .onFinishDataEntry { presenter.fininshEnrollmentDataEntry() }
-                    .resultDialogUiProvider(EnrollmentResultDialogUiProvider(ResourceManager(this.context, ColorUtils())))
-                    .factory(supportFragmentManager).setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW)).build()
+                .onFinishDataEntry { presenter.fininshEnrollmentDataEntry() }
+                .resultDialogUiProvider(EnrollmentResultDialogUiProvider(ResourceManager(this.context, ColorUtils())))
+                .factory(supportFragmentManager).setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW)).build()
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.tei_form_view, formView!!)
-                    .commitAllowingStateLoss()
+                .replace(R.id.tei_form_view, formView!!)
+                .commitAllowingStateLoss()
             val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
             saveButton.setOnClickListener { formView?.onSaveClick() }
         }
