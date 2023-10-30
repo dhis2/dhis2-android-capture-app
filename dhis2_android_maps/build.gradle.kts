@@ -35,6 +35,7 @@ android {
     }
 
     buildFeatures {
+        compose = true
         dataBinding = true
     }
 
@@ -42,6 +43,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }
 

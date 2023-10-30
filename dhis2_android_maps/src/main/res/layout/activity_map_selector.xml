@@ -63,11 +63,12 @@
             android:layout_height="match_parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mapContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@color/white"
-                app:layout_constraintBottom_toTopOf="@id/guide"
-
+                android:padding="16dp"
+                app:layout_constraintBottom_toTopOf="@id/bottomContent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.mapbox.mapboxsdk.maps.MapView
@@ -87,41 +88,31 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="9dp"
                     android:layout_marginEnd="8dp"
-                    android:contentDescription="Map position"
+                    android:contentDescription="@string/select_location"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_map_position_ripple" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guide"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.65" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bottomContent"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/guide">
+                app:layout_constraintTop_toBottomOf="@id/mapContainer">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     app:layout_constraintBottom_toTopOf="@id/saveButton"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
+                <androidx.compose.ui.platform.ComposeView
                     android:id="@+id/saveButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:background="@color/white"
-                    android:text="@string/action_accept"
-                    android:textColor="@color/blue_fab"
+                    android:padding="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -50,7 +51,10 @@ import org.dhis2.maps.location.MapActivityLocationCallback
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
+@OptIn(ExperimentalLayoutApi::class)
 class MapSelectorActivity :
     AppCompatActivity(),
     MapActivityLocationCallback.OnLocationChanged {
@@ -78,6 +82,8 @@ class MapSelectorActivity :
     private val baseMapManager by lazy {
         BaseMapManager(this, emptyList())
     }
+
+    private var onSaveButtonClick: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +117,14 @@ class MapSelectorActivity :
         }
         binding.mapPositionButton.setOnClickListener {
             centerCameraOnMyPosition()
+        }
+
+        binding.saveButton.setContent {
+            Button(
+                style = ButtonStyle.FILLED,
+                text = resources.getString(R.string.done),
+                onClick = { onSaveButtonClick?.invoke() },
+            )
         }
     }
 
@@ -169,7 +183,7 @@ class MapSelectorActivity :
             setPointToViewModel(point, viewModel)
             true
         }
-        binding.saveButton.setOnClickListener {
+        onSaveButtonClick = {
             val value = viewModel.getPointAsString()
             value?.let {
                 finishResult(it)
@@ -275,7 +289,7 @@ class MapSelectorActivity :
             viewModel.add(polygonPoint)
             true
         }
-        binding.saveButton.setOnClickListener {
+        onSaveButtonClick = {
             val value = viewModel.getPointAsString()
             value?.let {
                 finishResult(it)
