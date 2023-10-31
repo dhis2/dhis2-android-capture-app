@@ -76,4 +76,8 @@ sealed class FormIntent : MviIntent {
     data class OnCancelRequestCoordinates(
         val uid: String,
     ) : FormIntent()
+
+    data class OnAddImageFinished(
+        val uid: String,
+    ) : FormIntent()
 }

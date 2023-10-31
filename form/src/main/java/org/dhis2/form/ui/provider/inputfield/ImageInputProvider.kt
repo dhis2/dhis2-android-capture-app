@@ -17,6 +17,7 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.binding.getBitmap
+import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 
@@ -25,8 +26,9 @@ internal fun ProvideInputImage(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     resources: ResourceManager,
+    intentHandler: (FormIntent) -> Unit,
 ) {
-    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel)) }
+    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel, fieldUiModel.isLoadingData)) }
 
     val painter = fieldUiModel.displayName?.getBitmap()?.let { BitmapPainter(it.asImageBitmap()) }
     InputImage(
@@ -42,18 +44,30 @@ internal fun ProvideInputImage(
         load = {
             painter
         },
-        onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.SHOW_PICTURE) },
-        onResetButtonClicked = { fieldUiModel.onClear() },
+        onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.OPEN_FILE) },
+        onResetButtonClicked = {
+            fieldUiModel.onClear()
+            uploadState = getUploadState(fieldUiModel, false)
+            intentHandler.invoke(
+                FormIntent.OnAddImageFinished(
+                    uid = fieldUiModel.uid,
+                ),
+            )
+        },
         onAddButtonClicked = {
-            uploadState = UploadState.UPLOADING
+            uploadState = getUploadState(fieldUiModel, true)
             fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE)
         },
-        onImageClick = {},
+        onImageClick = {
+            fieldUiModel.invokeUiEvent(UiEventType.SHOW_PICTURE)
+        },
     )
 }
 
-private fun getUploadState(fieldUiModel: FieldUiModel): UploadState {
-    return if (fieldUiModel.displayName.isNullOrEmpty()) {
+private fun getUploadState(fieldUiModel: FieldUiModel, isLoading: Boolean): UploadState {
+    return if (isLoading && fieldUiModel.displayName.isNullOrEmpty()) {
+        UploadState.UPLOADING
+    } else if (fieldUiModel.displayName.isNullOrEmpty()) {
         UploadState.ADD
     } else {
         UploadState.LOADED
