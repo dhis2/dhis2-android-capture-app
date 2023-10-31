@@ -276,7 +276,7 @@ fun ProvideCoordinates(
     when (coordinates.model?.renderingType) {
         UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON -> {
             InputPolygon(
-                title = coordinates.model.label,
+                title = resources.getString(R.string.polygon),
                 state = getInputState(detailsEnabled && coordinates.model.editable),
                 polygonAdded = !coordinates.model.value.isNullOrEmpty(),
                 onResetButtonClicked = { coordinates.model.onClear() },
@@ -288,7 +288,7 @@ fun ProvideCoordinates(
 
         else -> {
             InputCoordinate(
-                title = coordinates.model?.label ?: "",
+                title = resources.getString(R.string.coordinates),
                 state = getInputState(detailsEnabled && coordinates.model?.editable == true),
                 coordinates = mapGeometry(coordinates.model?.value, FeatureType.POINT),
                 latitudeText = resources.getString(R.string.latitude),
