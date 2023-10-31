@@ -38,24 +38,6 @@
                 android:text="@string/select_location"
                 android:textSize="20sp"
                 app:layout_constraintStart_toEndOf="@id/back" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/toolbar_guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_end="10dp" />
-
-            <androidx.core.widget.ContentLoadingProgressBar
-                android:id="@+id/toolbarProgress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:padding="0dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
-                tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -67,7 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@color/white"
-                android:padding="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 app:layout_constraintBottom_toTopOf="@id/bottomContent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -75,7 +58,6 @@
                     android:id="@+id/map_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="40dp"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"

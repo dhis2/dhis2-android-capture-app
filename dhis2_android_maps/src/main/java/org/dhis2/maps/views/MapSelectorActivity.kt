@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -14,7 +15,6 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
@@ -40,7 +40,6 @@ import org.dhis2.maps.databinding.ActivityMapSelectorBinding
 import org.dhis2.maps.extensions.polygonToLatLngBounds
 import org.dhis2.maps.extensions.toLatLng
 import org.dhis2.maps.geometry.bound.GetBoundingBox
-import org.dhis2.maps.geometry.point.PointAdapter
 import org.dhis2.maps.geometry.point.PointViewModel
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.geometry.polygon.PolygonViewModel
@@ -203,30 +202,30 @@ class MapSelectorActivity :
     }
 
     private fun bindPoint(initialCoordinates: String?) {
-        val pointViewModel = getPointViewModel()
-        binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.adapter = PointAdapter(pointViewModel!!)
-        map.addOnMapClickListener {
-            val point = Point.fromLngLat(it.longitude.truncate(), it.latitude.truncate())
-            setPointToViewModel(point, pointViewModel)
-            true
-        }
-        onSaveButtonClick = {
-            val value = pointViewModel.getPointAsString()
-            value?.let {
-                finishResult(it)
+        getPointViewModel()?.let { viewModel ->
+            binding.recycler.visibility = View.GONE
+            map.addOnMapClickListener {
+                val point = Point.fromLngLat(it.longitude.truncate(), it.latitude.truncate())
+                setPointToViewModel(point, viewModel)
+                true
             }
-        }
+            onSaveButtonClick = {
+                val value = viewModel.getPointAsString()
+                value?.let {
+                    finishResult(it)
+                }
+            }
 
-        if (initialCoordinates != null) {
-            val initGeometry =
-                Geometry.builder().coordinates(initialCoordinates).type(locationType).build()
-            val pointGeometry = GeometryHelper.getPoint(initGeometry)
-            pointGeometry.let { sdkPoint ->
-                val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
-                setPointToViewModel(point, pointViewModel)
+            if (initialCoordinates != null) {
+                val initGeometry =
+                    Geometry.builder().coordinates(initialCoordinates).type(locationType).build()
+                val pointGeometry = GeometryHelper.getPoint(initGeometry)
+                pointGeometry.let { sdkPoint ->
+                    val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
+                    setPointToViewModel(point, viewModel)
+                }
+                map.moveCameraToPosition(pointGeometry.toLatLng())
             }
-            map.moveCameraToPosition(pointGeometry.toLatLng())
         }
     }
 
