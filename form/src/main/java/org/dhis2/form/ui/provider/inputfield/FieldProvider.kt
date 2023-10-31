@@ -43,6 +43,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
+import org.hisp.dhis.mobile.ui.designsystem.component.InputNotSupported
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
@@ -320,6 +321,13 @@ internal fun FieldProvider(
                     uiEventHandler = uiEventHandler,
                     resources = resources,
                 )
+            }
+            ValueType.REFERENCE,
+            ValueType.GEOJSON,
+            ValueType.USERNAME,
+            ValueType.TRACKER_ASSOCIATE,
+            -> {
+                InputNotSupported(title = fieldUiModel.label)
             }
 
             else -> {
