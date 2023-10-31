@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -324,7 +325,10 @@ class ManageStockViewModel @Inject constructor(
     }
 
     fun onSaveValueChange(cell: TableCell) {
-        viewModelScope.launch(dispatcherProvider.io()) {
+        viewModelScope.launch(
+            dispatcherProvider.io(),
+            start = CoroutineStart.ATOMIC,
+        ) {
             saveValue(cell)
         }
     }
