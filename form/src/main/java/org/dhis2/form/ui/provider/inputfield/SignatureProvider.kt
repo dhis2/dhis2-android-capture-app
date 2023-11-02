@@ -45,5 +45,6 @@ fun ProvideInputSignature(
         onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.SHOW_PICTURE) },
         onResetButtonClicked = { fieldUiModel.onClear() },
         onAddButtonClicked = { fieldUiModel.invokeUiEvent(UiEventType.ADD_SIGNATURE) },
+        onImageClick = {}
     )
 }

@@ -128,10 +128,9 @@ class EventCaptureActivity :
                 1
             }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
-        setUpViewPagerAdapter()
+        setUpViewPagerAdapter(navigationInitialPage)
         presenter!!.programStageUid()
         setUpNavigationBar(navigationInitialPage)
-        setUpViewPagerAdapter()
 
         if (isLandscape()) {
             val stageUid: String = presenter!!.programStageUidString
@@ -159,12 +158,12 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpViewPagerAdapter() {
+    private fun setUpViewPagerAdapter(initialPage: Int) {
         if (isLandscape()) {
             binding!!.eventViewLandPager!!.isUserInputEnabled = false
             adapter = EventCapturePagerAdapter(this, intent.getStringExtra(PROGRAM_UID), intent.getStringExtra(Constants.EVENT_UID), pageConfigurator!!.displayAnalytics(), pageConfigurator!!.displayRelationships(), false, false, teiUid, enrollmentUid)
             binding!!.eventViewLandPager!!.adapter = adapter
-            binding!!.eventViewLandPager!!.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
+            binding!!.eventViewLandPager!!.setCurrentItem(initialPage, false)
             binding!!.eventViewLandPager!!.clipWithRoundedCorners(16.dp)
             binding!!.eventViewLandPager!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -194,7 +193,7 @@ class EventCaptureActivity :
             )
 
             binding!!.eventViewPager!!.adapter = adapter
-            binding!!.eventViewPager!!.setCurrentItem(binding!!.navigationBar.getInitialPage(), false)
+            binding!!.eventViewPager!!.setCurrentItem(initialPage, false)
             binding!!.eventViewPager!!.clipWithRoundedCorners(16.dp)
             binding!!.eventViewPager!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
