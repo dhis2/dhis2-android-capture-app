@@ -5,7 +5,6 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -60,9 +59,8 @@ fun Form(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 16.dp),
-        state = scrollState,
-        verticalArrangement = spacedBy(24.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        state = scrollState
     ) {
         if (sections.isNotEmpty()) {
             this.itemsIndexed(
@@ -112,7 +110,6 @@ fun Form(
                                 resources = resources,
                                 focusManager = focusManager,
                             )
-                            Spacer(modifier = Modifier.height(24.dp))
                         }
                     },
                 )
