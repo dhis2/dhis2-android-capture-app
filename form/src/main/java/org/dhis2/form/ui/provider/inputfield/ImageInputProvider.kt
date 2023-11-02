@@ -48,7 +48,7 @@ internal fun ProvideInputImage(
             uploadState = UploadState.UPLOADING
             fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE)
         },
-        onImageClick = {}
+        onImageClick = {},
     )
 }
 
