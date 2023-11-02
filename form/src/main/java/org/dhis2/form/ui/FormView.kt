@@ -211,6 +211,10 @@ class FormView : Fragment() {
                 viewModel.getFocusedItemUid()?.let {
                     viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
                 }
+            } else {
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                }
             }
         }
 
@@ -220,6 +224,10 @@ class FormView : Fragment() {
                 getFileFromGallery(requireContext(), activityResult.data?.data)?.also { file ->
                     onSavePicture?.invoke(file.path)
                 }
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                }
+            } else {
                 viewModel.getFocusedItemUid()?.let {
                     viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
                 }
