@@ -48,7 +48,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Dec 2022"
+        val period = "Oct 2023"
         val orgUnit = "Ngelehun CHC"
         startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
@@ -57,7 +57,7 @@ class DataSetTest : BaseTest() {
         }
         dataSetInitialRobot {
             clickOnInputOrgUnit()
-            orgUnitSelectorRobot(composeTestRule){
+            orgUnitSelectorRobot(composeTestRule) {
                 selectTreeOrgUnit(orgUnit)
             }
             clickOnInputPeriod()
