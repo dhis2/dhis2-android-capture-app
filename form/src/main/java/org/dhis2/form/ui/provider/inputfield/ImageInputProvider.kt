@@ -28,7 +28,7 @@ internal fun ProvideInputImage(
     resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel, fieldUiModel.isLoadingData)) }
+    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
 
     val painter = fieldUiModel.displayName?.getBitmap()?.let { BitmapPainter(it.asImageBitmap()) }
     InputImage(
@@ -47,7 +47,7 @@ internal fun ProvideInputImage(
         onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.OPEN_FILE) },
         onResetButtonClicked = {
             fieldUiModel.onClear()
-            uploadState = getUploadState(fieldUiModel, false)
+            uploadState = getUploadState(fieldUiModel.displayName, false)
             intentHandler.invoke(
                 FormIntent.OnAddImageFinished(
                     uid = fieldUiModel.uid,
@@ -55,7 +55,7 @@ internal fun ProvideInputImage(
             )
         },
         onAddButtonClicked = {
-            uploadState = getUploadState(fieldUiModel, true)
+            uploadState = getUploadState(fieldUiModel.displayName, true)
             fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE)
         },
         onImageClick = {
@@ -64,10 +64,10 @@ internal fun ProvideInputImage(
     )
 }
 
-private fun getUploadState(fieldUiModel: FieldUiModel, isLoading: Boolean): UploadState {
-    return if (isLoading && fieldUiModel.displayName.isNullOrEmpty()) {
+private fun getUploadState(value: String?, isLoading: Boolean): UploadState {
+    return if (isLoading && value.isNullOrEmpty()) {
         UploadState.UPLOADING
-    } else if (fieldUiModel.displayName.isNullOrEmpty()) {
+    } else if (value.isNullOrEmpty()) {
         UploadState.ADD
     } else {
         UploadState.LOADED
