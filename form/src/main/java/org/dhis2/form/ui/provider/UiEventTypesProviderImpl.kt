@@ -28,6 +28,8 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
                     UiRenderType.AUTOCOMPLETE
                 ValueTypeRenderingType.QR_CODE ->
                     UiRenderType.QR_CODE
+                ValueTypeRenderingType.GS1_DATAMATRIX ->
+                    UiRenderType.GS1_DATAMATRIX
                 ValueTypeRenderingType.BAR_CODE ->
                     UiRenderType.BAR_CODE
                 ValueTypeRenderingType.CANVAS ->

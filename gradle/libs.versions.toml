@@ -13,7 +13,7 @@ hilt = '2.47'
 hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
 
-designSystem = "1.0-20231027.121015-100"
+designSystem = "1.0-20231031.093345-104"
 dhis2sdk = "1.9.0-20231025.143704-59"
 ruleEngine = "2.1.9"
 appcompat = "1.6.1"
