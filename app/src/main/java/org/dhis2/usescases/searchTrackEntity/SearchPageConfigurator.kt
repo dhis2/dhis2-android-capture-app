@@ -33,7 +33,7 @@ class SearchPageConfigurator(
     }
 
     internal fun programHasCoordinates(): Boolean {
-        val program = searchRepository.currentProgram()?.let {programId ->
+        val program = searchRepository.currentProgram()?.let { programId ->
             searchRepository.getProgram(programId)
         } ?: return false
 
