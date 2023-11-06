@@ -38,7 +38,7 @@ internal fun ProvideMatrixInput(
             icon = "dhis2_$icon"
         }
         val iconCardItem = IconCardData(
-            uid = fieldUiModel.uid,
+            uid = option.code() ?: "",
             label = option.displayName() ?: "",
             iconRes = icon,
             iconTint = Color(color),
@@ -48,7 +48,7 @@ internal fun ProvideMatrixInput(
                 iconCardItem,
             )
         }
-        if (fieldUiModel.displayName == option.displayName()) matrixSelectedItem = iconCardItem
+        if (fieldUiModel.displayName == option.code() || fieldUiModel.displayName == option.displayName()) matrixSelectedItem = iconCardItem
     }
 
     InputMatrix(
@@ -63,7 +63,7 @@ internal fun ProvideMatrixInput(
                 newSelectedItem
             }
             fieldUiModel.onItemClick()
-            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.label
+            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.uid
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
