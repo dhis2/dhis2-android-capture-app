@@ -207,14 +207,29 @@ class FormView : Fragment() {
                     TEMP_FILE,
                 ).rotateImage(requireContext())
                 onSavePicture?.invoke(imageFile.path)
+
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                }
+            } else {
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                }
             }
         }
 
     private val pickImage =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK) {
-                getFileFromGallery(requireContext(), it.data?.data)?.also { file ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+            if (activityResult.resultCode == RESULT_OK) {
+                getFileFromGallery(requireContext(), activityResult.data?.data)?.also { file ->
                     onSavePicture?.invoke(file.path)
+                }
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                }
+            } else {
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
                 }
             }
         }
@@ -907,6 +922,11 @@ class FormView : Fragment() {
         )
         MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
             .setTitle(requireContext().getString(R.string.select_option))
+            .setOnCancelListener {
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                }
+            }
             .setItems(options) { dialog: DialogInterface, item: Int ->
                 run {
                     when (options[item]) {
@@ -926,6 +946,11 @@ class FormView : Fragment() {
 
                         requireContext().getString(R.string.from_gallery) -> {
                             pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
+                        }
+                        requireContext().getString(R.string.cancel) -> {
+                            viewModel.getFocusedItemUid()?.let {
+                                viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                            }
                         }
                     }
                     dialog.dismiss()

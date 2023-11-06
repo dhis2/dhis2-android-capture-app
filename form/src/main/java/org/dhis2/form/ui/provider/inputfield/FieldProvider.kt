@@ -285,6 +285,7 @@ internal fun FieldProvider(
                         ProvideInputImage(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
