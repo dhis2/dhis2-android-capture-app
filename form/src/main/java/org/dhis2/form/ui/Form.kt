@@ -59,7 +59,7 @@ fun Form(
             .fillMaxSize()
             .background(Color.White)
             .padding(horizontal = 16.dp, vertical = 16.dp),
-        state = scrollState
+        state = scrollState,
     ) {
         if (sections.isNotEmpty()) {
             this.itemsIndexed(
