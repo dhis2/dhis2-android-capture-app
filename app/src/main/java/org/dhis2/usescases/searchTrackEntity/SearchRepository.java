@@ -59,9 +59,13 @@ public interface SearchRepository {
 
     void setCurrentProgram(@Nullable String currentProgram);
     boolean programHasAnalytics();
-    boolean programHasCoordinates();
+    boolean programStagesHaveCoordinates(String programUid);
+    boolean teTypeAttributesHaveCoordinates(String typeId);
+    boolean programAttributesHaveCoordinates(String programUid);
+    boolean eventsHaveCoordinates(String programUid);
 
     @Nullable Program getProgram(@Nullable String programUid);
+    @Nullable String currentProgram();
 
     @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
 

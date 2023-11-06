@@ -836,7 +836,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.currentProgram = currentProgram;
     }
 
-    private String currentProgram() {
+    @Override
+    public String currentProgram() {
         return currentProgram;
     }
 
@@ -852,87 +853,52 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public boolean programHasCoordinates() {
-        String programUid = currentProgram();
+    public boolean programStagesHaveCoordinates(String programUid) {
+        return !d2.programModule().programStages()
+                .byProgramUid().eq(programUid)
+                .byFeatureType().notIn(FeatureType.NONE)
+                .blockingIsEmpty();
+    }
 
-        if (programUid == null) return false;
-
-        boolean teTypeHasCoordinates = false;
-        FeatureType teTypeFeatureType = d2.trackedEntityModule().trackedEntityTypes()
-                .uid(teiType)
-                .blockingGet()
-                .featureType();
-
-        if (teTypeFeatureType != null && teTypeFeatureType != FeatureType.NONE) {
-            teTypeHasCoordinates = true;
-        }
-
-        boolean enrollmentHasCoordinates = false;
-        FeatureType enrollmentFeatureType = d2.programModule().programs()
-                .uid(programUid)
-                .blockingGet()
-                .featureType();
-
-        if (enrollmentFeatureType != null && enrollmentFeatureType != FeatureType.NONE) {
-            enrollmentHasCoordinates = true;
-        }
-
+    @Override
+    public boolean teTypeAttributesHaveCoordinates(String typeId) {
         List<TrackedEntityTypeAttribute> teAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
-                .byTrackedEntityTypeUid().eq(teiType)
+                .byTrackedEntityTypeUid().eq(typeId)
                 .blockingGet();
         List<String> teAttributeUids = new ArrayList<>();
         for (TrackedEntityTypeAttribute teTypeAttr : teAttributes) {
             teAttributeUids.add(teTypeAttr.trackedEntityAttribute().uid());
         }
 
-        boolean teAttributeHasCoordinates = !d2.trackedEntityModule().trackedEntityAttributes()
+        return !d2.trackedEntityModule().trackedEntityAttributes()
                 .byUid().in(teAttributeUids)
-                .byValueType().eq(ValueType.COORDINATE)
+                .byValueType().in(ValueType.COORDINATE, ValueType.GEOJSON)
                 .blockingIsEmpty();
+    }
 
-        boolean programAttributeHasCoordinates = false;
-        boolean eventHasCoordinates = false;
-        boolean eventDataElementHasCoordinates = false;
-        if (programUid != null) {
-            List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
-                    .byProgram().eq(programUid)
-                    .blockingGet();
-            List<String> programAttributeUids = new ArrayList<>();
-            for (ProgramTrackedEntityAttribute programAttr : programAttributes) {
-                programAttributeUids.add(programAttr.trackedEntityAttribute().uid());
-            }
-
-            programAttributeHasCoordinates = !d2.trackedEntityModule().trackedEntityAttributes()
-                    .byUid().in(programAttributeUids)
-                    .byValueType().eq(ValueType.COORDINATE)
-                    .blockingIsEmpty();
-
-            eventHasCoordinates = !d2.programModule().programStages()
-                    .byProgramUid().eq(programUid)
-                    .byFeatureType().notIn(FeatureType.NONE)
-                    .blockingIsEmpty();
-
-
-            List<Event> events = d2.eventModule().eventQuery().byIncludeDeleted()
-                    .eq(false)
-                    .byProgram()
-                    .eq(programUid)
-                    .blockingGet();
-            for (Event event : events) {
-                if (event.geometry() != null) {
-                    eventDataElementHasCoordinates = true;
-                    break;
-                }
-            }
-
+    @Override
+    public boolean programAttributesHaveCoordinates(String programUid) {
+        List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(programUid)
+                .blockingGet();
+        List<String> programAttributeUids = new ArrayList<>();
+        for (ProgramTrackedEntityAttribute programAttr : programAttributes) {
+            programAttributeUids.add(programAttr.trackedEntityAttribute().uid());
         }
 
-        return teTypeHasCoordinates ||
-                enrollmentHasCoordinates ||
-                teAttributeHasCoordinates ||
-                programAttributeHasCoordinates ||
-                eventHasCoordinates ||
-                eventDataElementHasCoordinates;
+        return !d2.trackedEntityModule().trackedEntityAttributes()
+                .byUid().in(programAttributeUids)
+                .byValueType().in(ValueType.COORDINATE, ValueType.GEOJSON)
+                .blockingIsEmpty();
+    }
+
+    @Override
+    public boolean eventsHaveCoordinates(String programUid) {
+        return !d2.eventModule().events()
+                .byDeleted().isFalse()
+                .byProgramUid().eq(programUid)
+                .byGeometryCoordinates().isNotNull()
+                .blockingIsEmpty();
     }
 
     @Nullable
