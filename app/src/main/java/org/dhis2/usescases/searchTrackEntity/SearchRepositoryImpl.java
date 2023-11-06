@@ -9,9 +9,9 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
+import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.data.EventViewModel;
@@ -69,6 +69,7 @@ import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup;
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
@@ -842,13 +843,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public boolean programHasAnalytics() {
-        String programUid = currentProgram();
-        if (programUid != null) {
-            boolean hasCharts = charts != null && !charts.getProgramVisualizations(null, programUid).isEmpty();
-            return hasCharts;
+    public List<AnalyticsDhisVisualizationsGroup> getProgramVisualizationGroups(String programUid) {
+        if (charts != null) {
+            return charts.getVisualizationGroups(programUid);
         } else {
-            return false;
+            return Collections.emptyList();
         }
     }
 

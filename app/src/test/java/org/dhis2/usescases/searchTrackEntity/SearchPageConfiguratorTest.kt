@@ -3,6 +3,7 @@ package org.dhis2.usescases.searchTrackEntity
 import com.google.common.truth.Truth.assertThat
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Before
 import org.junit.Test
@@ -18,6 +19,7 @@ class SearchPageConfiguratorTest {
     private val searchRepository: SearchRepository = mock()
     private val program: Program = mock()
     private val teType: TrackedEntityType = mock()
+    private val visualizationGroup: AnalyticsDhisVisualizationsGroup = mock()
 
     private val programUid: String = "programUid"
     private val teTypeUid: String = "teTypeUid"
@@ -37,7 +39,7 @@ class SearchPageConfiguratorTest {
     }
 
     @Test
-    fun shortcut_to_false_if_no_program() {
+    fun display_map_shortcut_to_false_if_no_program() {
         whenever(searchRepository.currentProgram()).doReturn(null)
 
         val hasCoordinates = configurator.programHasCoordinates()
@@ -49,7 +51,7 @@ class SearchPageConfiguratorTest {
     }
 
     @Test
-    fun shortcut_to_true_if_program_has_coordinates() {
+    fun display_map_shortcut_to_true_if_program_has_coordinates() {
         val hasCoordinates = configurator.programHasCoordinates()
 
         assertThat(hasCoordinates).isTrue()
@@ -60,7 +62,7 @@ class SearchPageConfiguratorTest {
     }
 
     @Test
-    fun do_not_shortcut_if_no_coordinates() {
+    fun display_map_do_not_shortcut_if_no_coordinates() {
         whenever(program.featureType()).doReturn(FeatureType.NONE)
 
         val hasCoordinates = configurator.programHasCoordinates()
@@ -74,6 +76,18 @@ class SearchPageConfiguratorTest {
         verify(searchRepository).trackedEntityType
         verify(searchRepository).teTypeAttributesHaveCoordinates(any())
         verify(searchRepository).eventsHaveCoordinates(programUid)
+        verifyNoMoreInteractions(searchRepository)
+    }
+
+    @Test
+    fun display_analytics_shortcut_to_false_if_no_program() {
+        whenever(searchRepository.currentProgram()).doReturn(null)
+
+        val hasAnalytics = configurator.programHasAnalytics()
+
+        assertThat(hasAnalytics).isFalse()
+
+        verify(searchRepository).currentProgram()
         verifyNoMoreInteractions(searchRepository)
     }
 }

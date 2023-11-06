@@ -12,7 +12,7 @@ class SearchPageConfigurator(
 
     fun initVariables(): SearchPageConfigurator {
         canDisplayMap = programHasCoordinates()
-        canDisplayAnalytics = searchRepository.programHasAnalytics()
+        canDisplayAnalytics = programHasAnalytics()
         return this
     }
 
@@ -67,5 +67,11 @@ class SearchPageConfigurator(
             teTypeHasCoordinates ||
             teAttributesHaveCoordinates ||
             eventsHaveCoordinates
+    }
+
+    internal fun programHasAnalytics(): Boolean {
+        val programUid = searchRepository.currentProgram() ?: return false
+
+        return searchRepository.getProgramVisualizationGroups(programUid).isNotEmpty()
     }
 }
