@@ -287,7 +287,6 @@ class FormViewModel(
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         val error = checkFieldError(it.valueType, it.value, it.fieldMask)
         if (error != null) {
-            // save autocomplete form here
             val action = rowActionFromIntent(
                 FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
             )
@@ -311,7 +310,7 @@ class FormViewModel(
     )
 
     private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) = getLastFocusedTextItem()?.let {
-        if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && fieldUidModel.value != null) {
+        if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0) {
             val autoCompleteValues =
                 getListFromPreference(fieldUidModel.uid)
             if (!autoCompleteValues.contains(fieldUidModel.value)) {

@@ -14,6 +14,7 @@ enum class UiRenderType {
     SEQUENCIAL,
     QR_CODE,
     BAR_CODE,
+    GS1_DATAMATRIX,
     CANVAS,
     TOGGLE,
     ;

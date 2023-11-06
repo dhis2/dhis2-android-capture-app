@@ -972,4 +972,5 @@
     <string name="sync_error">Sync Error</string>
     <string name="mark_follow_up">Mark for follow-up</string>
     <string name="remove">Remove</string>
+    <string name="coordinates">Coordinates</string>
 </resources>

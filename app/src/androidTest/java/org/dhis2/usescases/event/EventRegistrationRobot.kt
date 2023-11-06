@@ -1,10 +1,11 @@
 package org.dhis2.usescases.event
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withSubstring
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -13,7 +14,6 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
 import org.dhis2.usescases.event.entity.EventDetailsUIModel
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.not
 
 fun eventRegistrationRobot(eventRegistrationRobot: EventRegistrationRobot.() -> Unit) {
     EventRegistrationRobot().apply {
@@ -48,25 +48,12 @@ class EventRegistrationRobot : BaseRobot() {
         onView(withId(R.id.navigation_details)).perform(click())
     }
 
-    fun checkEventDetails(eventDetails: EventDetailsUIModel) {
+    fun checkEventDetails(eventDetails: EventDetailsUIModel, composeTestRule: ComposeTestRule) {
         onView(withId(R.id.detailsStageName)).check(matches(withText(eventDetails.programStage)))
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
-        onView(withId(R.id.date_layout)).check(
-            matches(
-                allOf(
-                    isEnabled(),
-                    hasDescendant(allOf(withId(R.id.date), withText(eventDetails.eventDate)))
-                )
-            )
-        )
-        onView(withId(R.id.org_unit_layout)).check(
-            matches(
-                allOf(
-                    not(isEnabled()),
-                    hasDescendant(allOf(withId(R.id.org_unit), withText(eventDetails.orgUnit)))
-                )
-            )
-        )
+
+        composeTestRule.onNodeWithText(formatStoredDateToUI(eventDetails.eventDate)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(eventDetails.orgUnit).assertIsDisplayed()
     }
 
     fun clickOnShare() {
@@ -101,5 +88,23 @@ class EventRegistrationRobot : BaseRobot() {
 
     fun clickNextButton() {
         waitForView(withId(R.id.action_button)).perform(click())
+    }
+
+    private fun formatStoredDateToUI(dateValue: String): String {
+        val components = dateValue.split("/")
+
+        val year = components[2]
+        val month = if (components[1].length == 1) {
+            "0${components[1]}"
+        } else {
+            components[1]
+        }
+        val day = if (components[0].length == 1) {
+            "0${components[0]}"
+        } else {
+            components[0]
+        }
+
+        return "$day/$month/$year"
     }
 }

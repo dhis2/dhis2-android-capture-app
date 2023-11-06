@@ -29,7 +29,7 @@ internal fun ProvideInputsForValueTypeText(
     focusManager: FocusManager,
 ) {
     when (fieldUiModel.renderingType) {
-        UiRenderType.QR_CODE -> {
+        UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
             ProvideQRInput(
                 modifier = modifier,
                 fieldUiModel = fieldUiModel,
@@ -38,6 +38,7 @@ internal fun ProvideInputsForValueTypeText(
                 focusManager = focusManager,
             )
         }
+
         UiRenderType.BAR_CODE -> {
             ProvideBarcodeInput(
                 modifier = modifier,
