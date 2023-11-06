@@ -131,11 +131,6 @@ class FormView : Fragment() {
         }
     }
 
-    private val coordinateTextWatcher = LatitudeLongitudeTextWatcher { coordinates ->
-        viewModel.items.value?.find { it.focused && it.valueType == ValueType.COORDINATE }
-            ?.onTextChange(coordinates)
-    }
-
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
             val intent = FormIntent.OnSave(
@@ -363,9 +358,6 @@ class FormView : Fragment() {
                         sections = sections,
                         intentHandler = ::intentHandler,
                         uiEventHandler = ::uiEventHandler,
-                        textWatcher = textWatcher,
-                        coordinateTextWatcher = coordinateTextWatcher,
-                        needToForceUpdate = needToForceUpdate,
                         resources = Injector.provideResourcesManager(context),
                     )
                 }
