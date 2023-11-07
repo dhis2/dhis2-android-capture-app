@@ -47,7 +47,6 @@ internal fun ProvideInputImage(
             painter
         },
         onDownloadButtonClick = {
-            fieldUiModel.setFocus()
             uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
         },
         onResetButtonClicked = {
