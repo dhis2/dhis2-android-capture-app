@@ -161,7 +161,9 @@ class TeiDataRepositoryImpl(
     }
 
     override fun getTeiHeader(): String? {
-        return d2.trackedEntityModule().trackedEntitySearch().uid(teiUid).blockingGet()?.header
+        return d2.trackedEntityModule().trackedEntitySearch()
+            .byProgram().eq(programUid)
+            .uid(teiUid).blockingGet()?.header
     }
 
     private fun getGroupedEvents(
