@@ -970,7 +970,7 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        event.field.value?.let { filePath ->
+        event.field.displayName?.let { filePath ->
             val file = File(filePath)
             val fileUri = FileProvider.getUriForFile(
                 requireContext(),

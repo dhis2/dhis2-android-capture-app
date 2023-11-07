@@ -288,6 +288,8 @@ internal fun FieldProvider(
                         ProvideInputSignature(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
+                            uiEventHandler = uiEventHandler,
                         )
                     }
 
@@ -296,6 +298,7 @@ internal fun FieldProvider(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
                             intentHandler = intentHandler,
+                            uiEventHandler = uiEventHandler,
                             resources = resources,
                         )
                     }
