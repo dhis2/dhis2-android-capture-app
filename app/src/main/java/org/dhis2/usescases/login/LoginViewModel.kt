@@ -102,6 +102,10 @@ class LoginViewModel(
                                         DEFAULT_URL.ifEmpty { view.getDefaultServerProtocol() }
                                     }
 
+                                    if (DEFAULT_URL.isNotEmpty()){
+                                        onServerChanged(defaultUrl(),0,0,0)
+                                    }
+
                                     view.setUrl(defaultUrl())
                                 }
                             }
