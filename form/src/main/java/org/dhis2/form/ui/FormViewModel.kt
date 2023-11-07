@@ -172,6 +172,7 @@ class FormViewModel(
                 if (action.valueType == ValueType.COORDINATE) {
                     repository.setFieldRequestingCoordinates(action.id, false)
                 }
+
                 repository.updateErrorList(action)
                 if (action.error != null) {
                     StoreResult(
@@ -262,11 +263,14 @@ class FormViewModel(
                 val saveResult = repository.storeFile(action.id, action.value)
                 when (saveResult?.valueStoreResult) {
                     ValueStoreResult.FILE_SAVED -> {
+                        val valueToReplace = action.value?.split("/")?.last()?.split(".")?.first()
+
+                        val valueToSave = valueToReplace?.let { action.value.replace(it, saveResult.uid) }
                         processUserAction(
                             rowActionFromIntent(
                                 FormIntent.OnSave(
                                     uid = action.id,
-                                    value = saveResult.uid,
+                                    value = valueToSave,
                                     valueType = action.valueType,
                                 ),
                             ),
@@ -403,9 +407,15 @@ class FormViewModel(
             )
 
             is FormIntent.OnSave -> {
+                val valueToCheck =
+                    if (intent.valueType == ValueType.FILE_RESOURCE && intent.value != null) {
+                        intent.value.split("/").last().split(".").first()
+                    } else {
+                        intent.value
+                    }
                 val error = checkFieldError(
                     intent.valueType,
-                    intent.value,
+                    valueToCheck,
                     intent.fieldMask,
                 )
 
@@ -612,7 +622,7 @@ class FormViewModel(
     }
 
     fun getFocusedItemUid(): String? {
-        return items.value?.first { it.focused }?.uid
+        return items.value?.firstOrNull { it.focused }?.uid
     }
 
     private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {
