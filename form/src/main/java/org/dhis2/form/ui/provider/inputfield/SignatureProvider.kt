@@ -52,7 +52,6 @@ fun ProvideInputSignature(
             }
         },
         onDownloadButtonClick = {
-            fieldUiModel.setFocus()
             uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
         },
         onResetButtonClicked = {
