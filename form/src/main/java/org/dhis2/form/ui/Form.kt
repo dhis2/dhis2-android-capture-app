@@ -1,6 +1,5 @@
 package org.dhis2.form.ui
 
-import android.text.TextWatcher
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -35,9 +34,6 @@ fun Form(
     sections: List<FormSection> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-    textWatcher: TextWatcher,
-    coordinateTextWatcher: LatitudeLongitudeTextWatcher,
-    needToForceUpdate: Boolean,
     resources: ResourceManager,
 ) {
     val scrollState = rememberLazyListState()
@@ -100,9 +96,6 @@ fun Form(
                                 ),
                                 context = context,
                                 fieldUiModel = fieldUiModel,
-                                needToForceUpdate = needToForceUpdate,
-                                textWatcher = textWatcher,
-                                coordinateTextWatcher = coordinateTextWatcher,
                                 uiEventHandler = uiEventHandler,
                                 intentHandler = intentHandler,
                                 resources = resources,

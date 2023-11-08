@@ -1,7 +1,9 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -26,6 +28,7 @@ import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
+import org.jetbrains.annotations.VisibleForTesting
 
 fun eventRobot(eventRobot: EventRobot.() -> Unit) {
     EventRobot().apply {
@@ -142,9 +145,27 @@ class EventRobot : BaseRobot() {
         onView(withId(R.id.datePicker)).perform(PickerActions.setDate(year, monthOfYear, dayOfMonth))
     }
 
-    fun checkEventDetails(eventDate: String, eventOrgUnit: String) {
+    fun checkEventDetails(eventDate: String, eventOrgUnit: String, composeTestRule: ComposeTestRule) {
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(100)))
-        onView(withId(R.id.date_layout)).check(matches(allOf(isEnabled(),hasDescendant(allOf(withId(R.id.date), withText(eventDate))))))
-        onView(withId(R.id.org_unit_layout)).check(matches(allOf(not(isEnabled()), hasDescendant(allOf(withId(R.id.org_unit), withText(eventOrgUnit))))))
+        composeTestRule.onNodeWithText(formatStoredDateToUI(eventDate)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(eventOrgUnit).assertIsDisplayed()
+    }
+
+    private fun formatStoredDateToUI(dateValue: String): String {
+        val components = dateValue.split("/")
+
+        val year = components[2]
+        val month = if (components[1].length == 1) {
+            "0${components[1]}"
+        } else {
+            components[1]
+        }
+        val day = if (components[0].length == 1) {
+            "0${components[0]}"
+        } else {
+            components[0]
+        }
+
+        return "$day/$month/$year"
     }
 }

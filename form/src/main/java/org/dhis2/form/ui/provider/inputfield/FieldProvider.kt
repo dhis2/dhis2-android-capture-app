@@ -2,10 +2,6 @@ package org.dhis2.form.ui.provider.inputfield
 
 import android.content.Context
 import android.content.Intent
-import android.text.TextWatcher
-import android.view.ContextThemeWrapper
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -20,20 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.viewinterop.AndroidViewBinding
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.form.BR
-import org.dhis2.form.R
 import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.form.ui.LatitudeLongitudeTextWatcher
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
@@ -43,6 +33,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
+import org.hisp.dhis.mobile.ui.designsystem.component.InputNotSupported
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
@@ -57,9 +48,6 @@ internal fun FieldProvider(
     modifier: Modifier,
     context: Context,
     fieldUiModel: FieldUiModel,
-    needToForceUpdate: Boolean,
-    textWatcher: TextWatcher,
-    coordinateTextWatcher: LatitudeLongitudeTextWatcher,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
@@ -285,6 +273,7 @@ internal fun FieldProvider(
                         ProvideInputImage(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
+                            intentHandler = intentHandler,
                             resources = resources,
                         )
                     }
@@ -320,26 +309,14 @@ internal fun FieldProvider(
                     resources = resources,
                 )
             }
-
-            else -> {
-                AndroidViewBinding(
-                    modifier = modifier.fillMaxWidth(),
-                    factory = { inflater, viewgroup, add ->
-                        getFieldView(
-                            context,
-                            inflater,
-                            viewgroup,
-                            add,
-                            fieldUiModel.layoutId,
-                            needToForceUpdate,
-                        )
-                    },
-                    update = {
-                        this.setVariable(BR.textWatcher, textWatcher)
-                        this.setVariable(BR.coordinateWatcher, coordinateTextWatcher)
-                        this.setVariable(BR.item, fieldUiModel)
-                    },
-                )
+            ValueType.REFERENCE,
+            ValueType.GEOJSON,
+            ValueType.USERNAME,
+            ValueType.TRACKER_ASSOCIATE,
+            ValueType.MULTI_TEXT,
+            null,
+            -> {
+                InputNotSupported(title = fieldUiModel.label)
             }
         }
     } else {
@@ -866,32 +843,4 @@ private fun ProvideOrgUnitInput(
         },
 
     )
-}
-
-private fun getFieldView(
-    context: Context,
-    inflater: LayoutInflater,
-    viewgroup: ViewGroup,
-    add: Boolean,
-    layoutId: Int,
-    needToForceUpdate: Boolean,
-): ViewDataBinding {
-    val layoutInflater =
-        if (needToForceUpdate) {
-            inflater.cloneInContext(
-                ContextThemeWrapper(
-                    context,
-                    R.style.searchFormInputText,
-                ),
-            )
-        } else {
-            inflater.cloneInContext(
-                ContextThemeWrapper(
-                    context,
-                    R.style.formInputText,
-                ),
-            )
-        }
-
-    return DataBindingUtil.inflate(layoutInflater, layoutId, viewgroup, add)
 }

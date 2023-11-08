@@ -18,7 +18,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
@@ -26,7 +25,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOr
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
-import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -53,8 +51,6 @@ class EventDetailsViewModel(
     var showPeriods: (() -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
     var showNoOrgUnits: (() -> Unit)? = null
-    var showCategoryDialog: ((category: EventCategory) -> Unit)? = null
-    var showCategoryPopUp: ((category: EventCategory) -> Unit)? = null
     var requestLocationPermissions: (() -> Unit)? = null
     var showEnableLocationMessage: (() -> Unit)? = null
     var requestLocationByMap: ((featureType: String, initCoordinate: String?) -> Unit)? = null
@@ -256,14 +252,6 @@ class EventDetailsViewModel(
         }
     }
 
-    fun onCatComboClick(category: EventCategory) {
-        if (category.optionsSize > DEFAULT_COUNT_LIMIT) {
-            showCategoryDialog?.invoke(category)
-        } else {
-            showCategoryPopUp?.invoke(category)
-        }
-    }
-
     fun requestCurrentLocation() {
         locationProvider.getLastKnownLocation(
             onNewLocation = { location ->
@@ -365,5 +353,6 @@ inline fun <R, reified T> Result<T>.mockSafeFold(
             }
         }
     }
+
     else -> onFailure(exceptionOrNull() ?: Exception())
 }

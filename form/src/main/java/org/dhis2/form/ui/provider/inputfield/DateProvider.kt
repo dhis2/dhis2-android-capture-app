@@ -197,21 +197,25 @@ private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?
 }
 
 private fun isValid(valueString: String, valueType: ValueType?): Boolean {
-    return when (valueType) {
-        ValueType.DATE -> {
-            valueString.length == 8
-        }
+    return if (valueString.isEmpty()) {
+        true
+    } else {
+        when (valueType) {
+            ValueType.DATE -> {
+                valueString.length == 8
+            }
 
-        ValueType.TIME -> {
-            valueString.length == 4
-        }
+            ValueType.TIME -> {
+                valueString.length == 4
+            }
 
-        ValueType.DATETIME -> {
-            valueString.length == 12
-        }
+            ValueType.DATETIME -> {
+                valueString.length == 12
+            }
 
-        else -> {
-            valueString.length == 8
+            else -> {
+                valueString.length == 8
+            }
         }
     }
 }

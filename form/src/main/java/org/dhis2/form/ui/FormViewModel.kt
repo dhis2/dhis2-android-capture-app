@@ -242,8 +242,16 @@ class FormViewModel(
                 )
             }
 
-            ActionType.ON_CANCELL_REQUEST_COORDINATES -> {
+            ActionType.ON_CANCEL_REQUEST_COORDINATES -> {
                 repository.setFieldRequestingCoordinates(action.id, false)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
+            }
+
+            ActionType.ON_ADD_IMAGE_FINISHED -> {
+                repository.setFieldAddingImage(action.id, false)
                 StoreResult(
                     action.id,
                     ValueStoreResult.VALUE_HAS_NOT_CHANGED,
@@ -279,7 +287,6 @@ class FormViewModel(
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         val error = checkFieldError(it.valueType, it.value, it.fieldMask)
         if (error != null) {
-            // save autocomplete form here
             val action = rowActionFromIntent(
                 FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
             )
@@ -303,7 +310,7 @@ class FormViewModel(
     )
 
     private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) = getLastFocusedTextItem()?.let {
-        if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && fieldUidModel.value != null) {
+        if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0) {
             val autoCompleteValues =
                 getListFromPreference(fieldUidModel.uid)
             if (!autoCompleteValues.contains(fieldUidModel.value)) {
@@ -446,9 +453,15 @@ class FormViewModel(
                 createRowAction(
                     uid = intent.uid,
                     value = null,
-                    actionType = ActionType.ON_CANCELL_REQUEST_COORDINATES,
+                    actionType = ActionType.ON_CANCEL_REQUEST_COORDINATES,
                 )
 
+            is FormIntent.OnAddImageFinished ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = null,
+                    actionType = ActionType.ON_ADD_IMAGE_FINISHED,
+                )
             is FormIntent.OnStoreFile ->
                 createRowAction(
                     uid = intent.uid,
