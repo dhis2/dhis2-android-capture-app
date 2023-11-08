@@ -413,7 +413,7 @@ class FormViewModel(
 
                 createRowAction(
                     uid = intent.uid,
-                    intent.value,
+                    value = intent.value,
                     error = error,
                     valueType = intent.valueType,
                 )
