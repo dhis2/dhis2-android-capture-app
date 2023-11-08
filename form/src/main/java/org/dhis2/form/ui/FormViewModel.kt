@@ -404,7 +404,6 @@ class FormViewModel(
             )
 
             is FormIntent.OnSave -> {
-
                 val error = checkFieldError(
                     intent.valueType,
                     intent.value,

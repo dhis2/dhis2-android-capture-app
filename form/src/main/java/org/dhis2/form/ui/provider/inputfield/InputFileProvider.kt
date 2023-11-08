@@ -13,6 +13,7 @@ import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.ui.model.InputData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputFileResource
@@ -26,20 +27,17 @@ internal fun ProvideInputFileResource(
     resources: ResourceManager,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
-    val fileInputData by remember(fieldUiModel) {
-        mutableStateOf(
-            fieldUiModel.value?.let {
-                val file = File(it)
-                InputData.FileInputData(
-                    fileName = file.path.split("/").last(),
-                    fileSize = file.length(),
-                    filePath = file.path,
-                )
-            },
-        )
-    }
-
     var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
+
+    val fileInputData =
+        fieldUiModel.displayName?.let {
+            val file = File(it)
+            InputData.FileInputData(
+                fileName = file.path.split("/").last(),
+                fileSize = file.length(),
+                filePath = file.path,
+            )
+        }
 
     InputFileResource(
         modifier = modifier.fillMaxWidth(),
@@ -52,7 +50,7 @@ internal fun ProvideInputFileResource(
         fileWeight = fileInputData?.fileSizeLabel,
         onSelectFile = {
             uploadState = getUploadState(fieldUiModel.displayName, true)
-            uiEventHandler.invoke(RecyclerViewUiEvents.OpenFileSelector(fieldUiModel))
+            fieldUiModel.invokeUiEvent(UiEventType.ADD_FILE)
         },
         onClear = { fieldUiModel.onClear() },
         onUploadFile = {
