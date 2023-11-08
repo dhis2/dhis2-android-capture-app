@@ -238,7 +238,6 @@ class FormView : Fragment() {
             } else {
                 viewModel.getFocusedItemUid()?.let {
                     viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                    onSavePicture?.invoke("")
                 }
             }
         }

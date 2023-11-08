@@ -404,21 +404,16 @@ class FormViewModel(
             )
 
             is FormIntent.OnSave -> {
-                val valueToCheck =
-                    if (intent.valueType == ValueType.FILE_RESOURCE && intent.value != null) {
-                        intent.value.split("/").last().split(".").first()
-                    } else {
-                        intent.value
-                    }
+
                 val error = checkFieldError(
                     intent.valueType,
-                    valueToCheck,
+                    intent.value,
                     intent.fieldMask,
                 )
 
                 createRowAction(
                     uid = intent.uid,
-                    value = valueToCheck,
+                    intent.value,
                     error = error,
                     valueType = intent.valueType,
                 )
