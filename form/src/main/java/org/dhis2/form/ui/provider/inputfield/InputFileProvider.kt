@@ -26,8 +26,6 @@ internal fun ProvideInputFileResource(
     resources: ResourceManager,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
-    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
-
     val fileInputData by remember(fieldUiModel) {
         mutableStateOf(
             fieldUiModel.value?.let {
@@ -40,6 +38,8 @@ internal fun ProvideInputFileResource(
             },
         )
     }
+
+    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
 
     InputFileResource(
         modifier = modifier.fillMaxWidth(),

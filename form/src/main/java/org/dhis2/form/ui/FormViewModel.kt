@@ -263,14 +263,11 @@ class FormViewModel(
                 val saveResult = repository.storeFile(action.id, action.value)
                 when (saveResult?.valueStoreResult) {
                     ValueStoreResult.FILE_SAVED -> {
-                        val valueToReplace = action.value?.split("/")?.last()?.split(".")?.first()
-
-                        val valueToSave = valueToReplace?.let { action.value.replace(it, saveResult.uid) }
                         processUserAction(
                             rowActionFromIntent(
                                 FormIntent.OnSave(
                                     uid = action.id,
-                                    value = valueToSave,
+                                    value = saveResult.uid,
                                     valueType = action.valueType,
                                 ),
                             ),
@@ -421,7 +418,7 @@ class FormViewModel(
 
                 createRowAction(
                     uid = intent.uid,
-                    value = intent.value,
+                    value = valueToCheck,
                     error = error,
                     valueType = intent.valueType,
                 )

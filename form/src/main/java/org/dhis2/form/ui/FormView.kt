@@ -235,9 +235,6 @@ class FormView : Fragment() {
                 getFileFrom(requireContext(), uri)?.also { file ->
                     onSavePicture?.invoke(file.path)
                 }
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
             } else {
                 viewModel.getFocusedItemUid()?.let {
                     viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
