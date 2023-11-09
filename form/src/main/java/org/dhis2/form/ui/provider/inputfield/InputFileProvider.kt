@@ -33,7 +33,7 @@ internal fun ProvideInputFileResource(
         fieldUiModel.displayName?.let {
             val file = File(it)
             InputData.FileInputData(
-                fileName = file.path.split("/").last(),
+                fileName = file.name,
                 fileSize = file.length(),
                 filePath = file.path,
             )
