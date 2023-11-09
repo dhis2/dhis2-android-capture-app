@@ -43,6 +43,7 @@ class TEIDetailMapperTest {
             phoneCallback = {},
             emailCallback = {},
             programsCallback = {},
+            onImageClick = {},
 
         )
 
