@@ -80,4 +80,11 @@ sealed class FormIntent : MviIntent {
     data class OnAddImageFinished(
         val uid: String,
     ) : FormIntent()
+
+    data class OnSaveDate(
+        val uid: String,
+        val value: String?,
+        val valueType: ValueType?,
+        val allowFutureDates: Boolean = true,
+    ) : FormIntent()
 }

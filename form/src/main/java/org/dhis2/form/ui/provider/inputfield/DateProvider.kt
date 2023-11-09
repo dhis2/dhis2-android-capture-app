@@ -89,10 +89,11 @@ fun ProvideInputDate(
             value = it
             if (isValid(it, fieldUiModel.valueType)) {
                 intentHandler.invoke(
-                    FormIntent.OnSave(
+                    FormIntent.OnSaveDate(
                         uid = fieldUiModel.uid,
                         value = formatUIDateToStored(it, fieldUiModel.valueType),
                         valueType = fieldUiModel.valueType,
+                        allowFutureDates = fieldUiModel.allowFutureDates ?: true,
                     ),
                 )
             }
