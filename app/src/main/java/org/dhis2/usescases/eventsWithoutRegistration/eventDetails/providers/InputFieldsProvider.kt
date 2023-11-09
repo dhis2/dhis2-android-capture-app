@@ -186,7 +186,7 @@ fun ProvideCategorySelector(
     onClearCatCombo: (EventCategory) -> Unit,
     onOptionSelected: (CategoryOption?) -> Unit,
 ) {
-    var selectedItem by remember(eventCatCombo) {
+    var selectedItem by remember {
         mutableStateOf(
             eventCatCombo.selectedCategoryOptions[category.uid]?.displayName()
                 ?: eventCatCombo.categoryOptions?.get(category.uid)?.displayName(),
@@ -205,6 +205,7 @@ fun ProvideCategorySelector(
             state = getInputState(detailsEnabled),
             selectedItem = selectedItem,
             onResetButtonClicked = {
+                selectedItem = null
                 onClearCatCombo(category)
             },
             onArrowDropDownButtonClicked = {
