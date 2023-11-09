@@ -343,7 +343,7 @@ fun ProvideRadioButtons(
     )
 
     InputRadioButton(
-        title = "",
+        title = resources.getString(R.string.referral),
         radioButtonData = radioButtonData,
         orientation = Orientation.HORIZONTAL,
         state = getInputState(detailsEnabled),
