@@ -25,7 +25,11 @@
 
 package org.dhis2.utils.analytics
 
+import io.reactivex.Single
+import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.schedulers.Schedulers
 import okhttp3.Interceptor
+import okhttp3.Request
 import okhttp3.Response
 import org.dhis2.BuildConfig
 import org.hisp.dhis.android.core.D2Manager
@@ -39,17 +43,32 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
         val response = chain.proceed(request)
 
         if (response.code >= 400 && isLogged()) {
-            analyticHelper.trackMatomoEvent(
-                API_CALL,
-                "${request.method}_${request.url}",
-                "${response.code}_${appVersionName}_${getDhis2Version()}",
-            )
+            trackMatomoEvent(request, response)
         }
         return response
     }
 
-    private fun getDhis2Version(): String? {
-        return D2Manager.getD2().systemInfoModule().systemInfo().blockingGet()?.version()
+    private fun trackMatomoEvent(request: Request, response: Response) {
+        getDhis2Version()
+            .subscribeOn(Schedulers.io())
+            .subscribe(object : DisposableSingleObserver<String>() {
+                override fun onSuccess(version: String) {
+                    analyticHelper.trackMatomoEvent(
+                        API_CALL,
+                        "${request.method}_${request.url}",
+                        "${response.code}_${appVersionName}_${version}",
+                    )
+                    dispose()
+                }
+
+                override fun onError(e: Throwable) {
+                    dispose()
+                }
+            })
+    }
+
+    private fun getDhis2Version(): Single<String> {
+        return D2Manager.getD2().systemInfoModule().systemInfo().get().map { it.version() }
     }
 
     private fun isLogged(): Boolean {
