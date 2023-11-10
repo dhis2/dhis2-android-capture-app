@@ -62,7 +62,6 @@ fun ProvideInputSignature(
                     uid = fieldUiModel.uid,
                 ),
             )
-            fieldUiModel.onClear()
         },
         onAddButtonClicked = {
             uploadState = getUploadState(fieldUiModel.displayName, true)
