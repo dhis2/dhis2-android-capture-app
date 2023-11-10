@@ -27,7 +27,7 @@ internal fun ProvideInputFileResource(
     resources: ResourceManager,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
-    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
+    var uploadState by remember(fieldUiModel) { mutableStateOf(getFileUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
 
     val fileInputData =
         fieldUiModel.displayName?.let {
@@ -49,12 +49,12 @@ internal fun ProvideInputFileResource(
         fileName = fileInputData?.fileName,
         fileWeight = fileInputData?.fileSizeLabel,
         onSelectFile = {
-            uploadState = getUploadState(fieldUiModel.displayName, true)
+            uploadState = getFileUploadState(fieldUiModel.displayName, true)
             fieldUiModel.invokeUiEvent(UiEventType.ADD_FILE)
         },
         onClear = { fieldUiModel.onClear() },
         onUploadFile = {
-            uploadState = getUploadState(fieldUiModel.displayName, false)
+            uploadState = getFileUploadState(fieldUiModel.displayName, false)
             uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
         },
         legendData = fieldUiModel.legend(),
@@ -62,7 +62,7 @@ internal fun ProvideInputFileResource(
     )
 }
 
-private fun getUploadState(value: String?, isLoading: Boolean): UploadFileState {
+private fun getFileUploadState(value: String?, isLoading: Boolean): UploadFileState {
     return if (isLoading && value.isNullOrEmpty()) {
         UploadFileState.UPLOADING
     } else if (value.isNullOrEmpty()) {
