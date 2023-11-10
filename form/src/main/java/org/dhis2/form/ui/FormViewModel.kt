@@ -172,6 +172,7 @@ class FormViewModel(
                 if (action.valueType == ValueType.COORDINATE) {
                     repository.setFieldRequestingCoordinates(action.id, false)
                 }
+
                 repository.updateErrorList(action)
                 if (action.error != null) {
                     StoreResult(
@@ -612,7 +613,7 @@ class FormViewModel(
     }
 
     fun getFocusedItemUid(): String? {
-        return items.value?.first { it.focused }?.uid
+        return items.value?.firstOrNull { it.focused }?.uid
     }
 
     private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {

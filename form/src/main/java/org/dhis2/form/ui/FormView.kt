@@ -231,9 +231,16 @@ class FormView : Fragment() {
 
     private val pickFile =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            uri?.let {
+            if (uri != null) {
                 getFileFrom(requireContext(), uri)?.also { file ->
                     onSavePicture?.invoke(file.path)
+                }
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
+                }
+            } else {
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
                 }
             }
         }

@@ -200,6 +200,7 @@ internal fun FieldProvider(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     resources = resources,
+                    uiEventHandler = uiEventHandler,
                 )
             }
 

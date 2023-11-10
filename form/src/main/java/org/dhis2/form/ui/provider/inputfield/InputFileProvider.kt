@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -13,6 +14,7 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.ui.model.InputData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputFileResource
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
@@ -23,25 +25,20 @@ internal fun ProvideInputFileResource(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     resources: ResourceManager,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
-    val uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel)) }
+    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
 
-    val fileInputData = fieldUiModel.value?.let {
-        val file = File(it)
-        InputData.FileInputData(
-            fileName = file.name,
-            fileSize = file.length(),
-            filePath = file.path,
-        )
-    }
+    val fileInputData =
+        fieldUiModel.displayName?.let {
+            val file = File(it)
+            InputData.FileInputData(
+                fileName = file.name,
+                fileSize = file.length(),
+                filePath = file.path,
+            )
+        }
 
-    val filename by remember(fieldUiModel) {
-        mutableStateOf(fileInputData?.fileName)
-    }
-
-    val fileSize by remember(fieldUiModel) {
-        mutableStateOf(fileInputData?.fileSizeLabel)
-    }
     InputFileResource(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -49,22 +46,26 @@ internal fun ProvideInputFileResource(
         supportingText = fieldUiModel.supportingText(),
         buttonText = resources.getString(R.string.add_file),
         uploadFileState = uploadState,
-        fileName = filename,
-        fileWeight = fileSize,
+        fileName = fileInputData?.fileName,
+        fileWeight = fileInputData?.fileSizeLabel,
         onSelectFile = {
+            uploadState = getUploadState(fieldUiModel.displayName, true)
             fieldUiModel.invokeUiEvent(UiEventType.ADD_FILE)
         },
         onClear = { fieldUiModel.onClear() },
         onUploadFile = {
-            fieldUiModel.invokeUiEvent(UiEventType.OPEN_FILE)
+            uploadState = getUploadState(fieldUiModel.displayName, false)
+            uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
         },
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
     )
 }
 
-private fun getUploadState(fieldUiModel: FieldUiModel): UploadFileState {
-    return if (fieldUiModel.displayName.isNullOrEmpty()) {
+private fun getUploadState(value: String?, isLoading: Boolean): UploadFileState {
+    return if (isLoading && value.isNullOrEmpty()) {
+        UploadFileState.UPLOADING
+    } else if (value.isNullOrEmpty()) {
         UploadFileState.ADD
     } else {
         UploadFileState.LOADED
