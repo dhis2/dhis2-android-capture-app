@@ -338,8 +338,10 @@ class FormRepositoryImpl(
 
         return dataEntryRepository?.updateField(
             fieldUiModel,
-            fieldErrorMessageProvider.mandatoryWarning(fieldUiModel.valueType).takeIf {
-                needsMandatoryWarning && runDataIntegrity
+            fieldUiModel.valueType?.let {
+                fieldErrorMessageProvider.mandatoryWarning(it).takeIf {
+                    needsMandatoryWarning && runDataIntegrity
+                }
             },
             ruleEffectsResult?.optionsToHide(fieldUiModel.uid) ?: emptyList(),
             ruleEffectsResult?.optionGroupsToHide(fieldUiModel.uid) ?: emptyList(),
