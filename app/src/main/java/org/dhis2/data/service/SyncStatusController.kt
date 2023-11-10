@@ -32,7 +32,7 @@ class SyncStatusController {
         Timber.tag("SYNC").d("FINISH DATA SYNC")
         progressStatusMap = progressStatusMap.toMutableMap()
         downloadStatus.postValue(
-            SyncStatusData(false, false, progressStatusMap),
+            SyncStatusData(false, false, progressStatusMap, true),
         )
     }
 

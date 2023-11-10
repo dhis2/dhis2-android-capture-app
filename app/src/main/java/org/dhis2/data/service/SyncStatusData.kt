@@ -7,6 +7,7 @@ data class SyncStatusData(
     val running: Boolean,
     val downloadingMedia: Boolean = false,
     val programSyncStatusMap: Map<String, D2ProgressStatus> = emptyMap(),
+    val firstSyncDone: Boolean = false,
 ) {
 
     fun isProgramDownloading(uid: String): Boolean {
