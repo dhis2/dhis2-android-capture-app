@@ -4,6 +4,8 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -13,6 +15,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,6 +57,11 @@ fun Form(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = { focusManager.clearFocus() },
+            )
             .padding(horizontal = 16.dp, vertical = 16.dp),
         state = scrollState,
     ) {
@@ -62,8 +70,11 @@ fun Form(
                 items = sections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
             ) { _, section ->
-                LaunchedEffect(section) {
-                    if (section.state == SectionState.OPEN) {
+                val isSectionOpen = remember(section.state) {
+                    derivedStateOf { section.state == SectionState.OPEN }
+                }
+                LaunchedEffect(isSectionOpen.value) {
+                    if (isSectionOpen.value) {
                         scrollState.animateScrollToItem(sections.indexOf(section))
                     }
                 }

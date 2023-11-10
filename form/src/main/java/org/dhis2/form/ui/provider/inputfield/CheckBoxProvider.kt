@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -19,6 +20,7 @@ internal fun ProvideCheckBoxInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusRequester: FocusRequester,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
         CheckBoxData(
@@ -39,7 +41,7 @@ internal fun ProvideCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
-            fieldUiModel.onItemClick()
+            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -50,7 +52,7 @@ internal fun ProvideCheckBoxInput(
             )
         },
         onClearSelection = {
-            fieldUiModel.onItemClick()
+            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.ClearValue(fieldUiModel.uid),
             )
@@ -64,6 +66,7 @@ internal fun ProvideYesNoCheckBoxInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
+    focusRequester: FocusRequester,
 ) {
     val data = listOf(
         CheckBoxData(
@@ -90,7 +93,7 @@ internal fun ProvideYesNoCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
-            fieldUiModel.onItemClick()
+            focusRequester.requestFocus()
             when (item.uid) {
                 "true" -> {
                     intentHandler(
@@ -116,7 +119,7 @@ internal fun ProvideYesNoCheckBoxInput(
             }
         },
         onClearSelection = {
-            fieldUiModel.onItemClick()
+            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.ClearValue(fieldUiModel.uid),
             )
@@ -129,6 +132,7 @@ internal fun ProvideYesOnlyCheckBoxInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusRequester: FocusRequester,
 ) {
     val cbData = CheckBoxData(
         uid = "",
@@ -145,7 +149,7 @@ internal fun ProvideYesOnlyCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onClick = {
-            fieldUiModel.onItemClick()
+            focusRequester.requestFocus()
             if (!fieldUiModel.isAffirmativeChecked) {
                 intentHandler(
                     FormIntent.OnSave(
