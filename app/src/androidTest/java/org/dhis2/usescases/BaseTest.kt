@@ -2,11 +2,8 @@ package org.dhis2.usescases
 
 import android.content.Context
 import android.os.Build
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import org.dhis2.AppTest
@@ -21,6 +18,7 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
@@ -74,6 +72,7 @@ open class BaseTest {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
             mockWebServerRobot = providesMockWebserverRobot(context)
+            disableComposeForms()
         }
     }
 
@@ -158,6 +157,10 @@ open class BaseTest {
 
     fun cleanLocalDatabase() {
         (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
+    }
+
+    private fun disableComposeForms() {
+        preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, false)
     }
 
     companion object {
