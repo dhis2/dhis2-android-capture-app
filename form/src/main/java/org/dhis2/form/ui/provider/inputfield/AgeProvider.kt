@@ -134,14 +134,14 @@ private fun saveValue(
     uid: String,
     value: String?,
     valueType: ValueType?,
-    allowFutureDates: Boolean?
+    allowFutureDates: Boolean?,
 ) {
     intentHandler.invoke(
         FormIntent.OnSaveDate(
             uid,
             value,
             valueType,
-            allowFutureDates ?: false
+            allowFutureDates ?: false,
         ),
     )
 }
