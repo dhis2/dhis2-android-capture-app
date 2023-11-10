@@ -17,6 +17,7 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.binding.getBitmap
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
@@ -27,6 +28,7 @@ internal fun ProvideInputImage(
     fieldUiModel: FieldUiModel,
     resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
     var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
 
@@ -44,7 +46,9 @@ internal fun ProvideInputImage(
         load = {
             painter
         },
-        onDownloadButtonClick = { fieldUiModel.invokeUiEvent(UiEventType.OPEN_FILE) },
+        onDownloadButtonClick = {
+            uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
+        },
         onResetButtonClicked = {
             fieldUiModel.onClear()
             uploadState = getUploadState(fieldUiModel.displayName, false)
@@ -59,12 +63,12 @@ internal fun ProvideInputImage(
             fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE)
         },
         onImageClick = {
-            fieldUiModel.invokeUiEvent(UiEventType.SHOW_PICTURE)
+            uiEventHandler.invoke(RecyclerViewUiEvents.ShowImage(fieldUiModel.label, fieldUiModel.displayName ?: ""))
         },
     )
 }
 
-private fun getUploadState(value: String?, isLoading: Boolean): UploadState {
+internal fun getUploadState(value: String?, isLoading: Boolean): UploadState {
     return if (isLoading && value.isNullOrEmpty()) {
         UploadState.UPLOADING
     } else if (value.isNullOrEmpty()) {
