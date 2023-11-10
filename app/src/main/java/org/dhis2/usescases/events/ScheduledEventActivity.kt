@@ -84,7 +84,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     override fun setEvent(event: Event) {
         this.event = event
 
-
         when (event.status()) {
             EventStatus.OVERDUE, EventStatus.SCHEDULE -> {
                 binding.actionButton.visibility = View.VISIBLE
@@ -135,7 +134,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 }
             }
         }
-
     }
 
     override fun setProgram(program: Program) {
