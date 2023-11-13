@@ -3,7 +3,6 @@ package org.dhis2.form.ui.validation
 import android.content.Context
 import org.dhis2.form.R
 import org.dhis2.form.ui.validation.failures.FieldMaskFailure
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.BooleanFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.CoordinateFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateFailure
@@ -169,11 +168,8 @@ class FieldErrorMessageProvider(private val context: Context) {
         NumberFailure.LeadingZeroException -> R.string.leading_zero_error
     }
 
-    fun mandatoryWarning(errorType: ValueType): String {
-        return when (errorType) {
-            ValueType.BOOLEAN -> context.getString(R.string.make_a_selection)
-            else -> context.getString(R.string.field_is_mandatory)
-        }
+    fun mandatoryWarning(): String {
+        return context.getString(R.string.make_a_selection)
     }
 
     fun defaultValidationErrorMessage(): String {

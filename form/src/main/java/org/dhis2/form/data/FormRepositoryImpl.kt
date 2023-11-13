@@ -339,7 +339,7 @@ class FormRepositoryImpl(
         return dataEntryRepository?.updateField(
             fieldUiModel,
             fieldUiModel.valueType?.let {
-                fieldErrorMessageProvider.mandatoryWarning(it).takeIf {
+                fieldErrorMessageProvider.mandatoryWarning().takeIf {
                     needsMandatoryWarning && runDataIntegrity
                 }
             },
