@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -76,8 +77,18 @@ fun Form(
                 LaunchedEffect(isSectionOpen.value) {
                     if (isSectionOpen.value) {
                         scrollState.animateScrollToItem(sections.indexOf(section))
+                        focusManager.moveFocus(FocusDirection.Next)
                     }
                 }
+
+                val onNextSection: () -> Unit = {
+                    getNextSection(section, sections)?.let {
+                        intentHandler.invoke(FormIntent.OnSection(it.uid))
+                    } ?: run {
+                        focusManager.clearFocus()
+                    }
+                }
+
                 Section(
                     title = section.title,
                     isLastSection = getNextSection(section, sections) == null,
@@ -87,16 +98,12 @@ fun Form(
                     state = section.state,
                     errorCount = section.errorCount(),
                     warningCount = section.warningCount(),
-                    onNextSection = {
-                        getNextSection(section, sections)?.let {
-                            intentHandler.invoke(FormIntent.OnSection(it.uid))
-                        }
-                    },
+                    onNextSection = onNextSection,
                     onSectionClick = {
                         intentHandler.invoke(FormIntent.OnSection(section.uid))
                     },
                     content = {
-                        section.fields.forEach { fieldUiModel ->
+                        section.fields.forEachIndexed { index, fieldUiModel ->
                             fieldUiModel.setCallback(callback)
                             FieldProvider(
                                 modifier = Modifier.animateItemPlacement(
@@ -111,6 +118,13 @@ fun Form(
                                 intentHandler = intentHandler,
                                 resources = resources,
                                 focusManager = focusManager,
+                                onNextClicked = {
+                                    if (index == section.fields.size - 1) {
+                                        onNextSection()
+                                    } else {
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                    }
+                                },
                             )
                         }
                     },

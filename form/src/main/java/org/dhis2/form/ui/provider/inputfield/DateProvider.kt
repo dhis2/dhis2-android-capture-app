@@ -27,6 +27,7 @@ fun ProvideInputDate(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    onNextClicked: () -> Unit,
 ) {
     val (actionType, visualTransformation) = when (fieldUiModel.valueType) {
         ValueType.DATETIME -> DateTimeActionIconType.DATE_TIME to DateTimeTransformation()
@@ -85,6 +86,7 @@ fun ProvideInputDate(
         isRequired = fieldUiModel.mandatory,
         visualTransformation = visualTransformation,
         onFocusChanged = {},
+        onNextClicked = onNextClicked,
         onValueChanged = {
             value = it
             if (isValid(it, fieldUiModel.valueType)) {
