@@ -110,6 +110,7 @@ fun ProvideInputAge(
                             fieldUiModel.uid,
                             formatUIDateToStored(type.value),
                             fieldUiModel.valueType,
+                            fieldUiModel.allowFutureDates,
                         )
                     }
                 }
@@ -120,6 +121,7 @@ fun ProvideInputAge(
                         fieldUiModel.uid,
                         null,
                         fieldUiModel.valueType,
+                        fieldUiModel.allowFutureDates,
                     )
                 }
             }
@@ -132,12 +134,14 @@ private fun saveValue(
     uid: String,
     value: String?,
     valueType: ValueType?,
+    allowFutureDates: Boolean?,
 ) {
     intentHandler.invoke(
-        FormIntent.OnSave(
+        FormIntent.OnSaveDate(
             uid,
             value,
             valueType,
+            allowFutureDates ?: false,
         ),
     )
 }
