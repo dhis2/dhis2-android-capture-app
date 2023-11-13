@@ -5,6 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.DatePicker
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import org.dhis2.App
 import org.dhis2.R
@@ -13,6 +19,8 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
@@ -76,8 +84,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     override fun setEvent(event: Event) {
         this.event = event
 
-        binding.dueDate.setText(DateUtils.uiDateFormat().format(event.dueDate()))
-
         when (event.status()) {
             EventStatus.OVERDUE, EventStatus.SCHEDULE -> {
                 binding.actionButton.visibility = View.VISIBLE
@@ -91,18 +97,43 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         }
     }
 
-    override fun setStage(programStage: ProgramStage) {
+    override fun setStage(programStage: ProgramStage, event: Event) {
         this.stage = programStage
         binding.programStage = programStage
-        binding.dateLayout.hint =
-            programStage.executionDateLabel() ?: getString(R.string.report_date)
-        binding.dueDateLayout.hint = programStage.dueDateLabel() ?: getString(R.string.due_date)
 
-        if (programStage.hideDueDate() == true) {
-            binding.dueDateLayout.visibility = View.GONE
+        binding.scheduledEventFieldContainer.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                Column {
+                    val eventDate = EventDate(
+                        label = programStage.executionDateLabel() ?: getString(R.string.report_date),
+                        dateValue = "",
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ProvideInputDate(
+                        eventDate = eventDate,
+                        allowsManualInput = false,
+                        detailsEnabled = true,
+                        onDateClick = { setEvenDateListener(programStage.periodType()) },
+                        onDateSet = {},
+                    )
+                    if (programStage.hideDueDate() == false) {
+                        val dueDate = EventDate(
+                            label = programStage.dueDateLabel() ?: getString(R.string.due_date),
+                            dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ProvideInputDate(
+                            eventDate = dueDate,
+                            detailsEnabled = true,
+                            onDateClick = { setDueDateListener(programStage.periodType()) },
+                            onDateSet = {},
+                        )
+                    }
+                }
+            }
         }
-
-        setEventDateClickListener(programStage.periodType())
     }
 
     override fun setProgram(program: Program) {
@@ -110,63 +141,61 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         binding.name = program.displayName()
     }
 
-    fun setEventDateClickListener(periodType: PeriodType?) {
-        binding.date.setOnClickListener {
-            if (periodType == null) {
-                showCustomCalendar(false)
-            } else {
-                var minDate =
-                    DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
-                val lastPeriodDate =
-                    DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true)
+    private fun setEvenDateListener(periodType: PeriodType?) {
+        if (periodType == null) {
+            showCustomCalendar(false)
+        } else {
+            var minDate =
+                DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
+            val lastPeriodDate =
+                DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true)
 
-                if (lastPeriodDate.after(
-                        DateUtils.getInstance().getNextPeriod(
-                            program.expiryPeriodType(),
-                            minDate,
-                            0,
-                        ),
-                    )
-                ) {
-                    minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
-                }
-
-                PeriodDialog()
-                    .setPeriod(periodType)
-                    .setMinDate(minDate)
-                    .setMaxDate(DateUtils.getInstance().today)
-                    .setPossitiveListener { selectedDate -> presenter.setEventDate(selectedDate) }
-                    .show(supportFragmentManager, PeriodDialog::class.java.simpleName)
+            if (lastPeriodDate.after(
+                    DateUtils.getInstance().getNextPeriod(
+                        program.expiryPeriodType(),
+                        minDate,
+                        0,
+                    ),
+                )
+            ) {
+                minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
             }
+
+            PeriodDialog()
+                .setPeriod(periodType)
+                .setMinDate(minDate)
+                .setMaxDate(DateUtils.getInstance().today)
+                .setPossitiveListener { selectedDate -> presenter.setEventDate(selectedDate) }
+                .show(supportFragmentManager, PeriodDialog::class.java.simpleName)
         }
+    }
 
-        binding.dueDate.setOnClickListener {
-            if (periodType == null) {
-                showCustomCalendar(true)
-            } else {
-                var minDate =
-                    DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
-                val lastPeriodDate =
-                    DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true)
+    private fun setDueDateListener(periodType: PeriodType?) {
+        if (periodType == null) {
+            showCustomCalendar(true)
+        } else {
+            var minDate =
+                DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
+            val lastPeriodDate =
+                DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true)
 
-                if (lastPeriodDate.after(
-                        DateUtils.getInstance().getNextPeriod(
-                            program.expiryPeriodType(),
-                            minDate,
-                            0,
-                        ),
-                    )
-                ) {
-                    minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
-                }
-
-                PeriodDialog()
-                    .setPeriod(periodType)
-                    .setMinDate(minDate)
-                    .setMaxDate(DateUtils.getInstance().today)
-                    .setPossitiveListener { selectedDate -> presenter.setDueDate(selectedDate) }
-                    .show(supportFragmentManager, PeriodDialog::class.java.simpleName)
+            if (lastPeriodDate.after(
+                    DateUtils.getInstance().getNextPeriod(
+                        program.expiryPeriodType(),
+                        minDate,
+                        0,
+                    ),
+                )
+            ) {
+                minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0)
             }
+
+            PeriodDialog()
+                .setPeriod(periodType)
+                .setMinDate(minDate)
+                .setMaxDate(DateUtils.getInstance().today)
+                .setPossitiveListener { selectedDate -> presenter.setDueDate(selectedDate) }
+                .show(supportFragmentManager, PeriodDialog::class.java.simpleName)
         }
     }
 

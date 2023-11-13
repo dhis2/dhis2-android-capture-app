@@ -57,6 +57,7 @@ fun ProvideInputDate(
     eventDate: EventDate,
     detailsEnabled: Boolean,
     onDateClick: () -> Unit,
+    allowsManualInput: Boolean = true,
     onDateSet: (InputDateValues) -> Unit,
 ) {
     var value by remember(eventDate.dateValue) {
@@ -69,6 +70,7 @@ fun ProvideInputDate(
 
     InputDateTime(
         title = eventDate.label ?: "",
+        allowsManualInput = allowsManualInput,
         value = value,
         actionIconType = DateTimeActionIconType.DATE,
         onActionClicked = onDateClick,

@@ -93,14 +93,14 @@ class TeiFlowRobot : BaseRobot() {
         }
     }
 
-    fun changeDueDate(date: DateRegistrationUIModel, programStage: String, orgUnit: String) {
+    fun changeDueDate(date: DateRegistrationUIModel, programStage: String, orgUnit: String, composeTestRule: ComposeTestRule) {
         teiDashboardRobot {
             clickOnStageGroup(programStage)
             clickOnEventGroupByStageUsingOU(orgUnit)
         }
 
         eventRobot {
-            clickOnEventDueDate()
+            clickOnEventDueDate(composeTestRule)
             selectSpecificDate(date.year, date.month, date.day)
             acceptUpdateEventDate()
         }
