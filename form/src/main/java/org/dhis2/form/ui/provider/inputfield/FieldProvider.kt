@@ -1,6 +1,5 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
@@ -18,6 +17,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
@@ -49,7 +49,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 @Composable
 internal fun FieldProvider(
     modifier: Modifier,
-    context: Context,
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
@@ -57,6 +56,7 @@ internal fun FieldProvider(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val context = LocalContext.current
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()

@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.dhis2.commons.resources.ResourceManager
@@ -41,7 +40,6 @@ fun Form(
     resources: ResourceManager,
 ) {
     val scrollState = rememberLazyListState()
-    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val callback = remember {
         object : FieldUiModel.Callback {
@@ -112,7 +110,6 @@ fun Form(
                                         easing = LinearOutSlowInEasing,
                                     ),
                                 ),
-                                context = context,
                                 fieldUiModel = fieldUiModel,
                                 uiEventHandler = uiEventHandler,
                                 intentHandler = intentHandler,
