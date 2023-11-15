@@ -3,10 +3,14 @@ package org.dhis2.commons.featureconfig.data
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.featureconfig.model.FeatureState
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.settings.ExperimentalFeature
 import javax.inject.Inject
 
-class FeatureConfigRepositoryImpl @Inject constructor(val preferences: PreferenceProvider) :
-    FeatureConfigRepository {
+class FeatureConfigRepositoryImpl @Inject constructor(
+    val preferences: PreferenceProvider,
+    val d2: D2,
+) : FeatureConfigRepository {
 
     override val featuresList: List<FeatureState>
         get() = Feature.entries.map {
@@ -17,5 +21,11 @@ class FeatureConfigRepositoryImpl @Inject constructor(val preferences: Preferenc
         preferences.setValue(featureState.feature.name, !featureState.enable)
     }
 
-    override fun isFeatureEnable(feature: Feature) = preferences.getBoolean(feature.name, true)
+    override fun isFeatureEnable(feature: Feature): Boolean {
+        val isSetInPreferences = preferences.getBoolean(feature.name, false)
+        val isSetInRemoteConfig = d2.settingModule().generalSetting()
+            .hasExperimentalFeature(ExperimentalFeature.NewFormLayout).blockingGet()
+
+        return isSetInPreferences || isSetInRemoteConfig
+    }
 }
