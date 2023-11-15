@@ -169,7 +169,7 @@ class FieldErrorMessageProvider(private val context: Context) {
     }
 
     fun mandatoryWarning(): String {
-        return context.getString(R.string.make_a_selection)
+        return context.getString(R.string.required)
     }
 
     fun defaultValidationErrorMessage(): String {

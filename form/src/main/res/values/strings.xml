@@ -23,7 +23,7 @@
     <string name="conf_error_value_to_assign_option_set">Program rule %s is trying to assign value %s which does not belongs to option set %s</string>
     <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
     <string name="field_is_mandatory">This field is mandatory</string>
-    <string name="make_a_selection">Make a selection</string>
+    <string name="required">Required</string>
     <string name="date">Date</string>
     <string name="hint_year">Years</string>
     <string name="hint_month">Months</string>
