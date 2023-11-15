@@ -10,8 +10,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withSubstring
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -27,8 +25,6 @@ import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.not
-import org.jetbrains.annotations.VisibleForTesting
 
 fun eventRobot(eventRobot: EventRobot.() -> Unit) {
     EventRobot().apply {
@@ -137,8 +133,10 @@ class EventRobot : BaseRobot() {
         onView(withId(R.id.possitive)).perform(click())
     }
 
-    fun clickOnEventDueDate() {
-        onView(withId(R.id.due_date)).perform(click())
+    fun clickOnEventDueDate(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag("INPUT_DATE_TIME_TEXT").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("INPUT_DATE_TIME_TEXT").performClick()
+
     }
 
     fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {

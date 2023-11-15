@@ -27,6 +27,7 @@ internal fun ProvideInputsForValueTypeText(
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
+    onNextClicked: () -> Unit,
 ) {
     when (fieldUiModel.renderingType) {
         UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
@@ -36,6 +37,7 @@ internal fun ProvideInputsForValueTypeText(
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
                 focusManager = focusManager,
+                onNextClicked = onNextClicked,
             )
         }
 
@@ -46,6 +48,7 @@ internal fun ProvideInputsForValueTypeText(
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
                 focusManager = focusManager,
+                onNextClicked = onNextClicked,
             )
         } else -> {
             ProvideDefaultTextInput(
@@ -53,6 +56,7 @@ internal fun ProvideInputsForValueTypeText(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 focusManager = focusManager,
+                onNextClicked = onNextClicked,
             )
         }
     }
@@ -65,6 +69,7 @@ private fun ProvideQRInput(
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
+    onNextClicked: () -> Unit,
 ) {
     var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
@@ -78,6 +83,7 @@ private fun ProvideQRInput(
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
         isRequiredField = fieldUiModel.mandatory,
+        onNextClicked = onNextClicked,
         onValueChanged = {
             value = it
             intentHandler(
@@ -122,6 +128,7 @@ private fun ProvideDefaultTextInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
+    onNextClicked: () -> Unit,
 ) {
     var value by remember {
         mutableStateOf(fieldUiModel.value)
@@ -134,6 +141,7 @@ private fun ProvideDefaultTextInput(
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
         isRequiredField = fieldUiModel.mandatory,
+        onNextClicked = onNextClicked,
         onValueChanged = {
             value = it
             intentHandler(
@@ -158,6 +166,7 @@ private fun ProvideBarcodeInput(
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
+    onNextClicked: () -> Unit,
 ) {
     var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
@@ -171,6 +180,7 @@ private fun ProvideBarcodeInput(
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
         isRequiredField = fieldUiModel.mandatory,
+        onNextClicked = onNextClicked,
         onValueChanged = {
             value = it
             intentHandler(

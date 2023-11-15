@@ -39,7 +39,7 @@ class ScheduledEventPresenterImpl(
                     { stageProgramEventData ->
                         val (stage, program, event) = stageProgramEventData
                         view.setProgram(program)
-                        view.setStage(stage)
+                        view.setStage(stage, event)
                         view.setEvent(event)
                     },
                     { Timber.e(it) },

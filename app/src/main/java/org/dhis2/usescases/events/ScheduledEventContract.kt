@@ -12,7 +12,7 @@ class ScheduledEventContract {
 
     interface View : AbstractActivityContracts.View {
         fun setEvent(event: Event)
-        fun setStage(programStage: ProgramStage)
+        fun setStage(programStage: ProgramStage, event: Event)
         fun setProgram(program: Program)
         fun openInitialActivity()
         fun openFormActivity()

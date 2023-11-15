@@ -1,6 +1,8 @@
 package org.dhis2.usescases.searchte
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -9,12 +11,12 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
+import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.TeiFlowTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
@@ -40,7 +42,6 @@ class SearchTETest : BaseTest() {
     val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     private var mapIdlingResource: MapIdlingResource? = null
-    private var map: MapboxMap? = null
 
     private val customDispatcherProvider =
         context.applicationContext.app().appComponent().customDispatcherProvider()
@@ -58,7 +59,6 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullySearchByName() {
         val firstName = "Tim"
         val firstNamePosition = 0
-        val filterCount = "1"
         val orgUnit = "Ngelehun CHC"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
@@ -92,7 +92,6 @@ class SearchTETest : BaseTest() {
         val firstNamePosition = 0
         val lastName = "Jones"
         val lastNamePosition = 1
-        val filterCount = "2"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -125,7 +124,6 @@ class SearchTETest : BaseTest() {
         val displayInListData = createDisplayListFields()
         val namePosition = 0
         val lastNamePosition = 1
-        val filterCount = "3"
 
         setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
@@ -179,12 +177,13 @@ class SearchTETest : BaseTest() {
 
         teiFlowRobot {
             registerTEI(registerTeiDetails)
-            changeDueDate(overdueDate, programStage, orgUnit)
+            changeDueDate(overdueDate, programStage, orgUnit, composeTestRule)
+            pressBack()
+            composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
             pressBack()
         }
 
         filterRobot {
-            waitToDebounce(5000)
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()
