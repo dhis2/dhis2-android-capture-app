@@ -17,6 +17,7 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
@@ -266,7 +267,12 @@ class TEIDataPresenter(
             valueStore,
         )
         stagesToHide = stagesToHide1
-        return events
+        return events.filter {
+            when (it.type) {
+                EventViewModelType.STAGE -> !stagesToHide.contains(it.stage?.uid())
+                EventViewModelType.EVENT -> !stagesToHide.contains(it.event?.programStage())
+            }
+        }
     }
 
     @VisibleForTesting
