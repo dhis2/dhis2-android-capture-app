@@ -22,10 +22,11 @@ class FeatureConfigRepositoryImpl @Inject constructor(
     }
 
     override fun isFeatureEnable(feature: Feature): Boolean {
-        val isSetInPreferences = preferences.getBoolean(feature.name, false)
-        val isSetInRemoteConfig = d2.settingModule().generalSetting()
-            .hasExperimentalFeature(ExperimentalFeature.NewFormLayout).blockingGet()
-
-        return isSetInPreferences || isSetInRemoteConfig
+        return if (preferences.contains(feature.name)) {
+            preferences.getBoolean(feature.name, false)
+        } else {
+            d2.settingModule().generalSetting()
+                .hasExperimentalFeature(ExperimentalFeature.NewFormLayout).blockingGet()
+        }
     }
 }
