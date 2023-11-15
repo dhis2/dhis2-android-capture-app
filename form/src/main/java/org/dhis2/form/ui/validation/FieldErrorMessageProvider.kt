@@ -169,7 +169,7 @@ class FieldErrorMessageProvider(private val context: Context) {
     }
 
     fun mandatoryWarning(): String {
-        return context.getString(R.string.field_is_mandatory)
+        return context.getString(R.string.required)
     }
 
     fun defaultValidationErrorMessage(): String {
