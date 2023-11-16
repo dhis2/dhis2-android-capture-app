@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.R
@@ -30,13 +31,14 @@ class DatasetCardMapper(
 
     fun map(
         dataset: DataSetDetailModel,
+        editable: Boolean,
         onSyncIconClick: () -> Unit,
         onCardCLick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
             title = dataset.namePeriod(),
             lastUpdated = dataset.lastUpdated().toDateSpan(context),
-            additionalInfo = getAdditionalInfoList(dataset),
+            additionalInfo = getAdditionalInfoList(dataset, editable),
             actionButton = {
                 ProvideSyncButton(
                     state = dataset.state(),
@@ -51,6 +53,7 @@ class DatasetCardMapper(
 
     private fun getAdditionalInfoList(
         dataset: DataSetDetailModel,
+        editable: Boolean,
     ): List<AdditionalInfoItem> {
         val list = mutableListOf<AdditionalInfoItem>()
 
@@ -74,9 +77,34 @@ class DatasetCardMapper(
             state = dataset.state(),
         )
 
-        // checkViewOnly()
+        checkViewOnly(
+            list = list,
+            editable = editable,
+        )
 
         return list
+    }
+
+    private fun checkViewOnly(
+        list: MutableList<AdditionalInfoItem>,
+        editable: Boolean,
+    ) {
+        if (!editable) {
+            list.add(
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Visibility,
+                            contentDescription = resourceManager.getString(R.string.view_only),
+                            tint = AdditionalInfoItemColor.DISABLED.color,
+                        )
+                    },
+                    value = resourceManager.getString(R.string.view_only),
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.DISABLED.color,
+                ),
+            )
+        }
     }
 
     private fun checkCategoryCombination(
