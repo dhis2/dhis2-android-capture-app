@@ -79,7 +79,11 @@ fun WorkingListChipGroup(
     workingListViewModel: WorkingListViewModel,
 ) {
     val workingListFilterState = workingListViewModel.workingListFilter.observeAsState()
-    var selectedWorkingList by remember { mutableStateOf(FilterManager.getInstance().currentWorkingList()) }
+    var selectedWorkingList by remember {
+        mutableStateOf(
+            FilterManager.getInstance().currentWorkingList(),
+        )
+    }
 
     workingListFilterState.value?.let { workingListFilter ->
         LazyRow(modifier) {
