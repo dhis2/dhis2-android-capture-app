@@ -167,6 +167,11 @@ class EventDetailsViewModel(
         }
     }
 
+    fun onClearEventReportDate() {
+        _eventDate.value = eventDate.value.copy(currentDate = null)
+        setUpEventDetails()
+    }
+
     fun setUpOrgUnit(selectedDate: Date? = null, selectedOrgUnit: String? = null) {
         viewModelScope.launch {
             configureOrgUnit(selectedDate, selectedOrgUnit)
@@ -176,6 +181,11 @@ class EventDetailsViewModel(
                     setUpEventDetails()
                 }
         }
+    }
+
+    fun onClearOrgUnit() {
+        _eventOrgUnit.value = eventOrgUnit.value.copy(selectedOrgUnit = null)
+        setUpEventDetails()
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
@@ -189,6 +199,11 @@ class EventDetailsViewModel(
                     EventDetailIdlingResourceSingleton.decrement()
                 }
         }
+    }
+
+    fun onClearCatCombo() {
+        _eventCatCombo.value = eventCatCombo.value.copy(isCompleted = false)
+        setUpEventDetails()
     }
 
     private fun setUpCoordinates(value: String? = "") {

@@ -59,6 +59,8 @@ fun ProvideInputDate(
     onDateClick: () -> Unit,
     allowsManualInput: Boolean = true,
     onDateSet: (InputDateValues) -> Unit,
+    onClear: () -> Unit,
+    required: Boolean = false,
 ) {
     var value by remember(eventDate.dateValue) {
         mutableStateOf(eventDate.dateValue?.let { formatStoredDateToUI(it) })
@@ -78,7 +80,9 @@ fun ProvideInputDate(
         visualTransformation = DateTransformation(),
         onValueChanged = {
             value = it
-            if (isValid(it)) {
+            if (it.isEmpty()) {
+                onClear()
+            } else if (isValid(it)) {
                 if (isValidDateFormat(it)) {
                     state = InputShellState.FOCUSED
                     formatUIDateToStored(it)?.let { dateValues ->
@@ -91,6 +95,7 @@ fun ProvideInputDate(
                 state = InputShellState.FOCUSED
             }
         },
+        isRequired = required,
     )
 }
 
@@ -157,6 +162,8 @@ fun ProvideOrgUnit(
     detailsEnabled: Boolean,
     onOrgUnitClick: () -> Unit,
     resources: ResourceManager,
+    onClear: () -> Unit,
+    required: Boolean = false,
 ) {
     val state = getInputState(detailsEnabled && orgUnit.enable && orgUnit.orgUnits.size > 1)
 
@@ -170,8 +177,12 @@ fun ProvideOrgUnit(
         inputText = inputFieldValue ?: "",
         onValueChanged = {
             inputFieldValue = it
+            if (it.isNullOrEmpty()) {
+                onClear()
+            }
         },
         onOrgUnitActionCLicked = onOrgUnitClick,
+        isRequiredField = required,
     )
 }
 
@@ -187,6 +198,7 @@ fun ProvideCategorySelector(
     onShowCategoryDialog: (EventCategory) -> Unit,
     onClearCatCombo: (EventCategory) -> Unit,
     onOptionSelected: (CategoryOption?) -> Unit,
+    required: Boolean = false,
 ) {
     var selectedItem by remember {
         mutableStateOf(
@@ -213,6 +225,7 @@ fun ProvideCategorySelector(
             onArrowDropDownButtonClicked = {
                 expanded = !expanded
             },
+            isRequiredField = required,
         )
 
         if (expanded) {
