@@ -32,7 +32,7 @@ fun ProvideInputAge(
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: ResourceManager,
 ) {
-    var inputType by remember {
+    var inputType by remember(fieldUiModel.value) {
         mutableStateOf(
             if (!fieldUiModel.value.isNullOrEmpty()) {
                 formatStoredDateToUI(fieldUiModel.value!!)?.let {
