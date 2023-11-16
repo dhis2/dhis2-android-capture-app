@@ -433,7 +433,7 @@ private fun ProvideIntegerPositive(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -472,7 +472,7 @@ private fun ProvideIntegerPositiveOrZero(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -511,7 +511,7 @@ private fun ProvidePercentage(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -550,7 +550,7 @@ private fun ProvideNumber(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -590,7 +590,7 @@ private fun ProvideIntegerNegative(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value?.replace("-", ""))
     }
 
@@ -629,7 +629,7 @@ private fun ProvideLongText(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -669,7 +669,7 @@ private fun ProvideLetter(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -708,7 +708,7 @@ private fun ProvideInteger(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -747,7 +747,7 @@ private fun ProvideEmail(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -796,7 +796,7 @@ private fun ProvideInputPhoneNumber(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
@@ -845,7 +845,7 @@ private fun ProvideInputLink(
     onNextClicked: () -> Unit,
 
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
 
