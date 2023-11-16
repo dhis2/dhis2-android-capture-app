@@ -8,7 +8,7 @@ import timber.log.Timber
 
 class SyncStatusController {
     private var progressStatusMap: Map<String, D2ProgressStatus> = emptyMap()
-    private val downloadStatus = MutableLiveData(SyncStatusData(false))
+    private val downloadStatus = MutableLiveData(SyncStatusData(false, isInitialSync = true))
 
     fun observeDownloadProcess(): LiveData<SyncStatusData> = downloadStatus
 
@@ -32,7 +32,7 @@ class SyncStatusController {
         Timber.tag("SYNC").d("FINISH DATA SYNC")
         progressStatusMap = progressStatusMap.toMutableMap()
         downloadStatus.postValue(
-            SyncStatusData(false, false, progressStatusMap, true),
+            SyncStatusData(false, false, progressStatusMap),
         )
     }
 

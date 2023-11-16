@@ -252,7 +252,7 @@ class MainActivity :
                 setFilterButtonVisibility(true)
                 setBottomNavigationVisibility(true)
                 presenter.onDataSuccess()
-                if (presenter.hasOneHomeItem() && !it.firstSyncDone) {
+                if (presenter.hasOneHomeItem() && it.isInitialSync) {
                     navigateToSingleProgram()
                 }
             }
