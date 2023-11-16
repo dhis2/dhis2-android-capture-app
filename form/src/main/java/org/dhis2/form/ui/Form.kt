@@ -17,11 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
@@ -41,6 +43,7 @@ fun Form(
 ) {
     val scrollState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
     val callback = remember {
         object : FieldUiModel.Callback {
             override fun intent(intent: FormIntent) {
@@ -82,6 +85,9 @@ fun Form(
                 val onNextSection: () -> Unit = {
                     getNextSection(section, sections)?.let {
                         intentHandler.invoke(FormIntent.OnSection(it.uid))
+                        scope.launch {
+                            scrollState.animateScrollToItem(sections.indexOf(it))
+                        }
                     } ?: run {
                         focusManager.clearFocus()
                     }
