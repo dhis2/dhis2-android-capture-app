@@ -156,7 +156,7 @@ class TeiDashboardCardMapper(
                 )
             }
         }.also { list ->
-            if (item.enrollmentActivePrograms.size > 1) {
+            if (item.enrollmentActivePrograms.isNotEmpty()) {
                 addEnrollPrograms(
                     list,
                     item.enrollmentActivePrograms,

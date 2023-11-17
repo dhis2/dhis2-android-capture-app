@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class SearchTeiModel implements CarouselItemModel {
 
@@ -170,7 +171,13 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public List<Program> getProgramInfo() {
         Collections.sort(programInfo, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
-        return programInfo;
+        List<Program> programs = new ArrayList<>();
+        for(Program program: programInfo) {
+            if (!Objects.equals(selectedEnrollment.program(), program.uid())) {
+                programs.add(program);
+            }
+        }
+        return programs;
     }
 
     public void setOverdueDate(Date dateToShow) {
