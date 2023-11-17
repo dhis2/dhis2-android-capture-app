@@ -111,7 +111,6 @@ class ConfigureEventDetailsTest {
         whenever(event.status()) doReturn EventStatus.ACTIVE
         whenever(repository.getEditableStatus()) doReturn Editable()
 
-
         // And event creation should be completed
         val selectedDate = Date()
         val selectedOrgUnit = ORG_UNIT_UID
