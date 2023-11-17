@@ -145,13 +145,6 @@ class TEIDataPresenter(
                             teiDataRepository.getTEIEnrollmentEvents(
                                 stageAndGrouping.first,
                                 stageAndGrouping.second,
-                                filterManager.periodFilters,
-                                filterManager.orgUnitUidsFilters,
-                                filterManager.stateFilters,
-                                filterManager.assignedFilter,
-                                filterManager.eventStatusFilters,
-                                filterManager.catOptComboFilters,
-                                filterManager.sortingItem,
                             ).toFlowable(),
                             ruleEngineRepository.updateRuleEngine()
                                 .flatMap { ruleEngineRepository.reCalculate() },
