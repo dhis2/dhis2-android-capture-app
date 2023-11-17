@@ -111,17 +111,23 @@ class ConfigureEventDetailsTest {
         whenever(event.status()) doReturn EventStatus.ACTIVE
         whenever(repository.getEditableStatus()) doReturn Editable()
 
+
+        // And event creation should be completed
+        val selectedDate = Date()
+        val selectedOrgUnit = ORG_UNIT_UID
+        val isCatComboCompleted = true
+
         // When button is checked
         val eventDetails = configureEventDetails.invoke(
-            selectedDate = null,
-            selectedOrgUnit = null,
+            selectedDate = selectedDate,
+            selectedOrgUnit = selectedOrgUnit,
             catOptionComboUid = null,
-            isCatComboCompleted = false,
+            isCatComboCompleted = isCatComboCompleted,
             coordinates = null,
             tempCreate = null,
         ).first()
 
-        // Then action button should be invisible
+        // Then action button should be visible
         assertTrue(eventDetails.isActionButtonVisible)
         assert(eventDetails.actionButtonText.equals(UPDATE))
     }
