@@ -155,7 +155,9 @@ class TeiDataRepositoryImpl(
                     eventRepo = eventRepository.byDeleted().isFalse
                         .byProgramStageUid().eq(programStage.uid())
 
-                    val eventList = eventRepo.blockingGet()
+                    val eventList = eventRepo
+                        .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
+                        .blockingGet()
 
                     val isSelected = programStage.uid() == selectedStage.stageUid
 
@@ -230,6 +232,7 @@ class TeiDataRepositoryImpl(
         val eventViewModels = mutableListOf<EventViewModel>()
 
         return eventRepository
+            .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
             .byDeleted().isFalse
             .get()
             .map { eventList ->
