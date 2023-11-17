@@ -79,7 +79,7 @@ class DataEntryAdapter(
 
     fun updateSectionData(position: Int, isHeader: Boolean) {
         (getItem(position) as SectionUiModelImpl?)!!.setShowBottomShadow(
-            collapsableSections &&
+            !collapsableSections &&
                 !isHeader && position > 0 && getItem(
                     position - 1,
                 ) !is SectionUiModelImpl,
