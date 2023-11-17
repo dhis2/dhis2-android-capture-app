@@ -69,10 +69,14 @@ class ConfigureEventDetails(
     }
 
     private fun isActionButtonVisible(isEventCompleted: Boolean, storedEvent: Event?): Boolean {
-        return storedEvent?.let {
-            !(it.status() == OVERDUE && enrollmentStatus == CANCELLED) &&
-                repository.getEditableStatus() !is NonEditable
-        } ?: isEventCompleted
+        return if (!isEventCompleted) {
+            false
+        } else {
+            storedEvent?.let {
+                !(it.status() == OVERDUE && enrollmentStatus == CANCELLED) &&
+                    repository.getEditableStatus() !is NonEditable
+            } ?: true
+        }
     }
 
     fun reopenEvent() = repository.reopenEvent()
