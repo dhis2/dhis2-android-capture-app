@@ -90,6 +90,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 binding.actionButton.text = getString(R.string.skip)
                 binding.actionButton.setOnClickListener { presenter.skipEvent() }
             }
+
             else -> {
                 binding.actionButton.visibility = View.GONE
                 binding.actionButton.setOnClickListener(null)
@@ -106,7 +107,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             setContent {
                 Column {
                     val eventDate = EventDate(
-                        label = programStage.executionDateLabel() ?: getString(R.string.report_date),
+                        label = programStage.executionDateLabel()
+                            ?: getString(R.string.report_date),
                         dateValue = "",
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -117,6 +119,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                         detailsEnabled = true,
                         onDateClick = { setEvenDateListener(programStage.periodType()) },
                         onDateSet = {},
+                        onClear = {},
                     )
                     if (programStage.hideDueDate() == false) {
                         val dueDate = EventDate(
@@ -129,6 +132,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             detailsEnabled = true,
                             onDateClick = { setDueDateListener(programStage.periodType()) },
                             onDateSet = {},
+                            onClear = {},
                         )
                     }
                 }

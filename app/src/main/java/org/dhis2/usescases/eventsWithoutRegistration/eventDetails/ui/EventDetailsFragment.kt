@@ -152,6 +152,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                         onDateSet = { dateValues ->
                             viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                         },
+                        onClear = { viewModel.onClearEventReportDate() },
+                        required = true,
                     )
                 }
                 if (orgUnit.visible) {
@@ -161,6 +163,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                         detailsEnabled = details.enabled,
                         onOrgUnitClick = { viewModel.onOrgUnitClick() },
                         resources = resourceManager,
+                        onClear = {
+                            viewModel.onClearOrgUnit()
+                        },
+                        required = true,
                     )
                 }
 
@@ -177,13 +183,14 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                                 showCategoryDialog(it)
                             },
                             onClearCatCombo = {
-                                val selectedOption = Pair(category.uid, null)
-                                viewModel.setUpCategoryCombo(selectedOption)
+                                viewModel.onClearCatCombo()
                             },
                             onOptionSelected = {
                                 val selectedOption = Pair(category.uid, it?.uid())
                                 viewModel.setUpCategoryCombo(selectedOption)
                             },
+
+                            required = true,
                         )
                     }
                 }
