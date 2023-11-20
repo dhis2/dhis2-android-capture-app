@@ -262,7 +262,9 @@ class MainActivity :
                         navigateToSingleProgram()
                     }
                 }
-                else -> {}
+                else -> {
+                    // no action
+                }
             }
         }
     }
