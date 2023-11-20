@@ -197,6 +197,7 @@ class MainPresenter(
         disposable.add(
             Completable.fromCallable {
                 workManagerController.cancelAllWork()
+                syncStatusController.restore()
                 FilterManager.getInstance().clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
                 userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
@@ -218,6 +219,7 @@ class MainPresenter(
         view.showProgressDeleteNotification()
         try {
             workManagerController.cancelAllWork()
+            syncStatusController.restore()
             deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
             userManager.d2?.wipeModule()?.wipeEverything()
             userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()

@@ -73,6 +73,7 @@ class MainActivity :
 
     var notification: Boolean = false
     var forceToNotSynced = false
+    private var singleProgramNavigationDone = false
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -212,6 +213,8 @@ class MainActivity :
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
+        } else if (!singleProgramNavigationDone && presenter.hasOneHomeItem()) {
+            navigateToSingleProgram()
         }
 
         checkNotificationPermission()
@@ -245,16 +248,21 @@ class MainActivity :
 
     private fun observeSyncState() {
         presenter.observeDataSync().observe(this) {
-            if (it.running) {
-                setFilterButtonVisibility(false)
-                setBottomNavigationVisibility(false)
-            } else {
-                setFilterButtonVisibility(true)
-                setBottomNavigationVisibility(true)
-                presenter.onDataSuccess()
-                if (presenter.hasOneHomeItem() && it.isInitialSync) {
-                    navigateToSingleProgram()
+            when (it.running) {
+                true -> {
+                    setFilterButtonVisibility(false)
+                    setBottomNavigationVisibility(false)
                 }
+                false -> {
+                    setFilterButtonVisibility(true)
+                    setBottomNavigationVisibility(true)
+                    presenter.onDataSuccess()
+                    if (presenter.hasOneHomeItem()) {
+                        singleProgramNavigationDone = true
+                        navigateToSingleProgram()
+                    }
+                }
+                else -> {}
             }
         }
     }
