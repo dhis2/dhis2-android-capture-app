@@ -171,13 +171,17 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public List<Program> getProgramInfo() {
         Collections.sort(programInfo, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
-        List<Program> programs = new ArrayList<>();
-        for(Program program: programInfo) {
-            if (!Objects.equals(selectedEnrollment.program(), program.uid())) {
-                programs.add(program);
+        if (selectedEnrollment != null) {
+            List<Program> programs = new ArrayList<>();
+            for (Program program : programInfo) {
+                if (!Objects.equals(selectedEnrollment.program(), program.uid())) {
+                    programs.add(program);
+                }
             }
+            return programs;
+        } else {
+            return programInfo;
         }
-        return programs;
     }
 
     public void setOverdueDate(Date dateToShow) {
