@@ -49,6 +49,7 @@ import java.io.File
 import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
+private const val SINGLE_PROGRAM_NAVIGATION = "SINGLE_PROGRAM_NAVIGATION"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
 private const val WIPE_NOTIFICATION = "wipe_notification"
 private const val RESTART = "Restart"
@@ -185,6 +186,7 @@ class MainActivity :
         elevation = ViewCompat.getElevation(binding.toolbar)
 
         val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
+        singleProgramNavigationDone = savedInstanceState?.getBoolean(SINGLE_PROGRAM_NAVIGATION) ?: false
         val openScreen = intent.getStringExtra(FRAGMENT)
 
         when {
@@ -228,6 +230,7 @@ class MainActivity :
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putBoolean(SINGLE_PROGRAM_NAVIGATION, singleProgramNavigationDone)
         outState.putString(FRAGMENT, mainNavigator.currentScreenName())
     }
 
@@ -258,7 +261,6 @@ class MainActivity :
                     setBottomNavigationVisibility(true)
                     presenter.onDataSuccess()
                     if (presenter.hasOneHomeItem()) {
-                        singleProgramNavigationDone = true
                         navigateToSingleProgram()
                     }
                 }
@@ -271,6 +273,7 @@ class MainActivity :
 
     private fun navigateToSingleProgram() {
         presenter.getSingleItemData()?.let { homeItemData ->
+            singleProgramNavigationDone = true
             navigationLauncher.navigateTo(this, homeItemData)
         }
     }
