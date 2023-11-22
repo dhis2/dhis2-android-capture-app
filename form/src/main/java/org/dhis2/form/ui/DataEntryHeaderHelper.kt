@@ -19,16 +19,16 @@ const val NO_POSITION = -1
 
 class DataEntryHeaderHelper(
     private val headerContainer: ViewGroup,
-    private val recyclerView: RecyclerView
+    private val recyclerView: RecyclerView,
 ) {
     private val currentSection = MutableLiveData<SectionUiModelImpl>()
 
     fun observeHeaderChanges(owner: LifecycleOwner) {
         currentSection.observe(
-            owner
+            owner,
         ) { section: SectionUiModelImpl? ->
             this.loadHeader(
-                section
+                section,
             )
         }
     }
@@ -46,7 +46,7 @@ class DataEntryHeaderHelper(
 
         if (visiblePos != NO_POSITION && dataEntryAdapter.getSectionSize() > 1) {
             dataEntryAdapter.getSectionForPosition(visiblePos)?.let { headerSection ->
-                if (headerSection.isOpen && !dataEntryAdapter.isSection(visiblePos + 1)) {
+                if (headerSection.isOpen == true && !dataEntryAdapter.isSection(visiblePos + 1)) {
                     if (currentSection.value == null ||
                         currentSection.value!!.uid != headerSection.uid
                     ) {
@@ -61,14 +61,14 @@ class DataEntryHeaderHelper(
 
     private fun loadHeader(section: SectionUiModelImpl?) {
         val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
-        if (section != null && section.isOpen) {
+        if (section != null && section.isOpen == true) {
             val layoutInflater = LayoutInflater.from(headerContainer.context)
             val binding =
                 DataBindingUtil.inflate<ViewDataBinding>(
                     layoutInflater,
                     section.layoutId,
                     headerContainer,
-                    false
+                    false,
                 )
             val sectionHolder = FormViewHolder(binding)
             val sectionPosition: Int? = dataEntryAdapter.getSectionPosition(section.uid)
@@ -86,7 +86,7 @@ class DataEntryHeaderHelper(
                     override fun intent(intent: FormIntent) {
                         dataEntryAdapter.intent(intent)
                     }
-                }
+                },
             )
             binding.setVariable(BR.item, section)
         } else {

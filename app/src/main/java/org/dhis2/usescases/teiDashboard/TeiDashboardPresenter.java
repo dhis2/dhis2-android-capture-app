@@ -1,14 +1,16 @@
 package org.dhis2.usescases.teiDashboard;
 
+import static androidx.core.content.ContextCompat.getString;
+
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.R;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -24,11 +26,13 @@ import timber.log.Timber;
 
 import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
 import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
 import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.commons.matomo.Categories.DASHBOARD;
+import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
@@ -36,7 +40,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
     private final PreferenceProvider preferenceProvider;
-    private final FilterManager filterManager;
     private final TeiDashboardContracts.View view;
 
     private String teiUid;
@@ -49,12 +52,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     public TeiDashboardPresenter(
             TeiDashboardContracts.View view,
-            String teiUid, String programUid, String enrollmentUid,
+            String teiUid, String programUid,
             DashboardRepository dashboardRepository,
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper,
             PreferenceProvider preferenceProvider,
-            FilterManager filterManager,
             MatomoAnalyticsController matomoAnalyticsController
     ) {
         this.view = view;
@@ -64,7 +66,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
-        this.filterManager = filterManager;
         this.matomoAnalyticsController = matomoAnalyticsController;
         compositeDisposable = new CompositeDisposable();
         notesCounterProcessor = PublishProcessor.create();
@@ -78,7 +79,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getEnrollment(),
                     dashboardRepository.getProgramStages(programUid),
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
-                    dashboardRepository.getProgramTrackedEntityAttributes(programUid),
+                    dashboardRepository.getAttributesMap(programUid, teiUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teiUid),
                     dashboardRepository.getTeiOrgUnits(teiUid, programUid),
                     dashboardRepository.getTeiActivePrograms(teiUid, false),
@@ -97,7 +98,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         else {
             compositeDisposable.add(Observable.zip(
                     dashboardRepository.getTrackedEntityInstance(teiUid),
-                    dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teiUid),
                     dashboardRepository.getTeiOrgUnits(teiUid, null),
                     dashboardRepository.getTeiActivePrograms(teiUid, true),
@@ -113,22 +113,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             Timber::e)
             );
         }
-        setTotalFilters();
-    }
-
-    @Override
-    public void setTotalFilters() {
-        compositeDisposable.add(
-                filterManager.asFlowable()
-                        .startWith(filterManager)
-                        .map(FilterManager::getTotalFilters)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                totalFilters -> view.updateTotalFilters(totalFilters),
-                                Timber::e
-                        )
-        );
     }
 
     @Override
@@ -266,11 +250,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void generalFiltersClick() {
-        view.setFiltersLayoutState();
-    }
-
-    @Override
     public void handleShowHideFilters(boolean showFilters) {
         if (showFilters) {
             view.hideTabsAndDisableSwipe();
@@ -299,7 +278,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         }, Timber::e)
         );
     }
-
 
     private Map<String, Boolean> getGrouping() {
         TypeToken<HashMap<String, Boolean>> typeToken =

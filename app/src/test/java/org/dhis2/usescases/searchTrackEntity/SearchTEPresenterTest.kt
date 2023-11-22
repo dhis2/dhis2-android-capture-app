@@ -7,6 +7,7 @@ import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
@@ -42,23 +43,24 @@ class SearchTEPresenterTest {
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val resourceManager: ResourceManager = mock()
+    private val colorUtils: ColorUtils = mock()
 
     @Before
     fun setUp() {
         whenever(
-            d2.programModule().programs().uid(initialProgram).blockingGet()
+            d2.programModule().programs().uid(initialProgram).blockingGet(),
         ) doReturn
             Program.builder().uid(initialProgram)
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0).build()
 
         whenever(
-            repository.getTrackedEntityType(teType)
+            repository.getTrackedEntityType(teType),
         ) doReturn Observable.just(
             TrackedEntityType.builder()
                 .uid(teType)
                 .displayName("teTypeName")
-                .build()
+                .build(),
         )
 
         presenter = SearchTEPresenter(
@@ -74,7 +76,8 @@ class SearchTEPresenterTest {
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,
             syncStatusController,
-            resourceManager
+            resourceManager,
+            colorUtils,
         )
     }
 
@@ -109,26 +112,26 @@ class SearchTEPresenterTest {
 
         whenever(
             d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid())
+                .byProgramUid().eq(newSelectedProgram.uid()),
         ) doReturn mock()
 
         whenever(
             d2.programModule().programStages()
                 .byProgramUid().eq(newSelectedProgram.uid())
-                .byEnableUserAssignment()
+                .byEnableUserAssignment(),
+        ) doReturn mock()
+
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(newSelectedProgram.uid())
+                .byEnableUserAssignment().isTrue,
         ) doReturn mock()
 
         whenever(
             d2.programModule().programStages()
                 .byProgramUid().eq(newSelectedProgram.uid())
                 .byEnableUserAssignment().isTrue
-        ) doReturn mock()
-
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid())
-                .byEnableUserAssignment().isTrue
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         presenter.setProgramForTesting(program)

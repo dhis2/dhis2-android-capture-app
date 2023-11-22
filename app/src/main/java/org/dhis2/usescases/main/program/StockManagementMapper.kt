@@ -1,31 +1,19 @@
 package org.dhis2.usescases.main.program
 
 import org.dhis2.android.rtsm.data.AppConfig
-import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.bindings.stockCount
 import org.dhis2.commons.bindings.stockDiscarded
 import org.dhis2.commons.bindings.stockDistribution
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
-internal class StockManagementMapper(
-    val repository: ProgramThemeRepository
-) {
-
-    fun map(program: ProgramViewModel): AppConfig {
-        val stockTheme = repository.getStockTheme(program.uid)
-            ?: throw InitializationException(
-                "Not possible to retrieve the Stock info from the server for uid:${program.uid}"
-            )
-
-        return AppConfig(
-            program = stockTheme.programUid,
-            itemCode = stockTheme.itemCode,
-            itemName = stockTheme.itemDescription,
-            stockOnHand = stockTheme.stockOnHand,
-            distributedTo = stockTheme.distributedTo(),
-            stockDistribution = stockTheme.stockDistribution(),
-            stockCount = stockTheme.stockCount(),
-            stockDiscarded = stockTheme.stockDiscarded()
-        )
-    }
-}
+fun StockUseCase.toAppConfig() = AppConfig(
+    program = this.programUid,
+    itemCode = this.itemCode,
+    itemName = this.itemDescription,
+    stockOnHand = this.stockOnHand,
+    distributedTo = this.distributedTo(),
+    stockDistribution = this.stockDistribution(),
+    stockCount = this.stockCount(),
+    stockDiscarded = this.stockDiscarded(),
+)

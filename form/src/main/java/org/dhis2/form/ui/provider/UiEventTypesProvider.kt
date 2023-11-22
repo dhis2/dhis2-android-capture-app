@@ -10,6 +10,6 @@ interface UiEventTypesProvider {
     fun provideUiRenderType(
         featureType: FeatureType?,
         valueTypeRenderingType: ValueTypeRenderingType?,
-        sectionRenderingType: SectionRenderingType?
+        sectionRenderingType: SectionRenderingType?,
     ): UiRenderType
 }

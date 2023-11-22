@@ -15,7 +15,7 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
         recordLabel: String,
         state: State,
         hasOverdue: Boolean,
-        filtersAreActive: Boolean
+        filtersAreActive: Boolean,
     ): ProgramViewModel {
         return ProgramViewModel(
             uid = program.uid(),
@@ -24,8 +24,8 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
                 programColor = resourceManager.getColorOrDefaultFrom(program.style()?.color()),
                 iconResource = resourceManager.getObjectStyleDrawableResource(
                     program.style()?.icon(),
-                    R.drawable.ic_default_outline
-                )
+                    R.drawable.ic_default_outline,
+                ),
             ),
             count = recordCount,
             type = if (program.trackedEntityType() != null) {
@@ -41,7 +41,8 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
             state = State.valueOf(state.name),
             hasOverdueEvent = hasOverdue,
             filtersAreActive = filtersAreActive,
-            downloadState = ProgramDownloadState.NONE
+            downloadState = ProgramDownloadState.NONE,
+            stockConfig = null,
         )
     }
 
@@ -50,7 +51,7 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
         dataSetInstanceSummary: DataSetInstanceSummary,
         recordCount: Int,
         dataSetLabel: String,
-        filtersAreActive: Boolean
+        filtersAreActive: Boolean,
     ): ProgramViewModel {
         return ProgramViewModel(
             uid = dataSetInstanceSummary.dataSetUid(),
@@ -59,8 +60,8 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
                 programColor = resourceManager.getColorOrDefaultFrom(dataSet.style()?.color()),
                 iconResource = resourceManager.getObjectStyleDrawableResource(
                     dataSet.style()?.icon(),
-                    R.drawable.ic_default_outline
-                )
+                    R.drawable.ic_default_outline,
+                ),
             ),
             count = recordCount,
             type = null,
@@ -72,16 +73,17 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
             state = dataSetInstanceSummary.state(),
             hasOverdueEvent = false,
             filtersAreActive = filtersAreActive,
-            downloadState = ProgramDownloadState.NONE
+            downloadState = ProgramDownloadState.NONE,
+            stockConfig = null,
         )
     }
 
     fun map(
         programViewModel: ProgramViewModel,
-        downloadState: ProgramDownloadState
+        downloadState: ProgramDownloadState,
     ): ProgramViewModel {
         return programViewModel.copy(
-            downloadState = downloadState
+            downloadState = downloadState,
         )
     }
 }

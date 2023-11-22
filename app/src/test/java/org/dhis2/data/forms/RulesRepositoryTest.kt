@@ -28,7 +28,7 @@ class RulesRepositoryTest {
             d2.organisationUnitModule().organisationUnits()
                 .withOrganisationUnitGroups()
                 .uid("org_unit_test")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn getTestOrgUnit()
         whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
         val testObserver = repository.supplementaryData("org_unit_test")
@@ -57,7 +57,7 @@ class RulesRepositoryTest {
             d2.organisationUnitModule().organisationUnits()
                 .withOrganisationUnitGroups()
                 .uid("org_unit_test")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn getTestOrgUnitWithNullCodeGroup()
         whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
         val testObserver = repository.supplementaryData("org_unit_test")
@@ -80,7 +80,7 @@ class RulesRepositoryTest {
         }
     }
 
-    private fun getTestUserRoles(): MutableList<UserRole>? {
+    private fun getTestUserRoles(): List<UserRole> {
         return arrayListOf(
             UserRole.builder()
                 .uid("role1")
@@ -91,7 +91,7 @@ class RulesRepositoryTest {
                 .uid("role2")
                 .name("roleName2")
                 .code("roleCode2")
-                .build()
+                .build(),
         )
     }
 

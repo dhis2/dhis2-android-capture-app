@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.program
 
+import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 
@@ -18,7 +19,8 @@ data class ProgramViewModel(
     val hasOverdueEvent: Boolean,
     val filtersAreActive: Boolean,
     val downloadState: ProgramDownloadState,
-    val downloadActive: Boolean = false
+    val downloadActive: Boolean = false,
+    val stockConfig: AppConfig?,
 ) {
     private var hasShownCompleteSyncAnimation = false
 

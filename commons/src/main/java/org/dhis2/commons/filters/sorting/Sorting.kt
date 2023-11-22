@@ -19,21 +19,21 @@ class Sorting {
                 Filters.ORG_UNIT,
                 Filters.ENROLLMENT_DATE,
                 Filters.ENROLLMENT_STATUS,
-                Filters.PERIOD
+                Filters.PERIOD,
             )
         }
 
         private fun trackerDashboardSorting(): List<Filters> {
             return arrayListOf(
                 Filters.ORG_UNIT,
-                Filters.PERIOD
+                Filters.PERIOD,
             )
         }
 
         private fun eventsSorting(): List<Filters> {
             return arrayListOf(
                 Filters.ORG_UNIT,
-                Filters.PERIOD
+                Filters.PERIOD,
             )
         }
     }

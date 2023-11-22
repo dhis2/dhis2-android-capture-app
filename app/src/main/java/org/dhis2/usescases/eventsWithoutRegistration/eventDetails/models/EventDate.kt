@@ -1,7 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models
 
-import java.util.Date
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Date
 
 data class EventDate(
     val active: Boolean = true,
@@ -12,5 +12,5 @@ data class EventDate(
     val maxDate: Date? = null,
     val scheduleInterval: Int = 0,
     val allowFutureDates: Boolean = true,
-    val periodType: PeriodType? = null
+    val periodType: PeriodType? = null,
 )

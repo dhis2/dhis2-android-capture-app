@@ -2,9 +2,9 @@ package org.dhis2.form.data.scan
 
 import android.content.Context
 import android.content.Intent
-import com.journeyapps.barcodescanner.ScanContract as DefaultScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import com.journeyapps.barcodescanner.ScanContract as DefaultScanContract
 
 class ScanContract : DefaultScanContract() {
 

@@ -4,6 +4,7 @@ import io.reactivex.Single
 import org.dhis2.commons.Constants
 import org.dhis2.commons.R
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.data.server.UserManager
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
@@ -21,12 +22,14 @@ class ThemeManagerTest {
     private val dataSetConfiguration: DataSetConfiguration = mock()
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration = mock()
     private val preferenceProvider: PreferenceProvider = mock()
+    private val colorUtils: ColorUtils = mock()
     private val themeManager = ThemeManager(
         userManager,
         programConfiguration,
         dataSetConfiguration,
         trackedEntityTypeConfiguration,
-        preferenceProvider
+        preferenceProvider,
+        colorUtils,
     )
 
     @Test
@@ -34,6 +37,7 @@ class ThemeManagerTest {
         val programColor = "#ffcdd2"
         val themeColor = R.style.colorPrimary_Pink
         whenever(programConfiguration.getProgramColor("uid")) doReturn programColor
+        whenever(colorUtils.getThemeFromColor(programColor)) doReturn themeColor
         themeManager.setProgramTheme("uid")
         verify(programConfiguration).getProgramColor("uid")
         verify(preferenceProvider).setValue(Constants.PROGRAM_THEME, themeColor)
@@ -43,6 +47,7 @@ class ThemeManagerTest {
     fun shouldRemoveProgramThemeForProgramWithNoColor() {
         val programColor = null
         whenever(programConfiguration.getProgramColor("uid")) doReturn programColor
+        whenever(colorUtils.getThemeFromColor(programColor)) doReturn -1
         themeManager.setProgramTheme("uid")
         verify(preferenceProvider).removeValue(Constants.PROGRAM_THEME)
     }
@@ -52,8 +57,9 @@ class ThemeManagerTest {
         val teTypeColor = "#ffcdd2"
         val themeColor = R.style.colorPrimary_Pink
         whenever(
-            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid")
+            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid"),
         ) doReturn teTypeColor
+        whenever(colorUtils.getThemeFromColor(teTypeColor)) doReturn themeColor
         themeManager.setTrackedEntityTypeTheme("uid")
         verify(trackedEntityTypeConfiguration).getTrackedEntityTypeColor("uid")
         verify(preferenceProvider).setValue(Constants.PROGRAM_THEME, themeColor)
@@ -64,8 +70,9 @@ class ThemeManagerTest {
         val teTypeColor = "#ffcdd2"
         val themeColor = R.style.colorPrimary_Pink
         whenever(
-            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid")
+            trackedEntityTypeConfiguration.getTrackedEntityTypeColor("uid"),
         ) doReturn teTypeColor
+        whenever(colorUtils.getThemeFromColor(teTypeColor)) doReturn themeColor
         themeManager.setTrackedEntityTypeTheme("uid")
         verify(trackedEntityTypeConfiguration).getTrackedEntityTypeColor("uid")
         verify(preferenceProvider).setValue(Constants.PROGRAM_THEME, themeColor)
@@ -79,7 +86,7 @@ class ThemeManagerTest {
         themeManager.getThemePrimaryColor(
             "uid",
             { result = true },
-            { result = false }
+            { result = false },
         )
         assertTrue(result)
     }
@@ -91,7 +98,7 @@ class ThemeManagerTest {
         themeManager.getThemePrimaryColor(
             null,
             { result = false },
-            { result = true }
+            { result = true },
         )
         assertTrue(result)
     }
@@ -104,7 +111,7 @@ class ThemeManagerTest {
         themeManager.getThemePrimaryColor(
             "uid",
             { result = false },
-            { result = true }
+            { result = true },
         )
         assertTrue(result)
     }

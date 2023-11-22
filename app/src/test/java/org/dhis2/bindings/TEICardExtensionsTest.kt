@@ -1,50 +1,119 @@
 package org.dhis2.bindings
 
 import android.content.Context
+import android.content.res.Resources
+import org.dhis2.commons.resources.ColorType
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
+import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.program.Program
+import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class TEICardExtensionsTest {
 
     private val context: Context = mock()
-    /*private val colorUtils: ColorUtils = mock()
+    private val resourceManager: ResourceManager = mock()
+    private val resources: Resources = mock()
+    private val colorUtils: ColorUtils = mock()
 
-    // TODO finish implementing unit tests for following cases:
-    // less than 4 enrollments, all enrollmentdata objects should  be icons.
-    // 4 enrollments, all should be icons
-    // more than 4 enrollments, should return data lis]t of four elements but last element should
-    // not be an icon (enrollmentIconData.isIcon == false).
-
-    //@Ignore
     @Test
-    fun `Should return list of enrollment data icon objects smaller than 4 `() {
-        val programs: List<Program> = listOf(
-            createProgram("uid_1", "blue", "icon"),
-            createProgram("uid_2", "green", "icon"),
-            createProgram("uid_3", "red", "icon"),
-            createProgram("uid_4", "orange", "icon"),
-        )
-        mockEnrollmentIconsData(programs)
-        val result = programs.getEnrollmentIconsData(context, "uid_1")
-        assert(result.size <= 4)
+    fun `Should return list of enrollment data icons that is smaller than four and all icons`() {
+        val programs: MutableList<Program> = mutableListOf()
+        for (index in 1..4)
+            programs.add(createProgram("uid_$index"))
+
+        mockEnrollmentIconsData()
+        val result = programs.getEnrollmentIconsData(context, "uid_1", colorUtils)
+        assert(result.size == 3)
+        result.forEach {
+            assert(it.isIcon)
+        }
     }
 
-    private fun mockEnrollmentIconsData(programs: List<Program>) {
+    @Test
+    fun `Should return list of enrollment data icons equal to four and all icons`() {
+        val programs: MutableList<Program> = mutableListOf()
+        for (index in 1..5)
+            programs.add(createProgram("uid_$index"))
 
-        //this is where the problem occurs
-        //todo migrate ColorUtils file to kotlin to avoid null pointer exception
-        //whenever(typedValue).doReturn(mock())
-        whenever(ColorUtils.getColorFrom("blue", 1)) doReturn  1
-        whenever(ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)) doReturn 1
-
-        // whenever(ColorUtils.getColorFrom("color", 444)).doReturn(4)
-        // whenever(ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)).doReturn(mock())
-        //whenever(ResourceManager(context).getObjectStyleDrawableResource("icon", 1)) doReturn any()
-        //whenever(ColorUtils.getColorFrom(mock(), mock())).doReturn(mock())
+        mockEnrollmentIconsData()
+        val result = programs.getEnrollmentIconsData(context, "uid_1", colorUtils)
+        assert(result.size == 4)
+        result.forEach {
+            assert(it.isIcon)
+        }
     }
 
-    private fun createProgram(uid: String, color: String, icon: String) = Program
+    @Test
+    fun `Should return list of enrollment data icons equal to four, three icons and an integer`() {
+        val programs: MutableList<Program> = mutableListOf()
+        for (index in 1..7)
+            programs.add(createProgram("uid_$index"))
+
+        mockEnrollmentIconsData()
+        val result = programs.getEnrollmentIconsData(context, "uid_5", colorUtils)
+        assert(result.size == 4)
+        result.forEachIndexed { index, item ->
+            if (index in 0..result.size - 2) {
+                assert(item.isIcon)
+            }
+            if (index == result.size - 1) {
+                assert(!item.isIcon)
+                assert(item.remainingEnrollments == 3)
+            }
+        }
+    }
+
+    @Test
+    fun `Should return list when current program is null`() {
+        val programs: MutableList<Program> = mutableListOf()
+        for (index in 1..6)
+            programs.add(createProgram("uid_$index"))
+
+        mockEnrollmentIconsData()
+        val result = programs.getEnrollmentIconsData(context, null, colorUtils)
+        assert(result.size == 4)
+        result.forEachIndexed { index, item ->
+            if (index in 0..result.size - 2) {
+                assert(item.isIcon)
+            }
+            if (index == result.size - 1) {
+                assert(!item.isIcon)
+                assert(item.remainingEnrollments == 3)
+            }
+        }
+    }
+
+    @Test
+    fun `Should return max icons number`() {
+        val programs: MutableList<Program> = mutableListOf()
+        for (index in 0..150)
+            programs.add(createProgram("uid_$index"))
+
+        mockEnrollmentIconsData()
+        val result = programs.getEnrollmentIconsData(context, "uid_100", colorUtils)
+        assert(result.size == 4)
+        assert(!result.last().isIcon)
+        assert(result.last().remainingEnrollments == 99)
+    }
+
+    private fun mockEnrollmentIconsData() {
+        whenever(colorUtils.getColorFrom("blue", 1)) doReturn 1
+        whenever(colorUtils.getPrimaryColor(context, ColorType.PRIMARY)) doReturn 1
+        whenever(resourceManager.getWrapperContext()) doAnswer { context }
+        whenever(resourceManager.getObjectStyleDrawableResource("icon", 1)) doAnswer { 1 }
+        whenever(context.resources) doAnswer { resources }
+        whenever(resources.getIdentifier(any(), any(), any())) doAnswer { 1 }
+    }
+
+    private fun createProgram(uid: String) = Program
         .builder()
         .uid(uid)
-        .style(ObjectStyle.builder().color(color).icon(icon).build())
-        .build()*/
+        .style(ObjectStyle.builder().color("color").icon("icon").build())
+        .build()
 }

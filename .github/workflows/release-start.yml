@@ -8,14 +8,8 @@ on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
-      base_branch: 
-        description: 'Base branch'
-        required: true
-        default: 'develop'
-        type: string
       version_name:
         description: 'Release version name'
-        # default: 'World'
         required: true
         type: string
 
@@ -28,8 +22,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     # override vName with new version
-    - name: Checkout base branch
-      run: git checkout ${{ inputs.base_branch }}
     - name: Create release branch
       run: git checkout -b release/${{ inputs.version_name }}
     - name: Push

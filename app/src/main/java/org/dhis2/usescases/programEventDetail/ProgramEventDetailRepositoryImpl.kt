@@ -32,17 +32,19 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
     private val mapUtils: DhisMapUtils,
     private val filterPresenter: FilterPresenter,
-    private val charts: Charts?
+    private val charts: Charts?,
 ) : ProgramEventDetailRepository {
 
     private val programRepository = d2.programModule().programs().uid(programUid)
     private val stageRepository = d2.programModule().programStages().byProgramUid().eq(programUid)
-    private val filterRepository =
-        filterPresenter.filteredEventProgram(programRepository.blockingGet())
+    private val filterRepository = programRepository.blockingGet()?.let {
+        filterPresenter.filteredEventProgram(it)
+    }
 
     override fun filteredProgramEvents(): LiveData<PagedList<EventViewModel>> {
+        val program = program().blockingGet() ?: throw NullPointerException()
         val dataSource = filterPresenter
-            .filteredEventProgram(program().blockingGet())
+            .filteredEventProgram(program)
             .dataSource
             .map { event ->
                 mapper.eventToEventViewModel(event)
@@ -53,27 +55,27 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                     return dataSource
                 }
             },
-            20
+            20,
         ).build()
     }
 
     override fun filteredEventsForMap(): Flowable<ProgramEventMapData> {
-        return filterRepository.get()
-            .map { listEvents ->
+        return filterRepository?.get()
+            ?.map { listEvents ->
                 val (first, second) = mapEventToFeatureCollection.map(listEvents)
                 val programEventFeatures = HashMap<String, FeatureCollection>()
                 programEventFeatures[EventMapManager.EVENTS] = first
                 val deFeatureCollection = mapCoordinateFieldToFeatureCollection.map(
-                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents))
+                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents)),
                 )
                 programEventFeatures.putAll(deFeatureCollection)
                 ProgramEventMapData(
                     mapper.eventsToProgramEvents(listEvents),
                     programEventFeatures,
-                    second
+                    second,
                 )
             }
-            .toFlowable()
+            ?.toFlowable() ?: Flowable.empty()
     }
 
     override fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel> {
@@ -96,20 +98,20 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             }
     }
 
-    override fun getCatOptCombo(selectedCatOptionCombo: String): CategoryOptionCombo {
+    override fun getCatOptCombo(selectedCatOptionCombo: String): CategoryOptionCombo? {
         return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet()
     }
 
-    override fun program(): Single<Program> {
+    override fun program(): Single<Program?> {
         return programRepository.get()
     }
 
     override fun getAccessDataWrite(): Boolean {
-        var canWrite = programRepository.blockingGet().access().data().write()
+        var canWrite = programRepository.blockingGet()?.access()?.data()?.write() == true
 
         if (canWrite && stageRepository.one().blockingGet() != null) {
             canWrite = stageRepository.one().blockingGet()
-                .access().data().write()
+                ?.access()?.data()?.write() == true
         } else if (stageRepository.one().blockingGet() == null) {
             canWrite = false
         }
@@ -122,14 +124,14 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                 val catCombo = d2.categoryModule().categoryCombos().withCategories()
                     .uid(program.categoryComboUid()).blockingGet()
                 var hasAccess = true
-                if (catCombo.isDefault == false) {
+                if (catCombo?.isDefault == false) {
                     for (category in catCombo.categories() ?: emptyList()) {
                         val options = d2.categoryModule().categories().withCategoryOptions()
-                            .uid(category.uid()).blockingGet().categoryOptions() ?: emptyList()
+                            .uid(category.uid()).blockingGet()?.categoryOptions() ?: emptyList()
                         var accessibleOptions = options.size
                         for (categoryOption in options) {
-                            if (!d2.categoryModule().categoryOptions().uid(categoryOption.uid())
-                                .blockingGet().access().data().write()
+                            if (d2.categoryModule().categoryOptions().uid(categoryOption.uid())
+                                    .blockingGet()?.access()?.data()?.write() == false
                             ) {
                                 accessibleOptions--
                             }
@@ -151,7 +153,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .get()
     }
 
-    override fun programStage(): Single<ProgramStage> {
+    override fun programStage(): Single<ProgramStage?> {
         return stageRepository.one().get()
     }
 
@@ -161,14 +163,18 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                 stage.featureType() != null && stage.featureType() != FeatureType.NONE
             }
             .blockingGet()
-        val eventDataElementHasCoordinates = filterRepository.get()
-            .map { events ->
+        val eventDataElementHasCoordinates = filterRepository?.get()
+            ?.map { events ->
                 events.any { event -> event.geometry() != null }
-            }.blockingGet()
+            }?.blockingGet() == true
         return programStageHasCoordinates || eventDataElementHasCoordinates
     }
 
     override fun programHasAnalytics(): Boolean {
         return charts != null && charts.getProgramVisualizations(null, programUid).isNotEmpty()
+    }
+
+    override fun isEventEditable(eventUid: String): Boolean {
+        return d2.eventModule().eventService().blockingIsEditable(eventUid)
     }
 }

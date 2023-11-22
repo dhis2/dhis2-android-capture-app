@@ -36,19 +36,19 @@ import org.hisp.dhis.android.core.D2
 class OUTreeModule(
     private val preselectedOrgUnits: List<String>,
     private val singleSelection: Boolean,
-    private val orgUnitSelectorScope: OrgUnitSelectorScope
+    private val orgUnitSelectorScope: OrgUnitSelectorScope,
 ) {
 
     @Provides
     internal fun providesPresenter(
         ouTreeRepository: OUTreeRepository,
-        dispatcherProvider: DispatcherProvider
+        dispatcherProvider: DispatcherProvider,
     ): OUTreeViewModelFactory {
         return OUTreeViewModelFactory(
             ouTreeRepository,
             dispatcherProvider,
             preselectedOrgUnits.toMutableList(),
-            singleSelection
+            singleSelection,
         )
     }
 

@@ -36,7 +36,7 @@ class MapPointToFeatureTest {
             latitude,
             latitude,
             longitude,
-            longitude
+            longitude,
         )
 
         val result = mapPointToFeature.map(geometry, boundsGeometry)

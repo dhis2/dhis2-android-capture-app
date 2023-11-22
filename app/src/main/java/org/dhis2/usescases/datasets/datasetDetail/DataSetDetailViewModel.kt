@@ -11,7 +11,7 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class DataSetDetailViewModel(
     private val dispatchers: DispatcherProvider,
-    private val dataSetPageConfigurator: DataSetPageConfigurator
+    private val dataSetPageConfigurator: DataSetPageConfigurator,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()

@@ -17,7 +17,7 @@ interface EventMapComponent {
 
 @Module
 class EventMapModule(
-    val view: EventMapFragmentView
+    val view: EventMapFragmentView,
 ) {
     @Provides
     @PerFragment
@@ -25,14 +25,14 @@ class EventMapModule(
         filterManager: FilterManager,
         programEventDetailRepository: ProgramEventDetailRepository,
         preferences: PreferenceProvider,
-        schedulers: SchedulerProvider
+        schedulers: SchedulerProvider,
     ): EventMapPresenter {
         return EventMapPresenter(
             view,
             filterManager,
             programEventDetailRepository,
             preferences,
-            schedulers
+            schedulers,
         )
     }
 }

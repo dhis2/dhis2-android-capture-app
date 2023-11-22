@@ -1,7 +1,5 @@
 package dhis2.org.analytics.charts.providers
 
-import java.util.Date
-import java.util.GregorianCalendar
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
@@ -11,6 +9,8 @@ import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import java.util.Date
+import java.util.GregorianCalendar
 
 class PeriodStepProviderImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -22,7 +22,7 @@ class PeriodStepProviderImplTest {
         verify(d2.periodModule().periodHelper(), times(2)).blockingGetPeriodForPeriodTypeAndDate(
             any(),
             any(),
-            any()
+            any(),
         )
     }
 
@@ -31,13 +31,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.Daily,
             GregorianCalendar(2021, 0, 1).time,
-            GregorianCalendar(2021, 0, 2).time
+            GregorianCalendar(2021, 0, 2).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.Daily,
             GregorianCalendar(2021, 0, 4).time,
-            GregorianCalendar(2021, 0, 5).time
+            GregorianCalendar(2021, 0, 5).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -50,13 +50,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.Daily,
             GregorianCalendar(2021, 1, 28).time,
-            GregorianCalendar(2021, 2, 0).time
+            GregorianCalendar(2021, 2, 0).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.Daily,
             GregorianCalendar(2021, 2, 1).time,
-            GregorianCalendar(2021, 2, 2).time
+            GregorianCalendar(2021, 2, 2).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -69,13 +69,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.Weekly,
             GregorianCalendar(2021, 6, 19).time,
-            GregorianCalendar(2021, 6, 26).time
+            GregorianCalendar(2021, 6, 26).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.Weekly,
             GregorianCalendar(2021, 6, 26).time,
-            GregorianCalendar(2021, 7, 2).time
+            GregorianCalendar(2021, 7, 2).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -88,13 +88,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.BiWeekly,
             GregorianCalendar(2021, 6, 19).time,
-            GregorianCalendar(2021, 7, 2).time
+            GregorianCalendar(2021, 7, 2).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.BiWeekly,
             GregorianCalendar(2021, 7, 16).time,
-            GregorianCalendar(2021, 7, 23).time
+            GregorianCalendar(2021, 7, 23).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -107,13 +107,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.Monthly,
             GregorianCalendar(2021, 0, 1).time,
-            GregorianCalendar(2021, 0, 31).time
+            GregorianCalendar(2021, 0, 31).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.Monthly,
             GregorianCalendar(2021, 11, 1).time,
-            GregorianCalendar(2021, 11, 31).time
+            GregorianCalendar(2021, 11, 31).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -126,13 +126,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.BiMonthly,
             GregorianCalendar(2021, 0, 1).time,
-            GregorianCalendar(2021, 1, 28).time
+            GregorianCalendar(2021, 1, 28).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.BiMonthly,
             GregorianCalendar(2021, 10, 1).time,
-            GregorianCalendar(2021, 11, 31).time
+            GregorianCalendar(2021, 11, 31).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -145,13 +145,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.Quarterly,
             GregorianCalendar(2021, 0, 1).time,
-            GregorianCalendar(2021, 2, 31).time
+            GregorianCalendar(2021, 2, 31).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.Quarterly,
             GregorianCalendar(2021, 9, 1).time,
-            GregorianCalendar(2021, 11, 31).time
+            GregorianCalendar(2021, 11, 31).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -164,13 +164,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.SixMonthlyApril,
             GregorianCalendar(2021, 3, 1).time,
-            GregorianCalendar(2021, 8, 28).time
+            GregorianCalendar(2021, 8, 28).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.SixMonthlyApril,
             GregorianCalendar(2023, 9, 1).time,
-            GregorianCalendar(2023, 11, 31).time
+            GregorianCalendar(2023, 11, 31).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
@@ -183,13 +183,13 @@ class PeriodStepProviderImplTest {
         val initialPeriod = generatePeriod(
             PeriodType.FinancialJuly,
             GregorianCalendar(2021, 6, 1).time,
-            GregorianCalendar(2021, 6, 31).time
+            GregorianCalendar(2021, 6, 31).time,
         )
 
         val endPeriod = generatePeriod(
             PeriodType.FinancialJuly,
             GregorianCalendar(2023, 6, 1).time,
-            GregorianCalendar(2023, 6, 31).time
+            GregorianCalendar(2023, 6, 31).time,
         )
 
         val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)

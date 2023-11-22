@@ -20,6 +20,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.commons.bindings.dp
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.camera.initCameraToViewAllElements
@@ -42,6 +43,8 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     var permissionsManager: PermissionsManager? = null
     private var mapStyles: List<BaseMapStyle> = emptyList()
 
+    private val colorUtils: ColorUtils = ColorUtils()
+
     var numberOfUiIcons: Int = 2
     val defaultUiIconLeftMargin = 8.dp
     val defaultUiIconTopMargin = 9.dp
@@ -52,7 +55,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     fun init(
         mapStyles: List<BaseMapStyle>,
         onInitializationFinished: () -> Unit = {},
-        onMissingPermission: (PermissionsManager?) -> Unit
+        onMissingPermission: (PermissionsManager?) -> Unit,
     ) {
         this.mapStyles = mapStyles.ifEmpty { listOf(internalBaseMap()) }
         if (style == null) {
@@ -62,10 +65,10 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                 val baseMapManager = BaseMapManager(mapView.context, this.mapStyles)
                 setUi()
                 map?.setStyle(
-                    baseMapManager.styleJson(this.mapStyles.first())
+                    baseMapManager.styleJson(this.mapStyles.first()),
                 ) { styleLoaded ->
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded, baseMapManager).apply {
+                    mapLayerManager = MapLayerManager(mapLoaded, baseMapManager, colorUtils).apply {
                         styleChangeCallback = { newStyle ->
                             style = newStyle
                             mapLayerManager.clearLayers()
@@ -93,15 +96,15 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                 AttributionManager(
                     mapView.context,
                     this,
-                    mapStyles.first()
-                )
+                    mapStyles.first(),
+                ),
             )
             uiSettings.isLogoEnabled = false
             uiSettings.setAttributionMargins(
                 defaultUiIconLeftMargin,
                 uiSettings.attributionMarginTop,
                 uiSettings.attributionMarginRight,
-                uiSettings.attributionMarginBottom
+                uiSettings.attributionMarginBottom,
             )
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass_ripple)?.let {
                 uiSettings.setCompassImage(it)
@@ -110,7 +113,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                     numberOfUiIcons * defaultUiIconSize +
                         (numberOfUiIcons + 1) * defaultUiIconTopMargin,
                     defaultUiIconRightMargin,
-                    defaultUiIconBottomMargin
+                    defaultUiIconBottomMargin,
                 )
             }
         }
@@ -127,7 +130,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
             .build()
         map?.initCameraToViewAllElements(
             mapView.context,
-            bounds
+            bounds,
         )
     }
 
@@ -197,7 +200,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     open fun findFeatures(
         source: String,
         propertyName: String,
-        propertyValue: String
+        propertyValue: String,
     ): List<Feature>? {
         return emptyList()
     }
@@ -218,15 +221,15 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     @SuppressLint("MissingPermission")
     private fun enableLocationComponent(
         style: Style,
-        onMissingPermission: (PermissionsManager?) -> Unit
+        onMissingPermission: (PermissionsManager?) -> Unit,
     ) {
         map?.locationComponent?.apply {
             if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
                 activateLocationComponent(
                     LocationComponentActivationOptions.builder(
                         mapView.context,
-                        style
-                    ).build()
+                        style,
+                    ).build(),
                 )
                 isLocationComponentEnabled = true
             } else {
@@ -246,15 +249,15 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     @SuppressLint("MissingPermission")
     private fun enableLocationComponentAndCenterCamera(
-        onMissingPermission: (PermissionsManager?) -> Unit
+        onMissingPermission: (PermissionsManager?) -> Unit,
     ) {
         map?.locationComponent?.apply {
             if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
                 activateLocationComponent(
                     LocationComponentActivationOptions.builder(
                         mapView.context,
-                        style!!
-                    ).build()
+                        style!!,
+                    ).build(),
                 )
                 isLocationComponentEnabled = true
                 centerCameraOnMyPosition(onMissingPermission)

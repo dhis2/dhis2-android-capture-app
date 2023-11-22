@@ -4,31 +4,31 @@ sealed class TeiDownloadResult {
     data class DownloadedResult(
         val teiUid: String,
         val programUid: String?,
-        val enrollmentUid: String?
+        val enrollmentUid: String?,
     ) : TeiDownloadResult()
 
     data class TeiToEnroll(
-        val teiUid: String
+        val teiUid: String,
     ) : TeiDownloadResult()
 
     data class TeiNotDownloaded(
-        val teiUid: String
+        val teiUid: String,
     ) : TeiDownloadResult()
 
     data class BreakTheGlassResult(
         val teiUid: String,
-        val enrollmentUid: String?
+        val enrollmentUid: String?,
     ) : TeiDownloadResult()
 
     data class ErrorResult(
-        val errorMessage: String
+        val errorMessage: String,
     ) : TeiDownloadResult()
 
     fun handleResult(
         onOpenDashboard: (teiUid: String, programUid: String?, enrollmentUid: String?) -> Unit,
         onBreakTheGlassResult: (teiUid: String, enrollmentUid: String?) -> Unit,
         onNotDownloaded: (teiUid: String) -> Unit,
-        onError: (errorMessage: String) -> Unit
+        onError: (errorMessage: String) -> Unit,
     ) {
         when (this) {
             is BreakTheGlassResult -> onBreakTheGlassResult(teiUid, enrollmentUid)

@@ -8,4 +8,4 @@
     <string name="dialog_layer_tei_coordinates">Показати координати об\'єкту, який відстежується</string>
     <string name="dialog_layer_enrollment_coordinates">Показати координати реєстрації</string>
     <string name="dialog_layer_heatmap">Показати шар теплової карти</string>
-</resources>
+    </resources>

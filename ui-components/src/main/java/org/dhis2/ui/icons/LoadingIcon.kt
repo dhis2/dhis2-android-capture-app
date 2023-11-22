@@ -29,7 +29,7 @@ fun SyncingIcon() {
     Row(
         modifier = Modifier.size(24.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         val radius = with(LocalDensity.current) {
             2.dp.toPx()
@@ -41,39 +41,39 @@ fun SyncingIcon() {
 
         Box(
             modifier = Modifier
-                .size(4.dp)
+                .size(4.dp),
         ) {
             Canvas(modifier = Modifier) {
                 drawCircle(
                     color = transitionDataA.color,
                     radius = radius,
-                    center = Offset(radius, transitionDataA.positionY)
+                    center = Offset(radius, transitionDataA.positionY),
                 )
             }
         }
 
         Box(
             modifier = Modifier
-                .size(4.dp)
+                .size(4.dp),
         ) {
             Canvas(modifier = Modifier) {
                 drawCircle(
                     color = transitionDataB.color,
                     radius = radius,
-                    center = Offset(radius, transitionDataB.positionY)
+                    center = Offset(radius, transitionDataB.positionY),
                 )
             }
         }
 
         Box(
             modifier = Modifier
-                .size(4.dp)
+                .size(4.dp),
         ) {
             Canvas(modifier = Modifier) {
                 drawCircle(
                     color = transitionDataC.color,
                     radius = radius,
-                    center = Offset(radius, transitionDataC.positionY)
+                    center = Offset(radius, transitionDataC.positionY),
                 )
             }
         }
@@ -92,8 +92,8 @@ fun syncAnimation(radius: Float, delayMillis: Int): TransitionData {
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 250, delayMillis = 250),
             repeatMode = RepeatMode.Reverse,
-            initialStartOffset = StartOffset(delayMillis)
-        )
+            initialStartOffset = StartOffset(delayMillis),
+        ),
     )
 
     val positionY by infiniteTransition.animateFloat(
@@ -102,8 +102,8 @@ fun syncAnimation(radius: Float, delayMillis: Int): TransitionData {
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 250, delayMillis = 250),
             repeatMode = RepeatMode.Reverse,
-            initialStartOffset = StartOffset(delayMillis)
-        )
+            initialStartOffset = StartOffset(delayMillis),
+        ),
     )
     return TransitionData(color, positionY)
 }

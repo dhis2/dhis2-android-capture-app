@@ -4,7 +4,7 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class TeiDashboardPageConfigurator(
     val dashboardRepository: DashboardRepository,
-    val isPortrait: Boolean
+    val isPortrait: Boolean,
 ) : NavigationPageConfigurator {
 
     override fun displayDetails(): Boolean {

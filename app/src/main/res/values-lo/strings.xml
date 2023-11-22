@@ -5,12 +5,17 @@
     <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">ເກີດການຜິດພາດ</string>
+    <plurals name="error_message">
+        <item quantity="other">ຂໍ້ຜິດພາດ</item>
+    </plurals>
     <string name="error_wrong_server_url">ຄວາມຜິດພາດຈາກການເຊື່ອມຕໍ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
     <string name="error_wrong_credentials">ຄວາມຜິດພາດຈາກຢັ້ງຢືນເອກະລັກບຸກຄົນ</string>
     <string name="error_unexpected_error">ຄໍາຜິດທີ່ເກີດຂື້ນໂດຍບັງເອີນ</string>
     <string name="error_internal_server_error">ຄໍາຜິດທີ່ເກີດຈາກພາຍໃນເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
     <string name="no_value">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="no_reserved_values">ບໍ່ມີຄ່າທີ່ສະຫງວນໃວ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ</string>
+    <string name="errors">ຂໍ້ຜິດພາດ</string>
+    <string name="something_wrong">ມີບາງຢ່າງຜິດພາດ</string>
     <!-- SyncService strings: -->
     <string name="sync_now">ດຽວນີ້, ລະບົບກໍາລັງທຳງານຮ່ວມກັນ</string>
     <string name="sync_text">ກໍາລັງທໍາງານຮ່ວມກັນກັບຄອມພີວເຕີໜ່ວຍແມ່</string>
@@ -29,6 +34,8 @@
     <string name="data_sync_warning_program">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຂໍ້ຄວນລະວັງຍັງຄົງຢູ່ ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ໂປຣແກຣມ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
     <string name="data_sync_error">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານ ບໍສາມາດຊິ້ງໄດ້. ກວດສອບສະຖານະການຊິ້ງ: ສາຍງານທີ່ມີຂໍ້ຜິດພາດຈະຖຶກໝາຍເປັນ @, TEI\'s ແລະ ເຫດການເປັນ $.</string>
     <string name="data_sync_error_program">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານບໍສາມາດຊິ້ງໄດ້. ກວດສອບເບີ່ງສະຖານະການຊິ້ງ: TEI\'s ແລະ ເຫດການທີມີຂໍ້ຂັດແຍ້ງທີມີເຄື່ອງໝາຍເປັນ $.</string>
+    <string name="server_sync_error">ເກີດຂໍ້ຜິດພາດ ແລະເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍ່ຕອບສະໜອງ. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
     <string name="add_new">ເພີ່ມໃໝ່</string>
     <string name="add">ເພີ່ມ</string>
@@ -78,14 +85,6 @@
     <string name="program_inactive">ໂປຣແກຣມທີ່ບໍ່ໄດ້ເປີດໃຊ້ງານ</string>
 
     <string name="event_open">ເປີດ</string>
-    <string name="event_completed">ຂໍ້ມູນຂອງແຕ່ລະກໍລະນີຖືກດໍາເນີນການສໍາເລັດແລ້ວ</string>
-    <string name="event_skipped">ຂໍ້ມູນຂອງກໍລະນີຖືກຂ້າມໄປ</string>
-    <string name="event_schedule">ລາຍລະອຽດຂອງກໍລະນີ</string>
-    <string name="event_expired">ຂໍ້ມູນຂອງກໍລະນີໝົດກໍານົດ</string>
-    <string name="event_editing_expired">ການດັດແປງໝົດກໍານົດ</string>
-    <string name="event_accepted">ກໍລະນີທີ່ຖືກຮັບຮອງແລ້ວ</string>
-    <string name="event_approved">ກໍລະນີທີ່ໄດ້ຢັ້ງຢືນແລ້ວ</string>
-    <string name="event_inactive">ກໍລະນີທີ່ບໍ່ໄດ້ຖືກນໍາໃຊ້</string>
     <string name="read_only">ອ່ານໄດ້ເທົ່ານັ້ນ</string>
     <string name="finish_and_complete">ສີ້ນສຸດ ແລະ ສໍາເລັດ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
@@ -101,6 +100,7 @@
     <string name="state_to_delete">ເພື່ອລືບອອກ</string>
     <string name="state_error">ເກີດການຜິດພາດ</string>
     <string name="action_sync">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="action_send">ສົ່ງ</string>
     <string name="action_sync_sms">ຊິ້ງຂໍ້ຄວາມ</string>
 
     <!--Completion-->
@@ -139,6 +139,8 @@
     <string name="confirm_delete_event">ທ່ານໝັ້ນໃຈບໍ ວ່າທ່ານຕ້ອງການລືບກໍລະນີນີ້ອອກ?</string>
     <string name="event_was_deleted">ກໍລະນີນີ້ໄດ້ຖືກລືບອອກຮຽບຮ້ອຍແລ້ວ</string>
     <string name="total">ລວມ</string>
+    <string name="most_recent_event_date">ວັນທີເຫດການຄັ້ງຫຼ້າສຸດ</string>
+
     <!--TEI Enrollment list-->
     <string name="enrollment_list">ລາຍລະອຽດການລົງທບຽນ</string>
     <string name="active_programs">ໂປຣແກຣທີ່ເປີດນໍາໃຊ້</string>
@@ -150,7 +152,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">ເບິ່ງຂໍ້ມູນເພີ່ມຕື່ມ</string>
     <string name="view_more">ເບີ່ງຕື່ມ</string>
-    <string name="edit">ດັດແປງ</string>
     <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
     <string name="follow_up">ຕິດຕາມ</string>
     <string name="follow_up_enabled">ເປີດການຕິດຕາມ</string>
@@ -170,6 +171,7 @@
     <string name="fifteen_minute">15 ນາທີ</string>
     <string name="thirty_minutes">30 ນາທີ</string>
     <string name="a_hour">1 ຊົ່ວໂມງ</string>
+    <string name="every_6_hours">6h</string>
     <string name="a_day">1 ມື້ (ຄ່າມາດຕະຖານ)</string>
     <string name="every_12_hours">12h</string>
     <string name="Automatic_Sync_Data">ສົ່ງຂໍ້ມູນໂອໂຕມະຕິກ ແຕ່ລະ:</string>
@@ -195,11 +197,15 @@
     <string name="settings_sms_receiver_number_hint">ຈຳນວນ</string>
     <string name="settings_sms_module_switch">ເປິດໃຊ້ການສົ່ງຂໍ້ຄວາມ</string>
     <string name="settings_sms_response_wait_switch">ລໍຖ້າການຕອບກັບທາງຂໍ້ຄວາມ</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="other">ມີ%s ສາຍງານທີ່ມີການຕັ້ງຄ່າສະເພາະ</item>
+    </plurals>
     <string name="settings_sync_period">ໄລຍະເວລາການອັບເດດຂໍ້ມູນ</string>
     <string name="settings_limit_scope">ຈໍາກັດການຕັ້ງຄ່າ</string>
     <string name="settings_limit_globally">ໃນທົ່ວໂລກ</string>
     <string name="settings_limit_program">ຕໍ່ແຜນງານ</string>
     <string name="settings_limit_ou">ຕໍ່ໜ່ວຍງານ</string>
+    <string name="settings_limit_ou_program">ໂດຍຫົວໜ່ວຍການຈັດຕັ້ງ ແລະ ສາຍງານ</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -417,8 +423,13 @@
     <string name="dashboard_overview">ພາບລວມ</string>
     <string name="dashboard_relationships">ສາຍພົວພັນ</string>
     <string name="dashboard_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="dashboard_analytics">ການວິເຄາະ</string>
     <string name="empty_indicators">ບໍ່ມີຕົວຊີ້ບອກສຳລັບສາຍງານນີ້</string>
     <string name="dashboard_notes">ຂໍ້ຄວາມ</string>
+    <string name="unable_to_complete">ບໍ່ສາມາດສຳເລັດໄດ້</string>
+    <string name="unable_to_save">ບໍ່ສາມາດບັນທຶກໄດ້</string>
+    <string name="warnings_in_form">ມີການແຈ້ງເຕືອນຢູ່ໃນຟອມ</string>
+    <string name="what_to_do">ເຈົ້າ​ຕ້ອງ​ການ​ເຮັດ​ຫຍັງ?</string>
     <string name="field_errors">ຂໍ້ມູນມີຂໍ້ຜິດພາດ. ກະລຸນາ, ກວດເບິ່ງເພື່ອໃຫ້ສາມາດເຮັດສໍາເລັດ</string>
     <string name="unselect_enrollment">ການລົງທະບຽນທັງໝົດ</string>
     <string name="unselect_enrollment_description">ສະແດງກະດານຂ່າວພ້ອມສາຍງານທີ່ເຮັດວຽກທັ້ງໝົດ</string>
@@ -473,7 +484,9 @@
     <string name="relationship_not_found_message">ບັນທຶກທີ່ທ່ານກຳລັງເຂົ້າເຖີງຍັງບໍ່ສາມາດເຂົ້າໄດ້ ທ່ານຕ້ອງການຄົ້ນຫາຫຼືບໍ?</string>
     <string name="sync_by_sms">ຊິ້ງຂໍ້ມູນດ້ວຍຂໍ້ຄວາມ</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
+    <string name="state_uploading">ກຳລັງອັບໂຫຼດ</string>
     <string name="state_relationship">ຄວາມສໍາພັນ</string>
+    <string name="sent_by_sms">ສົ່ງຂໍ້ຄວາມ</string>
     <string name="no_conflicts_message">ສາຍງານນີ້ບໍມີຂໍ້ຂັດແຍ້ງ</string>
     <string name="network_unavailable_sms">ບໍ່ມີການເຊື່ອຕໍ່ກັບເຄື່ອຂ່າຍ, ແຕ່ເບີ່ງຄືວ່າມີບໍລິການໂທລະສັບ - ທ່ານສາມາດໃຊ້ຂໍ້ຄວາມໄດ້</string>
     <string name="network_unavailable">ການເຊື່ອມຕໍ່ກັບເຄື່ອຂ່າຍບໍສາມາດໃຊ້ໄດ້</string>
@@ -495,6 +508,7 @@
     <string name="sync_setting">ການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ %s</string>
     <string name="relationship_without_enrollment">ບັນທຶກທີ່ທ່ານພະຍາຍາມເຂົ້າບໍ່ມີການລົງທະບຽນ. ທ່ານບໍສາມາດເຂົ້າເຖີງໜ້າກະດານຂ່າວໄດ້</string>
     <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
+    <string name="dashboard_menu_delete_tei_v2">ລົບ%s</string>
     <string name="dashboard_menu_delete_enrollment">ລົບການລົງທະບຽນເທົ່ານັ້ນ</string>
     <string name="delete_authority_error">ທ່ານບໍສາມາດທີ່ຈະລົບບັນທຶກນີ້ໄດ້</string>
     <string name="validation_url">ຊື່ url ບໍ່ຖຶກຕ້ອງ</string>
@@ -558,6 +572,7 @@
     <string name="filters_disabled">ບໍ່ໄດ້ໃຊ້ຕົວກອງ</string>
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
     <string name="filters_title_org_unit">ຫົວ​ໜ່ວຍ​ການ​ຈັດ​ຕັ້ງ</string>
+    <string name="filters_title_sorting">ການຈັດຮຽງ</string>
     <string name="filters_title_status">ສະຖານະ</string>
     <string name="filters_title_state">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
     <string name="filters_title_assigned">ມອບໝາຍໃຫ້ຂ້ອຍ</string>
@@ -608,30 +623,68 @@
     <string name="interval_hour_ago">%dຊົ່ວໂມງທີ່ຜ່ານມາ</string>
     <string name="interval_yesterday">ມື້ວານນີ</string>
     <string name="program_selector">ການລົງທະບຽນໂປຣແກຣມ</string>
+    <string name="select_time">ເລືອກເວລາ</string>
+    <string name="enter_letter">ປ້ອນຕົວອັກສອນ</string>
+    <string name="enter_unit_interval">ປ້ອນຕົວເລກຈາກ 0 ຫາ 1</string>
+    <string name="enter_percentage">ປ້ອນເປີເຊັນ</string>
+    <string name="enter_phone_number">ປ້ອນເບີໂທລະສັບ</string>
+    <string name="enter_email">ປ້ອນອີເມລ</string>
     <string name="choose_ou">ເລືອກຫົວໜ່ວຍອົງກອນ</string>
+    <string name="enter_url">ປ້ອນ url</string>
+    <string name="enter_value">ປ້ອນຄ່າ</string>
+    <string name="choose_image">ເລືອກຮູບພາບ</string>
+    <string name="scan_code">ສະແກນລະຫັດ</string>
     <string name="choose_option">ເລືອກຄໍາຕອບ</string>
+    <string name="events_to_download">ດາວໂຫຼດເຫດການ</string>
+    <string name="program_settings">ການຕັ້ງຄ່າສາຍງານ</string>
     <string name="limit_scope_global_trailing">ໃນທົ່ວໂລກ</string>
+    <string name="limit_scope_ou_trailing">ຕໍ່ຫົວໜ່ວຍການຈັດຕັ້ງ</string>
     <string name="limit_scope_program_trailing">ຕໍ່ສາຍງານ</string>
+    <string name="limit_scope_ou_program_trailing">ຕໍ່ຫົວໜ່ວຍການຈັດຕັ້ງ ແລະ ໂປຣແກຣມ</string>
+    <string name="activity_program_settings">ການຕັ້ງຄ່າການຊິ້ງສາຍງານ</string>
     <string name="syncing_period_not_editable">ໄລຍະເວລາການຊິ້ງຂໍ້ມູນແມ່ນບໍ່ສາມາດແກ້ໄຂໄດ້</string>
+    <string name="downloading">ກຳລັງດາວໂຫຼດ</string>
+    <string name="filter_sync_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນແລ້ວ</string>
+    <string name="filter_sync_not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="dataset_overview">ລາຍລະອຽດ</string>
     <string name="dataset_comments">ຄຳເຫັນ</string>
+    <string name="saved">ບັນທຶກແລ້ວ!</string>
+    <string name="run_validation_rules">ທ່ານຕ້ອງການກວດສອບຄຸນນະພາບຂໍ້ມູນນີ້ບໍ?</string>
+    <string name="validation_success_title">ທຸກຢ່າງຮຽບຮ້ອຍດີ</string>
+    <string name="mark_dataset_complete">ທ່ານຕ້ອງການເຮັດຊຸດຂໍ້ມູນໃຫ້ຄົບຖ້ວນບໍ?</string>
+    <string name="dataset_completed">ເຮັດໃຫ້ສຳເລັດແລ້ວ</string>
     <string name="name">ຊື່</string>
     <string name="formula">Formula</string>
     <string name="fk_message">ບໍ່ຄົບຖ້ວນ%s%sຈາກ%s%s</string>
     <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
     <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
     <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
+    <string name="validation_rules_data_to_review">ຂໍ້ມູນທີ່ຕ້ອງທົບທວນ</string>
+    <string name="dataset_saved_completed">ບັນ​ທຶກ​ແລະ​ສໍາ​ເລັດ​!</string>
+    <string name="status_change_error_active_exist">ມີການລົງທະບຽນທີ່ໃຊ້ງານຢູ່ແລ້ວ</string>
     <string name="enrollment_status_active">ເປີດ</string>
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
     <string name="event_data">ຂໍ້ມູນ</string>
+    <string name="action_done">ສຳເລັດແລ້ວ!</string>
     <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
+    <string name="reopen_question">ທ່ານຕ້ອງການເປີດຊຸດຂໍ້ມູນຄືນໃໝ່ບໍ?</string>
+    <string name="group_events_by_stage">ຈັດກຸ່ມເຫດການຕາມຂັ້ນຕອນ</string>
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="filters_title_event_date">ວັນທີເຫດການ</string>
+    <string name="privacy_policy_title">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
     <string name="customactivityoncrash_error_activity_restart_app">ກັບຄືນ</string>
+    <string name="customactivityoncrash_error_activity_close_app">ປິດແອັບ</string>
+    <string name="customactivityoncrash_error_activity_error_details">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
     <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
+    <string name="jira_issue_sent">ສົ່ງບັນຫາແລ້ວ</string>
+    <string name="jira_issue_sent_error">ເກີດຄວາມຜິດພາດໃນການສົ່ງບັນຫາ</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
+    <string name="navigation_list_view">ເບີ່ງລາຍການ</string>
+    <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
+    <string name="navigation_analytics">ການວິເຄາະ</string>
     <string name="navigation_programs">ສາຍງານ</string>
     <string name="navigation_events">ເຫດການ</string>
     <string name="navigation_relationships">ສາຍພົວພັນ</string>
@@ -639,22 +692,54 @@
     <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
     <string name="navigation_tei_data">ລາຍລະອຽດ</string>
     <string name="show_bar_graph">View as Bar</string>
+    <string name="show_line_graph">ເບິ່ງເປັນແຖວ</string>
+    <string name="show_table_graph">ເບິ່ງເປັນຕາຕະລາງ</string>
     <string name="filter_period_this_year">ປີນີ້</string>
+    <string name="filter_period_this_bimonth">ສອງເດືອນນີ້</string>
+    <string name="filter_period_last_bimonth">ສອງເດືອນຜ່ານມາ</string>
     <string name="filter_period_this_quarter">ໄຕມານີ້</string>
     <string name="filter_period_last_quarter">ໄຕມາດຜ່ານມາ</string>
+    <string name="filter_period_six_months">6 ເດືອນນີ້</string>
+    <string name="filter_period_last_six_months">6 ເດືອນຜ່ານມາ</string>
     <string name="filter_period_weeks_this_year">ອາທິດ ຂອງປີນີ້</string>
     <string name="filter_period_months_this_year">​ເດືອນ​ໃນ​ປີ</string>
     <string name="filter_period_quarters_this_year">​ໄຕຼມາດ​ໃນ​ປີ</string>
     <string name="filter_period_months_last_year">​ເດືອນ​ໃນປີ​ຜ່ານ​ມາ</string>
     <string name="filter_period_last_year">ປີກາຍ</string>
+    <string name="filter_period_this_biweek">ສອງອາທິດນີ້</string>
+    <string name="filter_period_last_biweek">ສອງອາທິດທີ່ຜ່ານມາ</string>
     <string name="filter_period_this_financial_year">ສົກປີງົບປະມານຂອງປິນີ້</string>
     <string name="filter_period_last_financial_year">​ສົກ​ປີ​ງົບ​ປະ​ມານ​ປີ​ກາຍ</string>
     <string name="section_feedback">ຜົນຕອບຮັບ</string>
     <string name="section_indicators">ຕົວຊີ້ວັດ</string>
     <string name="value">Value</string>
+    <string name="take_photo">ຖ່າຍຮູບ</string>
+    <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
+    <string name="data_set_quality_check_done">ສຳເລັດແລ້ວ!</string>
+    <string name="break_glass_dialog_title">ໂປຣແກຣມນີ້ໄດ້ຮັບການຄຸ້ມຄອງ</string>
+    <string name="break_glass_reason">ເຫດຜົນໃນການກວດສອບການລົງທະບຽນ</string>
+    <string name="break_glass_hint">ອະທິບາຍເຫດຜົນຢູ່ບ່ອນນີ້</string>
     <string name="login_error_bad_credentials">ຄວາມຜິດພາດຈາກຢັ້ງຢືນເອກະລັກບຸກຄົນ</string>
+    <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>
     <string name="invalid_integer">ຄ່າຕ້ອງເປັນຈຳນວນຖ້ວນ</string>
+    <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
+    <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
     <string name="available">ສີ່ງທີ່ມີ</string>
     <string name="unknown_date">ບໍ່ຮູ້</string>
+    <string name="add_accout">ເພີ່ມບັນຊີ</string>
+    <string name="delete_account">ລົບບັນຊີ</string>
+    <string name="manage_accounts">ຈັດການບັນຊີ</string>
     <string name="troubleshooting_language_title">Language</string>
+    <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="customactivityoncrash_error_activity_current_date">ວັນທີປະຈຸບັນນີ້: %s</string>
+    <string name="customactivityoncrash_error_activity_device">ອຸປະກອນ: %s</string>
+    <string name="syncing_events">ອັບເດດເຫດການໃຫ້ຄືກັນ</string>
+    <string name="syncing_teis">ອັບເດດຫົວໜ່ວຍທີ່ຕິດຕາມໃຫ້ຄືກັນ</string>
+    <string name="syncing_data_sets">ອັບເດດຊຸດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="syncing_done">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ</string>
+    <string name="program_description">ລາຍລະອຽດຂອງສາຍງານ</string>
+    <string name="enrolledIn">ລົງທະບຽນໃນ:</string>
+    <string name="sync_dialog_title_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນແລ້ວ</string>
+    <string name="sync_dialog_action_send">ສົ່ງ</string>
+    <string name="sync_dialog_action_not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     </resources>

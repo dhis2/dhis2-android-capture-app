@@ -39,7 +39,7 @@ class DataSetTableRepositoryTest {
             periodId,
             orgUnitUid,
             catOptCombo,
-            resourceManager
+            resourceManager,
         )
     }
 
@@ -49,7 +49,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().dataSets().byUid().eq(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one()) doReturn mock()
         whenever(
-            d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet()
+            d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet(),
         ) doReturn dummyDataSet()
 
         val testObserver = repository.getDataSet().test()
@@ -67,7 +67,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().sections().byDataSetUid()) doReturn mock()
         whenever(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid)) doReturn mock()
         whenever(
-            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get(),
         ) doReturn Single.just(sections)
 
         val testObserver = repository.getSections().test()
@@ -86,7 +86,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().sections().byDataSetUid()) doReturn mock()
         whenever(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid)) doReturn mock()
         whenever(
-            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get(),
         ) doReturn Single.just(sections)
 
         val testObserver = repository.getSections().test()
@@ -106,7 +106,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn dummyDataSetCompleteRegistration(false)
 
         val testObserver = repository.dataSetStatus().test()
@@ -124,7 +124,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn dummyDataSetCompleteRegistration(true)
 
         val testObserver = repository.dataSetStatus().test()
@@ -142,7 +142,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn null
 
         val testObserver = repository.dataSetStatus().test()
@@ -163,7 +163,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn dataSetInstance
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
@@ -171,7 +171,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn dummyDataSetCompleteRegistration(false)
 
         val testObserver = repository.dataSetState().test()
@@ -192,7 +192,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn dataSetInstance
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
@@ -200,7 +200,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn dummyDataSetCompleteRegistration(false, State.TO_POST)
 
         val testObserver = repository.dataSetState().test()
@@ -215,11 +215,11 @@ class DataSetTableRepositoryTest {
         val name = "CatComboName"
         whenever(d2.categoryModule().categoryOptionCombos().uid(uid)) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos().uid(uid).blockingGet()
+            d2.categoryModule().categoryOptionCombos().uid(uid).blockingGet(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
-                .uid(uid).blockingGet().displayName()
+                .uid(uid).blockingGet()?.displayName(),
         ) doReturn name
 
         val testObserver = repository.getCatComboName().test()
@@ -234,22 +234,22 @@ class DataSetTableRepositoryTest {
 
         whenever(d2.categoryModule().categoryOptionCombos().byDisplayName()) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos().byDisplayName().like("default")
+            d2.categoryModule().categoryOptionCombos().byDisplayName().like("default"),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
                 .byDisplayName().like("default")
-                .one()
+                .one(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
                 .byDisplayName().like("default")
-                .one().blockingGet()
+                .one().blockingGet(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
                 .byDisplayName().like("default")
-                .one().blockingGet().uid()
+                .one().blockingGet()?.uid(),
         ) doReturn categoryOptionCombo.uid()
 
         val returnedValue = repository.getCatOptComboFromOptionList(listOf())
@@ -263,19 +263,19 @@ class DataSetTableRepositoryTest {
         val catOptionUids = listOf("catOpt_uid_1", "catOpt_Uid_1")
 
         whenever(
-            d2.categoryModule().categoryOptionCombos().byCategoryOptions(catOptionUids)
+            d2.categoryModule().categoryOptionCombos().byCategoryOptions(catOptionUids),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(catOptionUids).one()
+                .byCategoryOptions(catOptionUids).one(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(catOptionUids).one().blockingGet()
+                .byCategoryOptions(catOptionUids).one().blockingGet(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(catOptionUids).one().blockingGet().uid()
+                .byCategoryOptions(catOptionUids).one().blockingGet()?.uid(),
         ) doReturn categoryOptionCombos.uid()
 
         val returnedValue = repository.getCatOptComboFromOptionList(catOptionUids)
@@ -286,15 +286,15 @@ class DataSetTableRepositoryTest {
     @Test
     fun `Should return true if dataset was successfully marked as completed`() {
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
+            d2.dataSetModule().dataSetCompleteRegistrations(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
-                .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
-                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists(),
         ) doReturn Single.just(false)
 
         val testObserver = repository.completeDataSetInstance().test()
@@ -374,36 +374,43 @@ class DataSetTableRepositoryTest {
     private fun mockDataSetCompRegistration() {
         whenever(d2.dataSetModule().dataSetCompleteRegistrations().byDataSetUid()) doReturn mock()
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations().byDataSetUid().eq(dataSetUid)
+            d2.dataSetModule().dataSetCompleteRegistrations().byDataSetUid().eq(dataSetUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
                 .byDataSetUid().eq(dataSetUid)
-                .byAttributeOptionComboUid()
+                .byAttributeOptionComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byAttributeOptionComboUid().eq(catOptCombo),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
+                .byOrganisationUnitUid(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
-                .byOrganisationUnitUid()
+                .byOrganisationUnitUid().eq(orgUnitUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
+                .byPeriod(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
-                .byPeriod()
+                .byPeriod().eq(periodId),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
@@ -411,50 +418,50 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byAttributeOptionComboUid().eq(catOptCombo)
-                .byOrganisationUnitUid().eq(orgUnitUid)
-                .byPeriod().eq(periodId)
-                .one()
+                .one(),
         ) doReturn mock()
     }
 
     private fun mockDataSetInstance() {
         whenever(d2.dataSetModule().dataSetInstances().byDataSetUid()) doReturn mock()
         whenever(
-            d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSetUid)
+            d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSetUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetInstances()
                 .byDataSetUid().eq(dataSetUid)
-                .byAttributeOptionComboUid()
+                .byAttributeOptionComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetInstances()
+                .byDataSetUid().eq(dataSetUid)
+                .byAttributeOptionComboUid().eq(catOptCombo),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetInstances()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
+                .byOrganisationUnitUid(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetInstances()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
-                .byOrganisationUnitUid()
+                .byOrganisationUnitUid().eq(orgUnitUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetInstances()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
+                .byPeriod(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetInstances()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
-                .byPeriod()
+                .byPeriod().eq(periodId),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetInstances()
@@ -462,14 +469,7 @@ class DataSetTableRepositoryTest {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId)
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataSetInstances()
-                .byDataSetUid().eq(dataSetUid)
-                .byAttributeOptionComboUid().eq(catOptCombo)
-                .byOrganisationUnitUid().eq(orgUnitUid)
-                .byPeriod().eq(periodId)
-                .one()
+                .one(),
         ) doReturn mock()
     }
 }

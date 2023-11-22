@@ -8,10 +8,10 @@ import org.hisp.dhis.android.core.note.NoteCreateProjection
 
 class NoteDetailRepositoryImpl(
     private val d2: D2,
-    private val programUid: String
+    private val programUid: String,
 ) : NoteDetailRepository {
 
-    override fun getNote(noteId: String): Single<Note> {
+    override fun getNote(noteId: String): Single<Note?> {
         return d2.noteModule().notes().uid(noteId).get()
     }
 
@@ -25,10 +25,10 @@ class NoteDetailRepositoryImpl(
                             d2.enrollmentModule().enrollments()
                                 .byProgram().eq(programUid)
                                 .byTrackedEntityInstance().eq(uid)
-                                .one().blockingGet().uid()
+                                .one().blockingGet()?.uid(),
                         )
                         .value(message)
-                        .build()
+                        .build(),
                 )
             }
             NoteType.EVENT -> {
@@ -37,7 +37,7 @@ class NoteDetailRepositoryImpl(
                         .noteType(Note.NoteType.EVENT_NOTE)
                         .event(uid)
                         .value(message)
-                        .build()
+                        .build(),
                 )
             }
         }

@@ -7,7 +7,7 @@ import org.dhis2.maps.model.EventUiComponentModel
 class EventToEventUiComponent {
     fun mapList(
         events: List<EventViewModel>,
-        teis: List<SearchTeiModel>
+        teis: List<SearchTeiModel>,
     ): List<EventUiComponentModel> {
         return events
             .filter { it.event?.geometry() != null }
@@ -18,7 +18,7 @@ class EventToEventUiComponent {
                         it.enrollments.any { enrollment ->
                             enrollment.uid() == event.event?.enrollment()
                         }
-                    }
+                    },
                 )
             }
     }
@@ -36,7 +36,7 @@ class EventToEventUiComponent {
             tei.attributeValues,
             tei.profilePicturePath,
             tei.defaultTypeIcon,
-            eventViewModel.orgUnitName
+            eventViewModel.orgUnitName,
         )
     }
 }

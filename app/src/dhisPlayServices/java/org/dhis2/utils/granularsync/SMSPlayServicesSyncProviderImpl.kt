@@ -45,7 +45,7 @@ import timber.log.Timber
 class SMSPlayServicesSyncProviderImpl(
     override val d2: D2,
     override val syncContext: SyncContext,
-    override val resourceManager: ResourceManager
+    override val resourceManager: ResourceManager,
 ) : SMSSyncProvider {
 
     private val confirmationMessage = MutableLiveData<Boolean?>(null)
@@ -75,13 +75,13 @@ class SMSPlayServicesSyncProviderImpl(
         context: Context,
         senderNumber: String,
         onSuccess: () -> Unit,
-        onFailure: () -> Unit
+        onFailure: () -> Unit,
     ) {
         context.registerReceiver(
             smsReceiver,
             IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
             SmsRetriever.SEND_PERMISSION,
-            null
+            null,
         )
         SmsRetriever.getClient(context).startSmsUserConsent(senderNumber).addOnCompleteListener {
             if (it.isSuccessful) {
@@ -132,7 +132,7 @@ class SMSPlayServicesSyncProviderImpl(
             SmsSendingService.State.COUNT_NOT_ACCEPTED,
             null,
             0,
-            0
+            0,
         )
     }
 }

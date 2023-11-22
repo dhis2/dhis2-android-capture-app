@@ -5,7 +5,7 @@ import org.dhis2.commons.filters.FilterManager
 
 sealed class WorkingListItem(
     val uid: String,
-    val label: String
+    val label: String,
 ) {
     private val itemId = View.generateViewId()
 

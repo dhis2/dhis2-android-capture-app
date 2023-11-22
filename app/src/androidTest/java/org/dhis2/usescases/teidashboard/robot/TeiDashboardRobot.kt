@@ -1,6 +1,11 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -27,6 +32,7 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.StageViewHolder
+import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.utils.dialFloatingActionButton.FAB_ID
@@ -63,19 +69,16 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuMoreOptions() {
-        onView(withId(R.id.moreOptions)).perform(click())
+        waitForView(withId(R.id.moreOptions)).perform(click())
     }
 
     fun clickOnMenuReOpen() {
         onView(withText(R.string.re_open)).perform(click())
     }
 
-    fun checkLockIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.cancelled)))
-    }
-
-    fun checkUnlockIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.event_open)))
+    fun checkCancelledStateInfoBarIsDisplay(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(STATE_INFO_BAR_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Enrollment cancelled").assertIsDisplayed()
     }
 
     fun checkCanAddEvent() {
@@ -148,14 +151,13 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
     }
 
-    fun clickOnReferralOption() {
-        onView(withId(R.id.one_time)).perform(click())
+    fun clickOnReferralOption(composeTestRule: ComposeTestRule, oneTime: String) {
+        composeTestRule.onNodeWithText(oneTime).performClick()
     }
 
     fun clickOnReferralNextButton() {
         waitForView(withId(R.id.action_button)).perform(click())
     }
-    
 
     fun checkEventWasCreated(eventName: String) {
         onView(withId(R.id.tei_recycler))
@@ -186,8 +188,9 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText(R.string.complete)).perform(click())
     }
 
-    fun checkLockCompleteIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.completed)))
+    fun checkCompleteStateInfoBarIsDisplay(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(STATE_INFO_BAR_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Enrollment completed").assertIsDisplayed()
     }
 
 
@@ -222,7 +225,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnSeeDetails() {
-        onView(withId(R.id.detailsButton)).perform(click())
+        onView(withId(R.id.editButton)).perform(click())
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {

@@ -6,14 +6,14 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
 
 class ConfigureEventTemp(
-    private val creationType: EventCreationType
+    private val creationType: EventCreationType,
 ) {
 
     operator fun invoke(status: EventTempStatus? = null): EventTemp {
         return EventTemp(
             active = isActive(),
             status = status,
-            completed = isCompleted(status)
+            completed = isCompleted(status),
         )
     }
 

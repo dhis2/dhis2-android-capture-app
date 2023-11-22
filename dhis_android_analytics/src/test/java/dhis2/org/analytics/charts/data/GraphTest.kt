@@ -1,10 +1,10 @@
 package dhis2.org.analytics.charts.data
 
-import java.time.Instant
-import java.util.Date
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
+import java.util.Date
 
 class GraphTest {
 
@@ -36,7 +36,7 @@ class GraphTest {
             Date.from(Instant.parse("2020-01-02T00:00:00.00Z")),
             Date.from(Instant.parse("2020-01-04T00:00:00.00Z")),
             Date.from(Instant.parse("2020-01-06T00:00:00.00Z")),
-            Date.from(Instant.parse("2020-01-07T00:00:00.00Z"))
+            Date.from(Instant.parse("2020-01-07T00:00:00.00Z")),
         )
         testSteps.forEachIndexed { index, step ->
             assertTrue(graph.dateFromSteps(step) == expectedResult[index])
@@ -79,13 +79,19 @@ class GraphTest {
         assertTrue(graph.xAxixMaximun() == 0.0f)
     }
 
+    @Test(expected = Test.None::class)
+    fun `Should use current date to calculate localDateFromSteps and don't throw exception`() {
+        val graph = mockedGraph(emptyList())
+        graph.localDateFromSteps(3)
+    }
+
     private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph {
         return Graph(
             "testGraph",
             coordinates.map { SerieData("fieldName", coordinates) },
             null,
             PeriodType.Daily,
-            dailyPeriodPeriod
+            dailyPeriodPeriod,
         )
     }
 
@@ -94,7 +100,7 @@ class GraphTest {
             GraphPoint(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")), fieldValue = 10f),
             GraphPoint(Date.from(Instant.parse("2020-01-02T00:00:00.00Z")), fieldValue = 20f),
             GraphPoint(Date.from(Instant.parse("2020-01-04T00:00:00.00Z")), fieldValue = 50f),
-            GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), fieldValue = 30f)
+            GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), fieldValue = 30f),
         )
     }
 }

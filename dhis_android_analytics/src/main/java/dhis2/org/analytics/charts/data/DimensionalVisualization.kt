@@ -8,5 +8,5 @@ data class DimensionalVisualization(
     val chartType: ChartType,
     val row: List<DimensionItem>,
     val column: List<DimensionItem>,
-    val dimensionResponse: DimensionalResponse
+    val dimensionResponse: DimensionalResponse,
 )

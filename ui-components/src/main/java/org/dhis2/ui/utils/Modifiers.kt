@@ -21,16 +21,16 @@ fun Modifier.dashedBorder(strokeWidth: Dp, color: Color, cornerRadiusDp: Dp) = c
                 onDrawBehind {
                     val stroke = Stroke(
                         width = strokeWidthPx,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f),
                     )
 
                     drawRoundRect(
                         color = color,
                         style = stroke,
-                        cornerRadius = CornerRadius(cornerRadiusPx)
+                        cornerRadius = CornerRadius(cornerRadiusPx),
                     )
                 }
-            }
+            },
         )
-    }
+    },
 )

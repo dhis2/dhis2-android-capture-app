@@ -5,8 +5,6 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.Date
-import java.util.Locale
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +35,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class DataSetTablePresenterTest {
@@ -75,7 +75,7 @@ class DataSetTablePresenterTest {
             },
             analyticsHelper,
             updateProcessor,
-            false
+            false,
         )
     }
 
@@ -104,7 +104,7 @@ class DataSetTablePresenterTest {
             "orgUnitName",
             "periodLabel",
             catComboName,
-            false
+            false,
         )
 
         whenever(repository.getSections()) doReturn Flowable.just(sections)
@@ -115,8 +115,8 @@ class DataSetTablePresenterTest {
             periodUtils.getPeriodUIString(
                 period.periodType(),
                 period.startDate()!!,
-                Locale.getDefault()
-            )
+                Locale.getDefault(),
+            ),
         ) doReturn "periodLabel"
         whenever(repository.getOrgUnit()) doReturn Single.just(orgUnit)
         whenever(repository.isComplete()) doReturn Single.just(false)
@@ -166,8 +166,8 @@ class DataSetTablePresenterTest {
         presenter.handleValidationResult(
             ValidationRuleResult(
                 ValidationResult.ValidationResultStatus.OK,
-                emptyList()
-            )
+                emptyList(),
+            ),
         )
         verify(view).showSuccessValidationDialog()
     }
@@ -178,8 +178,8 @@ class DataSetTablePresenterTest {
         presenter.handleValidationResult(
             ValidationRuleResult(
                 ValidationResult.ValidationResultStatus.OK,
-                emptyList()
-            )
+                emptyList(),
+            ),
         )
         verify(view).saveAndFinish()
     }
@@ -190,8 +190,8 @@ class DataSetTablePresenterTest {
         presenter.handleValidationResult(
             ValidationRuleResult(
                 ValidationResult.ValidationResultStatus.ERROR,
-                violations
-            )
+                violations,
+            ),
         )
         verify(view).showErrorsValidationDialog(violations)
     }
@@ -226,8 +226,8 @@ class DataSetTablePresenterTest {
         whenever(repository.checkFieldCombination()) doReturn Single.just(
             Pair.create(
                 true,
-                emptyList()
-            )
+                emptyList(),
+            ),
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
@@ -238,22 +238,22 @@ class DataSetTablePresenterTest {
     @Test
     fun `Should show missing mandatory fields`() {
         whenever(
-            repository.checkMandatoryFields()
+            repository.checkMandatoryFields(),
         ) doReturn Single.just(
             arrayListOf(
                 DataElementOperand.builder()
                     .uid("uid")
-                    .build()
-            ).toList()
+                    .build(),
+            ).toList(),
 
         )
         whenever(
-            repository.checkFieldCombination()
+            repository.checkFieldCombination(),
         ) doReturn Single.just(
             Pair.create(
                 true,
-                emptyList()
-            )
+                emptyList(),
+            ),
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
@@ -264,15 +264,15 @@ class DataSetTablePresenterTest {
     @Test
     fun `Should show combination fields message`() {
         whenever(
-            repository.checkMandatoryFields()
+            repository.checkMandatoryFields(),
         ) doReturn Single.just(emptyList())
         whenever(
-            repository.checkFieldCombination()
+            repository.checkFieldCombination(),
         ) doReturn Single.just(
             Pair.create(
                 false,
-                emptyList()
-            )
+                emptyList(),
+            ),
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
@@ -286,8 +286,8 @@ class DataSetTablePresenterTest {
         whenever(repository.checkFieldCombination()) doReturn Single.just(
             Pair.create(
                 true,
-                emptyList()
-            )
+                emptyList(),
+            ),
         )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(true)
         presenter.completeDataSet()

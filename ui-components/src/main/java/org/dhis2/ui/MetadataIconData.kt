@@ -6,5 +6,5 @@ import androidx.annotation.DrawableRes
 data class MetadataIconData(
     @ColorInt val programColor: Int,
     @DrawableRes val iconResource: Int,
-    val sizeInDp: Int = 40
+    val sizeInDp: Int = 40,
 )

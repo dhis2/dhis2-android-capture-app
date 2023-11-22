@@ -3,7 +3,6 @@ package org.dhis2.usescases.notes
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
-import java.util.UUID
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.note.Note
 import org.junit.Before
@@ -12,6 +11,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 class NotesPresenterTest {
 
@@ -54,10 +54,10 @@ class NotesPresenterTest {
         val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
-            repository.getEnrollmentNotes(uid)
+            repository.getEnrollmentNotes(uid),
         ) doReturn Single.just(notes)
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(),
         ) doReturn true
 
         noteProcessor.onNext(true)
@@ -72,10 +72,10 @@ class NotesPresenterTest {
         val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
-            repository.getEventNotes(uid)
+            repository.getEventNotes(uid),
         ) doReturn Single.just(notes)
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(),
         ) doReturn false
 
         noteProcessor.onNext(true)
@@ -87,10 +87,10 @@ class NotesPresenterTest {
     @Test
     fun `Should set no notes layout when notes are empty`() {
         whenever(
-            repository.getEnrollmentNotes(uid)
+            repository.getEnrollmentNotes(uid),
         ) doReturn Single.just(listOf())
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(),
         ) doReturn true
 
         noteProcessor.onNext(true)
@@ -104,10 +104,10 @@ class NotesPresenterTest {
         val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
-            repository.getEnrollmentNotes(uid)
+            repository.getEnrollmentNotes(uid),
         ) doReturn Single.just(notes)
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(),
         ) doReturn false
 
         noteProcessor.onNext(true)

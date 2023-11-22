@@ -1,6 +1,5 @@
 package org.dhis2.usescases.programEventDetail
 
-import java.util.Date
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.hisp.dhis.android.core.D2
@@ -18,6 +17,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class ProgramEventMapperTest {
 
@@ -71,22 +71,22 @@ class ProgramEventMapperTest {
         mockProgramStage()
         whenever(
             d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage")
+                .byProgramStage().eq("programStage"),
         ) doReturn mock()
         whenever(
             d2.programModule().programStageDataElements()
                 .byProgramStage().eq("programStage")
-                .byDisplayInReports()
+                .byDisplayInReports(),
         ) doReturn mock()
         whenever(
             d2.programModule().programStageDataElements()
                 .byProgramStage().eq("programStage")
-                .byDisplayInReports().isTrue
+                .byDisplayInReports().isTrue,
         ) doReturn mock()
         whenever(
             d2.programModule().programStageDataElements()
                 .byProgramStage().eq("programStage")
-                .byDisplayInReports().isTrue.blockingGet()
+                .byDisplayInReports().isTrue.blockingGet(),
         ) doReturn emptyList()
 
         val event = eventWithoutValidDate()
@@ -97,33 +97,33 @@ class ProgramEventMapperTest {
 
     private fun mockOrgUnitName() {
         whenever(
-            d2.organisationUnitModule().organisationUnits()
+            d2.organisationUnitModule().organisationUnits(),
         ) doReturn mock()
         whenever(
-            d2.organisationUnitModule().organisationUnits().uid("orgUnitUid")
+            d2.organisationUnitModule().organisationUnits().uid("orgUnitUid"),
+        ) doReturn mock()
+        whenever(
+            d2.organisationUnitModule().organisationUnits().uid("orgUnitUid").blockingGet(),
         ) doReturn mock()
         whenever(
             d2.organisationUnitModule().organisationUnits().uid("orgUnitUid").blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits().uid("orgUnitUid").blockingGet()
-                .displayName()
+                ?.displayName(),
         ) doReturn "OrgUnitName"
     }
 
     private fun mockProgramStageDataElements() {
         whenever(d2.programModule().programStageDataElements().byProgramStage()) doReturn mock()
         whenever(
-            d2.programModule().programStageDataElements().byProgramStage().eq("programStage")
+            d2.programModule().programStageDataElements().byProgramStage().eq("programStage"),
         ) doReturn mock()
         whenever(
             d2.programModule().programStageDataElements()
                 .byProgramStage().eq("programStage")
-                .orderBySortOrder(any())
+                .orderBySortOrder(any()),
         ) doReturn mock()
         whenever(
             d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage").blockingGet()
+                .byProgramStage().eq("programStage").blockingGet(),
         ) doReturn emptyList()
     }
 
@@ -131,7 +131,7 @@ class ProgramEventMapperTest {
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("programStage")) doReturn mock()
         whenever(
-            d2.programModule().programStages().uid("programStage").blockingGet()
+            d2.programModule().programStages().uid("programStage").blockingGet(),
         ) doReturn ProgramStage.builder()
             .uid("programStage")
             .build()
@@ -141,7 +141,7 @@ class ProgramEventMapperTest {
         whenever(d2.programModule().programs()) doReturn mock()
         whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet()
+            d2.programModule().programs().uid("programUid").blockingGet(),
         ) doReturn dummyProgramWithExpiryInfo()
     }
 
@@ -149,7 +149,7 @@ class ProgramEventMapperTest {
         whenever(d2.categoryModule().categoryOptionCombos()) doReturn mock()
         whenever(d2.categoryModule().categoryOptionCombos().uid("attrComboUid")) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos().uid("attrComboUid").blockingGet()
+            d2.categoryModule().categoryOptionCombos().uid("attrComboUid").blockingGet(),
         ) doReturn dummyCategoryOptionCombo()
     }
 

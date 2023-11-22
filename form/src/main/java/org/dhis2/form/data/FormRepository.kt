@@ -22,6 +22,8 @@ interface FormRepository {
     fun updateSectionOpened(action: RowAction)
     fun removeAllValues()
     fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean)
+    fun setFieldAddingImage(uid: String, requestInProcess: Boolean)
     fun clearFocusItem()
     fun storeFile(id: String, filePath: String?): StoreResult?
+    fun areSectionCollapsable(): Boolean
 }

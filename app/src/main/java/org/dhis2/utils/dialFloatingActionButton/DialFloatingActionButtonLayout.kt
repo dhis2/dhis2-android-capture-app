@@ -10,26 +10,29 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.LinkedList
-import org.dhis2.Bindings.dp
-import org.dhis2.Bindings.hideDialItem
-import org.dhis2.Bindings.initDialItem
-import org.dhis2.Bindings.rotate
-import org.dhis2.Bindings.showDialItem
 import org.dhis2.R
+import org.dhis2.bindings.dp
+import org.dhis2.bindings.hideDialItem
+import org.dhis2.bindings.initDialItem
+import org.dhis2.bindings.rotate
+import org.dhis2.bindings.showDialItem
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.DialFabItemBinding
+import java.util.LinkedList
 
 const val FAB_ID = 99
 
 class DialFloatingActionButtonLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     private var isActive = false
     private val dialItemViews = mutableListOf<View>()
     private var fab: FloatingActionButton
+
+    private val colorUtils: ColorUtils = ColorUtils()
 
     init {
         clipToPadding = false
@@ -81,16 +84,16 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
         return DialFabItemBinding.inflate(
             LayoutInflater.from(context),
             this@DialFloatingActionButtonLayout,
-            false
+            false,
         ).apply {
             dialLabel.text = dialItem.label
             dialIcon.setImageResource(dialItem.icon)
-            val colorPrimaryDark = ColorUtils.getPrimaryColor(
+            val colorPrimaryDark = colorUtils.getPrimaryColor(
                 context,
-                ColorUtils.ColorType.PRIMARY_DARK
+                ColorType.PRIMARY_DARK,
             )
             dialIcon.supportImageTintList =
-                ColorStateList.valueOf(ColorUtils.getContrastColor(colorPrimaryDark))
+                ColorStateList.valueOf(colorUtils.getContrastColor(colorPrimaryDark))
         }.root.apply {
             id = dialItem.id
             tag = dialItem.label
@@ -101,12 +104,12 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
     private fun initFab(context: Context) = FloatingActionButton(context).apply {
         id = FAB_ID
         setImageResource(R.drawable.ic_add_accent)
-        val colorPrimary = ColorUtils.getPrimaryColor(
+        val colorPrimary = colorUtils.getPrimaryColor(
             context,
-            ColorUtils.ColorType.PRIMARY
+            ColorType.PRIMARY,
         )
         supportBackgroundTintList = ColorStateList.valueOf(colorPrimary)
-        supportImageTintList = ColorStateList.valueOf(ColorUtils.getContrastColor(colorPrimary))
+        supportImageTintList = ColorStateList.valueOf(colorUtils.getContrastColor(colorPrimary))
         setOnClickListener { onFabClick() }
         layoutParams =
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {

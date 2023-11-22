@@ -5,13 +5,13 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.option.OptionCollectionRepository
 
 class SearchOptionSetOption(
-    private val optionRepository: OptionCollectionRepository
+    private val optionRepository: OptionCollectionRepository,
 ) {
     operator fun invoke(
         optionSetUid: String?,
         textToSearch: String,
         optionsToShow: List<String>,
-        optionsToHide: List<String>
+        optionsToHide: List<String>,
     ): List<Option> {
         var repository = optionRepository
             .byOptionSetUid().eq(optionSetUid)

@@ -92,14 +92,6 @@
     <string name="program_inactive">Programa suspendido</string>
 
     <string name="event_open">Abrir</string>
-    <string name="event_completed">Evento completado</string>
-    <string name="event_skipped">Evento Omitido</string>
-    <string name="event_schedule">Evento Programado</string>
-    <string name="event_expired">Evento expirado</string>
-    <string name="event_editing_expired">Edicion expirada</string>
-    <string name="event_accepted">Evento aceptado</string>
-    <string name="event_approved">Evento aprobado</string>
-    <string name="event_inactive">Evento inactivo</string>
     <string name="read_only">Sólo lectura</string>
     <string name="finish_and_complete">Acabar y completar</string>
     <string name="completed">Completado</string>
@@ -169,7 +161,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Ver detalles</string>
     <string name="view_more">Ver mas</string>
-    <string name="edit">Editar</string>
     <string name="enrolling_ou">OU de admision:</string>
     <string name="follow_up">Seguimiento</string>
     <string name="follow_up_enabled">Seguimiento activado</string>
@@ -733,7 +724,7 @@
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">¡Vaya! Algo no ha ido como estaba previsto.\nDéjenos por todo en marcha de nuevo.</string>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">¡Vaya! Algo no ha ido como estaba previsto.\nDéjenos poner todo en marcha de nuevo.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Ir atrás</string>
     <string name="customactivityoncrash_error_activity_close_app">Cerrar app</string>
     <string name="customactivityoncrash_error_activity_error_details">Más detalles</string>
@@ -888,4 +879,10 @@
     <string name="sms_sync_opening_app">Abriendo aplicación de SMS. Por favor, no modifique el mensaje.</string>
     <string name="sms_sync_sms_app_chooser_title">Enviar SMS con</string>
     <string name="sms_sync_manual_confirmation">Esperando confirmación manual</string>
+    <string name="enrolledIn">Inscrito en:</string>
+    <string name="sync_dialog_title_synced">Sincronizado</string>
+    <string name="sync_dialog_title_syncing">Sincronizando</string>
+    <string name="sync_dialog_action_send">Enviar</string>
+    <string name="sync_dialog_action_refresh">Actualizar</string>
+    <string name="sync_dialog_action_not_now">Ahora no</string>
     </resources>

@@ -19,7 +19,7 @@ fun TableCorner(
     modifier: Modifier = Modifier,
     tableCornerUiState: TableCornerUiState,
     tableId: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val isSelected = LocalTableSelection.current is TableSelection.AllCellSelection
     Box(
@@ -27,23 +27,23 @@ fun TableCorner(
             .cornerBackground(
                 isSelected = isSelected,
                 selectedColor = LocalTableColors.current.primaryLight,
-                defaultColor = LocalTableColors.current.tableBackground
+                defaultColor = LocalTableColors.current.tableBackground,
             )
             .width(
                 with(LocalDensity.current) {
                     TableTheme.dimensions
                         .rowHeaderWidth(tableId)
                         .toDp()
-                }
+                },
             )
             .clickable { onClick() },
-        contentAlignment = Alignment.CenterEnd
+        contentAlignment = Alignment.CenterEnd,
     ) {
         Divider(
             modifier
                 .fillMaxHeight()
                 .width(1.dp),
-            color = TableTheme.colors.primary
+            color = TableTheme.colors.primary,
         )
         if (isSelected) {
             VerticalResizingRule(
@@ -51,15 +51,22 @@ fun TableCorner(
                     .align(Alignment.CenterEnd)
                     .zIndex(1f),
                 checkMaxMinCondition = { dimensions, currentOffsetX ->
-                    dimensions.canUpdateAllWidths(
-                        tableId = tableId,
-                        widthOffset = currentOffsetX
-                    )
+                    if (tableCornerUiState.singleValueTable) {
+                        dimensions.canUpdateRowHeaderWidth(
+                            tableId = tableId,
+                            widthOffset = currentOffsetX,
+                        )
+                    } else {
+                        dimensions.canUpdateAllWidths(
+                            tableId = tableId,
+                            widthOffset = currentOffsetX,
+                        )
+                    }
                 },
                 onHeaderResize = { newValue ->
                     tableCornerUiState.onTableResize(newValue)
                 },
-                onResizing = tableCornerUiState.onResizing
+                onResizing = tableCornerUiState.onResizing,
             )
         }
     }

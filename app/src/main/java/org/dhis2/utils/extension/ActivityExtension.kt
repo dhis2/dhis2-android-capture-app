@@ -7,7 +7,7 @@ import android.os.Bundle
 inline fun <reified T> Activity.navigateTo(
     finishCurrent: Boolean = false,
     noinline block: (Bundle.() -> Unit)? = null,
-    flagsToApply: Int? = null
+    flagsToApply: Int? = null,
 ) {
     Intent(this, T::class.java).apply {
         block?.apply {

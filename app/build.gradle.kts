@@ -75,7 +75,7 @@ android {
         val mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") ?: defMapboxToken
         val bitriseSentryDSN = System.getenv("SENTRY_DSN") ?: ""
 
-        buildConfigField("String", "SDK_VERSION", "\"" + libs.versions.dhis2sdk + "\"")
+        buildConfigField("String", "SDK_VERSION", "\"" + libs.versions.dhis2sdk.get() + "\"")
         buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\"")
         buildConfigField("String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\"")
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
@@ -91,7 +91,7 @@ android {
             .annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
             "true"
     }
-    packagingOptions {
+    packaging {
         jniLibs {
             excludes.addAll(listOf("META-INF/licenses/**"))
         }
@@ -189,8 +189,18 @@ android {
     configurations.all {
         resolutionStrategy {
             preferProjectModules()
-            force("junit:junit:4.12", "com.squareup.okhttp3:okhttp:3.12.0")
-            setForcedModules("com.squareup.okhttp3:okhttp:3.12.0")
+            force(
+                "junit:junit:4.12",
+                "com.squareup.okhttp3:okhttp:4.9.3",
+                "com.squareup.okhttp3:mockwebserver:4.9.3",
+                "com.squareup.okhttp3:logging-interceptor:4.9.3"
+            )
+            setForcedModules(
+                "com.squareup.okhttp3:okhttp:4.9.3",
+                "com.squareup.okhttp3:mockwebserver:4.9.3",
+                "com.squareup.okhttp3:logging-interceptor:4.9.3"
+            )
+            cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
         }
     }
 
@@ -245,6 +255,7 @@ dependencies {
     implementation(libs.analytics.customactivityoncrash)
     implementation(platform(libs.dispatcher.dispatchBOM))
     implementation(libs.dispatcher.dispatchCore)
+    implementation(libs.dhis2.mobile.designsystem)
 
     coreLibraryDesugaring(libs.desugar)
 

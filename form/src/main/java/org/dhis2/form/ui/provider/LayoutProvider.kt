@@ -9,7 +9,7 @@ interface LayoutProvider {
         valueType: ValueType?,
         renderingType: ValueTypeRenderingType?,
         optionSet: String?,
-        sectionRenderingType: SectionRenderingType?
+        sectionRenderingType: SectionRenderingType?,
     ): Int
     fun getLayoutForSection(): Int
 }

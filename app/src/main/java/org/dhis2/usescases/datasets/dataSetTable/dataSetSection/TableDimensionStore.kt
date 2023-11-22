@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.D2
 class TableDimensionStore(
     val d2: D2,
     val dataSetUid: String,
-    val sectionUid: String
+    val sectionUid: String,
 ) {
 
     fun saveWidthForSection(tableId: String, widthDpValue: Float) {
@@ -98,7 +98,7 @@ class TableDimensionStore(
     }
 
     fun getColumnWidthForSection(
-        tableList: MutableList<TableModel>?
+        tableList: MutableList<TableModel>?,
     ): Map<String, Map<Int, Float>>? {
         return if (tableList != null) {
             columnWidthForTableModels(tableList.map { it.id ?: "" })

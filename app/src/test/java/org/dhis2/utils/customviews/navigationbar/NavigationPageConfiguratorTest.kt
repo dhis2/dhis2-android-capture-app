@@ -12,7 +12,7 @@ class NavigationPageConfiguratorTest {
         val defaultPageConfigurator = DefaultPageConfigurator()
         NavigationPage.values().forEach {
             assertTrue(
-                !defaultPageConfigurator.pageVisibility(it.id)
+                !defaultPageConfigurator.pageVisibility(it.id),
             )
         }
     }

@@ -40,7 +40,7 @@ fun HomeScreen(
     supportFragmentManager: FragmentManager,
     barcodeLauncher: ActivityResultLauncher<ScanOptions>,
     proceedAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
-    syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> }
+    syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -52,7 +52,7 @@ fun HomeScreen(
             AnimatedVisibility(
                 visible = dataEntryUiState.button.visible,
                 enter = fadeIn(),
-                exit = fadeOut()
+                exit = fadeOut(),
             ) {
                 FAButton(
                     text = dataEntryUiState.button.text,
@@ -62,9 +62,9 @@ fun HomeScreen(
                         Icon(
                             painter = painterResource(id = dataEntryUiState.button.icon),
                             contentDescription = stringResource(dataEntryUiState.button.text),
-                            tint = dataEntryUiState.button.contentColor
+                            tint = dataEntryUiState.button.contentColor,
                         )
-                    }
+                    },
                 ) {
                     proceedAction(scope, scaffoldState)
                 }
@@ -74,7 +74,7 @@ fun HomeScreen(
             SnackbarHost(hostState = it) {
                 CompletionDialog(dataEntryUiState = dataEntryUiState)
             }
-        }
+        },
     ) { paddingValues ->
         Backdrop(
             activity = activity,
@@ -84,7 +84,7 @@ fun HomeScreen(
             themeColor = themeColor,
             supportFragmentManager = supportFragmentManager,
             barcodeLauncher = barcodeLauncher,
-            scaffoldState = scaffoldState
+            scaffoldState = scaffoldState,
         ) { coroutineScope, scaffold ->
             syncAction(coroutineScope, scaffold)
         }

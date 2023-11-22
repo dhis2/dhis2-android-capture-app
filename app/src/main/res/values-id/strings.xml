@@ -87,14 +87,6 @@
     <string name="program_inactive">Program tidak aktif</string>
 
     <string name="event_open">Buka</string>
-    <string name="event_completed">Even selesai</string>
-    <string name="event_skipped">Even dilewati</string>
-    <string name="event_schedule">Jadwal even</string>
-    <string name="event_expired">Even kadaluarsa</string>
-    <string name="event_editing_expired">Ubah kadaluarsa</string>
-    <string name="event_accepted">Even diterima</string>
-    <string name="event_approved">Even disetujui</string>
-    <string name="event_inactive">Even tidak aktif</string>
     <string name="read_only">Baca saja</string>
     <string name="finish_and_complete">Selesai dan lengkap</string>
     <string name="completed">Selesai</string>
@@ -164,7 +156,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Lihat rincian</string>
     <string name="view_more">LIHAT LAINNYA</string>
-    <string name="edit">UBAH</string>
     <string name="enrolling_ou">Daftarkan OU:</string>
     <string name="follow_up">Tindak lanjut</string>
     <string name="follow_up_enabled">Tindak lanjut diterapkan</string>

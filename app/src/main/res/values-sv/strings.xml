@@ -66,14 +66,6 @@
     <string name="program_inactive">Programm inaktivt</string>
 
     <string name="event_open">Öppen</string>
-    <string name="event_completed">Händelse avslutad</string>
-    <string name="event_skipped">Händelse skippat</string>
-    <string name="event_schedule">Händelse schema</string>
-    <string name="event_expired">Händelsen har gått ut</string>
-    <string name="event_editing_expired">Redigeringen löpte ut</string>
-    <string name="event_accepted">Redigering accepterad</string>
-    <string name="event_approved">Händelse godkänd</string>
-    <string name="event_inactive">Händelse inaktiv</string>
     <string name="read_only">read only</string>
     <string name="completed">Avklarad</string>
     <string name="cancelled">Avbruten</string>
@@ -122,7 +114,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VISA MER</string>
-    <string name="edit">REDIGERA</string>
     <string name="enrolling_ou">Inskrivningsorganisationsenhet</string>
     <string name="follow_up">Följ upp</string>
     <string name="follow_up_enabled">Uppföljning aktiverad</string>

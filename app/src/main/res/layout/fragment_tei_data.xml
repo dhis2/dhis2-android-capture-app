@@ -53,6 +53,14 @@
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent">
 
+             <androidx.compose.ui.platform.ComposeView
+                 android:id="@+id/detailCard"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintTop_toTopOf="parent"/>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/tei_data"
                 android:layout_width="match_parent"
@@ -65,6 +73,7 @@
                 <include
                     android:id="@+id/card_front"
                     layout="@layout/fragment_tei_data_card_front"
+                    android:visibility="@{ program != null ? View.GONE : View.VISIBLE}"
                     app:dashboardModel="@{dashboardModel}"
                     app:enrollment="@{enrollment}"
                     app:followup="@{followup}"

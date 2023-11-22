@@ -1,38 +1,38 @@
 package org.dhis2.commons.filters.data
 
-import java.util.Calendar
-import javax.inject.Inject
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.period.DatePeriod
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
+import java.util.Calendar
+import javax.inject.Inject
 
 class TrackerFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
-    val filterManager: FilterManager
-) : FilterHelperActions<TrackedEntityInstanceQueryCollectionRepository> {
+    val filterManager: FilterManager,
+) : FilterHelperActions<TrackedEntitySearchCollectionRepository> {
 
     fun getFilteredProgramRepository(
-        programUid: String
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        programUid: String,
+    ): TrackedEntitySearchCollectionRepository {
         return applyFiltersTo(
-            filterRepository.trackedEntityInstanceQueryByProgram(programUid)
+            filterRepository.trackedEntityInstanceQueryByProgram(programUid),
         )
     }
 
     fun getFilteredTrackedEntityTypeRepository(
-        trackedEntityTypeUid: String
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        trackedEntityTypeUid: String,
+    ): TrackedEntitySearchCollectionRepository {
         return applyFiltersTo(
-            filterRepository.trackedEntityInstanceQueryByType(trackedEntityTypeUid)
+            filterRepository.trackedEntityInstanceQueryByType(trackedEntityTypeUid),
         )
     }
 
     override fun applyFiltersTo(
-        repository: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        repository: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return repository
             .withFilter { applyWorkingList(it) }
             .withFilter { applyEnrollmentStatusFilter(it) }
@@ -47,15 +47,15 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyWorkingList(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.workingListActive()) {
             filterRepository.applyWorkingList(
                 teiQuery,
-                filterManager.currentWorkingList()
+                filterManager.currentWorkingList(),
             ).also {
                 filterManager.setWorkingListScope(
-                    it.scope.mapToWorkingListScope(filterRepository.resources)
+                    it.scope.mapToWorkingListScope(filterRepository.resources),
                 )
             }
         } else {
@@ -64,12 +64,12 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyEnrollmentStatusFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.enrollmentStatusFilters.isNotEmpty()) {
             filterRepository.applyEnrollmentStatusFilter(
                 teiQuery,
-                filterManager.enrollmentStatusFilters
+                filterManager.enrollmentStatusFilters,
             )
         } else {
             teiQuery
@@ -77,17 +77,17 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyEventStatusFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.eventStatusFilters.isNotEmpty()) {
             filterRepository.applyEventStatusFilter(
                 teiQuery,
-                filterManager.eventStatusFilters
+                filterManager.eventStatusFilters,
             ).let {
                 if (filterManager.periodFilters.isEmpty()) {
                     val datePeriod = DatePeriod.create(
                         Calendar.getInstance().apply { add(Calendar.YEAR, -1) }.time,
-                        Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time
+                        Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time,
                     )
                     filterRepository.applyDateFilter(it, datePeriod)
                 } else {
@@ -100,12 +100,12 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyOrgUnitFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         val orgUnits: MutableList<String> = mutableListOf()
         val ouMode = if (filterManager.orgUnitUidsFilters.isEmpty()) {
             orgUnits.addAll(
-                filterRepository.rootOrganisationUnitUids()
+                filterRepository.rootOrganisationUnitUids(),
             )
             OrganisationUnitMode.DESCENDANTS
         } else {
@@ -116,8 +116,8 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyStateFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.stateFilters.isNotEmpty()) {
             filterRepository.applyStateFilter(teiQuery, filterManager.stateFilters)
         } else {
@@ -126,14 +126,14 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyDateFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.periodFilters.isNotEmpty()) {
             filterRepository.applyDateFilter(teiQuery, filterManager.periodFilters[0]).let {
                 if (filterManager.eventStatusFilters.isEmpty()) {
                     filterRepository.applyEventStatusFilter(
                         it,
-                        EventStatus.values().toMutableList()
+                        EventStatus.values().toMutableList(),
                     )
                 } else {
                     it
@@ -145,12 +145,12 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyEnrollmentDateFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.enrollmentPeriodFilters.isNotEmpty()) {
             filterRepository.applyEnrollmentDateFilter(
                 teiQuery,
-                filterManager.enrollmentPeriodFilters[0]
+                filterManager.enrollmentPeriodFilters[0],
             )
         } else {
             teiQuery
@@ -158,8 +158,8 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyAssignedToMeFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.assignedFilter) {
             filterRepository.applyAssignToMe(teiQuery)
         } else {
@@ -168,8 +168,8 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     private fun applyFollowUpFilter(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        teiQuery: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return if (filterManager.followUpFilter) {
             filterRepository.applyFollowUp(teiQuery)
         } else {
@@ -178,11 +178,11 @@ class TrackerFilterSearchHelper @Inject constructor(
     }
 
     override fun applySorting(
-        repository: TrackedEntityInstanceQueryCollectionRepository
-    ): TrackedEntityInstanceQueryCollectionRepository {
+        repository: TrackedEntitySearchCollectionRepository,
+    ): TrackedEntitySearchCollectionRepository {
         return filterManager.sortingItem?.let { sortingItem ->
             val orderDirection = getSortingDirection(
-                filterManager.sortingItem.sortingStatus
+                filterManager.sortingItem.sortingStatus,
             )
             orderDirection?.let {
                 when (sortingItem.filterSelectedForSorting) {
@@ -190,11 +190,11 @@ class TrackerFilterSearchHelper @Inject constructor(
                     Filters.ORG_UNIT -> filterRepository.sortByOrgUnit(repository, orderDirection)
                     Filters.ENROLLMENT_DATE -> filterRepository.sortByEnrollmentDate(
                         repository,
-                        orderDirection
+                        orderDirection,
                     )
                     Filters.ENROLLMENT_STATUS -> filterRepository.sortByEnrollmentStatus(
                         repository,
-                        orderDirection
+                        orderDirection,
                     )
                     else -> repository
                 }

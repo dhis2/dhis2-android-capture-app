@@ -18,33 +18,32 @@ public class ValueUtils {
     }
 
     public static TrackedEntityAttributeValue transform(D2 d2, TrackedEntityAttributeValue attributeValue, ValueType valueType, String optionSetUid) {
-        TrackedEntityAttributeValue teAttrValue = attributeValue;
+        String transformedValue = transformValue(d2, attributeValue.value(), valueType, optionSetUid);
+
+        if (!Objects.equals(transformedValue, attributeValue.value())) {
+            return attributeValue.toBuilder()
+                    .value(transformedValue)
+                    .build();
+        } else {
+            return attributeValue;
+        }
+    }
+
+    public static String transformValue(D2 d2, String value, ValueType valueType, String optionSetUid) {
+        String teAttrValue = value;
         if (valueType.equals(ValueType.ORGANISATION_UNIT)) {
-            if (!d2.organisationUnitModule().organisationUnits().byUid().eq(attributeValue.value()).blockingIsEmpty()) {
+            if (!d2.organisationUnitModule().organisationUnits().byUid().eq(value).blockingIsEmpty()) {
                 String orgUnitName = d2.organisationUnitModule().organisationUnits()
-                        .byUid().eq(attributeValue.value())
+                        .byUid().eq(value)
                         .one().blockingGet().displayName();
-                teAttrValue = TrackedEntityAttributeValue.builder()
-                        .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                        .lastUpdated(teAttrValue.lastUpdated())
-                        .created(teAttrValue.created())
-                        .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                        .value(orgUnitName)
-                        .build();
+                teAttrValue = orgUnitName;
             }
         } else if (optionSetUid != null) {
-            String optionCode = attributeValue.value();
+            String optionCode = value;
             if (optionCode != null) {
                 Option option = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).one().blockingGet();
                 if (option != null && (Objects.equals(option.code(), optionCode) || Objects.equals(option.name(), optionCode))) {
-                        teAttrValue = TrackedEntityAttributeValue.builder()
-                                .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                                .lastUpdated(teAttrValue.lastUpdated())
-                                .created(teAttrValue.created())
-                                .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                                .value(option.displayName())
-                                .build();
-
+                    teAttrValue = option.displayName();
                 }
             }
         }

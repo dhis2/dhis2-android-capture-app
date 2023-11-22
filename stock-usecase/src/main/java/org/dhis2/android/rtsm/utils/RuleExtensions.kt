@@ -69,7 +69,7 @@ fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
 fun List<ProgramRuleVariable>.toRuleVariableList(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): List<RuleVariable> {
     return filter {
         when {
@@ -99,7 +99,7 @@ fun ProgramRule.toRuleEngineObject(): Rule {
         condition() ?: "",
         programRuleActions()?.toRuleActionList() ?: ArrayList(),
         name(),
-        uid()
+        uid(),
     )
 }
 
@@ -128,22 +128,23 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
 fun ProgramRuleVariable.toRuleVariable(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): RuleVariable {
     val valueType = when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE,
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM,
         ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT,
-        ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
+        ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT,
+        ->
             dataElement()?.let {
                 dataElementRepository.uid(it.uid()).blockingGet()
-                    .valueType()?.toRuleValueType()
+                    ?.valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
 
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
             trackedEntityAttribute()?.let {
                 attributeRepository.uid(it.uid()).blockingGet()
-                    .valueType()?.toRuleValueType()
+                    ?.valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
 
         ProgramRuleVariableSourceType.CALCULATED_VALUE, null -> RuleValueType.TEXT
@@ -156,7 +157,7 @@ fun ProgramRuleVariable.toRuleVariable(
         trackedEntityAttribute()?.uid(),
         attributeRepository,
         dataElementRepository,
-        optionRepository
+        optionRepository,
     )
 
     return when (programRuleVariableSourceType()) {
@@ -166,7 +167,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: trackedEntityAttribute()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
@@ -175,7 +176,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 trackedEntityAttribute()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE ->
@@ -185,7 +186,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 programStage()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM ->
@@ -194,7 +195,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT ->
@@ -203,7 +204,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
@@ -212,7 +213,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         else -> throw IllegalArgumentException("Unsupported variable ")
@@ -225,7 +226,7 @@ fun getOptions(
     trackedEntityAttributeUid: String?,
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): List<Option> {
     if (useCodeForOptionSet) {
         return emptyList()
@@ -258,33 +259,33 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
     event: Event,
     dataElementRepository: DataElementCollectionRepository,
     ruleVariableRepository: ProgramRuleVariableCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): List<RuleDataValue> {
     return map {
         var value = if (it.value() != null) it.value() else ""
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
-        if (!de.optionSetUid().isNullOrEmpty()) {
+        if (!de?.optionSetUid().isNullOrEmpty()) {
             if (ruleVariableRepository
-                .byProgramUid().eq(event.program())
-                .byDataElementUid().eq(it.dataElement())
-                .byUseCodeForOptionSet().isTrue
-                .blockingIsEmpty()
+                    .byProgramUid().eq(event.program())
+                    .byDataElementUid().eq(it.dataElement())
+                    .byUseCodeForOptionSet().isTrue
+                    .blockingIsEmpty()
             ) {
                 value =
                     if (optionRepository
-                        .byOptionSetUid().eq(de.optionSetUid())
-                        .byCode().eq(value)
-                        .one().blockingExists()
+                            .byOptionSetUid().eq(de?.optionSetUid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
                     ) {
                         optionRepository
-                            .byOptionSetUid().eq(de.optionSetUid())
+                            .byOptionSetUid().eq(de?.optionSetUid())
                             .byCode().eq(value)
-                            .one().blockingGet().name()
+                            .one().blockingGet()?.name()
                     } else {
                         ""
                     }
             }
-        } else if (de.valueType()!!.isNumeric) {
+        } else if (de?.valueType()?.isNumeric == true) {
             value = try {
                 value?.toFloat().toString()
             } catch (e: Exception) {
@@ -296,7 +297,7 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             event.eventDate()!!,
             event.programStage()!!,
             it.dataElement()!!,
-            value!!
+            value!!,
         )
     }.filter { it.value().isNotEmpty() }
 }

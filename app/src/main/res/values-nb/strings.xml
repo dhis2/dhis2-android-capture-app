@@ -86,14 +86,6 @@
     <string name="program_inactive">Programmet er inaktivt</string>
 
     <string name="event_open">Åpne</string>
-    <string name="event_completed">Hendelse er fullført</string>
-    <string name="event_skipped">Hendelse er hoppet over</string>
-    <string name="event_schedule">Hendelsesplan</string>
-    <string name="event_expired">Hendelse er utgått</string>
-    <string name="event_editing_expired">Redigering utløpt</string>
-    <string name="event_accepted">Hendelse er akseptert</string>
-    <string name="event_approved">Hendelse er godkjent</string>
-    <string name="event_inactive">Hendelse er inaktiv</string>
     <string name="read_only">Skrivebeskyttet</string>
     <string name="finish_and_complete">Gjør ferdig og fullfør</string>
     <string name="completed">Fullført</string>
@@ -163,7 +155,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VIS MER</string>
-    <string name="edit">REDIGER</string>
     <string name="enrolling_ou">Registrerer OU:</string>
     <string name="follow_up">Oppfølging</string>
     <string name="follow_up_enabled">Oppfølging er aktivert</string>

@@ -7,6 +7,6 @@ interface DisplayNameProvider {
     fun provideDisplayName(
         valueType: ValueType?,
         value: String?,
-        optionSet: String? = null
+        optionSet: String? = null,
     ): String?
 }

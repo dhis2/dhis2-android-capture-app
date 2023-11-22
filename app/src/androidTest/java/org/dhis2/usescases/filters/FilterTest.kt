@@ -107,6 +107,7 @@ class FilterTest: BaseTest() {
 
         homeRobot {
             openProgramByPosition(composeTestRule,0)
+            waitToDebounce(700)
         }
         eventWithoutRegistrationRobot {
             clickOnEventAtPosition(0)

@@ -92,16 +92,14 @@
                     android:layout_marginEnd="16dp"
                     tools:text="Yesterday" />
 
-                <ImageButton
+                <androidx.compose.ui.platform.ComposeView
                     android:id="@+id/addStageButton"
-                    style="@style/ActionIcon"
-                    android:layout_width="54dp"
-                    android:layout_height="48dp"
-                    android:tint="?colorPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_add_accent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

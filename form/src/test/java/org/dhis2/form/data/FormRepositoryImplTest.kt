@@ -43,6 +43,7 @@ class FormRepositoryImplTest {
 
     @Before
     fun setUp() {
+        whenever(dataEntryRepository.disableCollapsableSections()) doReturn null
         whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
         repository = FormRepositoryImpl(
@@ -52,7 +53,8 @@ class FormRepositoryImplTest {
             dataEntryRepository,
             ruleEngineRepository,
             rulesUtilsProvider,
-            legendValueProvider
+            legendValueProvider,
+            false,
         )
         repository.fetchFormItems()
     }
@@ -61,7 +63,7 @@ class FormRepositoryImplTest {
     fun `Should process user action ON_FOCUS`() {
         val action = RowAction(
             id = "uid001",
-            type = ActionType.ON_FOCUS
+            type = ActionType.ON_FOCUS,
         )
         repository.setFocusedItem(action)
         assertTrue(repository.composeList().find { it.uid == "uid001" }?.focused == true)
@@ -71,7 +73,7 @@ class FormRepositoryImplTest {
     fun `Should process user action ON_NEXT`() {
         val action = RowAction(
             id = "uid001",
-            type = ActionType.ON_NEXT
+            type = ActionType.ON_NEXT,
         )
         repository.setFocusedItem(action)
         assertTrue(repository.composeList().find { it.uid == "uid002" }?.focused == true)
@@ -88,11 +90,11 @@ class FormRepositoryImplTest {
         val action = RowAction(
             id = "uid001",
             value = "testValue",
-            type = ActionType.ON_SAVE
+            type = ActionType.ON_SAVE,
         )
         whenever(formValueStore.save(action.id, action.value, null)) doReturn StoreResult(
             action.id,
-            ValueStoreResult.VALUE_CHANGED
+            ValueStoreResult.VALUE_CHANGED,
         )
         val result = repository.save("uid001", "testValue", null)
         assertThat(result?.valueStoreResult, `is`(ValueStoreResult.VALUE_CHANGED))
@@ -113,12 +115,12 @@ class FormRepositoryImplTest {
                 id = "uid001",
                 value = "testValue",
                 type = ActionType.ON_SAVE,
-                error = Throwable()
-            )
+                error = Throwable(),
+            ),
         )
 
         whenever(
-            fieldErrorMessageProvider.getFriendlyErrorMessage(any())
+            fieldErrorMessageProvider.getFriendlyErrorMessage(any()),
         ) doReturn "errorMessage"
 
         // Then item should not be saved
@@ -133,8 +135,8 @@ class FormRepositoryImplTest {
             RowAction(
                 id = "uid001",
                 value = "value",
-                type = ActionType.ON_FOCUS
-            )
+                type = ActionType.ON_FOCUS,
+            ),
         )
 
         // When user taps on next
@@ -142,8 +144,8 @@ class FormRepositoryImplTest {
             RowAction(
                 id = "uid001",
                 value = "value",
-                type = ActionType.ON_NEXT
-            )
+                type = ActionType.ON_NEXT,
+            ),
         )
 
         // Then result list should has second item focused
@@ -159,15 +161,15 @@ class FormRepositoryImplTest {
                 RuleActionAssign.create(
                     null,
                     "assignedValue",
-                    "uid001"
-                )
-            )
+                    "uid001",
+                ),
+            ),
         )
 
-        whenever(dataEntryRepository.isEvent) doReturn true
+        whenever(dataEntryRepository.isEvent()) doReturn true
 
         whenever(
-            rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any())
+            rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
         ) doReturn RuleUtilsProviderResult(
             canComplete = true,
             messageOnComplete = null,
@@ -179,14 +181,14 @@ class FormRepositoryImplTest {
             stagesToHide = emptyList(),
             optionsToHide = emptyMap(),
             optionGroupsToHide = emptyMap(),
-            optionGroupsToShow = emptyMap()
+            optionGroupsToShow = emptyMap(),
         )
 
         verify(rulesUtilsProvider, times(1)).applyRuleEffects(
             any(),
             any(),
             any(),
-            any()
+            any(),
         )
     }
 
@@ -200,18 +202,18 @@ class FormRepositoryImplTest {
                 any(),
                 any(),
                 any(),
-                any()
-            )
+                any(),
+            ),
         ) doReturnConsecutively listOf(
             section1().apply { totalFields = 3 },
-            section2().apply { totalFields = 0 }
+            section2().apply { totalFields = 0 },
         )
         val result = repository.fetchFormItems()
         assertTrue(
-            result.find { it.isSection() && it.uid == "section1" } != null
+            result.find { it.isSection() && it.uid == "section1" } != null,
         )
         assertTrue(
-            result.find { it.isSection() && it.uid == "section2" } == null
+            result.find { it.isSection() && it.uid == "section2" } == null,
         )
     }
 
@@ -221,7 +223,7 @@ class FormRepositoryImplTest {
         repository.fetchFormItems()
         assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
         whenever(
-            dataEntryRepository.list()
+            dataEntryRepository.list(),
         ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
         repository.fetchFormItems()
         assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
@@ -232,9 +234,9 @@ class FormRepositoryImplTest {
         val ruleEffects = emptyList<RuleEffect>()
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideMandatoryItemList())
         whenever(ruleEngineRepository.calculate()) doReturn ruleEffects
-        whenever(dataEntryRepository.isEvent) doReturn true
+        whenever(dataEntryRepository.isEvent()) doReturn true
         whenever(
-            rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any())
+            rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
         ) doReturn RuleUtilsProviderResult(
             canComplete = true,
             messageOnComplete = null,
@@ -246,7 +248,7 @@ class FormRepositoryImplTest {
             stagesToHide = emptyList(),
             optionsToHide = emptyMap(),
             optionGroupsToHide = emptyMap(),
-            optionGroupsToShow = emptyMap()
+            optionGroupsToShow = emptyMap(),
         )
         try {
             repository.fetchFormItems()
@@ -257,7 +259,7 @@ class FormRepositoryImplTest {
     }
 
     private fun mockedSections() = listOf(
-        "section1"
+        "section1",
     )
 
     private fun provideItemList() = listOf<FieldUiModel>(
@@ -269,7 +271,8 @@ class FormRepositoryImplTest {
             valueType = ValueType.TEXT,
             programStageSection = "section1",
             uiEventFactory = null,
-            optionSetConfiguration = null
+            optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid002",
@@ -279,7 +282,8 @@ class FormRepositoryImplTest {
             valueType = ValueType.TEXT,
             programStageSection = "section1",
             uiEventFactory = null,
-            optionSetConfiguration = null
+            optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid003",
@@ -289,22 +293,23 @@ class FormRepositoryImplTest {
             valueType = ValueType.TEXT,
             programStageSection = "section1",
             uiEventFactory = null,
-            optionSetConfiguration = null
-        )
+            optionSetConfiguration = null,
+            autocompleteList = null,
+        ),
     )
 
     private fun section1() = SectionUiModelImpl(
         uid = "section1",
         layoutId = 1,
         label = "section1",
-        selectedField = ObservableField("")
+        selectedField = ObservableField(""),
     )
 
     private fun section2() = SectionUiModelImpl(
         uid = "section2",
         layoutId = 1,
         label = "section2",
-        selectedField = ObservableField("")
+        selectedField = ObservableField(""),
     )
 
     private fun provideEmptySectionItemList() = listOf<FieldUiModel>(
@@ -318,7 +323,8 @@ class FormRepositoryImplTest {
             valueType = ValueType.TEXT,
             programStageSection = "section1",
             uiEventFactory = null,
-            optionSetConfiguration = null
+            optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid002",
@@ -329,7 +335,8 @@ class FormRepositoryImplTest {
             valueType = ValueType.TEXT,
             programStageSection = "section1",
             uiEventFactory = null,
-            optionSetConfiguration = null
+            optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid003",
@@ -340,9 +347,10 @@ class FormRepositoryImplTest {
             valueType = ValueType.TEXT,
             programStageSection = "section1",
             uiEventFactory = null,
-            optionSetConfiguration = null
+            optionSetConfiguration = null,
+            autocompleteList = null,
         ),
-        section2()
+        section2(),
     )
 
     private fun provideMandatoryItemList() = listOf(
@@ -357,7 +365,8 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             mandatory = true,
-            optionSetConfiguration = null
+            optionSetConfiguration = null,
+            autocompleteList = null,
         ),
         FieldUiModelImpl(
             uid = "uid002",
@@ -368,7 +377,8 @@ class FormRepositoryImplTest {
             valueType = ValueType.TEXT,
             programStageSection = "section1",
             uiEventFactory = null,
-            optionSetConfiguration = null
-        )
+            optionSetConfiguration = null,
+            autocompleteList = null,
+        ),
     )
 }

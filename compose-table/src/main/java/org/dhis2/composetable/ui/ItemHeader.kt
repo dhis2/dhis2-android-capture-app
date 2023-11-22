@@ -37,7 +37,7 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
         Row(
             modifier = Modifier
                 .defaultMinSize(
-                    minHeight = TableTheme.dimensions.defaultCellHeight
+                    minHeight = TableTheme.dimensions.defaultCellHeight,
                 )
                 .width(uiState.width)
                 .fillMaxHeight()
@@ -55,18 +55,18 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                         uiState.onDecorationClick(
                             TableDialogModel(
                                 uiState.rowHeader.title,
-                                uiState.rowHeader.description ?: ""
-                            )
+                                uiState.rowHeader.description ?: "",
+                            ),
                         )
                     }
                 },
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 modifier = Modifier
                     .weight(1f)
                     .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     modifier = Modifier
@@ -75,7 +75,7 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                     color = uiState.cellStyle.mainColor(),
                     fontSize = TableTheme.dimensions.defaultRowHeaderTextSize,
                     maxLines = uiState.maxLines,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
                 if (uiState.rowHeader.showDecoration) {
                     Spacer(modifier = Modifier.size(4.dp))
@@ -85,7 +85,7 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                         modifier = Modifier
                             .height(10.dp)
                             .width(10.dp),
-                        tint = uiState.cellStyle.mainColor()
+                        tint = uiState.cellStyle.mainColor(),
                     )
                 }
             }
@@ -93,14 +93,14 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(1.dp),
-                color = TableTheme.colors.primary
+                color = TableTheme.colors.primary,
             )
         }
 
         val isSelected = LocalTableSelection.current !is TableSelection.AllCellSelection &&
             LocalTableSelection.current.isRowSelected(
                 selectedTableId = uiState.tableId,
-                rowHeaderIndex = uiState.rowHeader.row ?: -1
+                rowHeaderIndex = uiState.rowHeader.row ?: -1,
             )
         if (isSelected) {
             VerticalResizingRule(
@@ -109,11 +109,11 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                 checkMaxMinCondition = { dimensions, currentOffsetX ->
                     dimensions.canUpdateRowHeaderWidth(
                         tableId = uiState.tableId,
-                        widthOffset = currentOffsetX
+                        widthOffset = currentOffsetX,
                     )
                 },
                 onHeaderResize = uiState.onHeaderResize,
-                onResizing = uiState.onResizing
+                onResizing = uiState.onResizing,
             )
         }
     }

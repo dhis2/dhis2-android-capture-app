@@ -3,7 +3,7 @@ package org.dhis2.usescases.main.program
 import android.animation.ValueAnimator
 import android.graphics.drawable.GradientDrawable
 import android.view.animation.OvershootInterpolator
-import org.dhis2.Bindings.dp
+import org.dhis2.bindings.dp
 
 class ProgramAnimation {
 

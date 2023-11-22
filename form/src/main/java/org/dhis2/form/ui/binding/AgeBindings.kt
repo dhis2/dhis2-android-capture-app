@@ -4,9 +4,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
+import java.util.Calendar
 
 @BindingAdapter(value = ["setInitialValueDate", "parsingErrorText"], requireAll = true)
 fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
@@ -75,7 +75,7 @@ private fun getDifferenceBetweenDates(value: String?): IntArray {
         Calendar.getInstance().time = it
         DateUtils.getDifference(
             it,
-            Calendar.getInstance().time
+            Calendar.getInstance().time,
         )
     } ?: IntArray(0)
 }

@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+
         <import type="android.graphics.drawable.Drawable" />
 
         <variable
@@ -17,97 +18,114 @@
             type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel" />
     </data>
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardElevation="0dp"
-        app:rippleColor="@color/rippleColor"
-        android:onClick="@{() -> viewModel.openDataSet(dataset)}"
-        tools:style="@style/CardView">
+        android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/composeView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:minHeight="60dp">
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/dp_8"
+            android:paddingRight="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_8" />
 
-            <ImageView
-                android:id="@+id/dataSetStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="19dp"
-                android:layout_marginTop="18dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:dataSetStatus='@{dataset.isComplete()}'
-                tools:ignore="ContentDescription" />
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.openDataSet(dataset)}"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardElevation="0dp"
+            app:rippleColor="@color/rippleColor"
+            tools:style="@style/CardView">
 
-            <TextView
-                android:id="@+id/dataSetPeriod"
-                android:layout_width="0dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="35dp"
-                android:gravity="bottom"
-                android:textColor="@color/textPrimary"
-                android:textSize="14sp"
-                android:textStyle="normal"
-                android:text='@{dataset.namePeriod()}'
-                app:layout_constraintEnd_toStartOf="@+id/sync_icon"
-                app:layout_constraintStart_toEndOf="@id/dataSetStatus"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Nov. 2020" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="60dp">
 
-            <TextView
-                android:id="@+id/orgUnit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/textSecondary"
-                android:textSize="12sp"
-                android:text='@{dataset.nameOrgUnit}'
-                android:visibility="@{dataset.displayOrgUnitName() ? View.VISIBLE : View.GONE}"
-                app:layout_constraintEnd_toStartOf="@id/sync_icon"
-                app:layout_constraintStart_toStartOf="@id/dataSetPeriod"
-                app:layout_constraintTop_toBottomOf="@id/dataSetPeriod"
-                tools:text="Ngelehun CHC" />
+                <ImageView
+                    android:id="@+id/dataSetStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="19dp"
+                    android:layout_marginTop="18dp"
+                    app:dataSetStatus='@{dataset.isComplete()}'
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
-            <TextView
-                android:id="@+id/optionCombo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="13dp"
-                android:textColor="@color/textSecondary"
-                android:text='@{dataset.nameCatCombo}'
-                android:textSize="12sp"
-                android:visibility='@{dataset.nameCatCombo().equals("default") ? View.GONE : View.VISIBLE}'
-                app:layout_constraintEnd_toStartOf="@id/sync_icon"
-                app:layout_constraintStart_toStartOf="@id/dataSetPeriod"
-                app:layout_constraintTop_toBottomOf="@id/orgUnit"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:text="APHIAplus, Improve access to clean water" />
+                <TextView
+                    android:id="@+id/dataSetPeriod"
+                    android:layout_width="0dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="35dp"
+                    android:gravity="bottom"
+                    android:text='@{dataset.namePeriod()}'
+                    android:textColor="@color/textPrimary"
+                    android:textSize="14sp"
+                    android:textStyle="normal"
+                    app:layout_constraintEnd_toStartOf="@+id/sync_icon"
+                    app:layout_constraintStart_toEndOf="@id/dataSetStatus"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Nov. 2020" />
 
-            <ImageView
-                android:id="@+id/sync_icon"
-                style="@style/ActionIconSmallPadding"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:layout_marginEnd="14dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:stateIcon='@{dataset.state}'
-                android:onClick="@{() -> viewModel.syncDataSet(dataset)}"
-                tools:ignore="ContentDescription"
-                tools:src="@drawable/ic_sync" />
+                <TextView
+                    android:id="@+id/orgUnit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text='@{dataset.nameOrgUnit}'
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp"
+                    android:visibility="@{dataset.displayOrgUnitName() ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toStartOf="@id/sync_icon"
+                    app:layout_constraintStart_toStartOf="@id/dataSetPeriod"
+                    app:layout_constraintTop_toBottomOf="@id/dataSetPeriod"
+                    tools:text="Ngelehun CHC" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/divider_bg"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/dataSetPeriod" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/optionCombo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="13dp"
+                    android:text='@{dataset.nameCatCombo}'
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp"
+                    android:visibility='@{dataset.nameCatCombo().equals("default") ? View.GONE : View.VISIBLE}'
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/sync_icon"
+                    app:layout_constraintStart_toStartOf="@id/dataSetPeriod"
+                    app:layout_constraintTop_toBottomOf="@id/orgUnit"
+                    tools:text="APHIAplus, Improve access to clean water" />
+
+                <ImageView
+                    android:id="@+id/sync_icon"
+                    style="@style/ActionIconSmallPadding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:onClick="@{() -> viewModel.syncDataSet(dataset)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:stateIcon='@{dataset.state}'
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/ic_sync" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/divider_bg"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/dataSetPeriod" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
 </layout>

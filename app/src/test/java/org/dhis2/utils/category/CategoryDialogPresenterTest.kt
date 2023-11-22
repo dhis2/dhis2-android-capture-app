@@ -33,14 +33,14 @@ class CategoryDialogPresenterTest {
             null,
             catOptMapper,
             catOptCombMapper,
-            schedulerProvider
+            schedulerProvider,
         )
 
         whenever(d2.categoryModule().categories().uid("uid").get()) doReturn Single.just(
             Category.builder()
                 .uid("uid")
                 .displayName("name")
-                .build()
+                .build(),
         )
 
         whenever(view.searchSource()) doReturn Observable.just("test")
@@ -60,16 +60,16 @@ class CategoryDialogPresenterTest {
             null,
             catOptMapper,
             catOptCombMapper,
-            schedulerProvider
+            schedulerProvider,
         )
 
         whenever(
-            d2.categoryModule().categoryCombos().uid("uid").get()
+            d2.categoryModule().categoryCombos().uid("uid").get(),
         ) doReturn Single.just(
             CategoryCombo.builder()
                 .uid("uid")
                 .displayName("name")
-                .build()
+                .build(),
         )
 
         whenever(view.searchSource()) doReturn Observable.just("test")

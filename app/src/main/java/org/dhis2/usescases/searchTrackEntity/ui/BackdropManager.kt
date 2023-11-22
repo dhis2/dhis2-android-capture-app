@@ -26,7 +26,7 @@ object BackdropManager {
         condition: Boolean,
         backdropLayout: ConstraintLayout,
         endID: Int,
-        margin: Int
+        margin: Int,
     ) {
         if (condition) changeBounds(backdropLayout, endID, margin)
     }

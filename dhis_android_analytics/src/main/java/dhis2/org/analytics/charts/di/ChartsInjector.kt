@@ -23,14 +23,15 @@ import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
-import javax.inject.Singleton
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
+import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [ChartsModule::class],
-    dependencies = [Charts.Dependencies::class]
+    dependencies = [Charts.Dependencies::class],
 )
 interface ChartsComponent {
     fun charts(): Charts
@@ -47,7 +48,7 @@ class ChartsModule {
         dataElementToGraph: DataElementToGraph,
         indicatorToGraph: ProgramIndicatorToGraph,
         analyticsResources: AnalyticResources,
-        analyticsFilterProvider: AnalyticsFilterProvider
+        analyticsFilterProvider: AnalyticsFilterProvider,
     ): ChartsRepository = ChartsRepositoryImpl(
         d2,
         visualizationToGraph,
@@ -55,7 +56,7 @@ class ChartsModule {
         dataElementToGraph,
         indicatorToGraph,
         analyticsResources,
-        analyticsFilterProvider
+        analyticsFilterProvider,
     )
 
     @Provides
@@ -66,7 +67,7 @@ class ChartsModule {
     @Provides
     internal fun provideVisualizationToGraph(
         periodStepProvider: PeriodStepProvider,
-        chartCoordinatesProvider: ChartCoordinatesProvider
+        chartCoordinatesProvider: ChartCoordinatesProvider,
     ): VisualizationToGraph {
         return VisualizationToGraph(periodStepProvider, chartCoordinatesProvider)
     }
@@ -76,13 +77,13 @@ class ChartsModule {
         analyticsSettingsMapper: AnalyticTeiSettingsToSettingsAnalyticsModel,
         nutritionDataProvider: NutritionDataProvider,
         periodStepProvider: PeriodStepProvider,
-        chartCoordinatesProvider: ChartCoordinatesProvider
+        chartCoordinatesProvider: ChartCoordinatesProvider,
     ): AnalyticsTeiSettingsToGraph {
         return AnalyticsTeiSettingsToGraph(
             analyticsSettingsMapper,
             nutritionDataProvider,
             periodStepProvider,
-            chartCoordinatesProvider
+            chartCoordinatesProvider,
         )
     }
 
@@ -94,18 +95,18 @@ class ChartsModule {
     @Provides
     internal fun provideAnalyticSettingsMapper(
         analyticDataElementMapper: AnalyticDataElementToDataElementData,
-        analyticIndicatorMapper: AnalyticIndicatorToIndicatorData
+        analyticIndicatorMapper: AnalyticIndicatorToIndicatorData,
     ): AnalyticTeiSettingsToSettingsAnalyticsModel {
         return AnalyticTeiSettingsToSettingsAnalyticsModel(
             analyticDataElementMapper,
-            analyticIndicatorMapper
+            analyticIndicatorMapper,
         )
     }
 
     @Provides
     internal fun provideDataElementToGraph(
         periodStepProvider: PeriodStepProvider,
-        chartCoordinatesProvider: ChartCoordinatesProvider
+        chartCoordinatesProvider: ChartCoordinatesProvider,
     ): DataElementToGraph {
         return DataElementToGraph(periodStepProvider, chartCoordinatesProvider)
     }
@@ -113,7 +114,7 @@ class ChartsModule {
     @Provides
     internal fun provideIndicatorToGraph(
         periodStepProvider: PeriodStepProvider,
-        chartCoordinatesProvider: ChartCoordinatesProvider
+        chartCoordinatesProvider: ChartCoordinatesProvider,
     ): ProgramIndicatorToGraph {
         return ProgramIndicatorToGraph(periodStepProvider, chartCoordinatesProvider)
     }
@@ -127,14 +128,14 @@ class ChartsModule {
     internal fun chartCoordinatesProvider(
         d2: D2,
         periodStepProvider: PeriodStepProvider,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): ChartCoordinatesProvider {
         return ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
     }
 
     @Provides
-    internal fun provideResourceManager(context: Context): ResourceManager {
-        return ResourceManager(context)
+    internal fun provideResourceManager(context: Context, colorUtils: ColorUtils): ResourceManager {
+        return ResourceManager(context, colorUtils)
     }
 
     @Provides

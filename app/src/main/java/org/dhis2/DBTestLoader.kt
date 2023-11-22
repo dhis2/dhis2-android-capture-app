@@ -1,12 +1,12 @@
 package org.dhis2
 
 import android.content.Context
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import timber.log.Timber
 
 class DBTestLoader(private val context: Context) {
 

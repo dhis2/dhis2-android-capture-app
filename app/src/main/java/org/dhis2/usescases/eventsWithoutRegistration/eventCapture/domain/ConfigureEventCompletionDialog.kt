@@ -17,7 +17,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.Event
 import org.dhis2.utils.customviews.FormBottomDialog
 
 class ConfigureEventCompletionDialog(
-    val provider: EventCaptureResourcesProvider
+    val provider: EventCaptureResourcesProvider,
 ) {
 
     operator fun invoke(
@@ -26,19 +26,19 @@ class ConfigureEventCompletionDialog(
         warningFields: List<FieldWithIssue>,
         canComplete: Boolean,
         onCompleteMessage: String?,
-        canSkipErrorFix: Boolean
+        canSkipErrorFix: Boolean,
     ): EventCompletionDialog {
         val dialogType = getDialogType(
             errorFields,
             mandatoryFields,
             warningFields,
-            !canComplete && onCompleteMessage != null
+            !canComplete && onCompleteMessage != null,
         )
         val mainButton = getMainButton(dialogType)
         val secondaryButton = if (canSkipErrorFix) {
             EventCompletionButtons(
                 SecondaryButton(provider.provideNotNow()),
-                FormBottomDialog.ActionType.FINISH
+                FormBottomDialog.ActionType.FINISH,
             )
         } else {
             null
@@ -48,7 +48,7 @@ class ConfigureEventCompletionDialog(
             message = getSubtitle(dialogType),
             iconResource = getIcon(dialogType),
             mainButton = mainButton.buttonStyle,
-            secondaryButton = secondaryButton?.buttonStyle
+            secondaryButton = secondaryButton?.buttonStyle,
         )
 
         return EventCompletionDialog(
@@ -59,8 +59,8 @@ class ConfigureEventCompletionDialog(
                 errorFields = errorFields,
                 mandatoryFields = mandatoryFields.keys.toList(),
                 warningFields = warningFields,
-                onCompleteField = getOnCompleteMessage(canComplete, onCompleteMessage)
-            )
+                onCompleteField = getOnCompleteMessage(canComplete, onCompleteMessage),
+            ),
         )
     }
 
@@ -87,15 +87,17 @@ class ConfigureEventCompletionDialog(
     private fun getMainButton(type: DialogType) = when (type) {
         ERROR,
         MANDATORY,
-        COMPLETE_ERROR -> EventCompletionButtons(
+        COMPLETE_ERROR,
+        -> EventCompletionButtons(
             MainButton(provider.provideReview()),
-            FormBottomDialog.ActionType.CHECK_FIELDS
+            FormBottomDialog.ActionType.CHECK_FIELDS,
         )
 
         WARNING,
-        SUCCESSFUL -> EventCompletionButtons(
+        SUCCESSFUL,
+        -> EventCompletionButtons(
             CompleteButton(),
-            FormBottomDialog.ActionType.COMPLETE
+            FormBottomDialog.ActionType.COMPLETE,
         )
     }
 
@@ -103,7 +105,7 @@ class ConfigureEventCompletionDialog(
         errorFields: List<FieldWithIssue>,
         mandatoryFields: List<String>,
         warningFields: List<FieldWithIssue>,
-        onCompleteField: List<FieldWithIssue>
+        onCompleteField: List<FieldWithIssue>,
     ): List<FieldWithIssue> {
         return onCompleteField
             .plus(errorFields)
@@ -113,15 +115,15 @@ class ConfigureEventCompletionDialog(
                         "uid",
                         it,
                         IssueType.MANDATORY,
-                        provider.provideMandatoryField()
+                        provider.provideMandatoryField(),
                     )
-                }
+                },
             ).plus(warningFields)
     }
 
     private fun getOnCompleteMessage(
         canComplete: Boolean,
-        onCompleteMessage: String?
+        onCompleteMessage: String?,
     ): List<FieldWithIssue> {
         val issueOnComplete = onCompleteMessage?.let {
             FieldWithIssue(
@@ -131,7 +133,7 @@ class ConfigureEventCompletionDialog(
                     false -> IssueType.ERROR_ON_COMPLETE
                     else -> IssueType.WARNING_ON_COMPLETE
                 },
-                message = ""
+                message = "",
             )
         }
         return issueOnComplete?.let { listOf(it) } ?: emptyList()
@@ -141,7 +143,7 @@ class ConfigureEventCompletionDialog(
         errorFields: List<FieldWithIssue>,
         mandatoryFields: Map<String, String>,
         warningFields: List<FieldWithIssue>,
-        errorOnComplete: Boolean
+        errorOnComplete: Boolean,
     ) = when {
         errorOnComplete -> {
             COMPLETE_ERROR

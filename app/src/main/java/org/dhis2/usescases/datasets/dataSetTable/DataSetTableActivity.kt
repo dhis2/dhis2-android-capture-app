@@ -27,11 +27,10 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import javax.inject.Inject
 import kotlinx.coroutines.launch
-import org.dhis2.Bindings.dp
-import org.dhis2.Bindings.userComponent
 import org.dhis2.R
+import org.dhis2.bindings.dp
+import org.dhis2.bindings.userComponent
 import org.dhis2.commons.Constants
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.AlertBottomDialog.Companion.instance
@@ -51,6 +50,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter
 import org.dhis2.utils.validationrules.Violation
+import javax.inject.Inject
 
 class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View {
     private var orgUnitUid: String? = null
@@ -84,8 +84,8 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                 periodId,
                 orgUnitUid,
                 catOptCombo,
-                openErrorLocation
-            )
+                openErrorLocation,
+            ),
         )
         dataSetTableComponent!!.inject(this)
         super.onCreate(savedInstanceState)
@@ -148,7 +148,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             dataSetUid!!,
             orgUnitUid!!,
             periodId!!,
-            catOptCombo!!
+            catOptCombo!!,
         )
         supportFragmentManager.beginTransaction()
             .replace(R.id.content, fragment)
@@ -164,8 +164,8 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                     dataSetUid!!,
                     periodId!!,
                     orgUnitUid!!,
-                    catOptCombo!!
-                )
+                    catOptCombo!!,
+                ),
             )
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
@@ -327,7 +327,8 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                     BottomSheetBehavior.STATE_DRAGGING,
                     BottomSheetBehavior.STATE_HALF_EXPANDED,
                     BottomSheetBehavior.STATE_HIDDEN,
-                    BottomSheetBehavior.STATE_SETTLING -> {}
+                    BottomSheetBehavior.STATE_SETTLING,
+                    -> {}
                     else -> {}
                 }
             }
@@ -354,7 +355,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
         Snackbar.make(
             binding.content,
             R.string.dataset_completed,
-            BaseTransientBottomBar.LENGTH_SHORT
+            BaseTransientBottomBar.LENGTH_SHORT,
         )
             .show()
         finish()
@@ -368,7 +369,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                 hideKeyboard()
                 Handler(Looper.getMainLooper()).postDelayed(
                     { behavior!!.setState(BottomSheetBehavior.STATE_EXPANDED) },
-                    100
+                    100,
                 )
             } else {
                 behavior!!.state = BottomSheetBehavior.STATE_EXPANDED
@@ -476,7 +477,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
         Toast.makeText(
             this,
             if (presenter.isComplete()) R.string.data_set_quality_check_done else R.string.save,
-            Toast.LENGTH_SHORT
+            Toast.LENGTH_SHORT,
         ).show()
         finish()
     }
@@ -493,7 +494,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             dataSetUid: String,
             orgUnitUid: String,
             periodId: String,
-            catOptCombo: String
+            catOptCombo: String,
         ): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.DATA_SET_UID, dataSetUid)
@@ -508,7 +509,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             dataSetUid: String,
             orgUnitUid: String,
             periodId: String,
-            catOptCombo: String
+            catOptCombo: String,
         ): Intent {
             val intent = Intent(context, DataSetTableActivity::class.java)
             intent.putExtras(getBundle(dataSetUid, orgUnitUid, periodId, catOptCombo))

@@ -11,6 +11,6 @@ fun Modifier.cornerBackground(isSelected: Boolean, selectedColor: Color, default
                 selectedColor
             } else {
                 defaultColor
-            }
-        )
+            },
+        ),
     )

@@ -3,12 +3,12 @@ package org.dhis2.data.service
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import javax.inject.Inject
 import org.dhis2.usescases.main.MainPresenter
+import javax.inject.Inject
 
 class CheckVersionWorker(
     context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : Worker(context, workerParams) {
 
     @Inject

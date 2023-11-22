@@ -18,7 +18,7 @@ import org.dhis2.maps.layer.basemaps.BaseMapStyle
 class AttributionManager(
     private val context: Context,
     mapboxMap: MapboxMap,
-    private var currentBaseMapStyle: BaseMapStyle
+    private var currentBaseMapStyle: BaseMapStyle,
 ) : AttributionDialogManager(context, mapboxMap) {
 
     override fun showAttributionDialog(attributionTitles: Array<String>) {
@@ -43,8 +43,8 @@ class AttributionManager(
             } catch (exception: ActivityNotFoundException) {
                 Toast.makeText(
                     context,
-                    R.string.mapbox_attributionErrorNoBrowser,
-                    Toast.LENGTH_LONG
+                    R.string.map_attributionErrorNoBrowser,
+                    Toast.LENGTH_LONG,
                 )
                     .show()
                 MapStrictMode.strictModeViolation(exception)

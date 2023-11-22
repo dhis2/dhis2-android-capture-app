@@ -4,7 +4,7 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class LongTextDecorator(
     val style: FormUiModelStyle,
-    private val longTextFactory: FormUiColorFactory
+    private val longTextFactory: FormUiColorFactory,
 ) :
     FormUiModelStyle {
     override fun getColors(): Map<FormUiColorType, Int> {
@@ -31,12 +31,12 @@ class LongTextDecorator(
     override fun backgroundColor(
         valueType: ValueType,
         error: String?,
-        warning: String?
+        warning: String?,
     ): Pair<Array<Int>, Int?> {
         return style.backgroundColor(
             valueType,
             error,
-            warning
+            warning,
         )
     }
 }

@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.material.composethemeadapter.MdcTheme
-import kotlin.math.roundToInt
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
@@ -34,17 +33,18 @@ import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
+import kotlin.math.roundToInt
 
 @Composable
 fun ManageStockTable(
     viewModel: ManageStockViewModel,
     concealBackdropState: () -> Unit,
-    onResized: (resizeActions: TableResizeActions?) -> Unit
+    onResized: (resizeActions: TableResizeActions?) -> Unit,
 ) {
     val screenState by viewModel.screenState.observeAsState(
         initial = TableScreenState(
-            tables = emptyList()
-        )
+            tables = emptyList(),
+        ),
     )
 
     MdcTheme {
@@ -81,8 +81,8 @@ fun ManageStockTable(
                             }
                         } ?: emptyMap(),
                         defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt(),
-                        tableBottomPadding = 100.dp
-                    )
+                        tableBottomPadding = 100.dp,
+                    ),
                 )
             }
 
@@ -109,7 +109,7 @@ fun ManageStockTable(
                     viewModel.tableDimensionStore.saveColumnWidthForSection(
                         tableId,
                         column,
-                        widthDpValue
+                        widthDpValue,
                     )
                     onResized(this)
                 }
@@ -141,22 +141,22 @@ fun ManageStockTable(
             TableTheme(
                 tableColors = TableColors(
                     primary = themeColor.value,
-                    primaryLight = themeColor.value.copy(alpha = 0.2f)
+                    primaryLight = themeColor.value.copy(alpha = 0.2f),
                 ),
                 tableDimensions = dimensions,
                 tableConfiguration = TableConfiguration(
                     headerActionsEnabled = false,
-                    textInputViewMode = false
+                    textInputViewMode = false,
                 ),
                 tableValidator = viewModel,
-                tableResizeActions = tableResizeActions
+                tableResizeActions = tableResizeActions,
             ) {
                 DataSetTableScreen(
                     tableScreenState = screenState,
                     onCellClick = { _, cell, _ ->
                         concealBackdropState.invoke()
                         viewModel.onCellClick(
-                            cell = cell
+                            cell = cell,
                         )
                     },
                     onEdition = { isEditing ->
@@ -169,24 +169,24 @@ fun ManageStockTable(
                         ) {
                             Box(
                                 modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.under_review),
                                     color = colorResource(id = R.color.text_color),
                                     fontSize = 14.sp,
                                     fontStyle = FontStyle.Normal,
-                                    lineHeight = 20.sp
+                                    lineHeight = 20.sp,
                                 )
                             }
                         }
-                    }
+                    },
                 )
             }
         } else {
             Text(
                 text = stringResource(id = R.string.no_data),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }

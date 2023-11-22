@@ -30,14 +30,14 @@ class UniqueAttributeControllerTest {
         val attributeValues: List<TrackedEntityAttributeValue> = listOf(
             mock {
                 on { trackedEntityInstance() } doReturn "teiUid"
-            }
+            },
         )
         mockTrackedEntityAttributeValues(attributeValues)
         val result = uniqueAttributeController.checkAttributeLocal(
             orgUnitScope = false,
             teiUid = "teiUid",
             attributeUid = "uid",
-            attributeValue = "value"
+            attributeValue = "value",
         )
         assertTrue(!result)
     }
@@ -51,21 +51,21 @@ class UniqueAttributeControllerTest {
                 },
                 mock {
                     on { organisationUnit() } doReturn "orgUnit2"
-                }
-            )
+                },
+            ),
         )
 
         val attributeValues: List<TrackedEntityAttributeValue> = listOf(
             mock {
                 on { trackedEntityInstance() } doReturn "teiUid2"
-            }
+            },
         )
         mockTrackedEntityAttributeValues(attributeValues)
         val result = uniqueAttributeController.checkAttributeLocal(
             orgUnitScope = true,
             teiUid = "teiUid",
             attributeUid = "uid",
-            attributeValue = "value"
+            attributeValue = "value",
         )
         assertTrue(result)
     }
@@ -76,15 +76,15 @@ class UniqueAttributeControllerTest {
             listOf(
                 mock {
                     on { uid() } doReturn "teiUid2"
-                }
-            )
+                },
+            ),
         )
         val result = uniqueAttributeController.checkAttributeOnline(
             false,
             "programUid",
             "teiUid",
             "attributeUid",
-            "attributeValue"
+            "attributeValue",
         )
         assertTrue(!result)
     }
@@ -97,7 +97,7 @@ class UniqueAttributeControllerTest {
             "programUid",
             "teiUid",
             "attributeUid",
-            "attributeValue"
+            "attributeValue",
         )
         assertTrue(result)
     }
@@ -110,97 +110,104 @@ class UniqueAttributeControllerTest {
             "programUid",
             "teiUid",
             "attributeUid",
-            "attributeValue"
+            "attributeValue",
         )
         verify(crashReportController).addBreadCrumb(any(), any())
     }
 
     private fun mockTeiOrgUnit(teiList: List<TrackedEntityInstance>) {
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances().uid(any()).blockingGet()
+            d2.trackedEntityModule().trackedEntityInstances().uid(any()).blockingGet(),
         ) doReturnConsecutively teiList
     }
 
     private fun mockTrackedEntityAttributeValues(result: List<TrackedEntityAttributeValue>) {
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute()
+                .byTrackedEntityAttribute(),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance().neq("teiUid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
                 .byTrackedEntityInstance().neq("teiUid")
+                .byValue(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
                 .byTrackedEntityInstance().neq("teiUid")
-                .byValue()
+                .byValue().eq("value"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
                 .byTrackedEntityInstance().neq("teiUid")
                 .byValue().eq("value")
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("teiUid")
-                .byValue().eq("value")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn result
     }
 
     private fun mockNoContextApiCall(teiList: List<TrackedEntityInstance>) {
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
+            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache()
+                .allowOnlineCache(),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
+                .allowOnlineCache().eq(true),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
+                .byOrgUnitMode(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
-                .byOrgUnitMode()
+                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
+                .byProgram(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
-                .byProgram()
+                .byProgram().eq("programUid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
                 .byProgram().eq("programUid")
+                .byAttribute("attributeUid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
                 .byProgram().eq("programUid")
-                .byAttribute("attributeUid")
+                .byAttribute("attributeUid").eq("attributeValue"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
@@ -208,82 +215,67 @@ class UniqueAttributeControllerTest {
                 .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
                 .byProgram().eq("programUid")
                 .byAttribute("attributeUid").eq("attributeValue")
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn teiList
     }
 
     private fun mockContextApiCall(
         teiList: List<TrackedEntityInstance>,
-        shouldThrowException: Boolean = false
+        shouldThrowException: Boolean = false,
     ) {
         mockTeiOrgUnit(
             listOf(
                 mock {
                     on { organisationUnit() } doReturn "orgUnit"
-                }
-            )
+                },
+            ),
         )
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
+            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache()
+                .allowOnlineCache(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram()
+                .allowOnlineCache().eq(true),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
+                .byProgram(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid")
+                .byProgram().eq("programUid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
+                .byAttribute("attributeUid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
-                .byOrgUnitMode()
+                .byAttribute("attributeUid").eq("attributeValue"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byProgram().eq("programUid")
                 .byAttribute("attributeUid").eq("attributeValue")
-                .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
+                .byOrgUnitMode(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache().eq(true)
                 .byProgram().eq("programUid")
                 .byAttribute("attributeUid").eq("attributeValue")
-                .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
-                .byOrgUnits()
+                .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
@@ -291,7 +283,15 @@ class UniqueAttributeControllerTest {
                 .byProgram().eq("programUid")
                 .byAttribute("attributeUid").eq("attributeValue")
                 .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
-                .byOrgUnits().`in`("orgUnit")
+                .byOrgUnits(),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
+                .allowOnlineCache().eq(true)
+                .byProgram().eq("programUid")
+                .byAttribute("attributeUid").eq("attributeValue")
+                .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
+                .byOrgUnits().`in`("orgUnit"),
         ) doReturn mock()
         if (shouldThrowException) {
             whenever(
@@ -301,14 +301,14 @@ class UniqueAttributeControllerTest {
                     .byAttribute("attributeUid").eq("attributeValue")
                     .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
                     .byOrgUnits().`in`("orgUnit")
-                    .blockingGet()
+                    .blockingGet(),
             ) doThrow MockitoException(
                 "",
                 D2Error.builder()
                     .errorComponent(D2ErrorComponent.Server)
                     .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
                     .errorDescription("error")
-                    .build()
+                    .build(),
             )
         } else {
             whenever(
@@ -318,7 +318,7 @@ class UniqueAttributeControllerTest {
                     .byAttribute("attributeUid").eq("attributeValue")
                     .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
                     .byOrgUnits().`in`("orgUnit")
-                    .blockingGet()
+                    .blockingGet(),
             ) doReturn teiList
         }
     }

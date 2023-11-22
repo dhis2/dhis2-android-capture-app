@@ -10,7 +10,6 @@ import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -47,6 +46,7 @@ import org.dhis2.utils.TRUE
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 
 const val DEFAULT = "default"
 const val SERVER_ACTION = "Server"
@@ -67,7 +67,7 @@ class MainPresenter(
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
     private val syncStatusController: SyncStatusController,
     private val versionRepository: VersionRepository,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
 ) : CoroutineScope {
 
     private var job = Job()
@@ -88,8 +88,8 @@ class MainPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.renderUsername(it) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
 
         disposable.add(
@@ -97,10 +97,10 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryCombo ->
-                        preferences.setValue(DEFAULT_CAT_COMBO, categoryCombo.uid())
+                        preferences.setValue(DEFAULT_CAT_COMBO, categoryCombo?.uid())
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
 
         disposable.add(
@@ -110,11 +110,11 @@ class MainPresenter(
                     { categoryOptionCombo ->
                         preferences.setValue(
                             PREF_DEFAULT_CAT_OPTION_COMBO,
-                            categoryOptionCombo.uid()
+                            categoryOptionCombo?.uid(),
                         )
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
         trackDhis2Server()
     }
@@ -132,8 +132,8 @@ class MainPresenter(
                             view.setFilters(filters)
                         }
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
 
         disposable.add(
@@ -142,8 +142,8 @@ class MainPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { filterManager -> view.updateFilters(filterManager.totalFilters) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
 
         disposable.add(
@@ -152,8 +152,8 @@ class MainPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { periodRequest -> view.showPeriodRequest(periodRequest.first) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 
@@ -163,9 +163,9 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { systemInfo -> compareAndTrack(systemInfo) },
-                    { Timber.e(it) }
-                )
+                    { systemInfo -> systemInfo?.let { compareAndTrack(systemInfo) } },
+                    { Timber.e(it) },
+                ),
         )
     }
 
@@ -179,7 +179,7 @@ class MainPresenter(
             matomoAnalyticsController.trackEvent(
                 HOME,
                 SERVER_ACTION,
-                currentDhis2Server
+                currentDhis2Server,
             )
             preferences.setValue("$DHIS2${getUserUid()}", currentDhis2Server)
         }
@@ -187,7 +187,7 @@ class MainPresenter(
 
     private fun getUserUid(): String {
         return try {
-            userManager.d2.userModule().user().blockingGet().uid()
+            userManager.d2.userModule().user().blockingGet()?.uid() ?: ""
         } catch (e: Exception) {
             ""
         }
@@ -197,11 +197,12 @@ class MainPresenter(
         disposable.add(
             Completable.fromCallable {
                 workManagerController.cancelAllWork()
+                syncStatusController.restore()
                 FilterManager.getInstance().clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
                 userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
             }.andThen(
-                repository.logOut()
+                repository.logOut(),
             )
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
@@ -209,8 +210,8 @@ class MainPresenter(
                     {
                         view.goToLogin(repository.accountsCount(), isDeletion = false)
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 
@@ -218,6 +219,7 @@ class MainPresenter(
         view.showProgressDeleteNotification()
         try {
             workManagerController.cancelAllWork()
+            syncStatusController.restore()
             deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
             userManager.d2?.wipeModule()?.wipeEverything()
             userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
@@ -254,7 +256,7 @@ class MainPresenter(
         return String.format(
             "%s %s",
             if (user.firstName().isNullOrEmpty()) "" else user.firstName(),
-            if (user.surname().isNullOrEmpty()) "" else user.surname()
+            if (user.surname().isNullOrEmpty()) "" else user.surname(),
         )
     }
 
@@ -283,7 +285,7 @@ class MainPresenter(
             null,
             null,
             null,
-            null
+            null,
         )
         workManagerController.cancelAllWorkByTag(workerItem.workerName)
         workManagerController.syncDataForWorker(workerItem)
@@ -332,7 +334,7 @@ class MainPresenter(
             Constants.NEW_APP_VERSION,
             WorkerType.NEW_VERSION,
             delayInSeconds = 24 * 60 * 60,
-            policy = ExistingWorkPolicy.REPLACE
+            policy = ExistingWorkPolicy.REPLACE,
         )
         workManagerController.beginUniqueWork(workerItem)
         versionRepository.removeVersionInfo()
@@ -341,7 +343,7 @@ class MainPresenter(
     fun downloadVersion(
         context: Context,
         onDownloadCompleted: (Uri) -> Unit,
-        onLaunchUrl: (Uri) -> Unit
+        onLaunchUrl: (Uri) -> Unit,
     ) {
         if (BuildConfig.FLAVOR == PLAY_FLAVOR) {
             val url = versionRepository.getUrl()
@@ -353,8 +355,16 @@ class MainPresenter(
                     onDownloadCompleted(it)
                     downloadingVersion.value = false
                 },
-                onDownloading = { downloadingVersion.value = true }
+                onDownloading = { downloadingVersion.value = true },
             )
         }
+    }
+
+    fun hasOneHomeItem(): Boolean {
+        return repository.homeItemCount() == 1
+    }
+
+    fun getSingleItemData(): HomeItemData? {
+        return repository.singleHomeItemData()
     }
 }

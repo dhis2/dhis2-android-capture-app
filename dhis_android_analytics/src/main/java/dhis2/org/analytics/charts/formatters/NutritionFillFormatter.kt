@@ -7,12 +7,12 @@ import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 
 class NutritionFillFormatter(
-    private val boundaryDataSet: ILineDataSet?
+    private val boundaryDataSet: ILineDataSet?,
 ) : IFillFormatter {
 
     override fun getFillLinePosition(
         dataSet: ILineDataSet?,
-        dataProvider: LineDataProvider?
+        dataProvider: LineDataProvider?,
     ): Float {
         return 0f
     }

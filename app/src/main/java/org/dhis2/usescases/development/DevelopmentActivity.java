@@ -1,11 +1,6 @@
 package org.dhis2.usescases.development;
 
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -13,14 +8,11 @@ import androidx.databinding.DataBindingUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
 import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.ui.dialogs.signature.SignatureDialog;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.main.MainActivity;
-import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 
@@ -32,7 +24,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
-import java.util.Locale;
 
 import kotlin.Unit;
 
@@ -55,7 +46,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
     }
 
     private void loadConflicts() {
-        binding.addConflicts.setOnClickListener(view-> {
+        binding.addConflicts.setOnClickListener(view -> {
             D2 d2 = D2Manager.getD2();
             new ConflictGenerator(d2).generate();
         });

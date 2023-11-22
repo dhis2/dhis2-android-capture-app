@@ -2,14 +2,18 @@ package dhis2.org.analytics.charts.bindings
 
 import android.view.View
 import android.widget.ImageView
+import androidx.annotation.OptIn
 import androidx.databinding.BindingAdapter
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeDrawable.BOTTOM_END
 import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import dhis2.org.analytics.charts.ui.ChartModel
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.period.PeriodType
 
+@OptIn(ExperimentalBadgeUtils::class)
 @BindingAdapter("filter_visualization")
 fun ImageView.setFilterVisualization(chartModel: ChartModel) {
     val currentFilters = chartModel.currentFilters()
@@ -20,7 +24,7 @@ fun ImageView.setFilterVisualization(chartModel: ChartModel) {
         val badge = BadgeDrawable.create(context).apply {
             number = currentFilters
             badgeGravity = BOTTOM_END
-            backgroundColor = ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+            backgroundColor = ColorUtils().getPrimaryColor(context, ColorType.PRIMARY)
         }
         BadgeUtils.attachBadgeDrawable(badge, this)
     }
@@ -39,7 +43,8 @@ fun PeriodType.datePattern(): String = when (this) {
     PeriodType.Quarterly,
     PeriodType.SixMonthly,
     PeriodType.SixMonthlyApril,
-    PeriodType.SixMonthlyNov -> {
+    PeriodType.SixMonthlyNov,
+    -> {
         "MMM YYYY"
     }
 
@@ -47,7 +52,8 @@ fun PeriodType.datePattern(): String = when (this) {
     PeriodType.FinancialApril,
     PeriodType.FinancialJuly,
     PeriodType.FinancialOct,
-    PeriodType.FinancialNov -> {
+    PeriodType.FinancialNov,
+    -> {
         "YYYY"
     }
 }

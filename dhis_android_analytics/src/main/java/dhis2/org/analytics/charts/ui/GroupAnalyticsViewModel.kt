@@ -22,7 +22,7 @@ class GroupAnalyticsViewModel(
     private val mode: AnalyticMode,
     private val uid: String?,
     private val charts: Charts,
-    private val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController,
 ) : ViewModel() {
 
     private val _chipItems = MutableLiveData<Result<List<AnalyticGroup>>>()
@@ -56,13 +56,13 @@ class GroupAnalyticsViewModel(
     fun filterByOrgUnit(
         chartModel: ChartModel,
         orgUnits: List<OrganisationUnit>,
-        orgUnitFilterType: OrgUnitFilterType
+        orgUnitFilterType: OrgUnitFilterType,
     ) {
         chartModel.graph.visualizationUid?.let {
             charts.setVisualizationOrgUnits(
                 chartModel.graph.visualizationUid,
                 orgUnits,
-                orgUnitFilterType
+                orgUnitFilterType,
             )
             fetchAnalytics(currentGroup)
         }
@@ -80,12 +80,12 @@ class GroupAnalyticsViewModel(
             when (filterType) {
                 ChartFilter.PERIOD -> charts.setVisualizationPeriods(
                     chartModel.graph.visualizationUid,
-                    emptyList()
+                    emptyList(),
                 )
                 ChartFilter.ORG_UNIT -> charts.setVisualizationOrgUnits(
                     chartModel.graph.visualizationUid,
                     emptyList(),
-                    OrgUnitFilterType.NONE
+                    OrgUnitFilterType.NONE,
                 )
             }
             fetchAnalytics(currentGroup)
@@ -127,7 +127,7 @@ class GroupAnalyticsViewModel(
         matomoAnalyticsController.trackEvent(
             analyticsCategory(mode),
             Actions.ANALYTICS_FILTERS,
-            Labels.PERIOD_FILTER
+            Labels.PERIOD_FILTER,
         )
     }
 
@@ -135,7 +135,7 @@ class GroupAnalyticsViewModel(
         matomoAnalyticsController.trackEvent(
             analyticsCategory(mode),
             Actions.ANALYTICS_FILTERS,
-            Labels.ORG_UNIT_FILTER
+            Labels.ORG_UNIT_FILTER,
         )
     }
 
@@ -143,7 +143,7 @@ class GroupAnalyticsViewModel(
         matomoAnalyticsController.trackEvent(
             analyticsCategory(mode),
             Actions.ANALYTICS_FILTERS,
-            Labels.RESET_FILTER
+            Labels.RESET_FILTER,
         )
     }
 
@@ -151,7 +151,7 @@ class GroupAnalyticsViewModel(
         matomoAnalyticsController.trackEvent(
             analyticsCategory(mode),
             Actions.VISUALIZATION_CHANGE,
-            Labels.CLICK
+            Labels.CLICK,
         )
     }
 

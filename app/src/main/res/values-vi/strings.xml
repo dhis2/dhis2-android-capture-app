@@ -88,14 +88,6 @@
     <string name="program_inactive">Chương trình không hoạt động</string>
 
     <string name="event_open">Mở</string>
-    <string name="event_completed">Sự kiện đã hoàn tất</string>
-    <string name="event_skipped">Sự kiện đã bỏ qua</string>
-    <string name="event_schedule">Sự kiện đã xếp lịch</string>
-    <string name="event_expired">Sự kiện quá hạn</string>
-    <string name="event_editing_expired">Chỉnh sửa quá hạn</string>
-    <string name="event_accepted">Sự kiện được chấp nhận</string>
-    <string name="event_approved">Sự kiện được được duyệt</string>
-    <string name="event_inactive">Sự kiện không hoạt động</string>
     <string name="read_only">Chỉ Xem</string>
     <string name="finish_and_complete">Lưu và Hoàn Tất</string>
     <string name="completed">Hoàn tất</string>
@@ -165,7 +157,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Xem Chi Tiết</string>
     <string name="view_more">XEM THÊM</string>
-    <string name="edit">CHỈNH SỬA</string>
     <string name="enrolling_ou">Đơn Vị Đăng Ký:</string>
     <string name="follow_up">Theo dõi</string>
     <string name="follow_up_enabled">Đã bật theo dõi</string>

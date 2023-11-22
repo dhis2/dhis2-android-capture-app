@@ -1,7 +1,6 @@
 package org.dhis2.data.dhislogic
 
 import io.reactivex.Flowable
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
@@ -10,6 +9,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCollectionRepository
+import javax.inject.Inject
 
 class DhisProgramUtils @Inject constructor(val d2: D2) {
 
@@ -19,7 +19,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
         }.plus(
             d2.dataSetModule().dataSetInstanceSummaries().blockingGet().map {
                 it.state()
-            }
+            },
         ).distinct()
 
         return when {
@@ -39,12 +39,6 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
             ProgramType.WITHOUT_REGISTRATION -> getEventProgramState(program)
             else -> throw Exception("Unsupported program type")
         }
-    }
-
-    fun getProgramState(programUid: String): State {
-        return getProgramState(
-            d2.programModule().programs().uid(programUid).blockingGet()
-        )
     }
 
     fun getProgramsInCaptureOrgUnits(): Flowable<List<Program>> {
@@ -71,7 +65,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
 
     private fun hasTeiWithWarningState(
         teiRepository: TrackedEntityInstanceCollectionRepository,
-        enrollmentRepository: EnrollmentCollectionRepository
+        enrollmentRepository: EnrollmentCollectionRepository,
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
@@ -83,7 +77,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
 
     private fun hasTeiWithErrorState(
         teiRepository: TrackedEntityInstanceCollectionRepository,
-        enrollmentRepository: EnrollmentCollectionRepository
+        enrollmentRepository: EnrollmentCollectionRepository,
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
@@ -94,7 +88,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     }
 
     private fun hasTeiWithSMSState(
-        teiRepository: TrackedEntityInstanceCollectionRepository
+        teiRepository: TrackedEntityInstanceCollectionRepository,
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
@@ -103,7 +97,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     }
 
     private fun hasTeiWithNotSyncedStateOrDeleted(
-        teiRepository: TrackedEntityInstanceCollectionRepository
+        teiRepository: TrackedEntityInstanceCollectionRepository,
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
@@ -147,7 +141,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     }
 
     private fun hasEventWithNotSyncedStateOrDeleted(
-        eventRepository: EventCollectionRepository
+        eventRepository: EventCollectionRepository,
     ): Boolean {
         return eventRepository
             .byDeleted().isFalse
@@ -161,7 +155,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     fun getProgramRecordLabel(
         program: Program,
         defaultTrackerLabel: String,
-        defaultEventLabel: String
+        defaultEventLabel: String,
     ): String {
         return when (program.programType()) {
             ProgramType.WITH_REGISTRATION -> {

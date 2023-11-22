@@ -6,7 +6,7 @@ sealed class InputData {
     data class FileInputData(
         val fileName: String,
         private val fileSize: Long,
-        val filePath: String
+        val filePath: String,
     ) {
         val fileSizeLabel
             get() = run {

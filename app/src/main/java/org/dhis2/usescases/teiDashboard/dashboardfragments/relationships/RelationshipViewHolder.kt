@@ -4,19 +4,21 @@ import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.commons.data.RelationshipViewModel
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.setItemPic
 import org.dhis2.databinding.ItemRelationshipBinding
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.setUpMetadataIcon
 
 class RelationshipViewHolder(
-    private val binding: ItemRelationshipBinding
+    private val binding: ItemRelationshipBinding,
+    private val colorUtils: ColorUtils,
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeToImage.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -26,7 +28,7 @@ class RelationshipViewHolder(
                 if (relationships.canBeOpened) {
                     presenter.onRelationshipClicked(
                         relationships.ownerType,
-                        relationships.ownerUid
+                        relationships.ownerUid,
                     )
                 }
             }
@@ -48,9 +50,9 @@ class RelationshipViewHolder(
                         MetadataIconData(
                             programColor = relationships.ownerDefaultColorResource,
                             iconResource = defaultRes,
-                            sizeInDp = 40
+                            sizeInDp = 40,
                         ),
-                        false
+                        false,
                     )
                 } else {
                     toTeiImage.setItemPic(
@@ -59,7 +61,8 @@ class RelationshipViewHolder(
                         relationships.ownerDefaultColorResource,
                         relationships.displayRelationshipName(),
                         relationships.isEvent(),
-                        binding.imageText
+                        binding.imageText,
+                        colorUtils,
                     )
                 }
             }

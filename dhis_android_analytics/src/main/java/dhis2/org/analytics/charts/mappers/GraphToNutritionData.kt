@@ -13,14 +13,14 @@ class GraphToNutritionData(private val nutritionColorProvider: NutritionColorsPr
     fun map(graph: Graph): Pair<LineData, Int> {
         val data = dataSet(
             coordinateToEntryMapper.mapNutrition(graph.series.last().coordinates),
-            graph.series.last().fieldName
+            graph.series.last().fieldName,
         ).withGlobalStyle()
         val backgroundSeries = graph.series.reversed().subList(1, graph.series.size)
         val backgroundData = backgroundSeries
             .mapIndexed { index, list ->
                 dataSet(
                     coordinateToEntryMapper.mapNutrition(list.coordinates),
-                    list.fieldName
+                    list.fieldName,
                 ).withNutritionBackgroundGlobalStyle(nutritionColorProvider.getColorAt(index))
             }
         backgroundData.reversed().forEachIndexed { index, lineDataSet ->

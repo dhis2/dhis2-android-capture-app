@@ -1,11 +1,11 @@
 package org.dhis2.form.ui.validation.validators
 
 import androidx.annotation.VisibleForTesting
-import java.util.regex.Pattern
 import org.dhis2.form.ui.validation.failures.FieldMaskFailure
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.valuetype.validation.validators.ValueTypeValidator
 import timber.log.Timber
+import java.util.regex.Pattern
 
 class FieldMaskValidator(val fieldMask: String?) : ValueTypeValidator<FieldMaskFailure> {
 

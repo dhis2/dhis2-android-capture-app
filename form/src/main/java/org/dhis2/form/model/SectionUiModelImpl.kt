@@ -33,7 +33,7 @@ data class SectionUiModelImpl(
     override val renderingType: UiRenderType? = null,
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null,
-    var isOpen: Boolean = false,
+    var isOpen: Boolean? = false,
     var totalFields: Int = 0,
     var completedFields: Int = 0,
     var errors: Int = 0,
@@ -41,7 +41,8 @@ data class SectionUiModelImpl(
     var rendering: String? = null,
     var selectedField: ObservableField<String?> = ObservableField(null),
     override val isLoadingData: Boolean = false,
-    override var optionSetConfiguration: OptionSetConfiguration? = null
+    override var optionSetConfiguration: OptionSetConfiguration? = null,
+    override val autocompleteList: List<String>? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0
@@ -116,8 +117,8 @@ data class SectionUiModelImpl(
         callback!!.intent(
             OnFocus(
                 uid,
-                value
-            )
+                value,
+            ),
         )
     }
 
@@ -125,8 +126,8 @@ data class SectionUiModelImpl(
         callback?.recyclerViewUiEvents(
             RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                 label,
-                description
-            )
+                description,
+            ),
         )
     }
 

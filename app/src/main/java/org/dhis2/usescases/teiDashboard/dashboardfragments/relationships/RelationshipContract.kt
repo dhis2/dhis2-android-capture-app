@@ -14,7 +14,7 @@ class AddRelationshipContract : ActivityResultContract<RelationshipInput, Relati
             null,
             input.teiTypeToAdd,
             input.teiUid,
-            true
+            true,
         )
     }
 

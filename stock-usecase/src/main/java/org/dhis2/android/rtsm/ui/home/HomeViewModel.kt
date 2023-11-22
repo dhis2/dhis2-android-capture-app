@@ -3,7 +3,6 @@ package org.dhis2.android.rtsm.ui.home
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -23,13 +22,14 @@ import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val metadataManager: MetadataManager,
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
 ) : BaseViewModel(schedulerProvider) {
 
     private val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
@@ -65,8 +65,8 @@ class HomeViewModel @Inject constructor(
                         _destinations.value = (
                             OperationState.Error(R.string.destinations_load_error)
                             )
-                    }
-                )
+                    },
+                ),
         )
     }
 
@@ -88,8 +88,8 @@ class HomeViewModel @Inject constructor(
                     {
                         it.printStackTrace()
                         _facilities.value = (OperationState.Error(R.string.facilities_load_error))
-                    }
-                )
+                    },
+                ),
         )
     }
 
@@ -116,7 +116,7 @@ class HomeViewModel @Inject constructor(
     fun setDestination(destination: Option?) {
         if (settingsUiState.value.transactionType != TransactionType.DISTRIBUTION) {
             throw UnsupportedOperationException(
-                "Cannot set 'distributed to' for non-distribution transactions"
+                "Cannot set 'distributed to' for non-distribution transactions",
             )
         }
 
@@ -140,7 +140,7 @@ class HomeViewModel @Inject constructor(
     fun getData(): Transaction {
         if (settingsUiState.value.facility == null) {
             throw UserIntentParcelCreationException(
-                "Unable to create parcel with empty facility"
+                "Unable to create parcel with empty facility",
             )
         }
         return Transaction(
@@ -149,16 +149,16 @@ class HomeViewModel @Inject constructor(
             settingsUiState.value.transactionDate.humanReadableDate(),
             settingsUiState.value.destination?.let {
                 ParcelUtils.distributedTo_ToIdentifiableModelParcel(
-                    it
+                    it,
                 )
-            }
+            },
         )
     }
 
     fun resetSettings() {
         _settingsUiSate.update {
             SettingsUiState(
-                programUid = config.program
+                programUid = config.program,
             )
         }
         selectTransaction(TransactionType.DISTRIBUTION)

@@ -4,5 +4,5 @@ import androidx.compose.ui.geometry.Offset
 
 data class ResizingCell(
     val initialPosition: Offset,
-    val draggingOffsetX: Float
+    val draggingOffsetX: Float,
 )

@@ -1,6 +1,6 @@
 package org.dhis2.form.data
 
-import org.dhis2.Bindings.blockingGetCheck
+import org.dhis2.bindings.blockingGetCheck
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -14,7 +14,7 @@ import org.hisp.dhis.rules.models.TriggerEnvironment
 
 class EnrollmentRuleEngineRepository(
     private val d2: D2,
-    private val enrollmentUid: String
+    private val enrollmentUid: String,
 ) : RuleEngineRepository {
 
     private val ruleRepository = RulesRepository(d2)
@@ -24,12 +24,12 @@ class EnrollmentRuleEngineRepository(
     private val enrollment: Enrollment by lazy {
         d2.enrollmentModule().enrollments()
             .uid(enrollmentUid)
-            .blockingGet()
+            .blockingGet() ?: throw NullPointerException()
     }
     private val program: Program by lazy {
         d2.programModule().programs()
             .uid(enrollment.program())
-            .blockingGet()
+            .blockingGet() ?: throw NullPointerException()
     }
 
     init {
@@ -37,7 +37,7 @@ class EnrollmentRuleEngineRepository(
         val rules = ruleRepository.rulesNew(program.uid()).blockingGet()
         val variables = ruleRepository.ruleVariables(program.uid()).blockingGet()
         val supplData = ruleRepository.supplementaryData(
-            enrollment.organisationUnit()!!
+            enrollment.organisationUnit()!!,
         ).blockingGet()
         val constants = ruleRepository.queryConstants().blockingGet()
         val events = ruleRepository.enrollmentEvents(enrollmentUid).blockingGet()
@@ -55,17 +55,17 @@ class EnrollmentRuleEngineRepository(
         ruleEnrollmentBuilder = RuleEnrollment.builder()
             .enrollment(enrollment.uid())
             .incidentDate(
-                enrollment.incidentDate() ?: enrollment.enrollmentDate()
+                enrollment.incidentDate() ?: enrollment.enrollmentDate(),
             )
             .enrollmentDate(enrollment.enrollmentDate())
             .status(
-                RuleEnrollment.Status.valueOf(enrollment.status()!!.name)
+                RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
             )
             .organisationUnit(enrollment.organisationUnit())
             .organisationUnitCode(
                 d2.organisationUnitModule().organisationUnits().uid(
-                    enrollment.organisationUnit()
-                ).blockingGet().code()
+                    enrollment.organisationUnit(),
+                ).blockingGet()?.code(),
             )
             .programName(program.displayName())
     }
@@ -87,14 +87,14 @@ class EnrollmentRuleEngineRepository(
                 d2.trackedEntityModule().trackedEntityAttributeValues()
                     .value(
                         it.trackedEntityAttribute()!!.uid(),
-                        enrollment.trackedEntityInstance()
+                        enrollment.trackedEntityInstance()!!,
                     )
                     .blockingExists()
             }.mapNotNull {
                 d2.trackedEntityModule().trackedEntityAttributeValues()
                     .value(
                         it.trackedEntityAttribute()!!.uid(),
-                        enrollment.trackedEntityInstance()
+                        enrollment.trackedEntityInstance()!!,
                     )
                     .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
             }.toRuleAttributeValue(d2, program.uid())

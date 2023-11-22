@@ -10,6 +10,6 @@ interface FormUiModelStyle {
     fun backgroundColor(
         valueType: ValueType,
         error: String?,
-        warning: String?
+        warning: String?,
     ): Pair<Array<Int>, Int?>
 }

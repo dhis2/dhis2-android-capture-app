@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.D2
 
 class LegendValueProviderImpl(
     val d2: D2,
-    val resourceManager: ResourceManager
+    val resourceManager: ResourceManager,
 ) : LegendValueProvider {
 
     override fun provideLegendValue(dataElementUid: String, value: String?): LegendValue? {
@@ -33,7 +33,7 @@ class LegendValueProviderImpl(
                     if (legend != null) {
                         return LegendValue(
                             resourceManager.getColorFrom(legend.color()),
-                            legend.displayName()
+                            legend.displayName(),
                         )
                     }
                 }

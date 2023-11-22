@@ -43,7 +43,7 @@ import org.hisp.dhis.android.core.D2
 class GranularSyncModule(
     private val context: Context,
     private val view: GranularSyncContracts.View,
-    private val syncContext: SyncContext
+    private val syncContext: SyncContext,
 ) {
 
     @Provides
@@ -52,7 +52,7 @@ class GranularSyncModule(
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController,
         smsSyncProvider: SMSSyncProvider,
-        repository: GranularSyncRepository
+        repository: GranularSyncRepository,
     ): GranularSyncViewModelFactory {
         return GranularSyncViewModelFactory(
             d2,
@@ -68,7 +68,7 @@ class GranularSyncModule(
             },
             syncContext,
             workManagerController,
-            smsSyncProvider
+            smsSyncProvider,
         )
     }
 
@@ -78,22 +78,22 @@ class GranularSyncModule(
         dhisProgramUtils: DhisProgramUtils,
         periodUtils: DhisPeriodUtils,
         preferenceProvider: PreferenceProvider,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): GranularSyncRepository = GranularSyncRepository(
         d2,
         syncContext,
         preferenceProvider,
         dhisProgramUtils,
         periodUtils,
-        resourceManager
+        resourceManager,
     )
 
     @Provides
-    fun smsSyncProvider(d2: D2): SMSSyncProvider {
+    fun smsSyncProvider(d2: D2, colorUtils: ColorUtils): SMSSyncProvider {
         return SMSPlayServicesSyncProviderImpl(
             d2,
             syncContext,
-            ResourceManager(context)
+            ResourceManager(context, colorUtils),
         )
     }
 }

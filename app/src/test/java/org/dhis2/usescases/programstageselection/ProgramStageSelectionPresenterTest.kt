@@ -68,26 +68,26 @@ class ProgramStageSelectionPresenterTest {
     fun `Should set programStages`() {
         val programStages = listOf(
             ProgramStage.builder().uid("programStage1").build(),
-            ProgramStage.builder().uid("programStage2").build()
+            ProgramStage.builder().uid("programStage2").build(),
         )
         val calcResult = Result.success(
             listOf(
                 RuleEffect.create(
                     "ruleUid",
-                    RuleActionHideProgramStage.create("programStage")
-                )
-            )
+                    RuleActionHideProgramStage.create("programStage"),
+                ),
+            ),
         )
 
         whenever(
-            repository.enrollmentProgramStages()
+            repository.enrollmentProgramStages(),
         ) doReturn Flowable.just(programStages)
         whenever(repository.calculate()) doReturn Flowable.just(calcResult)
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items())
-            )
+                kotlin.Result.success(calcResult.items()),
+            ),
         ) doAnswer { null }
 
         presenter.programStages()
@@ -107,20 +107,20 @@ class ProgramStageSelectionPresenterTest {
             listOf(
                 RuleEffect.create(
                     "ruleUid",
-                    RuleActionHideProgramStage.create("programStage")
-                )
-            )
+                    RuleActionHideProgramStage.create("programStage"),
+                ),
+            ),
         )
 
         whenever(
-            repository.enrollmentProgramStages()
+            repository.enrollmentProgramStages(),
         ) doReturn Flowable.just(programStages)
         whenever(repository.calculate()) doReturn Flowable.just(calcResult)
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items())
-            )
+                kotlin.Result.success(calcResult.items()),
+            ),
         ) doAnswer { null }
 
         presenter.programStages()
@@ -128,7 +128,7 @@ class ProgramStageSelectionPresenterTest {
         verify(view).setResult(
             programStage.uid(),
             programStage.repeatable() == true,
-            programStage.periodType()
+            programStage.periodType(),
         )
     }
 
@@ -140,16 +140,16 @@ class ProgramStageSelectionPresenterTest {
             listOf(
                 RuleEffect.create(
                     "ruleUid",
-                    RuleActionHideProgramStage.create("programStage")
-                )
-            )
+                    RuleActionHideProgramStage.create("programStage"),
+                ),
+            ),
         )
 
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items())
-            )
+                kotlin.Result.success(calcResult.items()),
+            ),
         ) doAnswer {
             it.getArgument<MutableMap<String, ProgramStage>>(0).remove("programStage")
             null
@@ -163,12 +163,12 @@ class ProgramStageSelectionPresenterTest {
         val programStages: MutableList<ProgramStage> =
             mutableListOf(ProgramStage.builder().uid("programStage").build())
         val calcResult: Result<RuleEffect> = Result.failure(
-            Exception("error")
+            Exception("error"),
         ) as Result<RuleEffect>
 
         Assert.assertEquals(
             presenter.applyEffects(programStages, calcResult),
-            programStages
+            programStages,
         )
     }
 
@@ -200,7 +200,7 @@ class ProgramStageSelectionPresenterTest {
     @Test
     fun `Should set result when clicking on a ProgramStage`() {
         val programStage = ProgramStage.builder().uid("programStage").access(
-            Access.builder().data(DataAccess.builder().write(true).build()).build()
+            Access.builder().data(DataAccess.builder().write(true).build()).build(),
         ).build()
 
         presenter.onProgramStageClick(programStage)
@@ -211,7 +211,7 @@ class ProgramStageSelectionPresenterTest {
     @Test
     fun `Should display permission message when clicking on a ProgramStage without access`() {
         val programStage = ProgramStage.builder().uid("programStage").access(
-            Access.builder().data(DataAccess.builder().write(false).build()).build()
+            Access.builder().data(DataAccess.builder().write(false).build()).build(),
         ).build()
 
         presenter.onProgramStageClick(programStage)
@@ -223,7 +223,7 @@ class ProgramStageSelectionPresenterTest {
     fun `Should return the standard interval`() {
         val interval = 3
         whenever(repository.getStage("programUid")) doReturn mock()
-        whenever(repository.getStage("programUid").standardInterval()) doReturn interval
+        whenever(repository.getStage("programUid")?.standardInterval()) doReturn interval
 
         val result = presenter.getStandardInterval("programUid")
 
@@ -234,7 +234,7 @@ class ProgramStageSelectionPresenterTest {
     fun `Should return 0 if the standard interval is not configured`() {
         val interval = null
         whenever(repository.getStage("programUid")) doReturn mock()
-        whenever(repository.getStage("programUid").standardInterval()) doReturn interval
+        whenever(repository.getStage("programUid")?.standardInterval()) doReturn interval
 
         val result = presenter.getStandardInterval("programUid")
 

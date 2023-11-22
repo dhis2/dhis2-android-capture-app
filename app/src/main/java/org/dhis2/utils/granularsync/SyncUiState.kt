@@ -11,5 +11,5 @@ data class SyncUiState(
     val mainActionLabel: String?,
     val secondaryActionLabel: String?,
     val content: List<SyncStatusItem>,
-    val shouldDismissOnUpdate: Boolean = false
+    val shouldDismissOnUpdate: Boolean = false,
 )

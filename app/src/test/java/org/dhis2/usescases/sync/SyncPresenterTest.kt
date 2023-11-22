@@ -4,7 +4,6 @@ import androidx.work.Data
 import androidx.work.WorkInfo
 import io.reactivex.Completable
 import io.reactivex.Single
-import java.util.UUID
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -21,6 +20,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 class SyncPresenterTest {
 
@@ -39,7 +39,7 @@ class SyncPresenterTest {
             userManager,
             schedulerProvider,
             workManagerController,
-            preferences
+            preferences,
         )
     }
 
@@ -48,7 +48,7 @@ class SyncPresenterTest {
         presenter.sync()
         verify(workManagerController, times(1)).syncMetaDataForWorker(
             Constants.META_NOW,
-            Constants.INITIAL_SYNC
+            Constants.INITIAL_SYNC,
         )
     }
 
@@ -104,7 +104,8 @@ class SyncPresenterTest {
             Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
             arrayListOf(Constants.META_NOW),
             Data.EMPTY,
-            0
+            0,
+            0,
         )
     }
 }

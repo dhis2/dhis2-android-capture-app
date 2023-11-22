@@ -34,7 +34,7 @@ fun PictureInput(
     enabled: Boolean = true,
     addButtonData: AddButtonData,
     onClick: () -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
 ) {
     if (imageValue != null) {
         Picture(imageValue.asImageBitmap(), enabled, onClick, onClear)
@@ -44,7 +44,7 @@ fun PictureInput(
             enabled = enabled,
             text = addButtonData.label,
             painter = addButtonData.icon,
-            onClick = addButtonData.onClick
+            onClick = addButtonData.onClick,
         )
     }
 }
@@ -56,16 +56,16 @@ fun Picture(image: ImageBitmap, enabled: Boolean, onClick: () -> Unit, onClear: 
         Surface(
             onClick = onClick,
             shadowElevation = 4.dp,
-            shape = RoundedCornerShape(6.dp)
+            shape = RoundedCornerShape(6.dp),
         ) {
             Image(
                 modifier = Modifier.defaultMinSize(
                     minWidth = if (image.width >= image.height) 200.dp else 0.dp,
-                    minHeight = if (image.width < image.height) 200.dp else 0.dp
+                    minHeight = if (image.width < image.height) 200.dp else 0.dp,
                 ),
                 bitmap = image,
                 contentScale = ContentScale.Crop,
-                contentDescription = "picture"
+                contentDescription = "picture",
             )
         }
         if (enabled) {
@@ -75,12 +75,12 @@ fun Picture(image: ImageBitmap, enabled: Boolean, onClick: () -> Unit, onClear: 
                     .background(Color.White, CircleShape)
                     .size(40.dp)
                     .align(Alignment.TopEnd),
-                onClick = onClear
+                onClick = onClear,
             ) {
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "clear",
-                    tint = errorColor
+                    tint = errorColor,
                 )
             }
         }
@@ -90,5 +90,5 @@ fun Picture(image: ImageBitmap, enabled: Boolean, onClick: () -> Unit, onClear: 
 data class AddButtonData(
     val icon: Painter,
     val label: String,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 )

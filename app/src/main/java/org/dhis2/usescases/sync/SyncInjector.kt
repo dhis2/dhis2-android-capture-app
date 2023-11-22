@@ -25,14 +25,14 @@ class SyncModule(private val view: SyncView, serverComponent: ServerComponent?) 
     fun providePresenter(
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController,
-        preferences: PreferenceProvider
+        preferences: PreferenceProvider,
     ): SyncPresenter {
         return SyncPresenter(
             view,
             userManager,
             schedulerProvider,
             workManagerController,
-            preferences
+            preferences,
         )
     }
 }

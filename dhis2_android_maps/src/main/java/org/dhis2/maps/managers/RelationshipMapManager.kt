@@ -41,30 +41,30 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
             BitmapUtils.getBitmapFromDrawable(
                 AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.ic_arrowhead
-                )
+                    R.drawable.ic_arrowhead,
+                ),
             )!!,
-            true
+            true,
         )
         style?.addImage(
             RELATIONSHIP_ICON,
             BitmapUtils.getBitmapFromDrawable(
                 AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.map_marker
-                )
+                    R.drawable.map_marker,
+                ),
             )!!,
-            true
+            true,
         )
         style?.addImage(
             RELATIONSHIP_ARROW_BIDIRECTIONAL,
             BitmapUtils.getBitmapFromDrawable(
                 AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.ic_arrowhead_bidirectional
-                )
+                    R.drawable.ic_arrowhead_bidirectional,
+                ),
             )!!,
-            true
+            true,
         )
         setSource()
         setLayer()
@@ -91,7 +91,7 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
     override fun findFeature(
         source: String,
         propertyName: String,
-        propertyValue: String
+        propertyValue: String,
     ): Feature? {
         return featureCollections[source]?.features()?.firstOrNull {
             it.getStringProperty(propertyName) == propertyValue
@@ -103,7 +103,7 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
             MapTeisToFeatureCollection.TEI_UID,
             MapTeisToFeatureCollection.ENROLLMENT_UID,
             MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT
+            MapEventToFeatureCollection.EVENT,
         )
         var featureToReturn: Feature? = null
         for (source in featureCollections.keys) {

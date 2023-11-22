@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.D2
 class NoteDetailModule(
     val view: NoteDetailView,
     private val noteId: String? = null,
-    private val programUid: String
+    private val programUid: String,
 ) {
 
     @Provides
@@ -23,7 +23,7 @@ class NoteDetailModule(
     @PerActivity
     fun providesPresenter(
         repository: NoteDetailRepository,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
     ): NoteDetailPresenter {
         return NoteDetailPresenter(view, schedulerProvider, noteId, repository)
     }

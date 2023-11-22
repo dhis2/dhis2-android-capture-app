@@ -33,7 +33,7 @@ fun FilterList(
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
     onTransitionSelected: (transition: TransactionType) -> Unit,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
-    onDestinationSelected: (destination: Option) -> Unit
+    onDestinationSelected: (destination: Option) -> Unit,
 ) {
     val facilities = viewModel.facilities.collectAsState().value
     val destinations = viewModel.destinationsList.collectAsState().value
@@ -46,9 +46,9 @@ fun FilterList(
             .animateContentSize(
                 animationSpec = tween(
                     delayMillis = 180,
-                    easing = LinearOutSlowInEasing
-                )
-            )
+                    easing = LinearOutSlowInEasing,
+                ),
+            ),
     ) {
         item {
             DropdownComponentTransactions(
@@ -57,7 +57,7 @@ fun FilterList(
                 dataEntryUiState.hasUnsavedData,
                 themeColor,
                 mapTransaction(),
-                launchDialog
+                launchDialog,
             )
         }
 
@@ -69,7 +69,7 @@ fun FilterList(
                 themeColor,
                 supportFragmentManager,
                 getFacilities(facilities),
-                launchDialog
+                launchDialog,
             )
         }
 
@@ -82,7 +82,7 @@ fun FilterList(
                         dataEntryUiState,
                         themeColor,
                         result,
-                        launchDialog = launchDialog
+                        launchDialog = launchDialog,
                     )
                 }
             }
@@ -94,7 +94,7 @@ private fun mapTransaction(): MutableList<TransactionItem> {
     return mutableListOf(
         TransactionItem(R.drawable.ic_distribution, DISTRIBUTION),
         TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD),
-        TransactionItem(R.drawable.ic_correction, TransactionType.CORRECTION)
+        TransactionItem(R.drawable.ic_correction, TransactionType.CORRECTION),
     )
 }
 

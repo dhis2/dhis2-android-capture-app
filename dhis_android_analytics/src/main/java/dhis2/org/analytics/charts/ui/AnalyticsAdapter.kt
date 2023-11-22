@@ -16,18 +16,18 @@ class AnalyticsAdapter :
 
             override fun areItemsTheSame(
                 oldItem: AnalyticsModel,
-                newItem: AnalyticsModel
+                newItem: AnalyticsModel,
             ): Boolean {
                 return oldItem.uid == newItem.uid
             }
 
             override fun areContentsTheSame(
                 oldItem: AnalyticsModel,
-                newItem: AnalyticsModel
+                newItem: AnalyticsModel,
             ): Boolean {
                 return oldItem == newItem
             }
-        }
+        },
     ),
     ChartViewHolder.ChartItemCallback {
 
@@ -51,16 +51,16 @@ class AnalyticsAdapter :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (AnalyticType.values()[viewType]) {
             AnalyticType.INDICATOR -> IndicatorViewHolder(
-                ItemIndicatorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ItemIndicatorBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             )
             AnalyticType.CHART ->
                 ChartViewHolder(
-                    ItemChartBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                    ItemChartBinding.inflate(LayoutInflater.from(parent.context), parent, false),
                 ) {
                     onChartTypeChanged.invoke()
                 }
             AnalyticType.SECTION_TITLE -> SectionTitleViewHolder(
-                ItemSectionTittleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ItemSectionTittleBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             )
         }
     }
@@ -76,7 +76,7 @@ class AnalyticsAdapter :
     override fun filterPeriod(
         chart: ChartModel,
         period: RelativePeriod?,
-        current: RelativePeriod?
+        current: RelativePeriod?,
     ) {
         onRelativePeriodCallback?.invoke(chart, period, current)
     }

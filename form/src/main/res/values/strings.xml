@@ -23,6 +23,7 @@
     <string name="conf_error_value_to_assign_option_set">Program rule %s is trying to assign value %s which does not belongs to option set %s</string>
     <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
     <string name="field_is_mandatory">This field is mandatory</string>
+    <string name="required">Required</string>
     <string name="date">Date</string>
     <string name="hint_year">Years</string>
     <string name="hint_month">Months</string>
@@ -102,5 +103,9 @@
     <string name="location_permission_denied">The location permission is needed for capturing coordinates. Please, enable them in the application settings</string>
     <string name="open_with">Open with</string>
     <string name="no_option_found">No option found</string>
-
+    <string name="download">Download</string>
+    <string name="scan">Scan</string>
+    <string name="qr_code">QR code</string>
+    <string name="bar_code">Bar code</string>
+    <string name="add_location">Add location</string>
 </resources>

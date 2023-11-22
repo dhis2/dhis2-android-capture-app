@@ -12,6 +12,6 @@ interface RuleValidationHelper {
         program: String,
         transaction: Transaction,
         eventUid: String? = null,
-        appConfig: AppConfig
+        appConfig: AppConfig,
     ): Flowable<List<RuleEffect>>
 }

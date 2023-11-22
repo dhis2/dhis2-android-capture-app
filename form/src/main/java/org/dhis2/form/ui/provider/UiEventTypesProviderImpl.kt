@@ -10,7 +10,7 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
     override fun provideUiRenderType(
         featureType: FeatureType?,
         valueTypeRenderingType: ValueTypeRenderingType?,
-        sectionRenderingType: SectionRenderingType?
+        sectionRenderingType: SectionRenderingType?,
     ): UiRenderType {
         return when (sectionRenderingType) {
             SectionRenderingType.SEQUENTIAL -> UiRenderType.SEQUENCIAL
@@ -28,10 +28,14 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
                     UiRenderType.AUTOCOMPLETE
                 ValueTypeRenderingType.QR_CODE ->
                     UiRenderType.QR_CODE
+                ValueTypeRenderingType.GS1_DATAMATRIX ->
+                    UiRenderType.GS1_DATAMATRIX
                 ValueTypeRenderingType.BAR_CODE ->
                     UiRenderType.BAR_CODE
                 ValueTypeRenderingType.CANVAS ->
                     UiRenderType.CANVAS
+                ValueTypeRenderingType.TOGGLE ->
+                    UiRenderType.TOGGLE
                 else -> when (featureType) {
                     FeatureType.POINT -> UiRenderType.POINT
                     FeatureType.POLYGON -> UiRenderType.POLYGON

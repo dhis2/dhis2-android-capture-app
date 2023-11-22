@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.FeatureState
 
-class FeatureConfigViewModel constructor(
-    private val repository: FeatureConfigRepository
+class FeatureConfigViewModel(
+    private val repository: FeatureConfigRepository,
 ) : ViewModel() {
 
     private val _featuresList = MutableLiveData<List<FeatureState>>()

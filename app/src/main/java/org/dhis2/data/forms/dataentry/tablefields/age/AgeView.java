@@ -21,11 +21,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.StringExtensionsKt;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
@@ -37,6 +38,8 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.inject.Inject;
 
 public class AgeView extends FieldLayout implements View.OnClickListener {
 
@@ -60,6 +63,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private AgeViewModel viewModel;
     private TextView errorView;
     Date selectedDate;
+
+    @Inject
+    ColorUtils colorUtils;
 
     public AgeView(Context context) {
         super(context);
@@ -154,7 +160,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     public void dispatchSetActivated(boolean activated) {
         super.dispatchSetActivated(activated);
         if (activated) {
-            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+            labelText.setTextColor(colorUtils.getPrimaryColor(getContext(), ColorType.PRIMARY));
         } else {
             labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
@@ -334,19 +340,19 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         year.setEnabled(editable);
 
         date.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent ? colorUtils.getPrimaryColor(getContext(), ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
         day.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent ? colorUtils.getPrimaryColor(getContext(), ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
         month.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent ? colorUtils.getPrimaryColor(getContext(), ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
         year.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent ? colorUtils.getPrimaryColor(getContext(), ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
 

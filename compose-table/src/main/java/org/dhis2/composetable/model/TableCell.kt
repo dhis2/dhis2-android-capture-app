@@ -13,7 +13,7 @@ data class TableCell(
     val mandatory: Boolean? = false,
     val error: String? = null,
     val warning: String? = null,
-    val legendColor: Int? = null
+    val legendColor: Int? = null,
 ) {
     fun isSelected(selectionState: SelectionState): Boolean {
         return selectionState.cellOnly &&

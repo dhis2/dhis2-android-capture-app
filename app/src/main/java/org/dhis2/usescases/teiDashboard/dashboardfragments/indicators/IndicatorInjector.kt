@@ -24,11 +24,11 @@ class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
         ((context.applicationContext) as App).dashboardComponent()!!
             .plus(
                 IndicatorsModule(
-                    activity.programUid,
-                    activity.teiUid,
+                    activity.programUid ?: "",
+                    activity.teiUid ?: "",
                     indicatorsFragment,
-                    VisualizationType.TRACKER
-                )
+                    VisualizationType.TRACKER,
+                ),
             )
             .inject(indicatorsFragment)
     }
@@ -40,8 +40,8 @@ class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
                 activity.intent.getStringExtra(Constants.PROGRAM_UID) ?: "",
                 activity.intent.getStringExtra(Constants.EVENT_UID) ?: "",
                 indicatorsFragment,
-                VisualizationType.EVENTS
-            )
+                VisualizationType.EVENTS,
+            ),
         )?.inject(indicatorsFragment)
     }
 }

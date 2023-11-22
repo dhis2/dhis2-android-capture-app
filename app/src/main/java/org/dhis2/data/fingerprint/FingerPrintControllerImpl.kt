@@ -3,7 +3,7 @@ package org.dhis2.data.fingerprint
 import io.reactivex.Observable
 
 class FingerPrintControllerImpl(
-    val mapper: FingerPrintMapper
+    val mapper: FingerPrintMapper,
 ) : FingerPrintController {
 
     /***
@@ -18,8 +18,5 @@ class FingerPrintControllerImpl(
      * */
     override fun authenticate(): Observable<FingerPrintResult> {
         return Observable.empty()
-    }
-
-    override fun cancel() {
     }
 }

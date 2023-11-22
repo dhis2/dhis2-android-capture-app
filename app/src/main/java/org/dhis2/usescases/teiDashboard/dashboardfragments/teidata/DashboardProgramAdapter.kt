@@ -10,14 +10,14 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 
 class DashboardProgramAdapter(
     private val presenter: TEIDataPresenter,
-    private val dashboardProgramModel: DashboardProgramModel
+    private val dashboardProgramModel: DashboardProgramModel,
 ) : RecyclerView.Adapter<DashboardProgramViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DashboardProgramViewHolder {
         val binding = DataBindingUtil.inflate<ItemDashboardProgramBinding>(
             LayoutInflater.from(parent.context),
             R.layout.item_dashboard_program,
             parent,
-            false
+            false,
         )
         return DashboardProgramViewHolder(binding)
     }

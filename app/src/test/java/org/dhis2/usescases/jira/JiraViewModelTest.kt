@@ -3,8 +3,8 @@ package org.dhis2.usescases.jira
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import io.reactivex.Single
-import okhttp3.MediaType
-import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.jira.JiraIssue
@@ -15,9 +15,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -42,7 +42,7 @@ class JiraViewModelTest {
     fun `Should get jira tickets if user is set`() {
         whenever(jiraRepository.hasJiraSessionSaved()) doReturn true
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
         jiraViewModel.init()
         verify(jiraRepository, times(1)).getJiraIssues(anyOrNull())
@@ -67,7 +67,7 @@ class JiraViewModelTest {
         jiraViewModel.onJiraPassChanged("pass", 0, 0, 0)
         jiraViewModel.onJiraUserChanged("userName", 0, 0, 0)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
         jiraViewModel.openSession()
         verify(jiraRepository, times(1)).setAuth("userName", "pass")
@@ -88,14 +88,12 @@ class JiraViewModelTest {
         val observer: Observer<String> = mock()
         jiraViewModel.issueMessage.observeForever(observer)
         whenever(
-            jiraRepository.sendJiraIssue(any(), any())
+            jiraRepository.sendJiraIssue(any(), any()),
         ) doReturn Single.error(Throwable("This is an error"))
         jiraViewModel.sendIssue()
-        val captor = ArgumentCaptor.forClass(String::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(value == "This is an error")
-        }
+        val captor = argumentCaptor<String>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(captor.firstValue == "This is an error")
     }
 
     @Test
@@ -104,22 +102,24 @@ class JiraViewModelTest {
         jiraViewModel.onDescriptionChanged("description", 0, 0, 0)
         val observer: Observer<String> = mock()
         jiraViewModel.issueMessage.observeForever(observer)
+        val mockedResponse = "{}".toResponseBody(
+            "*/*".toMediaTypeOrNull(),
+        )
         whenever(
-            jiraRepository.sendJiraIssue(any(), any())
-        ) doReturn Single.just(ResponseBody.create(MediaType.parse("*/*"), "{}"))
+            jiraRepository.sendJiraIssue(any(), any()),
+        ) doReturn Single.just(mockedResponse)
         whenever(
-            resourceManager.jiraIssueSentMessage()
+            resourceManager.jiraIssueSentMessage(),
         ) doReturn "Sent"
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
         jiraViewModel.sendIssue()
 
-        val captor = ArgumentCaptor.forClass(String::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(value == "Sent")
-        }
+        val captor = argumentCaptor<String>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(captor.firstValue == "Sent")
+
         verify(jiraRepository, times(1)).getJiraIssues(anyOrNull())
     }
 
@@ -130,19 +130,18 @@ class JiraViewModelTest {
         jiraViewModel.onCheckedChanged(true)
         jiraViewModel.issueListResponse.observeForever(observer)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(jiraIssuesResult)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.just(JiraIssueListResponse(0, 0, emptyList()))
 
         jiraViewModel.getJiraTickets()
 
-        val captor = ArgumentCaptor.forClass(JiraIssuesResult::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(value.isSuccess())
-        }
+        val captor = argumentCaptor<JiraIssuesResult>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(captor.firstValue.isSuccess())
+
         verify(jiraRepository).saveCredentials()
         assertTrue(jiraViewModel.isSessionOpen.get() == true)
     }
@@ -152,17 +151,16 @@ class JiraViewModelTest {
         val observer: Observer<JiraIssuesResult> = mock()
         jiraViewModel.issueListResponse.observeForever(observer)
         whenever(
-            jiraRepository.getJiraIssues(anyOrNull())
+            jiraRepository.getJiraIssues(anyOrNull()),
         ) doReturn Single.error(Throwable("Error"))
         whenever(jiraRepository.hasJiraSessionSaved()) doReturn true
 
         jiraViewModel.getJiraTickets()
 
-        val captor = ArgumentCaptor.forClass(JiraIssuesResult::class.java)
-        captor.run {
-            verify(observer, times(1)).onChanged(capture())
-            assertTrue(!value.isSuccess())
-        }
+        val captor = argumentCaptor<JiraIssuesResult>()
+        verify(observer, times(1)).onChanged(captor.capture())
+        assertTrue(!captor.firstValue.isSuccess())
+
         verify(jiraRepository).closeSession()
         assertTrue(jiraViewModel.isSessionOpen.get() == false)
     }

@@ -7,18 +7,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
-import kotlin.math.abs
 import org.dhis2.maps.camera.centerCameraOnFeatures
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.carousel.CarouselBinder
 import org.dhis2.maps.carousel.CarouselLayoutManager
 import org.dhis2.maps.geometry.isPoint
 import org.dhis2.maps.managers.MapManager
+import kotlin.math.abs
 
 class CarouselView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     var carouselEnabled: Boolean = true

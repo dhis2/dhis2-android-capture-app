@@ -41,7 +41,7 @@ class ConfigureEventReportDateTest {
         configureEventReportDate = ConfigureEventReportDate(
             resourceProvider = resourcesProvider,
             repository = repository,
-            periodUtils = periodUtils
+            periodUtils = periodUtils,
         )
 
         // And has a concrete date
@@ -69,7 +69,7 @@ class ConfigureEventReportDateTest {
         configureEventReportDate = ConfigureEventReportDate(
             resourceProvider = resourcesProvider,
             repository = repository,
-            periodUtils = periodUtils
+            periodUtils = periodUtils,
         )
         val currentDay =
             DateUtils.uiDateFormat().format(DateUtils.getInstance().today)
@@ -94,13 +94,13 @@ class ConfigureEventReportDateTest {
             resourceProvider = resourcesProvider,
             repository = repository,
             periodType = periodType,
-            periodUtils = periodUtils
+            periodUtils = periodUtils,
         )
 
         val tomorrow = "16/2/2022"
 
         whenever(
-            periodUtils.getPeriodUIString(any(), any(), any())
+            periodUtils.getPeriodUIString(any(), any(), any()),
         ) doReturn tomorrow
 
         // When reportDate is invoked
@@ -118,16 +118,16 @@ class ConfigureEventReportDateTest {
             resourceProvider = resourcesProvider,
             repository = repository,
             periodUtils = periodUtils,
-            enrollmentId = ENROLLMENT_ID
+            enrollmentId = ENROLLMENT_ID,
         )
 
         val lastEventDate = "13/2/2022"
         val nextEventDate = "19/2/2022"
         whenever(
-            repository.getStageLastDate(ENROLLMENT_ID)
+            repository.getStageLastDate(ENROLLMENT_ID),
         ) doReturn DateUtils.uiDateFormat().parse(lastEventDate)
         whenever(
-            repository.getMinDaysFromStartByProgramStage()
+            repository.getMinDaysFromStartByProgramStage(),
         ) doReturn 6
 
         // When reportDate is invoked
@@ -145,7 +145,7 @@ class ConfigureEventReportDateTest {
             resourceProvider = resourcesProvider,
             repository = repository,
             periodUtils = periodUtils,
-            enrollmentId = ENROLLMENT_ID
+            enrollmentId = ENROLLMENT_ID,
         )
 
         // And with hidden due date
@@ -171,7 +171,7 @@ class ConfigureEventReportDateTest {
             resourceProvider = resourcesProvider,
             repository = repository,
             periodUtils = periodUtils,
-            enrollmentId = ENROLLMENT_ID
+            enrollmentId = ENROLLMENT_ID,
         )
 
         whenever(repository.getStageLastDate(ENROLLMENT_ID)) doReturn DateUtils.getInstance().today

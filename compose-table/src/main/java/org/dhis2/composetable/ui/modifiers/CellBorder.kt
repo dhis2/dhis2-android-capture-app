@@ -10,5 +10,5 @@ import androidx.compose.ui.unit.dp
 fun Modifier.cellBorder(borderWidth: Dp = 1.dp, borderColor: Color, backgroundColor: Color) =
     this.then(
         border(borderWidth, borderColor)
-            .background(backgroundColor)
+            .background(backgroundColor),
     )

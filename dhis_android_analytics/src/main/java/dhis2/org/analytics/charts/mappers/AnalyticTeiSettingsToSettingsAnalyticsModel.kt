@@ -12,7 +12,7 @@ import org.hisp.dhis.android.core.settings.AnalyticsTeiWHONutritionItem
 
 class AnalyticTeiSettingsToSettingsAnalyticsModel(
     private val analyticDataElementMapper: AnalyticDataElementToDataElementData,
-    private val analyticIndicatorMapper: AnalyticIndicatorToIndicatorData
+    private val analyticIndicatorMapper: AnalyticIndicatorToIndicatorData,
 ) {
     fun map(analyticsTeiSetting: AnalyticsTeiSetting): SettingsAnalyticModel {
         return if (analyticsTeiSetting.whoNutritionData() != null) {
@@ -23,13 +23,13 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
     }
 
     private fun mapNutrition(
-        analyticsTeiSetting: AnalyticsTeiSetting
+        analyticsTeiSetting: AnalyticsTeiSetting,
     ): NutritionSettingsAnalyticsModel {
         val (zScoreContainer, zScoreStageUid, yIsDataElement) = getZscoreContainer(
-            analyticsTeiSetting.whoNutritionData()!!.y()
+            analyticsTeiSetting.whoNutritionData()!!.y(),
         )
         val (ageOrHeightUid, ageOrHeightStageUid, xIsDataElement) = getAgeOrHeightContainer(
-            analyticsTeiSetting.whoNutritionData()!!.x()
+            analyticsTeiSetting.whoNutritionData()!!.x(),
         )
 
         if (zScoreStageUid != ageOrHeightStageUid) {
@@ -43,13 +43,13 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
             NutritionGenderData(
                 analyticsTeiSetting.whoNutritionData()!!.gender().attribute(),
                 analyticsTeiSetting.whoNutritionData()!!.gender().values().female(),
-                analyticsTeiSetting.whoNutritionData()!!.gender().values().male()
+                analyticsTeiSetting.whoNutritionData()!!.gender().values().male(),
             ),
             zScoreStageUid,
             zScoreContainer,
             yIsDataElement,
             ageOrHeightUid,
-            xIsDataElement
+            xIsDataElement,
         )
     }
 
@@ -64,42 +64,42 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
             analyticsTeiSetting.data()?.indicators()?.filter { it.programStage() != null }?.map {
                 analyticIndicatorMapper.map(it)
             } ?: emptyList(),
-            analyticsTeiSetting.period()?.name ?: PeriodType.Daily.name
+            analyticsTeiSetting.period()?.name ?: PeriodType.Daily.name,
         )
     }
 
     private fun getZscoreContainer(
-        y: AnalyticsTeiWHONutritionItem
+        y: AnalyticsTeiWHONutritionItem,
     ): Triple<String, String, Boolean> {
         return if (y.dataElements().isNullOrEmpty()) {
             Triple(
                 y.indicators().firstOrNull()?.indicator() ?: "",
                 y.indicators().firstOrNull()?.programStage() ?: "",
-                false
+                false,
             )
         } else {
             Triple(
                 y.dataElements().firstOrNull()?.dataElement() ?: "",
                 y.dataElements().firstOrNull()?.programStage() ?: "",
-                true
+                true,
             )
         }
     }
 
     private fun getAgeOrHeightContainer(
-        x: AnalyticsTeiWHONutritionItem
+        x: AnalyticsTeiWHONutritionItem,
     ): Triple<String, String, Boolean> {
         return if (x.dataElements().isNullOrEmpty()) {
             Triple(
                 x.indicators().firstOrNull()?.indicator() ?: "",
                 x.indicators().firstOrNull()?.programStage() ?: "",
-                false
+                false,
             )
         } else {
             Triple(
                 x.dataElements().firstOrNull()?.dataElement() ?: "",
                 x.dataElements().firstOrNull()?.programStage() ?: "",
-                true
+                true,
             )
         }
     }

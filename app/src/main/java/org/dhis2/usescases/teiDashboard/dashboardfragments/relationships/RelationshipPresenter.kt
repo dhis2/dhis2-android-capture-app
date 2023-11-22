@@ -32,7 +32,7 @@ class RelationshipPresenter internal constructor(
     private val analyticsHelper: AnalyticsHelper,
     private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
-    private val mapStyleConfig: MapStyleConfiguration
+    private val mapStyleConfig: MapStyleConfiguration,
 ) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -59,11 +59,11 @@ class RelationshipPresenter internal constructor(
                         view.setFeatureCollection(
                             teiUid,
                             relationshipModel,
-                            mapRelationshipsToFeatureCollection.map(relationshipModel)
+                            mapRelationshipsToFeatureCollection.map(relationshipModel),
                         )
                     },
-                    { Timber.d(it) }
-                )
+                    { Timber.d(it) },
+                ),
         )
 
         compositeDisposable.add(
@@ -81,8 +81,8 @@ class RelationshipPresenter internal constructor(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.initFab(it.toMutableList()) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 
@@ -125,7 +125,7 @@ class RelationshipPresenter internal constructor(
     private fun addTeiToTeiRelationship(
         teiUid: String,
         selectedTei: String,
-        relationshipTypeUid: String
+        relationshipTypeUid: String,
     ) {
         try {
             val relationship =
@@ -141,14 +141,14 @@ class RelationshipPresenter internal constructor(
     private fun addEventToTeiRelationship(
         eventUid: String,
         selectedTei: String,
-        relationshipTypeUid: String
+        relationshipTypeUid: String,
     ) {
         try {
             val relationship =
                 RelationshipHelper.eventToTeiRelationship(
                     eventUid,
                     selectedTei,
-                    relationshipTypeUid
+                    relationshipTypeUid,
                 )
             d2.relationshipModule().relationships().blockingAdd(relationship)
         } catch (e: D2Error) {
@@ -160,23 +160,23 @@ class RelationshipPresenter internal constructor(
 
     fun openDashboard(teiUid: String) {
         if (d2.trackedEntityModule()
-            .trackedEntityInstances().uid(teiUid).blockingGet()!!.state() !=
+                .trackedEntityInstances().uid(teiUid).blockingGet()!!.state() !=
             State.RELATIONSHIP
         ) {
             if (d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid).blockingGet().isNotEmpty()
+                    .byTrackedEntityInstance().eq(teiUid).blockingGet().isNotEmpty()
             ) {
                 view.openDashboardFor(teiUid)
             } else {
                 view.showTeiWithoutEnrollmentError(
                     d2.trackedEntityModule()
-                        .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: ""
+                        .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: "",
                 )
             }
         } else {
             view.showRelationshipNotFoundError(
                 d2.trackedEntityModule()
-                    .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: ""
+                    .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: "",
             )
         }
     }
@@ -197,7 +197,7 @@ class RelationshipPresenter internal constructor(
         when (ownerType) {
             RelationshipOwnerType.EVENT -> openEvent(
                 ownerUid,
-                relationshipRepository.getEventProgram(ownerUid)
+                relationshipRepository.getEventProgram(ownerUid),
             )
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }

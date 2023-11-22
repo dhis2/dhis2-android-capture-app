@@ -95,14 +95,6 @@
     <string name="program_inactive">البرنامج غير نشط</string>
 
     <string name="event_open">مفتوح</string>
-    <string name="event_completed">تم اكمال الحدث</string>
-    <string name="event_skipped">تم تجاوز الحدث</string>
-    <string name="event_schedule">تم جدولة الحدث</string>
-    <string name="event_expired">انتهت صلاحية الحدث</string>
-    <string name="event_editing_expired">انتهاء صلاحية امكانية التعديل</string>
-    <string name="event_accepted">تم قبول الحدث</string>
-    <string name="event_approved">تمت الموافقة على الحدث</string>
-    <string name="event_inactive">الحدث غير نشط</string>
     <string name="read_only">للقراءة فقط</string>
     <string name="finish_and_complete">انهاء ومكتمل</string>
     <string name="completed">مكتمل</string>
@@ -172,7 +164,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">انظر التفاصيل</string>
     <string name="view_more">عرض المزيد</string>
-    <string name="edit">تعديل</string>
     <string name="enrolling_ou">الوحدة التنظيمية المسجلة</string>
     <string name="follow_up">متابعة</string>
     <string name="follow_up_enabled">تم تمكين المتابعة</string>

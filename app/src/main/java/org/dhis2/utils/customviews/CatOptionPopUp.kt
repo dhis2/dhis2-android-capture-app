@@ -4,10 +4,10 @@ import android.content.Context
 import android.view.Menu
 import android.view.View
 import android.widget.PopupMenu
-import java.util.Date
 import org.dhis2.data.dhislogic.inDateRange
 import org.dhis2.data.dhislogic.inOrgUnit
 import org.hisp.dhis.android.core.category.CategoryOption
+import java.util.Date
 
 class CatOptionPopUp(
     val context: Context,
@@ -15,7 +15,7 @@ class CatOptionPopUp(
     val options: List<CategoryOption>,
     val date: Date?,
     private val orgUnitUid: String?,
-    private val onOptionSelected: (CategoryOption?) -> Unit
+    private val onOptionSelected: (CategoryOption?) -> Unit,
 ) : PopupMenu(context, anchor) {
 
     private val selectableOptions = options

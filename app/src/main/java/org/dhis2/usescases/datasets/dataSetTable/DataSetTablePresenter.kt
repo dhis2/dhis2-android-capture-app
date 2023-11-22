@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.processors.FlowableProcessor
-import java.util.Locale
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +19,7 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.validationrules.ValidationRuleResult
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus
+import java.util.Locale
 
 class DataSetTablePresenter(
     private val view: DataSetTableContract.View,
@@ -28,15 +28,15 @@ class DataSetTablePresenter(
     private val dispatchers: DispatcherProvider,
     private val analyticsHelper: AnalyticsHelper,
     private val updateProcessor: FlowableProcessor<Unit>,
-    private val openErrorLocation: Boolean
+    private val openErrorLocation: Boolean,
 ) : ViewModel() {
 
     private val _dataSetScreenState = MutableStateFlow(
         DataSetScreenState(
             sections = emptyList(),
             renderDetails = null,
-            initialSectionToOpenUid = null
-        )
+            initialSectionToOpenUid = null,
+        ),
     )
     val dataSetScreenState: StateFlow<DataSetScreenState> = _dataSetScreenState
 
@@ -47,17 +47,17 @@ class DataSetTablePresenter(
             }
             val renderDetails = async(dispatchers.io()) {
                 DataSetRenderDetails(
-                    tableRepository.getDataSet().blockingGet().displayName()!!,
-                    tableRepository.getOrgUnit().blockingGet().displayName()!!,
+                    tableRepository.getDataSet().blockingGet()?.displayName()!!,
+                    tableRepository.getOrgUnit().blockingGet()?.displayName()!!,
                     tableRepository.getPeriod().map { period ->
                         periodUtils.getPeriodUIString(
                             period.periodType(),
                             period.startDate()!!,
-                            Locale.getDefault()
+                            Locale.getDefault(),
                         )
                     }.blockingGet(),
                     tableRepository.getCatComboName().blockingFirst(),
-                    tableRepository.isComplete().blockingGet()
+                    tableRepository.isComplete().blockingGet(),
                 )
             }
 
@@ -66,7 +66,7 @@ class DataSetTablePresenter(
                 DataSetScreenState(
                     sections = sections,
                     renderDetails = renderDetails.await(),
-                    initialSectionToOpenUid = getFirstSection(sections, openErrorLocation)
+                    initialSectionToOpenUid = getFirstSection(sections, openErrorLocation),
                 )
             }
         }
@@ -87,7 +87,7 @@ class DataSetTablePresenter(
 
     private fun getFirstSection(
         sections: List<DataSetSection>,
-        openErrorLocation: Boolean
+        openErrorLocation: Boolean,
     ): String {
         var sectionIndexToOpen = 0
         if (openErrorLocation) {
@@ -203,7 +203,7 @@ class DataSetTablePresenter(
         analyticsHelper.trackMatomoEvent(
             Categories.DATASET_DETAIL,
             Actions.SYNC_DATASET,
-            Labels.CLICK
+            Labels.CLICK,
         )
     }
 

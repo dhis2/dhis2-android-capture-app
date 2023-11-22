@@ -4,7 +4,7 @@ data class FieldWithIssue(
     val fieldUid: String,
     val fieldName: String,
     val issueType: IssueType,
-    val message: String
+    val message: String,
 )
 
 enum class IssueType {
@@ -12,5 +12,5 @@ enum class IssueType {
     MANDATORY,
     WARNING,
     ERROR_ON_COMPLETE,
-    WARNING_ON_COMPLETE
+    WARNING_ON_COMPLETE,
 }

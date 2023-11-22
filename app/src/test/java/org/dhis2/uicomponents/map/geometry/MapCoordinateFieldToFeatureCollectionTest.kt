@@ -31,7 +31,7 @@ class MapCoordinateFieldToFeatureCollectionTest {
         mapper =
             MapCoordinateFieldToFeatureCollection(
                 dataElementToFeatureMapper,
-                attributeToFeatureMapper
+                attributeToFeatureMapper,
             )
     }
 
@@ -60,22 +60,22 @@ class MapCoordinateFieldToFeatureCollectionTest {
                 ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
                 DataElement.builder().uid("deUid").displayFormName("deName").build(),
                 Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
             ),
             CoordinateDataElementInfo(
                 Event.builder().uid("eventUid").programStage("stageUid").build(),
                 ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
                 DataElement.builder().uid("de2Uid").displayFormName("de2Name").build(),
                 Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
             ),
             CoordinateDataElementInfo(
                 Event.builder().uid("event2Uid").programStage("stageUid").build(),
                 ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
                 DataElement.builder().uid("deUid").displayFormName("deName").build(),
                 Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
-            )
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+            ),
         )
     }
 
@@ -84,19 +84,19 @@ class MapCoordinateFieldToFeatureCollectionTest {
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
                 TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
                 TrackedEntityAttribute.builder().uid("attr2Uid")
                     .displayFormName("attr2Name").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("tei2Uid").build(),
                 TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
-            )
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+            ),
         )
     }
 }

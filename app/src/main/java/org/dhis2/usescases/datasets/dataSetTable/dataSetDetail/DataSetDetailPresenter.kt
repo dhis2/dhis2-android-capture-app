@@ -16,7 +16,7 @@ class DataSetDetailPresenter(
     val repository: DataSetTableRepositoryImpl,
     val schedulers: SchedulerProvider,
     val matomoAnalyticsController: MatomoAnalyticsController,
-    val updateProcessor: FlowableProcessor<Unit>
+    val updateProcessor: FlowableProcessor<Unit>,
 ) {
 
     private val disposable = CompositeDisposable()
@@ -34,21 +34,23 @@ class DataSetDetailPresenter(
                             view.setCatOptComboName(name)
                         }
                     },
-                    { error -> Timber.d(error) }
-                )
+                    { error -> Timber.d(error) },
+                ),
         )
 
         disposable.add(
             updateProcessor.startWith(Unit)
                 .switchMap {
-                    Flowable.combineLatest<DataSetInstance,
+                    Flowable.combineLatest<
+                        DataSetInstance,
                         Period,
                         Boolean,
-                        Trio<DataSetInstance, Period, Boolean>>(
+                        Trio<DataSetInstance, Period, Boolean>,
+                        >(
                         repository.dataSetInstance(),
                         repository.getPeriod().toFlowable(),
                         repository.isComplete().toFlowable(),
-                        { t1, t2, t3 -> Trio.create(t1, t2, t3) }
+                        { t1, t2, t3 -> Trio.create(t1, t2, t3) },
                     )
                 }
                 .subscribeOn(schedulers.io())
@@ -58,11 +60,11 @@ class DataSetDetailPresenter(
                         view.setDataSetDetails(
                             data.val0()!!,
                             data.val1()!!,
-                            data.val2() == true
+                            data.val2() == true,
                         )
                     },
-                    { error -> Timber.d(error) }
-                )
+                    { error -> Timber.d(error) },
+                ),
         )
         disposable.add(
             repository.getDataSet()
@@ -71,8 +73,8 @@ class DataSetDetailPresenter(
                 .observeOn(schedulers.ui())
                 .subscribe(
                     { style -> view.setStyle(style) },
-                    { error -> Timber.d(error) }
-                )
+                    { error -> Timber.d(error) },
+                ),
         )
 
         disposable.add(
@@ -81,8 +83,8 @@ class DataSetDetailPresenter(
                 .observeOn(schedulers.io())
                 .subscribe(
                     { updateProcessor.onNext(Unit) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 

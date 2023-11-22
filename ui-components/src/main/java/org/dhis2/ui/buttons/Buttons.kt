@@ -19,12 +19,12 @@ import org.dhis2.ui.model.ButtonUiModel
 fun Dhis2TextButton(
     modifier: Modifier = Modifier,
     model: ButtonUiModel,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     TextButton(
         modifier = modifier,
         onClick = model.onClick,
-        enabled = model.enabled
+        enabled = model.enabled,
     ) {
         leadingIcon?.let {
             it.invoke()
@@ -32,7 +32,7 @@ fun Dhis2TextButton(
         }
         Text(
             text = model.text,
-            fontSize = 12.sp
+            fontSize = 12.sp,
         )
     }
 }
@@ -41,11 +41,11 @@ fun Dhis2TextButton(
 fun Dhis2Button(
     modifier: Modifier = Modifier,
     model: ButtonUiModel,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     Button(
         modifier = modifier,
-        onClick = model.onClick
+        onClick = model.onClick,
     ) {
         leadingIcon?.let {
             it.invoke()
@@ -53,7 +53,7 @@ fun Dhis2Button(
         }
         Text(
             text = model.text,
-            fontSize = 12.sp
+            fontSize = 12.sp,
         )
     }
 }
@@ -63,11 +63,11 @@ fun Dhis2Button(
 fun Dhis2TextButtonPreview() {
     Dhis2TextButton(
         model = ButtonUiModel(
-            text = "Action"
+            text = "Action",
         ) {},
         leadingIcon = {
             Icon(imageVector = Icons.Default.Add, contentDescription = "")
-        }
+        },
     )
 }
 
@@ -76,10 +76,10 @@ fun Dhis2TextButtonPreview() {
 fun Dhis2ButtonPreview() {
     Dhis2Button(
         model = ButtonUiModel(
-            text = "Action"
+            text = "Action",
         ) {},
         leadingIcon = {
             Icon(imageVector = Icons.Default.Add, contentDescription = "")
-        }
+        },
     )
 }

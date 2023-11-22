@@ -57,7 +57,7 @@ class GraphToRadarChart {
 
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                DEFAULT_RADAR_CHART_HEIGHT
+                DEFAULT_RADAR_CHART_HEIGHT,
             )
         }
     }

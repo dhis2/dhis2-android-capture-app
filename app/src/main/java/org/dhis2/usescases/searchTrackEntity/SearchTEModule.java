@@ -11,12 +11,14 @@ import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
-import org.dhis2.commons.resources.D2ErrorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -32,6 +34,7 @@ import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
+import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
@@ -59,6 +62,7 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
+import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -106,11 +110,12 @@ public class SearchTEModule {
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SyncStatusController syncStatusController,
-                                                       ResourceManager resourceManager) {
+                                                       ResourceManager resourceManager,
+                                                       ColorUtils colorUtils) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, syncStatusController, resourceManager);
+                matomoAnalyticsController, syncStatusController, resourceManager, colorUtils);
     }
 
     @Provides
@@ -162,13 +167,14 @@ public class SearchTEModule {
     FieldViewModelFactory fieldViewModelFactory(
             Context context,
             D2 d2,
-            ResourceManager resourceManager
+            ResourceManager resourceManager,
+            ColorUtils colorUtils
     ) {
         return new FieldViewModelFactoryImpl(
                 true,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(moduleContext, false),
-                        new LongTextUiColorFactoryImpl(moduleContext, false),
+                        new FormUiModelColorFactoryImpl(moduleContext, false, colorUtils),
+                        new LongTextUiColorFactoryImpl(moduleContext, false, colorUtils),
                         false
                 ),
                 new LayoutProviderImpl(),
@@ -180,7 +186,9 @@ public class SearchTEModule {
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
-                new LegendValueProviderImpl(d2, resourceManager));
+                new LegendValueProviderImpl(d2, resourceManager),
+                new AutoCompleteProviderImpl(new PreferenceProviderImpl(context))
+        );
     }
 
     @Provides
@@ -242,7 +250,9 @@ public class SearchTEModule {
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
-            D2 d2) {
+            D2 d2,
+            FilterRepository filterRepository
+    ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
                 new SearchPageConfigurator(searchRepository),
@@ -277,5 +287,22 @@ public class SearchTEModule {
     @PerActivity
     SearchNavigator searchNavigator(D2 d2) {
         return new SearchNavigator((SearchTEActivity) moduleContext, new SearchNavigationConfiguration(d2));
+    }
+
+    @Provides
+    @PerActivity
+    TEICardMapper provideListCardMapper(
+            Context context,
+            ResourceManager resourceManager
+    ) {
+        return new TEICardMapper(context, resourceManager);
+    }
+
+    @Provides
+    @PerActivity
+    WorkingListViewModelFactory provideWorkingListViewModelFactory(
+            FilterRepository filterRepository
+    ) {
+        return new WorkingListViewModelFactory(initialProgram, filterRepository);
     }
 }

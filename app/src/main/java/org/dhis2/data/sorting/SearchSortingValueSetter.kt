@@ -1,8 +1,5 @@
 package org.dhis2.data.sorting
 
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.sorting.SortingItem
@@ -11,6 +8,9 @@ import org.dhis2.data.enrollment.EnrollmentUiDataHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventStatus
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class SearchSortingValueSetter(
     private val d2: D2,
@@ -19,7 +19,7 @@ class SearchSortingValueSetter(
     private val enrollmentStatusLabel: String,
     private val enrollmentDateDefaultLabel: String,
     private val uiDateFormat: String,
-    private val enrollmentUiDataHelper: EnrollmentUiDataHelper
+    private val enrollmentUiDataHelper: EnrollmentUiDataHelper,
 ) {
 
     fun setSortingItem(teiModel: SearchTeiModel, sortingItem: SortingItem?): Pair<String, String>? {
@@ -41,7 +41,7 @@ class SearchSortingValueSetter(
 
     private fun getTeiSortedEvent(
         teiModel: SearchTeiModel,
-        sortingStatus: SortingStatus
+        sortingStatus: SortingStatus,
     ): Pair<String, String>? {
         var eventDate = unknownLabel
         val sortedEvents = d2.eventModule().events()
@@ -52,7 +52,7 @@ class SearchSortingValueSetter(
                     RepositoryScope.OrderByDirection.ASC
                 } else {
                     RepositoryScope.OrderByDirection.DESC
-                }
+                },
             )
             .blockingGet()
         if (sortedEvents != null && sortedEvents.isNotEmpty()) {
@@ -77,7 +77,7 @@ class SearchSortingValueSetter(
         if (teiModel.selectedEnrollment != null) {
             enrollmentStatusValue =
                 enrollmentUiDataHelper.getEnrollmentStatusClientName(
-                    teiModel.selectedEnrollment.status()!!
+                    teiModel.selectedEnrollment.status()!!,
                 )
         }
         return Pair(enrollmentStatusLabel, enrollmentStatusValue)
@@ -87,7 +87,7 @@ class SearchSortingValueSetter(
         return teiModel.selectedEnrollment?.let {
             val enrollmentDateLabel = d2.programModule().programs()
                 .uid(it.program())
-                .blockingGet().enrollmentDateLabel() ?: enrollmentDateDefaultLabel
+                .blockingGet()?.enrollmentDateLabel() ?: enrollmentDateDefaultLabel
             val enrollmentDateValue = SimpleDateFormat(uiDateFormat, Locale.getDefault())
                 .format(teiModel.selectedEnrollment.enrollmentDate())
             Pair(enrollmentDateLabel, enrollmentDateValue)
