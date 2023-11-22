@@ -24,13 +24,32 @@ data class Graph(
     val errorMessage: String? = null,
 ) {
 
-    private fun minDate() = series.minOfOrNull { serie ->
-        serie.coordinates.minOf { point -> point.eventDate }
-    }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
+    private fun minDate(): LocalDate? {
+        val coordinatesNotEmpty = series.minOfOrNull { serie ->
+            serie.coordinates.isNotEmpty()
+        }
+        return if (series.isNotEmpty() && coordinatesNotEmpty == true) {
+            val minDate = series.minOfOrNull { serie ->
+                serie.coordinates.minOf { point -> point.eventDate }
+            }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
 
-    private fun maxDate() = series.maxOfOrNull { serie ->
-        serie.coordinates.maxOf { point -> point.eventDate }
-    }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
+            return minDate
+        } else { LocalDate.now() }
+    }
+
+    private fun maxDate(): LocalDate? {
+        val coordinatesNotEmpty = series.maxOfOrNull { serie ->
+            serie.coordinates.isNotEmpty()
+        }
+
+        return if (series.isNotEmpty() && coordinatesNotEmpty == true) {
+            val maxDate = series.maxOfOrNull { serie ->
+                serie.coordinates.maxOf { point -> point.eventDate }
+            }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
+
+            return maxDate
+        } else { LocalDate.now() }
+    }
 
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
@@ -116,7 +135,7 @@ data class Graph(
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov,
             -> {
-                val date = minDate().plusMonths(numberOfSteps)
+                val date = minDate()?.plusMonths(numberOfSteps)
                 YearMonth.from(date).atDay(1)
             }
 
@@ -126,7 +145,7 @@ data class Graph(
             PeriodType.FinancialOct,
             PeriodType.FinancialNov,
             -> {
-                val date = minDate().plusYears(numberOfSteps)
+                val date = minDate()?.plusYears(numberOfSteps)
                 YearMonth.from(date).atDay(1)
             }
         }
