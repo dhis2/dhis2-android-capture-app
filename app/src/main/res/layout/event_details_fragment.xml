@@ -97,100 +97,10 @@
                         tools:text="Not available" />
                 </LinearLayout>
 
-                <LinearLayout
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/fieldsContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/date_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@{viewModel.eventDate.label}"
-                        android:textColorHint="@color/text_black_808"
-                        android:visibility="@{viewModel.eventDate.active ? View.VISIBLE:View.GONE}">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/date"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:enabled="@{viewModel.eventDetails.enabled}"
-                            android:focusable="false"
-                            android:onClick="@{() -> viewModel.onDateClick()}"
-                            android:text="@{viewModel.eventDate.dateValue}"
-                            android:textSize="15sp" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/org_unit_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:enabled="@{viewModel.eventDetails.enabled &amp;&amp; viewModel.eventOrgUnit.enable}"
-                    android:hint="@string/org_unit"
-                    android:textColorHint="@color/text_black_808"
-                    android:visibility="@{viewModel.eventOrgUnit.visible ? View.VISIBLE:View.GONE}">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/org_unit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:onClick="@{() -> viewModel.onOrgUnitClick()}"
-                        android:text="@{viewModel.eventOrgUnit.selectedOrgUnit.displayName}"
-                        android:textSize="15sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:id="@+id/catComboLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:setCatCombo="@{viewModel.eventCatCombo}"
-                    app:setViewModel="@{viewModel}"
-                    app:enabled="@{viewModel.eventDetails.enabled}"/>
-
-                <include
-                    android:id="@+id/coordinateField"
-                    layout="@layout/form_coordinate_custom"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.eventCoordinates.active ? View.VISIBLE:View.GONE}"
-                    app:item="@{viewModel.eventCoordinates.model}" />
-
-                <RadioGroup
-                    android:id="@+id/temp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
-                    android:enabled="@{viewModel.eventDetails.enabled}"
-                    android:orientation="horizontal"
-                    android:visibility="@{viewModel.eventTemp.active ? View.VISIBLE:View.GONE}">
-
-                    <androidx.appcompat.widget.AppCompatRadioButton
-                        android:id="@+id/one_time"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.ONE_TIME ,checked)}"
-                        android:text="@string/one_time"
-                        app:buttonTint="@color/text_black_333" />
-
-                    <androidx.appcompat.widget.AppCompatRadioButton
-                        android:id="@+id/permanent"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.PERMANENT ,checked)}"
-                        android:text="@string/permanent"
-                        app:buttonTint="@color/text_black_333" />
-
-                </RadioGroup>
+                    android:layout_height="wrap_content" />
 
                 <androidx.compose.ui.platform.ComposeView
                     android:id="@+id/reopenButton"

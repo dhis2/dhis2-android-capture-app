@@ -16,7 +16,6 @@ import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -145,7 +144,10 @@ class TeiDashboardTest : BaseTest() {
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
-            clickOnReferralOption()
+            clickOnReferralOption(
+                composeTestRule,
+                context.getString(R.string.one_time)
+            )
             clickOnReferralNextButton()
             checkEventWasCreated(LAB_MONITORING)
         }

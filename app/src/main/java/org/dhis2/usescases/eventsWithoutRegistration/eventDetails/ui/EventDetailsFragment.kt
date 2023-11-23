@@ -8,6 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -27,16 +34,21 @@ import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
-import org.dhis2.utils.customviews.CatOptionPopUp
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -48,6 +60,9 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     @Inject
     lateinit var factory: EventDetailsViewModelFactory
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     private val requestLocationPermissions =
         registerForActivityResult(
@@ -119,6 +134,89 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         )
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        binding.fieldsContainer.setContent {
+            val date by viewModel.eventDate.collectAsState()
+            val details by viewModel.eventDetails.collectAsState()
+            val orgUnit by viewModel.eventOrgUnit.collectAsState()
+            val catCombo by viewModel.eventCatCombo.collectAsState()
+            val coordinates by viewModel.eventCoordinates.collectAsState()
+            val eventTemp by viewModel.eventTemp.collectAsState()
+
+            Column {
+                if (date.active) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideInputDate(
+                        eventDate = date,
+                        detailsEnabled = details.enabled,
+                        onDateClick = { viewModel.onDateClick() },
+                        onDateSet = { dateValues ->
+                            viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
+                        },
+                        onClear = { viewModel.onClearEventReportDate() },
+                        required = true,
+                    )
+                }
+                if (orgUnit.visible) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideOrgUnit(
+                        orgUnit = orgUnit,
+                        detailsEnabled = details.enabled,
+                        onOrgUnitClick = { viewModel.onOrgUnitClick() },
+                        resources = resourceManager,
+                        onClear = {
+                            viewModel.onClearOrgUnit()
+                        },
+                        required = true,
+                    )
+                }
+
+                if (!catCombo.isDefault) {
+                    catCombo.categories.forEach { category ->
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ProvideCategorySelector(
+                            category = category,
+                            eventCatCombo = catCombo,
+                            detailsEnabled = details.enabled,
+                            currentDate = date.currentDate,
+                            selectedOrgUnit = details.selectedOrgUnit,
+                            onShowCategoryDialog = {
+                                showCategoryDialog(it)
+                            },
+                            onClearCatCombo = {
+                                viewModel.onClearCatCombo()
+                            },
+                            onOptionSelected = {
+                                val selectedOption = Pair(category.uid, it?.uid())
+                                viewModel.setUpCategoryCombo(selectedOption)
+                            },
+
+                            required = true,
+                        )
+                    }
+                }
+
+                if (coordinates.active) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideCoordinates(
+                        coordinates = coordinates,
+                        detailsEnabled = details.enabled,
+                        resources = resourceManager,
+                    )
+                }
+
+                if (eventTemp.active) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProvideRadioButtons(
+                        eventTemp = eventTemp,
+                        detailsEnabled = details.enabled,
+                        resources = resourceManager,
+                        onEventTempSelected = {
+                            viewModel.setUpEventTemp(it)
+                        },
+                    )
+                }
+            }
+        }
         return binding.root
     }
 
@@ -145,14 +243,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
         viewModel.showNoOrgUnits = {
             showNoOrgUnitsDialog()
-        }
-
-        viewModel.showCategoryDialog = { category ->
-            showCategoryDialog(category)
-        }
-
-        viewModel.showCategoryPopUp = { category ->
-            showCategoryPopUp(category)
         }
 
         viewModel.requestLocationPermissions = {
@@ -247,7 +337,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 OrgUnitSelectorScope.ProgramCaptureScope(viewModel.eventOrgUnit.value.programUid!!),
             )
             .onSelection { selectedOrgUnits ->
-                viewModel.setUpOrgUnit(selectedOrgUnit = selectedOrgUnits.first().uid())
+                viewModel.setUpOrgUnit(selectedOrgUnit = selectedOrgUnits.firstOrNull()?.uid())
             }
             .build()
             .show(childFragmentManager, "ORG_UNIT_DIALOG")
@@ -255,19 +345,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showNoOrgUnitsDialog() {
         showInfoDialog(getString(R.string.error), getString(R.string.no_org_units))
-    }
-
-    private fun showCategoryPopUp(category: EventCategory) {
-        CatOptionPopUp(
-            context = requireContext(),
-            anchor = binding.catComboLayout,
-            options = category.options,
-            date = viewModel.eventDate.value.currentDate,
-            orgUnitUid = viewModel.eventDetails.value.selectedOrgUnit,
-        ) { categoryOption ->
-            val selectedOption = Pair(category.uid, categoryOption?.uid())
-            viewModel.setUpCategoryCombo(selectedOption)
-        }.show()
     }
 
     private fun showCategoryDialog(category: EventCategory) {

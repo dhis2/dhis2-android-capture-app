@@ -19,8 +19,9 @@ fun ProvideUnitIntervalInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    onNextClicked: () -> Unit,
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
     InputUnitInterval(
@@ -31,6 +32,7 @@ fun ProvideUnitIntervalInput(
         legendData = fieldUiModel.legend(),
         inputText = value ?: "",
         isRequiredField = fieldUiModel.mandatory,
+        onNextClicked = onNextClicked,
         onValueChanged = {
             value = it
             intentHandler(

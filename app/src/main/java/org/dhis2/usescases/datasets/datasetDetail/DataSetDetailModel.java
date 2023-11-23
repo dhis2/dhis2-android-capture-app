@@ -12,6 +12,10 @@ import java.util.Date;
 @AutoValue
 public abstract class DataSetDetailModel {
 
+
+    @NonNull
+    public abstract String datasetUid();
+
     @NonNull
     public abstract String orgUnitUid();
 
@@ -49,7 +53,7 @@ public abstract class DataSetDetailModel {
     public abstract String nameCategoryOptionCombo();
 
     @NonNull
-    public static DataSetDetailModel create(@NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state, String periodType, Boolean displayOrgUnitName, Boolean isComplete, Date lastUpdated, String nameCategoryOptionCombo) {
-        return new AutoValue_DataSetDetailModel(orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state, periodType, displayOrgUnitName, isComplete, lastUpdated, nameCategoryOptionCombo);
+    public static DataSetDetailModel create(@NonNull String datasetUid, @NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state, String periodType, Boolean displayOrgUnitName, Boolean isComplete, Date lastUpdated, String nameCategoryOptionCombo) {
+        return new AutoValue_DataSetDetailModel(datasetUid, orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state, periodType, displayOrgUnitName, isComplete, lastUpdated, nameCategoryOptionCombo);
     }
 }

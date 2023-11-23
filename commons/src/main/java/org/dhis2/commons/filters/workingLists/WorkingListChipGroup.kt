@@ -79,7 +79,11 @@ fun WorkingListChipGroup(
     workingListViewModel: WorkingListViewModel,
 ) {
     val workingListFilterState = workingListViewModel.workingListFilter.observeAsState()
-    var selectedWorkingList by remember { mutableStateOf<WorkingListItem?>(null) }
+    var selectedWorkingList by remember {
+        mutableStateOf(
+            FilterManager.getInstance().currentWorkingList(),
+        )
+    }
 
     workingListFilterState.value?.let { workingListFilter ->
         LazyRow(modifier) {
@@ -95,15 +99,12 @@ fun WorkingListChipGroup(
                     ),
                     label = workingList.label,
                     selected = selectedWorkingList == workingList,
-                    onSelected = { _ -> workingListFilter.onChecked(workingList.id()) },
+                    onSelected = { _ ->
+                        workingListFilter.onChecked(workingList.id())
+                        selectedWorkingList = FilterManager.getInstance().currentWorkingList()
+                    },
                 )
             }
         }
-        workingListFilter.observeScope()
-            .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-                override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                    selectedWorkingList = FilterManager.getInstance().currentWorkingList()
-                }
-            })
     }
 }

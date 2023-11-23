@@ -7,6 +7,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -192,7 +193,11 @@ public class SyncMetadataWorker extends Worker {
                         .setProgress(100, progress, false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        setForegroundAsync(new ForegroundInfo(SyncMetadataWorker.SYNC_METADATA_ID, notificationBuilder.build()));
+        setForegroundAsync(new ForegroundInfo(
+                SyncMetadataWorker.SYNC_METADATA_ID,
+                notificationBuilder.build(),
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC : 0
+        ));
     }
 
     private void cancelNotification() {

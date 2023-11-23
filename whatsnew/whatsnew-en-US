@@ -1,9 +1,12 @@
-This is a Patch version that fixes:
-ANDROAPP-3106 [Bug]Error when searching with comma char in the values
-ANDROAPP-4322 Analytics legends don't show event's exact date
-ANDROAPP-4710 Mandatory Fields
-ANDROAPP-5253 Event status filter doesn't remove checkmarks after the reset
-ANDROAPP-5255 Loading bar never hides in overview screen
-ANDROAPP-5271 After finishing transaction, orgunit on the Dialog is not reset
+This new version includes the following features:
+- New design for Dataset, Event and TEI cards
+- Implement changes in TEI Dashboard details
+- Data entry forms redesigned
+- Disable collapsible sections in forms
+- Disable referral in tracker programs
+- [EXPERIMENTAL] TEI Header
+- Move working lists under the search bar
+- Skip home if users only have access to one program
+- Display program stage description
 
 You can find all details in Github (github.com/dhis2/dhis2-android-capture-app) releases

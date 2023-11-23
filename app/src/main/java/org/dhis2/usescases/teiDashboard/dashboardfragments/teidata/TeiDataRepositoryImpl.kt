@@ -1,29 +1,22 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
-import org.dhis2.bindings.applyFilters
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
-import org.dhis2.commons.filters.Filters
-import org.dhis2.commons.filters.sorting.SortingItem
-import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
-import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -40,33 +33,13 @@ class TeiDataRepositoryImpl(
     override fun getTEIEnrollmentEvents(
         selectedStage: StageSection,
         groupedByStage: Boolean,
-        periodFilters: MutableList<DatePeriod>,
-        orgUnitFilters: MutableList<String>,
-        stateFilters: MutableList<State>,
-        assignedToMe: Boolean,
-        eventStatusFilters: MutableList<EventStatus>,
-        catOptComboFilters: MutableList<CategoryOptionCombo>,
-        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
-        var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
-
-        eventRepo = eventRepo.applyFilters(
-            periodFilters,
-            orgUnitFilters,
-            stateFilters,
-            if (assignedToMe) {
-                d2.userModule().user().blockingGet()?.uid()
-            } else {
-                null
-            },
-            eventStatusFilters,
-            catOptComboFilters,
-        )
+        val eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
         return if (groupedByStage) {
-            getGroupedEvents(eventRepo, selectedStage, sortingItem)
+            getGroupedEvents(eventRepo, selectedStage)
         } else {
-            getTimelineEvents(eventRepo, sortingItem)
+            getTimelineEvents(eventRepo)
         }
     }
 
@@ -161,13 +134,14 @@ class TeiDataRepositoryImpl(
     }
 
     override fun getTeiHeader(): String? {
-        return d2.trackedEntityModule().trackedEntitySearch().uid(teiUid).blockingGet()?.header
+        return d2.trackedEntityModule().trackedEntitySearch()
+            .byProgram().eq(programUid)
+            .uid(teiUid).blockingGet()?.header
     }
 
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,
-        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
@@ -181,8 +155,9 @@ class TeiDataRepositoryImpl(
                     eventRepo = eventRepository.byDeleted().isFalse
                         .byProgramStageUid().eq(programStage.uid())
 
-                    eventRepo = eventRepoSorting(sortingItem, eventRepo)
-                    val eventList = eventRepo.blockingGet()
+                    val eventList = eventRepo
+                        .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
+                        .blockingGet()
 
                     val isSelected = programStage.uid() == selectedStage.stageUid
 
@@ -253,14 +228,11 @@ class TeiDataRepositoryImpl(
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
-        sortingItem: SortingItem?,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
-        var eventRepo = eventRepository
 
-        eventRepo = eventRepoSorting(sortingItem, eventRepo)
-
-        return eventRepo
+        return eventRepository
+            .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
             .byDeleted().isFalse
             .get()
             .map { eventList ->
@@ -310,39 +282,6 @@ class TeiDataRepositoryImpl(
                 .categoryCombos()
                 .uid(it)
                 .blockingGet()
-        }
-    }
-
-    private fun eventRepoSorting(
-        sortingItem: SortingItem?,
-        eventRepo: EventCollectionRepository,
-    ): EventCollectionRepository {
-        return if (sortingItem != null) {
-            when (sortingItem.filterSelectedForSorting) {
-                Filters.ORG_UNIT ->
-                    if (sortingItem.sortingStatus == SortingStatus.ASC) {
-                        eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.ASC)
-                    } else {
-                        eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.DESC)
-                    }
-
-                Filters.PERIOD -> {
-                    if (sortingItem.sortingStatus === SortingStatus.ASC) {
-                        eventRepo
-                            .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-                    } else {
-                        eventRepo
-                            .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
-                    }
-                }
-
-                else -> {
-                    eventRepo
-                }
-            }
-        } else {
-            eventRepo
-                .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
         }
     }
 

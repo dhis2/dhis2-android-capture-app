@@ -33,14 +33,12 @@ internal fun ProvideSequentialInput(
     fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.forEach() { option ->
         val color =
             ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
-        option.style().icon()?.let {
-        }
         var icon = option.style().icon() ?: "dhis2_default_outline"
         if (!icon.startsWith("dhis2_")) {
             icon = "dhis2_$icon"
         }
         val iconCardItem = IconCardData(
-            uid = fieldUiModel.uid,
+            uid = option.code() ?: "",
             label = option.displayName() ?: "",
             iconRes = icon,
             iconTint = Color(color),
@@ -50,7 +48,7 @@ internal fun ProvideSequentialInput(
                 iconCardItem,
             )
         }
-        if (fieldUiModel.displayName == option.displayName()) matrixSelectedItem = iconCardItem
+        if (fieldUiModel.displayName == option.code() || fieldUiModel.displayName == option.displayName()) matrixSelectedItem = iconCardItem
     }
 
     InputSequential(
@@ -65,7 +63,7 @@ internal fun ProvideSequentialInput(
                 newSelectedItem
             }
             fieldUiModel.onItemClick()
-            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.label
+            val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.uid
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,

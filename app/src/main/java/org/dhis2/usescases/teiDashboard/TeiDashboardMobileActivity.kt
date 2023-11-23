@@ -182,7 +182,6 @@ class TeiDashboardMobileActivity :
                 getString(R.string.msg_network_connection_maps),
             )
         }
-        binding.syncButton.visibility = if (programUid != null) View.VISIBLE else View.GONE
         binding.syncButton.setOnClickListener { openSyncDialog() }
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()

@@ -2,10 +2,10 @@ package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -151,14 +151,13 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
     }
 
-    fun clickOnReferralOption() {
-        onView(withId(R.id.one_time)).perform(click())
+    fun clickOnReferralOption(composeTestRule: ComposeTestRule, oneTime: String) {
+        composeTestRule.onNodeWithText(oneTime).performClick()
     }
 
     fun clickOnReferralNextButton() {
         waitForView(withId(R.id.action_button)).perform(click())
     }
-    
 
     fun checkEventWasCreated(eventName: String) {
         onView(withId(R.id.tei_recycler))

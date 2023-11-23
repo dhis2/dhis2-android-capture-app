@@ -166,7 +166,7 @@ internal class ProgramRepositoryImpl(
                     else ->
                         ProgramDownloadState.NONE
                 },
-                downloadActive = syncStatusData.running,
+                downloadActive = syncStatusData.running ?: false,
             )
         }
     }

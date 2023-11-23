@@ -172,6 +172,7 @@ class FormViewModel(
                 if (action.valueType == ValueType.COORDINATE) {
                     repository.setFieldRequestingCoordinates(action.id, false)
                 }
+
                 repository.updateErrorList(action)
                 if (action.error != null) {
                     StoreResult(
@@ -242,8 +243,16 @@ class FormViewModel(
                 )
             }
 
-            ActionType.ON_CANCELL_REQUEST_COORDINATES -> {
+            ActionType.ON_CANCEL_REQUEST_COORDINATES -> {
                 repository.setFieldRequestingCoordinates(action.id, false)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
+            }
+
+            ActionType.ON_ADD_IMAGE_FINISHED -> {
+                repository.setFieldAddingImage(action.id, false)
                 StoreResult(
                     action.id,
                     ValueStoreResult.VALUE_HAS_NOT_CHANGED,
@@ -279,7 +288,6 @@ class FormViewModel(
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         val error = checkFieldError(it.valueType, it.value, it.fieldMask)
         if (error != null) {
-            // save autocomplete form here
             val action = rowActionFromIntent(
                 FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
             )
@@ -302,16 +310,17 @@ class FormViewModel(
         ValueStoreResult.VALUE_HAS_NOT_CHANGED,
     )
 
-    private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) = getLastFocusedTextItem()?.let {
-        if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && fieldUidModel.value != null) {
-            val autoCompleteValues =
-                getListFromPreference(fieldUidModel.uid)
-            if (!autoCompleteValues.contains(fieldUidModel.value)) {
-                autoCompleteValues.add(fieldUidModel.value.toString())
-                saveListToPreference(fieldUidModel.uid, autoCompleteValues)
+    private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) =
+        getLastFocusedTextItem()?.let {
+            if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0) {
+                val autoCompleteValues =
+                    getListFromPreference(fieldUidModel.uid)
+                if (!autoCompleteValues.contains(fieldUidModel.value)) {
+                    autoCompleteValues.add(fieldUidModel.value.toString())
+                    saveListToPreference(fieldUidModel.uid, autoCompleteValues)
+                }
             }
         }
-    }
 
     fun valueTypeIsTextField(valueType: ValueType?, renderType: UiRenderType? = null): Boolean {
         return if (valueType == null) {
@@ -446,7 +455,14 @@ class FormViewModel(
                 createRowAction(
                     uid = intent.uid,
                     value = null,
-                    actionType = ActionType.ON_CANCELL_REQUEST_COORDINATES,
+                    actionType = ActionType.ON_CANCEL_REQUEST_COORDINATES,
+                )
+
+            is FormIntent.OnAddImageFinished ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = null,
+                    actionType = ActionType.ON_ADD_IMAGE_FINISHED,
                 )
 
             is FormIntent.OnStoreFile ->
@@ -456,13 +472,29 @@ class FormViewModel(
                     actionType = ActionType.ON_STORE_FILE,
                     valueType = intent.valueType,
                 )
+
+            is FormIntent.OnSaveDate -> {
+                val error = checkFieldError(
+                    valueType = intent.valueType,
+                    fieldValue = intent.value,
+                    allowFutureDates = intent.allowFutureDates,
+                )
+
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    error = error,
+                    valueType = intent.valueType,
+                )
+            }
         }
     }
 
     private fun checkFieldError(
         valueType: ValueType?,
         fieldValue: String?,
-        fieldMask: String?,
+        fieldMask: String? = null,
+        allowFutureDates: Boolean? = null,
     ): Throwable? {
         if (fieldValue.isNullOrEmpty()) {
             return null
@@ -471,18 +503,19 @@ class FormViewModel(
         return fieldValue.let { value ->
             val result = when (valueType) {
                 ValueType.DATE -> {
-                    validateDateFormats(fieldValue, valueType)
+                    validateDateFormats(fieldValue, valueType, allowFutureDates)
                 }
+
                 ValueType.TIME -> {
                     validateTimeFormat(fieldValue, valueType)
                 }
 
                 ValueType.DATETIME -> {
-                    validateDateTimeFormat(fieldValue, valueType)
+                    validateDateTimeFormat(fieldValue, valueType, allowFutureDates)
                 }
 
                 ValueType.AGE -> {
-                    validateDateFormats(fieldValue, valueType)
+                    validateDateFormats(fieldValue, valueType, allowFutureDates)
                 }
 
                 else -> {
@@ -507,6 +540,7 @@ class FormViewModel(
     private fun validateDateTimeFormat(
         dateTimeString: String,
         valueType: ValueType,
+        allowFutureDates: Boolean?,
     ): Result<String, Throwable> {
         val regex = Regex("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")
 
@@ -516,11 +550,14 @@ class FormViewModel(
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
 
-        return try {
-            LocalDateTime.parse(dateTimeString, formatter)
-            valueType.validator.validate(dateTimeString)
+        try {
+            val date = LocalDateTime.parse(dateTimeString, formatter)
+            if (allowFutureDates == false && date.isAfter(LocalDateTime.now())) {
+                return Result.Failure(DateFailure.ParseException)
+            }
+            return valueType.validator.validate(dateTimeString)
         } catch (e: DateTimeParseException) {
-            Result.Failure(DateTimeFailure.ParseException)
+            return Result.Failure(DateTimeFailure.ParseException)
         }
     }
 
@@ -539,14 +576,18 @@ class FormViewModel(
     private fun validateDateFormats(
         dateString: String,
         valueType: ValueType,
+        allowFutureDates: Boolean?,
     ): Result<String, Throwable> {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        return try {
-            LocalDate.parse(dateString, formatter)
-            valueType.validator.validate(dateString)
+        try {
+            val date = LocalDate.parse(dateString, formatter)
+            if (allowFutureDates == false && date.isAfter(LocalDate.now())) {
+                return Result.Failure(DateFailure.ParseException)
+            }
+            return valueType.validator.validate(dateString)
         } catch (e: DateTimeParseException) {
-            Result.Failure(DateFailure.ParseException)
+            return Result.Failure(DateFailure.ParseException)
         }
     }
 
@@ -599,7 +640,7 @@ class FormViewModel(
     }
 
     fun getFocusedItemUid(): String? {
-        return items.value?.first { it.focused }?.uid
+        return items.value?.firstOrNull { it.focused }?.uid
     }
 
     private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {
@@ -719,6 +760,7 @@ class FormViewModel(
         val type = object : TypeToken<List<String>>() {}.type
         return gson.fromJson(json, type)
     }
+
     private fun saveListToPreference(uid: String, list: List<String>) {
         val gson = Gson()
         val json = gson.toJson(list)
