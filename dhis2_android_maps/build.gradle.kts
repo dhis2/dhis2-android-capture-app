@@ -38,8 +38,7 @@ android {
         compose = true
         dataBinding = true
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     kotlinOptions {
         jvmTarget = "17"
