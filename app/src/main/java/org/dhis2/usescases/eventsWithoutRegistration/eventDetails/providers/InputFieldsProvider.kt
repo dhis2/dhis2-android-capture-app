@@ -96,6 +96,15 @@ fun ProvideInputDate(
             }
         },
         isRequired = required,
+        onFocusChanged = { focused ->
+            if (!focused) {
+                value?.let {
+                    if (!isValid(it)) {
+                        state = InputShellState.ERROR
+                    }
+                }
+            }
+        },
     )
 }
 
@@ -143,15 +152,15 @@ private fun formatStoredDateToUI(dateValue: String): String? {
 }
 
 fun formatUIDateToStored(dateValue: String?): InputDateValues? {
-    if (dateValue?.length != 8) {
-        return null
+    return if (dateValue?.length != 8) {
+        null
+    } else {
+        val year = dateValue.substring(4, 8).toInt()
+        val month = dateValue.substring(2, 4).toInt()
+        val day = dateValue.substring(0, 2).toInt()
+
+        InputDateValues(day, month, year)
     }
-
-    val year = dateValue.substring(4, 8).toInt()
-    val month = dateValue.substring(2, 4).toInt()
-    val day = dateValue.substring(0, 2).toInt()
-
-    return (InputDateValues(day, month, year))
 }
 
 data class InputDateValues(val day: Int, val month: Int, val year: Int)
