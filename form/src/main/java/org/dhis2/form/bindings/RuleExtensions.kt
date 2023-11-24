@@ -472,13 +472,22 @@ fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
                     }
             }
         } else if (attr?.valueType()?.isNumeric == true) {
-            value = try {
-                value?.toFloat().toString()
-            } catch (e: Exception) {
-                Timber.e(e)
-                ""
+                value = try {
+                    when (attr.valueType()) {
+                        ValueType.INTEGER_NEGATIVE,
+                        ValueType.INTEGER_ZERO_OR_POSITIVE,
+                        ValueType.INTEGER_POSITIVE,
+                        ValueType.INTEGER -> value?.toInt().toString()
+                        ValueType.PERCENTAGE,
+                        ValueType.UNIT_INTERVAL,
+                        ValueType.NUMBER -> value?.toFloat().toString()
+                        else -> value
+                    }
+                }catch (e: Exception) {
+                    Timber.e(e)
+                    ""
+                }
             }
-        }
         RuleAttributeValue.create(it.trackedEntityAttribute()!!, value!!)
     }.filter { it.value().isNotEmpty() }
 }
