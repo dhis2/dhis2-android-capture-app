@@ -181,7 +181,7 @@ class FilterManagerTest {
             stageUid = "uid",
             eventDate = "23/11/2023",
             eventStatusList = listOf("status"),
-            assignedToMe = AssignedUserMode.CURRENT
+            assignedToMe = AssignedUserMode.CURRENT,
         )
         filterManager.setWorkingListScope(workingListScope)
 
@@ -195,7 +195,7 @@ class FilterManagerTest {
             enrollmentDate = null,
             eventStatusList = listOf(),
             eventDateList = listOf("date"),
-            assignedToMe = listOf()
+            assignedToMe = listOf(),
         )
         filterManager.setWorkingListScope(workingListScope)
 
