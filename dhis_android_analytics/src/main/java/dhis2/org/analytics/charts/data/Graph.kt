@@ -24,32 +24,13 @@ data class Graph(
     val errorMessage: String? = null,
 ) {
 
-    private fun minDate(): LocalDate {
-        val coordinatesNotEmpty = series.minOfOrNull { serie ->
-            serie.coordinates.isNotEmpty()
-        }
-        return if (series.isNotEmpty() && coordinatesNotEmpty == true) {
-            val minDate = series.minOfOrNull { serie ->
-                serie.coordinates.minOf { point -> point.eventDate }
-            }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
+    private fun minDate() = series.filter { it.coordinates.isNotEmpty() }.minOfOrNull { serie ->
+        serie.coordinates.minOf { point -> point.eventDate }
+    }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
 
-            return minDate
-        } else { LocalDate.now() }
-    }
-
-    private fun maxDate(): LocalDate {
-        val coordinatesNotEmpty = series.maxOfOrNull { serie ->
-            serie.coordinates.isNotEmpty()
-        }
-
-        return if (series.isNotEmpty() && coordinatesNotEmpty == true) {
-            val maxDate = series.maxOfOrNull { serie ->
-                serie.coordinates.maxOf { point -> point.eventDate }
-            }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
-
-            return maxDate
-        } else { LocalDate.now() }
-    }
+    private fun maxDate() = series.filter { it.coordinates.isNotEmpty() }.maxOfOrNull { serie ->
+        serie.coordinates.maxOf { point -> point.eventDate }
+    }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
 
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
