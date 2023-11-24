@@ -24,7 +24,7 @@ data class Graph(
     val errorMessage: String? = null,
 ) {
 
-    private fun minDate(): LocalDate? {
+    private fun minDate(): LocalDate {
         val coordinatesNotEmpty = series.minOfOrNull { serie ->
             serie.coordinates.isNotEmpty()
         }
@@ -37,7 +37,7 @@ data class Graph(
         } else { LocalDate.now() }
     }
 
-    private fun maxDate(): LocalDate? {
+    private fun maxDate(): LocalDate {
         val coordinatesNotEmpty = series.maxOfOrNull { serie ->
             serie.coordinates.isNotEmpty()
         }
@@ -135,7 +135,7 @@ data class Graph(
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov,
             -> {
-                val date = minDate()?.plusMonths(numberOfSteps)
+                val date = minDate().plusMonths(numberOfSteps)
                 YearMonth.from(date).atDay(1)
             }
 
@@ -145,7 +145,8 @@ data class Graph(
             PeriodType.FinancialOct,
             PeriodType.FinancialNov,
             -> {
-                val date = minDate()?.plusYears(numberOfSteps)
+                val date = minDate().plusYears(numberOfSteps)
+
                 YearMonth.from(date).atDay(1)
             }
         }
