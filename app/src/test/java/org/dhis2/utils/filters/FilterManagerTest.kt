@@ -5,10 +5,13 @@ import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.data.EventWorkingListScope
+import org.dhis2.commons.filters.data.TeiWorkingListScope
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.AssignedUserMode
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
@@ -170,5 +173,32 @@ class FilterManagerTest {
         filterManager.addEventStatus(false, EventStatus.ACTIVE)
 
         assertTrue(filterManager.totalFilters == 3)
+    }
+
+    @Test
+    fun `Should count filters in total for event working list`() {
+        val workingListScope = EventWorkingListScope(
+            stageUid = "uid",
+            eventDate = "23/11/2023",
+            eventStatusList = listOf("status"),
+            assignedToMe = AssignedUserMode.CURRENT
+        )
+        filterManager.setWorkingListScope(workingListScope)
+
+        assertTrue(filterManager.totalFilters == 3)
+    }
+
+    @Test
+    fun `Should count filters in total for tei working list`() {
+        val workingListScope = TeiWorkingListScope(
+            enrollmentStatusList = listOf("status", "status"),
+            enrollmentDate = null,
+            eventStatusList = listOf(),
+            eventDateList = listOf("date"),
+            assignedToMe = listOf()
+        )
+        filterManager.setWorkingListScope(workingListScope)
+
+        assertTrue(filterManager.totalFilters == 2)
     }
 }
