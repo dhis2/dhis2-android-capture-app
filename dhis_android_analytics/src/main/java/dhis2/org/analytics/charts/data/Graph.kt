@@ -127,7 +127,6 @@ data class Graph(
             PeriodType.FinancialNov,
             -> {
                 val date = minDate().plusYears(numberOfSteps)
-
                 YearMonth.from(date).atDay(1)
             }
         }
