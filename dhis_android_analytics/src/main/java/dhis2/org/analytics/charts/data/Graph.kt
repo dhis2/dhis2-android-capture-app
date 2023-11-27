@@ -24,11 +24,11 @@ data class Graph(
     val errorMessage: String? = null,
 ) {
 
-    private fun minDate() = series.minOfOrNull { serie ->
+    private fun minDate() = series.filter { it.coordinates.isNotEmpty() }.minOfOrNull { serie ->
         serie.coordinates.minOf { point -> point.eventDate }
     }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
 
-    private fun maxDate() = series.maxOfOrNull { serie ->
+    private fun maxDate() = series.filter { it.coordinates.isNotEmpty() }.maxOfOrNull { serie ->
         serie.coordinates.maxOf { point -> point.eventDate }
     }?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()
 
