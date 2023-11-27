@@ -5,6 +5,7 @@ import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.data.EmptyWorkingList
 import org.dhis2.commons.filters.data.EventWorkingListScope
 import org.dhis2.commons.filters.data.TeiWorkingListScope
 import org.dhis2.commons.filters.sorting.SortingItem
@@ -186,6 +187,7 @@ class FilterManagerTest {
         filterManager.setWorkingListScope(workingListScope)
 
         assertTrue(filterManager.totalFilters == 3)
+        filterManager.setWorkingListScope(EmptyWorkingList())
     }
 
     @Test
@@ -200,5 +202,6 @@ class FilterManagerTest {
         filterManager.setWorkingListScope(workingListScope)
 
         assertTrue(filterManager.totalFilters == 2)
+        filterManager.setWorkingListScope(EmptyWorkingList())
     }
 }
