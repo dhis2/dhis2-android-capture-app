@@ -343,6 +343,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 dataElement.fieldMask(),
                 optionSetConfig,
                 null,
+                null,
                 null);
     }
 

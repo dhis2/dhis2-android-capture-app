@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
@@ -442,6 +443,7 @@ class EnrollmentRepository(
             null,
             null,
             null,
+            orgUnitSelectorScope = programUid?.let { OrgUnitSelectorScope.ProgramCaptureScope(it) },
         )
     }
 
