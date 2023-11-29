@@ -12,8 +12,8 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.ActivityEventScheduledBinding
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.EventMode

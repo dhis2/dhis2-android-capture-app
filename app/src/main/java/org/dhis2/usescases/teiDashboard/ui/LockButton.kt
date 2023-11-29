@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 
@@ -44,7 +45,7 @@ fun ComposeView?.setLockButtonContent(
     onButtonClicked: () -> Unit,
 ) {
     this?.setContent {
-        MdcTheme {
+        Mdc3Theme {
             LockButton(
                 trackedEntityName = trackedEntityName,
                 onButtonClicked = onButtonClicked,

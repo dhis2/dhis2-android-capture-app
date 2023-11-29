@@ -6,7 +6,7 @@
     <data>
         <variable
             name="presenter"
-            type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
+            type="org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureContract.Presenter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

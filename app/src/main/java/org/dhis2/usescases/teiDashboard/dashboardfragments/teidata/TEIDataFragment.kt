@@ -48,7 +48,7 @@ import org.dhis2.commons.resources.ObjectStyleUtils.getIconResource
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel
@@ -181,8 +181,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.isGrouping = group
             presenter.onGroupingChanged(group!!)
         }
-        dashboardActivity.observeFilters()?.observe(viewLifecycleOwner) { showFilters: Boolean -> showHideFilters(showFilters) }
-        dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner) { enrollmentUid: String? -> updateEnrollment(enrollmentUid!!) }
+        dashboardActivity.observeFilters()
+            ?.observe(viewLifecycleOwner) { showFilters: Boolean -> showHideFilters(showFilters) }
+        dashboardActivity.updatedEnrollment()
+            ?.observe(viewLifecycleOwner) { enrollmentUid: String? -> updateEnrollment(enrollmentUid!!) }
 
         try {
             binding.filterLayout.adapter = filtersAdapter
@@ -248,25 +250,33 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     private fun getAttributeValue(attributeUid: String): TrackedEntityAttributeValue? {
-        val filteredValue = internalAttributeValues!!.stream().filter { value: TrackedEntityAttributeValue ->
-            println(value.trackedEntityAttribute().toString() + "===================" + attributeUid)
-            value.trackedEntityAttribute() == attributeUid
-        }.collect(Collectors.toList())
-        return if (filteredValue.size > 0) filteredValue[0] else null
+        val filteredValue =
+            internalAttributeValues!!.stream().filter { value: TrackedEntityAttributeValue ->
+                println(
+                    value.trackedEntityAttribute().toString() + "===================" + attributeUid
+                )
+                value.trackedEntityAttribute() == attributeUid
+            }.collect(Collectors.toList())
+        return if (filteredValue.isNotEmpty()) filteredValue[0] else null
     }
 
     private fun setAttributesAndValues(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>?) {
         val linkedHashMapOfAttrValues = LinkedHashMap<String, TrackedEntityAttributeValue?>()
         var teiAttributesLoopCounter = 0
         while (teiAttributesLoopCounter < programTrackedEntityAttributes!!.size) {
-            val value = getAttributeValue(programTrackedEntityAttributes[teiAttributesLoopCounter].trackedEntityAttribute()!!.uid())
-            linkedHashMapOfAttrValues[programTrackedEntityAttributes[teiAttributesLoopCounter].displayShortName()!!.replace("Mother program ", "").replace("Newborn program ", "")] = value
+            val value = getAttributeValue(
+                programTrackedEntityAttributes[teiAttributesLoopCounter].trackedEntityAttribute()!!
+                    .uid()
+            )
+            linkedHashMapOfAttrValues[programTrackedEntityAttributes[teiAttributesLoopCounter].displayShortName()!!
+                .replace("Mother program ", "").replace("Newborn program ", "")] = value
             teiAttributesLoopCounter++
         }
         teiModel!!.attributeValues = linkedHashMapOfAttrValues
         if (isLandscape()) {
             binding.cardFrontLand!!.attributeNames = teiModel!!.attributeValues.keys
-            binding.cardFrontLand!!.attribute = teiModel!!.attributeValues.values.stream().collect(Collectors.toList())
+            binding.cardFrontLand!!.attribute =
+                teiModel!!.attributeValues.values.stream().collect(Collectors.toList())
         }
     }
 
@@ -302,20 +312,23 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?) {
+    override fun setTrackedEntityInstance(
+        trackedEntityInstance: TrackedEntityInstance?,
+        organisationUnit: OrganisationUnit?,
+        trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?
+    ) {
         binding.trackEntity = trackedEntityInstance
 
-        if (isPortrait()) {
-            if (organisationUnit != null) {
-                binding.cardFront!!.orgUnit.text = organisationUnit.displayName()
-            }
+        if (isPortrait() && organisationUnit != null) {
+            binding.cardFront!!.orgUnit.text = organisationUnit.displayName()
         }
 
         if (isLandscape()) {
             if (organisationUnit != null) {
                 binding.cardFrontLand!!.orgUnit = organisationUnit.name()
             }
-            this.internalAttributeValues = trackedEntityAttributeValues as List<TrackedEntityAttributeValue>?
+            this.internalAttributeValues =
+                trackedEntityAttributeValues as? List<TrackedEntityAttributeValue>
 
             if (this.programTrackedEntityAttributes != null) {
                 setAttributesAndValues(this.programTrackedEntityAttributes)
@@ -333,6 +346,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun setAttributeValues(attributeValues: List<TrackedEntityAttributeValue?>?) {
+        // No attribute values to set
     }
 
     fun setData(dashboardModel: DashboardProgramModel) {
@@ -414,7 +428,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         if (isLandscape()) {
             binding.cardFrontLand!!.detailsButton.setButtonContent(dashboardActivity.presenter.teType) { Unit }
 
-            binding.cardFrontLand!!.followupButton.setFollowupButtonContent(dashboardActivity.presenter.teType, followUp.get()) {
+            binding.cardFrontLand!!.followupButton.setFollowupButtonContent(
+                dashboardActivity.presenter.teType,
+                followUp.get()
+            ) {
                 presenter.onFollowUp(dashboardModel)
                 presenter.init()
             }
@@ -442,6 +459,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 Intent.ACTION_DIAL -> {
                     data = Uri.parse("tel:$value")
                 }
+
                 Intent.ACTION_SENDTO -> {
                     data = Uri.parse("mailto:$value")
                 }
@@ -471,9 +489,20 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             .onMenuInflated { KParameter.Kind.INSTANCE }
             .onMenuItemClicked { itemId: Int? ->
                 when (itemId) {
-                    R.id.complete -> dashboardActivity.presenter.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.COMPLETED)
-                    R.id.deactivate -> dashboardActivity.presenter.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.CANCELLED)
-                    R.id.reOpen -> dashboardActivity.presenter.updateEnrollmentStatus(dashboardActivity.enrollmentUid, EnrollmentStatus.ACTIVE)
+                    R.id.complete -> dashboardActivity.presenter.updateEnrollmentStatus(
+                        dashboardActivity.enrollmentUid,
+                        EnrollmentStatus.COMPLETED
+                    )
+
+                    R.id.deactivate -> dashboardActivity.presenter.updateEnrollmentStatus(
+                        dashboardActivity.enrollmentUid,
+                        EnrollmentStatus.CANCELLED
+                    )
+
+                    R.id.reOpen -> dashboardActivity.presenter.updateEnrollmentStatus(
+                        dashboardActivity.enrollmentUid,
+                        EnrollmentStatus.ACTIVE
+                    )
                 }
                 true
             }
@@ -497,19 +526,19 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute?>?) {
         if (programTrackedEntityAttributes != null) {
-            this.programTrackedEntityAttributes = programTrackedEntityAttributes.stream()
-                .filter { attr: ProgramTrackedEntityAttribute? -> attr?.displayInList()!! }
-                .collect(Collectors.toList()) as List<ProgramTrackedEntityAttribute>?
+            this.programTrackedEntityAttributes = programTrackedEntityAttributes
+                .filterNotNull()
+                .filter { attr -> attr.displayInList() == true }
+                .toList()
         }
         Collections.sort(this.programTrackedEntityAttributes, CustomComparator())
-        if (isLandscape()) {
-            if (internalAttributeValues != null) {
+        if (isLandscape() && internalAttributeValues != null) {
                 setAttributesAndValues(this.programTrackedEntityAttributes)
-            }
         }
     }
 
     override fun hideFilters() {
+        // No filters to hide
     }
 
     override fun observeStageSelection(
@@ -546,7 +575,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         showLoadingProgress(false)
     }
 
-    override fun showCatComboDialog(eventUid: String?, eventDate: Date?, categoryComboUid: String?) {
+    override fun showCatComboDialog(
+        eventUid: String?,
+        eventDate: Date?,
+        categoryComboUid: String?
+    ) {
         TODO("Not yet implemented")
     }
 
@@ -690,59 +723,38 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun openEventCapture(intent: Intent) = eventCaptureLauncher.launch(intent)
 
     override fun showTeiImage(filePath: String, defaultIcon: String) {
-        if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-            if (isPortrait()) {
-                if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-                    binding.cardFront!!.teiImage.visibility = View.GONE
-                } else {
-                    binding.cardFront!!.teiImage.visibility = View.VISIBLE
-                    Glide.with(this)
-                        .load(File(filePath))
-                        .error(
-                            getIconResource(
-                                requireContext(),
-                                defaultIcon,
-                                R.drawable.photo_temp_gray,
-                                colorUtils,
-                            ),
-                        )
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .transform(CircleCrop())
-                        .into(binding.cardFront!!.teiImage)
-                    binding.cardFront!!.teiImage.setOnClickListener {
-                        val fileToShow = File(filePath)
-                        if (fileToShow.exists()) {
-                            ImageDetailBottomDialog(
-                                null,
-                                fileToShow,
-                            ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
-                        }
-                    }
+        val isPortrait = isPortrait()
+        val isLandscape = isLandscape()
+
+        fun configureImageView(imageView: ImageView, clickListener: () -> Unit) {
+            imageView.visibility = View.VISIBLE
+            Glide.with(this)
+                .load(File(filePath))
+                .error(getIconResource(requireContext(), defaultIcon, R.drawable.photo_temp_gray, colorUtils))
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .transform(CircleCrop())
+                .into(imageView)
+
+            imageView.setOnClickListener {
+                val fileToShow = File(filePath)
+                if (fileToShow.exists()) {
+                    ImageDetailBottomDialog(null, fileToShow).show(childFragmentManager, ImageDetailBottomDialog.TAG)
                 }
-            }
-        } else {
-            if (isLandscape()) {
-                binding.cardFrontLand!!.trackedEntityImage.visibility = View.VISIBLE
-                Glide.with(this)
-                    .load(File(filePath))
-                    .error(
-                        getIconResource(requireContext(), defaultIcon, R.drawable.photo_temp_gray, colorUtils),
-                    )
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .transform(CircleCrop())
-                    .into(binding.cardFrontLand!!.trackedEntityImage)
-                binding.cardFrontLand!!.trackedEntityImage.setOnClickListener {
-                    val fileToShow = File(filePath)
-                    if (fileToShow.exists()) {
-                        ImageDetailBottomDialog(
-                            null,
-                            fileToShow,
-                        ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
-                    }
-                }
+                clickListener.invoke()
             }
         }
+
+        if (isPortrait) {
+            if (filePath.isEmpty() && defaultIcon.isEmpty()) {
+                binding.cardFront?.teiImage?.visibility = View.GONE
+            } else {
+                configureImageView(binding.cardFront?.teiImage ?: return) {}
+            }
+        } else if (isLandscape) {
+            configureImageView(binding.cardFrontLand?.trackedEntityImage ?: return) {}
+        }
     }
+
 
     override fun goToEventInitial(
         eventCreationType: EventCreationType,

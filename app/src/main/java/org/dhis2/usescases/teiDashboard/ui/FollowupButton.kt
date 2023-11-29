@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 
@@ -70,7 +71,7 @@ fun ComposeView?.setFollowupButtonContent(
 
 ) {
     this?.setContent {
-        MdcTheme {
+        Mdc3Theme {
             FollowupButton(
                 trackedEntityName = trackedEntityName,
                 followUp = followUp,

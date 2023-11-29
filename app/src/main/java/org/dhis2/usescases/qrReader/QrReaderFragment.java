@@ -29,7 +29,7 @@ import org.dhis2.data.qr.QRjson;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FragmentQrBinding;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
+import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;

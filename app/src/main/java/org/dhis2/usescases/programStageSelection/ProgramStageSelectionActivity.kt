@@ -11,7 +11,7 @@ import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage

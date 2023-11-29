@@ -80,18 +80,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
-                <!--                <include-->
-                <!--                    android:id="@+id/card_front"-->
-                <!--                    layout="@layout/fragment_tei_data_card_front"-->
-                <!--                    app:dashboardModel="@{dashboardModel}"-->
-                <!--                    app:enrollment="@{enrollment}"-->
-                <!--                    app:followup="@{followup}"-->
-                <!--                    app:presenter="@{presenter}"-->
-                <!--                    app:highRisk="@{highRisk}"-->
-                <!--                    app:lowRisk="@{lowRisk}"-->
-                <!--                    app:program="@{program}"-->
-                <!--                    app:trackEntity="@{trackEntity}" />-->
-
                 <include
                     android:id="@+id/card_front_land"
                     layout="@layout/item_search_tracked_entity"

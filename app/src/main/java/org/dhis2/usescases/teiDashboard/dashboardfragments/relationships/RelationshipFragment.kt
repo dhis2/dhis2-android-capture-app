@@ -28,7 +28,7 @@ import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.ui.ThemeManager
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.ui.NoRelationships
@@ -69,8 +69,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             is RelationshipResult.Success -> {
                 presenter.addRelationship(it.teiUidToAddAsRelationship, relationshipType!!.uid())
             }
-
-            else -> {}
         }
     }
 

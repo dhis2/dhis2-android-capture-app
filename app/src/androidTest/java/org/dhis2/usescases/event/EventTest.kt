@@ -9,9 +9,8 @@ import org.dhis2.usescases.event.entity.EventDetailsUIModel
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.ProgramStageUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
-import org.dhis2.usescases.form.formRobot
+import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programevent.robot.programEventsRobot

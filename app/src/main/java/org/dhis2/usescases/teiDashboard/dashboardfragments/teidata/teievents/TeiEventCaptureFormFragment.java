@@ -17,11 +17,10 @@ import androidx.fragment.app.FragmentTransaction;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
-import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormView;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
+import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter;
+import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.EventCaptureFormView;
+import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,6 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
     @Inject
     EventCaptureFormPresenter presenter;
 
-    private TeiDashboardMobileActivity activity;
     private SectionSelectorFragmentBinding binding;
     private FormView formView;
 
@@ -51,8 +49,6 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        this.activity = (TeiDashboardMobileActivity) context;
-        setRetainInstance(true);
     }
 
     @Nullable
@@ -83,12 +79,6 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
         super.onResume();
         presenter.showOrHideSaveButton();
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     private void animateFabButton(boolean sectionIsVisible) {
         int translationX = 1000;
         if (sectionIsVisible) translationX = 0;

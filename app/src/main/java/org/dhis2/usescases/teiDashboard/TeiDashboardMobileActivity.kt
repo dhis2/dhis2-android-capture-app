@@ -144,6 +144,18 @@ class TeiDashboardMobileActivity :
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        extractDataFromIntentOrSavedState(savedInstanceState)
+        initializeDashboardComponent()
+        setThemeAndContentView()
+        configureUIElements()
+        setupFormViewIfLandscape()
+        setNavigationBar()
+        setEditButton()
+        observeViewModel()
+        super.onCreate(savedInstanceState)
+    }
+
+    private fun extractDataFromIntentOrSavedState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE)
             programUid = savedInstanceState.getString(Constants.PROGRAM_UID)
@@ -152,6 +164,9 @@ class TeiDashboardMobileActivity :
             programUid = intent.getStringExtra(Constants.PROGRAM_UID)
             enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         }
+    }
+
+    private fun initializeDashboardComponent() {
         (applicationContext as App).createDashboardComponent(
             TeiDashboardModule(
                 this,
@@ -159,64 +174,86 @@ class TeiDashboardMobileActivity :
                 programUid,
                 enrollmentUid,
                 this.isPortrait(),
-            ),
+            )
         ).inject(this)
+    }
+
+    private fun setThemeAndContentView() {
         setTheme(themeManager.getProgramTheme())
-        super.onCreate(savedInstanceState)
-        groupByStage = MutableLiveData(presenter.programGrouping)
-        currentEnrollment = MutableLiveData()
-        dashboardViewModel = ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
+        setContentView(R.layout.activity_dashboard_mobile)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
         showLoadingProgress(true)
         binding.presenter = presenter
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS)
         presenter.prefSaveCurrentProgram(programUid)
         elevation = ViewCompat.getElevation(binding.toolbar)
-        binding.relationshipMapIcon.setOnClickListener {
-            networkUtils.performIfOnline(
-                this,
-                {
-                    if (java.lang.Boolean.FALSE == relationshipMap.value) {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list)
-                    } else {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map)
-                    }
-                    val showMap = !relationshipMap.value!!
-                    if (showMap) {
-                        binding.toolbarProgress.visibility = View.VISIBLE
-                        binding.toolbarProgress.hide()
-                    }
-                    relationshipMap.value = showMap
-                },
-                {},
-                getString(R.string.msg_network_connection_maps),
-            )
-        }
+    }
+
+    private fun configureUIElements() {
+        setupSyncButton()
+        setupRelationshipMapIcon()
+    }
+
+    private fun setupSyncButton() {
         binding.syncButton.visibility = if (programUid != null) View.VISIBLE else View.GONE
         binding.syncButton.setOnClickListener { openSyncDialog() }
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()
         }
+    }
 
-        if (isLandscape()) {
-            formView = FormView.Builder().locationProvider(locationProvider).onItemChangeListener { action: RowAction? ->
-                presenter.updateEnrollmentFields(action)
-            }.onLoadingListener { loading: Boolean ->
-                if (loading) {
-                } else {
-                }
-            }
-                .onFinishDataEntry { presenter.fininshEnrollmentDataEntry() }
-                .resultDialogUiProvider(EnrollmentResultDialogUiProvider(ResourceManager(this.context, ColorUtils())))
-                .factory(supportFragmentManager).setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW)).build()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.tei_form_view, formView!!)
-                .commitAllowingStateLoss()
-            val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
-            saveButton.setOnClickListener { formView?.onSaveClick() }
+    private fun setupRelationshipMapIcon() {
+        binding.relationshipMapIcon.setOnClickListener {
+            handleRelationshipMapIconClick()
         }
-        setNavigationBar()
-        setEditButton()
+    }
+
+    private fun handleRelationshipMapIconClick() {
+        networkUtils.performIfOnline(
+            this,
+            {
+                toggleRelationshipMapIcon()
+                val showMap = !relationshipMap.value!!
+                if (showMap) {
+                    binding.toolbarProgress.visibility = View.VISIBLE
+                    binding.toolbarProgress.hide()
+                }
+                relationshipMap.value = showMap
+            },
+            {},
+            getString(R.string.msg_network_connection_maps),
+        )
+    }
+
+    private fun toggleRelationshipMapIcon() {
+        if (java.lang.Boolean.FALSE == relationshipMap.value) {
+            binding.relationshipMapIcon.setImageResource(R.drawable.ic_list)
+        } else {
+            binding.relationshipMapIcon.setImageResource(R.drawable.ic_map)
+        }
+    }
+    private fun setupFormViewIfLandscape() {
+        if (isLandscape()) {
+            setupFormView()
+        }
+    }
+
+    private fun setupFormView() {
+        formView = FormView.Builder().locationProvider(locationProvider)
+            .onItemChangeListener { action: RowAction? -> presenter.updateEnrollmentFields(action) }
+            .onFinishDataEntry { presenter.fininshEnrollmentDataEntry() }
+            .resultDialogUiProvider(EnrollmentResultDialogUiProvider(ResourceManager(this.context, ColorUtils())))
+            .factory(supportFragmentManager).setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW)).build()
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.tei_form_view, formView!!)
+            .commitAllowingStateLoss()
+
+        val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
+        saveButton.setOnClickListener { formView?.onSaveClick() }
+    }
+
+    private fun observeViewModel() {
         dashboardViewModel.showStatusErrorMessages.observe(this) {
             displayStatusError(it)
         }
@@ -226,6 +263,7 @@ class TeiDashboardMobileActivity :
             }
         }
     }
+
 
     private fun setEditButton() {
         binding.editButton.setButtonContent(presenter.teType) {

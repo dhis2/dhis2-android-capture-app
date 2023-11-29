@@ -96,7 +96,7 @@
         <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
         <activity android:name=".utils.WebViewActivity" />
         <activity
-            android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
+            android:name=".usescases.eventswithoutregistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
@@ -122,7 +122,7 @@
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
         <activity
-            android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
+            android:name=".usescases.eventswithoutregistration.eventCapture.EventCaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
