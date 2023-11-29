@@ -100,8 +100,11 @@ private fun getFilePath(context: Context, uri: Uri): String? {
         val split = id.split(":").toTypedArray()
         when {
             isDownloadsDocument(copy) -> {
+                if (id.startsWith("raw:")) {
+                    return id.replaceFirst("raw:", "")
+                }
                 copy = ContentUris.withAppendedId(
-                    copy,
+                    Uri.parse("content://downloads/public_downloads"),
                     split[1].toLong(),
                 )
             }
