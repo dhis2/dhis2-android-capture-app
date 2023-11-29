@@ -154,6 +154,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                         },
                         onClear = { viewModel.onClearEventReportDate() },
                         required = true,
+                        considerStandardInterval = true,
                     )
                 }
                 if (orgUnit.visible) {
