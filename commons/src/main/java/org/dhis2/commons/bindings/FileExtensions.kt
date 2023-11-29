@@ -101,7 +101,7 @@ private fun getFilePath(context: Context, uri: Uri): String? {
         when {
             isDownloadsDocument(copy) -> {
                 copy = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"),
+                    copy,
                     split[1].toLong(),
                 )
             }
