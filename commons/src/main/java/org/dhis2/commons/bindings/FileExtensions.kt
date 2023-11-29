@@ -112,16 +112,11 @@ private fun getFilePath(context: Context, uri: Uri): String? {
                 return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
             }
             isMediaDocument(copy) -> {
-                when (split[0]) {
-                    "image" -> {
-                        copy = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    }
-                    "video" -> {
-                        copy = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                    }
-                    "audio" -> {
-                        copy = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                    }
+                copy = when (split[0]) {
+                    "image" -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    "video" -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                    "audio" -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    else -> MediaStore.Files.getContentUri("external")
                 }
 
                 selection = "_id=?"
