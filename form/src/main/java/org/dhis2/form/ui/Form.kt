@@ -1,24 +1,26 @@
 package org.dhis2.form.ui
 
-import android.text.TextWatcher
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -29,6 +31,7 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
+import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -36,15 +39,11 @@ fun Form(
     sections: List<FormSection> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-    textWatcher: TextWatcher,
-    coordinateTextWatcher: LatitudeLongitudeTextWatcher,
-    needToForceUpdate: Boolean,
     resources: ResourceManager,
 ) {
     val scrollState = rememberLazyListState()
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
     val callback = remember {
         object : FieldUiModel.Callback {
             override fun intent(intent: FormIntent) {
@@ -60,15 +59,40 @@ fun Form(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 16.dp),
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = { focusManager.clearFocus() },
+            ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
         state = scrollState,
-        verticalArrangement = spacedBy(24.dp),
     ) {
         if (sections.isNotEmpty()) {
             this.itemsIndexed(
                 items = sections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
             ) { _, section ->
+                val isSectionOpen = remember(section.state) {
+                    derivedStateOf { section.state == SectionState.OPEN }
+                }
+                LaunchedEffect(isSectionOpen.value) {
+                    if (isSectionOpen.value) {
+                        scrollState.animateScrollToItem(sections.indexOf(section))
+                        focusManager.moveFocus(FocusDirection.Next)
+                    }
+                }
+
+                val onNextSection: () -> Unit = {
+                    getNextSection(section, sections)?.let {
+                        intentHandler.invoke(FormIntent.OnSection(it.uid))
+                        scope.launch {
+                            scrollState.animateScrollToItem(sections.indexOf(it))
+                        }
+                    } ?: run {
+                        focusManager.clearFocus()
+                    }
+                }
+
                 Section(
                     title = section.title,
                     isLastSection = getNextSection(section, sections) == null,
@@ -78,22 +102,12 @@ fun Form(
                     state = section.state,
                     errorCount = section.errorCount(),
                     warningCount = section.warningCount(),
-                    onNextSection = {
-                        getNextSection(section, sections)?.let {
-                            coroutineScope.launch {
-                                scrollState.animateScrollToItem(sections.indexOf(it))
-                                intentHandler.invoke(FormIntent.OnSection(it.uid))
-                            }
-                        }
-                    },
+                    onNextSection = onNextSection,
                     onSectionClick = {
-                        coroutineScope.launch {
-                            scrollState.animateScrollToItem(sections.indexOf(section))
-                            intentHandler.invoke(FormIntent.OnSection(section.uid))
-                        }
+                        intentHandler.invoke(FormIntent.OnSection(section.uid))
                     },
                     content = {
-                        section.fields.forEach { fieldUiModel ->
+                        section.fields.forEachIndexed { index, fieldUiModel ->
                             fieldUiModel.setCallback(callback)
                             FieldProvider(
                                 modifier = Modifier.animateItemPlacement(
@@ -102,17 +116,19 @@ fun Form(
                                         easing = LinearOutSlowInEasing,
                                     ),
                                 ),
-                                context = context,
                                 fieldUiModel = fieldUiModel,
-                                needToForceUpdate = needToForceUpdate,
-                                textWatcher = textWatcher,
-                                coordinateTextWatcher = coordinateTextWatcher,
                                 uiEventHandler = uiEventHandler,
                                 intentHandler = intentHandler,
                                 resources = resources,
                                 focusManager = focusManager,
+                                onNextClicked = {
+                                    if (index == section.fields.size - 1) {
+                                        onNextSection()
+                                    } else {
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                    }
+                                },
                             )
-                            Spacer(modifier = Modifier.height(24.dp))
                         }
                     },
                 )

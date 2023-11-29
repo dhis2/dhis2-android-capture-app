@@ -57,7 +57,7 @@ class DataSetTest : BaseTest() {
         }
         dataSetInitialRobot {
             clickOnInputOrgUnit()
-            orgUnitSelectorRobot(composeTestRule){
+            orgUnitSelectorRobot(composeTestRule) {
                 selectTreeOrgUnit(orgUnit)
             }
             clickOnInputPeriod()

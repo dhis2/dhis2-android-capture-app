@@ -35,8 +35,7 @@ android {
             )
         }
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

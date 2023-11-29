@@ -16,7 +16,7 @@ import org.dhis2.utils.Action
 import timber.log.Timber
 
 class DataSetListViewModel(
-    dataSetDetailRepository: DataSetDetailRepository,
+    val dataSetDetailRepository: DataSetDetailRepository,
     schedulerProvider: SchedulerProvider,
     val filterManager: FilterManager,
     val matomoAnalyticsController: MatomoAnalyticsController,
@@ -73,5 +73,19 @@ class DataSetListViewModel(
 
     fun updateData() {
         filterManager.publishData()
+    }
+
+    fun isEditable(
+        datasetUid: String,
+        periodId: String,
+        organisationUnitUid: String,
+        attributeOptionComboUid: String,
+    ): Boolean {
+        return dataSetDetailRepository.dataSetIsEditable(
+            datasetUid,
+            periodId,
+            organisationUnitUid,
+            attributeOptionComboUid,
+        )
     }
 }

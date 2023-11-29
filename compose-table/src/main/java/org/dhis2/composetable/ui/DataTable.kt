@@ -28,13 +28,14 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
     Table(
         tableList = tableList,
         tableHeaderRow = { index, tableModel ->
+            val isSingleValue = tableModel.tableRows.firstOrNull()?.values?.size == 1
             TableHeaderRow(
                 modifier = Modifier
                     .background(Color.White),
                 cornerUiState = TableCornerUiState(
                     isSelected = tableSelection.isCornerSelected(tableModel.id ?: ""),
                     onTableResize = {
-                        if (tableModel.tableRows.first().values.size == 1) {
+                        if (isSingleValue) {
                             tableResizeActions.onRowHeaderResize(
                                 tableModel.id ?: "",
                                 it,
@@ -47,7 +48,7 @@ fun DataTable(tableList: List<TableModel>, bottomContent: @Composable (() -> Uni
                         }
                     },
                     onResizing = { resizingCell = it },
-                    singleValueTable = tableModel.tableRows.first().values.size == 1,
+                    singleValueTable = isSingleValue,
                 ),
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollStates[index],

@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -209,7 +210,10 @@ class DataValuePresenter(
     }
 
     fun onSaveValueChange(cell: TableCell) {
-        launch(dispatcherProvider.io()) {
+        launch(
+            dispatcherProvider.io(),
+            start = CoroutineStart.ATOMIC,
+        ) {
             saveValue(cell)
             view.onValueProcessed()
         }

@@ -16,16 +16,18 @@ class ConfigureEventCatCombo(
     private var selectedCategoryOptions = mapOf<String, CategoryOption?>()
 
     operator fun invoke(categoryOption: Pair<String, String?>? = null): Flow<EventCatCombo> {
-        categoryOption?.let {
-            updateSelectedOptions(it)
-        }
         repository.catCombo().apply {
+            val categories = getCategories(this?.categories())
+            val categoryOptions = getCategoryOptions()
+
+            updateSelectedOptions(categoryOption, categories, categoryOptions)
+
             return flowOf(
                 EventCatCombo(
                     uid = getCatComboUid(this?.uid() ?: "", this?.isDefault ?: false),
                     isDefault = this?.isDefault ?: false,
-                    categories = getCategories(this?.categories()),
-                    categoryOptions = getCategoryOptions(),
+                    categories = categories,
+                    categoryOptions = categoryOptions,
                     selectedCategoryOptions = selectedCategoryOptions,
                     isCompleted = isCompleted(
                         isDefault = this?.isDefault ?: true,
@@ -73,14 +75,27 @@ class ConfigureEventCatCombo(
 
     private fun updateSelectedOptions(
         categoryOption: Pair<String, String?>?,
+        categories: List<EventCategory>,
+        categoryOptions: Map<String, CategoryOption>?,
     ): Map<String, CategoryOption?> {
-        categoryOption?.let { pair ->
-            val copy = selectedCategoryOptions.toMutableMap()
-            copy[pair.first] = pair.second?.let { categoryOptionId ->
-                repository.getCatOption(categoryOptionId)
+        if (categoryOption == null) {
+            categories.forEach { category ->
+                categoryOptions?.get(category.uid)?.let { categoryOption ->
+                    val copy = selectedCategoryOptions.toMutableMap()
+                    copy[category.uid] = categoryOption
+                    selectedCategoryOptions = copy
+                }
             }
-            selectedCategoryOptions = copy
+        } else {
+            categoryOption.let { pair ->
+                val copy = selectedCategoryOptions.toMutableMap()
+                copy[pair.first] = pair.second?.let { categoryOptionId ->
+                    repository.getCatOption(categoryOptionId)
+                }
+                selectedCategoryOptions = copy
+            }
         }
+
         return selectedCategoryOptions
     }
 

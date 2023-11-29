@@ -188,7 +188,7 @@ class EventDetailsRepository(
         return d2.categoryModule().categoryOptionCombos()
             .byCategoryComboUid().eq(categoryComboUid)
             .byCategoryOptions(categoryOptionsUid)
-            .one()?.blockingGet()?.uid()
+            .one().blockingGet()?.uid()
     }
 
     fun getCatOption(selectedOption: String?): CategoryOption? {
@@ -207,7 +207,7 @@ class EventDetailsRepository(
             .categoryOptions()
             .withOrganisationUnits()
             .byCategoryUid(categoryUid)
-            .blockingGet() ?: emptyList()
+            .blockingGet()
     }
 
     fun getOptionsFromCatOptionCombo(): Map<String, CategoryOption>? {
@@ -277,7 +277,9 @@ class EventDetailsRepository(
                         FeatureType.POLYGON,
                         FeatureType.MULTI_POLYGON,
                         -> eventRepository.setGeometry(geometry)
+
                         else -> {
+                            // no-op
                         }
                     }
                 }

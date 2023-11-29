@@ -14,12 +14,10 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.BreakTheGlassBottomDialogBindingImpl
-import javax.inject.Inject
 
 class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 
-    @Inject
-    lateinit var colorUtils: ColorUtils
+    val colorUtils: ColorUtils = ColorUtils()
 
     fun setPositiveButton(onClick: ((String) -> Unit)? = null) = apply {
         this.positiveOnclick = onClick

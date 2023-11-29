@@ -73,7 +73,7 @@ class EventTest: BaseTest() {
         eventRegistrationRobot {
             checkEventFormDetails(eventDetails)
             clickOnDetails()
-            checkEventDetails(eventDetails)
+            checkEventDetails(eventDetails, composeTestRule)
         }
     }
 

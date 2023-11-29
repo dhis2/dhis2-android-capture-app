@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.FeatureState
 
-class FeatureConfigViewModel constructor(
+class FeatureConfigViewModel(
     private val repository: FeatureConfigRepository,
 ) : ViewModel() {
 

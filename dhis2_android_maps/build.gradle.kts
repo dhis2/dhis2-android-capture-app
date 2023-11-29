@@ -35,13 +35,17 @@ android {
     }
 
     buildFeatures {
+        compose = true
         dataBinding = true
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }
 

@@ -148,8 +148,7 @@ android {
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
         }
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     productFlavors {
         create("dhis") {

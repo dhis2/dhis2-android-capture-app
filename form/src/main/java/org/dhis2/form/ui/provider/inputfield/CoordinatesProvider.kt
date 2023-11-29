@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -43,6 +44,7 @@ fun ProvideInputCoordinate(
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: ResourceManager,
+    focusRequester: FocusRequester,
 ) {
     InputCoordinate(
         title = fieldUiModel.label,
@@ -56,6 +58,7 @@ fun ProvideInputCoordinate(
         isRequired = fieldUiModel.mandatory,
         modifier = modifier,
         onResetButtonClicked = {
+            focusRequester.requestFocus()
             intentHandler.invoke(
                 FormIntent.OnSave(
                     uid = fieldUiModel.uid,
@@ -65,6 +68,7 @@ fun ProvideInputCoordinate(
             )
         },
         onUpdateButtonClicked = {
+            focusRequester.requestFocus()
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.RequestLocationByMap(
                     uid = fieldUiModel.uid,

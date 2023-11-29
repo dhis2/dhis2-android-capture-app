@@ -121,37 +121,12 @@
                             tools:text="Program Stage Name" />
                     </LinearLayout>
                 </LinearLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/date_layout"
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/scheduled_event_field_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColorHint="@color/text_black_808">
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:textSize="15sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/due_date_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColorHint="@color/text_black_808">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/due_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:textSize="15sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
                     android:id="@+id/catComboLayout"

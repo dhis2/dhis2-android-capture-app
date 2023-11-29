@@ -11,7 +11,9 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetEditableStatus;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
+import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
@@ -83,6 +85,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                     //"Category Combination Name" + "Category option selected"
                     return DataSetDetailModel.create(
+                            dataSetReport.dataSetUid(),
                             dataSetReport.organisationUnitUid(),
                             dataSetReport.attributeOptionComboUid(), //catComboUid
                             dataSetReport.period(),
@@ -164,6 +167,22 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         return visualizationSettings.dataSet().get(dataSetUid) != null &&
                 !Objects.requireNonNull(visualizationSettings.dataSet().get(dataSetUid)).isEmpty();
 
+    }
+
+    @Override
+    public boolean dataSetIsEditable(
+            String datasetUid,
+            String periodId,
+            String organisationUnitUid,
+            String attributeOptionComboUid) {
+        return d2.dataSetModule()
+                .dataSetInstanceService()
+                .blockingGetEditableStatus(
+                        datasetUid,
+                        periodId,
+                        organisationUnitUid,
+                        attributeOptionComboUid
+                ) instanceof DataSetEditableStatus.Editable;
     }
 
     private CategoryCombo getCategoryComboFromOptionCombo(String categoryOptionComboUid) {

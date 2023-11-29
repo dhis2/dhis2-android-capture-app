@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -18,6 +19,7 @@ internal fun ProvideRadioButtonInput(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
+    focusRequester: FocusRequester,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
         RadioButtonData(
@@ -39,7 +41,7 @@ internal fun ProvideRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            fieldUiModel.onItemClick()
+            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -58,6 +60,7 @@ internal fun ProvideYesNoRadioButtonInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
+    focusRequester: FocusRequester,
 ) {
     val data = listOf(
         RadioButtonData(
@@ -85,7 +88,7 @@ internal fun ProvideYesNoRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            fieldUiModel.onItemClick()
+            focusRequester.requestFocus()
             when (item?.uid) {
                 "true" -> {
                     intentHandler(

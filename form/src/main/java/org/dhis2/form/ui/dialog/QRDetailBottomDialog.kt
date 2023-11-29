@@ -42,6 +42,7 @@ import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.databinding.QrDetailDialogBinding
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
+import org.hisp.dhis.lib.expression.math.GS1Elements
 import org.hisp.dhis.mobile.ui.designsystem.component.BarcodeBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
@@ -197,7 +198,7 @@ QRDetailBottomDialog(
             val buttonList = getComposeButtonList()
             BottomSheetShell(
                 modifier = modifier,
-                title = if (renderingType == UiRenderType.QR_CODE) resources.getString(R.string.qr_code) else resources.getString(R.string.bar_code),
+                title = if (renderingType == UiRenderType.QR_CODE || renderingType == UiRenderType.GS1_DATAMATRIX) resources.getString(R.string.qr_code) else resources.getString(R.string.bar_code),
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -207,10 +208,15 @@ QRDetailBottomDialog(
                 },
                 content = {
                     Row(horizontalArrangement = Arrangement.Center) {
-                        if (renderingType == UiRenderType.QR_CODE) {
-                            QrCodeBlock(data = value)
-                        } else {
-                            BarcodeBlock(data = value)
+                        when (renderingType) {
+                            UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
+                                val isGS1Matrix = value.startsWith(GS1Elements.GS1_d2_IDENTIFIER.element)
+                                val content = formattedContent(value)
+                                QrCodeBlock(data = content, isDataMatrix = isGS1Matrix)
+                            }
+                            else -> {
+                                BarcodeBlock(data = value)
+                            }
                         }
                     }
                 },
@@ -224,6 +230,10 @@ QRDetailBottomDialog(
             )
         }
     }
+
+    private fun formattedContent(value: String) =
+        value.removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
+            .removePrefix(GS1Elements.GS1_GROUP_SEPARATOR.element)
 
     private fun getComposeButtonList(): List<CarouselButtonData> {
         val scanItem = CarouselButtonData(

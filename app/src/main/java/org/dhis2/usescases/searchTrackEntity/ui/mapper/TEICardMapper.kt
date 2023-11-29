@@ -128,7 +128,7 @@ class TEICardMapper(
             )
             checkEnrollmentStatus(
                 list = list,
-                status = searchTEIModel.selectedEnrollment.status(),
+                status = searchTEIModel.selectedEnrollment?.status(),
             )
 
             checkOverdue(
@@ -218,7 +218,7 @@ class TEICardMapper(
     ) {
         val programNames = enrolledPrograms.map { it.name() }
 
-        if (programNames.size > 1) {
+        if (programNames.isNotEmpty()) {
             list.add(
                 AdditionalInfoItem(
                     key = resourceManager.getString(R.string.programs),

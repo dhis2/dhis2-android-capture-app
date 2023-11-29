@@ -392,6 +392,12 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 )
                 val card = teiDashboardCardMapper.map(
                     dashboardModel = dashboardModel,
+                    onImageClick = { fileToShow ->
+                        ImageDetailBottomDialog(
+                            null,
+                            fileToShow,
+                        ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+                    },
                     phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
                     emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
                     programsCallback = {

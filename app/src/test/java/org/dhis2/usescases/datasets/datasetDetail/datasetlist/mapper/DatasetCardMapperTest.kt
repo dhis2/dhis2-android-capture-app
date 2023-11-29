@@ -40,6 +40,7 @@ class DatasetCardMapperTest {
             "",
             "",
             "",
+            "",
             "orgUnitName",
             "nameCatCombo",
             "Dataset PeriodName",
@@ -54,6 +55,7 @@ class DatasetCardMapperTest {
         // When dataset is mapped to card item
         val result = mapper.map(
             dataset = datasetModel,
+            editable = true,
             onSyncIconClick = {},
             onCardCLick = {},
         )

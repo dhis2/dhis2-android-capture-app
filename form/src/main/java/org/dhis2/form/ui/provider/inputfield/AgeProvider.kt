@@ -32,7 +32,7 @@ fun ProvideInputAge(
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: ResourceManager,
 ) {
-    var inputType by remember {
+    var inputType by remember(fieldUiModel.value) {
         mutableStateOf(
             if (!fieldUiModel.value.isNullOrEmpty()) {
                 formatStoredDateToUI(fieldUiModel.value!!)?.let {
@@ -110,6 +110,7 @@ fun ProvideInputAge(
                             fieldUiModel.uid,
                             formatUIDateToStored(type.value),
                             fieldUiModel.valueType,
+                            fieldUiModel.allowFutureDates,
                         )
                     }
                 }
@@ -120,6 +121,7 @@ fun ProvideInputAge(
                         fieldUiModel.uid,
                         null,
                         fieldUiModel.valueType,
+                        fieldUiModel.allowFutureDates,
                     )
                 }
             }
@@ -132,12 +134,14 @@ private fun saveValue(
     uid: String,
     value: String?,
     valueType: ValueType?,
+    allowFutureDates: Boolean?,
 ) {
     intentHandler.invoke(
-        FormIntent.OnSave(
+        FormIntent.OnSaveDate(
             uid,
             value,
             valueType,
+            allowFutureDates ?: false,
         ),
     )
 }

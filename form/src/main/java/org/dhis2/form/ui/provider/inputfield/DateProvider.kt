@@ -27,6 +27,7 @@ fun ProvideInputDate(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    onNextClicked: () -> Unit,
 ) {
     val (actionType, visualTransformation) = when (fieldUiModel.valueType) {
         ValueType.DATETIME -> DateTimeActionIconType.DATE_TIME to DateTimeTransformation()
@@ -85,14 +86,16 @@ fun ProvideInputDate(
         isRequired = fieldUiModel.mandatory,
         visualTransformation = visualTransformation,
         onFocusChanged = {},
+        onNextClicked = onNextClicked,
         onValueChanged = {
             value = it
             if (isValid(it, fieldUiModel.valueType)) {
                 intentHandler.invoke(
-                    FormIntent.OnSave(
+                    FormIntent.OnSaveDate(
                         uid = fieldUiModel.uid,
                         value = formatUIDateToStored(it, fieldUiModel.valueType),
                         valueType = fieldUiModel.valueType,
+                        allowFutureDates = fieldUiModel.allowFutureDates ?: true,
                     ),
                 )
             }
@@ -197,21 +200,25 @@ private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?
 }
 
 private fun isValid(valueString: String, valueType: ValueType?): Boolean {
-    return when (valueType) {
-        ValueType.DATE -> {
-            valueString.length == 8
-        }
+    return if (valueString.isEmpty()) {
+        true
+    } else {
+        when (valueType) {
+            ValueType.DATE -> {
+                valueString.length == 8
+            }
 
-        ValueType.TIME -> {
-            valueString.length == 4
-        }
+            ValueType.TIME -> {
+                valueString.length == 4
+            }
 
-        ValueType.DATETIME -> {
-            valueString.length == 12
-        }
+            ValueType.DATETIME -> {
+                valueString.length == 12
+            }
 
-        else -> {
-            valueString.length == 8
+            else -> {
+                valueString.length == 8
+            }
         }
     }
 }

@@ -149,6 +149,10 @@ class TeiDashboardMobileActivity :
         setThemeAndContentView()
         configureUIElements()
         setupFormViewIfLandscape()
+        binding.syncButton.setOnClickListener { openSyncDialog() }
+        if (intent.shouldLaunchSyncDialog()) {
+            openSyncDialog()
+        }
         setNavigationBar()
         setEditButton()
         observeViewModel()
@@ -174,7 +178,7 @@ class TeiDashboardMobileActivity :
                 programUid,
                 enrollmentUid,
                 this.isPortrait(),
-            )
+            ),
         ).inject(this)
     }
 
@@ -232,6 +236,7 @@ class TeiDashboardMobileActivity :
             binding.relationshipMapIcon.setImageResource(R.drawable.ic_map)
         }
     }
+
     private fun setupFormViewIfLandscape() {
         if (isLandscape()) {
             setupFormView()
