@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers
+package org.dhis2.usescases.eventswithoutregistration.eventDetails.providers
 
 import androidx.compose.foundation.background
 import androidx.compose.material.DropdownMenu
@@ -19,13 +19,13 @@ import org.dhis2.data.dhislogic.inDateRange
 import org.dhis2.data.dhislogic.inOrgUnit
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventCatCombo
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventCategory
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventCoordinates
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventDate
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventOrgUnit
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventTemp
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventTempStatus
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
