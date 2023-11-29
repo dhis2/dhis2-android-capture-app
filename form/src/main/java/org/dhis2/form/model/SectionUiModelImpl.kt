@@ -1,6 +1,7 @@
 package org.dhis2.form.model
 
 import androidx.databinding.ObservableField
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
@@ -43,6 +44,7 @@ data class SectionUiModelImpl(
     override val isLoadingData: Boolean = false,
     override var optionSetConfiguration: OptionSetConfiguration? = null,
     override val autocompleteList: List<String>? = null,
+    override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0

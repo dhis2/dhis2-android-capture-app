@@ -96,22 +96,19 @@ private fun getFilePath(context: Context, uri: Uri): String? {
     var selection: String? = null
     var selectionArgs: Array<String>? = null
     if (DocumentsContract.isDocumentUri(context, copy)) {
+        val id = DocumentsContract.getDocumentId(copy)
+        val split = id.split(":").toTypedArray()
         when {
             isDownloadsDocument(copy) -> {
-                val id = DocumentsContract.getDocumentId(copy)
                 copy = ContentUris.withAppendedId(
                     Uri.parse("content://downloads/public_downloads"),
-                    id.toLong(),
+                    split[1].toLong(),
                 )
             }
             isExternalStorageDocument(copy) -> {
-                val id = DocumentsContract.getDocumentId(copy)
-                val split = id.split(":").toTypedArray()
                 return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
             }
             isMediaDocument(copy) -> {
-                val id = DocumentsContract.getDocumentId(copy)
-                val split = id.split(":").toTypedArray()
                 when (split[0]) {
                     "image" -> {
                         copy = MediaStore.Images.Media.EXTERNAL_CONTENT_URI

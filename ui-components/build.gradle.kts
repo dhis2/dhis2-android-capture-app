@@ -37,8 +37,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     buildFeatures {
         compose = true

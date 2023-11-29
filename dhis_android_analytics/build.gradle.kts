@@ -34,8 +34,7 @@ android {
             )
         }
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     buildFeatures {
         compose = true

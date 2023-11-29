@@ -1,5 +1,6 @@
 package org.dhis2.form.model
 
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
@@ -34,6 +35,7 @@ data class FieldUiModelImpl(
     override val isLoadingData: Boolean = false,
     override var optionSetConfiguration: OptionSetConfiguration?,
     override var autocompleteList: List<String>?,
+    override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null

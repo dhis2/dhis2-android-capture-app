@@ -924,6 +924,7 @@ private fun ProvideOrgUnitInput(
                     fieldUiModel.uid,
                     fieldUiModel.label,
                     fieldUiModel.value,
+                    fieldUiModel.orgUnitSelectorScope,
                 ),
             )
         },

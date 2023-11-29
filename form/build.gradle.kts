@@ -33,8 +33,7 @@ android {
             )
         }
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
