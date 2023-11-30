@@ -26,7 +26,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -49,7 +48,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformatio
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.time.LocalDate
-import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Date
@@ -63,16 +61,9 @@ fun ProvideInputDate(
     onDateSet: (InputDateValues) -> Unit,
     onClear: () -> Unit,
     required: Boolean = false,
-    considerStandardInterval: Boolean = false,
 ) {
     var value by remember(eventDate.dateValue) {
         mutableStateOf(eventDate.dateValue?.let { formatStoredDateToUI(it) })
-    }
-    if (considerStandardInterval && eventDate.scheduleInterval != 0) {
-        val formatter = DateTimeFormatter.ofPattern(DateUtils.SIMPLE_DATE_FORMAT)
-        val date = LocalDate.parse(eventDate.dateValue, formatter).plus(Period.of(0, 0, eventDate.scheduleInterval))
-        val formattedDate = formatStoredDateToUI(date.format(formatter))
-        value = formattedDate
     }
 
     var state by remember {

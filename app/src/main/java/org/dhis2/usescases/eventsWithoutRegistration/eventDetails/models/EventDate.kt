@@ -10,7 +10,7 @@ data class EventDate(
     val currentDate: Date? = null,
     val minDate: Date? = null,
     val maxDate: Date? = null,
-    val scheduleInterval: Int = 0,
+    var scheduleInterval: Int = 0,
     val allowFutureDates: Boolean = true,
     val periodType: PeriodType? = null,
 )
