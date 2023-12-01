@@ -677,7 +677,9 @@ class FormView : Fragment() {
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
 
-        handleKeyBoardOnFocusChange(items)
+        if (!useCompose) {
+            handleKeyBoardOnFocusChange(items)
+        }
 
         var offset = 0
         myFirstPositionView?.let {
