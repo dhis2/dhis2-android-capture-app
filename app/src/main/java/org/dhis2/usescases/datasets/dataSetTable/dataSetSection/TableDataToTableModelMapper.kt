@@ -81,14 +81,14 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                 rowHeader = RowHeader(
                     id = indicatorName,
                     title = indicatorName!!,
-                    row = tableData.keys.indexOf(indicatorName)
+                    row = tableData.keys.indexOf(indicatorName),
                 ),
                 values = mapOf(
                     0 to TableCell(
                         id = indicatorName,
                         column = 0,
                         value = indicatorValue,
-                        editable = false
+                        editable = false,
                     ),
                 ),
             )
