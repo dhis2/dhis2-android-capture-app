@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventswithoutregistration.eventCapture;
 
-import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
+import static org.dhis2.usescases.teidashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
 import static org.dhis2.commons.Constants.PROGRAM_UID;
 
 import android.os.Bundle;
@@ -15,9 +15,9 @@ import org.dhis2.R;
 import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.ui.EventDetailsFragment;
 import org.dhis2.usescases.notes.NotesFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
+import org.dhis2.usescases.teidashboard.dashboardfragments.indicators.IndicatorsFragment;
+import org.dhis2.usescases.teidashboard.dashboardfragments.indicators.VisualizationType;
+import org.dhis2.usescases.teidashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.commons.Constants;
 import org.jetbrains.annotations.Nullable;
 

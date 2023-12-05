@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.enrollment.EnrollmentActivity
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity
 import java.util.UUID
 
 class SearchNavigator(

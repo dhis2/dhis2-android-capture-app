@@ -37,11 +37,11 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideCategorySelector
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideCoordinates
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideInputDate
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideOrgUnit
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventCategory

@@ -19,6 +19,7 @@ import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.featureconfig.model.Feature;
+import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
 import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureAction;

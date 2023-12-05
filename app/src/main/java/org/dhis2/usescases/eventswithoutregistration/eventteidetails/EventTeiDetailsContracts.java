@@ -10,7 +10,7 @@ import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import org.dhis2.usescases.teidashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;

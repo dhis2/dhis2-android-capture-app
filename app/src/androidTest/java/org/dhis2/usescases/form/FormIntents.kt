@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity
 
 const val EVENT_UID = "EVENT_UID"
 const val PROGRAM_UID = "PROGRAM_UID"

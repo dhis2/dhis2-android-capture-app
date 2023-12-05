@@ -11,7 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hamcrest.CoreMatchers.allOf
 
 fun eventWithoutRegistrationRobot(eventWithoutRegistrationRobot: EventWithoutRegistrationRobot.() -> Unit) {

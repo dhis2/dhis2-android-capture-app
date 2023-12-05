@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.SearchTETest
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 
 private const val PROGRAM_UID = "PROGRAM_UID"
 private const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"

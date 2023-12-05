@@ -23,7 +23,7 @@ import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule

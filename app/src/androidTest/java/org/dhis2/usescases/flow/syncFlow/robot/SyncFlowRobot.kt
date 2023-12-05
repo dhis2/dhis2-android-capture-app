@@ -13,7 +13,7 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.ui.dialogs.bottomsheet.TITLE
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents.EventViewHolder
 
 fun syncFlowRobot(syncFlowRobot: SyncFlowRobot.() -> Unit) {
     SyncFlowRobot().apply {

@@ -9,7 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo

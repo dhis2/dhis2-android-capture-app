@@ -5,8 +5,8 @@ import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFr
 import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.EventCaptureFormModule;
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsComponent;
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsModule;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsComponent;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsModule;
+import org.dhis2.usescases.teidashboard.dashboardfragments.indicators.IndicatorsComponent;
+import org.dhis2.usescases.teidashboard.dashboardfragments.indicators.IndicatorsModule;
 
 import dagger.Subcomponent;
 

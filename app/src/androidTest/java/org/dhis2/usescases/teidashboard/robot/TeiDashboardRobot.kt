@@ -29,10 +29,10 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.StageViewHolder
-import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.DashboardProgramViewHolder
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents.EventViewHolder
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents.StageViewHolder
+import org.dhis2.usescases.teidashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.utils.dialFloatingActionButton.FAB_ID

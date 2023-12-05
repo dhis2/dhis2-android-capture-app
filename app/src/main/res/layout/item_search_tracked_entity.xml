@@ -179,7 +179,7 @@
                     app:layout_constraintWidth_percent="0.7"
                     tools:text="Attribute 1:" />
 
-                <!--            android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"-->
+
                 <TextView
                     android:id="@+id/attribute_b_name"
                     android:layout_width="wrap_content"

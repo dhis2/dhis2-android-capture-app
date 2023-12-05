@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter" />
+            type="org.dhis2.usescases.teidashboard.dashboardfragments.teidata.TEIDataPresenter" />
 
         <variable
             name="program"

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventswithoutregistration.eventteidetails;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
@@ -40,18 +44,18 @@ import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import org.dhis2.usescases.teiDashboard.DashboardViewModel;
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataModule;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
+import org.dhis2.usescases.teidashboard.DashboardProgramModel;
+import org.dhis2.usescases.teidashboard.DashboardViewModel;
+import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.DashboardProgramAdapter;
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.TEIDataContracts;
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.TEIDataModule;
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.TEIDataPresenter;
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.Constants;
-import org.dhis2.usescases.teiDashboard.ui.FollowupButtonKt;
-import org.dhis2.usescases.teiDashboard.ui.LockButtonKt;
+import org.dhis2.usescases.teidashboard.ui.FollowupButtonKt;
+import org.dhis2.usescases.teidashboard.ui.LockButtonKt;
 import org.dhis2.utils.CustomComparator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
@@ -78,7 +82,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -93,7 +96,6 @@ import io.reactivex.functions.Consumer;
 import kotlin.Unit;
 import timber.log.Timber;
 
-import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static org.dhis2.commons.Constants.ENROLLMENT_UID;
 import static org.dhis2.commons.Constants.EVENT_CREATION_TYPE;
@@ -107,10 +109,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
 public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
-
-    private static final int REQ_DETAILS = 1001;
-    private static final int REQ_EVENT = 2001;
-
     private static final int RC_GENERATE_EVENT = 1501;
     private static final int RC_EVENTS_COMPLETED = 1601;
 
@@ -140,7 +138,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
     private EventCaptureActivity activity;
-    private Set<String> attributeNames;
     String teiUid;
     String programUid;
     String enrollmentUid;
@@ -167,7 +164,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void onAttach(@NotNull Context context) {
 
-        this.attributeNames = new HashSet<>(getArguments().getStringArrayList("ATTRIBUTE_NAMES"));
         this.teiUid = getArguments().getString("TEI_UID");
         this.enrollmentUid = getArguments().getString("ENROLLMENT_UID");
         this.programUid = getArguments().getString("PROGRAM_UID");
@@ -465,16 +461,16 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     }
 
-    @SuppressLint("CheckResult")
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQ_DETAILS) {
-                activity.getPresenter().init();
-            }
-        }
-    }
+    ActivityResultLauncher<Intent> onActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        activity.getPresenter().init();
+                    }
+                }
+            });
 
     @Override
     public void hideFilters() {
@@ -652,7 +648,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
             bundle.putInt(EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays);
             Intent intent = new Intent(getContext(), ProgramStageSelectionActivity.class);
             intent.putExtras(bundle);
-            startActivityForResult(intent, REQ_EVENT);
+            onActivityResultLauncher.launch(intent);
         }
     }
 
@@ -693,12 +689,12 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public void openEventInitial(Intent intent) {
-        this.startActivityForResult(intent, REQ_EVENT, null);
+        onActivityResultLauncher.launch(intent);
     }
 
     @Override
     public void openEventCapture(Intent intent) {
-        this.startActivityForResult(intent, REQ_EVENT, null);
+        onActivityResultLauncher.launch(intent);
     }
 
     @Override
@@ -729,7 +725,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid());
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() != null ? programStage.standardInterval() : 0);
         intent.putExtras(bundle);
-        startActivityForResult(intent, REQ_EVENT);
+        onActivityResultLauncher.launch(intent);
     }
 
     @Override
@@ -793,7 +789,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
         Collections.sort(this.programTrackedEntityAttributes, new CustomComparator());
 
         if (OrientationUtilsKt.isLandscape() && this.attributeValues != null) {
-                setAttributesAndValues(this.programTrackedEntityAttributes);
+            setAttributesAndValues(this.programTrackedEntityAttributes);
         }
     }
 
@@ -834,7 +830,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public void setFilters(@NonNull List<? extends FilterItem> filterItems) {
-       // No filters to set
+        // No filters to set
     }
 
     @Override

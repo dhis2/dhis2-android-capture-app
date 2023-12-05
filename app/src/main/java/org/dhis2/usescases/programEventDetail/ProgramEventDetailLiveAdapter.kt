@@ -13,7 +13,7 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
+import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 

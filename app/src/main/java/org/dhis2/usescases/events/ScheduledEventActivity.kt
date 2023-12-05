@@ -21,7 +21,7 @@ import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.EventMode

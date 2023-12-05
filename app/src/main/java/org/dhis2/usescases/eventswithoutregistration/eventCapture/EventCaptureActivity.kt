@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -44,9 +43,9 @@ import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.eventswithoutregistration.eventteidetails.EventTeiDetailsFragment
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
-import org.dhis2.usescases.teiDashboard.DashboardViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
+import org.dhis2.usescases.teidashboard.DashboardProgramModel
+import org.dhis2.usescases.teidashboard.DashboardViewModel
+import org.dhis2.usescases.teidashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
@@ -137,7 +136,9 @@ class EventCaptureActivity :
             val stageUid: String = presenter!!.programStageUidString
             programStageUid = stageUid
             dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
-            supportFragmentManager.beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false)).commitAllowingStateLoss()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false))
+                .commitAllowingStateLoss()
             supportFragmentManager.beginTransaction().replace(
                 R.id.tei_column,
                 EventTeiDetailsFragment.newInstance(
@@ -158,59 +159,71 @@ class EventCaptureActivity :
             showSyncDialog()
         }
     }
+
     private fun setUpViewPagerAdapter(initialPage: Int) {
         if (isLandscape()) {
-            setUpPager(binding!!.eventViewLandPager, false, initialPage)
-        } else {
-            setUpPager(binding!!.eventViewPager, true, initialPage)
-        }
-    }
-
-    private fun setUpPager(pager: ViewPager2?, isPortrait: Boolean, initialPage: Int) {
-        pager?.apply {
-            isUserInputEnabled = false
-            adapter = createPagerAdapter(isPortrait)
-            setCurrentItem(initialPage, false)
-            clipWithRoundedCorners(16.dp)
-
-            registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            binding!!.eventViewLandPager!!.isUserInputEnabled = false
+            adapter = EventCapturePagerAdapter(
+                this,
+                intent.getStringExtra(PROGRAM_UID),
+                intent.getStringExtra(Constants.EVENT_UID),
+                pageConfigurator!!.displayAnalytics(),
+                pageConfigurator!!.displayRelationships(),
+                false,
+                false
+            )
+            binding!!.eventViewLandPager!!.adapter = adapter
+            binding!!.eventViewLandPager!!.setCurrentItem(initialPage, false)
+            binding!!.eventViewLandPager!!.clipWithRoundedCorners(16.dp)
+            binding!!.eventViewLandPager!!.registerOnPageChangeCallback(object :
+                OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    handlePageSelected(position)
+                    if (position == 0 && eventMode !== EventMode.NEW) {
+                        binding!!.syncButton.visibility = View.VISIBLE
+                    } else {
+                        binding!!.syncButton.visibility = View.GONE
+                    }
+                    if (position != 1) {
+                        hideProgress()
+                    }
+                }
+            })
+        } else {
+            binding!!.eventViewPager!!.isUserInputEnabled = false
+            adapter = EventCapturePagerAdapter(
+                this,
+                intent.getStringExtra(PROGRAM_UID),
+                intent.getStringExtra(Constants.EVENT_UID),
+                pageConfigurator!!.displayAnalytics(),
+                pageConfigurator!!.displayRelationships(),
+                true,
+                intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
+            )
+
+            binding!!.eventViewPager!!.adapter = adapter
+            binding!!.eventViewPager!!.setCurrentItem(initialPage, false)
+            binding!!.eventViewPager!!.clipWithRoundedCorners(16.dp)
+            binding!!.eventViewPager!!.registerOnPageChangeCallback(object :
+                OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    onPageChange(position)
                 }
             })
         }
     }
 
-    private fun createPagerAdapter(isPortrait: Boolean): EventCapturePagerAdapter {
-        val displayAnalytics = pageConfigurator!!.displayAnalytics()
-        val displayRelationships = pageConfigurator!!.displayRelationships()
-
-        return EventCapturePagerAdapter(
-            this,
-            intent.getStringExtra(PROGRAM_UID),
-            intent.getStringExtra(Constants.EVENT_UID),
-            displayAnalytics,
-            displayRelationships,
-            isPortrait,
-            !isPortrait && intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
-            teiUid,
-            enrollmentUid
-        )
-    }
-
-    private fun handlePageSelected(position: Int) {
+    private fun onPageChange(position: Int) {
         if (position == 0 && eventMode !== EventMode.NEW) {
             binding!!.syncButton.visibility = View.VISIBLE
         } else {
             binding!!.syncButton.visibility = View.GONE
         }
-
         if (position != 1) {
             hideProgress()
         }
     }
-
 
     private fun setUpNavigationBar(initialPage: Int) {
         binding!!.navigationBar.setInitialPage(initialPage)
@@ -218,9 +231,11 @@ class EventCaptureActivity :
         binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
             run {
                 if (isLandscape()) {
-                    binding!!.eventViewLandPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+                    binding!!.eventViewLandPager!!.currentItem =
+                        adapter!!.getDynamicTabIndex(item.itemId)
                 } else {
-                    binding!!.eventViewPager!!.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+                    binding!!.eventViewPager!!.currentItem =
+                        adapter!!.getDynamicTabIndex(item.itemId)
                 }
             }
 
@@ -332,51 +347,51 @@ class EventCaptureActivity :
         eventCompletionDialog: EventCompletionDialog,
     ) {
         if (isPortrait() && (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry)) {
-                val dialog = BottomSheetDialog(
-                    bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                    onMainButtonClicked = {
-                        setAction(eventCompletionDialog.mainButtonAction)
-                    },
-                    onSecondaryButtonClicked = {
-                        eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                    },
-                    content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                        { bottomSheetDialog ->
-                            ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                                bottomSheetDialog.dismiss()
-                            }
+            val dialog = BottomSheetDialog(
+                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                onMainButtonClicked = {
+                    setAction(eventCompletionDialog.mainButtonAction)
+                },
+                onSecondaryButtonClicked = {
+                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+                },
+                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                    { bottomSheetDialog ->
+                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                            bottomSheetDialog.dismiss()
                         }
-                    } else {
-                        null
-                    },
-                )
-                dialog.show(supportFragmentManager, SHOW_OPTIONS)
+                    }
+                } else {
+                    null
+                },
+            )
+            dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
 
         if (isLandscape() && hasOneOfTheBottomNavigationButtonSelected()) {
-                val dialog = BottomSheetDialog(
-                    bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                    onMainButtonClicked = {
-                        setAction(eventCompletionDialog.mainButtonAction)
-                    },
-                    onSecondaryButtonClicked = {
-                        eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                    },
-                    content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                        { bottomSheetDialog ->
-                            ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                                bottomSheetDialog.dismiss()
-                            }
+            val dialog = BottomSheetDialog(
+                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                onMainButtonClicked = {
+                    setAction(eventCompletionDialog.mainButtonAction)
+                },
+                onSecondaryButtonClicked = {
+                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+                },
+                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                    { bottomSheetDialog ->
+                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                            bottomSheetDialog.dismiss()
                         }
-                    } else {
-                        null
-                    },
-                )
-                dialog.show(supportFragmentManager, SHOW_OPTIONS)
+                    }
+                } else {
+                    null
+                },
+            )
+            dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
     }
 
-    private fun hasOneOfTheBottomNavigationButtonSelected (): Boolean {
+    private fun hasOneOfTheBottomNavigationButtonSelected(): Boolean {
         return (
                 binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry ||
                         binding!!.navigationBar.selectedItemId == R.id.navigation_details ||
@@ -400,7 +415,8 @@ class EventCaptureActivity :
     }
 
     fun executeRules() {
-        val fragment: EventTeiDetailsFragment? = supportFragmentManager.findFragmentById(R.id.tei_column) as EventTeiDetailsFragment?
+        val fragment: EventTeiDetailsFragment? =
+            supportFragmentManager.findFragmentById(R.id.tei_column) as EventTeiDetailsFragment?
         fragment?.onResume()
     }
 
@@ -419,13 +435,16 @@ class EventCaptureActivity :
                 isEventCompleted = true
                 presenter!!.completeEvent(false)
             }
+
             FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter!!.completeEvent(true)
             FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
             FormBottomDialog.ActionType.SKIP -> presenter!!.skipEvent()
             FormBottomDialog.ActionType.RESCHEDULE -> { // Do nothing
             }
+
             FormBottomDialog.ActionType.CHECK_FIELDS -> { // Do nothing
             }
+
             FormBottomDialog.ActionType.FINISH -> finishDataEntry()
             FormBottomDialog.ActionType.NONE -> { // Do nothing
             }
@@ -488,6 +507,7 @@ class EventCaptureActivity :
                         analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         showTutorial(false)
                     }
+
                     R.id.menu_delete -> confirmDeleteEvent()
                     else -> { // Do nothing
                     }
@@ -587,7 +607,13 @@ class EventCaptureActivity :
         private const val SHOW_OPTIONS = "SHOW_OPTIONS"
 
         @JvmStatic
-        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode, teiUid: String?, enrollmentUid: String?): Bundle {
+        fun getActivityBundle(
+            eventUid: String,
+            programUid: String,
+            eventMode: EventMode,
+            teiUid: String?,
+            enrollmentUid: String?
+        ): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.EVENT_UID, eventUid)
             bundle.putString(PROGRAM_UID, programUid)
