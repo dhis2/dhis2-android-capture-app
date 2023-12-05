@@ -35,9 +35,9 @@ fun ProvideInputAge(
     var inputType by remember(fieldUiModel.value) {
         mutableStateOf(
             if (!fieldUiModel.value.isNullOrEmpty()) {
-                formatStoredDateToUI(fieldUiModel.value!!)?.let {
+                formatStoredDateToUI(fieldUiModel.value!!).let {
                     AgeInputType.DateOfBirth(it)
-                } ?: AgeInputType.None
+                }
             } else {
                 AgeInputType.None
             },
@@ -58,9 +58,9 @@ fun ProvideInputAge(
                     } ?: AgeInputType.None
 
                 is AgeInputType.DateOfBirth ->
-                    formatStoredDateToUI(fieldUiModel.value!!)?.let {
+                    formatStoredDateToUI(fieldUiModel.value!!).let {
                         (inputType as AgeInputType.DateOfBirth).copy(value = it)
-                    } ?: AgeInputType.None
+                    }
 
                 AgeInputType.None -> inputType
             }
