@@ -263,7 +263,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     private fun setAttributesAndValues(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>?) {
         val linkedHashMapOfAttrValues = LinkedHashMap<String, TrackedEntityAttributeValue?>()
-        val attributeNames: MutableSet<String> = mutableSetOf()
         var teiAttributesLoopCounter = 0
         val d2 = D2Manager.getD2()
         while (teiAttributesLoopCounter < programTrackedEntityAttributes!!.size) {
@@ -278,7 +277,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     trackedEntityAttributeUid
                 )
                 .blockingGet()
-            attributeNames.add(trackedEntityAttribute?.displayFormName() ?: "")
             linkedHashMapOfAttrValues[trackedEntityAttribute?.displayFormName() ?: ""] = value
             teiAttributesLoopCounter++
         }
