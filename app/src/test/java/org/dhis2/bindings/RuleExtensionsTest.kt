@@ -294,6 +294,29 @@ class RuleExtensionsTest {
     }
 
     @Test
+    fun `Should format numeric values`() {
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes()
+                .uid("attrIntegerUid").blockingGet(),
+        ) doReturn TrackedEntityAttribute.builder()
+            .uid("attrIntegerUid")
+            .valueType(ValueType.INTEGER)
+            .build()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes()
+                .uid("attrNumberUid").blockingGet(),
+        ) doReturn TrackedEntityAttribute.builder()
+            .uid("attrNumberUid")
+            .valueType(ValueType.NUMBER)
+            .build()
+
+        val rules = getTrackedEntityNumericAttributeValues().toRuleAttributeValue(d2, "programUid")
+
+        assertTrue(rules[0].value() == "123")
+        assertTrue(rules[1].value() == "555.55")
+    }
+
+    @Test
     fun `Should transform trackedEntityAttributeValue to ruleDataValues with optionCode value`() {
         whenever(
             d2.trackedEntityModule().trackedEntityAttributes().uid("attrUid").blockingGet(),
@@ -402,6 +425,20 @@ class RuleExtensionsTest {
             TrackedEntityAttributeValue.builder()
                 .trackedEntityAttribute("attrUid")
                 .trackedEntityInstance("teiUid")
+                .build(),
+        )
+    }
+    private fun getTrackedEntityNumericAttributeValues(): List<TrackedEntityAttributeValue> {
+        return arrayListOf(
+            TrackedEntityAttributeValue.builder()
+                .trackedEntityAttribute("attrIntegerUid")
+                .trackedEntityInstance("teiIntegerUid")
+                .value("123")
+                .build(),
+            TrackedEntityAttributeValue.builder()
+                .trackedEntityAttribute("attrNumberUid")
+                .trackedEntityInstance("teiNumberUid")
+                .value("555.55")
                 .build(),
         )
     }
