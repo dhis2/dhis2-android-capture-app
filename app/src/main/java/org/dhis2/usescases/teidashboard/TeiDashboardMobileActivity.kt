@@ -78,7 +78,7 @@ class TeiDashboardMobileActivity :
     lateinit var presenter: TeiDashboardContracts.Presenter
 
     var featureConfig: FeatureConfigRepository? = null
-    @Inject set
+        @Inject set
 
     @Inject
     lateinit var filterManager: FilterManager
@@ -239,14 +239,14 @@ class TeiDashboardMobileActivity :
                 EnrollmentResultDialogUiProvider(
                     ResourceManager(
                         this.context,
-                        ColorUtils()
-                    )
-                )
+                        ColorUtils(),
+                    ),
+                ),
             )
             .factory(supportFragmentManager)
             .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW))
             .useComposeForm(
-                featureConfig?.isFeatureEnable(Feature.COMPOSE_FORMS) ?: false
+                featureConfig?.isFeatureEnable(Feature.COMPOSE_FORMS) ?: false,
             )
             .build()
 
@@ -257,7 +257,6 @@ class TeiDashboardMobileActivity :
         val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
         saveButton.setOnClickListener { formView?.onSaveClick() }
     }
-
 
     private fun setEditButton() {
         binding.editButton.setButtonContent(presenter.teType) {
@@ -351,7 +350,7 @@ class TeiDashboardMobileActivity :
                             )
                             startActivity(
                                 intent(context, teiUid, programUid, enrollmentUid),
-                                activityOptions.toBundle()
+                                activityOptions.toBundle(),
                             )
                             finish()
                         }

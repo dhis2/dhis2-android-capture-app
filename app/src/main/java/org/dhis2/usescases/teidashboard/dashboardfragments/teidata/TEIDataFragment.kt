@@ -254,7 +254,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         val filteredValue =
             internalAttributeValues!!.stream().filter { value: TrackedEntityAttributeValue ->
                 println(
-                    value.trackedEntityAttribute().toString() + "===================" + attributeUid
+                    value.trackedEntityAttribute().toString() + "===================" + attributeUid,
                 )
                 value.trackedEntityAttribute() == attributeUid
             }.collect(Collectors.toList())
@@ -270,11 +270,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 programTrackedEntityAttributes[teiAttributesLoopCounter].trackedEntityAttribute()!!
                     .uid()
             val value = getAttributeValue(
-                trackedEntityAttributeUid
+                trackedEntityAttributeUid,
             )
             val trackedEntityAttribute = d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(
-                    trackedEntityAttributeUid
+                    trackedEntityAttributeUid,
                 )
                 .blockingGet()
             linkedHashMapOfAttrValues[trackedEntityAttribute?.displayFormName() ?: ""] = value
@@ -323,7 +323,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun setTrackedEntityInstance(
         trackedEntityInstance: TrackedEntityInstance?,
         organisationUnit: OrganisationUnit?,
-        trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?
+        trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?,
     ) {
         binding.trackEntity = trackedEntityInstance
 
@@ -444,7 +444,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
             binding.cardFrontLand!!.followupButton.setFollowupButtonContent(
                 dashboardActivity.presenter.teType,
-                followUp.get()
+                followUp.get(),
             ) {
                 presenter.onFollowUp(dashboardModel)
                 presenter.init()
@@ -505,17 +505,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 when (itemId) {
                     R.id.complete -> dashboardActivity.presenter.updateEnrollmentStatus(
                         dashboardActivity.enrollmentUid,
-                        EnrollmentStatus.COMPLETED
+                        EnrollmentStatus.COMPLETED,
                     )
 
                     R.id.deactivate -> dashboardActivity.presenter.updateEnrollmentStatus(
                         dashboardActivity.enrollmentUid,
-                        EnrollmentStatus.CANCELLED
+                        EnrollmentStatus.CANCELLED,
                     )
 
                     R.id.reOpen -> dashboardActivity.presenter.updateEnrollmentStatus(
                         dashboardActivity.enrollmentUid,
-                        EnrollmentStatus.ACTIVE
+                        EnrollmentStatus.ACTIVE,
                     )
                 }
                 true
@@ -592,7 +592,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun showCatComboDialog(
         eventUid: String?,
         eventDate: Date?,
-        categoryComboUid: String?
+        categoryComboUid: String?,
     ) {
         TODO("Not yet implemented")
     }
@@ -771,7 +771,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                         requireContext(),
                         defaultIcon,
                         R.drawable.photo_temp_gray,
-                        colorUtils
+                        colorUtils,
                     ),
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
@@ -796,7 +796,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
         }
     }
-
 
     override fun goToEventInitial(
         eventCreationType: EventCreationType,

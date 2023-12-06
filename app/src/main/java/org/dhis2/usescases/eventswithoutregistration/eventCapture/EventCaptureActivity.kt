@@ -170,7 +170,7 @@ class EventCaptureActivity :
                 pageConfigurator!!.displayAnalytics(),
                 pageConfigurator!!.displayRelationships(),
                 false,
-                false
+                false,
             )
             binding!!.eventViewLandPager!!.adapter = adapter
             binding!!.eventViewLandPager!!.setCurrentItem(initialPage, false)
@@ -393,11 +393,11 @@ class EventCaptureActivity :
 
     private fun hasOneOfTheBottomNavigationButtonSelected(): Boolean {
         return (
-                binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry ||
-                        binding!!.navigationBar.selectedItemId == R.id.navigation_details ||
-                        binding!!.navigationBar.selectedItemId == R.id.navigation_analytics ||
-                        binding!!.navigationBar.selectedItemId == R.id.navigation_notes
-                );
+            binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry ||
+                binding!!.navigationBar.selectedItemId == R.id.navigation_details ||
+                binding!!.navigationBar.selectedItemId == R.id.navigation_analytics ||
+                binding!!.navigationBar.selectedItemId == R.id.navigation_notes
+            )
     }
 
     override fun SaveAndFinish() {
@@ -612,7 +612,7 @@ class EventCaptureActivity :
             programUid: String,
             eventMode: EventMode,
             teiUid: String?,
-            enrollmentUid: String?
+            enrollmentUid: String?,
         ): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.EVENT_UID, eventUid)
