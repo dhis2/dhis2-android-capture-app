@@ -67,6 +67,8 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -74,6 +76,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.jetbrains.annotations.NotNull;
@@ -343,14 +346,22 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public void setAttributesAndValues(List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes) {
 
         LinkedHashMap<String, TrackedEntityAttributeValue> linkedHashMapOfAttrValues = new LinkedHashMap<>();
-
         int teiAttributesLoopCounter = 0;
+        D2 d2 = D2Manager.getD2();
+
         while (teiAttributesLoopCounter < programTrackedEntityAttributes.size()) {
+            ProgramTrackedEntityAttribute programTrackedEntityAttribute = programTrackedEntityAttributes.get(teiAttributesLoopCounter);
+            String trackedEntityAttributeUid = programTrackedEntityAttribute.trackedEntityAttribute().uid();
+            TrackedEntityAttributeValue value = getAttributeValue(trackedEntityAttributeUid);
 
-            TrackedEntityAttributeValue value = getAttributeValue(programTrackedEntityAttributes.get(teiAttributesLoopCounter).trackedEntityAttribute().uid());
+            TrackedEntityAttribute trackedEntityAttribute = d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(trackedEntityAttributeUid)
+                    .blockingGet();
 
-            linkedHashMapOfAttrValues.put(programTrackedEntityAttributes.get(teiAttributesLoopCounter).displayShortName().replace("Mother program ", "").replace("Newborn program ", ""), value);
+            linkedHashMapOfAttrValues.put(trackedEntityAttribute != null ? trackedEntityAttribute.displayFormName() : "", value);
+
             teiAttributesLoopCounter++;
+
         }
 
         this.teiModel.setAttributeValues(linkedHashMapOfAttrValues);
