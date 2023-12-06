@@ -73,6 +73,7 @@ import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -262,17 +263,23 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     private fun setAttributesAndValues(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>?) {
         val linkedHashMapOfAttrValues = LinkedHashMap<String, TrackedEntityAttributeValue?>()
+        val attributeNames: MutableSet<String> = mutableSetOf()
         var teiAttributesLoopCounter = 0
+        val d2 = D2Manager.getD2()
         while (teiAttributesLoopCounter < programTrackedEntityAttributes!!.size) {
-            val value = getAttributeValue(
+            val trackedEntityAttributeUid: String =
                 programTrackedEntityAttributes[teiAttributesLoopCounter].trackedEntityAttribute()!!
                     .uid()
+            val value = getAttributeValue(
+                trackedEntityAttributeUid
             )
-//            val value = programTrackedEntityAttributes[teiAttributesLoopCounter].trackedEntityAttribute()
-//            value
-//            linkedHashMapOfAttrValues
-            linkedHashMapOfAttrValues[programTrackedEntityAttributes[teiAttributesLoopCounter].displayShortName()!!
-                .replace("Mother program ", "").replace("Newborn program ", "")] = value
+            val trackedEntityAttribute = d2.trackedEntityModule().trackedEntityAttributes()
+                .uid(
+                    trackedEntityAttributeUid
+                )
+                .blockingGet()
+            attributeNames.add(trackedEntityAttribute?.displayFormName() ?: "")
+            linkedHashMapOfAttrValues[trackedEntityAttribute?.displayFormName() ?: ""] = value
             teiAttributesLoopCounter++
         }
         teiModel!!.attributeValues = linkedHashMapOfAttrValues
