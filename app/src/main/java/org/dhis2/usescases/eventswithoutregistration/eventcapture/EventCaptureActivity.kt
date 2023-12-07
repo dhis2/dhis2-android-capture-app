@@ -131,7 +131,7 @@ class EventCaptureActivity :
             } else {
                 1
             }
-        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE, EventMode::class.java)
+        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter(navigationInitialPage)
         presenter!!.programStageUid()
         setUpNavigationBar(navigationInitialPage)
