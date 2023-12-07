@@ -70,6 +70,14 @@ fun Date?.toOverdueUiText(
     resourceManager: ResourceManager,
     currentDate: Date = defaultCurrentDate,
 ): String {
+    fun getOverdueDaysString(days: Int): String {
+        return resourceManager.getPlural(
+            R.plurals.overdue_days,
+            days,
+            days,
+        )
+    }
+
     if (this == null) return ""
     val period = Interval(this.time, currentDate.time).toPeriod(PeriodType.yearMonthDayTime())
     return when {
@@ -88,19 +96,11 @@ fun Date?.toOverdueUiText(
             )
         }
         period.days in 1..89 -> {
-            resourceManager.getPlural(
-                R.plurals.overdue_days,
-                period.days,
-                period.days,
-            )
+            getOverdueDaysString(period.days)
         }
         period.days == 0 -> resourceManager.getString(R.string.overdue_today)
         else -> {
-            resourceManager.getPlural(
-                R.plurals.overdue_days,
-                period.days,
-                period.days,
-            )
+            getOverdueDaysString(period.days)
         }
     }
 }
