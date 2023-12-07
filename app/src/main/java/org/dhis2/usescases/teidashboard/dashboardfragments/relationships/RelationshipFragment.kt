@@ -28,7 +28,7 @@ import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.ui.ThemeManager
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.ui.NoRelationships

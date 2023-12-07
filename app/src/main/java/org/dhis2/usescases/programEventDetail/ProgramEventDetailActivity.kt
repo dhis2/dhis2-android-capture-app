@@ -30,8 +30,8 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
 import org.dhis2.ui.ThemeManager
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel.EventProgramScreen
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment

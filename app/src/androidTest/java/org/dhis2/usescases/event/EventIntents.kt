@@ -2,8 +2,8 @@ package org.dhis2.usescases.event
 
 import android.content.Intent
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity
 import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity
 
 const val EVENT_UID = "EVENT_UID"

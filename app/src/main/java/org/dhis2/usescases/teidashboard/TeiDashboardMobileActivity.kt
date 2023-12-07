@@ -705,7 +705,7 @@ class TeiDashboardMobileActivity :
     }
 
     override fun updateStatus() {
-        currentEnrollment?.value = programModel?.currentEnrollment?.uid()
+        currentEnrollment?.value = programModel.currentEnrollment?.uid()
     }
 
     fun updatedEnrollment(): LiveData<String>? {

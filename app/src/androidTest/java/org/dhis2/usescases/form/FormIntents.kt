@@ -2,7 +2,7 @@ package org.dhis2.usescases.form
 
 import android.content.Intent
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity
 

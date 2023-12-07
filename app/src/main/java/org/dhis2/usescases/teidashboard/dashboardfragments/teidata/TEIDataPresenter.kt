@@ -30,9 +30,9 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.usescases.events.ScheduledEventActivity.Companion.getIntent
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
-import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity.Companion.getActivityBundle
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity
 import org.dhis2.usescases.teidashboard.DashboardProgramModel
 import org.dhis2.usescases.teidashboard.DashboardRepository
 import org.dhis2.usescases.teidashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement

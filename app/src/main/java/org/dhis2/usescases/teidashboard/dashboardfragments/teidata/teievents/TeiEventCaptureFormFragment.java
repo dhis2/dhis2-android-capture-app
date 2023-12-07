@@ -17,9 +17,9 @@ import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.ui.FormView;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.EventCaptureFormView;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.eventCaptureFragment.OnEditionListener;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.eventcapturefragment.EventCaptureFormPresenter;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.eventcapturefragment.EventCaptureFormView;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.eventcapturefragment.OnEditionListener;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,11 +42,6 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
         args.putString(Constants.EVENT_UID, eventUid);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
     }
 
     @Nullable

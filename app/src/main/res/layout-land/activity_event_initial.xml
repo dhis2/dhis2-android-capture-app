@@ -21,7 +21,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialPresenter" />
+            type="org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialPresenter" />
     </data>
 
     <LinearLayout

@@ -48,7 +48,7 @@ import org.dhis2.commons.resources.ObjectStyleUtils.getIconResource
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
-import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.teidashboard.DashboardProgramModel
@@ -335,8 +335,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             if (organisationUnit != null) {
                 binding.cardFrontLand!!.orgUnit = organisationUnit.name()
             }
-            this.internalAttributeValues =
-                trackedEntityAttributeValues as? List<TrackedEntityAttributeValue>
+            this.internalAttributeValues = trackedEntityAttributeValues?.filterNotNull()
 
             if (this.programTrackedEntityAttributes != null) {
                 setAttributesAndValues(this.programTrackedEntityAttributes)
@@ -688,15 +687,15 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             val bundle = Bundle()
             bundle.putString(
                 Constants.PROGRAM_UID,
-                dashboardModel?.currentEnrollment?.program(),
+                dashboardModel.currentEnrollment?.program(),
             )
-            bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
-            dashboardModel?.currentOrgUnit?.uid()
+            bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel.tei?.uid())
+            dashboardModel.currentOrgUnit?.uid()
                 ?.takeIf { presenter.enrollmentOrgUnitInCaptureScope(it) }?.let {
                     bundle.putString(Constants.ORG_UNIT, it)
                 }
 
-            bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
+            bundle.putString(Constants.ENROLLMENT_UID, dashboardModel.currentEnrollment?.uid())
             bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
             bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays ?: 0)
             val intent = Intent(context, ProgramStageSelectionActivity::class.java)
@@ -803,13 +802,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     ) {
         val intent = Intent(activity, EventInitialActivity::class.java)
         val bundle = Bundle()
-        bundle.putString(Constants.PROGRAM_UID, dashboardModel?.currentProgram?.uid())
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
-        dashboardModel?.currentOrgUnit?.uid()?.takeIf(presenter::enrollmentOrgUnitInCaptureScope)
+        bundle.putString(Constants.PROGRAM_UID, dashboardModel.currentProgram?.uid())
+        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel.tei?.uid())
+        dashboardModel.currentOrgUnit?.uid()?.takeIf(presenter::enrollmentOrgUnitInCaptureScope)
             ?.let {
                 bundle.putString(Constants.ORG_UNIT, it)
             }
-        bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
+        bundle.putString(Constants.ENROLLMENT_UID, dashboardModel.currentEnrollment?.uid())
         bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
         bundle.putBoolean(Constants.EVENT_REPEATABLE, programStage.repeatable() ?: false)
         bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, programStage.periodType())

@@ -6,11 +6,11 @@ import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureContract;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCapturePresenterImpl;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureRepositoryImpl;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.domain.ConfigureEventCompletionDialog;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.provider.EventCaptureResourcesProvider;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureContract;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCapturePresenterImpl;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureRepositoryImpl;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.domain.ConfigureEventCompletionDialog;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.provider.EventCaptureResourcesProvider;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -22,7 +22,7 @@ public class TeiEventCaptureModule {
     private final String eventUid;
     private final EventCaptureContract.View view;
 
-    public TeiEventCaptureModule(EventCaptureContract.View view, String eventUid, boolean isPortrait) {
+    public TeiEventCaptureModule(EventCaptureContract.View view, String eventUid) {
         this.view = view;
         this.eventUid = eventUid;
     }

@@ -39,8 +39,8 @@ import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentEventTeiDetailsBinding;
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity;
-import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity;
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
@@ -145,7 +145,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     String programUid;
     String enrollmentUid;
     String programStageUid;
-    public static SearchTeiModel teiModel;
+    private static SearchTeiModel teiModel;
     List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes;
     List<TrackedEntityAttributeValue> attributeValues;
 
@@ -195,8 +195,8 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        if (this.teiModel == null) {
-            this.teiModel = new SearchTeiModel();
+        if (teiModel == null) {
+            teiModel = new SearchTeiModel();
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_event_tei_details, container, false);
@@ -474,12 +474,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     ActivityResultLauncher<Intent> onActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        activity.getPresenter().init();
-                    }
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    activity.getPresenter().init();
                 }
             });
 

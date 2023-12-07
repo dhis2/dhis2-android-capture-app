@@ -33,8 +33,8 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.events.ScheduledEventActivity
-import org.dhis2.usescases.eventswithoutregistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventswithoutregistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.EventMode
