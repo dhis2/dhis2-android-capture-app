@@ -45,7 +45,9 @@ class PolygonViewModel : ViewModel() {
         }
 
         return if (list[0].size > 2) {
-            list[0].add(list[0][0]) // set last point same as first
+            if (list[0].last() != list[0].first()) {
+                list[0].add(list[0][0]) // set last point same as first
+            }
             Gson().toJson(list)
         } else {
             onMessage("Polygon must contains at least 4 points.")
