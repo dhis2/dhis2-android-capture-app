@@ -130,7 +130,7 @@ private fun ProvideDefaultTextInput(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
     InputText(
