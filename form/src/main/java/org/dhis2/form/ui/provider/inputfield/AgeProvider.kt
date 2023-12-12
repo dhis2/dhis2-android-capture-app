@@ -35,9 +35,9 @@ fun ProvideInputAge(
     var inputType by remember(fieldUiModel.value) {
         mutableStateOf(
             if (!fieldUiModel.value.isNullOrEmpty()) {
-                formatStoredDateToUI(fieldUiModel.value!!)?.let {
+                formatStoredDateToUI(fieldUiModel.value!!).let {
                     AgeInputType.DateOfBirth(it)
-                } ?: AgeInputType.None
+                }
             } else {
                 AgeInputType.None
             },
@@ -58,9 +58,9 @@ fun ProvideInputAge(
                     } ?: AgeInputType.None
 
                 is AgeInputType.DateOfBirth ->
-                    formatStoredDateToUI(fieldUiModel.value!!)?.let {
+                    formatStoredDateToUI(fieldUiModel.value!!).let {
                         (inputType as AgeInputType.DateOfBirth).copy(value = it)
-                    } ?: AgeInputType.None
+                    }
 
                 AgeInputType.None -> inputType
             }
@@ -104,15 +104,13 @@ fun ProvideInputAge(
                 }
 
                 is AgeInputType.DateOfBirth -> {
-                    if (isValidDate(type.value)) {
-                        saveValue(
-                            intentHandler,
-                            fieldUiModel.uid,
-                            formatUIDateToStored(type.value),
-                            fieldUiModel.valueType,
-                            fieldUiModel.allowFutureDates,
-                        )
-                    }
+                    saveValue(
+                        intentHandler,
+                        fieldUiModel.uid,
+                        formatUIDateToStored(type.value),
+                        fieldUiModel.valueType,
+                        fieldUiModel.allowFutureDates,
+                    )
                 }
 
                 AgeInputType.None -> {
@@ -137,7 +135,7 @@ private fun saveValue(
     allowFutureDates: Boolean?,
 ) {
     intentHandler.invoke(
-        FormIntent.OnSaveDate(
+        FormIntent.OnTextChange(
             uid,
             value,
             valueType,
@@ -146,32 +144,29 @@ private fun saveValue(
     )
 }
 
-private fun formatStoredDateToUI(inputDateString: String): String? {
+private fun formatStoredDateToUI(inputDateString: String): String {
     val components = inputDateString.split("-")
-    if (components.size != 3) {
-        return null
+    return if (components.size != 3) {
+        inputDateString
+    } else {
+        val year = components[0]
+        val month = components[1]
+        val day = components[2]
+
+        "$day$month$year"
     }
-
-    val year = components[0]
-    val month = components[1]
-    val day = components[2]
-
-    return "$day$month$year"
 }
 
-private fun formatUIDateToStored(inputDateString: String): String? {
-    if (inputDateString.length != 8) {
-        return null
+private fun formatUIDateToStored(inputDateString: String): String {
+    return if (inputDateString.length != 8) {
+        inputDateString
+    } else {
+        val year = inputDateString.substring(4, 8)
+        val month = inputDateString.substring(2, 4)
+        val day = inputDateString.substring(0, 2)
+        return "$year-$month-$day"
     }
-
-    val year = inputDateString.substring(4, 8)
-    val month = inputDateString.substring(2, 4)
-    val day = inputDateString.substring(0, 2)
-
-    return "$year-$month-$day"
 }
-
-private fun isValidDate(dateString: String) = dateString.length == 8
 
 private fun calculateDateFromAge(age: AgeInputType.Age): String? {
     val calendar = Calendar.getInstance()
