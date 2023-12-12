@@ -37,7 +37,6 @@ class EnrollmentRuleEngineRepository(
     }
 
     private fun configureRuleEngine(enrollment: Enrollment) {
-
         val rules = ruleRepository.rulesNew(program.uid()).blockingGet()
         val variables = ruleRepository.ruleVariables(program.uid()).blockingGet()
         val supplData = ruleRepository.supplementaryData(
