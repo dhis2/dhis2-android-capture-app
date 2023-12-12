@@ -78,9 +78,14 @@ jobs:
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
         run: ./gradlew assembleDhisDebug
 
+      # Read App version
+      - name: Generate release notes
+        working-directory: ./scripts
+        run: python3 readReleaseInfo.py
+
       # Upload Artifact Build
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.repository_name }} - Android APK
-          path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v2.9-dhis-debug.apk
+          path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-${{env.NAME_RELEASE}}-dhis-debug.apk
