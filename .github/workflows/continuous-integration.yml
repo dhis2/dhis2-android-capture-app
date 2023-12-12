@@ -34,6 +34,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Read version name from file
+        working-directory: ./gradle
         id: read-version
         run: echo "::set-output name=vName::$(awk -F' *= *' '/vName/{print $2}' libs.versions.toml)"
 
