@@ -33,6 +33,13 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Read version name from file
+        id: read-version
+        run: echo "::set-output name=vName::$(awk -F' *= *' '/vName/{print $2}' libs.versions.toml)"
+
+      - name: Use version name in the next step
+        run: echo "Version name is ${{ steps.read-version.outputs.vName }}"
+
       # Run check style
       - name: Kotlin checkstyle
         run: ./gradlew ktlintCheck
@@ -78,14 +85,9 @@ jobs:
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
         run: ./gradlew assembleDhisDebug
 
-      - name: Install tomlq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tomlq
-
-      - name: Read version name from TOML file
+      - name: Read version name from file
         id: read-version
-        run: echo "::set-output name=vName::$(tomlq -r '.versions.vName' libs.versions.toml)"
+        run: echo "::set-output name=vName::$(awk -F' *= *' '/vName/{print $2}' libs.versions.toml)"
 
       - name: Use version name in the next step
         run: echo "Version name is ${{ steps.read-version.outputs.vName }}"
