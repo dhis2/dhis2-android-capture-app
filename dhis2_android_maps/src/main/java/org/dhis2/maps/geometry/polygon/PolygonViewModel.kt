@@ -46,7 +46,7 @@ class PolygonViewModel : ViewModel() {
 
         return if (list[0].size > 2) {
             if (list[0].last() != list[0].first()) {
-                for (index in 0..<list[0].size-1) {
+                for (index in 0..<list[0].size - 1) {
                     if (index != 0 && list[0].first() == list[0][index]) {
                         list[0].removeAt(index)
                     }
