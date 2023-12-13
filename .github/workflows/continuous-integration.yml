@@ -91,4 +91,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.repository_name }} - Android APK
-          path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-${{ steps.read-version.outputs.vName }}-dhis-debug.apk
+          path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
