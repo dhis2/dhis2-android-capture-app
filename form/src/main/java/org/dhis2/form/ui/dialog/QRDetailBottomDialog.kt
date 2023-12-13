@@ -47,6 +47,7 @@ import java.io.IOException
 
 class
 QRDetailBottomDialog(
+    private val label: String,
     private val value: String,
     private val renderingType: UiRenderType?,
     private val editable: Boolean,
@@ -92,7 +93,10 @@ QRDetailBottomDialog(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
-                ProvideQRorBarcodeBottomSheet(value = value)
+                ProvideQRorBarcodeBottomSheet(
+                    value = value,
+                    label = label,
+                )
             }
         }
     }
@@ -101,6 +105,7 @@ QRDetailBottomDialog(
     private fun ProvideQRorBarcodeBottomSheet(
         modifier: Modifier = Modifier,
         value: String,
+        label: String,
 
     ) {
         var showDialog by rememberSaveable(showBottomSheet) {
@@ -110,7 +115,7 @@ QRDetailBottomDialog(
             val buttonList = getComposeButtonList()
             BottomSheetShell(
                 modifier = modifier,
-                title = if (renderingType == UiRenderType.QR_CODE || renderingType == UiRenderType.GS1_DATAMATRIX) resources.getString(R.string.qr_code) else resources.getString(R.string.bar_code),
+                title = label,
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Info,

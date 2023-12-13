@@ -111,6 +111,7 @@ private fun ProvideQRInput(
                         value = value!!,
                         renderingType = fieldUiModel.renderingType,
                         editable = fieldUiModel.editable,
+                        label = fieldUiModel.label,
                     ),
                 )
             }
@@ -208,6 +209,7 @@ private fun ProvideBarcodeInput(
                         value = value!!,
                         renderingType = fieldUiModel.renderingType,
                         editable = fieldUiModel.editable,
+                        label = fieldUiModel.label,
                     ),
                 )
             }
