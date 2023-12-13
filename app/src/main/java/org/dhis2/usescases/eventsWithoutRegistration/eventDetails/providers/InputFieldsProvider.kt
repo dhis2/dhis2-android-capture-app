@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.inDateRange
@@ -96,6 +97,7 @@ fun ProvideInputDate(
             }
         },
         isRequired = required,
+        modifier = Modifier.testTag(INPUT_EVENT_INITIAL_DATE),
         onFocusChanged = { focused ->
             if (!focused) {
                 value?.let {
@@ -389,3 +391,5 @@ fun ProvideRadioButtons(
         },
     )
 }
+
+const val INPUT_EVENT_INITIAL_DATE = "INPUT_EVENT_INITIAL_DATE"
