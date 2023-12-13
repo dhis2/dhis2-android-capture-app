@@ -49,7 +49,8 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:overScrollMode="never">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -118,7 +119,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cardLayout"
-                    tools:listitem="@layout/item_event" />
+                    tools:listitem="@layout/item_event"
+                    android:overScrollMode="never"/>
 
                 <TextView
                     android:id="@+id/empty_teis"
