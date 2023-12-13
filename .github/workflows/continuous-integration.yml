@@ -36,7 +36,7 @@ jobs:
       - name: Read version name from file
         working-directory: ./gradle
         id: read-version
-        run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | sed 's/,//g' | tr -d '"')"
+        run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
 
       - name: Use version name in the next step
         run: echo "Version name is ${{ steps.read-version.outputs.vName }}"
