@@ -6,8 +6,8 @@ vCode = "128"
 vName = "2.9.1-DEV"
 kotlinCompilerExtensionVersion = "1.5.4"
 
-gradle = "8.1.3"
-kotlin = '1.9.20'
+gradle = "8.2.0"
+kotlin = '1.9.21'
 hilt = '2.47'
 hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
