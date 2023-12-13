@@ -4,7 +4,7 @@ sdk = "34"
 minSdk = "21"
 vCode = "128"
 vName = "2.9.1-DEV"
-kotlinCompilerExtensionVersion = "1.5.4"
+kotlinCompilerExtensionVersion = "1.5.6"
 
 gradle = "8.2.0"
 kotlin = '1.9.21'
