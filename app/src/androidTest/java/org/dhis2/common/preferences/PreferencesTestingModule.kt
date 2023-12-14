@@ -12,7 +12,7 @@ class PreferencesTestingModule : PreferenceModule() {
 
     @Provides
     @Singleton
-    override fun preferenceProvider(context: Context): PreferenceProvider {
+    fun providePreferenceProvider(context: Context): PreferenceProvider {
         return PreferenceTestingImpl(context)
     }
 }
