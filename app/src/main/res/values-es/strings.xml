@@ -724,7 +724,7 @@
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">¡Vaya! Algo no ha ido como estaba previsto.\nDéjenos poner todo en marcha de nuevo.</string>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">¡Vaya! Algo no ha ido como estaba previsto.\nDéjenos por todo en marcha de nuevo.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Ir atrás</string>
     <string name="customactivityoncrash_error_activity_close_app">Cerrar app</string>
     <string name="customactivityoncrash_error_activity_error_details">Más detalles</string>
