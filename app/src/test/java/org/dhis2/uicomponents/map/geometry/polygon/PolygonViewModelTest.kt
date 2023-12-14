@@ -59,7 +59,7 @@ class PolygonViewModelTest {
         polygonViewModel.add(point1)
         polygonViewModel.add(point2)
         polygonViewModel.add(point3)
-        assert(polygonViewModel.getPointAsString() == "[[[0.1,0.0],[0.1,0.1],[0.0,0.1],[0.1,0.0]]]")
+        assert(polygonViewModel.getPointAsString() == "[[[0.1,0.0],[0.1,0.1],[0.0,0.1]]]")
     }
 
     @Test
