@@ -46,14 +46,20 @@ class PolygonViewModelTest {
 
     @Test
     fun `Should check points as string`() {
-        val point = polygonViewModel.createPolygonPoint().apply {
+        val point1 = polygonViewModel.createPolygonPoint().apply {
             point = Point.fromLngLat(0.1, 0.0)
         }
+        val point2 = polygonViewModel.createPolygonPoint().apply {
+            point = Point.fromLngLat(0.1, 0.1)
+        }
+        val point3 = polygonViewModel.createPolygonPoint().apply {
+            point = Point.fromLngLat(0.0, 0.1)
+        }
         polygonViewModel.response.observeForever {}
-        polygonViewModel.add(point)
-        polygonViewModel.add(point)
-        polygonViewModel.add(point)
-        assert(polygonViewModel.getPointAsString() == "[[[0.1,0.0],[0.1,0.0],[0.1,0.0],[0.1,0.0]]]")
+        polygonViewModel.add(point1)
+        polygonViewModel.add(point2)
+        polygonViewModel.add(point3)
+        assert(polygonViewModel.getPointAsString() == "[[[0.1,0.0],[0.1,0.1],[0.0,0.1]]]")
     }
 
     @Test
