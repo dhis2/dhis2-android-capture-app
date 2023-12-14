@@ -135,6 +135,27 @@ class DisplayNameProviderImplTest {
         assertEquals(filePath, result)
     }
 
+    @Test
+    fun `Should return same value for valueType Date if value is an incomplete date`() {
+        val result =
+            displayNameProvider.provideDisplayName(ValueType.DATE, "12/25")
+        assertTrue(result == "12/25")
+    }
+
+    @Test
+    fun `Should return same value for valueType DateTime if value is an incomplete date`() {
+        val result =
+            displayNameProvider.provideDisplayName(ValueType.DATETIME, "12/25")
+        assertTrue(result == "12/25")
+    }
+
+    @Test
+    fun `Should return same value for valueType Time if value is an incomplete date`() {
+        val result =
+            displayNameProvider.provideDisplayName(ValueType.TIME, "12:25")
+        assertTrue(result == "12:25")
+    }
+
     private fun mockOptionSetByCode(
         value: String,
         optionSetUid: String,

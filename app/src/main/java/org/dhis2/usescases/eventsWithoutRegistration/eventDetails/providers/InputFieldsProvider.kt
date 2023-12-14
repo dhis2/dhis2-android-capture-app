@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.inDateRange
@@ -96,6 +97,16 @@ fun ProvideInputDate(
             }
         },
         isRequired = required,
+        modifier = Modifier.testTag(INPUT_EVENT_INITIAL_DATE),
+        onFocusChanged = { focused ->
+            if (!focused) {
+                value?.let {
+                    if (!isValid(it)) {
+                        state = InputShellState.ERROR
+                    }
+                }
+            }
+        },
     )
 }
 
@@ -143,15 +154,15 @@ private fun formatStoredDateToUI(dateValue: String): String? {
 }
 
 fun formatUIDateToStored(dateValue: String?): InputDateValues? {
-    if (dateValue?.length != 8) {
-        return null
+    return if (dateValue?.length != 8) {
+        null
+    } else {
+        val year = dateValue.substring(4, 8).toInt()
+        val month = dateValue.substring(2, 4).toInt()
+        val day = dateValue.substring(0, 2).toInt()
+
+        InputDateValues(day, month, year)
     }
-
-    val year = dateValue.substring(4, 8).toInt()
-    val month = dateValue.substring(2, 4).toInt()
-    val day = dateValue.substring(0, 2).toInt()
-
-    return (InputDateValues(day, month, year))
 }
 
 data class InputDateValues(val day: Int, val month: Int, val year: Int)
@@ -380,3 +391,5 @@ fun ProvideRadioButtons(
         },
     )
 }
+
+const val INPUT_EVENT_INITIAL_DATE = "INPUT_EVENT_INITIAL_DATE"
