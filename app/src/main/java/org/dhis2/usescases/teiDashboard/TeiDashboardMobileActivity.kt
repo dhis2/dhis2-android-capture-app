@@ -145,9 +145,9 @@ class TeiDashboardMobileActivity :
         (applicationContext as App).createDashboardComponent(
             TeiDashboardModule(
                 this,
-                teiUid,
-                programUid,
-                enrollmentUid,
+                teiUid ?: "",
+                programUid ?: "",
+                enrollmentUid ?: "",
                 this.isPortrait(),
             ),
         ).inject(this)

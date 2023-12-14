@@ -20,9 +20,9 @@ import org.hisp.dhis.android.core.D2
 @Module
 class TeiDashboardModule(
     private val view: TeiDashboardContracts.View,
-    val teiUid: String?,
-    val programUid: String?,
-    private val enrollmentUid: String?,
+    val teiUid: String,
+    val programUid: String,
+    private val enrollmentUid: String,
     private val isPortrait: Boolean,
 ) {
     @Provides
