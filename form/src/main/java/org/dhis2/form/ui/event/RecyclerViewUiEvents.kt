@@ -57,6 +57,7 @@ sealed class RecyclerViewUiEvents {
         val value: String,
         val renderingType: UiRenderType?,
         val editable: Boolean,
+        val label: String,
     ) : RecyclerViewUiEvents()
 
     data class OpenOrgUnitDialog(

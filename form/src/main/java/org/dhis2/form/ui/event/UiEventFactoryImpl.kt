@@ -123,6 +123,7 @@ class UiEventFactoryImpl(
                             value = value,
                             renderingType = renderingType,
                             editable = fieldUiModel.editable,
+                            label = label,
                         )
                     } else {
                         null

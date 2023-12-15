@@ -999,6 +999,7 @@ class FormView : Fragment() {
         viewModel.clearFocus()
         onEditionFinish()
         QRDetailBottomDialog(
+            event.label,
             event.value,
             event.renderingType,
             event.editable,
