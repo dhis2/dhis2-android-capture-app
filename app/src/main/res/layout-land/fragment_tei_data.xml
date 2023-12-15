@@ -83,6 +83,7 @@
                         <include
                             android:id="@+id/card_front"
                             layout="@layout/fragment_tei_data_card_front"
+                            android:visibility="@{ program != null ? View.GONE : View.VISIBLE}"
                             app:dashboardModel="@{dashboardModel}"
                             app:enrollment="@{enrollment}"
                             app:followup="@{followup}"
