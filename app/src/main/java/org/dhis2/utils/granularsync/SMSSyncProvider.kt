@@ -36,11 +36,11 @@ interface SMSSyncProvider {
     }
 
     fun expectsResponseSMS(): Boolean {
-        return d2.smsModule().configCase().smsModuleConfig.blockingGet().isWaitingForResult
+        return d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isWaitingForResult
     }
 
     fun getGatewayNumber(): String {
-        return d2.smsModule().configCase().smsModuleConfig.blockingGet().gateway
+        return d2.smsModule().configCase().getSmsModuleConfig().blockingGet().gateway
     }
 
     fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
@@ -51,7 +51,7 @@ interface SMSSyncProvider {
         }
 
         val smsModuleIsEnabled =
-            d2.smsModule().configCase().smsModuleConfig.blockingGet().isModuleEnabled
+            d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isModuleEnabled
 
         return hasCorrectSmsVersion && smsModuleIsEnabled
     }
