@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,10 +18,15 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.ui.keyboard.keyboardAsState
 import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -59,36 +65,44 @@ internal fun FieldProvider(
     val context = LocalContext.current
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
+    var visibleArea by remember { mutableStateOf(Rect.Zero) }
     val scope = rememberCoroutineScope()
-    val modifierWithFocus = modifier
-        .bringIntoViewRequester(bringIntoViewRequester)
-        .focusRequester(focusRequester)
-        .onFocusChanged {
-            if (it.isFocused && !fieldUiModel.focused) {
-                scope.launch {
-                    bringIntoViewRequester.bringIntoView()
-                    fieldUiModel.onItemClick()
-                }
-            }
-        }
-        .focusable()
+    val keyboardState by keyboardAsState()
 
-    val modifierWithFocusForText = modifier
+    var modifierWithFocus = modifier
         .bringIntoViewRequester(bringIntoViewRequester)
+        .onSizeChanged { intSize ->
+            visibleArea = Rect(
+                size = Size(intSize.width.toFloat(), intSize.height.toFloat()),
+                offset = Offset(0f, 20f),
+            )
+        }
         .onFocusChanged {
             if (it.isFocused && !fieldUiModel.focused) {
                 scope.launch {
-                    bringIntoViewRequester.bringIntoView()
+                    bringIntoViewRequester.bringIntoView(visibleArea)
                     fieldUiModel.onItemClick()
                 }
             }
         }
+
+   if (!fieldUiModel.needKeyboard()) {
+       modifierWithFocus = modifierWithFocus
+           .focusRequester(focusRequester)
+           .focusable()
+    }
+
+    LaunchedEffect(keyboardState) {
+        if (fieldUiModel.focused) {
+            bringIntoViewRequester.bringIntoView(visibleArea)
+        }
+    }
 
     if (fieldUiModel.optionSet == null) {
         when (fieldUiModel.valueType) {
             ValueType.TEXT -> {
                 ProvideInputsForValueTypeText(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -99,7 +113,7 @@ internal fun FieldProvider(
 
             ValueType.INTEGER_POSITIVE -> {
                 ProvideIntegerPositive(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -109,7 +123,7 @@ internal fun FieldProvider(
 
             ValueType.INTEGER_ZERO_OR_POSITIVE -> {
                 ProvideIntegerPositiveOrZero(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -120,7 +134,7 @@ internal fun FieldProvider(
 
             ValueType.PERCENTAGE -> {
                 ProvidePercentage(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -131,7 +145,7 @@ internal fun FieldProvider(
 
             ValueType.NUMBER -> {
                 ProvideNumber(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -142,7 +156,7 @@ internal fun FieldProvider(
 
             ValueType.INTEGER_NEGATIVE -> {
                 ProvideIntegerNegative(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -153,7 +167,7 @@ internal fun FieldProvider(
 
             ValueType.LONG_TEXT -> {
                 ProvideLongText(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -164,7 +178,7 @@ internal fun FieldProvider(
 
             ValueType.LETTER -> {
                 ProvideLetter(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -175,7 +189,7 @@ internal fun FieldProvider(
 
             ValueType.INTEGER -> {
                 ProvideInteger(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -196,7 +210,7 @@ internal fun FieldProvider(
 
             ValueType.UNIT_INTERVAL -> {
                 ProvideUnitIntervalInput(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     onNextClicked = onNextClicked,
@@ -205,7 +219,7 @@ internal fun FieldProvider(
 
             ValueType.EMAIL -> {
                 ProvideEmail(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -226,7 +240,7 @@ internal fun FieldProvider(
 
             ValueType.URL -> {
                 ProvideInputLink(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -285,7 +299,7 @@ internal fun FieldProvider(
 
             ValueType.PHONE_NUMBER -> {
                 ProvideInputPhoneNumber(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -300,7 +314,7 @@ internal fun FieldProvider(
             ValueType.TIME,
             -> {
                 ProvideInputDate(
-                    modifier = modifierWithFocusForText,
+                    modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -931,3 +945,6 @@ private fun ProvideOrgUnitInput(
 
     )
 }
+
+private fun FieldUiModel.needKeyboard() = optionSet == null &&
+        valueType?.let { it.isText || it.isNumeric || it.isDate } ?: false
