@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.form.ui.keyboard.keyboardAsState
 import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -35,6 +34,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.keyboard.keyboardAsState
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
@@ -86,10 +86,10 @@ internal fun FieldProvider(
             }
         }
 
-   if (!fieldUiModel.needKeyboard()) {
-       modifierWithFocus = modifierWithFocus
-           .focusRequester(focusRequester)
-           .focusable()
+    if (!fieldUiModel.needKeyboard()) {
+        modifierWithFocus = modifierWithFocus
+            .focusRequester(focusRequester)
+            .focusable()
     }
 
     LaunchedEffect(keyboardState) {
@@ -947,4 +947,4 @@ private fun ProvideOrgUnitInput(
 }
 
 private fun FieldUiModel.needKeyboard() = optionSet == null &&
-        valueType?.let { it.isText || it.isNumeric || it.isDate } ?: false
+    valueType?.let { it.isText || it.isNumeric || it.isDate } ?: false
