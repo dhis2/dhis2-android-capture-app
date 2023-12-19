@@ -13,6 +13,7 @@ import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Calendar
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
 import java.util.Locale
@@ -117,6 +118,9 @@ class ConfigureEventReportDate(
             date
         }
 
+        if (getScheduleInterval() > 0) {
+            initialDate.add(Calendar.DAY_OF_YEAR, getScheduleInterval())
+        }
         val minDateFromStart =
             repository.getMinDaysFromStartByProgramStage()
         if (minDateFromStart > 0) {

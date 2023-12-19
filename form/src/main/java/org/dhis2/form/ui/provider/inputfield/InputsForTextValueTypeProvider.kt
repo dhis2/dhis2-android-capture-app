@@ -111,6 +111,7 @@ private fun ProvideQRInput(
                         value = value!!,
                         renderingType = fieldUiModel.renderingType,
                         editable = fieldUiModel.editable,
+                        label = fieldUiModel.label,
                     ),
                 )
             }
@@ -130,7 +131,7 @@ private fun ProvideDefaultTextInput(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
-    var value by remember {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(fieldUiModel.value)
     }
     InputText(
@@ -208,6 +209,7 @@ private fun ProvideBarcodeInput(
                         value = value!!,
                         renderingType = fieldUiModel.renderingType,
                         editable = fieldUiModel.editable,
+                        label = fieldUiModel.label,
                     ),
                 )
             }

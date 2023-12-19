@@ -241,6 +241,7 @@ class FormValueStoreTest {
     fun `Should set enrollment org unit`() {
         val uid = EnrollmentDetail.ORG_UNIT_UID.name
         val result = attrValueStore.save(uid, "orgUnitUid", null)
+        verify(enrollmentRepository).setOrganisationUnitUid("orgUnitUid")
         assertTrue(result.valueStoreResult == VALUE_CHANGED)
     }
 

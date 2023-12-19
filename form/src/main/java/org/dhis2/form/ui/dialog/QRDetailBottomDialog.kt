@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Icon
@@ -26,20 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
 import org.dhis2.form.data.FormFileProvider
-import org.dhis2.form.databinding.QrDetailDialogBinding
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.lib.expression.math.GS1Elements
@@ -56,20 +47,19 @@ import java.io.IOException
 
 class
 QRDetailBottomDialog(
+    private val label: String,
     private val value: String,
     private val renderingType: UiRenderType?,
     private val editable: Boolean,
-    private val useCompose: Boolean,
-    private val onClear: () -> Unit,
     private val onScan: () -> Unit,
 ) : BottomSheetDialogFragment() {
 
     var colorUtils: ColorUtils = ColorUtils()
+
     companion object {
         const val TAG: String = "QR_DETAIL_DIALOG"
     }
 
-    private lateinit var binding: QrDetailDialogBinding
     private var qrContentUri: Uri? = null
     private var primaryColor: Int? = -1
     private val viewModel by viewModels<QRImageViewModel> {
@@ -92,96 +82,22 @@ QRDetailBottomDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        return if (useCompose) {
-            binding =
-                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
-
-            viewModel.qrBitmap.observe(this) { result ->
-                result.fold(
-                    onSuccess = { renderBitmap(it) },
-                    onFailure = { dismiss() },
+        viewModel.qrBitmap.observe(this) { result ->
+            result.fold(
+                onSuccess = { saveQrImage(it) },
+                onFailure = { dismiss() },
+            )
+        }
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+            )
+            setContent {
+                ProvideQRorBarcodeBottomSheet(
+                    value = value,
+                    label = label,
                 )
             }
-            ComposeView(requireContext()).apply {
-                setViewCompositionStrategy(
-                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
-                )
-                setContent {
-                    ProvideQRorBarcodeBottomSheet(value = value)
-                }
-            }
-        } else {
-            binding =
-                DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
-
-            binding.clearButton.apply {
-                isEnabled = editable == true
-                visibility = if (editable) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
-                setImageDrawable(
-                    colorUtils.tintDrawableWithColor(
-                        drawable,
-                        primaryColor!!,
-                    ),
-                )
-                setOnClickListener {
-                    onClear()
-                    dismiss()
-                }
-            }
-
-            binding.shareButton.apply {
-                setImageDrawable(
-                    colorUtils.tintDrawableWithColor(
-                        drawable,
-                        primaryColor!!,
-                    ),
-                )
-                setOnClickListener {
-                    qrContentUri?.let { uri ->
-                        Intent().apply {
-                            action = Intent.ACTION_SEND
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            setDataAndType(uri, context.contentResolver.getType(uri))
-                            putExtra(Intent.EXTRA_STREAM, uri)
-                            startActivity(Intent.createChooser(this, context.getString(R.string.share)))
-                        }
-                    }
-                }
-            }
-
-            binding.scanButton.apply {
-                isEnabled = editable == true
-                visibility = if (editable) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
-                setImageDrawable(
-                    colorUtils.tintDrawableWithColor(
-                        drawable,
-                        primaryColor!!,
-                    ),
-                )
-                setOnClickListener {
-                    onScan()
-                    dismiss()
-                }
-            }
-
-            binding.root.clipWithRoundedCorners()
-
-            viewModel.qrBitmap.observe(this) { result ->
-                result.fold(
-                    onSuccess = { renderBitmap(it) },
-                    onFailure = { dismiss() },
-                )
-            }
-
-            binding.root
         }
     }
 
@@ -189,6 +105,7 @@ QRDetailBottomDialog(
     private fun ProvideQRorBarcodeBottomSheet(
         modifier: Modifier = Modifier,
         value: String,
+        label: String,
 
     ) {
         var showDialog by rememberSaveable(showBottomSheet) {
@@ -198,7 +115,7 @@ QRDetailBottomDialog(
             val buttonList = getComposeButtonList()
             BottomSheetShell(
                 modifier = modifier,
-                title = if (renderingType == UiRenderType.QR_CODE || renderingType == UiRenderType.GS1_DATAMATRIX) resources.getString(R.string.qr_code) else resources.getString(R.string.bar_code),
+                title = label,
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -305,35 +222,9 @@ QRDetailBottomDialog(
         return buttonList
     }
 
-    // This is necessary to show the bottomSheet dialog with full height on landscape
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        view.viewTreeObserver.addOnGlobalLayoutListener {
-            val dialog = dialog as BottomSheetDialog
-
-            val bottomSheet =
-                dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet,
-                )
-            val behavior = BottomSheetBehavior.from(bottomSheet!!)
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            behavior.setPeekHeight(0)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         viewModel.renderQrBitmap(value, renderingType ?: UiRenderType.QR_CODE)
-    }
-
-    private fun renderBitmap(qrBitmap: Bitmap) {
-        saveQrImage(qrBitmap)
-        Glide.with(this)
-            .load(qrBitmap)
-            .apply(RequestOptions.skipMemoryCacheOf(true))
-            .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-            .skipMemoryCache(true)
-            .into(binding.fullImage)
     }
 
     private fun saveQrImage(qrBitmap: Bitmap) {

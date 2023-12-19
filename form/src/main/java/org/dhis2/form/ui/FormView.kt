@@ -999,23 +999,19 @@ class FormView : Fragment() {
         viewModel.clearFocus()
         onEditionFinish()
         QRDetailBottomDialog(
+            event.label,
             event.value,
             event.renderingType,
             event.editable,
-            useCompose,
-            {
-                intentHandler(FormIntent.OnNext(event.uid, null))
-            },
-            {
-                requestQRScan(
-                    RecyclerViewUiEvents.ScanQRCode(
-                        event.uid,
-                        event.optionSet,
-                        event.renderingType,
-                    ),
-                )
-            },
-        ).show(
+        ) {
+            requestQRScan(
+                RecyclerViewUiEvents.ScanQRCode(
+                    event.uid,
+                    event.optionSet,
+                    event.renderingType,
+                ),
+            )
+        }.show(
             childFragmentManager,
             QRDetailBottomDialog.TAG,
         )

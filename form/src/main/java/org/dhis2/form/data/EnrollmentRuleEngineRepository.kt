@@ -18,14 +18,14 @@ class EnrollmentRuleEngineRepository(
 ) : RuleEngineRepository {
 
     private val ruleRepository = RulesRepository(d2)
-    private val ruleEngine: RuleEngine
-    private var ruleEnrollmentBuilder: RuleEnrollment.Builder
+    private lateinit var ruleEngine: RuleEngine
+    private lateinit var ruleEnrollmentBuilder: RuleEnrollment.Builder
 
-    private val enrollment: Enrollment by lazy {
+    private var enrollment: Enrollment =
         d2.enrollmentModule().enrollments()
             .uid(enrollmentUid)
             .blockingGet() ?: throw NullPointerException()
-    }
+
     private val program: Program by lazy {
         d2.programModule().programs()
             .uid(enrollment.program())
@@ -33,7 +33,10 @@ class EnrollmentRuleEngineRepository(
     }
 
     init {
+        configureRuleEngine(enrollment)
+    }
 
+    private fun configureRuleEngine(enrollment: Enrollment) {
         val rules = ruleRepository.rulesNew(program.uid()).blockingGet()
         val variables = ruleRepository.ruleVariables(program.uid()).blockingGet()
         val supplData = ruleRepository.supplementaryData(
@@ -71,6 +74,14 @@ class EnrollmentRuleEngineRepository(
     }
 
     override fun calculate(): List<RuleEffect> {
+        val newEnrollment: Enrollment =
+            d2.enrollmentModule().enrollments()
+                .uid(enrollmentUid)
+                .blockingGet() ?: throw NullPointerException()
+        if (newEnrollment != enrollment) {
+            enrollment = newEnrollment
+            configureRuleEngine(enrollment)
+        }
         val attributes = queryAttributes()
         return try {
             ruleEngine.evaluate(ruleEnrollmentBuilder.attributeValues(attributes).build()).call()

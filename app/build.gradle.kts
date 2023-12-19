@@ -183,6 +183,7 @@ android {
         compose = true
         dataBinding = true
         viewBinding = true
+        buildConfig = true
     }
 
     configurations.all {
@@ -297,8 +298,9 @@ dependencies {
     androidTestImplementation(libs.test.rules)
     androidTestImplementation(libs.test.coreKtx)
     androidTestImplementation(libs.test.junitKtx)
-    androidTestImplementation(libs.test.mockito.android)
     androidTestImplementation(libs.test.mockitoCore)
+    androidTestImplementation(libs.test.dexmaker.mockitoInline)
+    androidTestImplementation(libs.test.mockitoKotlin)
     androidTestImplementation(libs.test.support.annotations)
     androidTestImplementation(libs.test.espresso.idlingresource)
     androidTestImplementation(libs.test.rx2.idler)

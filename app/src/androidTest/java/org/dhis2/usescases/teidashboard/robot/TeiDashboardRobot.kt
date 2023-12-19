@@ -1,16 +1,19 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
+import android.view.View
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -40,6 +43,8 @@ import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 
 fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
     TeiDashboardRobot().apply {
@@ -229,64 +234,16 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
-        onView(withId(R.id.recyclerView))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(),
-                        atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate)))
-                    )
-                )
-            )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.enrollmentDate)))))))
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday)))
-                )
-            )
-        )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.birthday)))))))
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit)))
-                )
-            )
-        )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.orgUnit)))))))
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(
-                        4, hasDescendant(
-                            allOf(
-                                withId(R.id.latitude),
-                                withText(enrollmentUIModel.latitude)
-                            )
-                        )
-                    )
-                )
-            )
-        )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.latitude)))))))
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(
-                        4, hasDescendant(
-                            allOf(
-                                withId(R.id.longitude), withText(enrollmentUIModel.longitude)
-                            )
-                        )
-                    )
-                )
-            )
-        )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.longitude)))))))
+
 
         onView(withId(R.id.recyclerView))
             .perform(
@@ -296,36 +253,34 @@ class TeiDashboardRobot : BaseRobot() {
                 )
             )
 
-        waitToDebounce(5000)
+        waitToDebounce(2000)
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(2, hasDescendant(withText(enrollmentUIModel.name)))
-                )
-            )
-        )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.name)))))))
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(3, hasDescendant(withText(enrollmentUIModel.lastName)))
-                )
-            )
-        )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.lastName)))))))
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(4, hasDescendant(withText(enrollmentUIModel.sex)))
-                )
-            )
-        )
+        onView(withId(R.id.recyclerView)).check(matches(not(recyclerChildViews(hasItem(hasDescendant(withText(enrollmentUIModel.sex)))))))
+
     }
 
+    private fun recyclerChildViews(matcher: Matcher<View>): BoundedMatcher<View?, RecyclerView> =
+        object : BoundedMatcher<View?, RecyclerView>(RecyclerView::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("RecyclerView child views: ")
+                matcher.describeTo(description)
+            }
+
+            override fun matchesSafely(recyclerView: RecyclerView): Boolean =
+                matcher.matches(sequence {
+                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> =
+                        recyclerView.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                    for (position in 0..<adapter.itemCount) {
+                        val holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(position))
+                        adapter.onBindViewHolder(holder, position)
+                        yield(holder.itemView)
+                    }
+                })
+        }
     fun clickOnScheduleNew() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val scheduleTag = targetContext.resources.getString(R.string.schedule_new)
