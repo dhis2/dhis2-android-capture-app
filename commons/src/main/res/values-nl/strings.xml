@@ -217,4 +217,5 @@
     <string name="default_empty_dataset_section_label">Gegevens</string>
     <string name="title_network_connection_unavailable">Netwerkverbinding niet beschikbaar</string>
     <string name="msg_network_connection_maps">Voor het gebruik van maps is een internetverbinding vereist.</string>
-</resources>
+
+    </resources>
