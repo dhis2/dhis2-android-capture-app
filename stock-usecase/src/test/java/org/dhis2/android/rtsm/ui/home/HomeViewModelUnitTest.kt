@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.data.DataElementFactory
 import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
 import org.dhis2.android.rtsm.data.OperationState
@@ -68,6 +69,13 @@ class HomeViewModelUnitTest {
     private lateinit var destinations: List<Option>
     private lateinit var appConfig: AppConfig
 
+    companion object {
+        const val DISTRIBUTION_LABEL = "Distribution"
+        const val CORRECTION_lABEL = "Correction"
+        const val DISCARD_LABEL = "Discard"
+        const val DELIVER_TO_LABEL = "Deliver to"
+    }
+
     private val disposable = CompositeDisposable()
 
     @Mock
@@ -102,6 +110,11 @@ class HomeViewModelUnitTest {
         facilities = FacilityFactory.getListOf(3)
         destinations = DestinationFactory.getListOf(5)
 
+        val distributionDataSet = DataElementFactory.create(appConfig.stockDistribution, DISTRIBUTION_LABEL)
+        val correctionDataSet = DataElementFactory.create(appConfig.stockCount, CORRECTION_lABEL)
+        val discardDataSet = DataElementFactory.create(appConfig.stockDiscarded, DISCARD_LABEL)
+        val deliverToDataSet = DataElementFactory.create(appConfig.stockDiscarded, DELIVER_TO_LABEL)
+
         schedulerProvider = TrampolineSchedulerProvider()
         testSchedulerProvider = TestCoroutineScheduler()
 
@@ -111,6 +124,18 @@ class HomeViewModelUnitTest {
 
         `when`(metadataManager.destinations(appConfig.distributedTo))
             .thenReturn(Single.just(destinations))
+
+        `when`(metadataManager.transactionType(appConfig.stockDistribution))
+            .thenReturn(Single.just(distributionDataSet))
+
+        `when`(metadataManager.transactionType(appConfig.distributedTo))
+            .thenReturn(Single.just(deliverToDataSet))
+
+        `when`(metadataManager.transactionType(appConfig.stockCount))
+            .thenReturn(Single.just(correctionDataSet))
+
+        `when`(metadataManager.transactionType(appConfig.stockDiscarded))
+            .thenReturn(Single.just(discardDataSet))
 
         viewModel = HomeViewModel(
             disposable,
@@ -149,6 +174,34 @@ class HomeViewModelUnitTest {
         verify(metadataManager).destinations(appConfig.distributedTo)
 
         assertEquals(viewModel.destinationsList.value, OperationState.Success(destinations))
+    }
+
+    @Test
+    fun init_shouldLoadDistributionLabel() {
+        verify(metadataManager).transactionType(appConfig.stockDistribution)
+
+        assertEquals(viewModel.distributionLabel, DISTRIBUTION_LABEL)
+    }
+
+    @Test
+    fun init_shouldLoadCorrectLabel() {
+        verify(metadataManager).transactionType(appConfig.stockCount)
+
+        assertEquals(viewModel.correctionLabel, CORRECTION_lABEL)
+    }
+
+    @Test
+    fun init_shouldLoadDiscardLabel() {
+        verify(metadataManager).transactionType(appConfig.stockDiscarded)
+
+        assertEquals(viewModel.discardLabel, DISCARD_LABEL)
+    }
+
+    @Test
+    fun init_shouldLoadDeliverToLabel() {
+        verify(metadataManager).transactionType(appConfig.distributedTo)
+
+        assertEquals(viewModel.distributedToLabel, DELIVER_TO_LABEL)
     }
 
     @Test
