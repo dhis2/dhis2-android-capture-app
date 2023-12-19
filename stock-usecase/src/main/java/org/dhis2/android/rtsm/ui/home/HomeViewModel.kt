@@ -1,5 +1,8 @@
 package org.dhis2.android.rtsm.ui.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -40,6 +43,13 @@ class HomeViewModel @Inject constructor(
     val facilities: StateFlow<OperationState<List<OrganisationUnit>>>
         get() = _facilities
 
+    var distributionLabel by mutableStateOf(TransactionType.DISTRIBUTION.name)
+
+    var distributedToLabel by mutableStateOf("")
+
+    var correctionLabel by mutableStateOf(TransactionType.CORRECTION.name)
+    var discardLabel by mutableStateOf(TransactionType.DISCARD.name)
+
     private val _destinations =
         MutableStateFlow<OperationState<List<Option>>>(OperationState.Loading)
     val destinationsList: StateFlow<OperationState<List<Option>>>
@@ -51,6 +61,7 @@ class HomeViewModel @Inject constructor(
     init {
         loadFacilities()
         loadDestinations()
+        loadTransactionTypeLabels()
     }
 
     private fun loadDestinations() {
@@ -65,6 +76,73 @@ class HomeViewModel @Inject constructor(
                         _destinations.value = (
                             OperationState.Error(R.string.destinations_load_error)
                             )
+                    },
+                ),
+        )
+    }
+
+    private fun loadTransactionTypeLabels() {
+        disposable.add(
+            metadataManager.transactionType(config.stockDistribution)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        distributionLabel = it.displayName() ?: distributionLabel
+                        _settingsUiSate.update { currentUiState ->
+                            currentUiState.copy(transactionTypeLabel = getTransactionLabel(currentUiState.transactionType))
+                        }
+                    },
+                    {
+                        it.printStackTrace()
+                    },
+                ),
+        )
+        disposable.add(
+            metadataManager.transactionType(config.stockCount)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        correctionLabel = it.displayName() ?: correctionLabel
+                        _settingsUiSate.update { currentUiState ->
+                            currentUiState.copy(transactionTypeLabel = getTransactionLabel(currentUiState.transactionType))
+                        }
+                    },
+                    {
+                        it.printStackTrace()
+                    },
+                ),
+        )
+        disposable.add(
+            metadataManager.transactionType(config.stockDiscarded)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        discardLabel = it.displayName() ?: discardLabel
+                        _settingsUiSate.update { currentUiState ->
+                            currentUiState.copy(transactionTypeLabel = getTransactionLabel(currentUiState.transactionType))
+                        }
+                    },
+                    {
+                        it.printStackTrace()
+                    },
+                ),
+        )
+        disposable.add(
+            metadataManager.transactionType(config.distributedTo)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        distributedToLabel = it.displayName() ?: distributedToLabel
+                        _settingsUiSate.update { currentUiState ->
+                            currentUiState.copy(deliverToLabel = it.displayName() ?: "")
+                        }
+                    },
+                    {
+                        it.printStackTrace()
                     },
                 ),
         )
@@ -95,14 +173,26 @@ class HomeViewModel @Inject constructor(
 
     fun selectTransaction(type: TransactionType) {
         _settingsUiSate.update { currentUiState ->
-            currentUiState.copy(transactionType = type)
+            currentUiState.copy(transactionType = type, transactionTypeLabel = getTransactionLabel(type))
         }
-
         // Distributed to cannot only be set for DISTRIBUTION,
         // so ensure you clear it for others if it has been set
         if (type != TransactionType.DISTRIBUTION) {
             _settingsUiSate.update { currentUiState ->
                 currentUiState.copy(destination = null)
+            }
+        }
+    }
+    fun getTransactionLabel(type: TransactionType): String {
+        return when (type) {
+            TransactionType.DISTRIBUTION -> {
+                distributionLabel
+            }
+            TransactionType.CORRECTION -> {
+                correctionLabel
+            }
+            TransactionType.DISCARD -> {
+                discardLabel
             }
         }
     }

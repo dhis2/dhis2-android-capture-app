@@ -84,7 +84,7 @@ fun Backdrop(
         modifier = modifier,
         appBar = {
             Toolbar(
-                settingsUiState.transactionType.name,
+                settingsUiState.transactionTypeLabel,
                 settingsUiState.fromFacilitiesLabel().asString(),
                 settingsUiState.deliverToLabel()?.asString(),
                 themeColor,

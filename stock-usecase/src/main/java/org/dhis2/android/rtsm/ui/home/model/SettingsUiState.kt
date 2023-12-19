@@ -13,6 +13,8 @@ import java.time.LocalDateTime
 data class SettingsUiState(
     val programUid: String,
     val transactionType: TransactionType = DISTRIBUTION,
+    val transactionTypeLabel: String = transactionType.name,
+    val deliverToLabel: String = "",
     val facility: OrganisationUnit? = null,
     val destination: Option? = null,
     val transactionDate: LocalDateTime = LocalDateTime.now(),

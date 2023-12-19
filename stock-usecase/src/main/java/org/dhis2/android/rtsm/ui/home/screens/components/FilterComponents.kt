@@ -56,7 +56,7 @@ fun FilterList(
                 onTransitionSelected,
                 dataEntryUiState.hasUnsavedData,
                 themeColor,
-                mapTransaction(),
+                mapTransaction(viewModel),
                 launchDialog,
             )
         }
@@ -73,28 +73,27 @@ fun FilterList(
             )
         }
 
-        if (showDestination) {
-            if (destinations is OperationState.Success<*>) {
-                val result = destinations.result as List<Option>
-                item {
-                    DropdownComponentDistributedTo(
-                        onDestinationSelected,
-                        dataEntryUiState,
-                        themeColor,
-                        result,
-                        launchDialog = launchDialog,
-                    )
-                }
+        if (showDestination && destinations is OperationState.Success<*>) {
+            val result = destinations.result as List<Option>
+            item {
+                DropdownComponentDistributedTo(
+                    onDestinationSelected,
+                    dataEntryUiState,
+                    themeColor,
+                    result,
+                    launchDialog = launchDialog,
+                    deliverToLabel = viewModel.distributedToLabel,
+                )
             }
         }
     }
 }
 
-private fun mapTransaction(): MutableList<TransactionItem> {
+private fun mapTransaction(viewModel: HomeViewModel): MutableList<TransactionItem> {
     return mutableListOf(
-        TransactionItem(R.drawable.ic_distribution, DISTRIBUTION),
-        TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD),
-        TransactionItem(R.drawable.ic_correction, TransactionType.CORRECTION),
+        TransactionItem(R.drawable.ic_distribution, TransactionType.DISTRIBUTION, viewModel.distributionLabel),
+        TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD, viewModel.discardLabel),
+        TransactionItem(R.drawable.ic_correction, TransactionType.CORRECTION, viewModel.correctionLabel),
     )
 }
 

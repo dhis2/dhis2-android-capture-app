@@ -94,7 +94,7 @@ fun DropdownComponentTransactions(
 
     Column(Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
-            value = capitalizeText(settingsUiState.transactionType.name),
+            value = capitalizeText(settingsUiState.transactionTypeLabel),
             onValueChange = { },
             modifier = Modifier
                 .fillMaxWidth()
@@ -197,7 +197,7 @@ fun DropdownComponentTransactions(
                                 Modifier.padding(6.dp),
                                 tint = themeColor,
                             )
-                            Text(text = capitalizeText(item.transactionType.name))
+                            Text(text = capitalizeText(item.transactionTypelabel))
                         }
                     }
                 }
@@ -304,6 +304,7 @@ fun DropdownComponentDistributedTo(
     themeColor: Color = colorResource(R.color.colorPrimary),
     data: List<Option>,
     isDestinationSelected: (value: String) -> Unit = { },
+    deliverToLabel: String? = null,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -382,7 +383,7 @@ fun DropdownComponentDistributedTo(
             },
             shape = RoundedCornerShape(30.dp),
             placeholder = {
-                Text(text = capitalizeText(stringResource(R.string.to)))
+                Text(text = deliverToLabel ?: capitalizeText(stringResource(R.string.to)))
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,
