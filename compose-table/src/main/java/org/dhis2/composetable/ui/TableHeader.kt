@@ -52,7 +52,8 @@ fun TableHeader(
                         action = { columnIndex ->
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
-                                ItemColumnHeaderUiState(
+                                modifier = Modifier.zIndex((totalColumns - columnIndex) * 1f),
+                                itemHeaderUiState = ItemColumnHeaderUiState(
                                     tableId = tableId,
                                     rowIndex = rowIndex,
                                     columnIndex = columnIndex,
@@ -84,35 +85,35 @@ fun TableHeader(
                             )
                         },
                     )
+                    if (tableHeaderModel.hasTotals) {
+                        HeaderCell(
+                            ItemColumnHeaderUiState(
+                                tableId = tableId,
+                                rowIndex = 0,
+                                columnIndex = tableHeaderModel.rows.size,
+                                headerCell = TableHeaderCell("Total"),
+                                HeaderMeasures(
+                                    dimensions.defaultCellWidthWithExtraSize(
+                                        tableId = tableId ?: "",
+                                        totalColumns = tableHeaderModel.tableMaxColumns(),
+                                        hasExtra = true,
+                                    ),
+                                    dimensions.defaultHeaderHeight * tableHeaderModel.rows.size,
+                                ),
+                                cellStyle = cellStyle(
+                                    tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
+                                    tableHeaderModel.rows.size - 1,
+                                ),
+                                onCellSelected = {},
+                                onHeaderResize = { _, _ -> },
+                                onResizing = {},
+                                isLastRow = false,
+                                checkMaxCondition = { _, _ -> false },
+                            ),
+                        )
+                    }
                 }
             }
-        }
-        if (tableHeaderModel.hasTotals) {
-            HeaderCell(
-                ItemColumnHeaderUiState(
-                    tableId = tableId,
-                    rowIndex = 0,
-                    columnIndex = tableHeaderModel.rows.size,
-                    headerCell = TableHeaderCell("Total"),
-                    HeaderMeasures(
-                        dimensions.defaultCellWidthWithExtraSize(
-                            tableId = tableId ?: "",
-                            totalColumns = tableHeaderModel.tableMaxColumns(),
-                            hasExtra = tableHeaderModel.hasTotals,
-                        ),
-                        dimensions.defaultHeaderHeight * tableHeaderModel.rows.size,
-                    ),
-                    cellStyle = cellStyle(
-                        tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
-                        tableHeaderModel.rows.size - 1,
-                    ),
-                    onCellSelected = {},
-                    onHeaderResize = { _, _ -> },
-                    onResizing = {},
-                    isLastRow = false,
-                    checkMaxCondition = { _, _ -> false },
-                ),
-            )
         }
         Spacer(Modifier.size(dimensions.tableEndExtraScroll))
     }

@@ -11,7 +11,10 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 const val DATAELEMENT_FORM_NAME = "dataElement_formName"
 const val DATAELEMENT_DESCRIPTION = "dataElement_description"
@@ -28,6 +31,9 @@ class TableDataToTableModelMapperTest {
 
     @Test
     fun `Should Map Indicators`() {
+        whenever(mapFieldValueToUser.resources) doReturn mock()
+        whenever(mapFieldValueToUser.resources.getString(any())) doReturn "Value"
+
         val map = mapOf<String?, String>(
             Pair("Indicator 1", "2"),
             Pair("Indicator 2", "1"),
