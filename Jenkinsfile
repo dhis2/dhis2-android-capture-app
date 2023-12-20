@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :compose-table:assembleAndroidTest'
+                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :compose-table:assembleAndroidTest :form:assembleAndroidTest'
                 }
             }
         }
@@ -66,6 +66,22 @@ pipeline {
                         }
                     }
                 }
+                 stage('Deploy and run Form Tests') {
+                            environment {
+                                BROWSERSTACK = credentials('android-browserstack')
+                                compose_table_apk = sh(returnStdout: true, script: 'find form/build/outputs -iname "*.apk" | sed -n 1p')
+                                compose_table_apk_path = "${env.WORKSPACE}/${form_apk}"
+                            }
+                            steps {
+                                dir("${env.WORKSPACE}/scripts"){
+                                    script {
+                                        echo 'Browserstack deployment and running Form module tests'
+                                        sh 'chmod +x browserstackJenkinsCompose.sh'
+                                        sh './browserstackJenkinsCompose.sh'
+                                    }
+                                }
+                            }
+                        }
                 stage('Deploy and Run UI Tests') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
