@@ -130,7 +130,7 @@ private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?)
         }
 
         ValueType.TIME -> {
-            val components = inputDateString.split(":/n")
+            val components = inputDateString.split(":")
             if (components.size != 2) {
                 return inputDateString
             }
