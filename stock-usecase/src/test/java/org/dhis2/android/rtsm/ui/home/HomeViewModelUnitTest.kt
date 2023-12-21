@@ -24,6 +24,7 @@ import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
@@ -69,11 +70,27 @@ class HomeViewModelUnitTest {
     private lateinit var destinations: List<Option>
     private lateinit var appConfig: AppConfig
 
+    private val distributionItem = TransactionItem(
+        R.drawable.ic_distribution,
+        TransactionType.DISTRIBUTION,
+        TransactionType.DISTRIBUTION.name,
+    )
+
+    private val correctionItem = TransactionItem(
+        R.drawable.ic_correction,
+        TransactionType.CORRECTION,
+        TransactionType.CORRECTION.name,
+    )
+    private val discardItem = TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD, TransactionType.DISCARD.name)
+
+    private val transactionItems = mutableListOf(distributionItem, correctionItem, discardItem)
+
     companion object {
         const val DISTRIBUTION_LABEL = "Distribution"
         const val CORRECTION_lABEL = "Correction"
         const val DISCARD_LABEL = "Discard"
         const val DELIVER_TO_LABEL = "Deliver to"
+        const val DISTRIBUTION_TRANSACTION_ITEM = "Deliver to"
     }
 
     private val disposable = CompositeDisposable()
@@ -180,111 +197,105 @@ class HomeViewModelUnitTest {
     fun init_shouldLoadDistributionLabel() {
         verify(metadataManager).transactionType(appConfig.stockDistribution)
 
-        assertEquals(viewModel.distributionLabel, DISTRIBUTION_LABEL)
+        assertEquals(viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISTRIBUTION }?.label, DISTRIBUTION_LABEL)
     }
 
     @Test
     fun init_shouldLoadCorrectLabel() {
         verify(metadataManager).transactionType(appConfig.stockCount)
 
-        assertEquals(viewModel.correctionLabel, CORRECTION_lABEL)
+        assertEquals(viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.CORRECTION }?.label, CORRECTION_lABEL)
     }
 
     @Test
     fun init_shouldLoadDiscardLabel() {
         verify(metadataManager).transactionType(appConfig.stockDiscarded)
 
-        assertEquals(viewModel.discardLabel, DISCARD_LABEL)
+        assertEquals(viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISCARD }?.label, DISCARD_LABEL)
     }
 
     @Test
     fun init_shouldLoadDeliverToLabel() {
         verify(metadataManager).transactionType(appConfig.distributedTo)
 
-        assertEquals(viewModel.distributedToLabel, DELIVER_TO_LABEL)
+        assertEquals(viewModel.settingsUiState.value.deliverToLabel, DELIVER_TO_LABEL)
     }
 
     @Test
     fun canSelectDifferentTransactionTypes() {
-        val types = listOf<TransactionType>(
-            TransactionType.DISTRIBUTION,
-            TransactionType.DISCARD,
-            TransactionType.CORRECTION,
-        )
-
-        types.forEach {
+        transactionItems.forEach {
             viewModel.selectTransaction(it)
-            assertEquals(viewModel.settingsUiState.value.transactionType, it)
+            assertEquals(viewModel.settingsUiState.value.selectedTransactionItem.type, it.type)
         }
     }
 
     @Test
     fun isDistributionIsPositive_whenDistributionIsSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
-        assertEquals(viewModel.settingsUiState.value.transactionType, TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
+        assertEquals(viewModel.settingsUiState.value.selectedTransactionItem.type, TransactionType.DISTRIBUTION)
     }
 
     @Test
     fun isDistributionIsNegative_whenDiscardIsSet() {
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
         assertNotEquals(
-            viewModel.settingsUiState.value.transactionType,
+            viewModel.settingsUiState.value.selectedTransactionItem.type,
             TransactionType.DISTRIBUTION,
         )
     }
 
     @Test
     fun isDistributionIsNegative_whenCorrectionIsSet() {
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
         assertNotEquals(
-            viewModel.settingsUiState.value.transactionType,
+            viewModel.settingsUiState.value.selectedTransactionItem.type,
             TransactionType.DISTRIBUTION,
         )
     }
 
     @Test
     fun distributionTransaction_cannotManageStock_ifNoParametersAreSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun distributionTransaction_cannotManageStock_ifOnlyFacilityIsSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setFacility(facilities[0])
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_distributed_to_selection)
     }
 
     @Test
     fun distributionTransaction_cannotManageStock_ifOnlyTransactionDateIsSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun distributionTransaction_cannotManageStock_ifOnlyDistributedToIsSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setDestination(destinations[0])
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun distributionTransaction_cannotManageStock_ifOnlyFacilityAndTransactionDateIsSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setFacility(facilities[0])
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_distributed_to_selection)
     }
 
     @Test
     fun distributionTransaction_cannotManageStock_ifOnlyDestinedToAndTransactionDateIsSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setDestination(destinations[0])
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun distributionTransaction_cannotManageStock_ifOnlyFacilityAndDestinedToIsSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setFacility(facilities[0])
         viewModel.setDestination(destinations[0])
         assertEquals(viewModel.checkForFieldErrors(), null)
@@ -292,7 +303,7 @@ class HomeViewModelUnitTest {
 
     @Test
     fun distributionTransaction_canManageStock_ifAllFieldsAreSet() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setFacility(facilities[0])
         viewModel.setDestination(destinations[0])
         assertEquals(viewModel.checkForFieldErrors(), null)
@@ -300,27 +311,27 @@ class HomeViewModelUnitTest {
 
     @Test
     fun discardTransaction_cannotManageStock_ifNoParametersAreSet() {
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun discardTransaction_cannotManageStock_ifOnlyFacilityIsSet() {
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
         viewModel.setFacility(facilities[0])
         assertEquals(viewModel.checkForFieldErrors(), null)
     }
 
     @Test
     fun discardTransaction_cannotManageStock_ifOnlyTransactionDateIsSet() {
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
 
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun discardTransaction_canManageStock_ifAllFieldsAreSet() {
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
         viewModel.setFacility(facilities[0])
 
         assertEquals(viewModel.checkForFieldErrors(), null)
@@ -328,33 +339,33 @@ class HomeViewModelUnitTest {
 
     @Test(expected = UnsupportedOperationException::class)
     fun discardTransaction_throwsErrorIfDistributedToIsSet() {
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
         viewModel.setDestination(destinations[1])
     }
 
     @Test
     fun correctionTransaction_cannotManageStock_ifNoParametersAreSet() {
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun correctionTransaction_cannotManageStock_ifOnlyFacilityIsSet() {
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
         viewModel.setFacility(facilities[0])
         assertEquals(viewModel.checkForFieldErrors(), null)
     }
 
     @Test
     fun correctionTransaction_cannotManageStock_ifOnlyTransactionDateIsSet() {
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
 
         assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_facility_selection)
     }
 
     @Test
     fun correctionTransaction_canManageStock_ifAllFieldsAreSet() {
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
         viewModel.setFacility(facilities[0])
 
         assertEquals(viewModel.checkForFieldErrors(), null)
@@ -362,13 +373,13 @@ class HomeViewModelUnitTest {
 
     @Test(expected = UnsupportedOperationException::class)
     fun correctionTransaction_throwsErrorIfDistributedToIsSet() {
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
         viewModel.setDestination(destinations[1])
     }
 
     @Test(expected = UserIntentParcelCreationException::class)
     fun distributionWithMissingFacility_cannotCreateUserIntent() {
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(correctionItem)
 
         viewModel.getData()
     }
@@ -377,7 +388,7 @@ class HomeViewModelUnitTest {
     fun distributionWithMissingTransactionDate_willCreateUSerIntentWithCurrentDay() {
         val now = LocalDateTime.now()
 
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setFacility(facilities[1])
 
         val data = viewModel.getData()
@@ -390,7 +401,7 @@ class HomeViewModelUnitTest {
         val facility = facilities[1]
         val now = LocalDateTime.now()
 
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setDestination(destination)
         viewModel.setFacility(facility)
 
@@ -413,7 +424,7 @@ class HomeViewModelUnitTest {
         val facility = facilities[1]
         val now = LocalDateTime.now()
 
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
         viewModel.setFacility(facility)
 
         val data = viewModel.getData()
@@ -430,7 +441,7 @@ class HomeViewModelUnitTest {
         val facility = facilities[1]
         val now = LocalDateTime.now()
 
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
         viewModel.setFacility(facility)
 
         val data = viewModel.getData()
@@ -447,7 +458,7 @@ class HomeViewModelUnitTest {
         val destination = destinations[2]
         val facility = facilities[1]
 
-        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.selectTransaction(distributionItem)
         viewModel.setDestination(destination)
         viewModel.setFacility(facility)
 
@@ -459,7 +470,7 @@ class HomeViewModelUnitTest {
     fun shouldChangeToolbarSubtitle_forDiscard() {
         val facility = facilities[1]
 
-        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.selectTransaction(discardItem)
         viewModel.setFacility(facility)
 
         assertNotNull(viewModel.settingsUiState.value.fromFacilitiesLabel())
@@ -469,7 +480,7 @@ class HomeViewModelUnitTest {
     fun shouldChangeToolbarSubtitle_forCorrection() {
         val facility = facilities[1]
 
-        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.selectTransaction(correctionItem)
         viewModel.setFacility(facility)
 
         assertNotNull(viewModel.settingsUiState.value.fromFacilitiesLabel())
