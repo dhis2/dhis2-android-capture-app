@@ -60,8 +60,8 @@ pipeline {
                             dir("${env.WORKSPACE}/scripts"){
                                 script {
                                     echo 'Browserstack deployment and running Form module tests'
-                                    sh 'chmod +x browserstackJenkinsCompose.sh'
-                                    sh './browserstackJenkinsCompose.sh'
+                                    sh 'chmod +x browserstackJenkinsForm.sh'
+                                    sh './browserstackJenkinsForm.sh'
                                 }
                             }
                         }
