@@ -6,11 +6,6 @@ echo "Uploading compose test APK to Browserstack..."
 upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-app -F file=@$compose_table_apk_path)"
 module_url=$(echo "$upload_test_response" | jq .module_url)
 
-echo "Uploading form test APK to Browserstack..."
-upload_form_apk_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-app -F file=@$form_apk_path)"
-module_url=$(echo "$upload_form_apk_test_response" | jq .module_url)
-
-
 # Prepare json and run tests
 echo "Starting execution of tests..."
 json=$(jq -n \
