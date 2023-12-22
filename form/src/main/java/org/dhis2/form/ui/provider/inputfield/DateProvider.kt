@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.extensions.inputState
@@ -79,7 +81,7 @@ fun ProvideInputDate(
                 )
             }
         },
-        modifier = modifier,
+        modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value ?: "", fieldUiModel.valueType) },
         state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         supportingText = fieldUiModel.supportingText(),
@@ -130,7 +132,7 @@ private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?)
         }
 
         ValueType.TIME -> {
-            val components = inputDateString.split(":/n")
+            val components = inputDateString.split(":")
             if (components.size != 2) {
                 return inputDateString
             }
