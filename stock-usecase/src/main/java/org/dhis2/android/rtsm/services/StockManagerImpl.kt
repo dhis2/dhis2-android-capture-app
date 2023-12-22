@@ -3,9 +3,9 @@ package org.dhis2.android.rtsm.services
 import androidx.lifecycle.liveData
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.math.NumberUtils
+import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.models.IdentifiableModel
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
@@ -36,6 +36,7 @@ class StockManagerImpl @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val ruleValidationHelper: RuleValidationHelper,
+    private val dispatcher: StockDispatcherProvider,
 ) : StockManager {
 
     override suspend fun search(
@@ -43,7 +44,7 @@ class StockManagerImpl @Inject constructor(
         ou: String?,
         config: AppConfig,
     ): SearchResult {
-        val list = withContext(Dispatchers.IO) {
+        val list = withContext(dispatcher.io()) {
             var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
             if (!ou.isNullOrEmpty()) {
