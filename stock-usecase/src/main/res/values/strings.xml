@@ -149,6 +149,15 @@
     <string name="destinations_load_error">
         Unable to load the list of available destinations
     </string>
+    <string name="distribution_data_element_load_error">
+        Unable to load the distribution data element
+    </string>
+    <string name="correction_data_element_load_error">
+        Unable to load correction data element
+    </string>
+    <string name="discard_data_element_load_error">
+        Unable to load discard data element
+    </string>
 
     <!-- Content descriptions for accessibility -->
     <string name="content_desc_sync_info">Sync information</string>

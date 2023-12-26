@@ -274,7 +274,7 @@ fun MainContent(
 }
 
 private fun shouldDisplayTable(settingsUiState: SettingsUiState): Boolean =
-    when (settingsUiState.transactionType) {
+    when (settingsUiState.selectedTransactionItem.type) {
         TransactionType.DISTRIBUTION ->
             settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()
         else -> settingsUiState.hasFacilitySelected()

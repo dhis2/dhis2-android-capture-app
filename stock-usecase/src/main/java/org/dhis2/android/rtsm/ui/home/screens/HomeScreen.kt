@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -30,7 +29,6 @@ import org.dhis2.android.rtsm.ui.home.screens.components.CompletionDialog
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.ui.buttons.FAButton
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     activity: Activity,
