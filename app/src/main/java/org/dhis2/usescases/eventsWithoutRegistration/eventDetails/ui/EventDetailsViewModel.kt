@@ -86,9 +86,6 @@ class EventDetailsViewModel(
         viewModelScope.launch {
             configureEventReportDate().collect {
                 _eventDate.value = it
-                if (_eventDate.value.scheduleInterval > 0) {
-                    _eventDate.value.scheduleInterval = 0
-                }
             }
 
             configureOrgUnit(eventDate.value.currentDate)
