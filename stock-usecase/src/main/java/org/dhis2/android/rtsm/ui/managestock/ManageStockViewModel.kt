@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -142,7 +141,17 @@ class ManageStockViewModel @Inject constructor(
 
     fun refreshData() {
         viewModelScope.launch {
-            getStockItems().asFlow().collect { stockItems ->
+            val result = stockManagerRepository.search(
+                search.value ?: SearchParametersModel(
+                    null,
+                    null,
+                    transaction.value?.facility?.uid ?: "",
+                ),
+                transaction.value?.facility?.uid,
+                config.value!!,
+            ).items
+
+            result.asFlow().collect { stockItems ->
                 _stockItems.value = stockItems
                 populateTable()
             }
@@ -173,13 +182,6 @@ class ManageStockViewModel @Inject constructor(
                 it,
             )
         }
-    }
-
-    private fun getStockItems() = search.switchMap { q ->
-        val result =
-            stockManagerRepository.search(q, transaction.value?.facility?.uid, config.value!!)
-
-        result.items
     }
 
     private fun configureRelays() {
