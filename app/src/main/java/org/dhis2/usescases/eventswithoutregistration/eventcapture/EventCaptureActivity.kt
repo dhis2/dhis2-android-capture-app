@@ -80,7 +80,6 @@ class EventCaptureActivity :
     private var setOfAttributeNames: Set<String> = emptySet()
     var teiUid: String? = null
 
-
     @JvmField
     @Inject
     var pageConfigurator: NavigationPageConfigurator? = null
@@ -104,9 +103,9 @@ class EventCaptureActivity :
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
         eventCaptureComponent = this.app().userComponent()!!.plus(
             EventCaptureModule(
-                    this,
-                    eventUid,
-                    isPortrait(),
+                this,
+                eventUid,
+                isPortrait(),
             ),
         )
 
@@ -145,8 +144,8 @@ class EventCaptureActivity :
                     programUid,
                     teiUid,
                     enrollmentUid,
-                        stageUid,
-                        setOfAttributeNames
+                    stageUid,
+                    setOfAttributeNames,
                 ),
             ).commit()
         }
@@ -341,22 +340,22 @@ class EventCaptureActivity :
         eventCompletionDialog: EventCompletionDialog,
     ) {
         val dialog = BottomSheetDialog(
-                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                onMainButtonClicked = {
-                    setAction(eventCompletionDialog.mainButtonAction)
-                },
-                onSecondaryButtonClicked = {
-                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                },
-                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                    { bottomSheetDialog ->
-                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                            bottomSheetDialog.dismiss()
-                        }
+            bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+            onMainButtonClicked = {
+                setAction(eventCompletionDialog.mainButtonAction)
+            },
+            onSecondaryButtonClicked = {
+                eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+            },
+            content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                { bottomSheetDialog ->
+                    ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                        bottomSheetDialog.dismiss()
                     }
-                } else {
-                    null
-                },
+                }
+            } else {
+                null
+            },
         )
         if (isPortrait() && (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry)) {
             dialog.show(supportFragmentManager, SHOW_OPTIONS)

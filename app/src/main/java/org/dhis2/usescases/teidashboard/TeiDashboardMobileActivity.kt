@@ -233,12 +233,12 @@ class TeiDashboardMobileActivity :
                 presenter.updateEnrollmentFields(action)
             }
             .onLoadingListener { loading ->
-                    if (loading) {
-                        showLoadingProgress(true)
-                    } else {
-                        showLoadingProgress(false)
-                    }
+                if (loading) {
+                    showLoadingProgress(true)
+                } else {
+                    showLoadingProgress(false)
                 }
+            }
             .onFinishDataEntry {
                 presenter.getNewDashboardProgramModel()
             }

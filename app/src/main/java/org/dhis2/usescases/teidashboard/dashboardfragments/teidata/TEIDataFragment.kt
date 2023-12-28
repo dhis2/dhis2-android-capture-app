@@ -106,7 +106,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private var programStageFromEvent: ProgramStage? = null
     private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
-private val dashboardViewModel: DashboardViewModel by activityViewModels()
+    private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private var teiModel: SearchTeiModel? = null
     var programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>? = null
     private lateinit var dashboardModel: DashboardProgramModel
@@ -254,7 +254,7 @@ private val dashboardViewModel: DashboardViewModel by activityViewModels()
         }
 
         if (isLandscape() && organisationUnit != null) {
-                binding.cardFrontLand!!.orgUnit.text = organisationUnit.name()
+            binding.cardFrontLand!!.orgUnit.text = organisationUnit.name()
         }
 
         if (teiModel == null) {
@@ -589,24 +589,24 @@ private val dashboardViewModel: DashboardViewModel by activityViewModels()
 
     override fun openEventCapture(intent: Intent) = eventCaptureLauncher.launch(intent)
 
-    override  fun showTeiImage (filePath: String, defaultIcon: String) {
+    override fun showTeiImage(filePath: String, defaultIcon: String) {
         val isPortrait = isPortrait()
         val isLandscape = isLandscape()
 
         fun configureImageView(imageView: ImageView) {
             Glide.with(this)
-                    .load(File(filePath))
-                    .error(
-                            getIconResource(
-                                    requireContext(),
-                                    defaultIcon,
-                                    R.drawable.photo_temp_gray,
-                                    colorUtils,
-                            ),
-                    )
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .transform(CircleCrop())
-                    .into(imageView)
+                .load(File(filePath))
+                .error(
+                    getIconResource(
+                        requireContext(),
+                        defaultIcon,
+                        R.drawable.photo_temp_gray,
+                        colorUtils,
+                    ),
+                )
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .transform(CircleCrop())
+                .into(imageView)
             imageView.setOnClickListener {
                 val fileToShow = File(filePath)
                 showImageIfFileExist(fileToShow)
