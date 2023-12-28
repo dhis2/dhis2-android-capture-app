@@ -3,7 +3,6 @@ package org.dhis2.usescases.teidashboard
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -110,7 +109,7 @@ class TeiDashboardMobileActivity :
     private var elevation = 0f
     private var restartingActivity = false
 
-    private var formView: FormView? = null
+    private lateinit var formView: FormView
 
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -227,14 +226,22 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    //
     private fun setupLandscapeFormView() {
         formView = FormView.Builder()
             .locationProvider(locationProvider)
             .onItemChangeListener { action: RowAction? ->
                 presenter.updateEnrollmentFields(action)
             }
-            .onFinishDataEntry { presenter.fininshEnrollmentDataEntry() }
+            .onLoadingListener { loading ->
+                    if (loading) {
+                        showLoadingProgress(true)
+                    } else {
+                        showLoadingProgress(false)
+                    }
+                }
+            .onFinishDataEntry {
+                presenter.getNewDashboardProgramModel()
+            }
             .resultDialogUiProvider(
                 EnrollmentResultDialogUiProvider(
                     ResourceManager(
@@ -251,11 +258,11 @@ class TeiDashboardMobileActivity :
             .build()
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.tei_form_view, formView!!)
+            .replace(R.id.tei_form_view, formView)
             .commitAllowingStateLoss()
 
         val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
-        saveButton.setOnClickListener { formView?.onSaveClick() }
+        saveButton.setOnClickListener { formView.onSaveClick() }
     }
 
     private fun setEditButton() {
@@ -316,10 +323,6 @@ class TeiDashboardMobileActivity :
             restoreAdapter(programUid)
         }
         presenter.refreshTabCounters()
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
     }
 
     override fun onPause() {
@@ -392,11 +395,11 @@ class TeiDashboardMobileActivity :
                     }
                     if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
                         binding.toolbarTitle.visibility = View.GONE
-                        binding.editButton.visibility = View.VISIBLE
+                        binding.editButton?.visibility = View.VISIBLE
                         binding.syncButton.visibility = View.GONE
                     } else {
                         binding.toolbarTitle.visibility = View.VISIBLE
-                        binding.editButton.visibility = View.GONE
+                        binding.editButton?.visibility = View.GONE
                         binding.syncButton.visibility = View.VISIBLE
                     }
                     binding.navigationBar.selectItemAt(position)
@@ -481,6 +484,10 @@ class TeiDashboardMobileActivity :
             )
         }
         presenter.initNoteCounter()
+    }
+
+    override fun updateDashboardProgramModel(program: DashboardProgramModel) {
+        dashboardViewModel.updateDashboard(program)
     }
 
     override fun restoreAdapter(programUid: String?) {
@@ -629,13 +636,16 @@ class TeiDashboardMobileActivity :
                 deleteTeiItem.title =
                     String.format(deleteTeiItem.title.toString(), presenter.teType)
                 if (enrollmentUid != null) {
-                    val status = presenter.getEnrollmentStatus(enrollmentUid)
-                    if (status == EnrollmentStatus.COMPLETED) {
-                        popupMenu.menu.findItem(R.id.complete).isVisible = false
-                    } else if (status == EnrollmentStatus.CANCELLED) {
-                        popupMenu.menu.findItem(R.id.deactivate).isVisible = false
-                    } else {
-                        popupMenu.menu.findItem(R.id.activate).isVisible = false
+                    when (presenter.getEnrollmentStatus(enrollmentUid)) {
+                        EnrollmentStatus.COMPLETED -> {
+                            popupMenu.menu.findItem(R.id.complete).isVisible = false
+                        }
+                        EnrollmentStatus.CANCELLED -> {
+                            popupMenu.menu.findItem(R.id.deactivate).isVisible = false
+                        }
+                        else -> {
+                            popupMenu.menu.findItem(R.id.activate).isVisible = false
+                        }
                     }
                     if (dashboardViewModel.showFollowUpBar.value) {
                         popupMenu.menu.findItem(R.id.markForFollowUp).isVisible = false
@@ -733,11 +743,7 @@ class TeiDashboardMobileActivity :
     }
 
     override fun updateEnrollmentFields(action: RowAction?) {
-        return Unit
-    }
-
-    override fun fininshEnrollmentDataEntry() {
-        return Unit
+        // No enrollment fields to update
     }
 
     companion object {

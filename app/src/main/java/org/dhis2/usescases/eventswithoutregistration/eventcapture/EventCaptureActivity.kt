@@ -13,7 +13,6 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -46,7 +45,6 @@ import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialAc
 import org.dhis2.usescases.eventswithoutregistration.eventteidetails.EventTeiDetailsFragment
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teidashboard.DashboardProgramModel
-import org.dhis2.usescases.teidashboard.DashboardViewModel
 import org.dhis2.usescases.teidashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.CLICK
@@ -82,7 +80,6 @@ class EventCaptureActivity :
     private var setOfAttributeNames: Set<String> = emptySet()
     var teiUid: String? = null
 
-    private var dashboardViewModel: DashboardViewModel? = null
 
     @JvmField
     @Inject
@@ -107,9 +104,9 @@ class EventCaptureActivity :
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
         eventCaptureComponent = this.app().userComponent()!!.plus(
             EventCaptureModule(
-                this,
-                eventUid,
-                isPortrait(),
+                    this,
+                    eventUid,
+                    isPortrait(),
             ),
         )
 
@@ -139,20 +136,19 @@ class EventCaptureActivity :
         if (isLandscape()) {
             val stageUid: String = presenter!!.programStageUidString
             programStageUid = stageUid
-            dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
             supportFragmentManager.beginTransaction()
                 .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false))
-                .commitAllowingStateLoss()
+                .commit()
             supportFragmentManager.beginTransaction().replace(
                 R.id.tei_column,
                 EventTeiDetailsFragment.newInstance(
                     programUid,
                     teiUid,
                     enrollmentUid,
-                    programStageUid,
-                    setOfAttributeNames,
+                        stageUid,
+                        setOfAttributeNames
                 ),
-            ).commitAllowingStateLoss()
+            ).commit()
         }
         showProgress()
         presenter!!.initNoteCounter()
@@ -247,13 +243,6 @@ class EventCaptureActivity :
         }
     }
 
-    fun restoreAdapter(programUid: String?, eventUid: String?) {
-        adapter = null
-        this.programUid = programUid
-        this.eventUid = eventUid
-        presenter!!.init()
-    }
-
     override fun onPause() {
         presenter!!.onDettach()
         super.onPause()
@@ -296,6 +285,7 @@ class EventCaptureActivity :
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        super.onBackPressed()
         if (onEditionListener != null) {
             onEditionListener!!.onEditionListener()
         }
@@ -350,8 +340,7 @@ class EventCaptureActivity :
         emptyMandatoryFields: Map<String, String>,
         eventCompletionDialog: EventCompletionDialog,
     ) {
-        if (isPortrait() && (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry)) {
-            val dialog = BottomSheetDialog(
+        val dialog = BottomSheetDialog(
                 bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
                 onMainButtonClicked = {
                     setAction(eventCompletionDialog.mainButtonAction)
@@ -368,29 +357,11 @@ class EventCaptureActivity :
                 } else {
                     null
                 },
-            )
+        )
+        if (isPortrait() && (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry)) {
             dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
-
         if (isLandscape() && hasOneOfTheBottomNavigationButtonSelected()) {
-            val dialog = BottomSheetDialog(
-                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                onMainButtonClicked = {
-                    setAction(eventCompletionDialog.mainButtonAction)
-                },
-                onSecondaryButtonClicked = {
-                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                },
-                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                    { bottomSheetDialog ->
-                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                            bottomSheetDialog.dismiss()
-                        }
-                    }
-                } else {
-                    null
-                },
-            )
             dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
     }

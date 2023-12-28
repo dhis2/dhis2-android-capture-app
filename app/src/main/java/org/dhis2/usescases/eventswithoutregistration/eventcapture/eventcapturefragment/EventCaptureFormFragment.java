@@ -67,7 +67,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                         this,
                         getArguments().getString(Constants.EVENT_UID))
         ).inject(this);
-        setRetainInstance(true);
     }
 
     @Override

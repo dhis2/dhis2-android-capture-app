@@ -38,13 +38,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final PreferenceProvider preferenceProvider;
     private final TeiDashboardContracts.View view;
 
-    private String teiUid;
+    private final String teiUid;
     public String programUid;
 
     public CompositeDisposable compositeDisposable;
     public DashboardProgramModel dashboardProgramModel;
-    private PublishProcessor<Unit> notesCounterProcessor;
-    private MatomoAnalyticsController matomoAnalyticsController;
+    private final PublishProcessor<Unit> notesCounterProcessor;
+    private final MatomoAnalyticsController matomoAnalyticsController;
+
+    @FunctionalInterface
+    public interface VoidFunction<T> {
+        void apply(T argument);
+    }
 
     public TeiDashboardPresenter(
             TeiDashboardContracts.View view,
@@ -69,28 +74,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void init() {
-        if (programUid != null)
-            compositeDisposable.add(Observable.zip(
-                    dashboardRepository.getTrackedEntityInstance(teiUid),
-                    dashboardRepository.getEnrollment(),
-                    dashboardRepository.getProgramStages(programUid),
-                    dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
-                    dashboardRepository.getAttributesMap(programUid, teiUid),
-                    dashboardRepository.getTEIAttributeValues(programUid, teiUid),
-                    dashboardRepository.getTeiOrgUnits(teiUid, programUid),
-                    dashboardRepository.getTeiActivePrograms(teiUid, false),
-                    DashboardProgramModel::new)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                            dashboardModel -> {
-                                this.dashboardProgramModel = dashboardModel;
-                                view.setData(dashboardModel);
-                            },
-                            Timber::e
-                    )
-            );
-
+        if (programUid != null) {
+            fetchDashboardDataAndNotify(view::setData);
+        }
         else {
             compositeDisposable.add(Observable.zip(
                     dashboardRepository.getTrackedEntityInstance(teiUid),
@@ -111,13 +97,38 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         }
     }
 
+    @Override
+    public void getNewDashboardProgramModel() {
+        fetchDashboardDataAndNotify(view::updateDashboardProgramModel);
+    }
 
-    public kotlin.Unit updateEnrollmentFields(RowAction action) {
-        return null;
+    private void fetchDashboardDataAndNotify(VoidFunction<DashboardProgramModel> updateFunction) {
+        compositeDisposable.add(
+                Observable.zip(
+                                dashboardRepository.getTrackedEntityInstance(teiUid),
+                                dashboardRepository.getEnrollment(),
+                                dashboardRepository.getProgramStages(programUid),
+                                dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
+                                dashboardRepository.getAttributesMap(programUid, teiUid),
+                                dashboardRepository.getTEIAttributeValues(programUid, teiUid),
+                                dashboardRepository.getTeiOrgUnits(teiUid, programUid),
+                                dashboardRepository.getTeiActivePrograms(teiUid, false),
+                                DashboardProgramModel::new
+                        )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                dashboardModel -> {
+                                    this.dashboardProgramModel = dashboardModel;
+                                    updateFunction.apply(dashboardModel);
+                                },
+                                Timber::e
+                        )
+        );
     }
 
 
-    public kotlin.Unit fininshEnrollmentDataEntry() {
+    public kotlin.Unit updateEnrollmentFields(RowAction action) {
         return null;
     }
 

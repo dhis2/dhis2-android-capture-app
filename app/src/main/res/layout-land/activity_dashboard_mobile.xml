@@ -61,15 +61,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="TEI NAME" />
 
-            <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/editButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="@{presenter.getProgramUid() == null ? View.GONE : View.VISIBLE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/syncButton"
-                app:layout_constraintTop_toTopOf="parent"/>
-
             <ImageView
                 android:id="@+id/syncButton"
                 style="@style/ActionIcon"

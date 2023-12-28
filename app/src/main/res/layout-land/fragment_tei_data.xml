@@ -41,14 +41,6 @@
             name="canAddEvents"
             type="java.lang.Boolean" />
 
-        <variable
-            name="highRisk"
-            type="java.lang.Boolean" />
-
-        <variable
-            name="lowRisk"
-            type="java.lang.Boolean" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,34 +53,34 @@
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/tei_data"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/detailCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"/>
 
-                <LinearLayout
-                    android:id="@+id/sectionSelectedMark"
-                    android:layout_marginTop="18dp"
-                    android:layout_width="4dp"
-                    android:layout_height="60dp"
-                    android:background="?colorPrimary"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tei_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <include
                     android:id="@+id/card_front_land"
-                    layout="@layout/item_search_tracked_entity"
-                    app:teiSyncState="@{trackEntity.syncState()}"
-                    app:highRisk="@{highRisk}"
-                    app:lowRisk="@{lowRisk}"
-                    app:followUp="@{enrollment.followUp()}"/>
+                    layout="@layout/fragment_tei_data_card_front"
+                    android:visibility="@{ program != null ? View.GONE : View.VISIBLE}"
+                    app:dashboardModel="@{dashboardModel}"
+                    app:enrollment="@{enrollment}"
+                    app:followup="@{followup}"
+                    app:presenter="@{presenter}"
+                    app:program="@{program}"
+                    app:trackEntity="@{trackEntity}" />
             </androidx.cardview.widget.CardView>
-
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/filterLayout"
@@ -103,6 +95,7 @@
                 tools:listitem="@layout/item_header_filter" />
 
         </LinearLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tei_recycler"
@@ -146,7 +139,7 @@
             android:id="@+id/dialFabLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_extra_bottom_margin="@{52}"
+            app:fab_extra_bottom_margin="@{16}"
             app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">

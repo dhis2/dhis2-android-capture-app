@@ -1,5 +1,5 @@
 package org.dhis2.commons.sync
 
-interface OnDismissListener {
+fun interface OnDismissListener {
     fun onDismiss(hasChanged: Boolean)
 }

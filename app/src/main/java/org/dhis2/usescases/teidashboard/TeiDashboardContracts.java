@@ -12,6 +12,8 @@ public class TeiDashboardContracts {
 
         void setData(DashboardProgramModel program);
 
+        void updateDashboardProgramModel (DashboardProgramModel program);
+
         void setDataWithOutProgram(DashboardProgramModel programModel);
 
         void goToEnrollmentList();
@@ -20,8 +22,6 @@ public class TeiDashboardContracts {
 
 
         Unit updateEnrollmentFields(RowAction action);
-
-        Unit fininshEnrollmentDataEntry();
 
         void handleTeiDeletion();
 
@@ -44,9 +44,9 @@ public class TeiDashboardContracts {
 
         void init();
 
-        Unit updateEnrollmentFields(RowAction action);
+        void getNewDashboardProgramModel();
 
-        Unit fininshEnrollmentDataEntry();
+        Unit updateEnrollmentFields(RowAction action);
 
         void showDescription(String description);
 

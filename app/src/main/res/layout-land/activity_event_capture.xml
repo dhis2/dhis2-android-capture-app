@@ -41,7 +41,6 @@
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
-
             <org.dhis2.utils.customviews.CircularCompletionView
                 android:id="@+id/completion"
                 android:layout_width="wrap_content"

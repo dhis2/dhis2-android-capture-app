@@ -17,10 +17,6 @@ class DashboardViewModel(
     private val analyticsHelper: AnalyticsHelper?,
 ) : ViewModel() {
 
-    constructor() : this(null, null) {
-        // Initialize any default values here if needed
-    }
-
     private val dashboardProgramModelLiveData = MutableLiveData<DashboardProgramModel>()
     private val eventUid = MutableLiveData<String>()
 
