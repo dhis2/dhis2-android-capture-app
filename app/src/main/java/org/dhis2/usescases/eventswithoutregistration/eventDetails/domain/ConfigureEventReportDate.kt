@@ -13,7 +13,6 @@ import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
-import java.util.Calendar
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
 import java.util.Locale
@@ -106,27 +105,24 @@ class ConfigureEventReportDate(
     }
 
     private fun getNextScheduleDate(): Date {
-        val isGeneratedEventBasedOnEnrollment =
-            repository.getProgramStage()?.generatedByEnrollmentDate()
-
-        val initialDate = if (isGeneratedEventBasedOnEnrollment == true) {
-            val enrollmentDate = repository.getEnrollmentDate(enrollmentId)
-            DateUtils.getInstance().getCalendarByDate(enrollmentDate)
-        } else {
-            val date = DateUtils.getInstance().calendar
-            date.time = repository.getStageLastDate(enrollmentId)
+        val scheduleDate = repository.getStageLastDate(enrollmentId)?.let {
+            val lastStageDate = DateUtils.getInstance().getCalendarByDate(it)
+            lastStageDate.add(DAY_OF_YEAR, getScheduleInterval())
+            lastStageDate
+        } ?: run {
+            val enrollmentDate = with(repository) {
+                when (getProgramStage()?.generatedByEnrollmentDate()) {
+                    true -> getEnrollmentDate(enrollmentId)
+                    else -> getEnrollmentIncidentDate(enrollmentId)
+                        ?: getEnrollmentDate(enrollmentId)
+                }
+            }
+            val date = DateUtils.getInstance().getCalendarByDate(enrollmentDate)
+            val minDateFromStart = repository.getMinDaysFromStartByProgramStage()
+            date.add(DAY_OF_YEAR, minDateFromStart)
             date
         }
-
-        if (getScheduleInterval() > 0) {
-            initialDate.add(Calendar.DAY_OF_YEAR, getScheduleInterval())
-        }
-        val minDateFromStart =
-            repository.getMinDaysFromStartByProgramStage()
-        if (minDateFromStart > 0) {
-            initialDate.add(DAY_OF_YEAR, minDateFromStart)
-        }
-        return DateUtils.getInstance().getNextPeriod(null, initialDate.time, 0)
+        return DateUtils.getInstance().getNextPeriod(null, scheduleDate.time, 0)
     }
 
     private fun getCurrentDay() = DateUtils.getInstance().today

@@ -163,7 +163,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnScheduleNew()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
-            checkEventWasCreated(LAB_MONITORING)
+            checkEventWasCreatedWithDate(LAB_MONITORING, LAB_MONITORING_SCHEDULE_DATE)
         }
     }
 
@@ -374,6 +374,7 @@ class TeiDashboardTest : BaseTest() {
         const val USER = "android"
 
         const val LAB_MONITORING = "Lab monitoring"
+        const val LAB_MONITORING_SCHEDULE_DATE = "10/9/2019"
 
         const val API_TEI_1_RESPONSE_OK = "mocks/teilist/teilist_1.json"
         const val API_TEI_2_RESPONSE_OK = "mocks/teilist/teilist_2.json"

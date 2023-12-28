@@ -233,7 +233,7 @@ class SMSSyncProviderTest {
             d2.smsModule().configCase(),
         ) doReturn mock()
         whenever(
-            d2.smsModule().configCase().smsModuleConfig,
+            d2.smsModule().configCase().getSmsModuleConfig(),
         ) doReturn Single.just(smsConfig)
     }
 
@@ -298,7 +298,7 @@ class SMSSyncProviderTest {
             d2.smsModule().configCase(),
         ) doReturn mock()
         whenever(
-            d2.smsModule().configCase().smsModuleConfig,
+            d2.smsModule().configCase().getSmsModuleConfig(),
         ) doReturn Single.just(smsConfig)
     }
 }

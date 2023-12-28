@@ -4,6 +4,7 @@ import io.reactivex.Single
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -26,6 +27,12 @@ class MetadataManagerImpl @Inject constructor(
             .eq(programUid)
             .one()
             .get()
+    }
+
+    override fun transactionType(dataSetUid: String): Single<DataElement> {
+        return Single.defer {
+            d2.dataElementModule().dataElements().uid(dataSetUid).get()
+        }
     }
 
     /**

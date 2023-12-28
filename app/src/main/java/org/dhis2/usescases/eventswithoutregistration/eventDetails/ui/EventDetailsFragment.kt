@@ -296,7 +296,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         dialog.setInitialDate(viewModel.eventDate.value.currentDate)
         dialog.setMinDate(viewModel.eventDate.value.minDate)
         dialog.setMaxDate(viewModel.eventDate.value.maxDate)
-        dialog.setScheduleInterval(viewModel.eventDate.value.scheduleInterval)
         dialog.isFutureDatesAllowed(viewModel.eventDate.value.allowFutureDates)
         dialog.setListener(
             object : OnDatePickerListener {

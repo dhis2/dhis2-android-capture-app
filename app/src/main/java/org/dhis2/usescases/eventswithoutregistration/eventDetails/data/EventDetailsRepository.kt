@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import java.util.Calendar
 import java.util.Date
 
 class EventDetailsRepository(
@@ -72,7 +71,7 @@ class EventDetailsRepository(
         return programStage?.minDaysFromStart() ?: 0
     }
 
-    fun getStageLastDate(enrollmentUid: String?): Date {
+    fun getStageLastDate(enrollmentUid: String?): Date? {
         val activeEvents =
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
@@ -89,7 +88,7 @@ class EventDetailsRepository(
         }
         if (scheduleEvents.isNotEmpty()) scheduleDate = scheduleEvents[0].dueDate()
 
-        return activeDate ?: (scheduleDate ?: Calendar.getInstance().time)
+        return activeDate ?: scheduleDate
     }
 
     fun hasAccessDataWrite(): Boolean {
@@ -109,6 +108,11 @@ class EventDetailsRepository(
     fun getEnrollmentDate(uid: String?): Date? {
         val enrollment = d2.enrollmentModule().enrollments().byUid().eq(uid).blockingGet().first()
         return enrollment.enrollmentDate()
+    }
+
+    fun getEnrollmentIncidentDate(uid: String?): Date? {
+        val enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet()
+        return enrollment?.incidentDate()
     }
 
     fun getFilteredOrgUnits(date: String?, parentUid: String?): List<OrganisationUnit> {

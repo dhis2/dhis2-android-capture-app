@@ -383,15 +383,15 @@ class SettingsRepositoryTest {
     }
 
     private fun configureSMSConfig() {
-        whenever(localDbRepository.isModuleEnabled) doReturn
+        whenever(localDbRepository.isModuleEnabled()) doReturn
             Single.just(true)
-        whenever(localDbRepository.gatewayNumber) doReturn
+        whenever(localDbRepository.getGatewayNumber()) doReturn
             Single.just("gatewaynumber")
-        whenever(localDbRepository.waitingForResultEnabled) doReturn
+        whenever(localDbRepository.getWaitingForResultEnabled()) doReturn
             Single.just(true)
-        whenever(localDbRepository.confirmationSenderNumber) doReturn
+        whenever(localDbRepository.getConfirmationSenderNumber()) doReturn
             Single.just("confirmationNumber")
-        whenever(localDbRepository.waitingResultTimeout) doReturn
+        whenever(localDbRepository.getWaitingResultTimeout()) doReturn
             Single.just(120)
         whenever(d2.smsModule().configCase()) doReturn
             ConfigCase(

@@ -1,11 +1,11 @@
 package org.dhis2.android.rtsm.services
 
-import androidx.paging.DataSource
-import androidx.paging.LivePagedListBuilder
+import androidx.lifecycle.liveData
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.math.NumberUtils
-import org.dhis2.android.rtsm.commons.Constants
+import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.models.IdentifiableModel
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
@@ -36,70 +36,62 @@ class StockManagerImpl @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val ruleValidationHelper: RuleValidationHelper,
+    private val dispatcher: StockDispatcherProvider,
 ) : StockManager {
 
-    override fun search(
+    override suspend fun search(
         query: SearchParametersModel,
         ou: String?,
         config: AppConfig,
     ): SearchResult {
-        var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
+        val list = withContext(dispatcher.io()) {
+            var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
-        if (!ou.isNullOrEmpty()) {
-            teiRepository.byOrgUnits()
-                .eq(ou)
-                .byOrgUnitMode()
-                .eq(OrganisationUnitMode.SELECTED)
+            if (!ou.isNullOrEmpty()) {
+                teiRepository.byOrgUnits()
+                    .eq(ou)
+                    .byOrgUnitMode()
+                    .eq(OrganisationUnitMode.SELECTED)
+                    .also { teiRepository = it }
+            }
+
+            teiRepository.byProgram()
+                .eq(config.program)
                 .also { teiRepository = it }
-        }
 
-        teiRepository.byProgram()
-            .eq(config.program)
-            .also { teiRepository = it }
+            if (!query.name.isNullOrEmpty()) {
+                teiRepository
+                    .byQuery()
+                    .like(query.name).also { teiRepository = it }
+            }
 
-        if (!query.name.isNullOrEmpty()) {
-            teiRepository
-                .byQuery()
-                .like(query.name).also { teiRepository = it }
-        }
+            if (!query.code.isNullOrEmpty()) {
+                teiRepository
+                    .byQuery()
+                    .eq(query.code)
+                    .also { teiRepository = it }
+            }
 
-        if (!query.code.isNullOrEmpty()) {
-            teiRepository
-                .byQuery()
-                .eq(query.code)
+            teiRepository.orderByAttribute(config.itemName)
+                .eq(RepositoryScope.OrderByDirection.ASC)
                 .also { teiRepository = it }
+
+            val teiList = teiRepository.blockingGet()
+                .filter { it.deleted() == null || !it.deleted()!! }
+                .map { transform(it, config) }
+
+            teiList
         }
 
-        teiRepository.orderByAttribute(config.itemName)
-            .eq(RepositoryScope.OrderByDirection.ASC)
-            .also { teiRepository = it }
-
-        val dataSource: DataSource<TrackedEntityInstance, StockItem> = teiRepository.dataSource
-            .mapByPage { filterDeleted(it.toMutableList()) }
-            .mapByPage { transform(it, config) }
-
-        val totalCount = teiRepository.blockingCount()
-        val pagedList = LivePagedListBuilder(
-            object : DataSource.Factory<TrackedEntityInstance, StockItem>() {
-                override fun create(): DataSource<TrackedEntityInstance, StockItem> {
-                    return dataSource
-                }
-            },
-            Constants.ITEM_PAGE_SIZE,
-        )
-            .build()
-
-        return SearchResult(pagedList, totalCount)
+        return SearchResult(liveData { emit(list) })
     }
 
-    private fun transform(teis: List<TrackedEntityInstance>, config: AppConfig): List<StockItem> {
-        return teis.map { tei ->
-            StockItem(
-                tei.uid(),
-                AttributeHelper.teiAttributeValueByAttributeUid(tei, config.itemName) ?: "",
-                getStockOnHand(tei, config.stockOnHand) ?: "",
-            )
-        }
+    private fun transform(tei: TrackedEntityInstance, config: AppConfig): StockItem {
+        return StockItem(
+            tei.uid(),
+            AttributeHelper.teiAttributeValueByAttributeUid(tei, config.itemName) ?: "",
+            getStockOnHand(tei, config.stockOnHand) ?: "",
+        )
     }
 
     private fun getStockOnHand(tei: TrackedEntityInstance, stockOnHandUid: String): String? {
@@ -123,14 +115,6 @@ class StockManagerImpl @Inject constructor(
         }
 
         return null
-    }
-
-    private fun filterDeleted(
-        list: List<TrackedEntityInstance>,
-    ): List<TrackedEntityInstance> {
-        return list.filter {
-            it.deleted() == null || !it.deleted()!!
-        }
     }
 
     private fun createEventProjection(

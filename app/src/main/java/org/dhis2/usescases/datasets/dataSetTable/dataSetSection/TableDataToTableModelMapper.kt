@@ -71,22 +71,32 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
             rows = listOf(
                 TableHeaderRow(
                     cells = listOf(
-                        TableHeaderCell(value = "Value"),
+                        TableHeaderCell(mapFieldValueToUser.resources.getString(R.string.value)),
                     ),
                 ),
             ),
         )
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
-                rowHeader = RowHeader(id = indicatorName, title = indicatorName!!),
+                rowHeader = RowHeader(
+                    id = indicatorName,
+                    title = indicatorName!!,
+                    row = tableData.keys.indexOf(indicatorName),
+                ),
                 values = mapOf(
-                    0 to TableCell(id = indicatorName, value = indicatorValue, editable = false),
+                    0 to TableCell(
+                        id = indicatorName,
+                        column = 0,
+                        value = indicatorValue,
+                        editable = false,
+                    ),
                 ),
             )
         }
 
         return TableModel(
-            title = "Indicators",
+            id = "indicators",
+            title = mapFieldValueToUser.resources.getString(R.string.dashboard_indicators),
             tableHeaderModel = tableHeader,
             tableRows = tableRows,
         )

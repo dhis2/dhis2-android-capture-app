@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -22,84 +21,74 @@ fun TeiDetailDashboard(
     enrollmentData: InfoBarUiModel,
     card: TeiCardUiModel,
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(top = 16.dp),
     ) {
-        item {
-            Column(
+        if (syncData.showInfoBar) {
+            InfoBar(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-            ) {
-                if (syncData.showInfoBar) {
-                    InfoBar(
-                        modifier = Modifier
-                            .padding(start = 8.dp, end = 8.dp)
-                            .testTag(SYNC_INFO_BAR_TEST_TAG),
-                        infoBarData =
-                        InfoBarData(
-                            text = syncData.text,
-                            icon = syncData.icon,
-                            color = syncData.textColor,
-                            backgroundColor = syncData.backgroundColor,
-                            actionText = syncData.actionText,
-                            onClick = syncData.onActionClick,
-                        ),
-                    )
-                    if (followUpData.showInfoBar || enrollmentData.showInfoBar) {
-                        Spacer(modifier = Modifier.padding(top = 8.dp))
-                    }
-                }
-
-                if (followUpData.showInfoBar) {
-                    InfoBar(
-                        modifier = Modifier
-                            .padding(start = 8.dp, end = 8.dp)
-                            .testTag(FOLLOWUP_INFO_BAR_TEST_TAG),
-                        infoBarData = InfoBarData(
-                            text = followUpData.text,
-                            icon = followUpData.icon,
-                            color = followUpData.textColor,
-                            backgroundColor = followUpData.backgroundColor,
-                            actionText = followUpData.actionText,
-                            onClick = followUpData.onActionClick,
-                        ),
-                    )
-                    if (enrollmentData.showInfoBar) {
-                        Spacer(modifier = Modifier.padding(top = 8.dp))
-                    }
-                }
-
-                if (enrollmentData.showInfoBar) {
-                    InfoBar(
-                        modifier = Modifier
-                            .padding(start = 8.dp, end = 8.dp)
-                            .testTag(STATE_INFO_BAR_TEST_TAG),
-                        infoBarData = InfoBarData(
-                            text = enrollmentData.text,
-                            icon = enrollmentData.icon,
-                            color = enrollmentData.textColor,
-                            backgroundColor = enrollmentData.backgroundColor,
-                            actionText = enrollmentData.actionText,
-                        ),
-                    )
-                }
+                    .padding(start = 8.dp, end = 8.dp)
+                    .testTag(SYNC_INFO_BAR_TEST_TAG),
+                infoBarData =
+                InfoBarData(
+                    text = syncData.text,
+                    icon = syncData.icon,
+                    color = syncData.textColor,
+                    backgroundColor = syncData.backgroundColor,
+                    actionText = syncData.actionText,
+                    onClick = syncData.onActionClick,
+                ),
+            )
+            if (followUpData.showInfoBar || enrollmentData.showInfoBar) {
+                Spacer(modifier = Modifier.padding(top = 8.dp))
             }
         }
 
-        item {
-            CardDetail(
-                modifier = Modifier.padding(top = 0.dp),
-                title = card.title,
-                additionalInfoList = card.additionalInfo,
-                avatar = card.avatar,
-                actionButton = card.actionButton,
-                expandLabelText = card.expandLabelText,
-                shrinkLabelText = card.shrinkLabelText,
-                showLoading = card.showLoading,
+        if (followUpData.showInfoBar) {
+            InfoBar(
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 8.dp)
+                    .testTag(FOLLOWUP_INFO_BAR_TEST_TAG),
+                infoBarData = InfoBarData(
+                    text = followUpData.text,
+                    icon = followUpData.icon,
+                    color = followUpData.textColor,
+                    backgroundColor = followUpData.backgroundColor,
+                    actionText = followUpData.actionText,
+                    onClick = followUpData.onActionClick,
+                ),
+            )
+            if (enrollmentData.showInfoBar) {
+                Spacer(modifier = Modifier.padding(top = 8.dp))
+            }
+        }
+
+        if (enrollmentData.showInfoBar) {
+            InfoBar(
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 8.dp)
+                    .testTag(STATE_INFO_BAR_TEST_TAG),
+                infoBarData = InfoBarData(
+                    text = enrollmentData.text,
+                    icon = enrollmentData.icon,
+                    color = enrollmentData.textColor,
+                    backgroundColor = enrollmentData.backgroundColor,
+                    actionText = enrollmentData.actionText,
+                ),
             )
         }
+
+        CardDetail(
+            title = card.title,
+            additionalInfoList = card.additionalInfo,
+            avatar = card.avatar,
+            actionButton = card.actionButton,
+            expandLabelText = card.expandLabelText,
+            shrinkLabelText = card.shrinkLabelText,
+            showLoading = card.showLoading,
+        )
     }
 }
 
