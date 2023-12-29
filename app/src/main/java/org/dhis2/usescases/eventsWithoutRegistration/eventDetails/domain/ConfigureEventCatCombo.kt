@@ -55,7 +55,7 @@ class ConfigureEventCatCombo(
         if (isDefault) {
             return repository.getCatOptionCombos(
                 categoryComboUid,
-            ).first().uid()
+            ).firstOrNull()?.uid()
         }
 
         val valuesList = getUidsList(selectedCategoryOptions.values.filterNotNull())
