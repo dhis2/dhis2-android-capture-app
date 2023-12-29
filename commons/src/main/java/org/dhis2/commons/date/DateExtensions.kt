@@ -96,7 +96,8 @@ fun Date?.toOverdueUiText(
             )
         }
         period.days in 1..89 -> {
-            getOverdueDaysString(period.days)
+            val intervalDays = Interval(this.time, currentDate.time).toDuration().toStandardDays().days
+            getOverdueDaysString(intervalDays)
         }
         period.days == 0 -> resourceManager.getString(R.string.overdue_today)
         else -> {
