@@ -251,7 +251,7 @@ class EventDetailsViewModel(
 
     fun onDateSet(year: Int, month: Int, day: Int) {
         val calendar = Calendar.getInstance()
-        calendar[year, month, day, 0, 0] = 0
+        calendar[year, month - 1, day, 0, 0] = 0
         calendar[Calendar.MILLISECOND] = 0
         val selectedDate = calendar.time
         setUpEventReportDate(selectedDate)
