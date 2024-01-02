@@ -34,7 +34,7 @@ jobs:
         pip install toml
 
     - name: Run Python script to update base branch version
-      run: python scripts/updateVersionName.py
+      run: python scripts/updateVersionName.py ${{ inputs.version_name }}
 
       # override vName with new version
 #    - name: Create release branch

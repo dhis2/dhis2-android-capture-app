@@ -1,28 +1,29 @@
 import toml
-import os
+# import os
+import sys
 
-
-file_path = os.path.join('gradle', 'libs.versions.toml')
+# file_path = os.path.join('gradle', 'libs.versions.toml')
+file_path = 'gradle/libs.versions.toml'
 
 # Load the TOML file
 with open(file_path, 'r') as file:
     data = toml.load(file)
 
-# print("Data dictionary:", data)
-
 # Print the current value of vName
 current_vName = data['versions']['vName']
 print("Current value of vName:", current_vName)
 
-# Update the desired value
-data['versions']['vName'] = '2.10'
+# Check if a new version is provided as a command-line argument
+if len(sys.argv) > 1:
+    new_vName_value = sys.argv[1]
+    # Update the 'vName' value in the data dictionary
+    data['versions']['vName'] = new_vName_value
+    # Print the updated value
+    print("Updated value of vName:", new_vName_value)
 
-# Save the changes back to the file
-with open(file_path, 'w') as file:
-    toml.dump(data, file)
-
-# validate changes
-with open(file_path, 'r') as file:
-    updated_data = toml.load(file)
-
-print("New value of vName:", data['versions']['vName'])
+    # Save the updated data back to the TOML file
+    with open(file_path, 'w') as file:
+        toml.dump(data, file)
+        print("File updated successfully!")
+else:
+    print("No new version provided. To update the version, pass the new version as a command-line argument.")
