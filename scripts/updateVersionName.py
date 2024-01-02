@@ -1,29 +1,44 @@
-import toml
-# import os
 import sys
 
-# file_path = os.path.join('gradle', 'libs.versions.toml')
-file_path = 'gradle/libs.versions.toml'
+def load_toml(file_path):
+    # Read the TOML file and parse it manually
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
 
-# Load the TOML file
-with open(file_path, 'r') as file:
-    data = toml.load(file)
+    data = {}
+    current_section = None
 
-# Print the current value of vName
-current_vName = data['versions']['vName']
-print("Current value of vName:", current_vName)
+    for line in lines:
+        line = line.strip()
+        if line.startswith('[') and line.endswith(']'):
+            current_section = line[1:-1]
+            data[current_section] = {}
+        elif '=' in line and current_section:
+            key, value = line.split('=', 1)
+            data[current_section][key.strip()] = value.strip()
 
-# Check if a new version is provided as a command-line argument
-if len(sys.argv) > 1:
-    new_vName_value = sys.argv[1]
-    # Update the 'vName' value in the data dictionary
-    data['versions']['vName'] = new_vName_value
-    # Print the updated value
-    print("Updated value of vName:", new_vName_value)
+    return data
 
-    # Save the updated data back to the TOML file
+def save_toml(file_path, data, newVersion):
+    # Write the data back to the TOML file
     with open(file_path, 'w') as file:
-        toml.dump(data, file)
-        print("File updated successfully!")
+        for section, section_data in data.items():
+            file.write(f'[{section}]\n')
+            for key, value in section_data.items():
+                # Check if the key is 'vName' and update the value with quotes
+                if section == 'versions' and key == 'vName':
+                    value = f'"{newVersion}"'
+                file.write(f'{key} = {value}\n')
+
+
+file_path = 'gradle/libs.versions.toml'
+data = load_toml(file_path)
+
+if len(sys.argv) > 1:
+    newVersion = sys.argv[1]
+    # Update the 'vName' value in the data dictionary
+    data['versions']['vName'] = newVersion
+    save_toml(file_path, data, newVersion)
+    print("File updated successfully!")
 else:
     print("No new version provided. To update the version, pass the new version as a command-line argument.")
