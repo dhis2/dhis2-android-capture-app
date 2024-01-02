@@ -31,6 +31,12 @@ jobs:
     - name: Run Python script to update base branch version
       run: python scripts/updateVersionName.py ${{ inputs.version_name }}
 
+    - name: setup git config
+      run: |
+        # setup the username and email.
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<android@dhis2.org>"
+
     - name: Commit and Push Changes
       run: |
         git add .
