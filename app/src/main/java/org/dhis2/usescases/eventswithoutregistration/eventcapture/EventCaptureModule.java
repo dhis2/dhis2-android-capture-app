@@ -27,6 +27,7 @@ import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.provider.EventCaptureResourcesProvider;
+import org.dhis2.usescases.teidashboard.DashboardRepository;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.D2;
 
@@ -39,13 +40,19 @@ import io.reactivex.processors.PublishProcessor;
 public class EventCaptureModule {
 
     private final String eventUid;
+
+    private final String teiUid;
+
+    private final String programUid;
     private final EventCaptureContract.View view;
 
     private final boolean isPortrait;
 
-    public EventCaptureModule(EventCaptureContract.View view, String eventUid, boolean isPortrait) {
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid, String teiUid, String programUid, boolean isPortrait) {
         this.view = view;
         this.eventUid = eventUid;
+        this.teiUid = teiUid;
+        this.programUid = programUid;
         this.isPortrait = isPortrait;
     }
 
@@ -54,14 +61,20 @@ public class EventCaptureModule {
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
-                                                    ConfigureEventCompletionDialog configureEventCompletionDialog) {
+                                                    ConfigureEventCompletionDialog configureEventCompletionDialog,
+                                                    DashboardRepository dashboardRepository
+                                                    ) {
         return new EventCapturePresenterImpl(
                 view,
                 eventUid,
+                teiUid,
+                programUid,
+                dashboardRepository,
                 eventCaptureRepository,
                 schedulerProvider,
                 preferences,
-                configureEventCompletionDialog);
+                configureEventCompletionDialog
+                );
     }
 
     @Provides

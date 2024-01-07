@@ -9,6 +9,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.model.EventCompletionDialog
+import org.dhis2.usescases.teidashboard.DashboardRepository
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -34,6 +35,9 @@ class EventCapturePresenterTest {
     private lateinit var presenter: EventCapturePresenterImpl
     private val view: EventCaptureContract.View = mock()
     private val eventUid = "eventUid"
+    private val teiUid = "teiUid"
+    private val programUid = "programUid"
+    private val dashboardRepository: DashboardRepository = mock()
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
@@ -42,12 +46,15 @@ class EventCapturePresenterTest {
     @Before
     fun setUp() {
         presenter = EventCapturePresenterImpl(
-            view,
-            eventUid,
-            eventRepository,
-            schedulers,
-            preferences,
-            configureEventCompletionDialog,
+                view,
+                eventUid,
+                teiUid,
+                programUid,
+                dashboardRepository,
+                eventRepository,
+                schedulers,
+                preferences,
+                configureEventCompletionDialog,
         )
     }
 
@@ -319,28 +326,28 @@ class EventCapturePresenterTest {
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
 
         whenever(
-            eventRepository.validationStrategy(),
+                eventRepository.validationStrategy(),
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any()),
+                configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any()),
         ) doReturn eventCompletionDialog
         whenever(
-            eventRepository.isEnrollmentOpen,
+                eventRepository.isEnrollmentOpen,
         ) doReturn true
 
         presenter.attemptFinish(
-            canComplete = true,
-            onCompleteMessage = "Complete",
-            errorFields = emptyList(),
-            emptyMandatoryFields = emptyMap(),
-            warningFields = emptyList(),
+                canComplete = true,
+                onCompleteMessage = "Complete",
+                errorFields = emptyList(),
+                emptyMandatoryFields = emptyMap(),
+                warningFields = emptyList(),
         )
 
         verify(view).showCompleteActions(
-            any(),
-            any(),
-            any(),
+                any(),
+                any(),
+                any(),
         )
         verify(view).showNavigationBar()
     }
@@ -348,8 +355,8 @@ class EventCapturePresenterTest {
     @Test
     fun `Should init note counter`() {
         whenever(eventRepository.noteCount) doReturnConsecutively listOf(
-            0,
-            1,
+                0,
+                1,
         ).map { Single.just(it) }
         presenter.initNoteCounter()
         verify(view).updateNoteBadge(0)
@@ -360,8 +367,8 @@ class EventCapturePresenterTest {
     @Test
     fun `Should allow skip error if validation strategy is ON_COMPLETE`() {
         val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
+                hasErrorFields = false,
+                hasEmptyMandatoryFields = false,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -369,8 +376,8 @@ class EventCapturePresenterTest {
     @Test
     fun `Should allow skip error if validation strategy is ON_COMPLETE and has error`() {
         val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
+                hasErrorFields = true,
+                hasEmptyMandatoryFields = false,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -378,8 +385,8 @@ class EventCapturePresenterTest {
     @Test
     fun `Should allow skip error if validation strategy is ON_COMPLETE and has mandatory`() {
         val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
+                hasErrorFields = false,
+                hasEmptyMandatoryFields = true,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -387,8 +394,8 @@ class EventCapturePresenterTest {
     @Test
     fun `Should allow skip error if validation strategy is ON_INSERT if no errors`() {
         val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
+                hasErrorFields = false,
+                hasEmptyMandatoryFields = false,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -396,8 +403,8 @@ class EventCapturePresenterTest {
     @Test
     fun `Should not allow skip error if validation strategy is ON_INSERT if has errors`() {
         val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
+                hasErrorFields = true,
+                hasEmptyMandatoryFields = false,
         )
         assertTrue(!canSkipErrorFix)
     }
@@ -405,8 +412,8 @@ class EventCapturePresenterTest {
     @Test
     fun `Should not allow skip error if ON_INSERT and has mandatory fields`() {
         val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
+                hasErrorFields = false,
+                hasEmptyMandatoryFields = true,
         )
         assertTrue(!canSkipErrorFix)
     }

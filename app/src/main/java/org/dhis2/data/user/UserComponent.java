@@ -70,6 +70,7 @@ import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.usescases.teidashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teidashboard.TeiDashboardModule;
+import org.dhis2.usescases.teidashboard.ViewModelFactoryModule;
 import org.dhis2.usescases.teidashboard.dashboardfragments.relationships.RelationshipComponent;
 import org.dhis2.usescases.teidashboard.dashboardfragments.relationships.RelationshipModule;
 import org.dhis2.usescases.teidashboard.teiProgramList.TeiProgramListComponent;
@@ -101,7 +102,7 @@ public interface UserComponent {
     SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
 
     @NonNull
-    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
+    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule, @NonNull ViewModelFactoryModule viewModelFactoryModule);
 
     @NonNull
     QrComponent plus(@NonNull QrModule qrModule);
@@ -152,7 +153,7 @@ public interface UserComponent {
     ReservedValuesWorkerComponent plus(ReservedValuesWorkerModule reservedValuesWorkerModule);
 
     @NonNull
-    EventCaptureComponent plus(EventCaptureModule eventCaptureModule);
+    EventCaptureComponent plus(EventCaptureModule eventCaptureModule, ViewModelFactoryModule viewModelFactoryModule);
 
     @NonNull
     SmsComponent plus(SmsModule smsModule);

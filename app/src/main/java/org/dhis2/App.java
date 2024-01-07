@@ -47,6 +47,7 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teidashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teidashboard.TeiDashboardModule;
+import org.dhis2.usescases.teidashboard.ViewModelFactoryModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
 import org.dhis2.utils.session.PinModule;
@@ -283,11 +284,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     // Dashboard component
     ////////////////////////////////////////////////////////////////////////
     @NonNull
-    public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
+    public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule, @NonNull ViewModelFactoryModule viewModelFactoryModule) {
         if (dashboardComponent != null) {
             this.recreated = true;
         }
-        dashboardComponent = userComponent.plus(dashboardModule);
+        dashboardComponent = userComponent.plus(dashboardModule, viewModelFactoryModule);
         return dashboardComponent;
     }
 

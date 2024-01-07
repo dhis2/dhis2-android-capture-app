@@ -257,6 +257,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        super.onBackPressed()
         formView.onEditionFinish()
         attemptFinish()
     }

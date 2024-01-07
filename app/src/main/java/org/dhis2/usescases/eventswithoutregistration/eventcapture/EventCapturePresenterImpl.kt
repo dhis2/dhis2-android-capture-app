@@ -4,10 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
 import org.dhis2.bindings.canSkipErrorFix
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -16,14 +18,27 @@ import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.model.EventCaptureInitialInfo
+import org.dhis2.usescases.teidashboard.DashboardProgramModel
+import org.dhis2.usescases.teidashboard.DashboardRepository
 import org.hisp.dhis.android.core.common.Unit
+import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import timber.log.Timber
 import java.util.Date
 
 class EventCapturePresenterImpl(
     private val view: EventCaptureContract.View,
     private val eventUid: String,
+    private val teiUid: String,
+    private val programUid: String,
+    private val dashboardRepository: DashboardRepository,
     private val eventCaptureRepository: EventCaptureRepository,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
@@ -75,6 +90,23 @@ class EventCapturePresenterImpl(
                 },
                 Timber::e,
             ),
+        )
+        compositeDisposable.add(
+                Observable.zip<TrackedEntityInstance, Enrollment, List<ProgramStage?>, List<Event?>, List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>, List<TrackedEntityAttributeValue?>, List<OrganisationUnit?>, List<Program?>, DashboardProgramModel>(
+                        dashboardRepository.getTrackedEntityInstance(teiUid),
+                        dashboardRepository.getEnrollment(),
+                        dashboardRepository.getProgramStages(programUid),
+                        dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
+                        dashboardRepository.getAttributesMap(programUid, teiUid),
+                        dashboardRepository.getTEIAttributeValues(programUid, teiUid),
+                        dashboardRepository.getTeiOrgUnits(teiUid, programUid),
+                        dashboardRepository.getTeiActivePrograms(teiUid, false)) { tei: TrackedEntityInstance?, currentEnrollment: Enrollment?, programStages: List<ProgramStage?>?, events: List<Event?>?, trackedEntityAttributes: List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?, orgsUnits: List<OrganisationUnit?>?, enrollmentPrograms: List<Program?>? -> DashboardProgramModel(tei, currentEnrollment, programStages, events, trackedEntityAttributes, trackedEntityAttributeValues, orgsUnits, enrollmentPrograms) }
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                { dashboardModel: DashboardProgramModel ->
+                                    view.setData(dashboardModel)
+                                }) { t: Throwable? -> Timber.e(t) }
         )
         checkExpiration()
     }

@@ -11,6 +11,7 @@ import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCapturePr
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureRepositoryImpl;
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.provider.EventCaptureResourcesProvider;
+import org.dhis2.usescases.teidashboard.DashboardRepository;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -20,11 +21,17 @@ import dagger.Provides;
 public class TeiEventCaptureModule {
 
     private final String eventUid;
+
+    private final String teiUid;
+
+    private final String programUid;
     private final EventCaptureContract.View view;
 
-    public TeiEventCaptureModule(EventCaptureContract.View view, String eventUid) {
+    public TeiEventCaptureModule(EventCaptureContract.View view, String eventUid, String teiUid, String programUid) {
         this.view = view;
         this.eventUid = eventUid;
+        this.teiUid = teiUid;
+        this.programUid = programUid;
     }
 
     @Provides
@@ -32,10 +39,15 @@ public class TeiEventCaptureModule {
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
-                                                    ConfigureEventCompletionDialog configureEventCompletionDialog) {
+                                                    ConfigureEventCompletionDialog configureEventCompletionDialog,
+                                                    DashboardRepository dashboardRepository
+                                                    ) {
         return new EventCapturePresenterImpl(
                 view,
                 eventUid,
+                teiUid,
+                programUid,
+                dashboardRepository,
                 eventCaptureRepository,
                 schedulerProvider,
                 preferences,

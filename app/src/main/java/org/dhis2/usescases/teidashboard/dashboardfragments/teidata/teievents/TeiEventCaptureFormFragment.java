@@ -2,7 +2,6 @@ package org.dhis2.usescases.teidashboard.dashboardfragments.teidata.teievents;
 
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
