@@ -23,31 +23,31 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 
 class EventAdapter(
-        val presenter: TEIDataPresenter,
-        val program: Program,
-        val colorUtils: ColorUtils,
-        private val stageSelected: String = "",
-        private val eventSelected: String = ""
+    val presenter: TEIDataPresenter,
+    val program: Program,
+    val colorUtils: ColorUtils,
+    private val stageSelected: String = "",
+    private val eventSelected: String = "",
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
-        object : DiffUtil.ItemCallback<EventViewModel>() {
-            override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-                val oldItemId = if (oldItem.type == STAGE) {
-                    oldItem.stage!!.uid()
-                } else {
-                    oldItem.event!!.uid()
-                }
-                val newItemId = if (newItem.type == STAGE) {
-                    newItem.stage!!.uid()
-                } else {
-                    newItem.event!!.uid()
-                }
-                return oldItemId == newItemId
+    object : DiffUtil.ItemCallback<EventViewModel>() {
+        override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
+            val oldItemId = if (oldItem.type == STAGE) {
+                oldItem.stage!!.uid()
+            } else {
+                oldItem.event!!.uid()
             }
+            val newItemId = if (newItem.type == STAGE) {
+                newItem.stage!!.uid()
+            } else {
+                newItem.event!!.uid()
+            }
+            return oldItemId == newItemId
+        }
 
-            override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-                return oldItem == newItem
-            }
-        },
+        override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
+            return oldItem == newItem
+        }
+    },
 ) {
 
     private lateinit var enrollment: Enrollment
@@ -62,39 +62,39 @@ class EventAdapter(
         return when (values()[viewType]) {
             STAGE -> {
                 val binding = ItemStageSectionBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false,
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false,
                 )
                 StageViewHolder(
-                        binding,
-                        stageSelector,
-                        presenter,
-                        colorUtils,
-                        stageSelected
+                    binding,
+                    stageSelector,
+                    presenter,
+                    colorUtils,
+                    stageSelected,
                 )
             }
 
             EVENT -> {
                 val binding = DataBindingUtil.inflate<ItemEventBinding>(
-                        LayoutInflater.from(parent.context),
-                        R.layout.item_event,
-                        parent,
-                        false,
+                    LayoutInflater.from(parent.context),
+                    R.layout.item_event,
+                    parent,
+                    false,
                 )
                 EventViewHolder(
-                        binding,
-                        program,
-                        colorUtils,
-                        eventSelected,
-                        { presenter.onSyncDialogClick(it) },
-                        { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
-                        { eventUid, _, eventStatus, _ ->
-                            presenter.onEventSelected(
-                                    eventUid,
-                                    eventStatus,
-                            )
-                        },
+                    binding,
+                    program,
+                    colorUtils,
+                    eventSelected,
+                    { presenter.onSyncDialogClick(it) },
+                    { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
+                    { eventUid, _, eventStatus, _ ->
+                        presenter.onEventSelected(
+                            eventUid,
+                            eventStatus,
+                        )
+                    },
                 )
             }
         }
@@ -108,8 +108,8 @@ class EventAdapter(
         when (holder) {
             is EventViewHolder -> {
                 holder.bind(
-                        getItem(position),
-                        enrollment,
+                    getItem(position),
+                    enrollment,
                 ) {
                     getItem(holder.getAdapterPosition()).toggleValueList()
                     notifyItemChanged(holder.getAdapterPosition())
