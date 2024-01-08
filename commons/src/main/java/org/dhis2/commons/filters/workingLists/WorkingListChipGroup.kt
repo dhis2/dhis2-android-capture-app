@@ -84,6 +84,13 @@ fun WorkingListChipGroup(
             FilterManager.getInstance().currentWorkingList(),
         )
     }
+    FilterManager.getInstance().observeWorkingListScope().addOnPropertyChangedCallback(
+        object : Observable.OnPropertyChangedCallback() {
+            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                selectedWorkingList = FilterManager.getInstance().currentWorkingList()
+            }
+        },
+    )
 
     workingListFilterState.value?.let { workingListFilter ->
         LazyRow(modifier) {
@@ -98,10 +105,9 @@ fun WorkingListChipGroup(
                         },
                     ),
                     label = workingList.label,
-                    selected = selectedWorkingList == workingList,
+                    selected = selectedWorkingList?.uid == workingList.uid,
                     onSelected = { _ ->
                         workingListFilter.onChecked(workingList.id())
-                        selectedWorkingList = FilterManager.getInstance().currentWorkingList()
                     },
                 )
             }
