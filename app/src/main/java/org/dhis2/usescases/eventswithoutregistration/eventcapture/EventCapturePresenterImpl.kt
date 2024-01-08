@@ -36,8 +36,8 @@ import java.util.Date
 class EventCapturePresenterImpl(
     private val view: EventCaptureContract.View,
     private val eventUid: String,
-    private val teiUid: String,
-    private val programUid: String,
+    private val teiUid: String?,
+    private val programUid: String?,
     private val dashboardRepository: DashboardRepository,
     private val eventCaptureRepository: EventCaptureRepository,
     private val schedulerProvider: SchedulerProvider,
@@ -93,14 +93,14 @@ class EventCapturePresenterImpl(
         )
         compositeDisposable.add(
                 Observable.zip<TrackedEntityInstance, Enrollment, List<ProgramStage?>, List<Event?>, List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>, List<TrackedEntityAttributeValue?>, List<OrganisationUnit?>, List<Program?>, DashboardProgramModel>(
-                        dashboardRepository.getTrackedEntityInstance(teiUid),
+                        dashboardRepository.getTrackedEntityInstance(teiUid ?: ""),
                         dashboardRepository.getEnrollment(),
-                        dashboardRepository.getProgramStages(programUid),
-                        dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
-                        dashboardRepository.getAttributesMap(programUid, teiUid),
-                        dashboardRepository.getTEIAttributeValues(programUid, teiUid),
-                        dashboardRepository.getTeiOrgUnits(teiUid, programUid),
-                        dashboardRepository.getTeiActivePrograms(teiUid, false)) { tei: TrackedEntityInstance?, currentEnrollment: Enrollment?, programStages: List<ProgramStage?>?, events: List<Event?>?, trackedEntityAttributes: List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?, orgsUnits: List<OrganisationUnit?>?, enrollmentPrograms: List<Program?>? -> DashboardProgramModel(tei, currentEnrollment, programStages, events, trackedEntityAttributes, trackedEntityAttributeValues, orgsUnits, enrollmentPrograms) }
+                        dashboardRepository.getProgramStages(programUid ?: ""),
+                        dashboardRepository.getTEIEnrollmentEvents(programUid ?: "", teiUid ?: ""),
+                        dashboardRepository.getAttributesMap(programUid ?: "", teiUid ?: ""),
+                        dashboardRepository.getTEIAttributeValues(programUid ?: "", teiUid ?: ""),
+                        dashboardRepository.getTeiOrgUnits(teiUid ?: "", programUid ?: ""),
+                        dashboardRepository.getTeiActivePrograms(teiUid ?: "", false)) { tei: TrackedEntityInstance?, currentEnrollment: Enrollment?, programStages: List<ProgramStage?>?, events: List<Event?>?, trackedEntityAttributes: List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?, orgsUnits: List<OrganisationUnit?>?, enrollmentPrograms: List<Program?>? -> DashboardProgramModel(tei, currentEnrollment, programStages, events, trackedEntityAttributes, trackedEntityAttributeValues, orgsUnits, enrollmentPrograms) }
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
