@@ -70,10 +70,12 @@ class EventCardMapper(
             )
         }?.toMutableList() ?: mutableListOf()
 
-        checkRegisteredIn(
-            list = list,
-            orgUnit = event.orgUnitName,
-        )
+        if (event.displayOrgUnitName) {
+            checkRegisteredIn(
+                list = list,
+                orgUnit = event.orgUnitName,
+            )
+        }
 
         checkCategoryCombination(
             list = list,

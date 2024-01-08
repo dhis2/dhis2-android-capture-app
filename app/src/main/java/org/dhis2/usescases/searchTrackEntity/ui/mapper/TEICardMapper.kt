@@ -118,10 +118,13 @@ class TEICardMapper(
         attributeList.removeIf { it.value.isEmpty() || it.value == "-" }
 
         return attributeList.also { list ->
-            checkEnrolledIn(
-                list = list,
-                enrolledOrgUnit = searchTEIModel.enrolledOrgUnit,
-            )
+            if (searchTEIModel.displayOrgUnit) {
+                checkEnrolledIn(
+                    list = list,
+                    enrolledOrgUnit = searchTEIModel.enrolledOrgUnit,
+                )
+            }
+
             checkEnrolledPrograms(
                 list = list,
                 enrolledPrograms = searchTEIModel.programInfo,

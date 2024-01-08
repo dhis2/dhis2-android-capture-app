@@ -116,6 +116,7 @@ class TeiDataRepositoryImpl(
                                 dataElementValues = null,
                                 displayDate = null,
                                 nameCategoryOptionCombo = null,
+                                displayOrgUnitName = true
                             )
                         }
                     }
@@ -184,6 +185,7 @@ class TeiDataRepositoryImpl(
                             groupedByStage = true,
                             displayDate = null,
                             nameCategoryOptionCombo = null,
+                            displayOrgUnitName = true
                         ),
                     )
                     if (isSelected) {
@@ -217,6 +219,7 @@ class TeiDataRepositoryImpl(
                                     ),
                                     nameCategoryOptionCombo =
                                     getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                                    displayOrgUnitName = true
                                 ),
                             )
                         }
@@ -262,6 +265,7 @@ class TeiDataRepositoryImpl(
                             ),
                             nameCategoryOptionCombo =
                             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                            displayOrgUnitName = true
                         ),
                     )
                 }

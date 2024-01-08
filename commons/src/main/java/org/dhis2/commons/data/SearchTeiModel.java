@@ -40,6 +40,8 @@ public class SearchTeiModel implements CarouselItemModel {
     private String sortingValue;
     private String teTypeName;
     private String enrolledOrgUnit;
+
+    private Boolean displayOrgUnit;
     private boolean showNavigationButton = false;
     @Nullable public String onlineErrorMessage;
     @Nullable public D2ErrorCode onlineErrorCode;
@@ -243,6 +245,14 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public String getEnrolledOrgUnit() {
         return enrolledOrgUnit;
+    }
+
+    public void setDisplayOrgUnit(Boolean display) {
+        displayOrgUnit = display;
+    }
+
+    public Boolean getDisplayOrgUnit() {
+        return displayOrgUnit;
     }
 
     public void setShowNavigationButton(boolean showNavigationButton) {
