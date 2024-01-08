@@ -150,7 +150,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                         detailsEnabled = details.enabled,
                         onDateClick = { viewModel.onDateClick() },
                         onDateSet = { dateValues ->
-                            viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
+                            viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
                         },
                         onClear = { viewModel.onClearEventReportDate() },
                         required = true,
