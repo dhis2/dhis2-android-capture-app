@@ -75,10 +75,12 @@ class EventDetailsRepository(
         val activeEvents =
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
+                .byDeleted().isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
         val scheduleEvents =
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
+                .byDeleted().isFalse
                 .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
 
         var activeDate: Date? = null
@@ -88,7 +90,12 @@ class EventDetailsRepository(
         }
         if (scheduleEvents.isNotEmpty()) scheduleDate = scheduleEvents[0].dueDate()
 
-        return activeDate ?: scheduleDate
+        return when {
+                scheduleDate == null -> activeDate
+                activeDate == null -> scheduleDate
+                activeDate.before(scheduleDate) -> scheduleDate
+                else -> activeDate
+        }
     }
 
     fun hasAccessDataWrite(): Boolean {
