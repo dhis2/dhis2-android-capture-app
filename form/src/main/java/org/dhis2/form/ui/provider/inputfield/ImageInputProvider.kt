@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.provider.inputfield
 
+import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import org.dhis2.commons.extensions.getBitmap
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -16,7 +18,6 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
-import org.dhis2.form.ui.binding.getBitmap
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
@@ -50,6 +51,15 @@ internal fun ProvideInputImage(
         onDownloadButtonClick = {
             uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
         },
+        onShareButtonClick = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_SEND,
+                    fieldUiModel.displayName,
+                    fieldUiModel.uid,
+                ),
+            )
+        },
         onResetButtonClicked = {
             fieldUiModel.onClear()
             uploadState = getUploadState(fieldUiModel.displayName, false)
@@ -63,8 +73,6 @@ internal fun ProvideInputImage(
             uploadState = getUploadState(fieldUiModel.displayName, true)
             fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE)
         },
-        onShareButtonClick = {},
-
     )
 }
 
