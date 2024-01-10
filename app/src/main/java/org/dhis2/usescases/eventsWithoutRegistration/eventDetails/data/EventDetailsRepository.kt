@@ -91,10 +91,10 @@ class EventDetailsRepository(
         if (scheduleEvents.isNotEmpty()) scheduleDate = scheduleEvents[0].dueDate()
 
         return when {
-                scheduleDate == null -> activeDate
-                activeDate == null -> scheduleDate
-                activeDate.before(scheduleDate) -> scheduleDate
-                else -> activeDate
+            scheduleDate == null -> activeDate
+            activeDate == null -> scheduleDate
+            activeDate.before(scheduleDate) -> scheduleDate
+            else -> activeDate
         }
     }
 
