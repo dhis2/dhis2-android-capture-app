@@ -638,6 +638,17 @@ class FormView : Fragment() {
                             Uri.parse(currentValue.value)
                         }
                     }
+
+                    Intent.ACTION_SEND -> {
+                        val contentUri = FileProvider.getUriForFile(
+                            requireContext(),
+                            FormFileProvider.fileProviderAuthority,
+                            File(currentValue.value),
+                        )
+                        setDataAndType(contentUri, requireContext().contentResolver.getType(contentUri))
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        putExtra(Intent.EXTRA_STREAM, contentUri)
+                    }
                 }
             }
 
