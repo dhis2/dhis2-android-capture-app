@@ -210,12 +210,100 @@ fun ProvideCategorySelector(
     onClearCatCombo: (EventCategory) -> Unit,
     onOptionSelected: (CategoryOption?) -> Unit,
     required: Boolean = false,
+    noOptionsText: String,
 ) {
     var selectedItem by remember {
         mutableStateOf(
             eventCatCombo.selectedCategoryOptions[category.uid]?.displayName()
                 ?: eventCatCombo.categoryOptions?.get(category.uid)?.displayName(),
         )
+    }
+
+    var expanded by remember { mutableStateOf(false) }
+    val selectableOptions = category.options
+        .filter { option ->
+            option.access().data().write()
+        }.filter { option ->
+            option.inDateRange(currentDate)
+        }.filter { option ->
+            option.inOrgUnit(selectedOrgUnit)
+        }
+
+    if (selectableOptions.isNotEmpty()) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {},
+        ) {
+            InputDropDown(
+                modifier = modifier,
+                title = category.name,
+                state = getInputState(detailsEnabled),
+                selectedItem = selectedItem,
+                onResetButtonClicked = {
+                    selectedItem = null
+                    onClearCatCombo(category)
+                },
+                onArrowDropDownButtonClicked = {
+                    expanded = !expanded
+                },
+                isRequiredField = required,
+            )
+
+            if (expanded) {
+                if (category.optionsSize > DEFAULT_COUNT_LIMIT) {
+                    onShowCategoryDialog(category)
+                    expanded = false
+                } else {
+                    DropdownMenu(
+                        modifier = modifier.exposedDropdownSize(),
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        if (selectableOptions.isNotEmpty()) {
+                            selectableOptions.forEach { option ->
+                                val isSelected = option.displayName() == selectedItem
+                                DropdownMenuItem(
+                                    modifier = Modifier.background(
+                                        when {
+                                            isSelected -> SurfaceColor.PrimaryContainer
+                                            else -> Color.Transparent
+                                        },
+                                    ),
+                                    content = {
+                                        Text(
+                                            text = option.displayName() ?: option.code() ?: "",
+                                            color = when {
+                                                isSelected -> TextColor.OnPrimaryContainer
+                                                else -> TextColor.OnSurface
+                                            },
+                                        )
+                                    },
+                                    onClick = {
+                                        expanded = false
+                                        selectedItem = option.displayName()
+                                        onOptionSelected(option)
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        ProvideEmptyCategorySelector(name = category.name, option = noOptionsText)
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ProvideEmptyCategorySelector(
+    modifier: Modifier = Modifier,
+    name: String,
+    option: String,
+) {
+    var selectedItem by remember {
+        mutableStateOf("")
     }
 
     var expanded by remember { mutableStateOf(false) }
@@ -226,64 +314,45 @@ fun ProvideCategorySelector(
     ) {
         InputDropDown(
             modifier = modifier,
-            title = category.name,
-            state = getInputState(detailsEnabled),
+            title = name,
+            state = InputShellState.UNFOCUSED,
             selectedItem = selectedItem,
             onResetButtonClicked = {
-                selectedItem = null
-                onClearCatCombo(category)
+                selectedItem = ""
             },
             onArrowDropDownButtonClicked = {
                 expanded = !expanded
             },
-            isRequiredField = required,
+            isRequiredField = true,
         )
 
-        if (expanded) {
-            if (category.optionsSize > DEFAULT_COUNT_LIMIT) {
-                onShowCategoryDialog(category)
-                expanded = false
-            } else {
-                DropdownMenu(
-                    modifier = modifier.exposedDropdownSize(),
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    val selectableOptions = category.options
-                        .filter { option ->
-                            option.access().data().write()
-                        }.filter { option ->
-                            option.inDateRange(currentDate)
-                        }.filter { option ->
-                            option.inOrgUnit(selectedOrgUnit)
-                        }
-                    selectableOptions.forEach { option ->
-                        val isSelected = option.displayName() == selectedItem
-                        DropdownMenuItem(
-                            modifier = Modifier.background(
-                                when {
-                                    isSelected -> SurfaceColor.PrimaryContainer
-                                    else -> Color.Transparent
-                                },
-                            ),
-                            content = {
-                                Text(
-                                    text = option.displayName() ?: option.code() ?: "",
-                                    color = when {
-                                        isSelected -> TextColor.OnPrimaryContainer
-                                        else -> TextColor.OnSurface
-                                    },
-                                )
-                            },
-                            onClick = {
-                                expanded = false
-                                selectedItem = option.displayName()
-                                onOptionSelected(option)
-                            },
-                        )
-                    }
-                }
-            }
+        DropdownMenu(
+            modifier = modifier.exposedDropdownSize(),
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            val isSelected = option == selectedItem
+            DropdownMenuItem(
+                modifier = Modifier.background(
+                    when {
+                        isSelected -> SurfaceColor.PrimaryContainer
+                        else -> Color.Transparent
+                    },
+                ),
+                content = {
+                    Text(
+                        text = option,
+                        color = when {
+                            isSelected -> TextColor.OnPrimaryContainer
+                            else -> TextColor.OnSurface
+                        },
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    selectedItem = option
+                },
+            )
         }
     }
 }

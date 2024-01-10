@@ -43,6 +43,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideEmptyCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
@@ -171,27 +172,32 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 }
 
                 if (!catCombo.isDefault) {
-                    catCombo.categories.forEach { category ->
+                    if (catCombo.categories.isNotEmpty()) {
+                        catCombo.categories.forEach { category ->
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ProvideCategorySelector(
+                                category = category,
+                                eventCatCombo = catCombo,
+                                detailsEnabled = details.enabled,
+                                currentDate = date.currentDate,
+                                selectedOrgUnit = details.selectedOrgUnit,
+                                onShowCategoryDialog = {
+                                    showCategoryDialog(it)
+                                },
+                                onClearCatCombo = {
+                                    viewModel.onClearCatCombo()
+                                },
+                                onOptionSelected = {
+                                    val selectedOption = Pair(category.uid, it?.uid())
+                                    viewModel.setUpCategoryCombo(selectedOption)
+                                },
+                                required = true,
+                                noOptionsText = getString(R.string.no_options),
+                            )
+                        }
+                    } else {
                         Spacer(modifier = Modifier.height(16.dp))
-                        ProvideCategorySelector(
-                            category = category,
-                            eventCatCombo = catCombo,
-                            detailsEnabled = details.enabled,
-                            currentDate = date.currentDate,
-                            selectedOrgUnit = details.selectedOrgUnit,
-                            onShowCategoryDialog = {
-                                showCategoryDialog(it)
-                            },
-                            onClearCatCombo = {
-                                viewModel.onClearCatCombo()
-                            },
-                            onOptionSelected = {
-                                val selectedOption = Pair(category.uid, it?.uid())
-                                viewModel.setUpCategoryCombo(selectedOption)
-                            },
-
-                            required = true,
-                        )
+                        ProvideEmptyCategorySelector(name = getString(R.string.cat_combo), option = getString(R.string.no_options))
                     }
                 }
 
