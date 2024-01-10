@@ -19,7 +19,7 @@ import org.dhis2.commons.Constants.ENROLLMENT_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.databinding.EnrollmentActivityBinding
@@ -348,14 +348,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun displayTeiPicture(picturePath: String) {
-        // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
-        ImageDetailBottomDialog(
-            null,
-            File(picturePath),
-        ).show(
-            supportFragmentManager,
-            ImageDetailBottomDialog.TAG,
+        val intent = ImageDetailActivity.intent(
+            context = this,
+            title = null,
+            imagePath = picturePath,
         )
+
+        startActivity(intent)
     }
     /*endregion*/
     /*region ACCESS*/

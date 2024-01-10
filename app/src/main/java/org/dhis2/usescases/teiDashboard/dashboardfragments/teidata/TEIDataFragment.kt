@@ -31,7 +31,7 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -269,11 +269,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 val card = teiDashboardCardMapper.map(
                     dashboardModel = dashboardModel,
                     onImageClick = { fileToShow ->
-                        // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
-                        ImageDetailBottomDialog(
-                            null,
-                            fileToShow,
-                        ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+                        val intent = ImageDetailActivity.intent(
+                            context = requireActivity(),
+                            title = null,
+                            imagePath = fileToShow.path,
+                        )
+
+                        startActivity(intent)
                     },
                     phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
                     emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
@@ -538,11 +540,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.cardFront.teiImage.setOnClickListener {
                 val fileToShow = File(filePath)
                 if (fileToShow.exists()) {
-                    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
-                    ImageDetailBottomDialog(
-                        null,
-                        fileToShow,
-                    ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+                    val intent = ImageDetailActivity.intent(
+                        context = requireActivity(),
+                        title = null,
+                        imagePath = fileToShow.path,
+                    )
+
+                    startActivity(intent)
                 }
             }
         }

@@ -21,7 +21,7 @@ import androidx.paging.PagedList
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.bindings.dp
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.resources.ColorUtils
@@ -35,7 +35,6 @@ import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButtonAndWorkingList
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.dhis2.utils.isLandscape
-import java.io.File
 import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
@@ -232,8 +231,13 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
     private fun displayImageDetail(imagePath: String) {
-        ImageDetailBottomDialog(null, File(imagePath))
-            .show(childFragmentManager, ImageDetailBottomDialog.TAG)
+        val intent = ImageDetailActivity.intent(
+            context = requireContext(),
+            title = null,
+            imagePath = imagePath,
+        )
+
+        startActivity(intent)
     }
 
     private fun observeNewData() {

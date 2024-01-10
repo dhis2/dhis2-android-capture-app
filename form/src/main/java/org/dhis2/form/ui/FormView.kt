@@ -50,11 +50,12 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.getFileFrom
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
+import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.extensions.truncate
@@ -64,7 +65,6 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
-import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.scan.ScanContract
@@ -974,8 +974,13 @@ class FormView : Fragment() {
 
     // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
     private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
-        ImageDetailBottomDialog(event.label, File(event.value))
-            .show(parentFragmentManager, ImageDetailBottomDialog.TAG)
+        val intent = ImageDetailActivity.intent(
+            title = event.label,
+            imagePath = event.value,
+            context = requireActivity(),
+        )
+
+        startActivity(intent)
     }
 
     private fun openFileSelector(event: RecyclerViewUiEvents.OpenFileSelector) {
