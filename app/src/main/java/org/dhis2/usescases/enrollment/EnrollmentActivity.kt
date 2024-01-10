@@ -348,6 +348,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun displayTeiPicture(picturePath: String) {
+        // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
         ImageDetailBottomDialog(
             null,
             File(picturePath),

@@ -19,10 +19,12 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.UiEventType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
+// TODO adapt Input dropdown to new Mobile ui functionality
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProvideDropdownInput(
@@ -42,15 +44,13 @@ fun ProvideDropdownInput(
             modifier = modifier,
             title = fieldUiModel.label,
             state = fieldUiModel.inputState(),
-            selectedItem = selectedItem,
+            selectedItem = DropdownItem(selectedItem ?: ""),
             supportingTextData = fieldUiModel.supportingText(),
             legendData = fieldUiModel.legend(),
             isRequiredField = fieldUiModel.mandatory,
             onResetButtonClicked = { fieldUiModel.onClear() },
-            onArrowDropDownButtonClicked = {
-                fieldUiModel.onItemClick()
-                expanded = !expanded
-            },
+            dropdownItems = emptyList(),
+            onItemSelected = {},
         )
         if (expanded) {
             when (val optionSetConfig = fieldUiModel.optionSetConfiguration) {

@@ -230,6 +230,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         }
     }
 
+    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
     private fun displayImageDetail(imagePath: String) {
         ImageDetailBottomDialog(null, File(imagePath))
             .show(childFragmentManager, ImageDetailBottomDialog.TAG)

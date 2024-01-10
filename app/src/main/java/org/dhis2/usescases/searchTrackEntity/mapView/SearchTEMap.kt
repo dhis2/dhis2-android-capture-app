@@ -260,6 +260,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             }
             .addOnProfileImageClickListener { path: String? ->
                 if (binding.mapCarousel.carouselEnabled) {
+                    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
                     ImageDetailBottomDialog(
                         null,
                         File(path),
