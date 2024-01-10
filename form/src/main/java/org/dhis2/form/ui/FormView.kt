@@ -961,6 +961,7 @@ class FormView : Fragment() {
             .show()
     }
 
+    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
     private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
         ImageDetailBottomDialog(event.label, File(event.value))
             .show(parentFragmentManager, ImageDetailBottomDialog.TAG)

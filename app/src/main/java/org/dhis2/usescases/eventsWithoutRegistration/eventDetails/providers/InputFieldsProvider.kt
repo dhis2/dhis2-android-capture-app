@@ -36,6 +36,7 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
@@ -197,6 +198,7 @@ fun ProvideOrgUnit(
     )
 }
 
+// TODO adapt Input dropdown to new Mobile ui functionality
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProvideCategorySelector(
@@ -228,14 +230,13 @@ fun ProvideCategorySelector(
             modifier = modifier,
             title = category.name,
             state = getInputState(detailsEnabled),
-            selectedItem = selectedItem,
+            selectedItem = DropdownItem(selectedItem ?: ""),
             onResetButtonClicked = {
                 selectedItem = null
                 onClearCatCombo(category)
             },
-            onArrowDropDownButtonClicked = {
-                expanded = !expanded
-            },
+            onItemSelected = {},
+            dropdownItems = emptyList(),
             isRequiredField = required,
         )
 

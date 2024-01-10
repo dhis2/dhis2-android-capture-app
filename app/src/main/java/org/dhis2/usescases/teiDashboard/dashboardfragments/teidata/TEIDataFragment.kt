@@ -269,6 +269,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 val card = teiDashboardCardMapper.map(
                     dashboardModel = dashboardModel,
                     onImageClick = { fileToShow ->
+                        // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
                         ImageDetailBottomDialog(
                             null,
                             fileToShow,
@@ -537,6 +538,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.cardFront.teiImage.setOnClickListener {
                 val fileToShow = File(filePath)
                 if (fileToShow.exists()) {
+                    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
                     ImageDetailBottomDialog(
                         null,
                         fileToShow,
