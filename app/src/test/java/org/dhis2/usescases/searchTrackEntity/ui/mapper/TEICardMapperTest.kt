@@ -95,6 +95,7 @@ class TEICardMapperTest {
                 .aggregatedSyncState(State.SYNCED)
                 .build()
             enrolledOrgUnit = "OrgUnit"
+            displayOrgUnit = true
             setCurrentEnrollment(
                 Enrollment.builder()
                     .uid("EnrollmentUid")

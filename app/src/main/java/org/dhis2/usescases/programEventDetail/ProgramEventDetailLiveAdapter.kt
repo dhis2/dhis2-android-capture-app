@@ -51,6 +51,8 @@ class ProgramEventDetailLiveAdapter(
                     event = it,
                     editable = it.event?.uid()
                         ?.let { eventViewModel.isEditable(it) } ?: true,
+                    displayOrgUnit = it.event?.program()
+                        ?.let { program -> eventViewModel.displayOrganisationUnit(program) } ?: true,
                     onSyncIconClick = {
                         eventViewModel.eventSyncClicked.value = it.event?.uid()
                     },

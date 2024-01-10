@@ -177,4 +177,10 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     override fun isEventEditable(eventUid: String): Boolean {
         return d2.eventModule().eventService().blockingIsEditable(eventUid)
     }
+
+    override fun displayOrganisationUnit(programUid: String): Boolean {
+        return d2.organisationUnitModule().organisationUnits()
+            .byProgramUids(listOf(programUid))
+            .blockingGet().size > 1
+    }
 }

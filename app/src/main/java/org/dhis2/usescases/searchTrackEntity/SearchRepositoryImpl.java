@@ -657,8 +657,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                             false,
                             false,
                             periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
-                            null,
-                            true
+                            null
                     ));
         }
 
@@ -704,8 +703,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 false,
                 false,
                 periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
-                null,
-                true
+                null
         );
     }
 

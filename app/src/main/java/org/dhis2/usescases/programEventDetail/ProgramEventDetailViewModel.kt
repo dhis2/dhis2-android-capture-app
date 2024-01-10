@@ -17,9 +17,11 @@ class ProgramEventDetailViewModel(
     val eventClicked = MutableLiveData<Pair<String, String>?>(null)
     var updateEvent: String? = null
     var recreationActivity: Boolean = false
+
     enum class EventProgramScreen {
         LIST, MAP, ANALYTICS
     }
+
     private val _currentScreen = MutableLiveData(EventProgramScreen.LIST)
     val currentScreen: LiveData<EventProgramScreen>
         get() = _currentScreen.distinctUntilChanged()
@@ -59,5 +61,9 @@ class ProgramEventDetailViewModel(
 
     fun isEditable(eventUid: String): Boolean {
         return eventRepository.isEventEditable(eventUid)
+    }
+
+    fun displayOrganisationUnit(programUid: String): Boolean {
+        return eventRepository.displayOrganisationUnit(programUid)
     }
 }
