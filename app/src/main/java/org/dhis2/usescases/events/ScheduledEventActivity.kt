@@ -6,11 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import org.dhis2.App
 import org.dhis2.R
@@ -111,7 +107,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             ?: getString(R.string.report_date),
                         dateValue = "",
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     ProvideInputDate(
                         eventDate = eventDate,
@@ -126,7 +121,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             label = programStage.dueDateLabel() ?: getString(R.string.due_date),
                             dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                         ProvideInputDate(
                             eventDate = dueDate,
                             detailsEnabled = true,
