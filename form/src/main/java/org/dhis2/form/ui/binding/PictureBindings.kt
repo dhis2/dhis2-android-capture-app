@@ -1,12 +1,11 @@
 package org.dhis2.form.ui.binding
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.databinding.BindingAdapter
+import org.dhis2.commons.extensions.getBitmap
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
@@ -18,7 +17,6 @@ import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.ui.theme.errorColor
 import org.dhis2.ui.theme.textSecondary
 import org.dhis2.ui.theme.warningColor
-import java.io.File
 
 @BindingAdapter("picture")
 fun ComposeView.setPicture(fieldUiModel: FieldUiModel) {
@@ -63,7 +61,3 @@ fun ComposeView.setPicture(fieldUiModel: FieldUiModel) {
         }
     }
 }
-
-fun String.getBitmap(): Bitmap? = File(this)
-    .takeIf { it.exists() }
-    ?.let { BitmapFactory.decodeFile(it.absolutePath) }
