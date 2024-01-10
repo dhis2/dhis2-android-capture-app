@@ -30,7 +30,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
-import org.dhis2.form.data.FormFileProvider
+import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.lib.expression.math.GS1Elements
