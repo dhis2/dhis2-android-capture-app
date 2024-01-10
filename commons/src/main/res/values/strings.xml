@@ -239,4 +239,5 @@
         <item quantity="one">%d year overdue</item>
         <item quantity="other">%d years overdue</item>
     </plurals>
+    <string name="open_with">Open with</string>
 </resources>
