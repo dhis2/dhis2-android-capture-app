@@ -16,8 +16,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
@@ -55,6 +58,7 @@ fun Form(
             }
         }
     }
+    var focusNext by remember { mutableStateOf(false) }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -75,10 +79,14 @@ fun Form(
                 val isSectionOpen = remember(section.state) {
                     derivedStateOf { section.state == SectionState.OPEN }
                 }
+
                 LaunchedEffect(isSectionOpen.value) {
                     if (isSectionOpen.value) {
                         scrollState.animateScrollToItem(sections.indexOf(section))
-                        focusManager.moveFocus(FocusDirection.Next)
+                        if (focusNext) {
+                            focusManager.moveFocus(FocusDirection.Next)
+                            focusNext = false
+                        }
                     }
                 }
 
@@ -124,6 +132,7 @@ fun Form(
                                 onNextClicked = {
                                     if (index == section.fields.size - 1) {
                                         onNextSection()
+                                        focusNext = true
                                     } else {
                                         focusManager.moveFocus(FocusDirection.Down)
                                     }
