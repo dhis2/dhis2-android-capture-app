@@ -25,7 +25,7 @@ import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
@@ -55,52 +55,34 @@ import java.time.format.DateTimeParseException
 
 @Composable
 fun ProvideInputDate(
-    eventDate: EventDate,
-    detailsEnabled: Boolean,
-    onDateClick: () -> Unit,
-    allowsManualInput: Boolean = true,
-    onDateSet: (InputDateValues) -> Unit,
-    onClear: () -> Unit,
-    required: Boolean = false,
-    showField: Boolean = true,
+    uiModel: EventInputDateUiModel,
+    modifier: Modifier = Modifier,
 ) {
-    if (showField) {
+    if (uiModel.showField) {
         Spacer(modifier = Modifier.height(16.dp))
-        var value by remember(eventDate.dateValue) {
-            mutableStateOf(eventDate.dateValue?.let { formatStoredDateToUI(it) })
+        var value by remember(uiModel.eventDate.dateValue) {
+            mutableStateOf(uiModel.eventDate.dateValue?.let { formatStoredDateToUI(it) })
         }
 
         var state by remember {
-            mutableStateOf(getInputState(detailsEnabled))
+            mutableStateOf(getInputState(uiModel.detailsEnabled))
         }
 
         InputDateTime(
-            title = eventDate.label ?: "",
-            allowsManualInput = allowsManualInput,
+            title = uiModel.eventDate.label ?: "",
+            allowsManualInput = uiModel.allowsManualInput,
             value = value,
             actionIconType = DateTimeActionIconType.DATE,
-            onActionClicked = onDateClick,
+            onActionClicked = uiModel.onDateClick,
             state = state,
             visualTransformation = DateTransformation(),
             onValueChanged = {
                 value = it
-                if (it.isEmpty()) {
-                    onClear()
-                } else if (isValid(it)) {
-                    if (isValidDateFormat(it)) {
-                        state = InputShellState.FOCUSED
-                        formatUIDateToStored(it)?.let { dateValues ->
-                            onDateSet(dateValues)
-                        }
-                    } else {
-                        state = InputShellState.ERROR
-                    }
-                } else {
-                    state = InputShellState.FOCUSED
-                }
+                state = getInputShellStateBasedOnValue(it)
+                manageActionBasedOnValue(uiModel, it)
             },
-            isRequired = required,
-            modifier = Modifier.testTag(INPUT_EVENT_INITIAL_DATE),
+            isRequired = uiModel.required,
+            modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
             onFocusChanged = { focused ->
                 if (!focused) {
                     value?.let {
@@ -134,6 +116,26 @@ fun isValidDateFormat(dateString: String): Boolean {
     }
 }
 
+fun getInputShellStateBasedOnValue(dateString: String?): InputShellState {
+    dateString?.let {
+        return if (isValid(it) && !isValidDateFormat(it)) {
+            InputShellState.ERROR
+        } else {
+            InputShellState.FOCUSED
+        }
+    }
+    return InputShellState.FOCUSED
+}
+
+fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String) {
+    if (dateString.isEmpty()) {
+        uiModel.onClear()
+    } else if (isValid(dateString) && isValidDateFormat(dateString)) {
+        formatUIDateToStored(dateString)?.let { dateValues ->
+            uiModel.onDateSet(dateValues)
+        }
+    }
+}
 private fun isValid(valueString: String) = valueString.length == 8
 
 private fun formatStoredDateToUI(dateValue: String): String? {
@@ -307,7 +309,7 @@ fun ProvideEmptyCategorySelector(
     }
 
     var expanded by remember { mutableStateOf(false) }
-
+    Spacer(modifier = Modifier.height(16.dp))
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {},

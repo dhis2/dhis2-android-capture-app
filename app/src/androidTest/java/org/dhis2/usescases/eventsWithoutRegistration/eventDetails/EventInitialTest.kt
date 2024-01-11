@@ -23,6 +23,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.INPUT_EVENT_INITIAL_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
@@ -213,14 +214,16 @@ class EventInitialTest {
             val date by viewModel.eventDate.collectAsState()
             val details by viewModel.eventDetails.collectAsState()
             ProvideInputDate(
-                eventDate = date,
-                detailsEnabled = details.enabled,
-                onDateClick = { viewModel.onDateClick() },
-                onDateSet = { dateValues ->
-                    viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
-                },
-                onClear = { viewModel.onClearEventReportDate() },
-                required = true,
+                EventInputDateUiModel(
+                    eventDate = date,
+                    detailsEnabled = details.enabled,
+                    onDateClick = { viewModel.onDateClick() },
+                    onDateSet = { dateValues ->
+                        viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
+                    },
+                    onClear = { viewModel.onClearEventReportDate() },
+                    required = true,
+                )
             )
 
         }
@@ -244,14 +247,17 @@ class EventInitialTest {
             val date by viewModel.eventDate.collectAsState()
             val details by viewModel.eventDetails.collectAsState()
             ProvideInputDate(
-                eventDate = date,
-                detailsEnabled = details.enabled,
-                onDateClick = { viewModel.onDateClick() },
-                onDateSet = { dateValues ->
-                    viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
-                },
-                onClear = { viewModel.onClearEventReportDate() },
-                required = true,
+                EventInputDateUiModel(
+                    eventDate = date,
+                    detailsEnabled = details.enabled,
+                    onDateClick = { viewModel.onDateClick() },
+                    onDateSet = { dateValues ->
+                        viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
+                    },
+                    onClear = { viewModel.onClearEventReportDate() },
+                    required = true,
+                )
+
             )
 
         }

@@ -19,12 +19,13 @@ class ConfigureEventCatCombo(
         repository.catCombo().apply {
             val categories = getCategories(this?.categories())
             val categoryOptions = getCategoryOptions()
-
+            val catComboUid = getCatComboUid(this?.uid() ?: "", this?.isDefault ?: false)
+            val catComboDisplayName = getCatComboDisplayName(this?.uid() ?: "")
             updateSelectedOptions(categoryOption, categories, categoryOptions)
 
             return flowOf(
                 EventCatCombo(
-                    uid = getCatComboUid(this?.uid() ?: "", this?.isDefault ?: false),
+                    uid = catComboUid,
                     isDefault = this?.isDefault ?: false,
                     categories = categories,
                     categoryOptions = categoryOptions,
@@ -34,6 +35,7 @@ class ConfigureEventCatCombo(
                         categories = this?.categories(),
                         selectedCategoryOptions = selectedCategoryOptions,
                     ),
+                    displayName = catComboDisplayName,
                 ),
             )
         }
@@ -71,6 +73,10 @@ class ConfigureEventCatCombo(
         }
 
         return null
+    }
+
+    private fun getCatComboDisplayName(categoryComboUid: String): String? {
+        return repository.getCatOptionComboDisplayName(categoryComboUid)
     }
 
     private fun updateSelectedOptions(

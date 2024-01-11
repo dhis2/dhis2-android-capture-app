@@ -42,6 +42,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
@@ -240,15 +241,17 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
     ) {
         Column {
             ProvideInputDate(
-                eventDate = date,
-                detailsEnabled = details.enabled,
-                onDateClick = { viewModel.onDateClick() },
-                onDateSet = { dateValues ->
-                    viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
-                },
-                onClear = { viewModel.onClearEventReportDate() },
-                required = true,
-                showField = date.active,
+                EventInputDateUiModel(
+                    eventDate = date,
+                    detailsEnabled = details.enabled,
+                    onDateClick = { viewModel.onDateClick() },
+                    onDateSet = { dateValues ->
+                        viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
+                    },
+                    onClear = { viewModel.onClearEventReportDate() },
+                    required = true,
+                    showField = date.active,
+                ),
             )
             ProvideOrgUnit(
                 orgUnit = orgUnit,
@@ -288,7 +291,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     )
                 }
             } else if (!catCombo.isDefault) {
-                ProvideEmptyCategorySelector(name = getString(R.string.cat_combo), option = getString(R.string.no_options))
+                ProvideEmptyCategorySelector(name = catCombo.displayName ?: getString(R.string.cat_combo), option = getString(R.string.no_options))
             }
             ProvideCoordinates(
                 coordinates = coordinates,
