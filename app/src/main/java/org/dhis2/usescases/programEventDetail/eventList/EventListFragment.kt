@@ -36,6 +36,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
     lateinit var binding: FragmentProgramEventDetailListBinding
     private var liveAdapter: ProgramEventDetailLiveAdapter? = null
     private val programEventsViewModel: ProgramEventDetailViewModel by activityViewModels()
+    private var liveDataList: LiveData<PagedList<EventViewModel>>? = null
 
     @Inject
     lateinit var presenter: EventListPresenter
@@ -97,9 +98,9 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
     }
 
     override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
-        pagedListLiveData.observe(
-            this,
-        ) { pagedList: PagedList<EventViewModel> ->
+        liveDataList?.removeObservers(viewLifecycleOwner)
+        this.liveDataList = pagedListLiveData
+        liveDataList?.observe(viewLifecycleOwner) { pagedList: PagedList<EventViewModel> ->
             programEventsViewModel.setProgress(false)
             liveAdapter?.submitList(pagedList) {
                 if ((binding.recycler.adapter?.itemCount ?: 0) == 0) {
