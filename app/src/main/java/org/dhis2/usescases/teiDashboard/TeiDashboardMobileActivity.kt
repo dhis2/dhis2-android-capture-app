@@ -33,6 +33,9 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.ui.ThemeManager
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -133,6 +136,7 @@ class TeiDashboardMobileActivity :
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE)
@@ -586,9 +590,10 @@ class TeiDashboardMobileActivity :
                         analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         showTutorial(true)
                     }
+
                     R.id.markForFollowUp -> dashboardViewModel.onFollowUp(programModel)
-                    R.id.deleteTei -> presenter.deleteTei()
-                    R.id.deleteEnrollment -> presenter.deleteEnrollment()
+                    R.id.deleteTei -> showDeleteTEIConfirmationDialog()
+                    R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()
                     R.id.programSelector -> presenter.onEnrollmentSelectorClick()
                     R.id.groupEvents -> groupByStage?.setValue(true)
                     R.id.showTimeline -> groupByStage?.setValue(false)
@@ -652,6 +657,36 @@ class TeiDashboardMobileActivity :
             StatusChangeResultCode.WRITE_PERMISSION_FAIL -> displayMessage(getString(R.string.permission_denied))
             StatusChangeResultCode.CHANGED -> {}
         }
+    }
+
+    private fun showDeleteTEIConfirmationDialog() {
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = getString(R.string.delete_tei_dialog_title).format(presenter.teType),
+                message = getString(R.string.delete_tei_dialog_message).format(presenter.teType),
+                iconResource = R.drawable.ic_error_outline,
+                mainButton = DialogButtonStyle.RemoveButton(),
+                secondaryButton = DialogButtonStyle.NeutralButton(R.string.cancel),
+            ),
+            onMainButtonClicked = {
+                presenter.deleteTei()
+            },
+        ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
+    }
+
+    private fun showRemoveEnrollmentConfirmationDialog() {
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = getString(R.string.remove_enrollment_dialog_title).format(programModel.currentProgram.displayName()),
+                message = getString(R.string.remove_enrollment_dialog_message).format(programModel.currentProgram.displayName()),
+                iconResource = R.drawable.ic_error_outline,
+                mainButton = DialogButtonStyle.RemoveButton(),
+                secondaryButton = DialogButtonStyle.NeutralButton(R.string.cancel),
+            ),
+            onMainButtonClicked = {
+                presenter.deleteEnrollment()
+            },
+        ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
     override fun onRelationshipMapLoaded() {

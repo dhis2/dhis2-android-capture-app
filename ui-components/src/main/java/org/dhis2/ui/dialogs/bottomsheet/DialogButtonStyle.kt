@@ -3,6 +3,7 @@ package org.dhis2.ui.dialogs.bottomsheet
 import androidx.compose.ui.graphics.Color
 import org.dhis2.ui.R
 import org.dhis2.ui.theme.colorPrimary
+import org.dhis2.ui.theme.errorColor
 import org.dhis2.ui.theme.warningColor
 
 sealed class DialogButtonStyle(
@@ -40,6 +41,11 @@ sealed class DialogButtonStyle(
     class DiscardButton : DialogButtonStyle(
         textResource = R.string.discard_changes,
         colorResource = warningColor,
+    )
+
+    class RemoveButton : DialogButtonStyle(
+        textResource = R.string.remove,
+        colorResource = errorColor,
     )
 
     class NeutralButton(override val textResource: Int) : DialogButtonStyle(
