@@ -59,6 +59,19 @@ class EventDetailsRepositoryTest {
             d2.eventModule().events()
                 .byEnrollmentUid().eq(ENROLLMENT_UID)
                 .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse,
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
                 .orderByEventDate(DESC),
         ) doReturn mock()
 
@@ -66,6 +79,7 @@ class EventDetailsRepositoryTest {
             d2.eventModule().events()
                 .byEnrollmentUid().eq(ENROLLMENT_UID)
                 .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
                 .orderByDueDate(DESC),
         ) doReturn mock()
     }
@@ -97,6 +111,7 @@ class EventDetailsRepositoryTest {
             d2.eventModule().events()
                 .byEnrollmentUid().eq(ENROLLMENT_UID)
                 .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
                 .orderByEventDate(DESC)
                 .blockingGet(),
         ) doReturn listOf(event)
@@ -104,6 +119,7 @@ class EventDetailsRepositoryTest {
             d2.eventModule().events()
                 .byEnrollmentUid().eq(ENROLLMENT_UID)
                 .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
                 .orderByDueDate(DESC)
                 .blockingGet(),
         ) doReturn emptyList()
@@ -120,6 +136,7 @@ class EventDetailsRepositoryTest {
             d2.eventModule().events()
                 .byEnrollmentUid().eq(ENROLLMENT_UID)
                 .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
                 .orderByEventDate(DESC)
                 .blockingGet(),
         ) doReturn emptyList()
@@ -127,6 +144,7 @@ class EventDetailsRepositoryTest {
             d2.eventModule().events()
                 .byEnrollmentUid().eq(ENROLLMENT_UID)
                 .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
                 .orderByDueDate(DESC)
                 .blockingGet(),
         ) doReturn listOf(event)
