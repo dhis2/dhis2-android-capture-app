@@ -3,26 +3,30 @@ package org.dhis2.usescases.datasets.datasetDetail.datasetList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.matomo.Labels
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
 import org.dhis2.utils.Action
 import timber.log.Timber
 
 class DataSetListViewModel(
-    val dataSetDetailRepository: DataSetDetailRepository,
+    private val dataSetDetailRepository: DataSetDetailRepository,
     schedulerProvider: SchedulerProvider,
     val filterManager: FilterManager,
     val matomoAnalyticsController: MatomoAnalyticsController,
+    private val dispatcher: DispatcherProvider,
+
 ) : ViewModel() {
 
-    var disposable: CompositeDisposable = CompositeDisposable()
     private val _datasets = MutableLiveData<List<DataSetDetailModel>>()
     val datasets: LiveData<List<DataSetDetailModel>> = _datasets
 
@@ -34,28 +38,34 @@ class DataSetListViewModel(
     val selectedSync = MutableLiveData<Action<DataSetDetailModel>>()
 
     init {
-        disposable.add(
-            filterManager.asFlowable()
-                .startWith(filterManager)
-                .flatMap { filterManager: FilterManager ->
-                    dataSetDetailRepository.dataSetGroups(
-                        filterManager.orgUnitUidsFilters,
-                        filterManager.periodFilters,
-                        filterManager.stateFilters,
-                        filterManager.catOptComboFilters,
-                    )
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe({ _datasets.value = it }) { t: Throwable? -> Timber.d(t) },
-        )
+        viewModelScope.launch(dispatcher.io()) {
+            val dataSets = async {
+                filterManager.asFlowable()
+                    .startWith(filterManager)
+                    .flatMap { filterManager: FilterManager ->
 
-        disposable.add(
-            dataSetDetailRepository.canWriteAny()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe({ _canWrite.value = it }) { t: Throwable? -> Timber.e(t) },
-        )
+                        dataSetDetailRepository.dataSetGroups(
+                            filterManager.orgUnitUidsFilters,
+                            filterManager.periodFilters,
+                            filterManager.stateFilters,
+                            filterManager.catOptComboFilters,
+                        )
+                    }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe({
+                        _datasets.value = it
+                    }) { t: Throwable? -> Timber.d(t) }
+            }
+            val dataSetDetails = async {
+                dataSetDetailRepository.canWriteAny()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe({
+                        _canWrite.value = it
+                    }) { t: Throwable? -> Timber.e(t) }
+            }
+        }
     }
 
     fun openDataSet(dataset: DataSetDetailModel) {

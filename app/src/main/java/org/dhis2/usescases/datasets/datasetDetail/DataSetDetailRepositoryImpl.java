@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
-import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
@@ -28,6 +27,7 @@ import java.util.Objects;
 
 import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 

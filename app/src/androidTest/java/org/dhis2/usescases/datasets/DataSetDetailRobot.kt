@@ -23,7 +23,7 @@ fun dataSetDetailRobot(dataSetDetailRobot: DataSetDetailRobot.() -> Unit) {
 class DataSetDetailRobot : BaseRobot() {
 
     fun clickOnAddDataSet() {
-        onView(withId(R.id.addDatasetButton)).perform(click())
+        waitForView(withId(R.id.addDatasetButton)).perform(click())
     }
 
     fun checkDataSetInList(period: String, orgUnit: String) {

@@ -51,6 +51,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private String dataSetUid;
     public DataSetDetailComponent dataSetDetailComponent;
 
+    private Fragment fragment;
+
     @Inject
     DataSetDetailPresenter presenter;
 
@@ -104,19 +106,21 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private void configureBottomNavigation() {
         boolean accessWriteData = Boolean.parseBoolean(getIntent().getStringExtra(Constants.ACCESS_DATA));
         viewModel.getPageConfiguration().observe(this, binding.navigationBar::pageConfiguration);
-        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-            Fragment fragment = null;
+
+        binding.navigationBar.setOnItemSelectedListener(item -> {
+            Fragment newFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    fragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
+                    newFragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
                     break;
                 case R.id.navigation_analytics:
                     presenter.trackDataSetAnalytics();
-                    fragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
+                    newFragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
                     break;
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if (fragment != null) {
+            if (newFragment!= null &&  fragment != newFragment ) {
+                fragment = newFragment;
                 transaction.replace(R.id.fragmentContainer, fragment).commit();
             }
             return true;
