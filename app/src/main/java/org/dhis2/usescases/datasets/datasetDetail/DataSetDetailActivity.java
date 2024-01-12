@@ -119,7 +119,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     break;
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if (newFragment!= null &&  fragment != newFragment ) {
+            if (fragment == null ||(newFragment != null  && !fragment.getClass().toString().equals(newFragment.getClass().toString()))) {
                 fragment = newFragment;
                 transaction.replace(R.id.fragmentContainer, fragment).commit();
             }
