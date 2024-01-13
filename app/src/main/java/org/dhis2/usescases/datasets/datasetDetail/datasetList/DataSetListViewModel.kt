@@ -39,7 +39,7 @@ class DataSetListViewModel(
 
     init {
         viewModelScope.launch(dispatcher.io()) {
-            val dataSets = async {
+            async {
                 filterManager.asFlowable()
                     .startWith(filterManager)
                     .flatMap { filterManager: FilterManager ->
@@ -57,7 +57,7 @@ class DataSetListViewModel(
                         _datasets.value = it
                     }) { t: Throwable? -> Timber.d(t) }
             }
-            val dataSetDetails = async {
+            async {
                 dataSetDetailRepository.canWriteAny()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
