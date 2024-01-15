@@ -5,15 +5,22 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.bindings.canSkipErrorFix
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventswithoutregistration.eventcapture.model.EventCompletionDialog
 import org.dhis2.usescases.teidashboard.DashboardRepository
 import org.hisp.dhis.android.core.common.ValidationStrategy
+import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -61,12 +68,14 @@ class EventCapturePresenterTest {
     @Test
     fun `Should initialize the event capture form`() {
         initializeMocks()
+
         whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(true)
         whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.ACTIVE)
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
 
         presenter.init()
         verify(view).renderInitialInfo(any(), any(), any(), any())
+        verify(view).setData(any())
 
         verifyNoMoreInteractions(view)
     }
@@ -81,6 +90,7 @@ class EventCapturePresenterTest {
         presenter.init()
         verify(view).showEventIntegrityAlert()
         verify(view).renderInitialInfo(any(), any(), any(), any())
+        verify(view).setData(any())
         verifyNoMoreInteractions(view)
     }
 
@@ -423,7 +433,44 @@ class EventCapturePresenterTest {
         val date = "date"
         val orgUnit = OrganisationUnit.builder().uid("orgUnit").displayName("OrgUnitName").build()
         val catOption = "catOption"
+        val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
+        val enrollment = Enrollment.builder().uid("enrollmentUid").build()
+        val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
+        val events = listOf(Event.builder().uid("eventUid").build())
+        val trackedEntityAttributes = listOf(
+                Pair.create(
+                        TrackedEntityAttribute.builder().uid("teiAttr").build(),
+                        TrackedEntityAttributeValue.builder().build(),
+                ),
+        )
+        val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
+        val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
+        val programs = listOf(Program.builder().uid(programUid).build())
 
+        whenever(
+                dashboardRepository.getTrackedEntityInstance(teiUid),
+        ) doReturn Observable.just(trackedEntityInstance)
+        whenever(
+                dashboardRepository.getEnrollment(),
+        ) doReturn Observable.just(enrollment)
+        whenever(
+                dashboardRepository.getProgramStages(programUid),
+        ) doReturn Observable.just(programStages)
+        whenever(
+                dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
+        ) doReturn Observable.just(events)
+        whenever(
+                dashboardRepository.getAttributesMap(programUid, teiUid),
+        ) doReturn Observable.just(trackedEntityAttributes)
+        whenever(
+                dashboardRepository.getTEIAttributeValues(programUid, teiUid),
+        ) doReturn Observable.just(trackedEntityAttributeValues)
+        whenever(
+                dashboardRepository.getTeiOrgUnits(teiUid, programUid),
+        ) doReturn Observable.just(orgUnits)
+        whenever(
+                dashboardRepository.getTeiActivePrograms(teiUid, false),
+        ) doReturn Observable.just(programs)
         whenever(eventRepository.programStageName()) doReturn Flowable.just(stage.uid())
         whenever(eventRepository.eventDate()) doReturn Flowable.just(date)
         whenever(eventRepository.orgUnit()) doReturn Flowable.just(orgUnit)
