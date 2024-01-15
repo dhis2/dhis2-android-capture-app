@@ -438,38 +438,38 @@ class EventCapturePresenterTest {
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
         val events = listOf(Event.builder().uid("eventUid").build())
         val trackedEntityAttributes = listOf(
-                Pair.create(
-                        TrackedEntityAttribute.builder().uid("teiAttr").build(),
-                        TrackedEntityAttributeValue.builder().build(),
-                ),
+            Pair.create(
+                TrackedEntityAttribute.builder().uid("teiAttr").build(),
+                TrackedEntityAttributeValue.builder().build(),
+            ),
         )
         val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
         val programs = listOf(Program.builder().uid(programUid).build())
 
         whenever(
-                dashboardRepository.getTrackedEntityInstance(teiUid),
+            dashboardRepository.getTrackedEntityInstance(teiUid),
         ) doReturn Observable.just(trackedEntityInstance)
         whenever(
-                dashboardRepository.getEnrollment(),
+            dashboardRepository.getEnrollment(),
         ) doReturn Observable.just(enrollment)
         whenever(
-                dashboardRepository.getProgramStages(programUid),
+            dashboardRepository.getProgramStages(programUid),
         ) doReturn Observable.just(programStages)
         whenever(
-                dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
+            dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
         ) doReturn Observable.just(events)
         whenever(
-                dashboardRepository.getAttributesMap(programUid, teiUid),
+            dashboardRepository.getAttributesMap(programUid, teiUid),
         ) doReturn Observable.just(trackedEntityAttributes)
         whenever(
-                dashboardRepository.getTEIAttributeValues(programUid, teiUid),
+            dashboardRepository.getTEIAttributeValues(programUid, teiUid),
         ) doReturn Observable.just(trackedEntityAttributeValues)
         whenever(
-                dashboardRepository.getTeiOrgUnits(teiUid, programUid),
+            dashboardRepository.getTeiOrgUnits(teiUid, programUid),
         ) doReturn Observable.just(orgUnits)
         whenever(
-                dashboardRepository.getTeiActivePrograms(teiUid, false),
+            dashboardRepository.getTeiActivePrograms(teiUid, false),
         ) doReturn Observable.just(programs)
         whenever(eventRepository.programStageName()) doReturn Flowable.just(stage.uid())
         whenever(eventRepository.eventDate()) doReturn Flowable.just(date)
