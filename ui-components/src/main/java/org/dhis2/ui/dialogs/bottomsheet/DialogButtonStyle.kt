@@ -43,11 +43,6 @@ sealed class DialogButtonStyle(
         colorResource = warningColor,
     )
 
-    class RemoveButton : DialogButtonStyle(
-        textResource = R.string.remove,
-        colorResource = errorColor,
-    )
-
     class NeutralButton(override val textResource: Int) : DialogButtonStyle(
         textResource = textResource,
         colorResource = colorPrimary,

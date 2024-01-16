@@ -13,7 +13,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupMenu
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
@@ -33,9 +37,7 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.ui.ThemeManager
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -670,33 +672,30 @@ class TeiDashboardMobileActivity :
     }
 
     private fun showDeleteTEIConfirmationDialog() {
-        BottomSheetDialog(
-            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = getString(R.string.delete_tei_dialog_title).format(presenter.teType),
-                message = getString(R.string.delete_tei_dialog_message).format(presenter.teType),
-                iconResource = R.drawable.ic_error_outline,
-                mainButton = DialogButtonStyle.RemoveButton(),
-                secondaryButton = DialogButtonStyle.NeutralButton(R.string.cancel),
-            ),
-            onMainButtonClicked = {
+        DeleteBottomSheetDialog(
+            title = getString(R.string.delete_tei_dialog_title).format(presenter.teType),
+            description = getString(R.string.delete_tei_dialog_message).format(presenter.teType),
+            mainButtonText = getString(R.string.delete),
+            deleteForever = true,
+            onMainButtonClick = {
                 presenter.deleteTei()
-            },
-        ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
+            }
+        ).show(
+            supportFragmentManager, DeleteBottomSheetDialog.TAG
+        )
     }
 
     private fun showRemoveEnrollmentConfirmationDialog() {
-        BottomSheetDialog(
-            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = getString(R.string.remove_enrollment_dialog_title).format(programModel.currentProgram.displayName()),
-                message = getString(R.string.remove_enrollment_dialog_message).format(programModel.currentProgram.displayName()),
-                iconResource = R.drawable.ic_error_outline,
-                mainButton = DialogButtonStyle.RemoveButton(),
-                secondaryButton = DialogButtonStyle.NeutralButton(R.string.cancel),
-            ),
-            onMainButtonClicked = {
+        DeleteBottomSheetDialog(
+            title = getString(R.string.remove_enrollment_dialog_title).format(programModel.currentProgram.displayName()),
+            description = getString(R.string.remove_enrollment_dialog_message).format(programModel.currentProgram.displayName()),
+            mainButtonText = getString(R.string.remove),
+            onMainButtonClick = {
                 presenter.deleteEnrollment()
-            },
-        ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
+            }
+        ).show(
+            supportFragmentManager, DeleteBottomSheetDialog.TAG
+        )
     }
 
     override fun onRelationshipMapLoaded() {
