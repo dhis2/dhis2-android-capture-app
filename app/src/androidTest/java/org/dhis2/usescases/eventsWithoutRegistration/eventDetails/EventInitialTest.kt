@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -23,9 +24,13 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EMPTY_CATEGORY_SELECTOR
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.INPUT_EVENT_INITIAL_DATE
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsViewModel
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -56,7 +61,7 @@ class EventInitialTest {
     val date: Date? = dateFormat.parse(dateString)
 
     private val eventDetailsRepository: EventDetailsRepository = mock {
-        on { getProgramStage()} doReturn programStage
+        on { getProgramStage() } doReturn programStage
         on { catCombo() } doReturn catCombo
         on { getEvent() } doReturn null
         on { getObjectStyle() } doReturn style
@@ -65,7 +70,8 @@ class EventInitialTest {
         on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
         on { getEditableStatus() } doReturn EventEditableStatus.Editable()
         on { getEnrollmentDate(ENROLLMENT_UID) } doReturn date
-        on { getStageLastDate(ENROLLMENT_UID) } doReturn DateUtils.uiDateFormat().parse("20/8/2023")!!
+        on { getStageLastDate(ENROLLMENT_UID) } doReturn DateUtils.uiDateFormat()
+            .parse("20/8/2023")!!
 
     }
 
@@ -100,9 +106,9 @@ class EventInitialTest {
         on { value } doReturn COORDINATES
     }
 
-     val eventDetailResourcesProvider: EventDetailResourcesProvider = mock {
-         on { provideDueDate() } doReturn "Due date"
-     }
+    private val eventDetailResourcesProvider: EventDetailResourcesProvider = mock {
+        on { provideDueDate() } doReturn "Due date"
+    }
 
     private fun createConfigureEventTemp(eventCreationType: EventCreationType) = ConfigureEventTemp(
         creationType = eventCreationType,
@@ -265,4 +271,40 @@ class EventInitialTest {
         assert(viewModel.eventDate.value.dateValue == "20/8/2023")
     }
 
+    @Test
+    fun shouldShowEmptyCategorySelectorIfCategoryHasNoOptions() {
+
+        viewModel = initViewModel(
+            periodType = null,
+            eventCreationType = EventCreationType.SCHEDULE,
+            enrollmentStatus = EnrollmentStatus.ACTIVE,
+            scheduleInterval = 0
+        )
+        composeTestRule.setContent {
+            val date by viewModel.eventDate.collectAsState()
+            val details by viewModel.eventDetails.collectAsState()
+            val catCombo by viewModel.eventCatCombo.collectAsState()
+
+            ProvideCategorySelector(
+                modifier = Modifier,
+                eventCatComboUiModel = EventCatComboUiModel(
+                    EventCategory("UID", "NO OPTIONS ", 0, emptyList()),
+                    eventCatCombo = catCombo,
+                    detailsEnabled = details.enabled,
+                    currentDate = date.currentDate,
+                    selectedOrgUnit = details.selectedOrgUnit,
+                    onShowCategoryDialog = {
+                    },
+                    onClearCatCombo = {
+                    },
+                    onOptionSelected = {
+                    },
+                    required = true,
+                    noOptionsText = "No options available",
+                    catComboText = "No options catCombo",
+                )
+            )
+        }
+        composeTestRule.onNodeWithTag(EMPTY_CATEGORY_SELECTOR).assertIsDisplayed()
+    }
 }

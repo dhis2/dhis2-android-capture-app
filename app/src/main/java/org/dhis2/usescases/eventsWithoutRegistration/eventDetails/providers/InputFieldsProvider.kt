@@ -237,7 +237,7 @@ fun ProvideCategorySelector(
             onExpandedChange = {},
         ) {
             InputDropDown(
-                modifier = modifier,
+                modifier = modifier.testTag(CATEGORY_SELECTOR),
                 title = eventCatComboUiModel.category.name,
                 state = getInputState(eventCatComboUiModel.detailsEnabled),
                 selectedItem = selectedItem,
@@ -293,7 +293,7 @@ fun ProvideCategorySelector(
             }
         }
     } else {
-        ProvideEmptyCategorySelector(name = eventCatComboUiModel.category.name, option = eventCatComboUiModel.noOptionsText)
+        ProvideEmptyCategorySelector(modifier = modifier, name = eventCatComboUiModel.category.name, option = eventCatComboUiModel.noOptionsText)
     }
 }
 
@@ -315,7 +315,7 @@ fun ProvideEmptyCategorySelector(
         onExpandedChange = {},
     ) {
         InputDropDown(
-            modifier = modifier,
+            modifier = modifier.testTag(EMPTY_CATEGORY_SELECTOR),
             title = name,
             state = InputShellState.UNFOCUSED,
             selectedItem = selectedItem,
@@ -472,3 +472,5 @@ fun ProvideRadioButtons(
 }
 
 const val INPUT_EVENT_INITIAL_DATE = "INPUT_EVENT_INITIAL_DATE"
+const val EMPTY_CATEGORY_SELECTOR = "EMPTY_CATEGORY_SELECTOR"
+const val CATEGORY_SELECTOR = "CATEGORY_SELECTOR"
