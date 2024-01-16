@@ -804,6 +804,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         searchTei.setHeader(searchItem.getHeader());
         searchTei.setSortingValue(sortingValueSetter.setSortingItem(searchTei, sortingItem));
         searchTei.setTEType(searchItem.getType().displayName());
+        searchTei.setDisplayOrgUnit(displayOrgUnit());
         return searchTei;
     }
 
@@ -947,5 +948,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             ProgramConfigurationSetting programConfiguration = d2.settingModule().appearanceSettings().getProgramConfigurationByUid(currentProgram);
             return programConfiguration != null && Boolean.TRUE.equals(programConfiguration.optionalSearch());
         }
+    }
+
+    private boolean displayOrgUnit() {
+           return d2.organisationUnitModule().organisationUnits()
+               .byProgramUids(Collections.singletonList(currentProgram))
+               .blockingGet().size() > 1;
     }
 }

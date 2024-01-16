@@ -47,6 +47,7 @@ class EventCardMapperTest {
         val result = mapper.map(
             event = model,
             editable = true,
+            displayOrgUnit = true,
             onSyncIconClick = {},
             onCardClick = {},
         )

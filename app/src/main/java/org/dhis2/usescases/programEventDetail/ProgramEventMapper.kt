@@ -5,7 +5,6 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.data.tuples.Pair
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -25,17 +24,11 @@ import javax.inject.Inject
 class ProgramEventMapper @Inject constructor(
     val d2: D2,
     val periodUtils: DhisPeriodUtils,
-    val crashReportController: CrashReportController,
 ) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
         val programStage =
             d2.programModule().programStages().uid(event.programStage()).blockingGet()
-
-        crashReportController.addBreadCrumb(
-            "ProgramEventMapper.eventToEventViewModel",
-            "Event: $event",
-        )
 
         val eventDate = event.eventDate() ?: event.dueDate()
 
