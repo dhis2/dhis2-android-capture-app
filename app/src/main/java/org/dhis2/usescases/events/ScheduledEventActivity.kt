@@ -42,7 +42,7 @@ const val ENROLLMENT_UID = "ENROLLMENT_UID"
 class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.View {
 
     companion object {
-        fun getIntent(context: Context, eventUid: String, teiUid: String, enrollmentUid: String): Intent {
+        fun getIntent(context: Context, eventUid: String, teiUid: String = "", enrollmentUid: String = ""): Intent {
             val intent = Intent(context, ScheduledEventActivity::class.java)
             intent.putExtra(EXTRA_EVENT_UID, eventUid)
             intent.putExtra(TEI_UID, teiUid)

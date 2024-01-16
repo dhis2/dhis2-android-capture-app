@@ -193,7 +193,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun openEvent(eventUid: String) {
         if (presenter.isEventScheduleOrSkipped(eventUid)) {
-            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid, "", "")
+            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
             openEventForResult.launch(scheduleEventIntent)
         } else if (presenter.openInitial(eventUid)) {
             val bundle = EventInitialActivity.getBundle(
@@ -257,7 +257,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        super.onBackPressed()
         formView.onEditionFinish()
         attemptFinish()
     }

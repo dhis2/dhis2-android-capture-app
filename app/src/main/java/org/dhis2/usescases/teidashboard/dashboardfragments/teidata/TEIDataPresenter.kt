@@ -365,7 +365,7 @@ class TEIDataPresenter(
 
     fun onScheduleSelected(uid: String?, sharedView: View?) {
         uid?.let {
-            val intent = getIntent(view.context, uid, "", "")
+            val intent = getIntent(view.context, uid)
             val options = sharedView?.let { it1 ->
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                     view.abstractActivity,
