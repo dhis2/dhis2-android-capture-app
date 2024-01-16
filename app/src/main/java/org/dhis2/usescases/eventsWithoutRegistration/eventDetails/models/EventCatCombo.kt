@@ -9,4 +9,5 @@ data class EventCatCombo(
     val categoryOptions: Map<String, CategoryOption>? = null,
     val selectedCategoryOptions: Map<String, CategoryOption?> = HashMap(),
     val isCompleted: Boolean = false,
+    val displayName: String? = "",
 )

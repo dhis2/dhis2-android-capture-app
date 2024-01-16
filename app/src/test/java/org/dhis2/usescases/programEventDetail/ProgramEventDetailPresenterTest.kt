@@ -117,7 +117,6 @@ class ProgramEventDetailPresenterTest {
         )
         filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
         whenever(repository.getAccessDataWrite()) doReturn true
-        whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
         whenever(repository.program()) doReturn Single.just(program)
         whenever(
             repository.filteredProgramEvents(),

@@ -6,11 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import org.dhis2.App
 import org.dhis2.R
@@ -20,6 +16,7 @@ import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -111,28 +108,31 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             ?: getString(R.string.report_date),
                         dateValue = "",
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     ProvideInputDate(
-                        eventDate = eventDate,
-                        allowsManualInput = false,
-                        detailsEnabled = true,
-                        onDateClick = { setEvenDateListener(programStage.periodType()) },
-                        onDateSet = {},
-                        onClear = {},
+                        EventInputDateUiModel(
+                            eventDate = eventDate,
+                            allowsManualInput = false,
+                            detailsEnabled = true,
+                            onDateClick = { setEvenDateListener(programStage.periodType()) },
+                            onDateSet = {},
+                            onClear = {},
+                        ),
+
                     )
                     if (programStage.hideDueDate() == false) {
                         val dueDate = EventDate(
                             label = programStage.dueDateLabel() ?: getString(R.string.due_date),
                             dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                         ProvideInputDate(
-                            eventDate = dueDate,
-                            detailsEnabled = true,
-                            onDateClick = { setDueDateListener(programStage.periodType()) },
-                            onDateSet = {},
-                            onClear = {},
+                            EventInputDateUiModel(
+                                eventDate = dueDate,
+                                detailsEnabled = true,
+                                onDateClick = { setDueDateListener(programStage.periodType()) },
+                                onDateSet = {},
+                                onClear = {},
+                            ),
                         )
                     }
                 }

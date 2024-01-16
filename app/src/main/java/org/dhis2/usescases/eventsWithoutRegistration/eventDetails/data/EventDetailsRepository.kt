@@ -202,6 +202,11 @@ class EventDetailsRepository(
             .one().blockingGet()?.uid()
     }
 
+    fun getCatOptionComboDisplayName(categoryComboUid: String): String? {
+        return d2.categoryModule().categoryCombos().uid(categoryComboUid)
+            .blockingGet()?.displayName()
+    }
+
     fun getCatOption(selectedOption: String?): CategoryOption? {
         return d2.categoryModule().categoryOptions().uid(selectedOption).blockingGet()
     }
