@@ -38,8 +38,10 @@ class DataSetListViewModel(
     val selectedSync = MutableLiveData<Action<DataSetDetailModel>>()
 
     init {
+
         viewModelScope.launch(dispatcher.io()) {
-            async {
+
+            val datasets = async {
                 filterManager.asFlowable()
                     .startWith(filterManager)
                     .flatMap { filterManager: FilterManager ->
@@ -57,7 +59,7 @@ class DataSetListViewModel(
                         _datasets.value = it
                     }) { t: Throwable? -> Timber.d(t) }
             }
-            async {
+            val permissions = async {
                 dataSetDetailRepository.canWriteAny()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
@@ -65,6 +67,8 @@ class DataSetListViewModel(
                         _canWrite.value = it
                     }) { t: Throwable? -> Timber.e(t) }
             }
+            datasets.await()
+            permissions.await()
         }
     }
 

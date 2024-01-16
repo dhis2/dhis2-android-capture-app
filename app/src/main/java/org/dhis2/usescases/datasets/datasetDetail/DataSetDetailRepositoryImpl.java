@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Objects;
 import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
@@ -53,7 +54,6 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             repo = repo.byPeriodStartDate().inDatePeriods(periodFilter);
         if (!catOptComboFilters.isEmpty())
             repo = repo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptComboFilters));
-
         d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet();
         int dataSetOrgUnitNumber = d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(Collections.singletonList(dataSetUid))
