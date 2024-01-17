@@ -43,11 +43,7 @@ class SearchRepository(
                     .blockingGet()?.let { attribute ->
 
                         val optionSetConfiguration = attribute.optionSet()?.let {
-                            OptionSetConfiguration.config(
-                                d2.optionModule().options()
-                                    .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                    .blockingCount(),
-                            ) {
+                            OptionSetConfiguration.config() {
                                 d2.optionModule().options()
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
@@ -88,11 +84,7 @@ class SearchRepository(
                     .blockingGet()?.let { attribute ->
 
                         val optionSetConfiguration = attribute.optionSet()?.let {
-                            OptionSetConfiguration.config(
-                                d2.optionModule().options()
-                                    .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                    .blockingCount(),
-                            ) {
+                            OptionSetConfiguration.config() {
                                 d2.optionModule().options()
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)

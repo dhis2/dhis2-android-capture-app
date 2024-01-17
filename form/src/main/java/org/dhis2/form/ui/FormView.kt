@@ -77,7 +77,6 @@ import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.exception.RepositoryRecordsException
-import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -600,7 +599,6 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
             is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
             is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
-            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
             is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
@@ -972,7 +970,6 @@ class FormView : Fragment() {
             .show()
     }
 
-    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
     private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
         val intent = ImageDetailActivity.intent(
             title = event.label,
@@ -1071,23 +1068,6 @@ class FormView : Fragment() {
                 .setCancelable(false)
                 .show()
         }
-    }
-
-    private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
-        OptionSetDialog(
-            field = uiEvent.field,
-            onClearValue = {
-                intentHandler(FormIntent.ClearValue(uiEvent.field.uid))
-            },
-        ) { code ->
-            intentHandler(
-                FormIntent.OnSave(
-                    uiEvent.field.uid,
-                    code,
-                    uiEvent.field.valueType,
-                ),
-            )
-        }.show(this@FormView.childFragmentManager)
     }
 
     private fun showSignatureDialog(uiEvent: RecyclerViewUiEvents.AddSignature) {

@@ -229,7 +229,6 @@ class SearchTEList : FragmentGlobalAbstract() {
         }
     }
 
-    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
     private fun displayImageDetail(imagePath: String) {
         val intent = ImageDetailActivity.intent(
             context = requireContext(),

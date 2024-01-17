@@ -36,15 +36,11 @@ sealed class OptionSetConfiguration(
 
     companion object {
         fun config(
-            optionCount: Int,
             optionRequestCallback: () -> List<Option>,
         ): OptionSetConfiguration {
-            return when {
-                optionCount > 15 -> BigOptionSet()
-                else -> DefaultOptionSet(
-                    options = optionRequestCallback(),
-                )
-            }
+            return DefaultOptionSet(
+                options = optionRequestCallback(),
+            )
         }
     }
 
