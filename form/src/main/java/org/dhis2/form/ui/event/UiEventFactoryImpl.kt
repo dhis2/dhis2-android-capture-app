@@ -14,7 +14,6 @@ import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
 import org.dhis2.form.model.UiEventType.DATE_TIME
 import org.dhis2.form.model.UiEventType.EMAIL
 import org.dhis2.form.model.UiEventType.OPEN_FILE
-import org.dhis2.form.model.UiEventType.OPTION_SET
 import org.dhis2.form.model.UiEventType.ORG_UNIT
 import org.dhis2.form.model.UiEventType.PHONE_NUMBER
 import org.dhis2.form.model.UiEventType.QR_CODE
