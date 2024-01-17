@@ -129,7 +129,6 @@ class UiEventFactoryImpl(
                         null
                     }
                 }
-                OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)
                 ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)
                 ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
                 OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
