@@ -23,11 +23,11 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 
 class EventAdapter(
-        val presenter: TEIDataPresenter,
-        val program: Program,
-        val colorUtils: ColorUtils,
-        private val stageSelected: String = "",
-        private var eventSelected: String = "",
+    val presenter: TEIDataPresenter,
+    val program: Program,
+    val colorUtils: ColorUtils,
+    private val stageSelected: String = "",
+    private var eventSelected: String = "",
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {

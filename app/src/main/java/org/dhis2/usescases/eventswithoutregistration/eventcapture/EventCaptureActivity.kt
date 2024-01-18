@@ -123,15 +123,15 @@ class EventCaptureActivity :
         if (isLandscape()) {
             val stageUid: String = eventCapturePresenter.programStageUidString
             supportFragmentManager.beginTransaction().replace(
-                    R.id.tei_column,
-                    EventTeiDetailsFragment.newInstance(
-                            programUid,
-                            teiUid,
-                            enrollmentUid,
-                            stageUid,
-                            setOfAttributeNames,
-                            eventUid,
-                    ),
+                R.id.tei_column,
+                EventTeiDetailsFragment.newInstance(
+                    programUid,
+                    teiUid,
+                    enrollmentUid,
+                    stageUid,
+                    setOfAttributeNames,
+                    eventUid,
+                ),
             ).commit()
         }
         showProgress()
@@ -146,18 +146,18 @@ class EventCaptureActivity :
 
     private fun initialNavigationPage(): Int {
         val navigationInitialPage =
-                if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
-                    0
-                } else {
-                    1
-                }
+            if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
+                0
+            } else {
+                1
+            }
         return navigationInitialPage
     }
-    private fun showTheEventCaptureFormInLandscape (eventUid: String) {
+    private fun showTheEventCaptureFormInLandscape(eventUid: String) {
         if (isLandscape()) {
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false))
-                    .commit()
+                .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false))
+                .commit()
         }
     }
 
@@ -169,21 +169,20 @@ class EventCaptureActivity :
         programUid = intent.getStringExtra(PROGRAM_UID)
 
         eventCaptureComponent = this.app().userComponent()!!.plus(
-                EventCaptureModule(
-                        this,
-                        eventUid,
-                        teiUid,
-                        programUid,
-                        isPortrait(),
-                ),
-                ViewModelFactoryModule(
-                        teiUid,
-                        programUid,
-                        enrollmentUid,
-                ),
+            EventCaptureModule(
+                this,
+                eventUid,
+                teiUid,
+                programUid,
+                isPortrait(),
+            ),
+            ViewModelFactoryModule(
+                teiUid,
+                programUid,
+                enrollmentUid,
+            ),
         )
         eventCaptureComponent!!.inject(this)
-
     }
 
     private fun setUpViewPagerAdapter(initialPage: Int, eventUid: String) {
