@@ -23,11 +23,11 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 
 class EventAdapter(
-    val presenter: TEIDataPresenter,
-    val program: Program,
-    val colorUtils: ColorUtils,
-    private val stageSelected: String = "",
-    private val eventSelected: String = "",
+        val presenter: TEIDataPresenter,
+        val program: Program,
+        val colorUtils: ColorUtils,
+        private val stageSelected: String = "",
+        private var eventSelected: String = "",
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
@@ -129,5 +129,10 @@ class EventAdapter(
     fun setEnrollment(enrollment: Enrollment) {
         this.enrollment = enrollment
         this.notifyDataSetChanged()
+    }
+
+    fun setEventSelectedUid(eventUid: String, position: Int) {
+        this.eventSelected = eventUid
+        this.notifyItemChanged(position)
     }
 }

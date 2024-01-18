@@ -19,6 +19,7 @@ class DashboardViewModel(
 
     private val dashboardProgramModelLiveData = MutableLiveData<DashboardProgramModel>()
     private val eventUid = MutableLiveData<String>()
+    private val selectedEventUid = MutableLiveData<String>()
 
     val updateEnrollment = MutableLiveData(false)
     val showStatusErrorMessages = MutableLiveData(StatusChangeResultCode.CHANGED)
@@ -43,6 +44,10 @@ class DashboardViewModel(
         return eventUid
     }
 
+    fun selectedEventUid(): LiveData<String> {
+        return selectedEventUid
+    }
+
     fun updateDashboard(dashboardProgramModel: DashboardProgramModel) {
         if (dashboardProgramModelLiveData.value != dashboardProgramModel) {
             dashboardProgramModelLiveData.value = dashboardProgramModel
@@ -60,6 +65,12 @@ class DashboardViewModel(
     fun updateEventUid(uid: String?) {
         if (eventUid.value != uid) {
             this.eventUid.value = uid
+        }
+    }
+
+    fun updateSelectedEventUid(uid: String?) {
+        if (selectedEventUid.value != uid) {
+            this.selectedEventUid.value = uid
         }
     }
 

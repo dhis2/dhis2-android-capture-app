@@ -117,6 +117,7 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     private var context: Context? = null
     private var dashboardModel: DashboardProgramModel? = null
     private var activity: EventCaptureActivity? = null
+    private var allEventsViewModel: List<EventViewModel>? = null
     var teiUid: String? = null
     var programUid: String? = null
     var enrollmentUid: String? = null
@@ -137,16 +138,16 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         this.context = context
         activity = context as EventCaptureActivity
         (context.getApplicationContext() as App)
-            .dashboardComponent()
-            ?.plus(
-                TEIDataModule(
-                    this,
-                    requireArguments().getString("PROGRAM_UID"),
-                    requireArguments().getString("TEI_UID")!!,
-                    requireArguments().getString("ENROLLMENT_UID")!!,
-                ),
-            )
-            ?.inject(this)
+                .dashboardComponent()
+                ?.plus(
+                        TEIDataModule(
+                                this,
+                                requireArguments().getString("PROGRAM_UID"),
+                                requireArguments().getString("TEI_UID")!!,
+                                requireArguments().getString("ENROLLMENT_UID")!!,
+                        ),
+                )
+                ?.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -166,13 +167,13 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     private fun updateFabItems() {
         val dialItems: MutableList<DialItem> = ArrayList()
         dialItems.add(
-            DialItem(REFERAL_ID, getString(R.string.referral), R.drawable.ic_arrow_forward),
+                DialItem(REFERAL_ID, getString(R.string.referral), R.drawable.ic_arrow_forward),
         )
         dialItems.add(
-            DialItem(ADD_NEW_ID, getString(R.string.add_new), R.drawable.ic_note_add),
+                DialItem(ADD_NEW_ID, getString(R.string.add_new), R.drawable.ic_note_add),
         )
         dialItems.add(
-            DialItem(SCHEDULE_ID, getString(R.string.schedule_new), R.drawable.ic_date_range),
+                DialItem(SCHEDULE_ID, getString(R.string.schedule_new), R.drawable.ic_date_range),
         )
         binding!!.dialFabLayout.addDialItems(dialItems) { clickedId: Int? ->
             when (clickedId) {
@@ -228,9 +229,9 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
             binding!!.dialFabLayout.setFabVisible(true)
             presenter.setDashboardProgram(dashboardModel)
             eventCatComboOptionSelector = EventCatComboOptionSelector(
-                dashboardModel.currentProgram.categoryComboUid(),
-                childFragmentManager,
-                object : CategoryDialogInteractions {},
+                    dashboardModel.currentProgram.categoryComboUid(),
+                    childFragmentManager,
+                    object : CategoryDialogInteractions {},
             )
             binding!!.dashboardModel = dashboardModel
             updateFabItems()
@@ -244,51 +245,51 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
                 dashboardModel.currentEnrollmentStatus = enrollmentStatus
                 dashboardModel.enrollmentState = state
                 val syncInfoBar = infoBarMapper.map(
-                    infoBarType = InfoBarType.SYNC,
-                    item = dashboardModel,
-                    actionCallback = { dashboardActivity.showTeiSyncDialog() },
-                    showInfoBar = syncNeeded,
+                        infoBarType = InfoBarType.SYNC,
+                        item = dashboardModel,
+                        actionCallback = { dashboardActivity.showTeiSyncDialog() },
+                        showInfoBar = syncNeeded,
                 )
                 val followUpInfoBar = infoBarMapper.map(
-                    infoBarType = InfoBarType.FOLLOW_UP,
-                    item = dashboardModel,
-                    actionCallback = {
-                        dashboardViewModel.onFollowUp(dashboardModel)
-                    },
-                    showInfoBar = followUp,
+                        infoBarType = InfoBarType.FOLLOW_UP,
+                        item = dashboardModel,
+                        actionCallback = {
+                            dashboardViewModel.onFollowUp(dashboardModel)
+                        },
+                        showInfoBar = followUp,
                 )
                 val enrollmentInfoBar = infoBarMapper.map(
-                    infoBarType = InfoBarType.ENROLLMENT_STATUS,
-                    item = dashboardModel,
-                    actionCallback = { },
-                    showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
+                        infoBarType = InfoBarType.ENROLLMENT_STATUS,
+                        item = dashboardModel,
+                        actionCallback = { },
+                        showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
                 )
                 val card = teiDashboardCardMapper.map(
-                    dashboardModel = dashboardModel,
-                    onImageClick = { fileToShow ->
-                        ImageDetailBottomDialog(
-                            null,
-                            fileToShow,
-                        ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
-                    },
-                    phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
-                    emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
-                    programsCallback = {
-                        startActivity(
-                            intent(
-                                dashboardActivity.context,
-                                dashboardActivity.teiUid,
-                                null,
-                                null,
-                            ),
-                        )
-                    },
+                        dashboardModel = dashboardModel,
+                        onImageClick = { fileToShow ->
+                            ImageDetailBottomDialog(
+                                    null,
+                                    fileToShow,
+                            ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+                        },
+                        phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
+                        emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
+                        programsCallback = {
+                            startActivity(
+                                    intent(
+                                            dashboardActivity.context,
+                                            dashboardActivity.teiUid,
+                                            null,
+                                            null,
+                                    ),
+                            )
+                        },
                 )
                 TeiDetailDashboard(
-                    syncData = syncInfoBar,
-                    followUpData = followUpInfoBar,
-                    enrollmentData = enrollmentInfoBar,
-                    card = card,
+                        syncData = syncInfoBar,
+                        followUpData = followUpInfoBar,
+                        enrollmentData = enrollmentInfoBar,
+                        card = card,
                 )
             }
         } else {
@@ -306,7 +307,7 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     }
 
     private var onActivityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
-        ActivityResultContracts.StartActivityForResult(),
+            ActivityResultContracts.StartActivityForResult(),
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             activity?.presenter?.init()
@@ -342,10 +343,10 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     override fun observeStageSelection(currentProgram: Program, currentEnrollment: Enrollment): Flowable<StageSection> {
         if (adapter == null) {
             adapter = EventAdapter(
-                presenter, currentProgram, colorUtils,
-                stageSelected = programStageUid
-                    ?: "",
-                eventSelected = eventUid ?: "",
+                    presenter, currentProgram, colorUtils,
+                    stageSelected = programStageUid
+                            ?: "",
+                    eventSelected = eventUid ?: "",
             ).also {
                 it.setEnrollment(currentEnrollment)
             }
@@ -375,6 +376,7 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
             binding!!.emptyTeis.setText(messageRes)
         } else {
             binding!!.emptyTeis.visibility = View.GONE
+            allEventsViewModel = events
         }
     }
 
@@ -407,21 +409,21 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
             programStageFromEvent = programStageModel
             if (programStageModel.displayGenerateEventBox()!! || programStageModel.allowGenerateNextVisit()!!) {
                 dialog = CustomDialog(
-                    requireContext(),
-                    getString(R.string.dialog_generate_new_event),
-                    getString(R.string.message_generate_new_event),
-                    getString(R.string.button_ok),
-                    getString(R.string.cancel),
-                    RC_GENERATE_EVENT,
-                    object : DialogClickListener {
-                        override fun onPositive() {
-                            createEvent(EventCreationType.SCHEDULE, if (programStageFromEvent!!.standardInterval() != null) programStageFromEvent!!.standardInterval() else 0)
-                        }
+                        requireContext(),
+                        getString(R.string.dialog_generate_new_event),
+                        getString(R.string.message_generate_new_event),
+                        getString(R.string.button_ok),
+                        getString(R.string.cancel),
+                        RC_GENERATE_EVENT,
+                        object : DialogClickListener {
+                            override fun onPositive() {
+                                createEvent(EventCreationType.SCHEDULE, if (programStageFromEvent!!.standardInterval() != null) programStageFromEvent!!.standardInterval() else 0)
+                            }
 
-                        override fun onNegative() {
-                            if (java.lang.Boolean.TRUE == programStageFromEvent!!.remindCompleted()) presenter.areEventsCompleted()
-                        }
-                    },
+                            override fun onNegative() {
+                                if (java.lang.Boolean.TRUE == programStageFromEvent!!.remindCompleted()) presenter.areEventsCompleted()
+                            }
+                        },
                 )
                 dialog!!.show()
             } else if (java.lang.Boolean.TRUE == programStageModel.remindCompleted()) showDialogCloseProgram()
@@ -430,21 +432,21 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
 
     private fun showDialogCloseProgram() {
         dialog = CustomDialog(
-            requireContext(),
-            getString(R.string.event_completed),
-            getString(R.string.complete_enrollment_message),
-            getString(R.string.button_ok),
-            getString(R.string.cancel),
-            RC_EVENTS_COMPLETED,
-            object : DialogClickListener {
-                override fun onPositive() {
-                    presenter.completeEnrollment()
-                }
+                requireContext(),
+                getString(R.string.event_completed),
+                getString(R.string.complete_enrollment_message),
+                getString(R.string.button_ok),
+                getString(R.string.cancel),
+                RC_EVENTS_COMPLETED,
+                object : DialogClickListener {
+                    override fun onPositive() {
+                        presenter.completeEnrollment()
+                    }
 
-                override fun onNegative() {
-                    // Nothing to show when negative
-                }
-            },
+                    override fun onNegative() {
+                        // Nothing to show when negative
+                    }
+                },
         )
         dialog!!.show()
     }
@@ -453,21 +455,21 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         return Consumer { eventsCompleted: Single<Boolean> ->
             if (java.lang.Boolean.TRUE == eventsCompleted.blockingGet()) {
                 dialog = CustomDialog(
-                    requireContext(),
-                    getString(R.string.event_completed_title),
-                    getString(R.string.event_completed_message),
-                    getString(R.string.button_ok),
-                    getString(R.string.cancel),
-                    RC_EVENTS_COMPLETED,
-                    object : DialogClickListener {
-                        override fun onPositive() {
-                            presenter.completeEnrollment()
-                        }
+                        requireContext(),
+                        getString(R.string.event_completed_title),
+                        getString(R.string.event_completed_message),
+                        getString(R.string.button_ok),
+                        getString(R.string.cancel),
+                        RC_EVENTS_COMPLETED,
+                        object : DialogClickListener {
+                            override fun onPositive() {
+                                presenter.completeEnrollment()
+                            }
 
-                        override fun onNegative() {
-                            // Nothing to show on negative
-                        }
-                    },
+                            override fun onNegative() {
+                                // Nothing to show on negative
+                            }
+                        },
                 )
                 dialog!!.show()
             }
@@ -502,10 +504,10 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
 
     override fun showCatComboDialog(eventUid: String?, eventDate: Date?, categoryComboUid: String?) {
         val categoryDialog = CategoryDialog(
-            CategoryDialog.Type.CATEGORY_OPTION_COMBO,
-            categoryComboUid!!,
-            true,
-            eventDate,
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                categoryComboUid!!,
+                true,
+                eventDate,
         ) { selectedCatOptComboUid: String? ->
             presenter.changeCatOption(eventUid, selectedCatOptComboUid)
         }
@@ -531,17 +533,27 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     }
 
     override fun openEventCapture(intent: Intent) {
-        onActivityResultLauncher.launch(intent)
+        val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
+        adapter?.setEventSelectedUid(selectedEventUid
+                ?: "", getPositionOfSelectedEvent(selectedEventUid ?: ""))
+        dashboardViewModel.updateSelectedEventUid(selectedEventUid)
+    }
+
+    private fun getPositionOfSelectedEvent(eventUid: String): Int {
+        val position = allEventsViewModel?.indexOfFirst { eventViewModel ->
+            eventViewModel.event?.uid() == eventUid
+        }
+        return position ?: -1
     }
 
     override fun showTeiImage(filePath: String, defaultIcon: String) {
         Glide.with(this)
-            .load(File(filePath))
-            .error(
-                getIconResource(requireContext(), defaultIcon, R.drawable.photo_temp_gray, ColorUtils()),
-            )
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .transform(CircleCrop())
+                .load(File(filePath))
+                .error(
+                        getIconResource(requireContext(), defaultIcon, R.drawable.photo_temp_gray, ColorUtils()),
+                )
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .transform(CircleCrop())
     }
 
     override fun goToEventInitial(eventCreationType: EventCreationType, programStage: ProgramStage) {
@@ -565,13 +577,13 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
             DateUtils.getInstance().fromCalendarSelector(
-                activity,
+                    activity,
             ) { datePeriod: List<DatePeriod?>? -> FilterManager.getInstance().addPeriod(datePeriod) }
         } else {
             DateUtils.getInstance().showPeriodDialog(
-                activity,
-                { datePeriod: List<DatePeriod?>? -> FilterManager.getInstance().addPeriod(datePeriod) },
-                true,
+                    activity,
+                    { datePeriod: List<DatePeriod?>? -> FilterManager.getInstance().addPeriod(datePeriod) },
+                    true,
             )
         }
     }
@@ -583,10 +595,10 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
 
     fun showSyncDialog(uid: String?) {
         val syncDialog = SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.TEI)
-            .setUid(uid!!)
-            .onDismissListener { hasChanged: Boolean -> if (hasChanged) FilterManager.getInstance().publishData() }
-            .build()
+                .setConflictType(ConflictType.TEI)
+                .setUid(uid!!)
+                .onDismissListener { hasChanged: Boolean -> if (hasChanged) FilterManager.getInstance().publishData() }
+                .build()
         syncDialog.show(childFragmentManager, uid)
     }
 
@@ -596,8 +608,8 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
 
     override fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute?>?) {
         this.programTrackedEntityAttributes = programTrackedEntityAttributes!!.stream()
-            .filter { attr: ProgramTrackedEntityAttribute? -> attr!!.displayInList()!! }
-            .collect(Collectors.toList())
+                .filter { attr: ProgramTrackedEntityAttribute? -> attr!!.displayInList()!! }
+                .collect(Collectors.toList())
         this.programTrackedEntityAttributes?.let { Collections.sort(it, CustomComparator()) }
     }
 

@@ -78,8 +78,6 @@ class EventCaptureActivity :
     @Inject
     lateinit var eventCapturePresenter: EventCaptureContract.Presenter
 
-    var programStageUid: String? = null
-
     var enrollmentUid: String? = null
     private var setOfAttributeNames: Set<String> = emptySet()
     var teiUid: String? = null
@@ -110,63 +108,30 @@ class EventCaptureActivity :
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
-
-        teiUid = intent.getStringExtra(Constants.TEI_UID)
-
-        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
-
-        programUid = intent.getStringExtra(PROGRAM_UID)
-
-        eventCaptureComponent = this.app().userComponent()!!.plus(
-            EventCaptureModule(
-                this,
-                eventUid,
-                teiUid,
-                programUid,
-                isPortrait(),
-            ),
-            ViewModelFactoryModule(
-                teiUid,
-                programUid,
-                enrollmentUid,
-            ),
-        )
-
-        programStageUid = intent.getStringExtra(Constants.PROGRAM_STAGE_UID)
-        eventCaptureComponent!!.inject(this)
+        createEventCaptureComponent(eventUid ?: "")
         themeManager!!.setProgramTheme(intent.getStringExtra(PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         dashboardViewModel =
             ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
         binding?.presenter = eventCapturePresenter
-        val navigationInitialPage =
-            if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
-                0
-            } else {
-                1
-            }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
-        setUpViewPagerAdapter(navigationInitialPage)
+        setUpViewPagerAdapter(initialNavigationPage(), eventUid ?: "")
         eventCapturePresenter.programStageUid()
-        setUpNavigationBar(navigationInitialPage)
-
+        setUpNavigationBar(initialNavigationPage())
+        showTheEventCaptureFormInLandscape(eventUid ?: "")
         if (isLandscape()) {
             val stageUid: String = eventCapturePresenter.programStageUidString
-            programStageUid = stageUid
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false))
-                .commit()
             supportFragmentManager.beginTransaction().replace(
-                R.id.tei_column,
-                EventTeiDetailsFragment.newInstance(
-                    programUid,
-                    teiUid,
-                    enrollmentUid,
-                    stageUid,
-                    setOfAttributeNames,
-                    eventUid,
-                ),
+                    R.id.tei_column,
+                    EventTeiDetailsFragment.newInstance(
+                            programUid,
+                            teiUid,
+                            enrollmentUid,
+                            stageUid,
+                            setOfAttributeNames,
+                            eventUid,
+                    ),
             ).commit()
         }
         showProgress()
@@ -179,13 +144,55 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpViewPagerAdapter(initialPage: Int) {
+    private fun initialNavigationPage(): Int {
+        val navigationInitialPage =
+                if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
+                    0
+                } else {
+                    1
+                }
+        return navigationInitialPage
+    }
+    private fun showTheEventCaptureFormInLandscape (eventUid: String) {
+        if (isLandscape()) {
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false))
+                    .commit()
+        }
+    }
+
+    private fun createEventCaptureComponent(eventUid: String) {
+        teiUid = intent.getStringExtra(Constants.TEI_UID)
+
+        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
+
+        programUid = intent.getStringExtra(PROGRAM_UID)
+
+        eventCaptureComponent = this.app().userComponent()!!.plus(
+                EventCaptureModule(
+                        this,
+                        eventUid,
+                        teiUid,
+                        programUid,
+                        isPortrait(),
+                ),
+                ViewModelFactoryModule(
+                        teiUid,
+                        programUid,
+                        enrollmentUid,
+                ),
+        )
+        eventCaptureComponent!!.inject(this)
+
+    }
+
+    private fun setUpViewPagerAdapter(initialPage: Int, eventUid: String) {
         if (isLandscape()) {
             binding!!.eventViewLandPager!!.isUserInputEnabled = false
             adapter = EventCapturePagerAdapter(
                 this,
                 intent.getStringExtra(PROGRAM_UID),
-                intent.getStringExtra(Constants.EVENT_UID),
+                eventUid,
                 pageConfigurator!!.displayAnalytics(),
                 pageConfigurator!!.displayRelationships(),
                 false,
@@ -213,7 +220,7 @@ class EventCaptureActivity :
             adapter = EventCapturePagerAdapter(
                 this,
                 intent.getStringExtra(PROGRAM_UID),
-                intent.getStringExtra(Constants.EVENT_UID),
+                eventUid,
                 pageConfigurator!!.displayAnalytics(),
                 pageConfigurator!!.displayRelationships(),
                 true,
@@ -291,6 +298,18 @@ class EventCaptureActivity :
     override fun onResume() {
         super.onResume()
         eventCapturePresenter.refreshTabCounters()
+        with(dashboardViewModel) {
+            selectedEventUid().observe(this@EventCaptureActivity, ::updateSelectedEventFormIfInLandscape)
+        }
+    }
+
+    private fun updateSelectedEventFormIfInLandscape(eventUid: String) {
+        createEventCaptureComponent(eventUid)
+        setUpViewPagerAdapter(initialNavigationPage(), eventUid)
+        setUpNavigationBar(initialNavigationPage())
+        showTheEventCaptureFormInLandscape(eventUid)
+        eventCapturePresenter.initNoteCounter()
+        eventCapturePresenter.init()
     }
 
     override fun onDestroy() {
