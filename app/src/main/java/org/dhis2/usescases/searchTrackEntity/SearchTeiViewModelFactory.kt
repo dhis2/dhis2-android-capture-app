@@ -9,6 +9,7 @@ import org.dhis2.maps.usecases.MapStyleConfiguration
 @Suppress("UNCHECKED_CAST")
 class SearchTeiViewModelFactory(
     val searchRepository: SearchRepository,
+    private val searchRepositoryKt: SearchRepositoryKt,
     private val searchNavPageConfigurator: SearchPageConfigurator,
     private val initialProgramUid: String?,
     private val initialQuery: MutableMap<String, String>?,
@@ -22,6 +23,7 @@ class SearchTeiViewModelFactory(
             initialProgramUid,
             initialQuery,
             searchRepository,
+            searchRepositoryKt,
             searchNavPageConfigurator,
             mapDataRepository,
             networkUtils,

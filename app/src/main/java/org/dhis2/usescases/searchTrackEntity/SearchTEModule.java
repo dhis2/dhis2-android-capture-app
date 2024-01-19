@@ -158,6 +158,14 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
+    SearchRepositoryKt searchRepositoryKt(
+            SearchRepository searchRepository
+    ) {
+        return new SearchRepositoryImplKt(searchRepository);
+    }
+
+    @Provides
+    @PerActivity
     SearchTEIRepository searchTEIRepository(D2 d2) {
         return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), new CrashReportControllerImpl());
     }
@@ -248,6 +256,7 @@ public class SearchTEModule {
     @PerActivity
     SearchTeiViewModelFactory providesViewModelFactory(
             SearchRepository searchRepository,
+            SearchRepositoryKt searchRepositoryKt,
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2,
@@ -255,6 +264,7 @@ public class SearchTEModule {
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
+                searchRepositoryKt,
                 new SearchPageConfigurator(searchRepository),
                 initialProgram,
                 initialQuery,

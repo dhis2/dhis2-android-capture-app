@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
+import androidx.paging.PagingData;
 
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.SearchTeiModel;
@@ -15,6 +16,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
@@ -57,6 +60,10 @@ public interface SearchRepository {
     Observable<D2Progress> downloadTei(String teiUid);
 
     TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, String reason);
+
+    SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem);
+
+    TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel);
 
     void setCurrentProgram(@Nullable String currentProgram);
     boolean programStagesHaveCoordinates(String programUid);

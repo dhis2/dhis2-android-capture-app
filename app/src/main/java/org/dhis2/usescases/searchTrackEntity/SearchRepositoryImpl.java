@@ -5,9 +5,14 @@ import android.database.sqlite.SQLiteConstraintException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
+import androidx.paging.Pager;
+import androidx.paging.PagingData;
+import androidx.paging.PagingDataTransforms;
+import androidx.paging.PagingLiveData;
 
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
@@ -97,6 +102,11 @@ import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import kotlinx.coroutines.ExecutorsKt;
+import kotlinx.coroutines.flow.Flow;
+import kotlinx.coroutines.flow.FlowCollector;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -105,7 +115,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final D2 d2;
     private final SearchSortingValueSetter sortingValueSetter;
     private TrackedEntitySearchCollectionRepository trackedEntityInstanceQuery;
-    private SearchParametersModel savedSearchParameters;
+    public SearchParametersModel savedSearchParameters;
     private FilterManager savedFilters;
     private FilterPresenter filterPresenter;
     private DhisPeriodUtils periodUtils;
@@ -225,7 +235,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .toList().toFlowable();
     }
 
-    private TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
+    @Override
+    public TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
         this.savedSearchParameters = searchParametersModel.copy();
         this.savedFilters = FilterManager.getInstance().copy();
 
@@ -725,7 +736,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return teiDownloader.download(teiUid, enrollmentUid, reason);
     }
 
-    private SearchTeiModel transformResult(Result<TrackedEntitySearchItem, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
+    public SearchTeiModel transformResult(Result<TrackedEntitySearchItem, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
         try {
             return transform(result.getOrThrow(), selectedProgram, offlineOnly, sortingItem);
         } catch (Exception e) {
@@ -736,7 +747,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
     }
 
-    private SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
+    @Override
+    public SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
         if (!fetchedTeiUids.contains(searchItem.uid())) {
             fetchedTeiUids.add(searchItem.uid());
         }
