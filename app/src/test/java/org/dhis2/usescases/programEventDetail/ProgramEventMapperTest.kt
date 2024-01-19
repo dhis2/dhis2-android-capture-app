@@ -1,6 +1,5 @@
 package org.dhis2.usescases.programEventDetail
 
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -25,11 +24,10 @@ class ProgramEventMapperTest {
 
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val periodUtil: DhisPeriodUtils = mock()
-    private val crashReportController: CrashReportController = mock()
 
     @Before
     fun setUp() {
-        mapper = ProgramEventMapper(d2, periodUtil, crashReportController)
+        mapper = ProgramEventMapper(d2, periodUtil)
     }
 
     @Test
