@@ -322,7 +322,6 @@ class EventCaptureActivity :
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        super.onBackPressed()
         if (onEditionListener != null) {
             onEditionListener!!.onEditionListener()
         }
