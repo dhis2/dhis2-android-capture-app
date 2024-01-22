@@ -32,9 +32,6 @@ public interface SearchRepository {
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
-    @NonNull
-    LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline);
-
     void clearFetchedList();
 
     @NonNull

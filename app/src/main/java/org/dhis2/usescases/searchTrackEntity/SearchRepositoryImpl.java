@@ -180,40 +180,6 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline) {
-        boolean allowCache = false;
-        if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().sameFilters(savedFilters)) {
-            trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
-        } else {
-            getFilteredRepository(searchParametersModel);
-            allowCache = true;
-        }
-
-        if (!fetchedTeiUids.isEmpty() && searchParametersModel.getSelectedProgram() == null) {
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.excludeUids().in(new ArrayList<>(fetchedTeiUids));
-        }
-
-        DataSource<TrackedEntitySearchItem, SearchTeiModel> dataSource;
-
-        if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty()) {
-            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getResultDataSource()
-                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()));
-        } else {
-            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getResultDataSource()
-                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()));
-        }
-
-        return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntitySearchItem, SearchTeiModel>() {
-            @NonNull
-            @Override
-            public DataSource<TrackedEntitySearchItem, SearchTeiModel> create() {
-                return dataSource;
-            }
-        }, 10).build();
-    }
-
-    @NonNull
-    @Override
     public Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline) {
 
         boolean allowCache = false;
