@@ -201,6 +201,7 @@ class ManageStockViewModel @Inject constructor(
                                     it,
                                 )
                             }
+                        refreshData()
                     },
                     { it.printStackTrace() },
                 ),
