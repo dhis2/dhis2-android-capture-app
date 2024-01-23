@@ -179,9 +179,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                             detailsEnabled = details.enabled,
                             currentDate = date.currentDate,
                             selectedOrgUnit = details.selectedOrgUnit,
-                            onShowCategoryDialog = {
-                                showCategoryDialog(it)
-                            },
                             onClearCatCombo = {
                                 viewModel.onClearCatCombo()
                             },

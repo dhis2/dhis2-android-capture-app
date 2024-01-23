@@ -600,8 +600,8 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
             is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
             is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
-            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
+            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
@@ -972,7 +972,6 @@ class FormView : Fragment() {
             .show()
     }
 
-    // TODO replace ImageDetailBottomDialog with new mobile ui Image detail component
     private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
         val intent = ImageDetailActivity.intent(
             title = event.label,
