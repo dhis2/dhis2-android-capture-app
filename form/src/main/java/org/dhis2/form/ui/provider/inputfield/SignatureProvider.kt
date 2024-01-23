@@ -21,7 +21,6 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSignature
 import java.io.File
 
-// TODO adapt Input signature to new Mobile ui functionality
 @Composable
 fun ProvideInputSignature(
     modifier: Modifier,
