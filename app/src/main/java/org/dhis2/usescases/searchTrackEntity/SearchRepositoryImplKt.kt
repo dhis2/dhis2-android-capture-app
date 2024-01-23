@@ -27,7 +27,7 @@ class SearchRepositoryImplKt(
         savedSearchParamenters = searchParametersModel.copy()
         savedFilters = FilterManager.getInstance().copy()
 
-        if (!searchParametersModel.equals(savedSearchParamenters) || !FilterManager.getInstance().sameFilters(savedFilters)) {
+        if (searchParametersModel != savedSearchParamenters || !FilterManager.getInstance().sameFilters(savedFilters)) {
             trackedEntityInstanceQuery = searchRepositoryJava.getFilteredRepository(searchParametersModel)
         } else {
             trackedEntityInstanceQuery = searchRepositoryJava.getFilteredRepository(searchParametersModel)
