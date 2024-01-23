@@ -39,7 +39,6 @@ import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
@@ -47,8 +46,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Prov
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.category.CategoryDialog
-import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -341,18 +338,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showNoOrgUnitsDialog() {
         showInfoDialog(getString(R.string.error), getString(R.string.no_org_units))
-    }
-
-    private fun showCategoryDialog(category: EventCategory) {
-        CategoryDialog(
-            CategoryDialog.Type.CATEGORY_OPTIONS,
-            category.uid,
-            true,
-            viewModel.eventDate.value.currentDate,
-        ) { categoryOption ->
-            val selectedOption = Pair(category.uid, categoryOption)
-            viewModel.setUpCategoryCombo(selectedOption)
-        }.show(requireActivity().supportFragmentManager, TAG)
     }
 
     private fun getEventCreationType(typeString: String?): EventCreationType {

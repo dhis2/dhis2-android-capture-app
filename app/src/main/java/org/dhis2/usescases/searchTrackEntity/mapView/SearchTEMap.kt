@@ -258,16 +258,14 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                 true
             }
             .addOnProfileImageClickListener { path: String? ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    if (!path.isNullOrBlank()) {
-                        val intent = ImageDetailActivity.intent(
-                            context = requireContext(),
-                            title = null,
-                            imagePath = path,
-                        )
+                if (binding.mapCarousel.carouselEnabled && !path.isNullOrBlank()) {
+                    val intent = ImageDetailActivity.intent(
+                        context = requireContext(),
+                        title = null,
+                        imagePath = path,
+                    )
 
-                        startActivity(intent)
-                    }
+                    startActivity(intent)
                 }
                 Unit
             }

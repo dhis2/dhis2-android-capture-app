@@ -22,7 +22,6 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
-// TODO adapt Input image to new Mobile ui functionality
 
 @Composable
 internal fun ProvideInputImage(
