@@ -139,7 +139,7 @@ class TeiDashboardMobileActivity :
                             this,
                             teiUid,
                             dataIntent.getStringExtra(CHANGE_PROGRAM),
-                            dataIntent.getStringExtra(CHANGE_PROGRAM_ENROLLMENT),
+                            dataIntent.getStringExtra(CHANGE_PROGRAM_ENROLLMENT) ?: enrollmentUid,
                         ),
                     )
                     finish()
