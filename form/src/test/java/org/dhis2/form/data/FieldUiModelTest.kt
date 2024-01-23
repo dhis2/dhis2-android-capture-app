@@ -76,7 +76,7 @@ class FieldUiModelTest {
         1,
         label = "label",
         valueType = ValueType.TEXT,
-        optionSetConfiguration = OptionSetConfiguration.config() {
+        optionSetConfiguration = OptionSetConfiguration.config(5) {
             listOf(
                 Option.builder().uid("1").build(),
                 Option.builder().uid("2").build(),

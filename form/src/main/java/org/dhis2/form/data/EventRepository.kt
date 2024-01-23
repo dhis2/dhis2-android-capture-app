@@ -143,7 +143,10 @@ class EventRepository(
                         .byCode()
                         .eq(dataValue).one().blockingGet()?.displayName()
             }
-            optionSetConfig = OptionSetConfiguration.config() {
+            val optionCount =
+                d2.optionModule().options().byOptionSetUid().eq(optionSet)
+                    .blockingCount()
+            optionSetConfig = OptionSetConfiguration.config(optionCount) {
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
             }

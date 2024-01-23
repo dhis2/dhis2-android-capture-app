@@ -261,7 +261,9 @@ class EventCaptureFieldProvider(
     }
 
     private fun options(optionSetUid: String?): OptionSetConfiguration? = optionSetUid?.let {
-        OptionSetConfiguration.config() {
+        OptionSetConfiguration.config(
+            d2.optionModule().options().byOptionSetUid().eq(it).blockingCount(),
+        ) {
             d2.optionModule().options().byOptionSetUid().eq(it)
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
         }

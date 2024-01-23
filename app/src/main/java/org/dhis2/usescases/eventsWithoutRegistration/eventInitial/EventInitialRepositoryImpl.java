@@ -317,6 +317,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 dataValue = option.get(0).displayName();
             }
             optionSetConfig = OptionSetConfiguration.Companion.config(
+                    d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount(),
                     ()-> d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingGet()
             );
         }

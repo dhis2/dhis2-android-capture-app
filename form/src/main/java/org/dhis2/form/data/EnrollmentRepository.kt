@@ -173,7 +173,9 @@ class EnrollmentRepository(
 
         var optionSetConfig: OptionSetConfiguration? = null
         if (!optionSet.isNullOrEmpty()) {
-            optionSetConfig = OptionSetConfiguration.config() {
+            val optionCount =
+                d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount()
+            optionSetConfig = OptionSetConfiguration.config(optionCount) {
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet()
