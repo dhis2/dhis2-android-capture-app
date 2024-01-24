@@ -46,14 +46,10 @@ class ImageDetailActivity : AppCompatActivity() {
                 painter = painter!!,
                 title = title.orEmpty(),
                 onDismiss = { finish() },
-                onDownloadButtonClick = { saveImage(imagePath) },
+                onDownloadButtonClick = { },
                 onShareButtonClick = { shareImage(imagePath) },
             )
         }
-    }
-
-    private fun saveImage(image: String) {
-        // TODO: Implement saving image to disk
     }
 
     private fun shareImage(image: String) {
