@@ -18,9 +18,11 @@ sealed class OptionSetConfiguration(
     )
 
     data class BigOptionSet(
+        override val options: List<Option>,
         override val optionsToHide: List<String> = emptyList(),
         override val optionsToShow: List<String> = emptyList(),
     ) : OptionSetConfiguration(
+        options = options,
         optionsToHide = optionsToHide,
         optionsToShow = optionsToShow,
     )
@@ -40,7 +42,7 @@ sealed class OptionSetConfiguration(
             optionRequestCallback: () -> List<Option>,
         ): OptionSetConfiguration {
             return when {
-                optionCount > 15 -> BigOptionSet()
+                optionCount > 15 -> BigOptionSet(options = optionRequestCallback())
                 else -> DefaultOptionSet(
                     options = optionRequestCallback(),
                 )

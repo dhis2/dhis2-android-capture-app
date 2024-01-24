@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.provider.inputfield
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,8 +68,14 @@ fun ProvideInputSignature(
             uploadState = getUploadState(fieldUiModel.displayName, true)
             fieldUiModel.invokeUiEvent(UiEventType.ADD_SIGNATURE)
         },
-        onImageClick = {
-            uiEventHandler.invoke(RecyclerViewUiEvents.ShowImage(fieldUiModel.label, fieldUiModel.displayName ?: ""))
+        onShareButtonClick = {
+            uiEventHandler.invoke(
+                RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_SEND,
+                    fieldUiModel.displayName,
+                    fieldUiModel.uid,
+                ),
+            )
         },
     )
 }
