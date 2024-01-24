@@ -15,7 +15,6 @@ import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSignature
@@ -44,7 +43,6 @@ fun ProvideInputSignature(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
-        uploadState = uploadState,
         load = { imageBitmap },
         painterFor = imageBitmap?.let {
             {
@@ -64,10 +62,6 @@ fun ProvideInputSignature(
                 ),
             )
         },
-        onAddButtonClicked = {
-            uploadState = getUploadState(fieldUiModel.displayName, true)
-            fieldUiModel.invokeUiEvent(UiEventType.ADD_SIGNATURE)
-        },
         onShareButtonClick = {
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
@@ -77,5 +71,6 @@ fun ProvideInputSignature(
                 ),
             )
         },
+        onSaveSignature = {},
     )
 }
