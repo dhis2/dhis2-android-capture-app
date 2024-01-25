@@ -632,11 +632,15 @@ class FormView : Fragment() {
                     }
 
                     Intent.ACTION_VIEW -> {
-                        data = if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith("https://")) {
-                            Uri.parse("http://${currentValue.value}")
-                        } else {
-                            Uri.parse(currentValue.value)
-                        }
+                        data =
+                            if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith(
+                                    "https://",
+                                )
+                            ) {
+                                Uri.parse("http://${currentValue.value}")
+                            } else {
+                                Uri.parse(currentValue.value)
+                            }
                     }
 
                     Intent.ACTION_SEND -> {
@@ -645,7 +649,10 @@ class FormView : Fragment() {
                             FormFileProvider.fileProviderAuthority,
                             File(currentValue.value),
                         )
-                        setDataAndType(contentUri, requireContext().contentResolver.getType(contentUri))
+                        setDataAndType(
+                            contentUri,
+                            requireContext().contentResolver.getType(contentUri),
+                        )
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         putExtra(Intent.EXTRA_STREAM, contentUri)
                     }
@@ -960,6 +967,7 @@ class FormView : Fragment() {
                         requireContext().getString(R.string.from_gallery) -> {
                             pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
                         }
+
                         requireContext().getString(R.string.cancel) -> {
                             viewModel.getFocusedItemUid()?.let {
                                 viewModel.submitIntent(FormIntent.OnAddImageFinished(it))

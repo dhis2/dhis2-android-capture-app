@@ -11,7 +11,6 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.R;
 import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
 import org.dhis2.databinding.DevelopmentActivityBinding;
-import org.dhis2.ui.dialogs.signature.SignatureDialog;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
@@ -24,8 +23,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
-
-import kotlin.Unit;
 
 public class DevelopmentActivity extends ActivityGlobalAbstract {
 
@@ -41,7 +38,6 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadIconsDevTools();
         loadCrashControl();
         loadFeatureConfig();
-        loadSignature();
         loadConflicts();
     }
 
@@ -187,13 +183,6 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         binding.featureConfigButton.setOnClickListener(view -> {
             startActivity(FeatureConfigView.class, null, false, false, null);
         });
-    }
-
-    private void loadSignature() {
-        binding.signature.setOnClickListener(view -> {
-                    new SignatureDialog("Signature", bitmap -> Unit.INSTANCE).show(getSupportFragmentManager(), "Signature");
-                }
-        );
     }
 
     @Override

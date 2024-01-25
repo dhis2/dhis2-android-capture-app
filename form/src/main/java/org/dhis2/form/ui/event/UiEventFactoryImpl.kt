@@ -20,6 +20,7 @@ import org.dhis2.form.model.UiEventType.PHONE_NUMBER
 import org.dhis2.form.model.UiEventType.QR_CODE
 import org.dhis2.form.model.UiEventType.REQUEST_CURRENT_LOCATION
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
+import org.dhis2.form.model.UiEventType.SHARE_IMAGE
 import org.dhis2.form.model.UiEventType.SHOW_DESCRIPTION
 import org.dhis2.form.model.UiEventType.SHOW_PICTURE
 import org.dhis2.form.model.UiRenderType
@@ -137,6 +138,11 @@ class UiEventFactoryImpl(
                 PHONE_NUMBER -> RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_DIAL,
                     value,
+                    uid,
+                )
+                SHARE_IMAGE -> RecyclerViewUiEvents.OpenChooserIntent(
+                    Intent.ACTION_SEND,
+                    fieldUiModel.displayName,
                     uid,
                 )
                 else -> null
