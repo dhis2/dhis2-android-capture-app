@@ -1,6 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.data
 
 import io.reactivex.Single
+import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -18,6 +20,7 @@ import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +30,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class TeiDataPresenterTest {
 
@@ -118,5 +122,50 @@ class TeiDataPresenterTest {
         val uid = "orgUnitUid"
         whenever(teiDataRepository.getOrgUnitName(uid)) doReturn "OrgUnitDisplayName"
         assertTrue(teiDataPresenter.getOrgUnitName(uid) == "OrgUnitDisplayName")
+    }
+
+    @Test
+    fun `Should return null when apply effects of hide program stage with no events`() {
+        val stage = fakeModel()
+        assert(stage.applyHideStage(true) == null)
+        assert(stage.applyHideStage(false) == stage)
+    }
+
+    @Test
+    fun `Should not be able to add event when apply effects of hide program stage with events`() {
+        val stage = fakeModel(3)
+        assert(stage.applyHideStage(true)?.canAddNewEvent == false)
+    }
+
+    @Test
+    fun `Should not apply effects of hide program stage for events`() {
+        val stage = fakeModel(0, EventViewModelType.EVENT)
+        assert(stage.applyHideStage(true) == stage)
+    }
+
+    private fun fakeModel(eventCount: Int = 0, type: EventViewModelType = EventViewModelType.STAGE): EventViewModel {
+        val dataElements = mutableListOf<Pair<String, String>>()
+        dataElements.add(
+            Pair("Name", "Peter"),
+        )
+
+        return EventViewModel(
+            type = type,
+            stage = ProgramStage.builder().uid("stage").build(),
+            event = null,
+            eventCount = eventCount,
+            lastUpdate = Date(),
+            isSelected = false,
+            canAddNewEvent = true,
+            orgUnitName = "Org unit name",
+            catComboName = "Cat combo name",
+            dataElementValues = dataElements,
+            groupedByStage = null,
+            valueListIsOpen = false,
+            showTopShadow = false,
+            showBottomShadow = false,
+            displayDate = "21/11/2023",
+            nameCategoryOptionCombo = "Name Category option combo",
+        )
     }
 }
