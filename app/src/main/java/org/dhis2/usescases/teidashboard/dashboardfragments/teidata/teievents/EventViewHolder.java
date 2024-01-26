@@ -45,15 +45,11 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private final Function1<String, Unit> onSyncClick;
     private final Function2<String, View, Unit> onScheduleClick;
     private final Function4<String, String, EventStatus, View, Unit> onEventSelected;
-    private ItemEventBinding binding;
-    private ColorUtils colorUtils;
-
-    private String selectedEvent;
-
+    private final ItemEventBinding binding;
+    private final ColorUtils colorUtils;
     public EventViewHolder(ItemEventBinding binding,
                            Program program,
                            ColorUtils colorUtils,
-                           String eventSelected,
                            Function1<String, Unit> syncClick,
                            Function2<String, View, Unit> scheduleClick,
                            Function4<String, String, EventStatus, View, Unit> onEventSelected
@@ -65,11 +61,10 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
         this.colorUtils = colorUtils;
-        this.selectedEvent = eventSelected;
         MetadataIconKt.handleComposeDispose(binding.composeStageIcon);
     }
 
-    public void bind(EventViewModel eventModel, Enrollment enrollment, @NotNull Function0<Unit> toggleList) {
+    public void bind(EventViewModel eventModel, Enrollment enrollment, String selectedEventUid, @NotNull Function0<Unit> toggleList) {
         ProgramStage programStage = eventModel.getStage();
         Event event = eventModel.getEvent();
         binding.setEvent(eventModel.getEvent());
@@ -78,8 +73,11 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.setProgram(program);
         binding.executePendingBindings();
 
-        if(event.uid().equals(this.selectedEvent)){
-            binding.sharedView.setBackgroundColor(Color.rgb(234,245,253));
+        assert event != null;
+        if (event.uid().equals(selectedEventUid)) {
+            binding.sharedView.setBackgroundColor(Color.rgb(234, 245, 253));
+        } else {
+            binding.sharedView.setBackgroundColor(Color.rgb(255, 255, 255));
         }
 
         if (eventModel.getGroupedByStage()) {

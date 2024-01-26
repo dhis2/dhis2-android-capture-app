@@ -31,7 +31,6 @@ class ProgramEventDetailLiveAdapter(
             binding,
             program,
             colorUtils,
-            "",
             { eventUid ->
                 eventViewModel.eventSyncClicked.value = eventUid
             },
@@ -76,7 +75,7 @@ class ProgramEventDetailLiveAdapter(
                 )
             }
 
-            holder.bind(it, null) {
+            holder.bind(it, null, "") {
                 getItem(holder.bindingAdapterPosition)?.toggleValueList()
                 notifyItemChanged(holder.bindingAdapterPosition)
             }
