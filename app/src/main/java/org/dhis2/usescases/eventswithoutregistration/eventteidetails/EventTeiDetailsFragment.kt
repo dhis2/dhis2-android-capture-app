@@ -314,6 +314,11 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         }
     }
 
+    private val eventDetailsLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                dashboardActivity.presenter.init()
+            }
+
     private fun openChooser(value: String, action: String) {
         val intent = Intent(action).apply {
             when (action) {
@@ -624,9 +629,8 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         // No details to show
     }
 
-    override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) {
-        // No event details to open
-    }
+    override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
+            eventDetailsLauncher.launch(intent, options)
 
     override fun showSyncDialog(eventUid: String, enrollmentUid: String) {
         // No sync dialog to show
