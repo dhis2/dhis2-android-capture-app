@@ -259,9 +259,6 @@ class SearchTEList : FragmentGlobalAbstract() {
             }
             displayResult(it)
             updateRecycler()
-            recycler.post {
-                recycler.smoothScrollToPosition(0)
-            }
         }
     }
 
