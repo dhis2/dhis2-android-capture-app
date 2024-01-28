@@ -539,19 +539,14 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
 
     override fun openEventCapture(intent: Intent) {
         val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
+        val initialSelectedEventPosition = dashboardViewModel.initialSelectedEventPosition()
         adapter?.setEventSelectedUid(
                 selectedEventUid
                         ?: "",
-                getPositionOfSelectedEvent(selectedEventUid ?: ""),
+                presenter.getPositionOfSelectedEvent(selectedEventUid ?: "", allEventsViewModel),
+                initialSelectedEventPosition
         )
         dashboardViewModel.updateSelectedEventUid(selectedEventUid)
-    }
-
-    private fun getPositionOfSelectedEvent(eventUid: String): Int {
-        val position = allEventsViewModel?.indexOfFirst { eventViewModel ->
-            eventViewModel.event?.uid() == eventUid
-        }
-        return position ?: -1
     }
 
     override fun showTeiImage(filePath: String, defaultIcon: String) {

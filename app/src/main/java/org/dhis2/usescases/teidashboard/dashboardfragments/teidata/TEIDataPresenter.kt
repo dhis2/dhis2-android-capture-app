@@ -324,6 +324,13 @@ class TEIDataPresenter(
         )
     }
 
+    fun getPositionOfSelectedEvent(eventUid: String, allEventsViewModel: List<EventViewModel>?): Int {
+        val position = allEventsViewModel?.indexOfFirst { eventViewModel ->
+            eventViewModel.event?.uid() == eventUid
+        }
+        return position ?: -1
+    }
+
     fun completeEnrollment() {
         val hasWriteAccessInProgram =
             programUid?.let { d2.program(it)?.access()?.data()?.write() } == true

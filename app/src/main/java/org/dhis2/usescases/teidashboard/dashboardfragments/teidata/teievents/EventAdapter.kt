@@ -51,6 +51,8 @@ class EventAdapter(
         },
 ) {
 
+    private var newSelectedPosition: Int = RecyclerView.NO_POSITION
+    private var previosSelectedEventPosition: Int = RecyclerView.NO_POSITION
     private lateinit var enrollment: Enrollment
 
     private var stageSelector: FlowableProcessor<StageSection> = PublishProcessor.create()
@@ -132,8 +134,15 @@ class EventAdapter(
         this.notifyDataSetChanged()
     }
 
-    fun setEventSelectedUid(eventUid: String, selectedPosition: Int) {
+    fun setEventSelectedUid(eventUid: String, selectedPosition: Int, initialSelectedEventPosition: Int) {
         this.selectedEventUid = eventUid
-        notifyItemChanged(selectedPosition)
+        previosSelectedEventPosition = if (previosSelectedEventPosition == RecyclerView.NO_POSITION) {
+            initialSelectedEventPosition
+        } else {
+            newSelectedPosition
+        }
+        newSelectedPosition = selectedPosition
+        notifyItemChanged(newSelectedPosition)
+        notifyItemChanged(previosSelectedEventPosition)
     }
 }

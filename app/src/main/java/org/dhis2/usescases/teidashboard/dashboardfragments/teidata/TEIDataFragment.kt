@@ -106,6 +106,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private var programStageFromEvent: ProgramStage? = null
     private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
+    private var allEventsViewModel: List<EventViewModel>? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private var teiModel: SearchTeiModel? = null
     var programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute>? = null
@@ -432,6 +433,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             }
         } else {
             binding.emptyTeis.visibility = View.GONE
+            allEventsViewModel = events
             eventAdapter?.submitList(events)
             for (eventViewModel in events) {
                 if (eventViewModel.isAfterToday(DateUtils.getInstance().today)) {
@@ -587,7 +589,12 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun openEventInitial(intent: Intent) = eventInitialLauncher.launch(intent)
 
-    override fun openEventCapture(intent: Intent) = eventCaptureLauncher.launch(intent)
+    override fun openEventCapture(intent: Intent) {
+        val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
+        val selectedEventPosition = presenter.getPositionOfSelectedEvent(selectedEventUid ?: "", allEventsViewModel)
+        intent.putExtra("SELECTED_EVENT_POSITION", selectedEventPosition)
+        eventCaptureLauncher.launch(intent)
+    }
 
     override fun showTeiImage(filePath: String, defaultIcon: String) {
         val isPortrait = isPortrait()

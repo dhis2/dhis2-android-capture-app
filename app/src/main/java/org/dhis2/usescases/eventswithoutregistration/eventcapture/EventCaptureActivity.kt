@@ -73,6 +73,7 @@ class EventCaptureActivity :
     EventCaptureContract.View,
     MapButtonObservable,
     EventDetailsComponentProvider {
+    private var initialSelectedEventPosition: Int = -1
     private var binding: ActivityEventCaptureBinding? = null
 
     @Inject
@@ -108,11 +109,13 @@ class EventCaptureActivity :
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
+        initialSelectedEventPosition = intent.getIntExtra("SELECTED_EVENT_POSITION", -1)
         createEventCaptureComponent(eventUid ?: "")
         themeManager!!.setProgramTheme(intent.getStringExtra(PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         dashboardViewModel =
             ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
+        dashboardViewModel.setInitialSelectedEventPosition(initialSelectedEventPosition)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
         binding?.presenter = eventCapturePresenter
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
