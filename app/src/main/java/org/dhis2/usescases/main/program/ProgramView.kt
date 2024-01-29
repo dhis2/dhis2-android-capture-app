@@ -5,8 +5,6 @@ import org.dhis2.usescases.general.AbstractActivityContracts
 
 interface ProgramView : AbstractActivityContracts.View {
 
-    fun swapProgramModelData(programs: List<ProgramViewModel>)
-
     fun showFilterProgress()
 
     fun openOrgUnitTreeSelector()
