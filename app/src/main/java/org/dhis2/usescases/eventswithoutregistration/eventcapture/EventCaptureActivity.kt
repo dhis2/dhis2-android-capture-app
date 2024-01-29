@@ -66,6 +66,7 @@ import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import javax.inject.Inject
 
+
 const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
 
 class EventCaptureActivity :
@@ -123,7 +124,7 @@ class EventCaptureActivity :
         eventCapturePresenter.programStageUid()
         setUpNavigationBar(initialNavigationPage())
         showTheEventCaptureFormInLandscape(eventUid ?: "")
-        if (isLandscape()) {
+        if (isLandscape() && areTeiAndEnrollmentUidValid()) {
             val stageUid: String = eventCapturePresenter.programStageUidString
             supportFragmentManager.beginTransaction().replace(
                 R.id.tei_column,
@@ -146,6 +147,11 @@ class EventCaptureActivity :
             showSyncDialog()
         }
     }
+
+    private fun areTeiAndEnrollmentUidValid(): Boolean {
+        return enrollmentUid.isNullOrBlank() || teiUid.isNullOrBlank()
+    }
+
 
     private fun initialNavigationPage(): Int {
         val navigationInitialPage =
