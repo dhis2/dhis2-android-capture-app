@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import android.content.Intent
+import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityOptionsCompat
@@ -12,6 +13,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import org.dhis2.R
 import org.dhis2.bindings.profilePicturePath
+import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
@@ -22,7 +24,6 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.form.data.FormValueStore
@@ -32,8 +33,10 @@ import org.dhis2.usescases.events.ScheduledEventActivity.Companion.getIntent
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
@@ -42,7 +45,9 @@ import org.dhis2.utils.EventMode
 import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.FOLLOW_UP
+import org.dhis2.utils.analytics.TYPE_EVENT_TEI
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -68,10 +73,11 @@ class TEIDataPresenter(
     private val filterManager: FilterManager,
     private val filterRepository: FilterRepository,
     private val valueStore: FormValueStore,
-    private val resources: ResourceManager,
     private val optionsRepository: OptionsRepository,
     private val getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
     private val eventCreationOptionsMapper: EventCreationOptionsMapper,
+    private val contractHandler: TeiDataContractHandler,
+    private val dashboardActivityPresenter: TeiDashboardContracts.Presenter,
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -244,9 +250,7 @@ class TEIDataPresenter(
         Timber.d("APPLYING EFFECTS")
         if (calcResult.error() != null) {
             Timber.e(calcResult.error())
-            view.showProgramRuleErrorMessage(
-                resources.getString(R.string.error_applying_rule_effects),
-            )
+            view.showProgramRuleErrorMessage()
             return emptyList()
         }
         val (_, _, _, _, _, _, stagesToHide1) = RulesUtilsProviderImpl(
@@ -351,6 +355,40 @@ class TEIDataPresenter(
             },
         )
         view.switchFollowUp(followup)
+    }
+
+    fun onEventCreationClick(eventCreationId: Int) {
+        createEventInEnrollment(eventCreationOptionsMapper.getActionType(eventCreationId))
+    }
+
+    fun onAcceptScheduleNewEvent(stageStandardInterval: Int) {
+        createEventInEnrollment(EventCreationType.SCHEDULE, stageStandardInterval)
+    }
+
+    private fun createEventInEnrollment(
+        eventCreationType: EventCreationType,
+        scheduleIntervalDays: Int = 0,
+    ) {
+        analyticsHelper.setEvent(TYPE_EVENT_TEI, eventCreationType.name, CREATE_EVENT_TEI)
+        val bundle = Bundle()
+        bundle.putString(
+            Constants.PROGRAM_UID,
+            dashboardModel?.currentEnrollment?.program(),
+        )
+        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
+        dashboardModel?.currentOrgUnit?.uid()
+            ?.takeIf { enrollmentOrgUnitInCaptureScope(it) }?.let {
+                bundle.putString(Constants.ORG_UNIT, it)
+            }
+
+        bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
+        bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
+        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays ?: 0)
+        val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
+        intent.putExtras(bundle)
+        contractHandler.createEvent(intent).observe(view.viewLifecycleOwner()) {
+            dashboardActivityPresenter.init()
+        }
     }
 
     fun onScheduleSelected(uid: String?, sharedView: View?) {

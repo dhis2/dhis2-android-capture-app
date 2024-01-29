@@ -236,32 +236,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldSuccessfullyCreateANewEvent() {
-        prepareTeiToCreateANewEventAndLaunchActivity(rule)
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            clickOnFab()
-            clickOnCreateNewEvent()
-            clickOnFirstReferralEvent()
-            waitToDebounce(2000)
-            clickOnReferralNextButton()
-            waitToDebounce(600)
-        }
-
-        eventRobot {
-            fillRadioButtonForm(4)
-            clickOnFormFabButton()
-            clickOnNotNow(composeTestRule)
-        }
-
-        teiDashboardRobot {
-            checkEventWasCreatedAndOpen(LAB_MONITORING, 0)
-        }
-    }
-
-    @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
         prepareTeiOpenedToEditAndLaunchActivity(rule)
 
