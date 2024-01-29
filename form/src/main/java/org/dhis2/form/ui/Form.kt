@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -25,13 +29,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
 import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -55,7 +63,8 @@ fun Form(
             }
         }
     }
-    LazyColumn(
+    if (sections.isNotEmpty() && sections[0].uid != "DUMMY") {
+        LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
@@ -67,7 +76,6 @@ fun Form(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
         state = scrollState,
     ) {
-        if (sections.isNotEmpty()) {
             this.itemsIndexed(
                 items = sections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
@@ -96,7 +104,7 @@ fun Form(
                 Section(
                     title = section.title,
                     isLastSection = getNextSection(section, sections) == null,
-                    description = section.description,
+                    description = if (sections.size >= 2 && section.fields.isNotEmpty()) section.description else null,
                     completedFields = section.completedFields(),
                     totalFields = section.fields.size,
                     state = section.state,
@@ -137,8 +145,33 @@ fun Form(
                 Spacer(modifier = Modifier.height(120.dp))
             }
         }
+    } else {
+        Column(modifier = Modifier
+            .height(120.dp)
+        ) {
+            InfoBar(
+                infoBarData = InfoBarData(
+                    text = resources.getString(R.string.form_without_fields),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.ErrorOutline,
+                            contentDescription = "not synced",
+                            tint = SurfaceColor.Warning,
+                        )
+                    },
+                    color = SurfaceColor.Warning,
+                    backgroundColor = SurfaceColor.WarningContainer,
+                    actionText = null,
+                    onClick = null
+                ),
+                modifier = Modifier
+                    .background(SurfaceColor.WarningContainer)
+            )
+        }
     }
+
 }
+
 
 private fun getNextSection(section: FormSection, sections: List<FormSection>): FormSection? {
     val currentIndex = sections.indexOf(section)
