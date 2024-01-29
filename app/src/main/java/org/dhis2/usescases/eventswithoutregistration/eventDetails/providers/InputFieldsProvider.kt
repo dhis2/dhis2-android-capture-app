@@ -1,18 +1,11 @@
 package org.dhis2.usescases.eventswithoutregistration.eventDetails.providers
 
-import androidx.compose.foundation.background
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -36,6 +29,7 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
@@ -46,8 +40,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -197,7 +189,6 @@ fun ProvideOrgUnit(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProvideCategorySelector(
     modifier: Modifier = Modifier,
@@ -206,7 +197,6 @@ fun ProvideCategorySelector(
     detailsEnabled: Boolean,
     currentDate: Date?,
     selectedOrgUnit: String?,
-    onShowCategoryDialog: (EventCategory) -> Unit,
     onClearCatCombo: (EventCategory) -> Unit,
     onOptionSelected: (CategoryOption?) -> Unit,
     required: Boolean = false,
@@ -218,74 +208,31 @@ fun ProvideCategorySelector(
         )
     }
 
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {},
-    ) {
-        InputDropDown(
-            modifier = modifier,
-            title = category.name,
-            state = getInputState(detailsEnabled),
-            selectedItem = selectedItem,
-            onResetButtonClicked = {
-                selectedItem = null
-                onClearCatCombo(category)
-            },
-            onArrowDropDownButtonClicked = {
-                expanded = !expanded
-            },
-            isRequiredField = required,
-        )
-
-        if (expanded) {
-            if (category.optionsSize > DEFAULT_COUNT_LIMIT) {
-                onShowCategoryDialog(category)
-                expanded = false
-            } else {
-                DropdownMenu(
-                    modifier = modifier.exposedDropdownSize(),
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    val selectableOptions = category.options
-                        .filter { option ->
-                            option.access().data().write()
-                        }.filter { option ->
-                            option.inDateRange(currentDate)
-                        }.filter { option ->
-                            option.inOrgUnit(selectedOrgUnit)
-                        }
-                    selectableOptions.forEach { option ->
-                        val isSelected = option.displayName() == selectedItem
-                        DropdownMenuItem(
-                            modifier = Modifier.background(
-                                when {
-                                    isSelected -> SurfaceColor.PrimaryContainer
-                                    else -> Color.Transparent
-                                },
-                            ),
-                            content = {
-                                Text(
-                                    text = option.displayName() ?: option.code() ?: "",
-                                    color = when {
-                                        isSelected -> TextColor.OnPrimaryContainer
-                                        else -> TextColor.OnSurface
-                                    },
-                                )
-                            },
-                            onClick = {
-                                expanded = false
-                                selectedItem = option.displayName()
-                                onOptionSelected(option)
-                            },
-                        )
-                    }
-                }
-            }
+    val selectableOptions = category.options
+        .filter { option ->
+            option.access().data().write()
+        }.filter { option ->
+            option.inDateRange(currentDate)
+        }.filter { option ->
+            option.inOrgUnit(selectedOrgUnit)
         }
-    }
+    val dropdownItems = selectableOptions.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
+    InputDropDown(
+        modifier = modifier,
+        title = category.name,
+        state = getInputState(detailsEnabled),
+        selectedItem = DropdownItem(selectedItem ?: ""),
+        onResetButtonClicked = {
+            selectedItem = null
+            onClearCatCombo(category)
+        },
+        onItemSelected = { newSelectedDropdownItem ->
+            selectedItem = newSelectedDropdownItem.label
+            onOptionSelected(selectableOptions.firstOrNull { it.displayName() == newSelectedDropdownItem.label })
+        },
+        dropdownItems = dropdownItems,
+        isRequiredField = required,
+    )
 }
 
 private fun getInputState(enabled: Boolean) = if (enabled) {

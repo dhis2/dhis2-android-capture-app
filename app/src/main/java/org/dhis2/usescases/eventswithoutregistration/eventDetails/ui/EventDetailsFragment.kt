@@ -47,8 +47,6 @@ import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.Prov
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideOrgUnit
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.category.CategoryDialog
-import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -179,9 +177,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                             detailsEnabled = details.enabled,
                             currentDate = date.currentDate,
                             selectedOrgUnit = details.selectedOrgUnit,
-                            onShowCategoryDialog = {
-                                showCategoryDialog(it)
-                            },
                             onClearCatCombo = {
                                 viewModel.onClearCatCombo()
                             },
@@ -344,18 +339,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showNoOrgUnitsDialog() {
         showInfoDialog(getString(R.string.error), getString(R.string.no_org_units))
-    }
-
-    private fun showCategoryDialog(category: EventCategory) {
-        CategoryDialog(
-            CategoryDialog.Type.CATEGORY_OPTIONS,
-            category.uid,
-            true,
-            viewModel.eventDate.value.currentDate,
-        ) { categoryOption ->
-            val selectedOption = Pair(category.uid, categoryOption)
-            viewModel.setUpCategoryCombo(selectedOption)
-        }.show(requireActivity().supportFragmentManager, TAG)
     }
 
     private fun getEventCreationType(typeString: String?): EventCreationType {

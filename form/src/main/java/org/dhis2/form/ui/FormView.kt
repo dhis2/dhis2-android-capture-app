@@ -50,11 +50,12 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.getFileFrom
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
+import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.extensions.truncate
@@ -64,7 +65,6 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
-import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.scan.ScanContract
@@ -600,8 +600,8 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
             is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
             is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
-            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
+            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
@@ -632,11 +632,29 @@ class FormView : Fragment() {
                     }
 
                     Intent.ACTION_VIEW -> {
-                        data = if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith("https://")) {
-                            Uri.parse("http://${currentValue.value}")
-                        } else {
-                            Uri.parse(currentValue.value)
-                        }
+                        data =
+                            if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith(
+                                    "https://",
+                                )
+                            ) {
+                                Uri.parse("http://${currentValue.value}")
+                            } else {
+                                Uri.parse(currentValue.value)
+                            }
+                    }
+
+                    Intent.ACTION_SEND -> {
+                        val contentUri = FileProvider.getUriForFile(
+                            requireContext(),
+                            FormFileProvider.fileProviderAuthority,
+                            File(currentValue.value),
+                        )
+                        setDataAndType(
+                            contentUri,
+                            requireContext().contentResolver.getType(contentUri),
+                        )
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        putExtra(Intent.EXTRA_STREAM, contentUri)
                     }
                 }
             }
@@ -949,6 +967,7 @@ class FormView : Fragment() {
                         requireContext().getString(R.string.from_gallery) -> {
                             pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
                         }
+
                         requireContext().getString(R.string.cancel) -> {
                             viewModel.getFocusedItemUid()?.let {
                                 viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
@@ -962,8 +981,13 @@ class FormView : Fragment() {
     }
 
     private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
-        ImageDetailBottomDialog(event.label, File(event.value))
-            .show(parentFragmentManager, ImageDetailBottomDialog.TAG)
+        val intent = ImageDetailActivity.intent(
+            title = event.label,
+            imagePath = event.value,
+            context = requireActivity(),
+        )
+
+        startActivity(intent)
     }
 
     private fun openFileSelector(event: RecyclerViewUiEvents.OpenFileSelector) {
