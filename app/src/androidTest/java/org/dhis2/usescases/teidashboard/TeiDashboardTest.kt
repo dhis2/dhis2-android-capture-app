@@ -169,17 +169,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldNotBeAbleToCreateNewEventsWhenFull() {
-        prepareTeiOpenedWithFullEventsAndLaunchActivity(rule)
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            checkCanNotAddEvent()
-        }
-    }
-
-    @Test
     fun shouldOpenEventAndSaveSuccessfully() {
         setupCredentials()
 

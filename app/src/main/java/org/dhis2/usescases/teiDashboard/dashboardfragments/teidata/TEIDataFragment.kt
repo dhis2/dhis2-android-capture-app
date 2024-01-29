@@ -134,13 +134,15 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.presenter = presenter
             dashboardActivity.observeGrouping()?.observe(viewLifecycleOwner) { group ->
                 showLoadingProgress(true)
-                binding.isGrouping = group
                 presenter.onGroupingChanged(group)
             }
             dashboardActivity.observeFilters()?.observe(viewLifecycleOwner, ::showHideFilters)
             dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner, ::updateEnrollment)
 
             binding.filterLayout.adapter = filtersAdapter
+            presenter.shouldDisplayEventCreationButton.observe(this.viewLifecycleOwner) { showCreateEventButton ->
+                binding.dialFabLayout.setFabVisible(showCreateEventButton)
+            }
         }.root
     }
 
@@ -334,8 +336,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return eventAdapter?.stageSelector() ?: Flowable.empty()
     }
 
-    override fun setEvents(events: List<EventViewModel>, canAddEvents: Boolean) {
-        binding.canAddEvents = canAddEvents
+    override fun setEvents(events: List<EventViewModel>) {
         if (events.isEmpty()) {
             binding.emptyTeis.visibility = View.VISIBLE
             if (binding.dialFabLayout.isFabVisible()) {

@@ -6,6 +6,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Single
+import org.dhis2.commons.bindings.canCreateEventInEnrollment
+import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.filters.FilterManager
@@ -26,6 +28,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataReposi
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
@@ -166,11 +170,33 @@ class TeiDataPresenterTest {
         Mockito.`when`(lifecycleOwner.lifecycle).thenReturn(lifecycle)
 
         val contractLiveData = MutableLiveData<Unit>()
-        whenever(view.viewLifecycleOwner())doReturn lifecycleOwner
+        whenever(view.viewLifecycleOwner()) doReturn lifecycleOwner
         whenever(teiDataContractHandler.createEvent(any())) doReturn contractLiveData
         teiDataPresenter.onEventCreationClick(EventCreationOptionsMapper.ADD_NEW_ID)
         contractLiveData.value = Unit
         verify(activityPresenter).init()
+    }
+
+    @Test
+    fun shouldNotBeAbleToCreateNewEventsWhenFull() {
+        val mockedEnrollment = mock<Enrollment> {
+            on { status() } doReturn EnrollmentStatus.ACTIVE
+        }
+        whenever(d2.enrollment(enrollmentUid)) doReturn mockedEnrollment
+        whenever(d2.canCreateEventInEnrollment(enrollmentUid, emptyList())) doReturn false
+        teiDataPresenter.updateCreateEventButtonVisibility(false)
+        assertTrue(teiDataPresenter.shouldDisplayEventCreationButton.value == false)
+    }
+
+    @Test
+    fun shouldNotBeAbleToCreateNewEventsWhenEnrollmentNotActive() {
+        val mockedEnrollment = mock<Enrollment> {
+            on { status() } doReturn EnrollmentStatus.CANCELLED
+        }
+        whenever(d2.enrollment(enrollmentUid)) doReturn mockedEnrollment
+        whenever(d2.canCreateEventInEnrollment(enrollmentUid, emptyList())) doReturn true
+        teiDataPresenter.updateCreateEventButtonVisibility(false)
+        assertTrue(teiDataPresenter.shouldDisplayEventCreationButton.value == false)
     }
 
     private fun fakeModel(

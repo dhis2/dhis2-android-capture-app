@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -14,6 +16,7 @@ import io.reactivex.processors.BehaviorProcessor
 import org.dhis2.R
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.Constants
+import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
@@ -85,6 +88,10 @@ class TEIDataPresenter(
     private var currentStage: String = ""
     private var stagesToHide: List<String> = emptyList()
 
+    private val _groupEvents = MutableLiveData(false)
+    private val _shouldDisplayEventCreationButton = MutableLiveData(false)
+    val shouldDisplayEventCreationButton: LiveData<Boolean> = _shouldDisplayEventCreationButton
+
     fun init() {
         compositeDisposable.add(
             filterManager.asFlowable().startWith(filterManager)
@@ -133,9 +140,10 @@ class TEIDataPresenter(
                     currentStage = if (stageUid == currentStage && !showOptions) "" else stageUid
                     StageSection(currentStage, showOptions)
                 }
-            val groupingFlowable = groupingProcessor.startWith(
-                hasGrouping(it),
-            )
+            val programHasGrouping = hasGrouping(it)
+            val groupingFlowable = groupingProcessor.startWith(programHasGrouping)
+            _groupEvents.value = programHasGrouping
+
             compositeDisposable.add(
                 Flowable.combineLatest(
                     filterManager.asFlowable().startWith(filterManager),
@@ -164,7 +172,7 @@ class TEIDataPresenter(
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { events ->
-                            view.setEvents(events, canAddNewEvents())
+                            view.setEvents(events)
                             decrement()
                         },
                         Timber.Forest::d,
@@ -194,7 +202,12 @@ class TEIDataPresenter(
                         Timber.Forest::e,
                     ),
             )
-        } ?: view.setEnrollmentData(null, null)
+        } ?: run {
+            view.setEnrollmentData(null, null)
+            _shouldDisplayEventCreationButton.value = false
+        }
+
+        updateCreateEventButtonVisibility(_groupEvents.value ?: false)
 
         compositeDisposable.add(
             Single.zip(
@@ -233,6 +246,16 @@ class TEIDataPresenter(
                     programUid?.let { it1 -> view.openOrgUnitTreeSelector(it1) }
                 }, Timber.Forest::e),
         )
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun updateCreateEventButtonVisibility(isGrouping: Boolean) {
+        val enrollment = d2.enrollment(enrollmentUid)
+        val showButton =
+            enrollment != null &&
+                !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
+                canAddNewEvents()
+        _shouldDisplayEventCreationButton.value = showButton
     }
 
     private fun hasGrouping(programUid: String): Boolean {
@@ -383,7 +406,7 @@ class TEIDataPresenter(
 
         bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
         bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
-        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays ?: 0)
+        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays)
         val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
         intent.putExtras(bundle)
         contractHandler.createEvent(intent).observe(view.viewLifecycleOwner()) {
@@ -469,7 +492,9 @@ class TEIDataPresenter(
                 Preference.GROUPING,
                 groups,
             )
+            _groupEvents.value = shouldGroupBool
             groupingProcessor.onNext(shouldGroupBool)
+            updateCreateEventButtonVisibility(shouldGroupBool)
         }
     }
 
@@ -519,12 +544,7 @@ class TEIDataPresenter(
     }
 
     private fun canAddNewEvents(): Boolean {
-        return d2.enrollmentModule()
-            .enrollmentService()
-            .blockingGetAllowEventCreation(
-                enrollmentUid,
-                stagesToHide,
-            )
+        return d2.canCreateEventInEnrollment(enrollmentUid, stagesToHide)
     }
 
     fun getOrgUnitName(orgUnitUid: String): String {

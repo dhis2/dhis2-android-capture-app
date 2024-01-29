@@ -22,7 +22,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
         fun viewLifecycleOwner(): LifecycleOwner
-        fun setEvents(events: List<EventViewModel>, canAddEvents: Boolean)
+        fun setEvents(events: List<EventViewModel>)
         fun displayGenerateEvent(): Consumer<ProgramStage>
         fun areEventsCompleted(): Consumer<Single<Boolean>>
         fun enrollmentCompleted(): Consumer<EnrollmentStatus>
