@@ -20,7 +20,6 @@ import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventTempStatus
-import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.category.CategoryOption

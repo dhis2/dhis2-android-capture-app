@@ -39,7 +39,6 @@ import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsModule
-import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideCoordinates

@@ -81,7 +81,7 @@ class DashboardViewModel(
     }
 
     fun setInitialSelectedEventPosition(position: Int) {
-       this.initialSelectedEventPosition = position
+        this.initialSelectedEventPosition = position
     }
 
     fun onFollowUp(dashboardProgramModel: DashboardProgramModel) {

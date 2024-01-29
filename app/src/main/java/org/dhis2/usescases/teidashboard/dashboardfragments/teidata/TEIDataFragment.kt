@@ -584,9 +584,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private fun showImageIfFileExist(fileToShow: File) {
         if (fileToShow.exists()) {
             val intent = ImageDetailActivity.intent(
-                    context = requireActivity(),
-                    title = null,
-                    imagePath = fileToShow.path,
+                context = requireActivity(),
+                title = null,
+                imagePath = fileToShow.path,
             )
 
             startActivity(intent)

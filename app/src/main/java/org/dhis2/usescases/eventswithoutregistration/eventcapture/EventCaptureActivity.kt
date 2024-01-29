@@ -66,7 +66,6 @@ import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import javax.inject.Inject
 
-
 const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
 
 class EventCaptureActivity :
@@ -151,7 +150,6 @@ class EventCaptureActivity :
     private fun areTeiAndEnrollmentUidValid(): Boolean {
         return !enrollmentUid.isNullOrBlank() || !teiUid.isNullOrBlank()
     }
-
 
     private fun initialNavigationPage(): Int {
         val navigationInitialPage =

@@ -16,7 +16,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class TEIDataContracts {
