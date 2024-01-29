@@ -149,7 +149,7 @@ class EventCaptureActivity :
     }
 
     private fun areTeiAndEnrollmentUidValid(): Boolean {
-        return enrollmentUid.isNullOrBlank() || teiUid.isNullOrBlank()
+        return !enrollmentUid.isNullOrBlank() || !teiUid.isNullOrBlank()
     }
 
 

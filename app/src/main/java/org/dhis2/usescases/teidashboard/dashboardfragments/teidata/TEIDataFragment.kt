@@ -252,7 +252,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             updateFabItems()
             dashboardModel.teiHeader = presenter.getTeiHeader()
             dashboardModel.avatarPath = presenter.getTeiProfilePath()
-            binding.detailCard?.setContent {
+            binding.detailCard.setContent {
                 val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
                 val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
                 val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
@@ -487,13 +487,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 Constants.PROGRAM_UID,
                 dashboardModel.currentEnrollment?.program(),
             )
-            bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
+            bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel.tei?.uid())
             dashboardModel.currentOrgUnit?.uid()
                 ?.takeIf { presenter.enrollmentOrgUnitInCaptureScope(it) }?.let {
                     bundle.putString(Constants.ORG_UNIT, it)
                 }
 
-            bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
+            bundle.putString(Constants.ENROLLMENT_UID, dashboardModel.currentEnrollment?.uid())
             bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
             bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays ?: 0)
             val intent = Intent(context, ProgramStageSelectionActivity::class.java)

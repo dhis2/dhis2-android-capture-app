@@ -30,11 +30,10 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
-import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -62,12 +61,9 @@ import org.dhis2.usescases.teidashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teidashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teidashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teidashboard.ui.model.InfoBarType
-import org.dhis2.utils.CustomComparator
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
-import org.dhis2.utils.category.CategoryDialog
-import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.isLandscape
@@ -78,13 +74,9 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import timber.log.Timber
 import java.io.File
-import java.util.Collections
-import java.util.Date
-import java.util.stream.Collectors
 import javax.inject.Inject
 
 class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
@@ -124,7 +116,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     var programStageUid: String? = null
     var eventUid: String? = null
     var programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute?>? = null
-    private var internalAttributeValues: List<TrackedEntityAttributeValue?>? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardActivity: EventCaptureActivity by lazy { context as EventCaptureActivity }
@@ -151,9 +142,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        if (teiModel == null) {
-            teiModel = SearchTeiModel()
-        }
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_event_tei_details, container, false)
         binding!!.presenter = presenter
         try {
@@ -192,6 +180,16 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         }
     }
 
+    override fun setTrackedEntityInstance(
+            trackedEntityInstance: TrackedEntityInstance,
+            organisationUnit: OrganisationUnit,
+    ) {
+        binding!!.trackEntity = trackedEntityInstance
+        if (isLandscape()) {
+            binding!!.cardFrontLand.orgUnit.text = organisationUnit.name()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         presenter.init()
@@ -217,10 +215,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
             followUp.set(enrollment.followUp() != null && enrollment.followUp()!!)
         }
         binding!!.followup = followUp
-        if (teiModel == null) {
-            teiModel = SearchTeiModel()
-        }
-        teiModel!!.setCurrentEnrollment(enrollment)
     }
 
     fun setData(dashboardModel: DashboardProgramModel) {
@@ -267,10 +261,13 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
                 val card = teiDashboardCardMapper.map(
                         dashboardModel = dashboardModel,
                         onImageClick = { fileToShow ->
-                            ImageDetailBottomDialog(
-                                    null,
-                                    fileToShow,
-                            ).show(childFragmentManager, ImageDetailBottomDialog.TAG)
+                            val intent = ImageDetailActivity.intent(
+                                    context = requireActivity(),
+                                    title = null,
+                                    imagePath = fileToShow.path,
+                            )
+
+                            startActivity(intent)
                         },
                         phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
                         emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
@@ -339,10 +336,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         } catch (e: ActivityNotFoundException) {
             Timber.e("No activity found that can handle this action")
         }
-    }
-
-    override fun hideFilters() {
-        // No filters to hide
     }
 
     override fun observeStageSelection(currentProgram: Program, currentEnrollment: Enrollment): Flowable<StageSection> {
@@ -507,19 +500,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         }
     }
 
-    override fun showCatComboDialog(eventUid: String?, eventDate: Date?, categoryComboUid: String?) {
-        val categoryDialog = CategoryDialog(
-                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
-                categoryComboUid!!,
-                true,
-                eventDate,
-        ) { selectedCatOptComboUid: String? ->
-            presenter.changeCatOption(eventUid, selectedCatOptComboUid)
-        }
-        categoryDialog.isCancelable = false
-        categoryDialog.show(childFragmentManager, TAG)
-    }
-
     override fun switchFollowUp(followUp: Boolean) {
         this.followUp.set(followUp)
     }
@@ -605,21 +585,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         syncDialog.show(childFragmentManager, uid)
     }
 
-    override fun setRiskColor(risk: String?) {
-        // No risk color to set here
-    }
-
-    override fun setProgramAttributes(programTrackedEntityAttributes: List<ProgramTrackedEntityAttribute?>?) {
-        this.programTrackedEntityAttributes = programTrackedEntityAttributes!!.stream()
-                .filter { attr: ProgramTrackedEntityAttribute? -> attr!!.displayInList()!! }
-                .collect(Collectors.toList())
-        this.programTrackedEntityAttributes?.let { Collections.sort(it, CustomComparator()) }
-    }
-
-    override fun setAttributeValues(attributeValues: List<TrackedEntityAttributeValue?>?) {
-        // No attribute values to set here
-    }
-
     override fun seeDetails(intent: Intent, options: ActivityOptionsCompat) {
         // No details to show
     }
@@ -648,19 +613,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         // No filters to set
     }
 
-    override fun setTrackedEntityInstance(trackedEntityInstance: TrackedEntityInstance?, organisationUnit: OrganisationUnit?, trackedEntityAttributeValues: List<TrackedEntityAttributeValue?>?) {
-        if (isLandscape()) {
-            binding!!.cardFrontLand.orgUnit.text = organisationUnit!!.name()
-            internalAttributeValues = trackedEntityAttributeValues
-        }
-        binding!!.trackEntity = trackedEntityInstance
-        if (teiModel == null) {
-            teiModel = SearchTeiModel()
-        }
-        teiModel!!.tei = trackedEntityInstance
-        teiModel!!.enrolledOrgUnit = organisationUnit!!.displayName()
-    }
-
     companion object {
         private const val RC_GENERATE_EVENT = 1501
         private const val RC_EVENTS_COMPLETED = 1601
@@ -668,7 +620,6 @@ class EventTeiDetailsFragment : FragmentGlobalAbstract(), TEIDataContracts.View 
         private const val ADD_NEW_ID = 2
         private const val SCHEDULE_ID = 1
         private const val PREF_COMPLETED_EVENT = "COMPLETED_EVENT"
-        private var teiModel: SearchTeiModel? = null
 
         @JvmStatic
         fun newInstance(programUid: String?, teiUid: String?, enrollmentUid: String?, stageUid: String?, attributeNames: Set<String>?, eventUid: String?): EventTeiDetailsFragment {
