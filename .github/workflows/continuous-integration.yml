@@ -1,0 +1,93 @@
+name: Continuous Integration
+
+env:
+  # The name of the main module repository
+  main_project_module: app
+
+on:
+  push:
+    branches:
+     - main
+     - develop
+     - release/*
+  pull_request:
+    branches:
+     - main
+     - develop
+     - release/*
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  ci_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu' # See 'Supported distributions' for available options
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Run check style
+      - name: Kotlin checkstyle
+        run: ./gradlew ktlintCheck
+
+      # Running unit tests on app module
+      - name: Run app module tests
+        run: ./gradlew :app:testDhisDebugUnitTest
+
+      # Running unit tests on all other modules
+      - name: Run all modules tests
+        run: ./gradlew testDebugUnitTest
+
+      # Run Build Project
+      #- name: Build gradle project
+       # run: ./gradlew build
+
+  deployment_job:
+    runs-on: ubuntu-latest
+    needs: ci_job
+    if: github.event_name == 'pull_request' && needs.ci_job.result == 'success'
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set Current Date As Env Variable
+      - name: Set current date as env variable
+        run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      # Set Repository Name As Env Variable
+      - name: Set repository name as env variable
+        run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu' # See 'Supported distributions' for available options
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Create APK Debug
+      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
+        run: ./gradlew assembleDhisDebug
+
+      - name: Read version name from file
+        working-directory: ./gradle
+        id: read-version
+        run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+
+      # Upload Artifact Build
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.repository_name }} - Android APK
+          path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk

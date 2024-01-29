@@ -225,4 +225,18 @@
     <string name="default_empty_dataset_section_label">Data</string>
     <string name="title_network_connection_unavailable">Network connection unavailable</string>
     <string name="msg_network_connection_maps">An internet connection is required in order to use maps.</string>
+
+    <string name="overdue_today">Today</string>
+    <plurals name="overdue_days">
+        <item quantity="one">%d day overdue</item>
+        <item quantity="other">%d days overdue</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="one">%d month overdue</item>
+        <item quantity="other">%d months overdue</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="one">%d year overdue</item>
+        <item quantity="other">%d years overdue</item>
+    </plurals>
 </resources>

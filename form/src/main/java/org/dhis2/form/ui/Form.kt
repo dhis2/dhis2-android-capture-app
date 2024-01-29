@@ -15,14 +15,18 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
@@ -55,6 +59,7 @@ fun Form(
             }
         }
     }
+    val focusNext = remember { mutableStateOf(false) }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -75,11 +80,10 @@ fun Form(
                 val isSectionOpen = remember(section.state) {
                     derivedStateOf { section.state == SectionState.OPEN }
                 }
-                LaunchedEffect(isSectionOpen.value) {
-                    if (isSectionOpen.value) {
-                        scrollState.animateScrollToItem(sections.indexOf(section))
-                        focusManager.moveFocus(FocusDirection.Next)
-                    }
+
+                LaunchIfTrue(isSectionOpen.value) {
+                    scrollState.animateScrollToItem(sections.indexOf(section))
+                    focusManager.moveFocusNext(focusNext)
                 }
 
                 val onNextSection: () -> Unit = {
@@ -124,6 +128,7 @@ fun Form(
                                 onNextClicked = {
                                     if (index == section.fields.size - 1) {
                                         onNextSection()
+                                        focusNext.value = true
                                     } else {
                                         focusManager.moveFocus(FocusDirection.Down)
                                     }
@@ -136,6 +141,22 @@ fun Form(
             item(sections.size - 1) {
                 Spacer(modifier = Modifier.height(120.dp))
             }
+        }
+    }
+}
+
+private fun FocusManager.moveFocusNext(focusNext: MutableState<Boolean>) {
+    if (focusNext.value) {
+        this.moveFocus(FocusDirection.Next)
+        focusNext.value = false
+    }
+}
+
+@Composable
+private fun LaunchIfTrue(key: Boolean, block: suspend CoroutineScope.() -> Unit) {
+    LaunchedEffect(key) {
+        if (key) {
+            block()
         }
     }
 }

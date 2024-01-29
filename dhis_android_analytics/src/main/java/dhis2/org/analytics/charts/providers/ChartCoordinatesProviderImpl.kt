@@ -65,7 +65,7 @@ class ChartCoordinatesProviderImpl(
                                 lineListResponse.period,
                             ).toFloat()
                         },
-                        fieldValue = value.toFloat(),
+                        fieldValue = value.toFloatOrNull() ?: 0f,
                         legendValue = createLegendValue(legend),
                     )
                 }

@@ -421,7 +421,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 showList();
             }
             binding.navigationBar.setOnConfigurationFinishListener(() -> {
-                binding.navigationBar.show();
+                if (viewModel.searchOrFilterIsOpen()) {
+                    binding.navigationBar.hide();
+                } else {
+                    binding.navigationBar.show();
+                }
                 return Unit.INSTANCE;
             });
             binding.navigationBar.pageConfiguration(pageConfigurator);

@@ -41,6 +41,7 @@ sealed class FormIntent : MviIntent {
         val uid: String,
         val value: String?,
         val valueType: ValueType?,
+        val allowFutureDates: Boolean? = false,
     ) : FormIntent()
 
     data class ClearValue(

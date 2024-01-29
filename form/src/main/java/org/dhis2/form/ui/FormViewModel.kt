@@ -339,7 +339,10 @@ class FormViewModel(
             valueTypeIsTextField(
                 it.valueType,
                 it.renderingType,
-            ) || it.valueType == ValueType.AGE
+            ) || it.valueType == ValueType.AGE ||
+                it.valueType == ValueType.DATETIME ||
+                it.valueType == ValueType.DATE ||
+                it.valueType == ValueType.TIME
             )
     }
 

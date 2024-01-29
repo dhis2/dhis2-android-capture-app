@@ -108,15 +108,11 @@ class DataValuePresenter(
         val tableData = repository.setTableData(dataTableModel, errors)
         val updatedTableModel = mapper(tableData)
 
-        val updatedIndicators = indicatorTables()
-
         val updatedTables = screenState.value.tables.map { tableModel ->
             if (tableModel.id == catComboUid) {
                 updatedTableModel.copy(overwrittenValues = tableModel.overwrittenValues)
-            } else if (tableModel.id == null && updatedIndicators != null) {
-                updatedIndicators
             } else {
-                tableModel
+                indicatorTables() ?: tableModel
             }
         }
 

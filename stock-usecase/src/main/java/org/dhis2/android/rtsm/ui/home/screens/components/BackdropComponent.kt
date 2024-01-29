@@ -84,7 +84,7 @@ fun Backdrop(
         modifier = modifier,
         appBar = {
             Toolbar(
-                settingsUiState.transactionType.name,
+                settingsUiState.selectedTransactionItem.label,
                 settingsUiState.fromFacilitiesLabel().asString(),
                 settingsUiState.deliverToLabel()?.asString(),
                 themeColor,
@@ -145,7 +145,7 @@ fun Backdrop(
         gesturesEnabled = false,
         frontLayerBackgroundColor = Color.White,
         frontLayerScrimColor = if (
-            settingsUiState.transactionType == TransactionType.DISTRIBUTION
+            settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION
         ) {
             if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
                 isFrontLayerDisabled = false

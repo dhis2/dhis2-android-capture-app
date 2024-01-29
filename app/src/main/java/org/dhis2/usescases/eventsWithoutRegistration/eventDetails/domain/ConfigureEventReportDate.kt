@@ -105,24 +105,24 @@ class ConfigureEventReportDate(
     }
 
     private fun getNextScheduleDate(): Date {
-        val isGeneratedEventBasedOnEnrollment =
-            repository.getProgramStage()?.generatedByEnrollmentDate()
-
-        val initialDate = if (isGeneratedEventBasedOnEnrollment == true) {
-            val enrollmentDate = repository.getEnrollmentDate(enrollmentId)
-            DateUtils.getInstance().getCalendarByDate(enrollmentDate)
-        } else {
-            val date = DateUtils.getInstance().calendar
-            date.time = repository.getStageLastDate(enrollmentId)
+        val scheduleDate = repository.getStageLastDate(enrollmentId)?.let {
+            val lastStageDate = DateUtils.getInstance().getCalendarByDate(it)
+            lastStageDate.add(DAY_OF_YEAR, getScheduleInterval())
+            lastStageDate
+        } ?: run {
+            val enrollmentDate = with(repository) {
+                when (getProgramStage()?.generatedByEnrollmentDate()) {
+                    true -> getEnrollmentDate(enrollmentId)
+                    else -> getEnrollmentIncidentDate(enrollmentId)
+                        ?: getEnrollmentDate(enrollmentId)
+                }
+            }
+            val date = DateUtils.getInstance().getCalendarByDate(enrollmentDate)
+            val minDateFromStart = repository.getMinDaysFromStartByProgramStage()
+            date.add(DAY_OF_YEAR, minDateFromStart)
             date
         }
-
-        val minDateFromStart =
-            repository.getMinDaysFromStartByProgramStage()
-        if (minDateFromStart > 0) {
-            initialDate.add(DAY_OF_YEAR, minDateFromStart)
-        }
-        return DateUtils.getInstance().getNextPeriod(null, initialDate.time, 0)
+        return DateUtils.getInstance().getNextPeriod(null, scheduleDate.time, 0)
     }
 
     private fun getCurrentDay() = DateUtils.getInstance().today

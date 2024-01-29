@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.event
 
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
@@ -56,12 +57,14 @@ sealed class RecyclerViewUiEvents {
         val value: String,
         val renderingType: UiRenderType?,
         val editable: Boolean,
+        val label: String,
     ) : RecyclerViewUiEvents()
 
     data class OpenOrgUnitDialog(
         val uid: String,
         val label: String,
         val value: String?,
+        val orgUnitSelectorScope: OrgUnitSelectorScope?,
     ) : RecyclerViewUiEvents()
 
     data class AddImage(

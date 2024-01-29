@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
@@ -60,17 +59,14 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 @Composable
 fun DropdownComponentTransactions(
     settingsUiState: SettingsUiState,
-    onTransitionSelected: (transition: TransactionType) -> Unit,
+    onTransitionSelected: (transition: TransactionItem) -> Unit,
     hasUnsavedData: Boolean,
     themeColor: Color = colorResource(R.color.colorPrimary),
-    data: MutableList<TransactionItem>,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    val itemIcon = data.find {
-        it.transactionType == settingsUiState.transactionType
-    }?.icon ?: data.first().icon
+    val itemIcon = settingsUiState.selectedTransactionItem.icon
 
     var selectedIndex by remember { mutableStateOf(0) }
     val paddingValue = if (selectedIndex >= 0) {
@@ -94,7 +90,7 @@ fun DropdownComponentTransactions(
 
     Column(Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
-            value = capitalizeText(settingsUiState.transactionType.name),
+            value = capitalizeText(settingsUiState.selectedTransactionItem.label),
             onValueChange = { },
             modifier = Modifier
                 .fillMaxWidth()
@@ -132,7 +128,7 @@ fun DropdownComponentTransactions(
             },
             shape = RoundedCornerShape(30.dp),
             placeholder = {
-                Text(text = capitalizeText(data.first().transactionType.name))
+                Text(text = capitalizeText(settingsUiState.selectedTransactionItem.label))
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,
@@ -151,7 +147,7 @@ fun DropdownComponentTransactions(
                     .background(shape = RoundedCornerShape(16.dp), color = Color.White),
                 offset = DpOffset(x = 0.dp, y = 2.dp),
             ) {
-                data.forEachIndexed { index, item ->
+                settingsUiState.transactionItems.forEachIndexed { index, item ->
                     DropdownMenuItem(
                         onClick = {
                             if (selectedIndex != index && hasUnsavedData) {
@@ -159,7 +155,7 @@ fun DropdownComponentTransactions(
                                     when (result) {
                                         EditionDialogResult.DISCARD -> {
                                             // Perform the transaction change and clear data
-                                            onTransitionSelected.invoke(item.transactionType)
+                                            onTransitionSelected.invoke(item)
                                             selectedIndex = index
                                             isExpanded = false
                                         }
@@ -170,7 +166,7 @@ fun DropdownComponentTransactions(
                                     }
                                 }
                             } else {
-                                onTransitionSelected.invoke(item.transactionType)
+                                onTransitionSelected.invoke(item)
                                 selectedIndex = index
                                 isExpanded = false
                             }
@@ -197,7 +193,7 @@ fun DropdownComponentTransactions(
                                 Modifier.padding(6.dp),
                                 tint = themeColor,
                             )
-                            Text(text = capitalizeText(item.transactionType.name))
+                            Text(text = capitalizeText(item.label))
                         }
                     }
                 }
@@ -304,6 +300,7 @@ fun DropdownComponentDistributedTo(
     themeColor: Color = colorResource(R.color.colorPrimary),
     data: List<Option>,
     isDestinationSelected: (value: String) -> Unit = { },
+    deliverToLabel: String? = null,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -382,7 +379,7 @@ fun DropdownComponentDistributedTo(
             },
             shape = RoundedCornerShape(30.dp),
             placeholder = {
-                Text(text = capitalizeText(stringResource(R.string.to)))
+                Text(text = deliverToLabel ?: capitalizeText(stringResource(R.string.to)))
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,

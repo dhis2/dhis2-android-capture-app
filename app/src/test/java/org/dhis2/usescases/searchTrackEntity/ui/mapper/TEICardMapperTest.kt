@@ -4,7 +4,7 @@ import android.content.Context
 import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.date.toUiText
+import org.dhis2.commons.date.toOverdueUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -39,9 +39,7 @@ class TEICardMapperTest {
             resourceManager.getString(R.string.enrollment_completed),
         ) doReturn "Enrollment Completed"
         whenever(
-            resourceManager.getString(
-                R.string.overdue, currentDate.toUiText(context),
-            ),
+            resourceManager.getString(R.string.overdue_today),
         ) doReturn "Today"
         whenever(resourceManager.getString(R.string.marked_follow_up)) doReturn "Marked for follow-up"
 
@@ -71,12 +69,10 @@ class TEICardMapperTest {
             result.additionalInfo[3].value,
             resourceManager.getString(R.string.enrollment_completed),
         )
+
         assertEquals(
             result.additionalInfo[4].value,
-            resourceManager.getString(
-                R.string.overdue,
-                model.overdueDate?.toUiText(context) ?: "",
-            ),
+            model.overdueDate.toOverdueUiText(resourceManager),
         )
         assertEquals(
             result.additionalInfo[5].value,

@@ -1,9 +1,9 @@
 package org.dhis2.android.rtsm.ui.managestock
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.liveData
 import com.github.javafaker.Faker
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.dhis2.android.rtsm.MainDispatcherRule
 import org.dhis2.android.rtsm.data.AppConfig
@@ -11,6 +11,8 @@ import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.IdentifiableModel
+import org.dhis2.android.rtsm.data.models.SearchParametersModel
+import org.dhis2.android.rtsm.data.models.SearchResult
 import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
@@ -33,10 +35,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import timber.log.Timber
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(MockitoJUnitRunner::class)
 class ManageStockViewModelTest {
     @get:Rule
@@ -123,6 +126,18 @@ class ManageStockViewModelTest {
 
     @Test
     fun init_shouldSetFacilityDateAndDistributedToForDistribution() = runTest {
+        whenever(
+            stockManager.search(
+                query = SearchParametersModel(
+                    null,
+                    null,
+                    facility.uid,
+                ),
+                ou = facility.uid,
+                config = appConfig,
+            ),
+        ) doReturn SearchResult(liveData { emptyList<StockItem>() })
+
         val transaction = Transaction(
             transactionType = TransactionType.DISTRIBUTION,
             facility = facility,
@@ -130,6 +145,7 @@ class ManageStockViewModelTest {
             distributedTo = distributedTo,
         )
         val viewModel = getModel()
+        viewModel.setConfig(appConfig)
         viewModel.setup(transaction)
 
         viewModel.transaction.let {
@@ -142,6 +158,18 @@ class ManageStockViewModelTest {
 
     @Test
     fun init_shouldSetFacilityAndDateForDiscard() = runTest {
+        whenever(
+            stockManager.search(
+                query = SearchParametersModel(
+                    null,
+                    null,
+                    facility.uid,
+                ),
+                ou = facility.uid,
+                config = appConfig,
+            ),
+        ) doReturn SearchResult(liveData { emptyList<StockItem>() })
+
         val transaction = Transaction(
             transactionType = TransactionType.DISCARD,
             facility = facility,
@@ -149,6 +177,7 @@ class ManageStockViewModelTest {
             distributedTo = null,
         )
         val viewModel = getModel()
+        viewModel.setConfig(appConfig)
         viewModel.setup(transaction)
 
         viewModel.transaction.let {
@@ -161,6 +190,18 @@ class ManageStockViewModelTest {
 
     @Test
     fun init_shouldSetFacilityAndDateForCorrection() = runTest {
+        whenever(
+            stockManager.search(
+                query = SearchParametersModel(
+                    null,
+                    null,
+                    facility.uid,
+                ),
+                ou = facility.uid,
+                config = appConfig,
+            ),
+        ) doReturn SearchResult(liveData { emptyList<StockItem>() })
+
         val transaction = Transaction(
             transactionType = TransactionType.CORRECTION,
             facility = facility,
@@ -168,6 +209,7 @@ class ManageStockViewModelTest {
             distributedTo = null,
         )
         val viewModel = getModel()
+        viewModel.setConfig(appConfig)
         viewModel.setup(transaction)
 
         viewModel.transaction.let {

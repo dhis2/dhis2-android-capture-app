@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.extensions.inputState
@@ -79,7 +81,7 @@ fun ProvideInputDate(
                 )
             }
         },
-        modifier = modifier,
+        modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value ?: "", fieldUiModel.valueType) },
         state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         supportingText = fieldUiModel.supportingText(),
@@ -89,31 +91,29 @@ fun ProvideInputDate(
         onNextClicked = onNextClicked,
         onValueChanged = {
             value = it
-            if (isValid(it, fieldUiModel.valueType)) {
-                intentHandler.invoke(
-                    FormIntent.OnSaveDate(
-                        uid = fieldUiModel.uid,
-                        value = formatUIDateToStored(it, fieldUiModel.valueType),
-                        valueType = fieldUiModel.valueType,
-                        allowFutureDates = fieldUiModel.allowFutureDates ?: true,
-                    ),
-                )
-            }
+            intentHandler.invoke(
+                FormIntent.OnTextChange(
+                    uid = fieldUiModel.uid,
+                    value = formatUIDateToStored(it, fieldUiModel.valueType),
+                    valueType = fieldUiModel.valueType,
+                    allowFutureDates = fieldUiModel.allowFutureDates ?: true,
+                ),
+            )
         },
     )
 }
 
-private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String? {
+private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String {
     return when (valueType) {
         ValueType.DATETIME -> {
             val components = inputDateString.split("T")
             if (components.size != 2) {
-                return null
+                return inputDateString
             }
 
             val date = components[0].split("-")
             if (date.size != 3) {
-                return null
+                return inputDateString
             }
 
             val year = date[0]
@@ -122,7 +122,7 @@ private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?)
 
             val time = components[1].split(":")
             if (components.size != 2) {
-                return null
+                return inputDateString
             }
 
             val hours = time[0]
@@ -134,7 +134,7 @@ private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?)
         ValueType.TIME -> {
             val components = inputDateString.split(":")
             if (components.size != 2) {
-                return null
+                return inputDateString
             }
 
             val hours = components[0]
@@ -146,7 +146,7 @@ private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?)
         else -> {
             val components = inputDateString.split("-")
             if (components.size != 3) {
-                return null
+                return inputDateString
             }
 
             val year = components[0]
@@ -162,62 +162,38 @@ private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?
     return when (valueType) {
         ValueType.DATETIME -> {
             if (inputDateString?.length != 12) {
-                return null
+                inputDateString
+            } else {
+                val minutes = inputDateString.substring(10, 12)
+                val hours = inputDateString.substring(8, 10)
+                val year = inputDateString.substring(4, 8)
+                val month = inputDateString.substring(2, 4)
+                val day = inputDateString.substring(0, 2)
+
+                "$year-$month-$day" + "T$hours:$minutes"
             }
-
-            val minutes = inputDateString.substring(10, 12)
-            val hours = inputDateString.substring(8, 10)
-            val year = inputDateString.substring(4, 8)
-            val month = inputDateString.substring(2, 4)
-            val day = inputDateString.substring(0, 2)
-
-            "$year-$month-$day" + "T$hours:$minutes"
         }
 
         ValueType.TIME -> {
             if (inputDateString?.length != 4) {
-                return null
+                inputDateString
+            } else {
+                val minutes = inputDateString.substring(2, 4)
+                val hours = inputDateString.substring(0, 2)
+
+                "$hours:$minutes"
             }
-
-            val minutes = inputDateString.substring(2, 4)
-            val hours = inputDateString.substring(0, 2)
-
-            "$hours:$minutes"
         }
 
         else -> {
             if (inputDateString?.length != 8) {
-                return null
-            }
+                inputDateString
+            } else {
+                val year = inputDateString.substring(4, 8)
+                val month = inputDateString.substring(2, 4)
+                val day = inputDateString.substring(0, 2)
 
-            val year = inputDateString.substring(4, 8)
-            val month = inputDateString.substring(2, 4)
-            val day = inputDateString.substring(0, 2)
-
-            "$year-$month-$day"
-        }
-    }
-}
-
-private fun isValid(valueString: String, valueType: ValueType?): Boolean {
-    return if (valueString.isEmpty()) {
-        true
-    } else {
-        when (valueType) {
-            ValueType.DATE -> {
-                valueString.length == 8
-            }
-
-            ValueType.TIME -> {
-                valueString.length == 4
-            }
-
-            ValueType.DATETIME -> {
-                valueString.length == 12
-            }
-
-            else -> {
-                valueString.length == 8
+                "$year-$month-$day"
             }
         }
     }

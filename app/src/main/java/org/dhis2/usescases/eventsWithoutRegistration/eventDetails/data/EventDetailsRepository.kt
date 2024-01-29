@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import java.util.Calendar
 import java.util.Date
 
 class EventDetailsRepository(
@@ -72,14 +71,16 @@ class EventDetailsRepository(
         return programStage?.minDaysFromStart() ?: 0
     }
 
-    fun getStageLastDate(enrollmentUid: String?): Date {
+    fun getStageLastDate(enrollmentUid: String?): Date? {
         val activeEvents =
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
+                .byDeleted().isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
         val scheduleEvents =
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
+                .byDeleted().isFalse
                 .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
 
         var activeDate: Date? = null
@@ -89,7 +90,12 @@ class EventDetailsRepository(
         }
         if (scheduleEvents.isNotEmpty()) scheduleDate = scheduleEvents[0].dueDate()
 
-        return activeDate ?: (scheduleDate ?: Calendar.getInstance().time)
+        return when {
+            scheduleDate == null -> activeDate
+            activeDate == null -> scheduleDate
+            activeDate.before(scheduleDate) -> scheduleDate
+            else -> activeDate
+        }
     }
 
     fun hasAccessDataWrite(): Boolean {
@@ -109,6 +115,11 @@ class EventDetailsRepository(
     fun getEnrollmentDate(uid: String?): Date? {
         val enrollment = d2.enrollmentModule().enrollments().byUid().eq(uid).blockingGet().first()
         return enrollment.enrollmentDate()
+    }
+
+    fun getEnrollmentIncidentDate(uid: String?): Date? {
+        val enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet()
+        return enrollment?.incidentDate()
     }
 
     fun getFilteredOrgUnits(date: String?, parentUid: String?): List<OrganisationUnit> {
@@ -189,6 +200,11 @@ class EventDetailsRepository(
             .byCategoryComboUid().eq(categoryComboUid)
             .byCategoryOptions(categoryOptionsUid)
             .one().blockingGet()?.uid()
+    }
+
+    fun getCatOptionComboDisplayName(categoryComboUid: String): String? {
+        return d2.categoryModule().categoryCombos().uid(categoryComboUid)
+            .blockingGet()?.displayName()
     }
 
     fun getCatOption(selectedOption: String?): CategoryOption? {

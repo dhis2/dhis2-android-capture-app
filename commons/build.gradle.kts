@@ -35,10 +35,10 @@ android {
             )
         }
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -124,4 +124,5 @@ dependencies {
     api(libs.dhis2.mobile.designsystem) {
         isChanging = true
     }
+    coreLibraryDesugaring(libs.desugar)
 }

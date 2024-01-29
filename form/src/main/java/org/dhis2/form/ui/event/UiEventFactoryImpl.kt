@@ -87,6 +87,7 @@ class UiEventFactoryImpl(
                     uid,
                     label,
                     value,
+                    fieldUiModel.orgUnitSelectorScope,
                 )
                 REQUEST_CURRENT_LOCATION -> RecyclerViewUiEvents.RequestCurrentLocation(
                     uid = uid,
@@ -122,6 +123,7 @@ class UiEventFactoryImpl(
                             value = value,
                             renderingType = renderingType,
                             editable = fieldUiModel.editable,
+                            label = label,
                         )
                     } else {
                         null

@@ -33,7 +33,7 @@ fun ItemValues(
                         overridenValues[columnIndex]
                     } else {
                         cellValues[columnIndex]
-                    } ?: TableCell(value = "")
+                    } ?: TableCell(value = "", column = columnIndex)
 
                 key("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}") {
                     TableCell(

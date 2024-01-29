@@ -61,6 +61,7 @@ import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
@@ -676,7 +677,9 @@ class FormView : Fragment() {
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
 
-        handleKeyBoardOnFocusChange(items)
+        if (!useCompose) {
+            handleKeyBoardOnFocusChange(items)
+        }
 
         var offset = 0
         myFirstPositionView?.let {
@@ -996,23 +999,19 @@ class FormView : Fragment() {
         viewModel.clearFocus()
         onEditionFinish()
         QRDetailBottomDialog(
+            event.label,
             event.value,
             event.renderingType,
             event.editable,
-            useCompose,
-            {
-                intentHandler(FormIntent.OnNext(event.uid, null))
-            },
-            {
-                requestQRScan(
-                    RecyclerViewUiEvents.ScanQRCode(
-                        event.uid,
-                        event.optionSet,
-                        event.renderingType,
-                    ),
-                )
-            },
-        ).show(
+        ) {
+            requestQRScan(
+                RecyclerViewUiEvents.ScanQRCode(
+                    event.uid,
+                    event.optionSet,
+                    event.renderingType,
+                ),
+            )
+        }.show(
             childFragmentManager,
             QRDetailBottomDialog.TAG,
         )
@@ -1034,6 +1033,7 @@ class FormView : Fragment() {
                     ),
                 )
             }
+            .orgUnitScope(uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope())
             .build()
             .show(childFragmentManager, uiEvent.label)
     }

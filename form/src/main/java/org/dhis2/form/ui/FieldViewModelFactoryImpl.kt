@@ -2,6 +2,7 @@ package org.dhis2.form.ui
 
 import androidx.databinding.ObservableField
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.OptionSetConfiguration
@@ -54,6 +55,7 @@ class FieldViewModelFactoryImpl(
         optionSetConfiguration: OptionSetConfiguration?,
         featureType: FeatureType?,
         autoCompleteList: List<String>?,
+        orgUnitSelectorScope: OrgUnitSelectorScope?,
     ): FieldUiModel {
         var isMandatory = mandatory
         isNull(valueType, "type must be supplied")
@@ -99,6 +101,7 @@ class FieldViewModelFactoryImpl(
             keyboardActionType = keyboardActionProvider.provideKeyboardAction(valueType),
             fieldMask = fieldMask,
             autocompleteList = autoCompleteProvider.provideAutoCompleteValues(id),
+            orgUnitSelectorScope = orgUnitSelectorScope,
         )
     }
 

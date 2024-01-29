@@ -46,7 +46,7 @@ class SMSSyncProviderImpl(
                     reportState(SmsSendingService.State.SENT, 0, 0),
                 )
             }
-            .andThen(d2.smsModule().configCase().smsModuleConfig)
+            .andThen(d2.smsModule().configCase().getSmsModuleConfig())
             .flatMapCompletable { config ->
                 if (config.isWaitingForResult) {
                     doOnNewState(

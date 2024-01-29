@@ -123,9 +123,10 @@ class FormValueStore(
             }
 
             EnrollmentDetail.ORG_UNIT_UID.name -> {
+                enrollmentRepository?.setOrganisationUnitUid(value)
                 Flowable.just(
                     StoreResult(
-                        "",
+                        EnrollmentDetail.ORG_UNIT_UID.name,
                         ValueStoreResult.VALUE_CHANGED,
                     ),
                 )

@@ -77,6 +77,7 @@ class AnalyticsTeiSettingsToGraph(
                             it.dataElementUid,
                             selectedRelativePeriod,
                             selectedOrgUnits,
+                            true,
                         )
                     },
                 )

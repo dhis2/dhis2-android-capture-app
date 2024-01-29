@@ -22,6 +22,9 @@ class ResourceManager(
     fun getPlural(@PluralsRes pluralResource: Int, quantity: Int) =
         getWrapperContext().resources.getQuantityString(pluralResource, quantity)
 
+    fun getPlural(@PluralsRes pluralResource: Int, quantity: Int, vararg arguments: Any) =
+        getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
+
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"

@@ -43,7 +43,7 @@ class SettingsRepository(
             null
         }
     private val smsConfig: ConfigCase.SmsConfig
-        get() = d2.smsModule().configCase().smsModuleConfig.blockingGet()
+        get() = d2.smsModule().configCase().getSmsModuleConfig().blockingGet()
 
     fun dataSync(): Single<DataSettingsViewModel> {
         return Single.just(

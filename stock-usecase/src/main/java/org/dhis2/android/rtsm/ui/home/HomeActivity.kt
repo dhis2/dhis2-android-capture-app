@@ -62,7 +62,7 @@ class HomeActivity : AppCompatActivity() {
 
         setContent {
             val settingsUiState by viewModel.settingsUiState.collectAsState()
-            updateTheme(settingsUiState.transactionType)
+            updateTheme(settingsUiState.selectedTransactionItem.type)
             manageStockViewModel.setThemeColor(Color(colorResource(themeColor).toArgb()))
             MdcTheme {
                 Surface(

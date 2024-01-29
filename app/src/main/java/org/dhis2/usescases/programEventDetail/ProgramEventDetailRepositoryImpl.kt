@@ -118,34 +118,6 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         return canWrite
     }
 
-    override fun hasAccessToAllCatOptions(): Single<Boolean> {
-        return programRepository.get()
-            .map { program ->
-                val catCombo = d2.categoryModule().categoryCombos().withCategories()
-                    .uid(program.categoryComboUid()).blockingGet()
-                var hasAccess = true
-                if (catCombo?.isDefault == false) {
-                    for (category in catCombo.categories() ?: emptyList()) {
-                        val options = d2.categoryModule().categories().withCategoryOptions()
-                            .uid(category.uid()).blockingGet()?.categoryOptions() ?: emptyList()
-                        var accessibleOptions = options.size
-                        for (categoryOption in options) {
-                            if (d2.categoryModule().categoryOptions().uid(categoryOption.uid())
-                                    .blockingGet()?.access()?.data()?.write() == false
-                            ) {
-                                accessibleOptions--
-                            }
-                        }
-                        if (accessibleOptions == 0) {
-                            hasAccess = false
-                            break
-                        }
-                    }
-                }
-                hasAccess
-            }
-    }
-
     override fun workingLists(): Single<List<EventFilter>> {
         return d2.eventModule().eventFilters()
             .withEventDataFilters()
