@@ -30,12 +30,12 @@ import org.dhis2.usescases.enrollment.EnrollmentComponent;
 import org.dhis2.usescases.enrollment.EnrollmentModule;
 import org.dhis2.usescases.events.ScheduledEventComponent;
 import org.dhis2.usescases.events.ScheduledEventModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureComponent;
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureModule;
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsComponent;
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.injection.EventDetailsModule;
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialComponent;
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialModule;
 import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
@@ -68,12 +68,13 @@ import org.dhis2.usescases.sms.SmsComponent;
 import org.dhis2.usescases.sms.SmsModule;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
-import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
-import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipComponent;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipModule;
-import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
-import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
+import org.dhis2.usescases.teidashboard.TeiDashboardComponent;
+import org.dhis2.usescases.teidashboard.TeiDashboardModule;
+import org.dhis2.usescases.teidashboard.ViewModelFactoryModule;
+import org.dhis2.usescases.teidashboard.dashboardfragments.relationships.RelationshipComponent;
+import org.dhis2.usescases.teidashboard.dashboardfragments.relationships.RelationshipModule;
+import org.dhis2.usescases.teidashboard.teiProgramList.TeiProgramListComponent;
+import org.dhis2.usescases.teidashboard.teiProgramList.TeiProgramListModule;
 import org.dhis2.utils.optionset.OptionSetComponent;
 import org.dhis2.utils.optionset.OptionSetModule;
 import org.dhis2.utils.session.PinModule;
@@ -101,7 +102,7 @@ public interface UserComponent {
     SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
 
     @NonNull
-    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
+    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule, @NonNull ViewModelFactoryModule viewModelFactoryModule);
 
     @NonNull
     QrComponent plus(@NonNull QrModule qrModule);
@@ -152,7 +153,7 @@ public interface UserComponent {
     ReservedValuesWorkerComponent plus(ReservedValuesWorkerModule reservedValuesWorkerModule);
 
     @NonNull
-    EventCaptureComponent plus(EventCaptureModule eventCaptureModule);
+    EventCaptureComponent plus(EventCaptureModule eventCaptureModule, ViewModelFactoryModule viewModelFactoryModule);
 
     @NonNull
     SmsComponent plus(SmsModule smsModule);

@@ -17,11 +17,11 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter" />
+            type="org.dhis2.usescases.teidashboard.dashboardfragments.teidata.TEIDataPresenter" />
 
         <variable
             name="dashboardModel"
-            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+            type="org.dhis2.usescases.teidashboard.DashboardProgramModel" />
 
         <variable
             name="program"
@@ -204,7 +204,7 @@
                     android:textSize="12sp"
                     android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/incident_date_label"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Date of enrollment:" />
 
                 <TextView

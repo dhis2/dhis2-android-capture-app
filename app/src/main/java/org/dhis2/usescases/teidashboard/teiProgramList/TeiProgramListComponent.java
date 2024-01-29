@@ -1,0 +1,16 @@
+package org.dhis2.usescases.teidashboard.teiProgramList;
+
+import org.dhis2.commons.di.dagger.PerActivity;
+
+import dagger.Subcomponent;
+
+/**
+ * Created by Cristian on 13/02/2018.
+ *
+ */
+
+@PerActivity
+@Subcomponent(modules = TeiProgramListModule.class)
+public interface TeiProgramListComponent {
+    void inject(TeiProgramListActivity activity);
+}

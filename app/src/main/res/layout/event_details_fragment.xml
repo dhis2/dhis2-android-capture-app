@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment">
+    tools:context=".usescases.eventswithoutregistration.eventDetails.ui.EventDetailsFragment">
 
     <data>
 
@@ -10,11 +10,11 @@
 
         <import type="org.hisp.dhis.android.core.common.FeatureType" />
 
-        <import type="org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus" />
+        <import type="org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventTempStatus" />
 
         <variable
             name="viewModel"
-            type="org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsViewModel" />
+            type="org.dhis2.usescases.eventswithoutregistration.eventDetails.ui.EventDetailsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

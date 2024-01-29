@@ -92,14 +92,14 @@
             android:configChanges="keyboardHidden|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden"
             />
-        <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
+        <activity android:name=".usescases.teidashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.qrScanner.ScanActivity" />
-        <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
+        <activity android:name=".usescases.teidashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name="org.dhis2.maps.views.MapSelectorActivity" />
         <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
         <activity android:name=".utils.WebViewActivity" />
         <activity
-            android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
+            android:name=".usescases.eventswithoutregistration.eventinitial.EventInitialActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
@@ -125,8 +125,8 @@
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
         <activity
-            android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:name=".usescases.eventswithoutregistration.eventcapture.EventCaptureActivity"
+            android:configChanges="keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
 

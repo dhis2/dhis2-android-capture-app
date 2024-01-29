@@ -33,10 +33,10 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.events.ScheduledEventActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.hisp.dhis.android.core.common.FeatureType
@@ -218,6 +218,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     eventUid,
                     presenter.getProgram()?.uid() ?: "",
                     EventMode.CHECK,
+                    "",
+                    "",
                 ),
             )
             eventCreationIntent.putExtra(

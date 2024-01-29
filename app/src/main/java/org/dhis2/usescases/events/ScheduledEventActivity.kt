@@ -18,10 +18,10 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.ActivityEventScheduledBinding
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.models.EventDate
+import org.dhis2.usescases.eventswithoutregistration.eventDetails.providers.ProvideInputDate
+import org.dhis2.usescases.eventswithoutregistration.eventcapture.EventCaptureActivity
+import org.dhis2.usescases.eventswithoutregistration.eventinitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.EventMode
@@ -36,13 +36,17 @@ import java.util.Date
 import javax.inject.Inject
 
 const val EXTRA_EVENT_UID = "EVENT_UID"
+const val TEI_UID = "TEI_UID"
+const val ENROLLMENT_UID = "ENROLLMENT_UID"
 
 class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.View {
 
     companion object {
-        fun getIntent(context: Context, eventUid: String): Intent {
+        fun getIntent(context: Context, eventUid: String, teiUid: String = "", enrollmentUid: String = ""): Intent {
             val intent = Intent(context, ScheduledEventActivity::class.java)
             intent.putExtra(EXTRA_EVENT_UID, eventUid)
+            intent.putExtra(TEI_UID, teiUid)
+            intent.putExtra(ENROLLMENT_UID, enrollmentUid)
             return intent
         }
     }
@@ -51,6 +55,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     private lateinit var program: Program
     private lateinit var event: Event
     private lateinit var binding: ActivityEventScheduledBinding
+    private var teiUid: String? = ""
+    private var enrollmentUid: String? = ""
 
     @Inject
     lateinit var presenter: ScheduledEventContract.Presenter
@@ -69,6 +75,14 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_scheduled)
         binding.presenter = presenter
+
+        teiUid = intent.extras?.getString(
+            TEI_UID,
+        )
+
+        enrollmentUid = intent.extras?.getString(
+            ENROLLMENT_UID,
+        )
     }
 
     override fun onResume() {
@@ -270,6 +284,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             event.uid(),
             program.uid(),
             EventMode.CHECK,
+            this.teiUid,
+            this.enrollmentUid,
         )
         Intent(activity, EventCaptureActivity::class.java).apply {
             putExtras(bundle)
