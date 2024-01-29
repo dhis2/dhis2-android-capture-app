@@ -1,4 +1,4 @@
-Android Capture App for DHIS 2 (v2.8.2) - Patch version
+Android Capture App for DHIS 2 (v2.9.1) - Patch version
 <table>
 <tr> 
 <td> 
@@ -54,7 +54,7 @@ It includes no functional improvements neither changes in the User Interface. It
 * [ANDROAPP-5261](https://dhis2.atlassian.net/browse/ANDROAPP-5261) The animation of the input bottom bar is not smooth.
 * [ANDROAPP-5249](https://dhis2.atlassian.net/browse/ANDROAPP-5249) Resizing for all columns difficult use
 * [ANDROAPP-5130](https://dhis2.atlassian.net/browse/ANDROAPP-5130) Follow-up clicks can be skipped by the app when entering data into tables.
-* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.8.2.
+* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.9.1-20240109.100903-15.
     
 You can find in Jira details on the [bugs fixed](https://dhis2.atlassian.net/issues/?filter=10554) in this version.
 
