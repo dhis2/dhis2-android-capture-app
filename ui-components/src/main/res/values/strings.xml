@@ -14,6 +14,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="hint_search">Search</string>
     <string name="action_clear_all">Clear all</string>
+    <string name="form_without_fields">This form has no fields configured</string>
     <plurals name="error_count">
         <item quantity="one">%s error</item>
         <item quantity="other">%s errors</item>
