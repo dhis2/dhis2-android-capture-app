@@ -1,13 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -245,8 +239,6 @@ fun ProvideCategorySelector(
             dropdownItems = dropdownItems,
             isRequiredField = eventCatComboUiModel.required,
         )
-
-
     } else {
         ProvideEmptyCategorySelector(modifier = modifier, name = eventCatComboUiModel.category.name, option = eventCatComboUiModel.noOptionsText)
     }
@@ -267,7 +259,7 @@ fun ProvideEmptyCategorySelector(
         modifier = modifier,
         title = name,
         state = InputShellState.UNFOCUSED,
-        selectedItem = DropdownItem(selectedItem ?: ""),
+        selectedItem = DropdownItem(selectedItem),
         onResetButtonClicked = {
             selectedItem = ""
         },

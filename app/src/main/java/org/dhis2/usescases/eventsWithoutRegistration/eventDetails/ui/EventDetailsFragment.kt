@@ -36,6 +36,10 @@ import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
