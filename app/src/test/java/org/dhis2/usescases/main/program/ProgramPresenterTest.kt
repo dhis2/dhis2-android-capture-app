@@ -64,7 +64,6 @@ class ProgramPresenterTest {
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
         verify(view).showFilterProgress()
-        verify(view).swapProgramModelData(programs)
         verify(view).openOrgUnitTreeSelector()
     }
 

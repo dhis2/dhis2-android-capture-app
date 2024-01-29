@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.program
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
@@ -23,7 +24,8 @@ class ProgramPresenter internal constructor(
     private val syncStatusController: SyncStatusController,
 ) {
 
-    private val programs = MutableLiveData<List<ProgramViewModel>>(emptyList())
+    private val _programs = MutableLiveData<List<ProgramViewModel>>()
+    val programs: LiveData<List<ProgramViewModel>> = _programs
     private val refreshData = PublishProcessor.create<Unit>()
     var disposable: CompositeDisposable = CompositeDisposable()
 
@@ -48,8 +50,7 @@ class ProgramPresenter internal constructor(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { programs ->
-                        this.programs.postValue(programs)
-                        view.swapProgramModelData(programs)
+                        _programs.postValue(programs)
                     },
                     { throwable -> Timber.d(throwable) },
                     { Timber.tag("INIT DATA").d("LOADING ENDED") },
@@ -118,8 +119,6 @@ class ProgramPresenter internal constructor(
     fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit>) {
         filterManager.addOrgUnits(selectedOrgUnits)
     }
-
-    fun programs() = programs
 
     fun downloadState() = syncStatusController.observeDownloadProcess()
 
