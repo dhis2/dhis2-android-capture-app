@@ -67,7 +67,7 @@ fun Form(
             }
         }
     }
-    if (sections.isNotEmpty() && sections[0].uid != "DUMMY") {
+    if (sections.isNotEmpty()) {
     val focusNext = remember { mutableStateOf(false) }
     LazyColumn(
         modifier = Modifier
