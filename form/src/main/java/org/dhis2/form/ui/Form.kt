@@ -217,7 +217,9 @@ private fun LaunchIfTrue(key: Boolean, block: suspend CoroutineScope.() -> Unit)
             block()
         }
     }
+
 }
+
 
 private fun getNextSection(section: FormSection, sections: List<FormSection>): FormSection? {
     val currentIndex = sections.indexOf(section)
