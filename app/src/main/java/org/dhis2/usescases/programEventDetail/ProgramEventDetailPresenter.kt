@@ -66,12 +66,7 @@ class ProgramEventDetailPresenter(
                 ),
         )
         compositeDisposable.add(
-            Single.zip(
-                Single.just(eventRepository.getAccessDataWrite()),
-                eventRepository.hasAccessToAllCatOptions(),
-            ) { hasWritePermission, hasAccessToAllCatOptions ->
-                hasWritePermission && hasAccessToAllCatOptions
-            }
+            Single.just(eventRepository.getAccessDataWrite())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

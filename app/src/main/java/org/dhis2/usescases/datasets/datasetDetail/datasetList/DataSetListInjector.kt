@@ -7,6 +7,7 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
 
 @PerFragment
@@ -24,10 +25,12 @@ class DataSetListModule {
         schedulerProvider: SchedulerProvider,
         filterManager: FilterManager,
         matomoAnalyticsController: MatomoAnalyticsController,
+        dispatcher: DispatcherProvider,
     ): DataSetListViewModelFactory = DataSetListViewModelFactory(
         dataSetDetailRepository,
         schedulerProvider,
         filterManager,
         matomoAnalyticsController,
+        dispatcher,
     )
 }

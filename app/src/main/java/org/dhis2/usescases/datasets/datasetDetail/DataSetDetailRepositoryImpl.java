@@ -1,8 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-
 import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
-
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -13,21 +11,19 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
-import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsSetting;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
 import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
@@ -58,7 +54,6 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             repo = repo.byPeriodStartDate().inDatePeriods(periodFilter);
         if (!catOptComboFilters.isEmpty())
             repo = repo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptComboFilters));
-
         d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet();
         int dataSetOrgUnitNumber = d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(Collections.singletonList(dataSetUid))

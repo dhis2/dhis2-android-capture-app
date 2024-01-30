@@ -6,15 +6,15 @@ print("*** Update Github notes ***")
 
 JIRA_AUTH = os.environ.get('JIRA_AUTH')
 JIRA_FILTER = os.environ.get('FILTER_ID')
-RELEASE_INFO_PATH = '../release.info'
+RELEASE_INFO_PATH = '../gradle/libs.versions.toml'
 RELEASE_MD_PATH = '../RELEASE.md'
 
 release_versions = {}
 with open(RELEASE_INFO_PATH, 'r') as file:
     for line in file:
-        y = line.strip().split(":")
-        release_versions[y[0]] = str(y[1])
-
+        y = line.strip().split(" = ")
+        if len(y) == 2:
+            release_versions[y[0]] = str(y[1])
 
 print("Getting issues from filter version...")
 print(JIRA_FILTER)
@@ -42,13 +42,13 @@ content_footer = '''
 </tr>
 </table>'''
 f = open(RELEASE_MD_PATH, "w")
-f.write("Android Capture App for DHIS 2 (v" + release_versions["vName"] + ") - Patch version\n")
+f.write("Android Capture App for DHIS 2 (v" + release_versions.get('vName').replace("\"", "") + ") - Patch version\n")
 f.write(content_header)
 f.write("\n## Bugs fixed\n")
 for issue in filtered_issues['issues']:
     f.write("* [" + issue['key'] + "](https://dhis2.atlassian.net/browse/" + issue['key'] + ") " +
             issue['fields']['summary'] + "\n")
-f.write('''* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version ''' + release_versions["sdkVersion"] + '''.
+f.write('''* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version ''' + release_versions.get('dhis2sdk').replace("\"", "") + '''.
     
 You can find in Jira details on the [bugs fixed](https://dhis2.atlassian.net/issues/?filter=''' + JIRA_FILTER + ''') in this version.
 
