@@ -65,17 +65,17 @@ fun Form(
     }
     if (sections.isNotEmpty()) {
         LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .clickable(
-                interactionSource = MutableInteractionSource(),
-                indication = null,
-                onClick = { focusManager.clearFocus() },
-            ),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-        state = scrollState,
-    ) {
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null,
+                    onClick = { focusManager.clearFocus() },
+                ),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            state = scrollState,
+        ) {
             this.itemsIndexed(
                 items = sections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
@@ -115,28 +115,54 @@ fun Form(
                         intentHandler.invoke(FormIntent.OnSection(section.uid))
                     },
                     content = {
-                        section.fields.forEachIndexed { index, fieldUiModel ->
-                            fieldUiModel.setCallback(callback)
-                            FieldProvider(
-                                modifier = Modifier.animateItemPlacement(
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = LinearOutSlowInEasing,
+                        if (sections.size >= 2 && section.fields.isNotEmpty()) {
+                            section.fields.forEachIndexed { index, fieldUiModel ->
+                                fieldUiModel.setCallback(callback)
+                                FieldProvider(
+                                    modifier = Modifier.animateItemPlacement(
+                                        animationSpec = tween(
+                                            durationMillis = 500,
+                                            easing = LinearOutSlowInEasing,
+                                        ),
                                     ),
-                                ),
-                                fieldUiModel = fieldUiModel,
-                                uiEventHandler = uiEventHandler,
-                                intentHandler = intentHandler,
-                                resources = resources,
-                                focusManager = focusManager,
-                                onNextClicked = {
-                                    if (index == section.fields.size - 1) {
-                                        onNextSection()
-                                    } else {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                },
-                            )
+                                    fieldUiModel = fieldUiModel,
+                                    uiEventHandler = uiEventHandler,
+                                    intentHandler = intentHandler,
+                                    resources = resources,
+                                    focusManager = focusManager,
+                                    onNextClicked = {
+                                        if (index == section.fields.size - 1) {
+                                            onNextSection()
+                                        } else {
+                                            focusManager.moveFocus(FocusDirection.Down)
+                                        }
+                                    },
+                                )
+                            }
+                        } else {
+                            Column(
+                                modifier = Modifier
+                                    .height(120.dp),
+                            ) {
+                                InfoBar(
+                                    infoBarData = InfoBarData(
+                                        text = resources.getString(R.string.form_without_fields),
+                                        icon = {
+                                            Icon(
+                                                imageVector = Icons.Outlined.ErrorOutline,
+                                                contentDescription = "no fields",
+                                                tint = SurfaceColor.Warning,
+                                            )
+                                        },
+                                        color = SurfaceColor.Warning,
+                                        backgroundColor = SurfaceColor.WarningContainer,
+                                        actionText = null,
+                                        onClick = null,
+                                    ),
+                                    modifier = Modifier
+                                        .background(SurfaceColor.WarningContainer),
+                                )
+                            }
                         }
                     },
                 )
@@ -146,8 +172,9 @@ fun Form(
             }
         }
     } else {
-        Column(modifier = Modifier
-            .height(120.dp)
+        Column(
+            modifier = Modifier
+                .height(120.dp),
         ) {
             InfoBar(
                 infoBarData = InfoBarData(
@@ -155,23 +182,21 @@ fun Form(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.ErrorOutline,
-                            contentDescription = "not synced",
+                            contentDescription = "no fields",
                             tint = SurfaceColor.Warning,
                         )
                     },
                     color = SurfaceColor.Warning,
                     backgroundColor = SurfaceColor.WarningContainer,
                     actionText = null,
-                    onClick = null
+                    onClick = null,
                 ),
                 modifier = Modifier
-                    .background(SurfaceColor.WarningContainer)
+                    .background(SurfaceColor.WarningContainer),
             )
         }
     }
-
 }
-
 
 private fun getNextSection(section: FormSection, sections: List<FormSection>): FormSection? {
     val currentIndex = sections.indexOf(section)
