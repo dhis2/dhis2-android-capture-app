@@ -293,8 +293,6 @@ class EventInitialTest {
                     detailsEnabled = details.enabled,
                     currentDate = date.currentDate,
                     selectedOrgUnit = details.selectedOrgUnit,
-                    onShowCategoryDialog = {
-                    },
                     onClearCatCombo = {
                     },
                     onOptionSelected = {
