@@ -1,12 +1,8 @@
-This new version includes the following features:
-- New design for Dataset, Event and TEI cards
-- Implement changes in TEI Dashboard details
-- Data entry forms redesigned
-- Disable collapsible sections in forms
-- Disable referral in tracker programs
-- [EXPERIMENTAL] TEI Header
-- Move working lists under the search bar
-- Skip home if users only have access to one program
-- Display program stage description
+This is a patch version that fixes:
+- ANDROAPP-5749 Incorrect behavior when tapping on Next on sections that are too long
+- ANDROAPP-5885 Data set indicators don't update until the user moves to a different cell
+- ANDROAPP-5741 [Local Analytics] App crashes if charts are empty
+- ANDROAPP-5604	App crashes when one attempts to synchronise TEI and events imported via QR code
+- ANDROAPP-5872 Search in stock management is not updating the list
 
-You can find all details in Github (github.com/dhis2/dhis2-android-capture-app) releases
+You can find all the details on Jira and Github.

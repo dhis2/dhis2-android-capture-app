@@ -17,7 +17,6 @@ interface ProgramEventDetailRepository {
     fun filteredEventsForMap(): Flowable<ProgramEventMapData>
     fun program(): Single<Program?>
     fun getAccessDataWrite(): Boolean
-    fun hasAccessToAllCatOptions(): Single<Boolean>
     fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel>
     fun featureType(): Single<FeatureType>
     fun getCatOptCombo(selectedCatOptionCombo: String): CategoryOptionCombo?

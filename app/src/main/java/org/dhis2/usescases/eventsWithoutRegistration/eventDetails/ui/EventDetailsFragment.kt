@@ -9,12 +9,9 @@ import android.view.ViewGroup
 import android.widget.DatePicker
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -39,16 +36,21 @@ import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideEmptyCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.category.CategoryDialog
-import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -142,80 +144,14 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             val coordinates by viewModel.eventCoordinates.collectAsState()
             val eventTemp by viewModel.eventTemp.collectAsState()
 
-            Column {
-                if (date.active) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ProvideInputDate(
-                        eventDate = date,
-                        detailsEnabled = details.enabled,
-                        onDateClick = { viewModel.onDateClick() },
-                        onDateSet = { dateValues ->
-                            viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
-                        },
-                        onClear = { viewModel.onClearEventReportDate() },
-                        required = true,
-                    )
-                }
-                if (orgUnit.visible) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ProvideOrgUnit(
-                        orgUnit = orgUnit,
-                        detailsEnabled = details.enabled,
-                        onOrgUnitClick = { viewModel.onOrgUnitClick() },
-                        resources = resourceManager,
-                        onClear = {
-                            viewModel.onClearOrgUnit()
-                        },
-                        required = true,
-                    )
-                }
-
-                if (!catCombo.isDefault) {
-                    catCombo.categories.forEach { category ->
-                        Spacer(modifier = Modifier.height(16.dp))
-                        ProvideCategorySelector(
-                            category = category,
-                            eventCatCombo = catCombo,
-                            detailsEnabled = details.enabled,
-                            currentDate = date.currentDate,
-                            selectedOrgUnit = details.selectedOrgUnit,
-                            onShowCategoryDialog = {
-                                showCategoryDialog(it)
-                            },
-                            onClearCatCombo = {
-                                viewModel.onClearCatCombo()
-                            },
-                            onOptionSelected = {
-                                val selectedOption = Pair(category.uid, it?.uid())
-                                viewModel.setUpCategoryCombo(selectedOption)
-                            },
-
-                            required = true,
-                        )
-                    }
-                }
-
-                if (coordinates.active) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ProvideCoordinates(
-                        coordinates = coordinates,
-                        detailsEnabled = details.enabled,
-                        resources = resourceManager,
-                    )
-                }
-
-                if (eventTemp.active) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ProvideRadioButtons(
-                        eventTemp = eventTemp,
-                        detailsEnabled = details.enabled,
-                        resources = resourceManager,
-                        onEventTempSelected = {
-                            viewModel.setUpEventTemp(it)
-                        },
-                    )
-                }
-            }
+            ProvideNewEventForm(
+                date = date,
+                details = details,
+                orgUnit = orgUnit,
+                catCombo = catCombo,
+                coordinates = coordinates,
+                eventTemp = eventTemp,
+            )
         }
         return binding.root
     }
@@ -291,6 +227,84 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         }
     }
 
+    @Composable
+    private fun ProvideNewEventForm(
+        date: EventDate,
+        details: EventDetails,
+        orgUnit: EventOrgUnit,
+        catCombo: EventCatCombo,
+        coordinates: EventCoordinates,
+        eventTemp: EventTemp,
+    ) {
+        Column {
+            ProvideInputDate(
+                EventInputDateUiModel(
+                    eventDate = date,
+                    detailsEnabled = details.enabled,
+                    onDateClick = { viewModel.onDateClick() },
+                    onDateSet = { dateValues ->
+                        viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
+                    },
+                    onClear = { viewModel.onClearEventReportDate() },
+                    required = true,
+                    showField = date.active,
+                ),
+            )
+            ProvideOrgUnit(
+                orgUnit = orgUnit,
+                detailsEnabled = details.enabled,
+                onOrgUnitClick = { viewModel.onOrgUnitClick() },
+                resources = resourceManager,
+                onClear = {
+                    viewModel.onClearOrgUnit()
+                },
+                required = true,
+                showField = orgUnit.visible,
+            )
+
+            if (!catCombo.isDefault && catCombo.categories.isNotEmpty()) {
+                catCombo.categories.forEach { category ->
+                    ProvideCategorySelector(
+                        eventCatComboUiModel = EventCatComboUiModel(
+                            category = category,
+                            eventCatCombo = catCombo,
+                            detailsEnabled = details.enabled,
+                            currentDate = date.currentDate,
+                            selectedOrgUnit = details.selectedOrgUnit,
+                            onClearCatCombo = {
+                                viewModel.onClearCatCombo()
+                            },
+                            onOptionSelected = {
+                                val selectedOption = Pair(category.uid, it?.uid())
+                                viewModel.setUpCategoryCombo(selectedOption)
+                            },
+                            required = true,
+                            noOptionsText = getString(R.string.no_options),
+                            catComboText = getString(R.string.cat_combo),
+                        ),
+                    )
+                }
+            } else if (!catCombo.isDefault) {
+                ProvideEmptyCategorySelector(name = catCombo.displayName ?: getString(R.string.cat_combo), option = getString(R.string.no_options))
+            }
+            ProvideCoordinates(
+                coordinates = coordinates,
+                detailsEnabled = details.enabled,
+                resources = resourceManager,
+                showField = coordinates.active,
+            )
+            ProvideRadioButtons(
+                eventTemp = eventTemp,
+                detailsEnabled = details.enabled,
+                resources = resourceManager,
+                onEventTempSelected = {
+                    viewModel.setUpEventTemp(it)
+                },
+                showField = eventTemp.active,
+            )
+        }
+    }
+
     private fun showCalendarDialog() {
         val dialog = CalendarPicker(requireContext())
         dialog.setInitialDate(viewModel.eventDate.value.currentDate)
@@ -344,18 +358,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showNoOrgUnitsDialog() {
         showInfoDialog(getString(R.string.error), getString(R.string.no_org_units))
-    }
-
-    private fun showCategoryDialog(category: EventCategory) {
-        CategoryDialog(
-            CategoryDialog.Type.CATEGORY_OPTIONS,
-            category.uid,
-            true,
-            viewModel.eventDate.value.currentDate,
-        ) { categoryOption ->
-            val selectedOption = Pair(category.uid, categoryOption)
-            viewModel.setUpCategoryCombo(selectedOption)
-        }.show(requireActivity().supportFragmentManager, TAG)
     }
 
     private fun getEventCreationType(typeString: String?): EventCreationType {

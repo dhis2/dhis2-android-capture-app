@@ -38,6 +38,16 @@ data class EventViewModel(
         return type == EventViewModelType.EVENT && event?.eventDate() != null &&
             event.eventDate()?.after(today) == true
     }
+
+    fun applyHideStage(hidden: Boolean): EventViewModel? {
+        return when {
+            type == EventViewModelType.STAGE && hidden -> when {
+                eventCount > 0 -> copy(canAddNewEvent = false)
+                else -> null
+            }
+            else -> this
+        }
+    }
 }
 
 fun List<EventViewModel>.uids(): List<String> {

@@ -160,6 +160,7 @@
     <string name="event_was_deleted">Event deleted successfully</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Most recent event date</string>
+    <string name="no_options">No options available</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment List</string>
@@ -973,4 +974,5 @@
     <string name="mark_follow_up">Mark for follow-up</string>
     <string name="remove">Remove</string>
     <string name="coordinates">Coordinates</string>
+    <string name="no_data_access">You don’t have access to data.\nContact your administrator.</string>
 </resources>

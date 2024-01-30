@@ -328,8 +328,6 @@ internal fun FieldProvider(
                         ProvideInputSignature(
                             modifier = modifierWithFocus,
                             fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                            uiEventHandler = uiEventHandler,
                         )
                     }
 
@@ -353,6 +351,7 @@ internal fun FieldProvider(
                             fieldUiModel = fieldUiModel,
                         )
                     }
+
                     else -> {
                         ProvideInputCoordinate(
                             modifier = modifierWithFocus,
@@ -375,6 +374,7 @@ internal fun FieldProvider(
                     resources = resources,
                 )
             }
+
             ValueType.REFERENCE,
             ValueType.GEOJSON,
             ValueType.USERNAME,
