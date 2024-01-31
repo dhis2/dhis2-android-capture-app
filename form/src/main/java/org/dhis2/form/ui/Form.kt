@@ -68,19 +68,19 @@ fun Form(
         }
     }
     if (sections.isNotEmpty()) {
-    val focusNext = remember { mutableStateOf(false) }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .clickable(
-                interactionSource = MutableInteractionSource(),
-                indication = null,
-                onClick = { focusManager.clearFocus() },
-            ),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-        state = scrollState,
-    ) {
+        val focusNext = remember { mutableStateOf(false) }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null,
+                    onClick = { focusManager.clearFocus() },
+                ),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            state = scrollState,
+        ) {
             this.itemsIndexed(
                 items = sections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
