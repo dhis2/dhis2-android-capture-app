@@ -68,6 +68,7 @@ fun Form(
         }
     }
     if (sections.isNotEmpty()) {
+        val focusNext = remember { mutableStateOf(false) }
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -136,6 +137,7 @@ fun Form(
                                     onNextClicked = {
                                         if (index == section.fields.size - 1) {
                                             onNextSection()
+                                            focusNext.value = true
                                         } else {
                                             focusManager.moveFocus(FocusDirection.Down)
                                         }
