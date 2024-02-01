@@ -46,7 +46,11 @@ class EnrollmentRepository(
 
     override fun sectionUids(): Flowable<List<String>> {
         val sectionUids = mutableListOf(ENROLLMENT_DATA_SECTION_UID)
-        sectionUids.addAll(programSections.map { it.uid() })
+        if (programSections.isEmpty()) {
+            sectionUids.add(SINGLE_SECTION_UID)
+        } else {
+            sectionUids.addAll(programSections.map { it.uid() })
+        }
         return Flowable.just(sectionUids)
     }
 
@@ -442,7 +446,7 @@ class EnrollmentRepository(
     }
 
     override fun firstSectionToOpen(): String? {
-        return if (isEnrollmentDataCompleted()) {
+        return if (enrollmentMode == EnrollmentMode.CHECK && isEnrollmentDataCompleted()) {
             sectionUids().blockingFirst().filterIndexed { index, _ -> index != 0 }.firstOrNull()
         } else {
             super.firstSectionToOpen()
