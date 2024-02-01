@@ -141,7 +141,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
             binding.filterLayout.adapter = filtersAdapter
             presenter.shouldDisplayEventCreationButton.observe(this.viewLifecycleOwner) { showCreateEventButton ->
-                binding.dialFabLayout.setFabVisible(showCreateEventButton)
+                binding.dialFabLayout.visibility = if (showCreateEventButton) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
             }
         }.root
     }
