@@ -72,6 +72,8 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipComponent;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipModule;
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingComponent;
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 import org.dhis2.utils.optionset.OptionSetComponent;
@@ -204,4 +206,7 @@ public interface UserComponent {
 
     @NonNull
     SessionComponent plus(PinModule pinModule);
+
+    @NonNull
+    SchedulingComponent plus(SchedulingModule schedulingModule);
 }

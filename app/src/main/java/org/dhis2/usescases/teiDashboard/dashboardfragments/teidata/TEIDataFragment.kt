@@ -29,6 +29,7 @@ import org.dhis2.commons.animations.collapse
 import org.dhis2.commons.animations.expand
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
@@ -53,6 +54,8 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.CategoryDialogInteractions
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG
 import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
@@ -377,26 +380,19 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return Consumer { programStageModel: ProgramStage ->
             programStageFromEvent = programStageModel
             if (programStageModel.displayGenerateEventBox() == true || programStageModel.allowGenerateNextVisit() == true) {
-                dialog = CustomDialog(
-                    requireContext(),
-                    getString(R.string.dialog_generate_new_event),
-                    getString(R.string.message_generate_new_event),
-                    getString(R.string.button_ok),
-                    getString(R.string.cancel),
-                    RC_GENERATE_EVENT,
-                    object : DialogClickListener {
-                        override fun onPositive() {
-                            presenter.onAcceptScheduleNewEvent(
-                                programStageModel.standardInterval() ?: 0,
-                            )
-                        }
-
-                        override fun onNegative() {
-                            if (programStageFromEvent?.remindCompleted() == true) presenter.areEventsCompleted()
+                SchedulingDialog(
+                    enrollment = dashboardModel.currentEnrollment,
+                    programStages = eventAdapter?.currentList
+                        ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
+                        ?.mapNotNull { it.stage }
+                        ?: emptyList(),
+                    onScheduled = {
+                        showToast(getString(R.string.event_created))
+                        binding.isGrouping?.let {
+                            presenter.onGroupingChanged(it)
                         }
                     },
-                )
-                dialog?.show()
+                ).show(childFragmentManager, SCHEDULING_DIALOG)
             } else if (java.lang.Boolean.TRUE == programStageModel.remindCompleted()) showDialogCloseProgram()
         }
     }

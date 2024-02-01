@@ -1,6 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 
 import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.form.model.FieldUiModel
@@ -17,6 +19,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventCreateProjection
 import org.hisp.dhis.android.core.event.EventEditableStatus
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.event.EventStatus
@@ -24,6 +27,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Calendar
 import java.util.Date
 
 class EventDetailsRepository(
@@ -31,7 +35,7 @@ class EventDetailsRepository(
     private val programUid: String,
     private val eventUid: String?,
     private val programStageUid: String?,
-    private val fieldFactory: FieldViewModelFactory,
+    private val fieldFactory: FieldViewModelFactory?,
     private val onError: (Throwable) -> String?,
 ) {
 
@@ -173,7 +177,7 @@ class EventDetailsRepository(
             d2.eventModule().events().uid(eventUid).blockingGet()?.geometry()?.coordinates()
         }
 
-        return fieldFactory.create(
+        return fieldFactory!!.create(
             id = "",
             label = "",
             valueType = ValueType.COORDINATE,
@@ -324,5 +328,34 @@ class EventDetailsRepository(
                 d2Error,
             ),
         )
+    }
+
+    fun scheduleEvent(
+        enrollmentUid: String?,
+        dueDate: Date,
+        orgUnitUid: String?,
+        categoryOptionComboUid: String?,
+    ): Flow<String?> = flow {
+        val cal = Calendar.getInstance()
+        cal.time = dueDate
+        cal[Calendar.HOUR_OF_DAY] = 0
+        cal[Calendar.MINUTE] = 0
+        cal[Calendar.SECOND] = 0
+        cal[Calendar.MILLISECOND] = 0
+
+        val uid = d2.eventModule().events().blockingAdd(
+            EventCreateProjection.builder()
+                .enrollment(enrollmentUid)
+                .program(programUid)
+                .programStage(programStageUid)
+                .organisationUnit(orgUnitUid)
+                .attributeOptionCombo(categoryOptionComboUid)
+                .build(),
+        )
+        val eventRepository = d2.eventModule().events().uid(uid)
+        eventRepository.setDueDate(cal.time)
+        eventRepository.setStatus(EventStatus.SCHEDULE)
+
+        emit(uid)
     }
 }

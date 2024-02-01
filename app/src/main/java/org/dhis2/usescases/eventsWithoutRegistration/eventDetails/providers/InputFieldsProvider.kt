@@ -207,11 +207,13 @@ fun ProvideCategorySelector(
     modifier: Modifier = Modifier,
     eventCatComboUiModel: EventCatComboUiModel,
 ) {
-    var selectedItem by remember {
-        mutableStateOf(
-            eventCatComboUiModel.eventCatCombo.selectedCategoryOptions[eventCatComboUiModel.category.uid]?.displayName()
-                ?: eventCatComboUiModel.eventCatCombo.categoryOptions?.get(eventCatComboUiModel.category.uid)?.displayName(),
-        )
+    var selectedItem by with(eventCatComboUiModel) {
+        remember(this) {
+            mutableStateOf(
+                eventCatCombo.selectedCategoryOptions[category.uid]?.displayName()
+                    ?: eventCatCombo.categoryOptions?.get(category.uid)?.displayName(),
+            )
+        }
     }
 
     val selectableOptions = eventCatComboUiModel.category.options
