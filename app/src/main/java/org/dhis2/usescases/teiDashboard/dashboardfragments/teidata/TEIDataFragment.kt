@@ -376,28 +376,23 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun displayGenerateEvent(): Consumer<ProgramStage> {
-        return Consumer { programStageModel: ProgramStage ->
-            programStageFromEvent = programStageModel
-            if (programStageModel.displayGenerateEventBox() == true || programStageModel.allowGenerateNextVisit() == true) {
-                SchedulingDialog(
-                    enrollment = dashboardModel.currentEnrollment,
-                    programStages = eventAdapter?.currentList
-                        ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
-                        ?.mapNotNull { it.stage }
-                        ?: emptyList(),
-                    onScheduled = {
-                        showToast(getString(R.string.event_created))
-                        binding.isGrouping?.let {
-                            presenter.onGroupingChanged(it)
-                        }
-                    },
-                ).show(childFragmentManager, SCHEDULING_DIALOG)
-            } else if (java.lang.Boolean.TRUE == programStageModel.remindCompleted()) showDialogCloseProgram()
-        }
+    override fun displayScheduleEvent() {
+        SchedulingDialog(
+            enrollment = dashboardModel.currentEnrollment,
+            programStages = eventAdapter?.currentList
+                ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
+                ?.mapNotNull { it.stage }
+                ?: emptyList(),
+            onScheduled = {
+                showToast(getString(R.string.event_created))
+                binding.isGrouping?.let {
+                    presenter.onGroupingChanged(it)
+                }
+            },
+        ).show(childFragmentManager, SCHEDULING_DIALOG)
     }
 
-    private fun showDialogCloseProgram() {
+    override fun showDialogCloseProgram() {
         dialog = CustomDialog(
             requireContext(),
             resourceManager.formatWithEventLabel(

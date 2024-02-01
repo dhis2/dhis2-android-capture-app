@@ -23,7 +23,8 @@ class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
         fun viewLifecycleOwner(): LifecycleOwner
         fun setEvents(events: List<EventViewModel>)
-        fun displayGenerateEvent(): Consumer<ProgramStage>
+        fun displayScheduleEvent()
+        fun showDialogCloseProgram()
         fun areEventsCompleted(): Consumer<Single<Boolean>>
         fun enrollmentCompleted(): Consumer<EnrollmentStatus>
         fun switchFollowUp(followUp: Boolean)
