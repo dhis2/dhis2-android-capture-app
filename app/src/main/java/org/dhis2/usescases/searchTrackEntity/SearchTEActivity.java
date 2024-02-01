@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import static android.view.View.GONE;
+import static org.dhis2.usescases.searchTrackEntity.ui.SearchFormScreenKt.initSearchScreen;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,7 +25,6 @@ import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
-import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -35,7 +35,6 @@ import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
-import org.dhis2.form.model.SearchRecords;
 import org.dhis2.form.ui.FormView;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -155,9 +154,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         viewModel = new ViewModelProvider(this, viewModelFactory).get(SearchTEIViewModel.class);
 
-        initSearchForm();
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
+
+        initSearchParameters();
 
         searchScreenConfigurator = new SearchScreenConfigurator(
                 binding,
@@ -359,8 +358,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         viewModel.refreshData();
     }
 
-    private void initSearchForm() {
-        formView = new FormView.Builder()
+    private void initSearchParameters() {
+        /*formView = new FormView.Builder()
                 .locationProvider(locationProvider)
                 .onItemChangeListener(action -> {
                     viewModel.updateQueryData(action);
@@ -381,7 +380,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 ))
                 .build();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.formViewContainer, formView).commit();
+        transaction.replace(R.id.searchContainer, formView).commit();*/
+        initSearchScreen(binding.searchContainer);
     }
 
     private void configureBottomNavigation() {

@@ -195,8 +195,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
 
-            <FrameLayout
-                android:id="@+id/formViewContainer"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/searchContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"

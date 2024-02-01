@@ -103,7 +103,7 @@ class SearchScreenConfigurator(
 
     private fun openFilters() {
         binding.filterRecyclerLayout.visibility = View.VISIBLE
-        binding.formViewContainer.visibility = View.GONE
+        binding.searchContainer.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(true)
         changeBounds(R.id.filterRecyclerLayout, 16.dp)
@@ -111,7 +111,7 @@ class SearchScreenConfigurator(
 
     fun closeBackdrop() {
         binding.filterRecyclerLayout.visibility = View.GONE
-        binding.formViewContainer.visibility = View.GONE
+        binding.searchContainer.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.show()
         filterIsOpenCallback(false)
         changeBounds(R.id.backdropGuideTop, 0)
@@ -119,10 +119,10 @@ class SearchScreenConfigurator(
 
     private fun openSearch() {
         binding.filterRecyclerLayout.visibility = View.GONE
-        binding.formViewContainer.visibility = View.VISIBLE
+        binding.searchContainer.visibility = View.VISIBLE
         if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(false)
-        changeBounds(R.id.formViewContainer, 0)
+        changeBounds(R.id.searchContainer, 0)
     }
 
     private fun changeBounds(endID: Int, margin: Int) {
