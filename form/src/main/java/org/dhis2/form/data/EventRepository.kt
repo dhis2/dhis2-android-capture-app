@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.bindings.blockingGetValueCheck
 import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -22,7 +23,7 @@ class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
     private val d2: D2,
-) : DataEntryBaseRepository(d2, fieldFactory) {
+) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
 
     private val event by lazy {
         d2.eventModule().events().uid(eventUid)

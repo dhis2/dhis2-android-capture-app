@@ -21,6 +21,7 @@ import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
 import org.dhis2.form.data.SearchRepository
+import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
@@ -157,8 +158,7 @@ object Injector {
                 enrollmentRecords.allowMandatoryFields,
                 enrollmentRecords.isBackgroundTransparent,
             ),
-            enrollmentUid = enrollmentRecords.enrollmentUid,
-            d2 = provideD2(),
+            conf = EnrollmentConfiguration(provideD2(), enrollmentRecords.enrollmentUid),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
         )

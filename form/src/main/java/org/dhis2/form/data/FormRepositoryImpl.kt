@@ -54,10 +54,10 @@ class FormRepositoryImpl(
 
         shouldOpenErrorLocation ->
             itemList.firstOrNull { it.error != null || it.warning != null }?.programStageSection
-                ?: dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+                ?: dataEntryRepository?.firstSectionToOpen()
 
         else ->
-            dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
+            dataEntryRepository?.firstSectionToOpen()
     }
 
     override fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
