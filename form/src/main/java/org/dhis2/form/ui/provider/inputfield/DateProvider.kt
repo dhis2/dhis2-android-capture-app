@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.extensions.inputState
@@ -38,12 +39,18 @@ fun ProvideInputDate(
     }
 
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value?.let { formatStoredDateToUI(it, fieldUiModel.valueType) })
+        mutableStateOf(
+            if (fieldUiModel.value != null) {
+                TextFieldValue(formatStoredDateToUI(fieldUiModel.value!!, fieldUiModel.valueType))
+            } else {
+                TextFieldValue()
+            },
+        )
     }
 
     InputDateTime(
         title = fieldUiModel.label,
-        value = value,
+        inputTextFieldValue = value,
         actionIconType = actionType,
         onActionClicked = {
             when (actionType) {
@@ -51,7 +58,7 @@ fun ProvideInputDate(
                     RecyclerViewUiEvents.OpenCustomCalendar(
                         uid = fieldUiModel.uid,
                         label = fieldUiModel.label,
-                        date = value?.toDate(),
+                        date = value.text.toDate(),
                         allowFutureDates = fieldUiModel.allowFutureDates ?: true,
                         isDateTime = false,
                     ),
@@ -61,7 +68,7 @@ fun ProvideInputDate(
                     RecyclerViewUiEvents.OpenTimePicker(
                         uid = fieldUiModel.uid,
                         label = fieldUiModel.label,
-                        date = formatUIDateToStored(value, fieldUiModel.valueType)?.let {
+                        date = formatUIDateToStored(value.text, fieldUiModel.valueType)?.let {
                             DateUtils.timeFormat().parse(it)
                         },
                         isDateTime = false,
@@ -72,7 +79,7 @@ fun ProvideInputDate(
                     RecyclerViewUiEvents.OpenCustomCalendar(
                         uid = fieldUiModel.uid,
                         label = fieldUiModel.label,
-                        date = formatUIDateToStored(value, fieldUiModel.valueType)?.let {
+                        date = formatUIDateToStored(value.text, fieldUiModel.valueType)?.let {
                             DateUtils.databaseDateFormatNoSeconds().parse(it)
                         },
                         allowFutureDates = fieldUiModel.allowFutureDates ?: true,
@@ -81,7 +88,7 @@ fun ProvideInputDate(
                 )
             }
         },
-        modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value ?: "", fieldUiModel.valueType) },
+        modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value.text, fieldUiModel.valueType) },
         state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         supportingText = fieldUiModel.supportingText(),
@@ -94,7 +101,7 @@ fun ProvideInputDate(
             intentHandler.invoke(
                 FormIntent.OnTextChange(
                     uid = fieldUiModel.uid,
-                    value = formatUIDateToStored(it, fieldUiModel.valueType),
+                    value = formatUIDateToStored(it.text, fieldUiModel.valueType),
                     valueType = fieldUiModel.valueType,
                     allowFutureDates = fieldUiModel.allowFutureDates ?: true,
                 ),

@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -52,7 +53,11 @@ fun ProvideInputDate(
     if (uiModel.showField) {
         Spacer(modifier = Modifier.height(16.dp))
         var value by remember(uiModel.eventDate.dateValue) {
-            mutableStateOf(uiModel.eventDate.dateValue?.let { formatStoredDateToUI(it) })
+            if (uiModel.eventDate.dateValue != null) {
+                mutableStateOf(TextFieldValue(formatStoredDateToUI(uiModel.eventDate.dateValue) ?: ""))
+            } else {
+                mutableStateOf(TextFieldValue())
+            }
         }
 
         var state by remember {
@@ -62,25 +67,21 @@ fun ProvideInputDate(
         InputDateTime(
             title = uiModel.eventDate.label ?: "",
             allowsManualInput = uiModel.allowsManualInput,
-            value = value,
+            inputTextFieldValue = value,
             actionIconType = DateTimeActionIconType.DATE,
             onActionClicked = uiModel.onDateClick,
             state = state,
             visualTransformation = DateTransformation(),
             onValueChanged = {
                 value = it
-                state = getInputShellStateBasedOnValue(it)
-                manageActionBasedOnValue(uiModel, it)
+                state = getInputShellStateBasedOnValue(it.text)
+                manageActionBasedOnValue(uiModel, it.text)
             },
             isRequired = uiModel.required,
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
             onFocusChanged = { focused ->
-                if (!focused) {
-                    value?.let {
-                        if (!isValid(it)) {
-                            state = InputShellState.ERROR
-                        }
-                    }
+                if (!focused && !isValid(value.text)) {
+                    state = InputShellState.ERROR
                 }
             },
         )

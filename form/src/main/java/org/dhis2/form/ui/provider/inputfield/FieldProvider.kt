@@ -24,6 +24,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.extensions.autocompleteList
@@ -448,7 +449,7 @@ private fun ProvideIntegerPositive(
     onNextClicked: () -> Unit,
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputPositiveInteger(
@@ -457,15 +458,15 @@ private fun ProvideIntegerPositive(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -487,7 +488,7 @@ private fun ProvideIntegerPositiveOrZero(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputPositiveIntegerOrZero(
@@ -496,15 +497,15 @@ private fun ProvideIntegerPositiveOrZero(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -526,7 +527,7 @@ private fun ProvidePercentage(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputPercentage(
@@ -535,15 +536,15 @@ private fun ProvidePercentage(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -565,7 +566,7 @@ private fun ProvideNumber(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputNumber(
@@ -574,15 +575,15 @@ private fun ProvideNumber(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -605,7 +606,7 @@ private fun ProvideIntegerNegative(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value?.replace("-", ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value?.replace("-", "") ?: ""))
     }
 
     InputNegativeInteger(
@@ -614,15 +615,15 @@ private fun ProvideIntegerNegative(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -644,7 +645,7 @@ private fun ProvideLongText(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputLongText(
@@ -653,15 +654,15 @@ private fun ProvideLongText(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -684,7 +685,7 @@ private fun ProvideLetter(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputLetter(
@@ -693,15 +694,15 @@ private fun ProvideLetter(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -723,7 +724,7 @@ private fun ProvideInteger(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputInteger(
@@ -732,15 +733,15 @@ private fun ProvideInteger(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -762,7 +763,7 @@ private fun ProvideEmail(
     onNextClicked: () -> Unit,
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputEmail(
@@ -771,15 +772,15 @@ private fun ProvideEmail(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -788,7 +789,7 @@ private fun ProvideEmail(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SENDTO,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
@@ -811,7 +812,7 @@ private fun ProvideInputPhoneNumber(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputPhoneNumber(
@@ -820,15 +821,15 @@ private fun ProvideInputPhoneNumber(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -837,7 +838,7 @@ private fun ProvideInputPhoneNumber(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_DIAL,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
@@ -860,7 +861,7 @@ private fun ProvideInputLink(
 
 ) {
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
     }
 
     InputLink(
@@ -869,15 +870,15 @@ private fun ProvideInputLink(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -886,7 +887,7 @@ private fun ProvideInputLink(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_VIEW,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
