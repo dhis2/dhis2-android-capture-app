@@ -142,9 +142,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.filterLayout.adapter = filtersAdapter
             presenter.shouldDisplayEventCreationButton.observe(this.viewLifecycleOwner) { showCreateEventButton ->
                 binding.dialFabLayout.visibility = if (showCreateEventButton) {
-                    View.VISIBLE
+                    View.VISIBLE.also { binding.dialFabLayout.setFabVisible(true) }
                 } else {
-                    View.GONE
+                    View.GONE.also { binding.dialFabLayout.setFabVisible(false) }
                 }
             }
         }.root
@@ -208,7 +208,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     fun setData(dashboardModel: DashboardProgramModel) {
         this.dashboardModel = dashboardModel
         if (dashboardModel.currentEnrollment != null) {
-            binding.dialFabLayout.setFabVisible(true)
+//            binding.dialFabLayout.setFabVisible(true)
             presenter.setDashboardProgram(dashboardModel)
             eventCatComboOptionSelector = EventCatComboOptionSelector(
                 dashboardModel.currentProgram.categoryComboUid(),
@@ -278,7 +278,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 )
             }
         } else {
-            binding.dialFabLayout.setFabVisible(false)
+//            binding.dialFabLayout.setFabVisible(false)
             binding.teiRecycler.adapter = DashboardProgramAdapter(presenter, dashboardModel)
             binding.teiRecycler.addItemDecoration(
                 DividerItemDecoration(
