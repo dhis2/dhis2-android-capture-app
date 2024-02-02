@@ -9,7 +9,6 @@ import androidx.paging.PagingData;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.data.tuples.Pair;
-import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.data.search.SearchParametersModel;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -37,8 +36,6 @@ public interface SearchRepository {
     @NonNull
     Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
 
-    SearchTeiModel getTrackedEntityInfo(String teiUid, Program selectedProgram, SortingItem sortingItem);
-
     @NonNull
     Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate, @Nullable String fromRelationshipUid);
 
@@ -52,8 +49,6 @@ public interface SearchRepository {
 
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 
-    EventViewModel getEventInfo(String enrollmentUid);
-
     Observable<D2Progress> downloadTei(String teiUid);
 
     TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, String reason);
@@ -63,15 +58,22 @@ public interface SearchRepository {
     TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel);
 
     void setCurrentProgram(@Nullable String currentProgram);
+
     boolean programStagesHaveCoordinates(String programUid);
+
     boolean teTypeAttributesHaveCoordinates(String typeId);
+
     boolean programAttributesHaveCoordinates(String programUid);
+
     boolean eventsHaveCoordinates(String programUid);
 
     List<AnalyticsDhisVisualizationsGroup> getProgramVisualizationGroups(String programUid);
 
-    @Nullable Program getProgram(@Nullable String programUid);
-    @Nullable String currentProgram();
+    @Nullable
+    Program getProgram(@Nullable String programUid);
+
+    @Nullable
+    String currentProgram();
 
     @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
 

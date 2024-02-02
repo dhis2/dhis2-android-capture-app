@@ -18,8 +18,6 @@ import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
@@ -201,23 +199,12 @@ class SearchTEIViewModel(
         performSearch()
     }
 
-    fun updateQueryData(rowAction: RowAction) {
-        if (rowAction.type == ActionType.ON_SAVE || rowAction.type == ActionType.ON_TEXT_CHANGE) {
-            if (rowAction.value != null) {
-                queryData[rowAction.id] = rowAction.value!!
-            } else {
-                queryData.remove(rowAction.id)
-            }
-            updateSearch()
-        } else if (rowAction.type == ActionType.ON_CLEAR) {
-            clearQueryData()
-        }
-    }
+    fun updateQuery(uid: String, value: String?) {
+        value?.let {
+            queryData[uid] = it
+        } ?: queryData.remove(uid)
 
-    private fun clearQueryData() {
-        queryData.clear()
         updateSearch()
-        performSearch()
     }
 
     private fun updateSearch() {
@@ -395,7 +382,7 @@ class SearchTEIViewModel(
 
     private fun minAttributesToSearchCheck(): Boolean {
         return searchRepository.getProgram(initialProgramUid)?.let { program ->
-            program.minAttributesRequiredToSearch() ?: 0 <= queryData.size
+            (program.minAttributesRequiredToSearch() ?: 0) <= queryData.size
         } ?: true
     }
 
@@ -501,7 +488,7 @@ class SearchTEIViewModel(
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OR_CREATE,
-                        searchRepository.getTrackedEntityType().displayName(),
+                        searchRepository.trackedEntityType.displayName(),
                     ),
                 )
 

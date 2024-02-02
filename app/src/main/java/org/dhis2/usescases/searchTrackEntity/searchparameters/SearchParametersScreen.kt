@@ -20,7 +20,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelecto
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 
 @Composable
-fun SearchParametersScreen(viewModel: SearchParametersViewModel) {
+fun SearchParametersScreen(
+    viewModel: SearchParametersViewModel,
+    onValueChange: (uid: String, value: String?) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,9 +38,7 @@ fun SearchParametersScreen(viewModel: SearchParametersViewModel) {
                 ParameterSelectorItem(
                     model = provideParameterSelectorItem(
                         searchParameter = searchParameter,
-                        onValueChange = { uid, value ->
-                            viewModel.updateParameter(uid, value)
-                        },
+                        onValueChange = onValueChange,
                     ),
                 )
             }
@@ -69,12 +70,13 @@ fun initSearchScreen(
     viewModel: SearchParametersViewModel,
     program: String?,
     teiType: String,
+    onValueChange: (uid: String, value: String?) -> Unit,
 ) {
     viewModel.fetchSearchParameters(
         programUid = program,
         teiTypeUid = teiType,
     )
     composeView.setContent {
-        SearchParametersScreen(viewModel)
+        SearchParametersScreen(viewModel, onValueChange)
     }
 }

@@ -1128,10 +1128,6 @@ class FormView : Fragment() {
         return if (value.isEmpty()) 0 else -Integer.valueOf(value)
     }
 
-    fun clearValues() {
-        intentHandler(FormIntent.OnClear())
-    }
-
     fun onBackPressed() {
         viewModel.runDataIntegrityCheck(backButtonPressed = true)
     }

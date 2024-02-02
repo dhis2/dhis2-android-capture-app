@@ -219,14 +219,6 @@ class FormViewModel(
                 )
             }
 
-            ActionType.ON_CLEAR -> {
-                repository.removeAllValues()
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_CHANGED,
-                )
-            }
-
             ActionType.ON_FINISH -> {
                 repository.setFocusedItem(action)
                 StoreResult(
@@ -358,12 +350,6 @@ class FormViewModel(
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
         return when (intent) {
-            is FormIntent.OnClear -> createRowAction(
-                uid = "",
-                value = null,
-                actionType = ActionType.ON_CLEAR,
-            )
-
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> {
                 val error = checkFieldError(

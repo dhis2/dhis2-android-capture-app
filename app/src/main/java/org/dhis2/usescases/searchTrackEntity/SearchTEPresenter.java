@@ -29,13 +29,11 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
-import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -258,12 +256,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
         return previousProgramUid != null && previousProgramUid.equals(currentProgramUid) ||
                 programSelected == selectedProgram;
-    }
-
-    @Override
-    public void onClearClick() {
-        searchRepository.setCurrentProgram(selectedProgram != null ? selectedProgram.uid() : null);
-        currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
     }
 
     @Override

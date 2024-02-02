@@ -36,7 +36,4 @@ class SearchParametersViewModel(
             }
         }
     }
-
-    fun updateParameter(uid: String, value: String?) {
-    }
 }

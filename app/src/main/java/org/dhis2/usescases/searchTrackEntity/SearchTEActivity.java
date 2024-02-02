@@ -35,7 +35,6 @@ import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
-import org.dhis2.form.ui.FormView;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
@@ -108,7 +107,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SearchParametersViewModel searchParametersViewModel;
 
     private boolean initSearchNeeded = true;
-    private FormView formView;
     public SearchTEComponent searchComponent;
     private int initialPage = 0;
 
@@ -185,7 +183,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
         binding.searchButton.setOnClickListener(v -> {
             if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
-            formView.onEditionFinish();
             viewModel.onSearchClick(minNumberOfAttributes -> {
                 showSnackbar(
                         v,
@@ -371,29 +368,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void initSearchParameters() {
-        /*formView = new FormView.Builder()
-                .locationProvider(locationProvider)
-                .onItemChangeListener(action -> {
-                    viewModel.updateQueryData(action);
+        initSearchScreen(binding.searchContainer, searchParametersViewModel, initialProgram, tEType,
+                (uid, value) -> {
+                    viewModel.updateQuery(uid, value);
                     return Unit.INSTANCE;
-                })
-                .activityForResultListener(() -> {
-                    initSearchNeeded = false;
-                    return Unit.INSTANCE;
-                })
-                .onFieldItemsRendered(isEmpty -> Unit.INSTANCE)
-                .needToForceUpdate(true)
-                .setActionIconsActivation(false)
-                .factory(getSupportFragmentManager())
-                .setRecords(new SearchRecords(
-                        initialProgram,
-                        tEType,
-                        initialQuery
-                ))
-                .build();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.searchContainer, formView).commit();*/
-        initSearchScreen(binding.searchContainer, searchParametersViewModel, initialProgram, tEType);
+                });
     }
 
     private void configureBottomNavigation() {
@@ -403,36 +382,33 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             binding.mainComponent.setVisibility(View.VISIBLE);
             switch (item.getItemId()) {
-                case R.id.navigation_list_view:
+                case R.id.navigation_list_view -> {
                     viewModel.setListScreen();
                     showList();
                     showSearchAndFilterButtons();
-                    break;
-                case R.id.navigation_map_view:
-                    networkUtils.performIfOnline(
-                            this,
-                            () -> {
-                                presenter.trackSearchMapVisualization();
-                                viewModel.setMapScreen();
-                                showMap();
-                                showSearchAndFilterButtons();
-                                return null;
-                            },
-                            () -> {
-                                binding.navigationBar.selectItemAt(0);
-                                return null;
-                            },
-                            getString(R.string.msg_network_connection_maps)
-                    );
-
-                    break;
-                case R.id.navigation_analytics:
+                }
+                case R.id.navigation_map_view -> networkUtils.performIfOnline(
+                        this,
+                        () -> {
+                            presenter.trackSearchMapVisualization();
+                            viewModel.setMapScreen();
+                            showMap();
+                            showSearchAndFilterButtons();
+                            return null;
+                        },
+                        () -> {
+                            binding.navigationBar.selectItemAt(0);
+                            return null;
+                        },
+                        getString(R.string.msg_network_connection_maps)
+                );
+                case R.id.navigation_analytics -> {
                     presenter.trackSearchAnalytics();
                     viewModel.setAnalyticsScreen();
                     fromAnalytics = true;
                     showAnalytics();
                     hideSearchAndFilterButtons();
-                    break;
+                }
             }
             return true;
         });
@@ -662,10 +638,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (viewModel.filterIsOpen()) {
             filtersAdapter.notifyDataSetChanged();
             FilterManager.getInstance().clearAllFilters();
-        } else {
-            formView.onEditionFinish();
-            formView.clearValues();
-            presenter.onClearClick();
         }
     }
 
