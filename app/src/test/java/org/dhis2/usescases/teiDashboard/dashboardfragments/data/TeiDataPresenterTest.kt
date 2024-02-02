@@ -199,6 +199,7 @@ class TeiDataPresenterTest {
         teiDataPresenter.updateCreateEventButtonVisibility(false)
         assertTrue(teiDataPresenter.shouldDisplayEventCreationButton.value == false)
     }
+
     @Test
     fun `Should display schedule events dialogs when configured`() {
         val programStage = ProgramStage.builder()
