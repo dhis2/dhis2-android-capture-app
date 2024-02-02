@@ -77,11 +77,11 @@ class SearchRepository(
                 .withRenderType()
                 .byProgram().eq(programUid)
                 .blockingGet().filter { programAttribute ->
-                    val isSearcheable = programAttribute.searchable()!!
+                    val isSearchable = programAttribute.searchable()!!
                     val isUnique = d2.trackedEntityModule().trackedEntityAttributes()
                         .uid(programAttribute.trackedEntityAttribute()!!.uid())
                         .blockingGet()?.unique() === java.lang.Boolean.TRUE
-                    isSearcheable || isUnique
+                    isSearchable || isUnique
                 }
             searchableAttributes.mapNotNull { programAttribute ->
                 d2.trackedEntityModule().trackedEntityAttributes()

@@ -21,6 +21,7 @@ import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
@@ -299,8 +300,11 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchParametersRepository provideSearchParametersRepository() {
-        return new SearchParametersRepository();
+    SearchParametersRepository provideSearchParametersRepository(
+            D2 d2,
+            DispatcherProvider dispatcherProvider
+    ) {
+        return new SearchParametersRepository(d2, dispatcherProvider);
     }
 
     @Provides

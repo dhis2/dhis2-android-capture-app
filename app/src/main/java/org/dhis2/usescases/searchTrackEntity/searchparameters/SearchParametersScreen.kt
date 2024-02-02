@@ -33,7 +33,12 @@ fun SearchParametersScreen(viewModel: SearchParametersViewModel) {
         ) {
             viewModel.uiState.items.forEach { searchParameter ->
                 ParameterSelectorItem(
-                    model = provideParameterSelectorItem(searchParameter),
+                    model = provideParameterSelectorItem(
+                        searchParameter = searchParameter,
+                        onValueChange = { uid, value ->
+                            viewModel.updateParameter(uid, value)
+                        },
+                    ),
                 )
             }
         }
@@ -52,14 +57,23 @@ fun SearchParametersScreen(viewModel: SearchParametersViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun SearchFormPreview() {
-    SearchParametersScreen(
-        SearchParametersViewModel(
-            repository = SearchParametersRepository(),
-        ),
-    )
+    /* SearchParametersScreen(
+         SearchParametersViewModel(
+             repository = SearchParametersRepository(),
+         ),
+     )*/
 }
 
-fun initSearchScreen(composeView: ComposeView, viewModel: SearchParametersViewModel) {
+fun initSearchScreen(
+    composeView: ComposeView,
+    viewModel: SearchParametersViewModel,
+    program: String?,
+    teiType: String,
+) {
+    viewModel.fetchSearchParameters(
+        programUid = program,
+        teiTypeUid = teiType,
+    )
     composeView.setContent {
         SearchParametersScreen(viewModel)
     }

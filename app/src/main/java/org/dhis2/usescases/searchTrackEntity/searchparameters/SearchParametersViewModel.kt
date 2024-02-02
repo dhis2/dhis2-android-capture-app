@@ -19,15 +19,14 @@ class SearchParametersViewModel(
 
     private var fetchJob: Job? = null
 
-    init {
-        fetchSearchParameters()
-    }
-
-    private fun fetchSearchParameters() {
+    fun fetchSearchParameters(
+        programUid: String?,
+        teiTypeUid: String,
+    ) {
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
             try {
-                val searchParameters = repository.searchParameters()
+                val searchParameters = repository.searchParameters(programUid, teiTypeUid)
                 uiState = uiState.copy(items = searchParameters)
             } catch (ioe: IOException) {
                 /*_uiState.update {
@@ -36,5 +35,8 @@ class SearchParametersViewModel(
                 }*/
             }
         }
+    }
+
+    fun updateParameter(uid: String, value: String?) {
     }
 }

@@ -12,24 +12,31 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 
 @Composable
-fun provideParameterSelectorItem(searchParameter: SearchParameter): ParameterSelectorItemModel {
-    var inputTextValue1: String? by remember { mutableStateOf(null) }
+fun provideParameterSelectorItem(
+    searchParameter: SearchParameter,
+    onValueChange: (uid: String, value: String?) -> Unit,
+): ParameterSelectorItemModel {
+    var inputTextValue: String? by remember(searchParameter.value) { mutableStateOf(null) }
 
     return ParameterSelectorItemModel(
-        label = "Label",
-        helper = "Optional",
+        label = searchParameter.label,
+        helper = searchParameter.helper,
         inputField = {
             InputText(
-                title = "Label",
+                title = searchParameter.label,
                 state = InputShellState.UNFOCUSED,
-                inputText = inputTextValue1,
+                inputText = inputTextValue,
                 inputStyle = InputStyle.ParameterInputStyle(),
                 onValueChanged = {
-                    inputTextValue1 = it
+                    inputTextValue = it
+                    onValueChange(
+                        searchParameter.uid,
+                        it,
+                    )
                 },
             )
         },
-        status = if (inputTextValue1.isNullOrEmpty()) {
+        status = if (inputTextValue.isNullOrEmpty()) {
             ParameterSelectorItemModel.Status.CLOSED
         } else {
             ParameterSelectorItemModel.Status.OPENED

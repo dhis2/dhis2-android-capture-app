@@ -393,7 +393,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .build();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.searchContainer, formView).commit();*/
-        initSearchScreen(binding.searchContainer, searchParametersViewModel);
+        initSearchScreen(binding.searchContainer, searchParametersViewModel, initialProgram, tEType);
     }
 
     private void configureBottomNavigation() {
