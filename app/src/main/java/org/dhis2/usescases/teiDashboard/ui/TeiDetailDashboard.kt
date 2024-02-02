@@ -16,17 +16,17 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 
 @Composable
 fun TeiDetailDashboard(
-    syncData: InfoBarUiModel,
-    followUpData: InfoBarUiModel,
-    enrollmentData: InfoBarUiModel,
-    card: TeiCardUiModel,
+    syncData: InfoBarUiModel?,
+    followUpData: InfoBarUiModel?,
+    enrollmentData: InfoBarUiModel?,
+    card: TeiCardUiModel?,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp),
     ) {
-        if (syncData.showInfoBar) {
+        if (syncData?.showInfoBar == true) {
             InfoBar(
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp)
@@ -41,12 +41,12 @@ fun TeiDetailDashboard(
                     onClick = syncData.onActionClick,
                 ),
             )
-            if (followUpData.showInfoBar || enrollmentData.showInfoBar) {
+            if (followUpData?.showInfoBar == true || enrollmentData?.showInfoBar == true) {
                 Spacer(modifier = Modifier.padding(top = 8.dp))
             }
         }
 
-        if (followUpData.showInfoBar) {
+        if (followUpData?.showInfoBar == true) {
             InfoBar(
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp)
@@ -60,12 +60,12 @@ fun TeiDetailDashboard(
                     onClick = followUpData.onActionClick,
                 ),
             )
-            if (enrollmentData.showInfoBar) {
+            if (enrollmentData?.showInfoBar == true) {
                 Spacer(modifier = Modifier.padding(top = 8.dp))
             }
         }
 
-        if (enrollmentData.showInfoBar) {
+        if (enrollmentData?.showInfoBar == true) {
             InfoBar(
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp)
@@ -80,15 +80,17 @@ fun TeiDetailDashboard(
             )
         }
 
-        CardDetail(
-            title = card.title,
-            additionalInfoList = card.additionalInfo,
-            avatar = card.avatar,
-            actionButton = card.actionButton,
-            expandLabelText = card.expandLabelText,
-            shrinkLabelText = card.shrinkLabelText,
-            showLoading = card.showLoading,
-        )
+        card?.let {
+            CardDetail(
+                title = card.title,
+                additionalInfoList = card.additionalInfo,
+                avatar = card.avatar,
+                actionButton = card.actionButton,
+                expandLabelText = card.expandLabelText,
+                shrinkLabelText = card.shrinkLabelText,
+                showLoading = card.showLoading,
+            )
+        }
     }
 }
 

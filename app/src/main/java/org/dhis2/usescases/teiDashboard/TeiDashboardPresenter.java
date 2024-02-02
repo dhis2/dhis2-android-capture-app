@@ -1,14 +1,25 @@
 package org.dhis2.usescases.teiDashboard;
 
+import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
+import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
+import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
+import static org.dhis2.commons.matomo.Categories.DASHBOARD;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.commons.Constants;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -20,14 +31,6 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
-
-import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
-import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
-import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
-import static org.dhis2.commons.matomo.Categories.DASHBOARD;
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
@@ -41,7 +44,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public String programUid;
 
     public CompositeDisposable compositeDisposable;
-    public DashboardProgramModel dashboardProgramModel;
     private PublishProcessor<Unit> notesCounterProcessor;
     private MatomoAnalyticsController matomoAnalyticsController;
 
@@ -68,46 +70,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void init() {
-        if (programUid != null)
-            compositeDisposable.add(Observable.zip(
-                    dashboardRepository.getTrackedEntityInstance(teiUid),
-                    dashboardRepository.getEnrollment(),
-                    dashboardRepository.getProgramStages(programUid),
-                    dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
-                    dashboardRepository.getAttributesMap(programUid, teiUid),
-                    dashboardRepository.getTEIAttributeValues(programUid, teiUid),
-                    dashboardRepository.getTeiOrgUnits(teiUid, programUid),
-                    dashboardRepository.getTeiActivePrograms(teiUid, false),
-                    DashboardProgramModel::new)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                            dashboardModel -> {
-                                this.dashboardProgramModel = dashboardModel;
-                                view.setData(dashboardModel);
-                            },
-                            Timber::e
-                    )
-            );
 
-        else {
-            compositeDisposable.add(Observable.zip(
-                    dashboardRepository.getTrackedEntityInstance(teiUid),
-                    dashboardRepository.getTEIAttributeValues(null, teiUid),
-                    dashboardRepository.getTeiOrgUnits(teiUid, null),
-                    dashboardRepository.getTeiActivePrograms(teiUid, true),
-                    dashboardRepository.getTEIEnrollments(teiUid),
-                    DashboardProgramModel::new)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                            dashboardModel -> {
-                                this.dashboardProgramModel = dashboardModel;
-                                view.setDataWithOutProgram(dashboardProgramModel);
-                            },
-                            Timber::e)
-            );
-        }
     }
 
     @Override
@@ -168,29 +131,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                     }
                                 },
                                 Timber::e
-                        )
-        );
-    }
-
-    @Override
-    public void deleteEnrollment() {
-        compositeDisposable.add(
-                dashboardRepository.deleteEnrollment(
-                        dashboardProgramModel.getCurrentEnrollment().uid()
-                )
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                hasMoreEnrollments -> {
-                                    analyticsHelper.setEvent(DELETE_ENROLL, CLICK, DELETE_ENROLL);
-                                    view.handleEnrollmentDeletion(hasMoreEnrollments);
-                                },
-                                error -> {
-                                    if (error instanceof AuthorityException)
-                                        view.authorityErrorMessage();
-                                    else
-                                        Timber.e(error);
-                                }
                         )
         );
     }

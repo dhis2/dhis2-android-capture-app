@@ -84,13 +84,15 @@ class TEIDataPresenter(
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private var dashboardModel: DashboardProgramModel? = null
     private var currentStage: String = ""
     private var stagesToHide: List<String> = emptyList()
 
     private val _groupEvents = MutableLiveData(false)
     private val _shouldDisplayEventCreationButton = MutableLiveData(false)
     val shouldDisplayEventCreationButton: LiveData<Boolean> = _shouldDisplayEventCreationButton
+
+    private val _events: MutableLiveData<List<EventViewModel>> = MutableLiveData()
+    val events: LiveData<List<EventViewModel>> = _events
 
     fun init() {
         compositeDisposable.add(
@@ -172,7 +174,8 @@ class TEIDataPresenter(
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { events ->
-                            view.setEvents(events)
+                            _events.postValue(events)
+//                            view.setEvents(events)
                             decrement()
                         },
                         Timber.Forest::d,
@@ -209,25 +212,6 @@ class TEIDataPresenter(
 
         updateCreateEventButtonVisibility(_groupEvents.value ?: false)
 
-        compositeDisposable.add(
-            Single.zip(
-                teiDataRepository.getTrackedEntityInstance(),
-                teiDataRepository.enrollingOrgUnit(),
-            ) { tei, orgUnit ->
-                Pair(tei, orgUnit)
-            }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { teiAndOrgUnit ->
-                        view.setTrackedEntityInstance(
-                            teiAndOrgUnit.first,
-                            teiAndOrgUnit.second,
-                        )
-                    },
-                    Timber.Forest::e,
-                ),
-        )
         compositeDisposable.add(
             filterManager.periodRequest
                 .map { it.first }
@@ -352,11 +336,10 @@ class TEIDataPresenter(
     fun completeEnrollment() {
         val hasWriteAccessInProgram =
             programUid?.let { d2.program(it)?.access()?.data()?.write() } == true
-        val currentEnrollmentUid =
-            dashboardModel?.currentEnrollment?.uid()
-        if (hasWriteAccessInProgram && currentEnrollmentUid != null) {
+
+        if (hasWriteAccessInProgram) {
             compositeDisposable.add(
-                dashboardRepository.completeEnrollment(currentEnrollmentUid)
+                dashboardRepository.completeEnrollment(enrollmentUid)
                     .subscribeOn(schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
                     .map { obj -> obj.status() ?: EnrollmentStatus.ACTIVE }
@@ -402,15 +385,15 @@ class TEIDataPresenter(
         val bundle = Bundle()
         bundle.putString(
             Constants.PROGRAM_UID,
-            dashboardModel?.currentEnrollment?.program(),
+            programUid,
         )
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
-        dashboardModel?.currentOrgUnit?.uid()
+        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid)
+        teiDataRepository.getEnrollment().blockingGet()?.organisationUnit()
             ?.takeIf { enrollmentOrgUnitInCaptureScope(it) }?.let {
                 bundle.putString(Constants.ORG_UNIT, it)
             }
 
-        bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
+        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid)
         bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays)
         val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
@@ -457,18 +440,13 @@ class TEIDataPresenter(
                     null,
                     event?.organisationUnit(),
                     event?.programStage(),
-                    dashboardModel?.currentEnrollment?.uid(),
+                    enrollmentUid,
                     0,
-                    dashboardModel?.currentEnrollment?.status(),
+                    teiDataRepository.getEnrollment().blockingGet()?.status(),
                 ),
             )
             view.openEventInitial(intent)
         }
-    }
-
-    fun setDashboardProgram(dashboardModel: DashboardProgramModel) {
-        this.dashboardModel = dashboardModel
-        programUid = dashboardModel.currentProgram.uid()
     }
 
     fun setProgram(program: Program, enrollmentUid: String?) {

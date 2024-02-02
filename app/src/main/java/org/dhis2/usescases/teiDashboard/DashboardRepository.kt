@@ -20,6 +20,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 interface DashboardRepository {
 
+    fun getTeiHeader(): String?
+
+    fun getTeiProfilePath(): String?
+
     fun getProgramStages(programStages: String): Observable<List<ProgramStage>>
 
     fun getEnrollment(): Observable<Enrollment>
@@ -100,5 +104,7 @@ interface DashboardRepository {
     fun getAttributesMap(
         programUid: String,
         teiUid: String,
-    ): Observable<List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>>
+    ): Observable<List<kotlin.Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>>
+
+    fun getDashboardModel(): DashboardModel
 }

@@ -97,7 +97,6 @@ class TeiDashboardMobileActivity :
     private lateinit var dashboardViewModel: DashboardViewModel
     private var fromRelationship = false
     private var groupByStage: MutableLiveData<Boolean>? = null
-    private var currentEnrollment: MutableLiveData<String>? = null
     private var relationshipMap: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private var elevation = 0f
@@ -161,7 +160,6 @@ class TeiDashboardMobileActivity :
         setTheme(themeManager.getProgramTheme())
         super.onCreate(savedInstanceState)
         groupByStage = MutableLiveData(presenter.programGrouping)
-        currentEnrollment = MutableLiveData()
         dashboardViewModel =
             ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
@@ -202,6 +200,12 @@ class TeiDashboardMobileActivity :
         dashboardViewModel.updateEnrollment.observe(this) {
             if (it) {
                 updateStatus()
+            }
+        }
+        dashboardViewModel.dashboardModel.observe(this) {
+            when (it) {
+                is DashboardEnrollmentModel -> setData(it)
+                is DashboardTEIModel -> setDataWithOutProgram(it)
             }
         }
     }
@@ -390,33 +394,25 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    override fun setData(program: DashboardProgramModel) {
-        dashboardViewModel.updateDashboard(program)
-        themeManager.setProgramTheme(program.currentProgram.uid())
-        setProgramColor(program.currentProgram.uid())
-        binding.dashboardModel = program
-        binding.trackEntity = program.tei
+    private fun setData(dashboardModel: DashboardEnrollmentModel) {
+        themeManager.setProgramTheme(dashboardModel.currentProgram().uid())
+        setProgramColor(dashboardModel.currentProgram().uid())
         val title = String.format(
             "%s %s",
-            if (program.getTrackedEntityAttributeValueBySortOrder(1) != null) {
-                program.getTrackedEntityAttributeValueBySortOrder(
-                    1,
-                )
+            if (dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) != null) {
+                dashboardModel.getTrackedEntityAttributeValueBySortOrder(1)
             } else {
                 ""
             },
-            if (program.getTrackedEntityAttributeValueBySortOrder(2) != null) {
-                program.getTrackedEntityAttributeValueBySortOrder(
-                    2,
-                )
+            if (dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) != null) {
+                dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)
             } else {
                 ""
             },
         )
         binding.title = title
         binding.executePendingBindings()
-        programModel = program
-        enrollmentUid = program.currentEnrollment.uid()
+        enrollmentUid = dashboardModel.currentEnrollment.uid()
         if (this.isLandscape()) {
             if (binding.teiTablePager?.adapter == null) {
                 setViewpagerAdapter()
@@ -430,7 +426,7 @@ class TeiDashboardMobileActivity :
             }
         }
         val enrollmentStatus =
-            program.currentEnrollment != null && program.currentEnrollment.status() == EnrollmentStatus.ACTIVE
+            dashboardModel.currentEnrollment != null && dashboardModel.currentEnrollment.status() == EnrollmentStatus.ACTIVE
         if (intent.getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus) {
             dashboardViewModel.updateEventUid(
                 intent.getStringExtra(Constants.EVENT_UID),
@@ -462,39 +458,31 @@ class TeiDashboardMobileActivity :
         displayMessage(getString(R.string.delete_authority_error))
     }
 
-    override fun setDataWithOutProgram(program: DashboardProgramModel) {
-        dashboardViewModel.updateDashboard(program)
+    private fun setDataWithOutProgram(dashboardModel: DashboardTEIModel) {
         themeManager.clearProgramTheme()
         setProgramColor(null)
-        binding.dashboardModel = program
-        binding.trackEntity = program.tei
         val title = String.format(
             "%s %s - %s",
-            if (program.getTrackedEntityAttributeValueBySortOrder(1) != null) {
-                program.getTrackedEntityAttributeValueBySortOrder(
+            if (dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) != null) {
+                dashboardModel.getTrackedEntityAttributeValueBySortOrder(
                     1,
                 )
             } else {
                 ""
             },
-            if (program.getTrackedEntityAttributeValueBySortOrder(2) != null) {
-                program.getTrackedEntityAttributeValueBySortOrder(
+            if (dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) != null) {
+                dashboardModel.getTrackedEntityAttributeValueBySortOrder(
                     2,
                 )
             } else {
                 ""
             },
-            if (program.currentProgram != null) {
-                program.currentProgram.displayName()
-            } else {
-                getString(
-                    R.string.dashboard_overview,
-                )
-            },
+            getString(
+                R.string.dashboard_overview,
+            ),
         )
         binding.title = title
         binding.executePendingBindings()
-        programModel = program
         setViewpagerAdapter()
         binding.relationshipMapIcon.visibility = View.GONE
         if (this.isLandscape()) {
@@ -638,18 +626,15 @@ class TeiDashboardMobileActivity :
                     R.id.showTimeline -> groupByStage?.setValue(false)
                     R.id.complete -> {
                         dashboardViewModel.updateEnrollmentStatus(
-                            programModel,
                             EnrollmentStatus.COMPLETED,
                         )
                     }
 
                     R.id.activate -> dashboardViewModel.updateEnrollmentStatus(
-                        programModel,
                         EnrollmentStatus.ACTIVE,
                     )
 
                     R.id.deactivate -> dashboardViewModel.updateEnrollmentStatus(
-                        programModel,
                         EnrollmentStatus.CANCELLED,
                     )
 
@@ -685,12 +670,11 @@ class TeiDashboardMobileActivity :
     }
 
     override fun updateStatus() {
-        currentEnrollment?.value = programModel?.currentEnrollment?.uid()
     }
 
-    fun updatedEnrollment(): LiveData<String>? {
+    /*fun updatedEnrollment(): LiveData<String>? {
         return currentEnrollment
-    }
+    }*/
 
     override fun displayStatusError(statusCode: StatusChangeResultCode) {
         when (statusCode) {

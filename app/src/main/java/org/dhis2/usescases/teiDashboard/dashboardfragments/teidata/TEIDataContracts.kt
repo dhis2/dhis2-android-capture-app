@@ -14,10 +14,8 @@ import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
@@ -41,10 +39,6 @@ class TEIDataContracts {
         ): Flowable<StageSection>
 
         fun setEnrollmentData(program: Program?, enrollment: Enrollment?)
-        fun setTrackedEntityInstance(
-            trackedEntityInstance: TrackedEntityInstance,
-            organisationUnit: OrganisationUnit,
-        )
 
         fun showPeriodRequest(periodRequest: PeriodRequest)
         fun openOrgUnitTreeSelector(programUid: String)

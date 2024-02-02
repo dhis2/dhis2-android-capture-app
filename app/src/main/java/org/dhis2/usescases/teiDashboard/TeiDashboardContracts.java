@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
+import androidx.lifecycle.LiveData;
+
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -7,10 +9,6 @@ import org.hisp.dhis.android.core.program.Program;
 public class TeiDashboardContracts {
 
     public interface View extends AbstractActivityContracts.View {
-
-        void setData(DashboardProgramModel program);
-
-        void setDataWithOutProgram(DashboardProgramModel programModel);
 
         void goToEnrollmentList();
 
@@ -50,8 +48,6 @@ public class TeiDashboardContracts {
         String getProgramUid();
 
         void deleteTei();
-
-        void deleteEnrollment();
 
         void initNoteCounter();
 

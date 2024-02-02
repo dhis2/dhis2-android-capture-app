@@ -9,30 +9,6 @@
 
         <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
 
-        <variable
-            name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
-
-        <variable
-            name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
-
-        <variable
-            name="presenter"
-            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter" />
-
-        <variable
-            name="dashboardModel"
-            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
-
-        <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.Program" />
-
-        <variable
-            name="followup"
-            type="androidx.databinding.ObservableBoolean" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,27 +38,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/tei_data"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardElevation="4dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <include
-                            android:id="@+id/card_front"
-                            layout="@layout/fragment_tei_data_card_front"
-                            android:visibility="@{ program != null ? View.GONE : View.VISIBLE}"
-                            app:dashboardModel="@{dashboardModel}"
-                            app:enrollment="@{enrollment}"
-                            app:followup="@{followup}"
-                            app:presenter="@{presenter}"
-                            app:program="@{program}"
-                            app:trackEntity="@{trackEntity}" />
-                    </androidx.cardview.widget.CardView>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/filterLayout"
