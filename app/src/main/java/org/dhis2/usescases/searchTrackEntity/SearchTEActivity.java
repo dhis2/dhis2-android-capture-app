@@ -1,7 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import static android.view.View.GONE;
-import static org.dhis2.usescases.searchTrackEntity.ui.SearchFormScreenKt.initSearchScreen;
+import static org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersScreenKt.initSearchScreen;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -40,6 +40,8 @@ import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
+import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersViewModel;
+import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersViewModelFactory;
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
@@ -77,6 +79,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     SearchTeiViewModelFactory viewModelFactory;
 
     @Inject
+    SearchParametersViewModelFactory searchParametersViewModelFactory;
+
+    @Inject
     SearchNavigator searchNavigator;
 
     @Inject
@@ -99,6 +104,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private boolean fromAnalytics = false;
 
     private SearchTEIViewModel viewModel;
+
+    private SearchParametersViewModel searchParametersViewModel;
 
     private boolean initSearchNeeded = true;
     private FormView formView;
@@ -153,6 +160,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onCreate(savedInstanceState);
 
         viewModel = new ViewModelProvider(this, viewModelFactory).get(SearchTEIViewModel.class);
+
+        searchParametersViewModel = new ViewModelProvider(
+                this,
+                searchParametersViewModelFactory
+        ).get(SearchParametersViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
 
@@ -381,7 +393,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .build();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.searchContainer, formView).commit();*/
-        initSearchScreen(binding.searchContainer);
+        initSearchScreen(binding.searchContainer, searchParametersViewModel);
     }
 
     private void configureBottomNavigation() {
