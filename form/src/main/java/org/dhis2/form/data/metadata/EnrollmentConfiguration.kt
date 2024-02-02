@@ -6,6 +6,7 @@ import org.dhis2.commons.bindings.enrollmentImportConflicts
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.tei
 import org.dhis2.commons.bindings.teiAttribute
+import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.form.model.OptionSetConfiguration
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -25,7 +26,7 @@ class EnrollmentConfiguration(private val d2: D2, private val enrollmentUid: Str
     }
 
     fun tei() = enrollment()?.trackedEntityInstance()?.let { d2.tei(it) }
-    fun trackedEntityType() = program()?.trackedEntityType()
+    fun trackedEntityType() = d2.trackedEntityType(program()?.trackedEntityType()?.uid()!!)
     fun sections() = d2.programModule().programSections()
         .withAttributes()
         .byProgramUid().eq(enrollment()?.program())
