@@ -55,11 +55,14 @@ fun SchedulingDialogUi(
         derivedStateOf { optionSelected == yesNoOptions.first() }
     }
 
+    val onButtonClick = {
+        when {
+            scheduleNew -> viewModel.scheduleEvent()
+            else -> onDismiss()
+        }
+    }
     BottomSheetShell(
-        title = stringResource(id = R.string.schedule_next) + " " + when (programStages.size) {
-            1 -> programStages.first().displayName()
-            else -> stringResource(id = R.string.event)
-        } + "?",
+        title = bottomSheetTitle(programStages),
         buttonBlock = {
             Button(
                 modifier = Modifier.fillMaxWidth(),
@@ -67,17 +70,9 @@ fun SchedulingDialogUi(
                 enabled = !scheduleNew ||
                     !date.dateValue.isNullOrEmpty() &&
                     catCombo.isCompleted,
-                text = when (scheduleNew) {
-                    true -> stringResource(id = R.string.schedule)
-                    false -> stringResource(id = R.string.done)
-                },
-            ) {
-                if (scheduleNew) {
-                    viewModel.scheduleEvent()
-                } else {
-                    onDismiss()
-                }
-            }
+                text = buttonTitle(scheduleNew),
+                onClick = onButtonClick,
+            )
         },
         showSectionDivider = false,
         content = {
@@ -142,4 +137,18 @@ fun SchedulingDialogUi(
         },
         onDismiss = onDismiss,
     )
+}
+
+@Composable
+fun bottomSheetTitle(programStages: List<ProgramStage>): String =
+    stringResource(id = R.string.schedule_next) + " " +
+        when (programStages.size) {
+            1 -> programStages.first().displayName()
+            else -> stringResource(id = R.string.event)
+        } + "?"
+
+@Composable
+fun buttonTitle(scheduleNew: Boolean): String = when (scheduleNew) {
+    true -> stringResource(id = R.string.schedule)
+    false -> stringResource(id = R.string.done)
 }

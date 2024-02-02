@@ -5,6 +5,6 @@ import org.dhis2.commons.di.dagger.PerFragment
 
 @PerFragment
 @Subcomponent(modules = [SchedulingModule::class])
-interface SchedulingComponent {
+fun interface SchedulingComponent {
     fun inject(schedulingDialog: SchedulingDialog)
 }

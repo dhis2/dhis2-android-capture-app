@@ -89,7 +89,9 @@ class SchedulingDialog(
         dialog.isFutureDatesAllowed(viewModel.eventDate.value.allowFutureDates)
         dialog.setListener(
             object : OnDatePickerListener {
-                override fun onNegativeClick() {}
+                override fun onNegativeClick() {
+                    // Unused
+                }
                 override fun onPositiveClick(datePicker: DatePicker) {
                     viewModel.onDateSet(
                         datePicker.year,
