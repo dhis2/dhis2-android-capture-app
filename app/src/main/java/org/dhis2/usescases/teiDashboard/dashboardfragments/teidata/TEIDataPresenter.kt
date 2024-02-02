@@ -585,4 +585,8 @@ class TEIDataPresenter(
     fun getTeiHeader(): String? {
         return teiDataRepository.getTeiHeader()
     }
+
+    fun updateEventList() {
+        groupingProcessor.onNext(_groupEvents.value)
+    }
 }

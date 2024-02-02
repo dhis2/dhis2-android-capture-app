@@ -385,9 +385,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 ?: emptyList(),
             onScheduled = {
                 showToast(getString(R.string.event_created))
-                binding.isGrouping?.let {
-                    presenter.onGroupingChanged(it)
-                }
+                presenter.updateEventList()
             },
         ).show(childFragmentManager, SCHEDULING_DIALOG)
     }
