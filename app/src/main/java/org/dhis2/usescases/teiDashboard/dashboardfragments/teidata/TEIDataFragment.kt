@@ -8,12 +8,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -93,6 +93,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     @Inject
     lateinit var infoBarMapper: InfoBarMapper
 
+    @Inject
+    lateinit var contractHandler: TeiDataContractHandler
+
     private var eventAdapter: EventAdapter? = null
     private var dialog: CustomDialog? = null
     private var programStageFromEvent: ProgramStage? = null
@@ -101,29 +104,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private lateinit var dashboardModel: DashboardProgramModel
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
-
-    private val detailsLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-    ) {
-        dashboardActivity.presenter.init()
-    }
-
-    private val eventCreationLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            dashboardActivity.presenter.init()
-        }
-    private val eventCaptureLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            dashboardActivity.presenter.init()
-        }
-    private val eventDetailsLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            dashboardActivity.presenter.init()
-        }
-    private val eventInitialLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            dashboardActivity.presenter.init()
-        }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -138,6 +118,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     programUid,
                     teiUid,
                     enrollmentUid,
+                    requireActivity().activityResultRegistry,
                 ),
             )?.inject(this@TEIDataFragment)
         }
@@ -153,13 +134,19 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.presenter = presenter
             dashboardActivity.observeGrouping()?.observe(viewLifecycleOwner) { group ->
                 showLoadingProgress(true)
-                binding.isGrouping = group
                 presenter.onGroupingChanged(group)
             }
             dashboardActivity.observeFilters()?.observe(viewLifecycleOwner, ::showHideFilters)
             dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner, ::updateEnrollment)
 
             binding.filterLayout.adapter = filtersAdapter
+            presenter.shouldDisplayEventCreationButton.observe(this.viewLifecycleOwner) { showCreateEventButton ->
+                binding.dialFabLayout.visibility = if (showCreateEventButton) {
+                    View.VISIBLE.also { binding.dialFabLayout.setFabVisible(true) }
+                } else {
+                    View.GONE.also { binding.dialFabLayout.setFabVisible(false) }
+                }
+            }
         }.root
     }
 
@@ -169,14 +156,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     private fun updateFabItems() {
         val dialItems = presenter.newEventOptionsByTimeline()
-        binding.dialFabLayout.addDialItems(dialItems) { clickedId: Int? ->
-            when (clickedId) {
-                REFERAL_ID -> createEvent(EventCreationType.REFERAL, 0)
-                ADD_NEW_ID -> createEvent(EventCreationType.ADDNEW, 0)
-                SCHEDULE_ID -> createEvent(EventCreationType.SCHEDULE, 0)
-                else -> {}
-            }
-        }
+        binding.dialFabLayout.addDialItems(dialItems, presenter::onEventCreationClick)
     }
 
     override fun setEnrollment(enrollment: Enrollment) {
@@ -228,7 +208,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     fun setData(dashboardModel: DashboardProgramModel) {
         this.dashboardModel = dashboardModel
         if (dashboardModel.currentEnrollment != null) {
-            binding.dialFabLayout.setFabVisible(true)
+//            binding.dialFabLayout.setFabVisible(true)
             presenter.setDashboardProgram(dashboardModel)
             eventCatComboOptionSelector = EventCatComboOptionSelector(
                 dashboardModel.currentProgram.categoryComboUid(),
@@ -298,7 +278,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 )
             }
         } else {
-            binding.dialFabLayout.setFabVisible(false)
+//            binding.dialFabLayout.setFabVisible(false)
             binding.teiRecycler.adapter = DashboardProgramAdapter(presenter, dashboardModel)
             binding.teiRecycler.addItemDecoration(
                 DividerItemDecoration(
@@ -327,6 +307,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 Intent.ACTION_DIAL -> {
                     data = Uri.parse("tel:$value")
                 }
+
                 Intent.ACTION_SENDTO -> {
                     data = Uri.parse("mailto:$value")
                 }
@@ -359,8 +340,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return eventAdapter?.stageSelector() ?: Flowable.empty()
     }
 
-    override fun setEvents(events: List<EventViewModel>, canAddEvents: Boolean) {
-        binding.canAddEvents = canAddEvents
+    override fun setEvents(events: List<EventViewModel>) {
         if (events.isEmpty()) {
             binding.emptyTeis.visibility = View.VISIBLE
             if (binding.dialFabLayout.isFabVisible()) {
@@ -401,9 +381,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     RC_GENERATE_EVENT,
                     object : DialogClickListener {
                         override fun onPositive() {
-                            createEvent(
-                                EventCreationType.SCHEDULE,
-                                if (programStageFromEvent?.standardInterval() != null) programStageFromEvent?.standardInterval() else 0,
+                            presenter.onAcceptScheduleNewEvent(
+                                programStageModel.standardInterval() ?: 0,
                             )
                         }
 
@@ -484,8 +463,14 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays ?: 0)
             val intent = Intent(context, ProgramStageSelectionActivity::class.java)
             intent.putExtras(bundle)
-            eventCreationLauncher.launch(intent)
+            contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
+                dashboardActivity.presenter.init()
+            }
         }
+    }
+
+    override fun viewLifecycleOwner(): LifecycleOwner {
+        return this.viewLifecycleOwner
     }
 
     override fun switchFollowUp(followUp: Boolean) {
@@ -509,15 +494,20 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         dashboardActivity.finish()
     }
 
-    override fun seeDetails(intent: Intent, options: ActivityOptionsCompat) =
-        detailsLauncher.launch(intent, options)
-
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
-        eventDetailsLauncher.launch(intent, options)
+        contractHandler.scheduleEvent(intent, options).observe(this.viewLifecycleOwner) {
+            dashboardActivity.presenter.init()
+        }
 
-    override fun openEventInitial(intent: Intent) = eventInitialLauncher.launch(intent)
+    override fun openEventInitial(intent: Intent) =
+        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+            dashboardActivity.presenter.init()
+        }
 
-    override fun openEventCapture(intent: Intent) = eventCaptureLauncher.launch(intent)
+    override fun openEventCapture(intent: Intent) =
+        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+            dashboardActivity.presenter.init()
+        }
 
     override fun showTeiImage(filePath: String, defaultIcon: String) {
         if (filePath.isEmpty() && defaultIcon.isEmpty()) {
@@ -571,7 +561,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid())
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() ?: 0)
         intent.putExtras(bundle)
-        eventInitialLauncher.launch(intent)
+        contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
+            dashboardActivity.presenter.init()
+        }
     }
 
     private fun showHideFilters(showFilters: Boolean) {
@@ -635,8 +627,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         eventCatComboOptionSelector?.requestCatComboOption(presenter::changeCatOption)
     }
 
-    override fun showProgramRuleErrorMessage(message: String) {
-        dashboardActivity.runOnUiThread { showDescription(message) }
+    override fun showProgramRuleErrorMessage() {
+        dashboardActivity.runOnUiThread {
+            showDescription(getString(R.string.error_applying_rule_effects))
+        }
     }
 
     override fun showCatOptComboDialog(catComboUid: String) {
@@ -656,9 +650,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     companion object {
         const val RC_GENERATE_EVENT = 1501
         const val RC_EVENTS_COMPLETED = 1601
-        const val REFERAL_ID = 3
-        const val ADD_NEW_ID = 2
-        const val SCHEDULE_ID = 1
         const val PREF_COMPLETED_EVENT = "COMPLETED_EVENT"
 
         @JvmStatic

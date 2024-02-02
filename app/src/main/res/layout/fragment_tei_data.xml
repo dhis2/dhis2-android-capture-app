@@ -32,15 +32,6 @@
         <variable
             name="followup"
             type="androidx.databinding.ObservableBoolean" />
-
-        <variable
-            name="isGrouping"
-            type="java.lang.Boolean" />
-
-        <variable
-            name="canAddEvents"
-            type="java.lang.Boolean" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,7 +60,7 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/tei_data"
@@ -112,15 +103,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
+                    android:overScrollMode="never"
                     android:paddingBottom="200dp"
-                    app:layout_constraintVertical_weight="0"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cardLayout"
-                    tools:listitem="@layout/item_event"
-                    android:overScrollMode="never"/>
+                    app:layout_constraintVertical_weight="0"
+                    tools:listitem="@layout/item_event" />
 
                 <TextView
                     android:id="@+id/empty_teis"
@@ -151,14 +142,13 @@
 
         </androidx.core.widget.NestedScrollView>
 
-    <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
-        android:id="@+id/dialFabLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fab_extra_bottom_margin="@{16}"
-        app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+            android:id="@+id/dialFabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_extra_bottom_margin="@{16}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

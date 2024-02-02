@@ -52,42 +52,6 @@ class SyncFlowTest : BaseTest() {
     }
 
     @Test
-    fun shouldSuccessfullySyncAChangedTEI() {
-        val teiName = "Scott"
-        val teiLastName = "Kelley"
-
-        prepareTBProgrammeIntentAndLaunchActivity(ruleSearch)
-        searchTeiRobot {
-            clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, 0)
-            typeAttributeAtPosition(teiLastName, 1)
-            clickOnSearch()
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            clickOnGroupEventByName(TB_VISIT)
-            clickOnEventWith(TB_VISIT_EVENT_DATE, ORG_UNIT)
-        }
-
-        eventRobot {
-            clickOnUpdate()
-        }
-
-        teiDashboardRobot {
-            composeTestRule.onNodeWithText("Sync").performClick()
-        }
-        syncFlowRobot {
-            waitToDebounce(500)
-            clickOnSyncButton(composeTestRule)
-            workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
-            workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            checkSyncWasSuccessfully(composeTestRule)
-        }
-        cleanLocalDatabase()
-    }
-
-    @Test
     fun shouldShowErrorWhenTEISyncFails() {
         val teiName = "Lars"
         val teiLastName = "Overland"

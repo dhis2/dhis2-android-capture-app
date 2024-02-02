@@ -33,14 +33,6 @@
             name="followup"
             type="androidx.databinding.ObservableBoolean" />
 
-        <variable
-            name="isGrouping"
-            type="java.lang.Boolean" />
-
-        <variable
-            name="canAddEvents"
-            type="java.lang.Boolean" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -155,7 +147,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_extra_bottom_margin="@{52}"
-            app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

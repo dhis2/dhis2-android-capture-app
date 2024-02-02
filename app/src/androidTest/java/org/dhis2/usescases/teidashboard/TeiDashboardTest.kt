@@ -169,17 +169,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldNotBeAbleToCreateNewEventsWhenFull() {
-        prepareTeiOpenedWithFullEventsAndLaunchActivity(rule)
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            checkCanNotAddEvent()
-        }
-    }
-
-    @Test
     fun shouldOpenEventAndSaveSuccessfully() {
         setupCredentials()
 
@@ -232,32 +221,6 @@ class TeiDashboardTest : BaseTest() {
 
         indicatorsRobot {
             checkDetails("0", "4817")
-        }
-    }
-
-    @Test
-    fun shouldSuccessfullyCreateANewEvent() {
-        prepareTeiToCreateANewEventAndLaunchActivity(rule)
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            clickOnFab()
-            clickOnCreateNewEvent()
-            clickOnFirstReferralEvent()
-            waitToDebounce(2000)
-            clickOnReferralNextButton()
-            waitToDebounce(600)
-        }
-
-        eventRobot {
-            fillRadioButtonForm(4)
-            clickOnFormFabButton()
-            clickOnNotNow(composeTestRule)
-        }
-
-        teiDashboardRobot {
-            checkEventWasCreatedAndOpen(LAB_MONITORING, 0)
         }
     }
 

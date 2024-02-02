@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
+import androidx.activity.result.ActivityResultRegistry
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EntryMode
@@ -21,6 +22,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
@@ -34,6 +36,7 @@ class TEIDataModule(
     private val programUid: String?,
     private val teiUid: String,
     private val enrollmentUid: String,
+    private val registry: ActivityResultRegistry,
 ) {
     @Provides
     @PerFragment
@@ -48,10 +51,11 @@ class TEIDataModule(
         filterManager: FilterManager,
         filterRepository: FilterRepository,
         valueStore: FormValueStore,
-        resources: ResourceManager,
         optionsRepository: OptionsRepository,
         getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
         eventCreationOptionsMapper: EventCreationOptionsMapper,
+        contractHandler: TeiDataContractHandler,
+        dashboardActivityPresenter: TeiDashboardContracts.Presenter,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -68,10 +72,11 @@ class TEIDataModule(
             filterManager,
             filterRepository,
             valueStore,
-            resources,
             optionsRepository,
             getNewEventCreationTypeOptions,
             eventCreationOptionsMapper,
+            contractHandler,
+            dashboardActivityPresenter,
         )
     }
 
@@ -152,4 +157,7 @@ class TEIDataModule(
     ): InfoBarMapper {
         return InfoBarMapper(resourceManager)
     }
+
+    @Provides
+    fun provideContractHandler() = TeiDataContractHandler(registry)
 }
