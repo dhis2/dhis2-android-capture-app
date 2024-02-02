@@ -1,6 +1,5 @@
 package org.dhis2.form.data
 
-import org.dhis2.commons.bindings.disableCollapsableSectionsInProgram
 import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
@@ -10,7 +9,6 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 
 abstract class DataEntryBaseRepository(
     private val conf: FormBaseConfiguration,
-//    private val d2: D2,
     private val fieldFactory: FieldViewModelFactory,
 ) : DataEntryRepository {
 
