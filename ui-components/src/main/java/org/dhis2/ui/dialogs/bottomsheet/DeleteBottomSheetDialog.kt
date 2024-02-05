@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -31,7 +30,7 @@ DeleteBottomSheetDialog(
     private val deleteForever: Boolean = false,
     private val onMainButtonClick: () -> Unit,
 
-    ) : BottomSheetDialogFragment() {
+) : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG: String = "DELETE_DIALOG"
@@ -95,9 +94,9 @@ DeleteBottomSheetDialog(
                         dismiss()
                     },
                     content = {
-                      // no-op
+                        // no-op
                     },
-                    showSectionDivider = false
+                    showSectionDivider = false,
                 )
             }
         }

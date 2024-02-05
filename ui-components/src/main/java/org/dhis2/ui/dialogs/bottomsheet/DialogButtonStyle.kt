@@ -3,7 +3,6 @@ package org.dhis2.ui.dialogs.bottomsheet
 import androidx.compose.ui.graphics.Color
 import org.dhis2.ui.R
 import org.dhis2.ui.theme.colorPrimary
-import org.dhis2.ui.theme.errorColor
 import org.dhis2.ui.theme.warningColor
 
 sealed class DialogButtonStyle(

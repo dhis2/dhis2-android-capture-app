@@ -13,11 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupMenu
-import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
@@ -679,9 +675,10 @@ class TeiDashboardMobileActivity :
             deleteForever = true,
             onMainButtonClick = {
                 presenter.deleteTei()
-            }
+            },
         ).show(
-            supportFragmentManager, DeleteBottomSheetDialog.TAG
+            supportFragmentManager,
+            DeleteBottomSheetDialog.TAG,
         )
     }
 
@@ -692,9 +689,10 @@ class TeiDashboardMobileActivity :
             mainButtonText = getString(R.string.remove),
             onMainButtonClick = {
                 presenter.deleteEnrollment()
-            }
+            },
         ).show(
-            supportFragmentManager, DeleteBottomSheetDialog.TAG
+            supportFragmentManager,
+            DeleteBottomSheetDialog.TAG,
         )
     }
 

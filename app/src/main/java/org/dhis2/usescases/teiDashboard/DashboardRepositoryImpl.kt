@@ -426,7 +426,7 @@ class DashboardRepositoryImpl(
                 d2.enrollmentModule()
                     .enrollments().uid(enrollmentUid)
             enrollmentObjectRepository.setStatus(
-                enrollmentObjectRepository.blockingGet()!!.status()!!
+                enrollmentObjectRepository.blockingGet()!!.status()!!,
             )
             enrollmentObjectRepository.blockingDelete()
             !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid)
