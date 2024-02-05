@@ -153,6 +153,7 @@ class DataValuePresenter(
                     id = cell.id ?: "",
                     mainLabel = dataElement?.displayFormName() ?: "-",
                     secondaryLabels = repository.getCatOptComboOptions(ids[1]),
+                    helperText = dataElement?.description(),
                     currentValue = cell.value,
                     keyboardInputType = inputType,
                     error = errors[cell.id],
