@@ -7,12 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import org.dhis2.Bindings.app
 import org.dhis2.R
+import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.databinding.DialogChangeServerUrlBinding
+import org.dhis2.usescases.general.ActivityGlobalAbstract
 import javax.inject.Inject
+
 
 const val CHANGE_SERVER_URL_DIALOG_TAG: String = "CHANGE_SERVER_URL_DIALOG_TAG"
 
@@ -49,7 +54,10 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
         binding.closeButton.apply {
             setOnClickListener { closeDialog() }
         }
-        binding.dialogOk.setOnClickListener { presenter.save() }
+        binding.dialogOk.setOnClickListener {
+            binding.root.closeKeyboard()
+            presenter.save()
+        }
         binding.presenter = presenter
 
         presenter.init()
@@ -67,7 +75,7 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
         window.setGravity(Gravity.CENTER)
     }
 
-    private fun closeDialog() {
+    override fun closeDialog() {
         dismissAllowingStateLoss()
     }
 
@@ -92,6 +100,32 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
     override fun dismiss() {
         app().releaseSessionComponent()
         dismissAllowingStateLoss()
+    }
+
+    override fun getAbstractContext(): ActivityGlobalAbstract {
+        return activity as ActivityGlobalAbstract
+    }
+
+    override fun showLoginProgress() {
+        binding.serverUrl.visibility = View.GONE
+        binding.dialogWarning.visibility = View.GONE
+        binding.progress.visibility = View.VISIBLE
+    }
+
+    override fun hideLoginProgress() {
+        binding.progress.visibility = View.GONE
+        binding.dialogWarning.visibility = View.GONE
+        binding.serverUrl.visibility = View.VISIBLE
+    }
+
+    override fun renderError(throwable: Throwable) {
+        val error = D2ErrorUtils(getAbstractContext()).getErrorMessage(throwable)
+
+        Toast.makeText(
+            getAbstractContext(),
+            error,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun show(manager: FragmentManager, tag: String?) {

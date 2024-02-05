@@ -62,6 +62,18 @@
                 app:layout_constraintBottom_toTopOf="@id/dialogOk"
                 android:visibility="gone"/>
 
+            <ProgressBar
+                android:id="@+id/progress"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:progressColor="@{@color/colorPrimary}"
+                android:visibility="gone"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/server_url"
                 android:layout_width="0dp"
