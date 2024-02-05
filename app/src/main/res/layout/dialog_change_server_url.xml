@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.utils.session.ChangeServerURLPresenter" />
+
+    </data>
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview_pin"
         android:layout_width="match_parent"
@@ -13,8 +21,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp">
+            android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/closeButton"
@@ -25,6 +32,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_clear" />
+
 
             <TextView
                 android:id="@+id/title"
@@ -40,21 +48,35 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/closeButton" />
 
+            <TextView
+                android:id="@+id/dialog_warning"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/change_server_url_warning"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginVertical="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintBottom_toTopOf="@id/dialogOk"
+                android:visibility="gone"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/server_url"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
-                android:layout_marginVertical="32dp"
+                android:layout_marginVertical="24dp"
                 android:hint="@string/url_hint"
                 android:textColorHint="@color/text_black_808"
                 android:theme="@style/loginInputText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title">
-
-                <!--                    android:onTextChanged="@{loginModel::onServerChanged}"-->
+                app:layout_constraintBottom_toTopOf="@id/dialogOk"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                android:visibility="visible">
 
                 <org.dhis2.commons.customviews.TextInputAutoCompleteTextView
                     android:id="@+id/server_url_edit"
@@ -65,7 +87,8 @@
                     android:padding="5dp"
                     android:text="@string/login_https"
                     android:textColor="@color/text_black_333"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:onTextChanged="@{presenter::onServerChanged}"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,7 +102,7 @@
                 android:layout_marginVertical="24dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
-                app:layout_constraintTop_toBottomOf="@+id/server_url"
+                app:layout_constraintBottom_toBottomOf="parent"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

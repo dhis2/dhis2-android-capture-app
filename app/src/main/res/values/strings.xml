@@ -917,4 +917,5 @@
     <string name="wrong_pin">Wrong pin</string>
 
     <string name="change_server_url">Change server URL</string>
+    <string name="change_server_url_warning">Please confirm that metadata in the new server is equal to this one. Sync errors could occur in case server is not totally synced with current one. Are you sure?</string>
 </resources>

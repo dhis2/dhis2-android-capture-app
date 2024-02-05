@@ -47,28 +47,46 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
     ): View? {
         binding = DialogChangeServerUrlBinding.inflate(layoutInflater, container, false)
         binding.closeButton.apply {
-            visibility = View.GONE
             setOnClickListener { closeDialog() }
         }
+        binding.dialogOk.setOnClickListener { presenter.save() }
+        binding.presenter = presenter
 
         presenter.init()
 
         return binding.root
     }
+
     override fun onResume() {
         super.onResume()
         val window = dialog!!.window
-        window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT)
+        window!!.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         window.setGravity(Gravity.CENTER)
     }
 
-    override fun closeDialog() {
+    private fun closeDialog() {
         dismissAllowingStateLoss()
+    }
+
+    override fun requestConfirmation() {
+        binding.serverUrl.visibility = View.GONE
+        binding.dialogWarning.visibility = View.VISIBLE
+        binding.dialogOk.text = getString(R.string.action_accept)
     }
 
     override fun renderServerUrl(url: String) {
         binding.serverUrlEdit.setText(url)
+    }
+
+    override fun enableOk() {
+        binding.dialogOk.isEnabled = true
+    }
+
+    override fun disableOk() {
+        binding.dialogOk.isEnabled = false
     }
 
     override fun dismiss() {
