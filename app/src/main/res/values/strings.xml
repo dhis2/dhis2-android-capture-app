@@ -915,4 +915,6 @@
     <string name="downloading_image_resources">Downloading images...</string>
     <string name="program_description">Program description</string>
     <string name="wrong_pin">Wrong pin</string>
+
+    <string name="change_server_url">Change server URL</string>
 </resources>
