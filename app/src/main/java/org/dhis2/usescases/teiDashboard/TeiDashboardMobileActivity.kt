@@ -567,8 +567,18 @@ class TeiDashboardMobileActivity :
             .menu(this, menu)
             .onMenuInflated { popupMenu: PopupMenu ->
                 val deleteTeiItem = popupMenu.menu.findItem(R.id.deleteTei)
-                deleteTeiItem.title =
-                    String.format(deleteTeiItem.title.toString(), presenter.teType)
+                val showDeleteTeiItem = presenter.checkIfTEICanBeDeleted()
+                if (showDeleteTeiItem) {
+                    deleteTeiItem.isVisible = true
+                    deleteTeiItem.title =
+                        String.format(deleteTeiItem.title.toString(), presenter.teType)
+                } else {
+                    deleteTeiItem.isVisible = false
+                }
+
+                val deleteEnrollmentItem = popupMenu.menu.findItem(R.id.deleteEnrollment)
+                deleteEnrollmentItem.isVisible = presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
+
                 if (enrollmentUid != null) {
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
                     if (status == EnrollmentStatus.COMPLETED) {

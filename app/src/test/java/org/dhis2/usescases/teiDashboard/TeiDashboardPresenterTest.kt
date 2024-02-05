@@ -224,7 +224,7 @@ class TeiDashboardPresenterTest {
         )
         presenter.dashboardProgramModel = dashboardProgramModel
         whenever(
-            repository.deleteEnrollmentIfPossible(dashboardProgramModel.currentEnrollment.uid()),
+            repository.deleteEnrollment(dashboardProgramModel.currentEnrollment.uid()),
         ) doReturn Single.error(AuthorityException(null))
         presenter.deleteEnrollment()
 
@@ -246,7 +246,7 @@ class TeiDashboardPresenterTest {
         )
         presenter.dashboardProgramModel = dashboardProgramModel
         whenever(
-            repository.deleteEnrollmentIfPossible(dashboardProgramModel.currentEnrollment.uid()),
+            repository.deleteEnrollment(dashboardProgramModel.currentEnrollment.uid()),
         ) doReturn Single.just(true)
         presenter.deleteEnrollment()
 
@@ -256,7 +256,7 @@ class TeiDashboardPresenterTest {
 
     @Test
     fun `Should not deleteTei if it doesn't has permission`() {
-        whenever(repository.deleteTeiIfPossible()) doReturn Single.just(false)
+        whenever(repository.deleteTei()) doReturn Single.just(false)
         presenter.deleteTei()
 
         verify(view).authorityErrorMessage()
@@ -264,7 +264,7 @@ class TeiDashboardPresenterTest {
 
     @Test
     fun `Should deleteTei if it has permission`() {
-        whenever(repository.deleteTeiIfPossible()) doReturn Single.just(true)
+        whenever(repository.deleteTei()) doReturn Single.just(true)
         presenter.deleteTei()
 
         verify(analyticsHelper).setEvent(DELETE_TEI, CLICK, DELETE_TEI)

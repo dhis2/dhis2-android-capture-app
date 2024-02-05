@@ -7,7 +7,6 @@ import io.reactivex.Single
 import io.reactivex.functions.Function
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
@@ -386,58 +385,53 @@ class DashboardRepositoryImpl(
         }
     }
 
-    override fun deleteTeiIfPossible(): Single<Boolean> {
-        return Single.fromCallable {
-            val local = d2.trackedEntityModule()
-                .trackedEntityInstances()
-                .uid(teiUid)
-                .blockingGet()
-                ?.state() == State.TO_POST
-            val hasAuthority = d2.userModule()
-                .authorities()
-                .byName().eq("F_TEI_CASCADE_DELETE")
-                .one().blockingExists()
-            local || hasAuthority
-        }.flatMap { canDelete: Boolean ->
-            if (canDelete) {
-                return@flatMap d2.trackedEntityModule()
-                    .trackedEntityInstances()
-                    .uid(teiUid)
-                    .delete()
-                    .andThen<Boolean>(Single.fromCallable<Boolean> { true })
-            } else {
-                return@flatMap Single.fromCallable<Boolean> { false }
-            }
-        }
+    override fun checkIfDeleteTeiIsPossible(): Boolean {
+        val local = d2.trackedEntityModule()
+            .trackedEntityInstances()
+            .uid(teiUid)
+            .blockingGet()
+            ?.state() == State.TO_POST
+        val hasAuthority = d2.userModule()
+            .authorities()
+            .byName().eq("F_TEI_CASCADE_DELETE")
+            .one().blockingExists()
+
+        return local || hasAuthority
     }
 
-    override fun deleteEnrollmentIfPossible(enrollmentUid: String): Single<Boolean> {
+    override fun deleteTei(): Single<Boolean> {
+        return d2.trackedEntityModule()
+            .trackedEntityInstances()
+            .uid(teiUid)
+            .delete()
+            .andThen(Single.fromCallable { true })
+    }
+
+    override fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String): Boolean {
+        val local = d2.enrollmentModule()
+            .enrollments()
+            .uid(enrollmentUid)
+            .blockingGet()!!.state() == State.TO_POST
+        val hasAuthority = d2.userModule()
+            .authorities()
+            .byName().eq("F_ENROLLMENT_CASCADE_DELETE")
+            .one().blockingExists()
+
+        return local || hasAuthority
+    }
+
+    override fun deleteEnrollment(enrollmentUid: String): Single<Boolean> {
         return Single.fromCallable {
-            val local = d2.enrollmentModule()
-                .enrollments()
-                .uid(enrollmentUid)
-                .blockingGet()!!.state() == State.TO_POST
-            val hasAuthority = d2.userModule()
-                .authorities()
-                .byName().eq("F_ENROLLMENT_CASCADE_DELETE")
-                .one().blockingExists()
-            local || hasAuthority
-        }.flatMap { canDelete: Boolean ->
-            if (canDelete) {
-                return@flatMap Single.fromCallable<Boolean> {
-                    val enrollmentObjectRepository = d2.enrollmentModule()
-                        .enrollments().uid(enrollmentUid)
-                    enrollmentObjectRepository.setStatus(
-                        enrollmentObjectRepository.blockingGet()!!.status()!!,
-                    )
-                    enrollmentObjectRepository.blockingDelete()
-                    d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid)
-                        .byDeleted().isFalse
-                        .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isNotEmpty()
-                }
-            } else {
-                return@flatMap Single.error<Boolean>(AuthorityException(null))
-            }
+            val enrollmentObjectRepository =
+                d2.enrollmentModule()
+                    .enrollments().uid(enrollmentUid)
+            enrollmentObjectRepository.setStatus(
+                enrollmentObjectRepository.blockingGet()!!.status()!!
+            )
+            enrollmentObjectRepository.blockingDelete()
+            !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid)
+                .byDeleted().isFalse
+                .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty()
         }
     }
 

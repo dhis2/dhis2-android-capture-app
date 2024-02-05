@@ -74,9 +74,13 @@ interface DashboardRepository {
 
     fun saveCatOption(eventUid: String?, catOptionComboUid: String?)
 
-    fun deleteTeiIfPossible(): Single<Boolean>
+    fun checkIfDeleteTeiIsPossible(): Boolean
 
-    fun deleteEnrollmentIfPossible(enrollmentUid: String): Single<Boolean>
+    fun deleteTei(): Single<Boolean>
+
+    fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String): Boolean
+
+    fun deleteEnrollment(enrollmentUid: String): Single<Boolean>
 
     fun getNoteCount(): Single<Int>
 
