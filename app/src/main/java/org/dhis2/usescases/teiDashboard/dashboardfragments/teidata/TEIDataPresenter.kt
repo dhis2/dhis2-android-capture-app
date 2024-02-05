@@ -7,14 +7,12 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import org.dhis2.R
-import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
@@ -23,10 +21,6 @@ import org.dhis2.commons.bindings.program
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
-import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.data.FilterRepository
-import org.dhis2.commons.prefs.Preference
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.form.data.FormValueStore
@@ -51,7 +45,6 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.FOLLOW_UP
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
-import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
@@ -71,10 +64,7 @@ class TEIDataPresenter(
     private val teiUid: String,
     private val enrollmentUid: String,
     private val schedulerProvider: SchedulerProvider,
-    private val preferences: PreferenceProvider,
     private val analyticsHelper: AnalyticsHelper,
-    private val filterManager: FilterManager,
-    private val filterRepository: FilterRepository,
     private val valueStore: FormValueStore,
     private val optionsRepository: OptionsRepository,
     private val getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
@@ -87,7 +77,6 @@ class TEIDataPresenter(
     private var currentStage: String = ""
     private var stagesToHide: List<String> = emptyList()
 
-    private val _groupEvents = MutableLiveData(false)
     private val _shouldDisplayEventCreationButton = MutableLiveData(false)
     val shouldDisplayEventCreationButton: LiveData<Boolean> = _shouldDisplayEventCreationButton
 
@@ -95,44 +84,6 @@ class TEIDataPresenter(
     val events: LiveData<List<EventViewModel>> = _events
 
     fun init() {
-        compositeDisposable.add(
-            filterManager.asFlowable().startWith(filterManager)
-                .flatMap {
-                    Flowable.just(
-                        filterRepository.dashboardFilters(programUid!!),
-                    )
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { filters ->
-                        if (filters.isNotEmpty()) {
-                            view.setFilters(filters)
-                        }
-                    },
-                    Timber.Forest::e,
-                ),
-        )
-        compositeDisposable.add(
-            d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
-                .map { tei ->
-                    val defaultIcon = d2.trackedEntityModule().trackedEntityTypes()
-                        .uid(tei.trackedEntityType()).blockingGet()
-                        ?.style()?.icon()
-                    org.dhis2.commons.data.tuples.Pair.create(
-                        tei.profilePicturePath(d2, programUid),
-                        defaultIcon ?: "",
-                    )
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe({ fileNameAndDefault ->
-                    view.showTeiImage(
-                        fileNameAndDefault.val0(),
-                        fileNameAndDefault.val1(),
-                    )
-                }, Timber.Forest::e),
-        )
         programUid?.let {
             val program = d2.program(it) ?: throw NullPointerException()
             val enrollment = d2.enrollment(enrollmentUid) ?: throw NullPointerException()
@@ -142,18 +93,14 @@ class TEIDataPresenter(
                     currentStage = if (stageUid == currentStage && !showOptions) "" else stageUid
                     StageSection(currentStage, showOptions)
                 }
-            val programHasGrouping = hasGrouping(it)
+            val programHasGrouping = dashboardRepository.getGrouping()
             val groupingFlowable = groupingProcessor.startWith(programHasGrouping)
-            _groupEvents.value = programHasGrouping
 
             compositeDisposable.add(
-                Flowable.combineLatest(
-                    filterManager.asFlowable().startWith(filterManager),
+                Flowable.combineLatest<StageSection?, Boolean?, Pair<StageSection, Boolean>>(
                     sectionFlowable,
-                    groupingFlowable,
-                ) { _, stageSelection, isGrooping ->
-                    Pair(stageSelection, isGrooping)
-                }
+                    groupingFlowable, ::Pair,
+                )
                     .doOnNext { increment() }
                     .switchMap { stageAndGrouping ->
                         Flowable.zip(
@@ -175,7 +122,6 @@ class TEIDataPresenter(
                     .subscribe(
                         { events ->
                             _events.postValue(events)
-//                            view.setEvents(events)
                             decrement()
                         },
                         Timber.Forest::d,
@@ -196,40 +142,12 @@ class TEIDataPresenter(
                     }, Timber.Forest::e),
             )
             getEventsWithoutCatCombo()
-            compositeDisposable.add(
-                FilterManager.getInstance().catComboRequest
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        view::showCatOptComboDialog,
-                        Timber.Forest::e,
-                    ),
-            )
         } ?: run {
             view.setEnrollmentData(null, null)
             _shouldDisplayEventCreationButton.value = false
         }
 
-        updateCreateEventButtonVisibility(_groupEvents.value ?: false)
-
-        compositeDisposable.add(
-            filterManager.periodRequest
-                .map { it.first }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    view::showPeriodRequest,
-                    Timber.Forest::e,
-                ),
-        )
-        compositeDisposable.add(
-            filterManager.ouTreeFlowable()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe({
-                    programUid?.let { it1 -> view.openOrgUnitTreeSelector(it1) }
-                }, Timber.Forest::e),
-        )
+        updateCreateEventButtonVisibility(dashboardRepository.getGrouping())
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -240,14 +158,6 @@ class TEIDataPresenter(
                 !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
                 canAddNewEvents()
         _shouldDisplayEventCreationButton.value = showButton
-    }
-
-    private fun hasGrouping(programUid: String): Boolean {
-        var hasGrouping = true
-        if (grouping.containsKey(programUid)) {
-            hasGrouping = grouping[programUid] ?: false
-        }
-        return hasGrouping
     }
 
     private fun applyEffects(
@@ -399,7 +309,7 @@ class TEIDataPresenter(
         val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
         intent.putExtras(bundle)
         contractHandler.createEvent(intent).observe(view.viewLifecycleOwner()) {
-            dashboardActivityPresenter.init()
+
         }
     }
 
@@ -470,43 +380,10 @@ class TEIDataPresenter(
 
     fun onGroupingChanged(shouldGroupBool: Boolean) {
         programUid?.let {
-            val groups = grouping
-            groups[it] = shouldGroupBool
-            preferences.saveAsJson<Map<String, Boolean>>(
-                Preference.GROUPING,
-                groups,
-            )
-            _groupEvents.value = shouldGroupBool
             groupingProcessor.onNext(shouldGroupBool)
             updateCreateEventButtonVisibility(shouldGroupBool)
         }
     }
-
-    fun getEnrollment(enrollmentUid: String?) {
-        compositeDisposable.add(
-            d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { enrollment ->
-                        enrollment?.let { view.setEnrollment(enrollment) }
-                        filterManager.publishData()
-                    },
-                    Timber.Forest::e,
-                ),
-        )
-    }
-
-    private val grouping: MutableMap<String, Boolean>
-        get() {
-            val typeToken: TypeToken<HashMap<String, Boolean>> =
-                object : TypeToken<HashMap<String, Boolean>>() {}
-            return preferences.getObjectFromJson(
-                Preference.GROUPING,
-                typeToken,
-                HashMap(),
-            )
-        }
 
     fun onSyncDialogClick(eventUid: String) {
         view.showSyncDialog(eventUid, enrollmentUid)
@@ -519,14 +396,6 @@ class TEIDataPresenter(
             .blockingIsEmpty()
     }
 
-    fun setOpeningFilterToNone() {
-        filterRepository.collapseAllFilters()
-    }
-
-    fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit?>?) {
-        FilterManager.getInstance().addOrgUnits(selectedOrgUnits)
-    }
-
     private fun canAddNewEvents(): Boolean {
         return d2.canCreateEventInEnrollment(enrollmentUid, stagesToHide)
     }
@@ -535,17 +404,15 @@ class TEIDataPresenter(
         return teiDataRepository.getOrgUnitName(orgUnitUid)
     }
 
-    fun filterCatOptCombo(selectedCatOptionCombo: String?) {
-        FilterManager.getInstance().addCatOptCombo(
-            dashboardRepository.catOptionCombo(selectedCatOptionCombo),
-        )
+    fun onAddNewEventOptionSelected(it: EventCreationType, stage: ProgramStage?) {
+        if (stage != null) {
+            view.goToEventInitial(it, stage)
+        } else {
+            createEventInEnrollment(it)
+        }
     }
 
-    fun onAddNewEventOptionSelected(it: EventCreationType, stage: ProgramStage) {
-        view.goToEventInitial(it, stage)
-    }
-
-    fun getNewEventOptionsByStages(stage: ProgramStage): List<EventCreationOptions> {
+    fun getNewEventOptionsByStages(stage: ProgramStage?): List<EventCreationOptions> {
         val options = programUid?.let { getNewEventCreationTypeOptions(stage, it) }
         return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it) } ?: emptyList()
     }

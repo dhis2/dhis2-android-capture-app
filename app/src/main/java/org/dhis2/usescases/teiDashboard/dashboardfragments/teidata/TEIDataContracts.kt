@@ -9,8 +9,6 @@ import io.reactivex.functions.Consumer
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
-import org.dhis2.commons.filters.FilterItem
-import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -31,8 +29,6 @@ class TEIDataContracts {
         fun openEventDetails(intent: Intent, options: ActivityOptionsCompat)
         fun openEventInitial(intent: Intent)
         fun openEventCapture(intent: Intent)
-        fun showTeiImage(filePath: String, defaultIcon: String)
-        fun setFilters(filterItems: List<FilterItem>)
         fun observeStageSelection(
             currentProgram: Program,
             currentEnrollment: Enrollment,
@@ -40,14 +36,10 @@ class TEIDataContracts {
 
         fun setEnrollmentData(program: Program?, enrollment: Enrollment?)
 
-        fun showPeriodRequest(periodRequest: PeriodRequest)
-        fun openOrgUnitTreeSelector(programUid: String)
-        fun setEnrollment(enrollment: Enrollment)
         fun showSyncDialog(eventUid: String, enrollmentUid: String)
         fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>)
 
         fun showProgramRuleErrorMessage()
-        fun showCatOptComboDialog(catComboUid: String)
         fun goToEventInitial(eventCreationType: EventCreationType, programStage: ProgramStage)
     }
 }

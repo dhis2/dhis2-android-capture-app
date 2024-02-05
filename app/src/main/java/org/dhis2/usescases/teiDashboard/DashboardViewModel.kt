@@ -43,8 +43,12 @@ class DashboardViewModel(
     private val _dashboardModel = MutableLiveData<DashboardModel>()
     var dashboardModel: LiveData<DashboardModel> = _dashboardModel
 
+    private val _groupByStage = MutableLiveData<Boolean>()
+    val groupByStage: LiveData<Boolean> = _groupByStage
+
     init {
         fetchDashboardModel()
+        fetchGrouping()
     }
 
     private fun fetchDashboardModel() {
@@ -67,6 +71,23 @@ class DashboardViewModel(
             } catch (_: Exception) {
             }
         }
+    }
+
+    private fun fetchGrouping() {
+        viewModelScope.launch {
+            val result = async(context = Dispatchers.IO) {
+                repository.getGrouping()
+            }
+            try {
+                _groupByStage.value = result.await()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    fun setGrouping(groupEvents: Boolean) {
+        repository.setGrouping(groupEvents)
+        _groupByStage.value = groupEvents
     }
 
     fun eventUid(): LiveData<String> {
@@ -124,7 +145,7 @@ class DashboardViewModel(
                 }
             }
             try {
-                val hasMoreEnrollments = result.await()
+                result.await()
             } catch (e: AuthorityException) {
                 onAuthorityError()
             } catch (e: Exception) {

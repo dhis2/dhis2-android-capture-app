@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -96,7 +95,7 @@ class TeiDashboardMobileActivity :
     var adapter: DashboardPagerAdapter? = null
     private lateinit var dashboardViewModel: DashboardViewModel
     private var fromRelationship = false
-    private var groupByStage: MutableLiveData<Boolean>? = null
+
     private var relationshipMap: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private var elevation = 0f
@@ -105,7 +104,7 @@ class TeiDashboardMobileActivity :
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) {
-        presenter.init()
+
     }
 
     private val teiProgramListLauncher = registerForActivityResult(
@@ -159,7 +158,6 @@ class TeiDashboardMobileActivity :
         ).inject(this)
         setTheme(themeManager.getProgramTheme())
         super.onCreate(savedInstanceState)
-        groupByStage = MutableLiveData(presenter.programGrouping)
         dashboardViewModel =
             ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
@@ -268,10 +266,6 @@ class TeiDashboardMobileActivity :
             restoreAdapter(programUid)
         }
         presenter.refreshTabCounters()
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
     }
 
     override fun onPause() {
@@ -438,7 +432,6 @@ class TeiDashboardMobileActivity :
     override fun restoreAdapter(programUid: String?) {
         adapter = null
         this.programUid = programUid
-        presenter.init()
     }
 
     override fun handleTeiDeletion() {
@@ -560,7 +553,7 @@ class TeiDashboardMobileActivity :
     override fun showMoreOptions(view: View?) {
         val menu: Int = if (enrollmentUid == null) {
             R.menu.dashboard_tei_menu
-        } else if (java.lang.Boolean.TRUE == groupByStage?.value) {
+        } else if (java.lang.Boolean.TRUE == dashboardViewModel.groupByStage.value) {
             R.menu.dashboard_menu_group
         } else {
             R.menu.dashboard_menu
@@ -622,8 +615,8 @@ class TeiDashboardMobileActivity :
                     R.id.deleteTei -> showDeleteTEIConfirmationDialog()
                     R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()
                     R.id.programSelector -> presenter.onEnrollmentSelectorClick()
-                    R.id.groupEvents -> groupByStage?.setValue(true)
-                    R.id.showTimeline -> groupByStage?.setValue(false)
+                    R.id.groupEvents -> dashboardViewModel.setGrouping(true)
+                    R.id.showTimeline -> dashboardViewModel.setGrouping(false)
                     R.id.complete -> {
                         dashboardViewModel.updateEnrollmentStatus(
                             EnrollmentStatus.COMPLETED,
@@ -651,10 +644,6 @@ class TeiDashboardMobileActivity :
 
     fun observeFilters(): LiveData<Boolean>? {
         return null
-    }
-
-    fun observeGrouping(): LiveData<Boolean>? {
-        return groupByStage
     }
 
     override fun relationshipMap(): LiveData<Boolean> {

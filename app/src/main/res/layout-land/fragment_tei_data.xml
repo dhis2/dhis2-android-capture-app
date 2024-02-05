@@ -24,34 +24,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:id="@+id/cardLayout"
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/detailCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/detailCard"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/filterLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="?colorPrimary"
-                        android:visibility="gone"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:listitem="@layout/item_header_filter" />
-
-                </LinearLayout>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/tei_recycler"
@@ -64,7 +43,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/cardLayout"
+                    app:layout_constraintTop_toBottomOf="@id/detailCard"
                     tools:listitem="@layout/item_event"
                     android:overScrollMode="never"/>
 
@@ -81,7 +60,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/cardLayout" />
+                    app:layout_constraintTop_toBottomOf="@id/detailCard" />
 
                 <include
                     android:id="@+id/loading_progress"
@@ -91,20 +70,20 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/cardLayout" />
+                    app:layout_constraintTop_toBottomOf="@id/detailCard" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
 
-        <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+        <!--<org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
             android:id="@+id/dialFabLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_extra_bottom_margin="@{52}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
+-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

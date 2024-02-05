@@ -8,8 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarUiModel
 import org.dhis2.usescases.teiDashboard.ui.model.TeiCardUiModel
+import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.hisp.dhis.mobile.ui.designsystem.component.CardDetail
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
@@ -20,6 +22,9 @@ fun TeiDetailDashboard(
     followUpData: InfoBarUiModel?,
     enrollmentData: InfoBarUiModel?,
     card: TeiCardUiModel?,
+    timelineEventHeaderModel: TimelineEventsHeaderModel,
+    isGrouped: Boolean = false,
+    timelineOnEventCreationOptionSelected: (EventCreationType) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -89,6 +94,13 @@ fun TeiDetailDashboard(
                 expandLabelText = card.expandLabelText,
                 shrinkLabelText = card.shrinkLabelText,
                 showLoading = card.showLoading,
+            )
+        }
+
+        if (!isGrouped) {
+            TimelineEventsHeader(
+                timelineEventsHeaderModel = timelineEventHeaderModel,
+                onOptionSelected = timelineOnEventCreationOptionSelected,
             )
         }
     }

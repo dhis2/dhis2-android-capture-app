@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.ui.mapper
 import org.dhis2.R
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.hisp.dhis.android.core.common.State
@@ -99,25 +100,24 @@ class InfoBarMapperTest {
         state: State,
         status: EnrollmentStatus,
         followup: Boolean = false,
-    ): DashboardProgramModel {
+    ): DashboardEnrollmentModel {
         val attributeValues = listOf(
-            Pair.create(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
-            Pair.create(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
+            Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
+            Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
         )
 
-        val model = DashboardProgramModel(
-            setTei(state),
+        val model = DashboardEnrollmentModel(
             setEnrollment(state, status, followup),
             emptyList<ProgramStage>(),
             emptyList<Event>(),
+            setTei(state),
             attributeValues,
             emptyList<TrackedEntityAttributeValue>(),
-            emptyList<OrganisationUnit>(),
             setPrograms(),
+            emptyList<OrganisationUnit>(),
+            null,
+            null
         )
-
-        model.enrollmentState = state
-        model.currentEnrollmentStatus = status
 
         return model
     }

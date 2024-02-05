@@ -62,93 +62,6 @@ class TeiDashboardPresenterTest {
         )
     }
 
-    @Test
-    fun `Should set data on init`() {
-        val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
-        val enrollment = Enrollment.builder().uid("enrollmentUid").build()
-        val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
-        val events = listOf(Event.builder().uid("eventUid").build())
-        val trackedEntityAttributes = listOf(
-            Pair.create(
-                TrackedEntityAttribute.builder().uid("teiAttr").build(),
-                TrackedEntityAttributeValue.builder().build(),
-            ),
-        )
-        val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
-        val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
-        val programs = listOf(Program.builder().uid(programUid).build())
-
-        whenever(
-            repository.getTrackedEntityInstance(teiUid),
-        ) doReturn Observable.just(trackedEntityInstance)
-        whenever(
-            repository.getEnrollment(),
-        ) doReturn Observable.just(enrollment)
-        whenever(
-            repository.getProgramStages(programUid),
-        ) doReturn Observable.just(programStages)
-        whenever(
-            repository.getTEIEnrollmentEvents(programUid, teiUid),
-        ) doReturn Observable.just(events)
-        whenever(
-            repository.getAttributesMap(programUid, teiUid),
-        ) doReturn Observable.just(trackedEntityAttributes)
-        whenever(
-            repository.getTEIAttributeValues(programUid, teiUid),
-        ) doReturn Observable.just(trackedEntityAttributeValues)
-        whenever(
-            repository.getTeiOrgUnits(teiUid, programUid),
-        ) doReturn Observable.just(orgUnits)
-        whenever(
-            repository.getTeiActivePrograms(teiUid, false),
-        ) doReturn Observable.just(programs)
-        whenever(
-            filterManager.asFlowable(),
-        ) doReturn Flowable.just(filterManager)
-
-        presenter.init()
-
-        verify(view).setData(presenter.dashboardProgramModel)
-    }
-
-    @Test
-    fun `Should set data on init without program`() {
-        presenter.programUid = null
-        val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
-        val trackedEntityAttributes = listOf(
-            ProgramTrackedEntityAttribute.builder().uid("teiAUid").build(),
-        )
-        val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
-        val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
-        val programs = listOf(Program.builder().uid(programUid).build())
-        val enrollments = listOf(Enrollment.builder().uid("enrollmentUid").build())
-
-        whenever(
-            repository.getTrackedEntityInstance(teiUid),
-        ) doReturn Observable.just(trackedEntityInstance)
-        whenever(
-            repository.getProgramTrackedEntityAttributes(null),
-        ) doReturn Observable.just(trackedEntityAttributes)
-        whenever(
-            repository.getTEIAttributeValues(null, teiUid),
-        ) doReturn Observable.just(trackedEntityAttributeValues)
-        whenever(
-            repository.getTeiOrgUnits(teiUid, null),
-        ) doReturn Observable.just(orgUnits)
-        whenever(
-            repository.getTeiActivePrograms(teiUid, true),
-        ) doReturn Observable.just(programs)
-        whenever(
-            repository.getTEIEnrollments(teiUid),
-        ) doReturn Observable.just(enrollments)
-        whenever(
-            filterManager.asFlowable(),
-        ) doReturn Flowable.just(filterManager)
-
-        presenter.init()
-
-        verify(view).setDataWithOutProgram(presenter.dashboardProgramModel)
-    }
 
     @Test
     fun `Should go to enrollment list when clicked`() {
@@ -166,7 +79,7 @@ class TeiDashboardPresenterTest {
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
         val events = listOf(Event.builder().uid("eventUid").build())
         val trackedEntityAttributes = listOf(
-            Pair.create(
+            Pair(
                 TrackedEntityAttribute.builder().uid("teiAttr").build(),
                 TrackedEntityAttributeValue.builder().build(),
             ),
@@ -207,51 +120,6 @@ class TeiDashboardPresenterTest {
 
         assert(presenter.programUid == programUid)
         verify(view).restoreAdapter(programUid)
-    }
-
-    @Test
-    fun `Should not deleteEnrollment if it doesn't has permission`() {
-        val currentEnrollment = Enrollment.builder().uid("enrollmentUid").build()
-        val dashboardProgramModel = DashboardProgramModel(
-            null,
-            currentEnrollment,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-        )
-        presenter.dashboardProgramModel = dashboardProgramModel
-        whenever(
-            repository.deleteEnrollment(dashboardProgramModel.currentEnrollment.uid()),
-        ) doReturn Single.error(AuthorityException(null))
-        presenter.deleteEnrollment()
-
-        verify(view).authorityErrorMessage()
-    }
-
-    @Test
-    fun `Should deleteEnrollment if it has permission`() {
-        val currentEnrollment = Enrollment.builder().uid("enrollmentUid").build()
-        val dashboardProgramModel = DashboardProgramModel(
-            null,
-            currentEnrollment,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-        )
-        presenter.dashboardProgramModel = dashboardProgramModel
-        whenever(
-            repository.deleteEnrollment(dashboardProgramModel.currentEnrollment.uid()),
-        ) doReturn Single.just(true)
-        presenter.deleteEnrollment()
-
-        verify(analyticsHelper).setEvent(DELETE_ENROLL, CLICK, DELETE_ENROLL)
-        verify(view).handleEnrollmentDeletion(true)
     }
 
     @Test
@@ -297,69 +165,6 @@ class TeiDashboardPresenterTest {
         val uid = presenter.programUid
 
         assert(uid == programUid)
-    }
-
-    @Test
-    fun `Should return true program grouping from preferences if setting set to true`() {
-        val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object : TypeToken<HashMap<String, Boolean>>() {}
-        val returnedHashMap = hashMapOf(programUid to true)
-
-        whenever(
-            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf()),
-        ) doReturn returnedHashMap
-
-        val isGrouped = presenter.programGrouping
-
-        assert(isGrouped == true)
-    }
-
-    @Test
-    fun `Should return false program grouping from preferences if setting is set to false`() {
-        val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object : TypeToken<HashMap<String, Boolean>>() {}
-        val returnedHashMap = hashMapOf(programUid to false)
-
-        whenever(
-            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf()),
-        ) doReturn returnedHashMap
-
-        val isGrouped = presenter.programGrouping
-
-        assert(isGrouped == false)
-    }
-
-    @Test
-    fun `Should return true program grouping if the programUid not = presenter's programUid`() {
-        val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object : TypeToken<HashMap<String, Boolean>>() {}
-        val returnedHashMap = hashMapOf("otherProgramUid" to true)
-
-        whenever(
-            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf()),
-        ) doReturn returnedHashMap
-
-        val isGrouped = presenter.programGrouping
-
-        assert(isGrouped == true)
-    }
-
-    @Test
-    fun `Should return false as program grouping if program uid is null`() {
-        presenter = TeiDashboardPresenter(
-            view,
-            teiUid,
-            null,
-            repository,
-            schedulers,
-            analyticsHelper,
-            preferenceProvider,
-            matomoAnalyticsController,
-        )
-
-        val isGrouped = presenter.programGrouping
-
-        assert(isGrouped == false)
     }
 
     @Test

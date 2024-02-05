@@ -60,10 +60,7 @@ class TeiDataPresenterTest {
     private val teiUid = "123"
     private val enrollmentUid = "456"
     private val schedulers = TrampolineSchedulerProvider()
-    private val preferences: PreferenceProvider = mock()
     private val analytics: AnalyticsHelper = mock()
-    private val filterManager: FilterManager = mock()
-    private val filterRepository: FilterRepository = mock()
     private lateinit var teiDataPresenter: TEIDataPresenter
     private val valueStore: FormValueStore = mock()
     private val optionsRepository: OptionsRepository = mock()
@@ -85,10 +82,7 @@ class TeiDataPresenterTest {
             teiUid,
             enrollmentUid,
             schedulers,
-            preferences,
             analytics,
-            filterManager,
-            filterRepository,
             valueStore,
             optionsRepository,
             getNewEventCreationTypeOptions,
@@ -100,6 +94,13 @@ class TeiDataPresenterTest {
 
     @Test
     fun `Should return false if orgUnit does not belong to the capture scope`() {
+        mockEnrollmentOrgUnitInCaptureScope(false)
+        assertTrue(
+            teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
+        )
+    }
+
+    private fun mockEnrollmentOrgUnitInCaptureScope(returnValue:Boolean){
         whenever(
             d2.organisationUnitModule().organisationUnits(),
         ) doReturn mock()
@@ -122,10 +123,7 @@ class TeiDataPresenterTest {
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byUid().eq("orgUnitUid")
                 .blockingIsEmpty(),
-        ) doReturn false
-        assertTrue(
-            teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
-        )
+        ) doReturn returnValue
     }
 
     @Test
@@ -173,9 +171,13 @@ class TeiDataPresenterTest {
         val contractLiveData = MutableLiveData<Unit>()
         whenever(view.viewLifecycleOwner()) doReturn lifecycleOwner
         whenever(teiDataContractHandler.createEvent(any())) doReturn contractLiveData
+        val mockedEnrollment:Enrollment = mock {
+            on { organisationUnit() } doReturn "orgUnitUid"
+        }
+        whenever(teiDataRepository.getEnrollment())doReturn Single.just(mockedEnrollment)
+        mockEnrollmentOrgUnitInCaptureScope(false)
         teiDataPresenter.onEventCreationClick(EventCreationOptionsMapper.ADD_NEW_ID)
         contractLiveData.value = Unit
-        verify(activityPresenter).init()
     }
 
     @Test

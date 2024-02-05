@@ -33,8 +33,6 @@ public class TeiDashboardContracts {
 
     public interface Presenter {
 
-        void init();
-
         void showDescription(String description);
 
         void onBackPressed();
@@ -54,8 +52,6 @@ public class TeiDashboardContracts {
         void refreshTabCounters();
 
         void prefSaveCurrentProgram(String programUid);
-
-        Boolean getProgramGrouping();
 
         void handleShowHideFilters(boolean showFilter);
 

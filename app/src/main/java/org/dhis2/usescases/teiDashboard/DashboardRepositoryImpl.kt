@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard
 
+import com.google.gson.reflect.TypeToken
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -8,6 +9,9 @@ import io.reactivex.functions.Function
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
@@ -39,8 +43,8 @@ class DashboardRepositoryImpl(
     private val teiUid: String,
     private val programUid: String?,
     private val enrollmentUid: String?,
-    private val resources: ResourceManager,
     private val teiAttributesProvider: TeiAttributesProvider,
+    private val preferenceProvider: PreferenceProvider,
 ) : DashboardRepository {
     override fun getTeiHeader(): String? {
         return d2.trackedEntityModule().trackedEntitySearch()
@@ -549,6 +553,30 @@ class DashboardRepositoryImpl(
         } else {
             false
         }
+    }
+
+    override fun getGrouping(): Boolean {
+        return getGroupingOptions().getOrDefault(programUid, true)
+    }
+
+    override fun setGrouping(groupEvent: Boolean) {
+        val groups = getGroupingOptions()
+        programUid?.let { groups[programUid] = groupEvent }
+        preferenceProvider.saveAsJson<Map<String, Boolean>>(
+            Preference.GROUPING,
+            groups,
+        )
+    }
+
+    private fun getGroupingOptions(): HashMap<String, Boolean> {
+        val typeToken: TypeToken<HashMap<String, Boolean>> =
+            object : TypeToken<HashMap<String, Boolean>>() {}
+        val grouping = preferenceProvider.getObjectFromJson(
+            Preference.GROUPING,
+            typeToken,
+            HashMap(),
+        )
+        return grouping
     }
 
     override fun getTETypeName(): String? {

@@ -6,7 +6,6 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.EnrollmentFormRepository
 import org.dhis2.data.forms.FormRepository
@@ -57,7 +56,7 @@ class TeiDashboardModule(
     fun dashboardRepository(
         d2: D2,
         charts: Charts,
-        resources: ResourceManager,
+        preferenceProvider: PreferenceProvider,
         teiAttributesProvider: TeiAttributesProvider,
     ): DashboardRepository {
         return DashboardRepositoryImpl(
@@ -66,8 +65,8 @@ class TeiDashboardModule(
             teiUid,
             programUid,
             enrollmentUid,
-            resources,
             teiAttributesProvider,
+            preferenceProvider,
         )
     }
 

@@ -107,4 +107,8 @@ interface DashboardRepository {
     ): Observable<List<kotlin.Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>>
 
     fun getDashboardModel(): DashboardModel
+
+    fun getGrouping(): Boolean
+
+    fun setGrouping(groupEvent: Boolean)
 }

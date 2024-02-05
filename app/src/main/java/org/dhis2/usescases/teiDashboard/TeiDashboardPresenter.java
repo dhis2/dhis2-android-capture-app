@@ -5,29 +5,17 @@ import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
 import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
 import static org.dhis2.commons.matomo.Categories.DASHBOARD;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
-import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
-import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
@@ -69,11 +57,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void init() {
-
-    }
-
-    @Override
     public String getTEType() {
         return dashboardRepository.getTETypeName();
     }
@@ -112,7 +95,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void setProgram(Program program) {
         this.programUid = program.uid();
         view.restoreAdapter(programUid);
-        init();
     }
 
     @Override
@@ -186,15 +168,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public Boolean getProgramGrouping() {
-        if (programUid != null) {
-            return getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     public void handleShowHideFilters(boolean showFilters) {
         if (showFilters) {
             view.hideTabsAndDisableSwipe();
@@ -222,15 +195,5 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             }
                         }, Timber::e)
         );
-    }
-
-    private Map<String, Boolean> getGrouping() {
-        TypeToken<HashMap<String, Boolean>> typeToken =
-                new TypeToken<HashMap<String, Boolean>>() {
-                };
-        return preferenceProvider.getObjectFromJson(
-                Preference.GROUPING,
-                typeToken,
-                new HashMap<>());
     }
 }

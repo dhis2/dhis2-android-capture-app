@@ -5,11 +5,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ResourceManager
@@ -47,9 +43,6 @@ class TEIDataModule(
         ruleEngineRepository: RuleEngineRepository,
         schedulerProvider: SchedulerProvider,
         analyticsHelper: AnalyticsHelper,
-        preferenceProvider: PreferenceProvider,
-        filterManager: FilterManager,
-        filterRepository: FilterRepository,
         valueStore: FormValueStore,
         optionsRepository: OptionsRepository,
         getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
@@ -67,10 +60,7 @@ class TEIDataModule(
             teiUid,
             enrollmentUid,
             schedulerProvider,
-            preferenceProvider,
             analyticsHelper,
-            filterManager,
-            filterRepository,
             valueStore,
             optionsRepository,
             getNewEventCreationTypeOptions,
@@ -96,12 +86,6 @@ class TEIDataModule(
             enrollmentUid,
             periodUtils,
         )
-    }
-
-    @Provides
-    @PerFragment
-    fun provideNewFiltersAdapter(): FiltersAdapter {
-        return FiltersAdapter()
     }
 
     @Provides
