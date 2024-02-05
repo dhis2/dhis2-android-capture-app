@@ -44,6 +44,7 @@ class FormRepositoryImplTest {
     @Before
     fun setUp() {
         whenever(dataEntryRepository.disableCollapsableSections()) doReturn null
+        whenever(dataEntryRepository.firstSectionToOpen())doReturn mockedSections().first()
         whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
         repository = FormRepositoryImpl(

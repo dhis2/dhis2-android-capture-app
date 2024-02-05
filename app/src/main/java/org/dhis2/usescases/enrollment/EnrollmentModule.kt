@@ -21,6 +21,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.data.RulesRepository
+import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
@@ -90,8 +91,7 @@ class EnrollmentModule(
     ): EnrollmentRepository {
         return EnrollmentRepository(
             fieldFactory = modelFactory,
-            enrollmentUid = enrollmentUid,
-            d2 = d2,
+            conf = EnrollmentConfiguration(d2, enrollmentUid),
             enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
             enrollmentFormLabelsProvider = enrollmentFormLabelsProvider,
         )

@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
+import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -14,7 +15,7 @@ class SearchRepository(
     override val programUid: String?,
     private val teiTypeUid: String,
     private val currentSearchValues: Map<String, String>,
-) : DataEntryBaseRepository(d2, fieldViewModelFactory) {
+) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldViewModelFactory) {
 
     override fun list(): Flowable<List<FieldUiModel>> {
         return programUid?.let {
