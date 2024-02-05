@@ -40,6 +40,8 @@ import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.dhis2.utils.session.CHANGE_SERVER_URL_DIALOG_TAG
+import org.dhis2.utils.session.ChangeServerUrlDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
@@ -75,6 +77,7 @@ class MainActivity :
         }
 
     private var isPinLayoutVisible = false
+    private var isChangeServerURLVisible = false
 
     private var prefs: SharedPreferences? = null
     private var backDropActive = false
@@ -322,10 +325,17 @@ class MainActivity :
         }
     }
 
+    private fun onChangeServerURL(){
+        binding.mainDrawerLayout.closeDrawers()
+        ChangeServerUrlDialog().show(supportFragmentManager, CHANGE_SERVER_URL_DIALOG_TAG)
+        isChangeServerURLVisible = true
+    }
+
     override fun onBackPressed() {
         when {
             !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
             isPinLayoutVisible -> isPinLayoutVisible = false
+            isChangeServerURLVisible -> isChangeServerURLVisible = false
             else -> super.onBackPressed()
         }
     }
@@ -439,6 +449,9 @@ class MainActivity :
             }
             R.id.delete_account -> {
                 confirmAccountDelete()
+            }
+            R.id.change_url -> {
+                onChangeServerURL()
             }
         }
 
