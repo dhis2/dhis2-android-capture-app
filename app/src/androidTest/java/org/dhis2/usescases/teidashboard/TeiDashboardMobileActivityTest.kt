@@ -3,22 +3,16 @@ package org.dhis2.usescases.teidashboard
 import android.view.View
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Observable
+import java.util.Calendar
 import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.ui.ThemeManager
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.EventInitialTest
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
-import org.dhis2.usescases.main.program.ProgramPresenter
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
@@ -26,19 +20,14 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.event.EventEditableStatus
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.Calendar
 
 class TeiDashboardMobileActivityTest {
 
@@ -55,18 +44,21 @@ class TeiDashboardMobileActivityTest {
     private val resources: ResourceManager = mock()
     private val charts: Charts = mock()
     private val teiAttributesProvider: TeiAttributesProvider = mock()
+    private val preferences: PreferenceProvider = mock()
 
 
     private var repository: DashboardRepositoryImpl = mock {
 
     }
-    var tei = Observable.just(TrackedEntityInstance.builder()
-        .uid(TEI_Uid)
-        .created(Calendar.getInstance().time)
-        .lastUpdated(Calendar.getInstance().time)
-        .organisationUnit(ORG_UNIT_UID)
-        .trackedEntityType(TETYPE_NAME)
-        .build())
+    var tei = Observable.just(
+        TrackedEntityInstance.builder()
+            .uid(TEI_Uid)
+            .created(Calendar.getInstance().time)
+            .lastUpdated(Calendar.getInstance().time)
+            .organisationUnit(ORG_UNIT_UID)
+            .trackedEntityType(TETYPE_NAME)
+            .build()
+    )
 
     private val teType: TrackedEntityType = mock()
 
@@ -93,8 +85,8 @@ class TeiDashboardMobileActivityTest {
     }
 
     private fun initViewModel() {
-        viewModel =  DashboardViewModel(
-            repository ,
+        viewModel = DashboardViewModel(
+            repository,
             analyticsHelper
         )
 
@@ -112,8 +104,8 @@ class TeiDashboardMobileActivityTest {
             TEI_Uid,
             PROGRAM_UID,
             ENROLLMENT_UID,
-            resources,
             teiAttributesProvider,
+            preferences,
         )
 
 
@@ -123,58 +115,73 @@ class TeiDashboardMobileActivityTest {
     @Test
     fun shouldSuccessfullyInitializeTeiDashBoardMobileActivity() {
         setUp()
-        whenever (repository.getTETypeName()) doReturn TETYPE_NAME
-        whenever ( repository.getTrackedEntityInstance("") ) doReturn mock()
-        whenever {repository.getTrackedEntityInstance("").flatMap { tei: TrackedEntityInstance ->
-            d2.trackedEntityModule().trackedEntityTypes()
-                .uid(tei.trackedEntityType())
-                .get()
-                .toObservable()
-        } } doReturn mock()
-        whenever {repository.getTrackedEntityInstance("").flatMap { tei: TrackedEntityInstance ->
-            d2.trackedEntityModule().trackedEntityTypes()
-                .uid(tei.trackedEntityType())
-                .get()
-                .toObservable()
-        }.blockingFirst() } doReturn { teType }
+        whenever(repository.getTETypeName()) doReturn TETYPE_NAME
+        whenever(repository.getTrackedEntityInstance("")) doReturn mock()
+        whenever {
+            repository.getTrackedEntityInstance("").flatMap { tei: TrackedEntityInstance ->
+                d2.trackedEntityModule().trackedEntityTypes()
+                    .uid(tei.trackedEntityType())
+                    .get()
+                    .toObservable()
+            }
+        } doReturn mock()
+        whenever {
+            repository.getTrackedEntityInstance("").flatMap { tei: TrackedEntityInstance ->
+                d2.trackedEntityModule().trackedEntityTypes()
+                    .uid(tei.trackedEntityType())
+                    .get()
+                    .toObservable()
+            }.blockingFirst()
+        } doReturn { teType }
         whenever(
             presenter.teType
-        ) doReturn  TETYPE_NAME
+        ) doReturn TETYPE_NAME
 
         whenever(
             repository.getTETypeName()
-        ) doReturn  TETYPE_NAME
+        ) doReturn TETYPE_NAME
         whenever(
-            d2.trackedEntityModule()  ) doReturn  mock()
+            d2.trackedEntityModule()
+        ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances()  ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityInstances()
+        ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byUid()  ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityInstances().byUid()
+        ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byUid().eq("")  ) doReturn  mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byUid().eq("").one()  ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityInstances().byUid().eq("")
+        ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances().byUid().eq("").one()
-                .blockingGet()        ) doReturn  mock()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().byUid().eq("").one()
+                .blockingGet()
+        ) doReturn mock()
 
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes()    ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityTypes()
+        ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid("")   ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityTypes().uid("")
+        ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid("").get() ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityTypes().uid("").get()
+        ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid("").get().toObservable() ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityTypes().uid("").get().toObservable()
+        ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid("").get().toObservable() ) doReturn  mock()
+            d2.trackedEntityModule().trackedEntityTypes().uid("").get().toObservable()
+        ) doReturn mock()
 
 
 
 
         ActivityScenario.launch(TeiDashboardMobileActivity::class.java).onActivity { activity ->
 
-        val showMoreOptions = activity.findViewById<View>(R.id.moreOptions)
+            val showMoreOptions = activity.findViewById<View>(R.id.moreOptions)
             showMoreOptions.performClick()
         }
 
