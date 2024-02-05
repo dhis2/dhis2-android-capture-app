@@ -20,7 +20,6 @@ public class HelpManager {
 
     private static HelpManager instance;
     private List<FancyShowCaseView> help;
-    private String screen;
     private NestedScrollView scrollView;
 
     public enum TutorialName {
@@ -35,14 +34,8 @@ public class HelpManager {
         return instance;
     }
 
-    public boolean isReady(){
+    public boolean isReady() {
         return help != null;
-    }
-
-
-    public void setScreenHelp(String screen, List<FancyShowCaseView> steps) {
-        help = steps;
-        this.screen = screen;
     }
 
     public void showHelp() {
@@ -62,10 +55,6 @@ public class HelpManager {
         }
     }
 
-    public boolean isTutorialReadyForScreen(String screen) {
-        return this.screen != null && this.screen.equals(screen) && help != null && !help.isEmpty();
-    }
-
     public void setScroll(NestedScrollView scrollView) {
         this.scrollView = scrollView;
     }
@@ -73,24 +62,12 @@ public class HelpManager {
     public void show(ActivityGlobalAbstract activity, TutorialName name, SparseBooleanArray stepCondition) {
         help = new ArrayList<>();
         switch (name) {
-            case PROGRAM_FRAGMENT:
-                help = programFragmentTutorial(activity, stepCondition);
-                break;
-            case SETTINGS_FRAGMENT:
-                help = settingsFragmentTutorial(activity);
-                break;
-            case TEI_DASHBOARD:
-                help = teiDashboardTutorial(activity);
-                break;
-            case TEI_SEARCH:
-                help = teiSearchTutorial(activity);
-                break;
-            case PROGRAM_EVENT_LIST:
-                help = programEventListTutorial(activity, stepCondition);
-                break;
-            case EVENT_INITIAL:
-                help = eventInitialTutorial(activity, stepCondition);
-                break;
+            case PROGRAM_FRAGMENT -> help = programFragmentTutorial(activity, stepCondition);
+            case SETTINGS_FRAGMENT -> help = settingsFragmentTutorial(activity);
+            case TEI_DASHBOARD -> help = teiDashboardTutorial(activity);
+            case TEI_SEARCH -> help = teiSearchTutorial(activity);
+            case PROGRAM_EVENT_LIST -> help = programEventListTutorial(activity, stepCondition);
+            case EVENT_INITIAL -> help = eventInitialTutorial(activity, stepCondition);
         }
         if (!help.isEmpty())
             showHelp();
@@ -155,24 +132,10 @@ public class HelpManager {
                 .focusOn(activity.findViewById(R.id.program_spinner))
                 .closeOnTouch(true)
                 .build();
-        FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_search_3_v2))
-                .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.searchButton))
-                .closeOnTouch(true)
-                .build();
-        FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.clearFilterSearchButton))
-                .title(activity.getString(R.string.tuto_search_4_v2))
-                .enableAutoTextPosition()
-                .closeOnTouch(true)
-                .build();
 
         ArrayList<FancyShowCaseView> steps = new ArrayList<>();
         steps.add(tuto1);
         steps.add(tuto2);
-        steps.add(tuto3);
-        steps.add(tuto4);
         return steps;
     }
 
@@ -190,19 +153,7 @@ public class HelpManager {
                 .titleGravity(Gravity.BOTTOM)
                 .closeOnTouch(true)
                 .build();
-        FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_dashboard_4))
-                .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.follow_up))
-                .closeOnTouch(true)
-                .build();
-        FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_dashboard_5))
-                .enableAutoTextPosition()
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .closeOnTouch(true)
-                .build();
-        FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(activity)
+        FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_6))
                 .enableAutoTextPosition()
                 .focusOn(activity.findViewById(R.id.tei_recycler))
@@ -210,7 +161,7 @@ public class HelpManager {
                 .titleGravity(Gravity.TOP)
                 .closeOnTouch(true)
                 .build();
-        FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(activity)
+        FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_7))
                 .enableAutoTextPosition()
                 .focusOn(activity.findViewById(R.id.navigationBar))
@@ -221,10 +172,8 @@ public class HelpManager {
         ArrayList<FancyShowCaseView> steps = new ArrayList<>();
         steps.add(tuto1);
         steps.add(tuto2);
+        steps.add(tuto3);
         steps.add(tuto4);
-        steps.add(tuto5);
-        steps.add(tuto6);
-        steps.add(tuto7);
         return steps;
     }
 
