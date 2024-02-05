@@ -1,20 +1,16 @@
 package org.dhis2.usescases.teiDashboard
 
-import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
-import org.dhis2.commons.prefs.Preference.Companion.GROUPING
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_ENROLL
 import org.dhis2.utils.analytics.DELETE_TEI
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -22,7 +18,6 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -61,7 +56,6 @@ class TeiDashboardPresenterTest {
             matomoAnalyticsController,
         )
     }
-
 
     @Test
     fun `Should go to enrollment list when clicked`() {

@@ -44,7 +44,7 @@ class TEIDetailMapperTest {
             programsCallback = {},
             onImageClick = {},
 
-            )
+        )
 
         assertEquals(result.title, model.teiHeader)
         assertEquals(result.additionalInfo[0].value, model.trackedEntityAttributes[0].second.value())

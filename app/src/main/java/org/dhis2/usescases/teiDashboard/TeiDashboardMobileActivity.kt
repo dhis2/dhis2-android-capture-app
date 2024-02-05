@@ -104,7 +104,6 @@ class TeiDashboardMobileActivity :
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) {
-
     }
 
     private val teiProgramListLauncher = registerForActivityResult(

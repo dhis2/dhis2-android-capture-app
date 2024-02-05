@@ -309,7 +309,6 @@ class TEIDataPresenter(
         val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
         intent.putExtras(bundle)
         contractHandler.createEvent(intent).observe(view.viewLifecycleOwner()) {
-
         }
     }
 

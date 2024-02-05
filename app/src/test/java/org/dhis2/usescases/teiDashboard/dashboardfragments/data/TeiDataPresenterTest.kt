@@ -11,9 +11,6 @@ import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
-import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.data.FilterRepository
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -100,7 +97,7 @@ class TeiDataPresenterTest {
         )
     }
 
-    private fun mockEnrollmentOrgUnitInCaptureScope(returnValue:Boolean){
+    private fun mockEnrollmentOrgUnitInCaptureScope(returnValue: Boolean) {
         whenever(
             d2.organisationUnitModule().organisationUnits(),
         ) doReturn mock()
@@ -171,7 +168,7 @@ class TeiDataPresenterTest {
         val contractLiveData = MutableLiveData<Unit>()
         whenever(view.viewLifecycleOwner()) doReturn lifecycleOwner
         whenever(teiDataContractHandler.createEvent(any())) doReturn contractLiveData
-        val mockedEnrollment:Enrollment = mock {
+        val mockedEnrollment: Enrollment = mock {
             on { organisationUnit() } doReturn "orgUnitUid"
         }
         whenever(teiDataRepository.getEnrollment())doReturn Single.just(mockedEnrollment)

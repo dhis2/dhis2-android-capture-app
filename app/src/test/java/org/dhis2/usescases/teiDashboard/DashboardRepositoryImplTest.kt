@@ -44,7 +44,7 @@ class DashboardRepositoryImplTest {
             "programUid",
             "enrollmentUid",
             teiAttributesProvider,
-            preferences
+            preferences,
         )
     }
 

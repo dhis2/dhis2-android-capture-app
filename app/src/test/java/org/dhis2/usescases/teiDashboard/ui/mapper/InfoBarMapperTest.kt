@@ -4,7 +4,6 @@ import org.dhis2.R
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -116,7 +115,7 @@ class InfoBarMapperTest {
             setPrograms(),
             emptyList<OrganisationUnit>(),
             null,
-            null
+            null,
         )
 
         return model
