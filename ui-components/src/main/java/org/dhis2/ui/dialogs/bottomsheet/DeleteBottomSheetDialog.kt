@@ -20,6 +20,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class
@@ -80,6 +81,7 @@ DeleteBottomSheetDialog(
                                         )
                                     },
                                     text = mainButtonText,
+                                    colorStyle = ColorStyle.ERROR,
                                     onClick = {
                                         onMainButtonClick
                                     },
@@ -92,6 +94,10 @@ DeleteBottomSheetDialog(
                     onDismiss = {
                         dismiss()
                     },
+                    content = {
+                      // no-op
+                    },
+                    showSectionDivider = false
                 )
             }
         }
