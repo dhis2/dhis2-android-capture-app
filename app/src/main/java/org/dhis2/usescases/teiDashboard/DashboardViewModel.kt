@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -21,6 +21,7 @@ import timber.log.Timber
 class DashboardViewModel(
     private val repository: DashboardRepository,
     private val analyticsHelper: AnalyticsHelper,
+    private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
 
     private val eventUid = MutableLiveData<String>()
@@ -52,8 +53,8 @@ class DashboardViewModel(
     }
 
     private fun fetchDashboardModel() {
-        viewModelScope.launch {
-            val result = async(context = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.io()) {
+            val result = async {
                 repository.getDashboardModel()
             }
             try {
@@ -74,8 +75,8 @@ class DashboardViewModel(
     }
 
     private fun fetchGrouping() {
-        viewModelScope.launch {
-            val result = async(context = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.io()) {
+            val result = async {
                 repository.getGrouping()
             }
             try {
@@ -110,7 +111,7 @@ class DashboardViewModel(
                 repository.setFollowUp((dashboardModel.value as DashboardEnrollmentModel).currentEnrollment.uid())
             _syncNeeded.value = true
             _state.value = State.TO_UPDATE
-            analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, _showFollowUpBar.toString(), FOLLOW_UP)
+            analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, _showFollowUpBar.value.toString(), FOLLOW_UP)
             updateDashboard()
         }
     }
@@ -137,8 +138,8 @@ class DashboardViewModel(
     }
 
     fun deleteEnrollment(onAuthorityError: () -> Unit) {
-        viewModelScope.launch {
-            val result = async(context = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.io()) {
+            val result = async {
                 dashboardModel.value.takeIf { it is DashboardEnrollmentModel }?.let {
                     repository.deleteEnrollmentIfPossible((it as DashboardEnrollmentModel).currentEnrollment.uid())
                         .blockingGet()

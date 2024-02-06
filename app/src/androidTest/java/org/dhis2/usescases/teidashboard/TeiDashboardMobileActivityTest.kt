@@ -12,6 +12,7 @@ import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
@@ -50,6 +51,8 @@ class TeiDashboardMobileActivityTest {
     private var repository: DashboardRepositoryImpl = mock {
 
     }
+
+    private var dispatcher:DispatcherProvider = mock()
     var tei = Observable.just(
         TrackedEntityInstance.builder()
             .uid(TEI_Uid)
@@ -87,7 +90,8 @@ class TeiDashboardMobileActivityTest {
     private fun initViewModel() {
         viewModel = DashboardViewModel(
             repository,
-            analyticsHelper
+            analyticsHelper,
+            dispatcher,
         )
 
     }

@@ -7,6 +7,7 @@ import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.forms.EnrollmentFormRepository
 import org.dhis2.data.forms.FormRepository
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository
@@ -123,7 +124,8 @@ class TeiDashboardModule(
     fun providesViewModelFactory(
         repository: DashboardRepository,
         analyticsHelper: AnalyticsHelper,
+        dispatcher: DispatcherProvider,
     ): DashboardViewModelFactory {
-        return DashboardViewModelFactory(repository, analyticsHelper)
+        return DashboardViewModelFactory(repository, analyticsHelper, dispatcher)
     }
 }
