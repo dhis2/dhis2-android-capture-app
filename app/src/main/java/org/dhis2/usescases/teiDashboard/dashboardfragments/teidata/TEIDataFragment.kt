@@ -127,6 +127,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
             with(dashboardViewModel) {
                 eventUid().observe(viewLifecycleOwner, ::displayGenerateEvent)
+                updateEnrollment.observe(viewLifecycleOwner) { update ->
+                    updateEnrollment(update)
+                }
             }
 
             presenter.events.observe(viewLifecycleOwner) {
@@ -412,14 +415,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
         contractHandler.scheduleEvent(intent, options).observe(this.viewLifecycleOwner) {
+            updateEnrollment(true)
         }
 
     override fun openEventInitial(intent: Intent) =
         contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+            updateEnrollment(true)
         }
 
     override fun openEventCapture(intent: Intent) =
         contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+            updateEnrollment(true)
         }
 
     override fun goToEventInitial(
@@ -448,6 +454,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() ?: 0)
             intent.putExtras(bundle)
             contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
+                updateEnrollment(true)
             }
         }
     }
@@ -482,6 +489,12 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         dashboardActivity.runOnUiThread {
             showDescription(getString(R.string.error_applying_rule_effects))
         }
+    }
+
+    override fun updateEnrollment(update: Boolean) {
+        presenter.fetchEvents(update)
+        presenter.getEnrollment()?.let { eventAdapter?.setEnrollment(it) }
+        dashboardViewModel.updateDashboard()
     }
 
     companion object {

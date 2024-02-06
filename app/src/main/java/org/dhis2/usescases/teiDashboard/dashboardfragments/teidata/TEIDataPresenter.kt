@@ -46,6 +46,7 @@ import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.FOLLOW_UP
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -309,6 +310,7 @@ class TEIDataPresenter(
         val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
         intent.putExtras(bundle)
         contractHandler.createEvent(intent).observe(view.viewLifecycleOwner()) {
+            view.updateEnrollment(true)
         }
     }
 
@@ -416,18 +418,14 @@ class TEIDataPresenter(
         return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it) } ?: emptyList()
     }
 
-    fun newEventOptionsByTimeline(): List<DialItem> {
-        val options = programUid?.let { getNewEventCreationTypeOptions.invoke(null, it) }
-        return options?.let { eventCreationOptionsMapper.mapToEventsByTimeLine(it) }
-            ?: emptyList()
+    fun fetchEvents(updateEnrollment: Boolean) {
+        if (updateEnrollment) {
+            groupingProcessor.onNext(groupingProcessor.value)
+        }
     }
 
-    fun getTeiProfilePath(): String? {
-        return teiDataRepository.getTeiProfilePath()
-    }
-
-    fun getTeiHeader(): String? {
-        return teiDataRepository.getTeiHeader()
+    fun getEnrollment(): Enrollment? {
+        return teiDataRepository.getEnrollment().blockingGet()
     }
 
     fun updateEventList() {

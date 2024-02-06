@@ -660,10 +660,6 @@ class TeiDashboardMobileActivity :
     override fun updateStatus() {
     }
 
-    /*fun updatedEnrollment(): LiveData<String>? {
-        return currentEnrollment
-    }*/
-
     override fun displayStatusError(statusCode: StatusChangeResultCode) {
         when (statusCode) {
             StatusChangeResultCode.FAILED -> displayMessage(getString(R.string.something_wrong))

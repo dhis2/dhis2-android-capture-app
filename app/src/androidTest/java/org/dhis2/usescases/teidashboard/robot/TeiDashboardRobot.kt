@@ -3,6 +3,7 @@ package org.dhis2.usescases.teidashboard.robot
 import android.content.Context
 import android.view.View
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -17,7 +18,6 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -36,9 +36,9 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProg
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.StageViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
+import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
-import org.dhis2.utils.dialFloatingActionButton.FAB_ID
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo
@@ -86,13 +86,6 @@ class TeiDashboardRobot : BaseRobot() {
         composeTestRule.onNodeWithText("Enrollment cancelled").assertIsDisplayed()
     }
 
-    fun checkCanAddEvent() {
-        onView(withId(FAB_ID)).check(matches(allOf(isDisplayed(), isEnabled()))).perform(click())
-        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val addNewTag = targetContext.resources.getString(R.string.add_new)
-        onView(withTagValue(equalTo(addNewTag))).check(matches(isDisplayed()))
-    }
-
     fun clickOnEventWithPosition(position: Int) {
         onView(withId(R.id.tei_recycler))
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
@@ -135,14 +128,15 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    fun clickOnFab() {
-        onView(withId(FAB_ID)).perform(click())
+    fun clickOnFab(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON,useUnmergedTree = true).performClick()
     }
 
-    fun clickOnReferral() {
+    fun clickOnReferral(composeTestRule: ComposeTestRule) {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val referalTag = targetContext.resources.getString(R.string.referral)
-        onView(withTagValue(equalTo(referalTag))).perform(click())
+        composeTestRule.onNodeWithTag(referalTag).performClick()
+//        onView(withTagValue(equalTo(referalTag))).perform(click())
     }
 
     fun checkCannotAddMoreEventToastIsShown() {
@@ -230,8 +224,8 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
 
-    fun checkCanNotAddEvent() {
-        onView(withId(FAB_ID)).check(matches(not(isDisplayed())))
+    fun checkCanNotAddEvent(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON, useUnmergedTree = true).assertDoesNotExist()
     }
 
     fun clickOnShareButton() {
@@ -312,10 +306,11 @@ class TeiDashboardRobot : BaseRobot() {
                     }
                 })
         }
-    fun clickOnScheduleNew() {
+
+    fun clickOnScheduleNew(composeTestRule: ComposeTestRule) {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val scheduleTag = targetContext.resources.getString(R.string.schedule_new)
-        onView(withTagValue(equalTo(scheduleTag))).perform(click())
+        composeTestRule.onNodeWithTag(scheduleTag, useUnmergedTree = true).performClick()
     }
 
     fun clickOnMenuProgramEnrollments() {
