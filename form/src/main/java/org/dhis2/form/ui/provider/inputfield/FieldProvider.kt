@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.launch
@@ -448,8 +449,10 @@ private fun ProvideIntegerPositive(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPositiveInteger(
@@ -487,8 +490,10 @@ private fun ProvideIntegerPositiveOrZero(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPositiveIntegerOrZero(
@@ -526,8 +531,10 @@ private fun ProvidePercentage(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPercentage(
@@ -565,8 +572,10 @@ private fun ProvideNumber(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputNumber(
@@ -605,8 +614,9 @@ private fun ProvideIntegerNegative(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value?.replace("-", "") ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value?.replace("-", "") ?: "", textSelection))
     }
 
     InputNegativeInteger(
@@ -644,8 +654,10 @@ private fun ProvideLongText(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLongText(
@@ -684,8 +696,9 @@ private fun ProvideLetter(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLetter(
@@ -723,8 +736,9 @@ private fun ProvideInteger(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputInteger(
@@ -762,8 +776,10 @@ private fun ProvideEmail(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputEmail(
@@ -811,8 +827,10 @@ private fun ProvideInputPhoneNumber(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPhoneNumber(
@@ -860,8 +878,10 @@ private fun ProvideInputLink(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLink(

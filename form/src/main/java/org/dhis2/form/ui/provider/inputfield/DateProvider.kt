@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
@@ -37,11 +38,12 @@ fun ProvideInputDate(
         ValueType.TIME -> DateTimeActionIconType.TIME to TimeTransformation()
         else -> DateTimeActionIconType.DATE to DateTransformation()
     }
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
     var value by remember(fieldUiModel.value) {
         mutableStateOf(
             if (fieldUiModel.value != null) {
-                TextFieldValue(formatStoredDateToUI(fieldUiModel.value!!, fieldUiModel.valueType))
+                TextFieldValue(formatStoredDateToUI(fieldUiModel.value!!, fieldUiModel.valueType), textSelection)
             } else {
                 TextFieldValue()
             },

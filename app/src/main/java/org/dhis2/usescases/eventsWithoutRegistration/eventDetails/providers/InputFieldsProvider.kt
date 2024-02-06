@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
@@ -52,9 +53,11 @@ fun ProvideInputDate(
 ) {
     if (uiModel.showField) {
         Spacer(modifier = Modifier.height(16.dp))
+        val textSelection = TextRange(if (uiModel.eventDate.dateValue != null) uiModel.eventDate.dateValue.length else 0)
+
         var value by remember(uiModel.eventDate.dateValue) {
             if (uiModel.eventDate.dateValue != null) {
-                mutableStateOf(TextFieldValue(formatStoredDateToUI(uiModel.eventDate.dateValue) ?: ""))
+                mutableStateOf(TextFieldValue(formatStoredDateToUI(uiModel.eventDate.dateValue) ?: "", textSelection))
             } else {
                 mutableStateOf(TextFieldValue())
             }
