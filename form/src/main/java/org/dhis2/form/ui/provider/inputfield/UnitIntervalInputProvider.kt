@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -21,8 +23,10 @@ fun ProvideUnitIntervalInput(
     intentHandler: (FormIntent) -> Unit,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
     InputUnitInterval(
         modifier = modifier.fillMaxWidth(),
@@ -30,15 +34,15 @@ fun ProvideUnitIntervalInput(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
