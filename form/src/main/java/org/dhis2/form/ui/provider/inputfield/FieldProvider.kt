@@ -23,7 +23,9 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.extensions.autocompleteList
@@ -447,8 +449,10 @@ private fun ProvideIntegerPositive(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPositiveInteger(
@@ -457,15 +461,15 @@ private fun ProvideIntegerPositive(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -486,8 +490,10 @@ private fun ProvideIntegerPositiveOrZero(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPositiveIntegerOrZero(
@@ -496,15 +502,15 @@ private fun ProvideIntegerPositiveOrZero(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -525,8 +531,10 @@ private fun ProvidePercentage(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPercentage(
@@ -535,15 +543,15 @@ private fun ProvidePercentage(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -564,8 +572,10 @@ private fun ProvideNumber(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputNumber(
@@ -574,15 +584,15 @@ private fun ProvideNumber(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -604,8 +614,9 @@ private fun ProvideIntegerNegative(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value?.replace("-", ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value?.replace("-", "") ?: "", textSelection))
     }
 
     InputNegativeInteger(
@@ -614,15 +625,15 @@ private fun ProvideIntegerNegative(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -643,8 +654,10 @@ private fun ProvideLongText(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLongText(
@@ -653,15 +666,15 @@ private fun ProvideLongText(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -683,8 +696,9 @@ private fun ProvideLetter(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLetter(
@@ -693,15 +707,15 @@ private fun ProvideLetter(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -722,8 +736,9 @@ private fun ProvideInteger(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputInteger(
@@ -732,15 +747,15 @@ private fun ProvideInteger(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -761,8 +776,10 @@ private fun ProvideEmail(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputEmail(
@@ -771,15 +788,15 @@ private fun ProvideEmail(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -788,7 +805,7 @@ private fun ProvideEmail(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SENDTO,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
@@ -810,8 +827,10 @@ private fun ProvideInputPhoneNumber(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPhoneNumber(
@@ -820,15 +839,15 @@ private fun ProvideInputPhoneNumber(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -837,7 +856,7 @@ private fun ProvideInputPhoneNumber(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_DIAL,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
@@ -859,8 +878,10 @@ private fun ProvideInputLink(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLink(
@@ -869,15 +890,15 @@ private fun ProvideInputLink(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -886,7 +907,7 @@ private fun ProvideInputLink(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_VIEW,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
