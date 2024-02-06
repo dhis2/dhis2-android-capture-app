@@ -37,8 +37,7 @@ class SearchScreenConfigurator(
             searchConfiguration.searchForm.isOpened -> openSearch()
             else -> closeBackdrop()
         }
-        binding.searchButton.display(searchConfiguration.displaySearchButton())
-        binding.clearFilterSearchButton.display(searchConfiguration.displayResetSearchButton())
+
         binding.clearFilters?.display(searchConfiguration.displayResetFiltersButton())
         syncButtonVisibility(!searchConfiguration.searchForm.isOpened)
         setFiltersVisibility(!searchConfiguration.searchForm.isOpened)
@@ -61,13 +60,7 @@ class SearchScreenConfigurator(
         } else {
             openSearch()
         }
-        binding.searchButton.display(
-            searchConfiguration.displaySearchButton() ||
-                !searchConfiguration.searchFilters.isOpened,
-        )
-        binding.clearFilterSearchButton.display(
-            searchConfiguration.displayResetInLandscape(),
-        )
+
         syncButtonVisibility(true)
         setFiltersVisibility(true)
         binding.minAttributeMessage.setContent {
@@ -97,7 +90,7 @@ class SearchScreenConfigurator(
 
     private fun setFiltersVisibility(showFilters: Boolean) {
         binding.filterCounter.visibility =
-            if (showFilters && binding.totalFilters ?: 0 > 0) View.VISIBLE else View.GONE
+            if (showFilters && (binding.totalFilters ?: 0) > 0) View.VISIBLE else View.GONE
         binding.searchFilterGeneral.visibility = if (showFilters) View.VISIBLE else View.GONE
     }
 

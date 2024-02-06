@@ -181,19 +181,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
-        binding.searchButton.setOnClickListener(v -> {
-            if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
-            viewModel.onSearchClick(minNumberOfAttributes -> {
-                showSnackbar(
-                        v,
-                        String.format(getString(R.string.search_min_num_attr),
-                                minNumberOfAttributes),
-                        getString(R.string.button_ok)
-
-                );
-                return Unit.INSTANCE;
-            });
-        });
 
         binding.filterRecyclerLayout.setAdapter(filtersAdapter);
 
@@ -372,7 +359,28 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 (uid, value) -> {
                     viewModel.updateQuery(uid, value);
                     return Unit.INSTANCE;
-                });
+                },
+                () -> {
+                    if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
+                    viewModel.onSearchClick(minNumberOfAttributes -> {
+                        showSnackbar(
+                                binding.searchContainer,
+                                String.format(getString(R.string.search_min_num_attr),
+                                        minNumberOfAttributes),
+                                getString(R.string.button_ok)
+
+                        );
+                        return Unit.INSTANCE;
+                    });
+                    return Unit.INSTANCE;
+                },
+                () -> {
+            presenter.clearFilterClick();
+                    presenter.onClearClick();
+                    viewModel.clearQueryData();
+                    return Unit.INSTANCE;
+                }
+        );
     }
 
     private void configureBottomNavigation() {
@@ -457,9 +465,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void hideSearchAndFilterButtons() {
         binding.searchFilterGeneral.setVisibility(GONE);
         binding.filterCounter.setVisibility(GONE);
-        if (OrientationUtilsKt.isLandscape()) {
-            binding.searchButton.setVisibility(GONE);
-        }
     }
 
     private void showSearchAndFilterButtons() {
@@ -467,7 +472,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             fromAnalytics = false;
             binding.searchFilterGeneral.setVisibility(View.VISIBLE);
             binding.filterCounter.setVisibility(binding.getTotalFilters() > 0 ? View.VISIBLE : View.GONE);
-            binding.searchButton.setVisibility(OrientationUtilsKt.isLandscape() ? View.VISIBLE : GONE);
         }
     }
 

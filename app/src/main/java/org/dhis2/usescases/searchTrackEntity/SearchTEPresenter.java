@@ -259,6 +259,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void onClearClick() {
+        searchRepository.setCurrentProgram(selectedProgram != null ? selectedProgram.uid() : null);
+        currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
+    }
+
+    @Override
     public void onBackClick() {
         view.onBackClicked();
     }

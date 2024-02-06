@@ -200,11 +200,19 @@ class SearchTEIViewModel(
     }
 
     fun updateQuery(uid: String, value: String?) {
-        value?.let {
-            queryData[uid] = it
-        } ?: queryData.remove(uid)
+        if (value.isNullOrEmpty()) {
+            queryData.remove(uid)
+        } else {
+            queryData[uid] = value
+        }
 
         updateSearch()
+    }
+
+    fun clearQueryData() {
+        queryData.clear()
+        updateSearch()
+        performSearch()
     }
 
     private fun updateSearch() {
@@ -392,7 +400,7 @@ class SearchTEIViewModel(
         } ?: false
     }
 
-    fun canDisplayResult(itemCount: Int, onlineTooManyResults: Boolean): Boolean {
+    private fun canDisplayResult(itemCount: Int, onlineTooManyResults: Boolean): Boolean {
         return !onlineTooManyResults && when (initialProgramUid) {
             null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
             else ->

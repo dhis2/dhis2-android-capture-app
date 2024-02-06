@@ -73,6 +73,8 @@ public class SearchTEContractsModule {
 
         void setProgram(Program programSelected);
 
+        void onClearClick();
+
         void onBackClick();
 
         void onEnrollClick(HashMap<String, String> queryData);
