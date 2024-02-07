@@ -420,7 +420,7 @@ class TEIDataPresenter(
 
     fun fetchEvents(updateEnrollment: Boolean) {
         if (updateEnrollment) {
-            groupingProcessor.onNext(groupingProcessor.value)
+            groupingProcessor.onNext(dashboardRepository.getGrouping())
         }
     }
 

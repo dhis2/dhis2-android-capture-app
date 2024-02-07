@@ -119,8 +119,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         savedInstanceState: Bundle?,
     ): View {
         return FragmentTeiDataBinding.inflate(inflater, container, false).also { binding ->
+            this.binding = binding
             dashboardViewModel.groupByStage.observe(viewLifecycleOwner) { group ->
-                this.binding = binding
                 showLoadingProgress(false)
                 presenter.onGroupingChanged(group)
             }
