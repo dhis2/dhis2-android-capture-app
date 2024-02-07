@@ -45,9 +45,8 @@
     <string name="filters_title_assigned">Assigned to me</string>
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Event date</string>
-    <string name="enrollment_date">Enrollment date</string>
     <string name="filters_title_event_status">Event status</string>
-    <string name="filters_title_enrollment_status">Enrollment status</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Followed up %s</string>
 
     <!-- State -->
@@ -240,4 +239,24 @@
         <item quantity="other">%d years overdue</item>
     </plurals>
     <string name="open_with">Open with</string>
+
+
+    <!--Enrollment labels-->
+    <plurals name="enrollment">
+        <item quantity="many">enrollments</item>
+        <item quantity="other">enrollment</item>
+    </plurals>
+    <string name="dialog_layer_enrollment_coordinates_v2">Show %s coordinates</string>
+
+    <string name="enrollment_data_section_label_V2">%s data</string>
+    <string name="enrollment_coordinates_V2">%s coordinates</string>
+    <string name="enrollment_date_V2">%s date</string>
+    <string name="enrollment_status">%s status</string>
+    <string name="break_glass_dialog_description_V2">You must provide a reason to check for %s in this protected program. All activity will be logged.</string>
+    <string name="break_glass_reason_V2">Reason to check for %s</string>
+    <string name="edition_enrollment_is_no_open_V2">This data is not editable because the %s is completed or cancelled</string>
+    <string name="enrollment_org_unit_V2">Enrollment Org Unit</string>
+    <string name="enrollment_completed">%s completed</string>
+    <string name="enrollment_cancelled">%s cancelled</string>
+
 </resources>

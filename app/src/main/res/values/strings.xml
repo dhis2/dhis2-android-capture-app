@@ -817,8 +817,6 @@
     <string name="from_gallery">Choose from gallery</string>
     <string name="data_set_quality_check_done">Done!</string>
     <string name="break_glass_dialog_title">This program is protected</string>
-    <string name="break_glass_dialog_description">You must provide a reason to check for enrollment in this protected program. All activity will be logged.</string>
-    <string name="break_glass_reason">Reason to check for enrollment</string>
     <string name="break_glass_hint">Describe the reason here</string>
     <string name="authenticating">Authenticating</string>
     <string name="login_error_no_dhis_instance">Provided server url is not a dhis instance</string>
@@ -845,7 +843,6 @@
     <string name="edition_no_write_access">You do not have permission to edit this data</string>
     <string name="event_date_not_in_orgunit_range">This data is not editable because the organization unit is closed</string>
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
-    <string name="edition_enrollment_is_no_open">This data is not editable because the enrollment is completed or cancelled</string>
     <string name="edition_orgunit_capture_scope">You cannot edit data from this organisation unit</string>
     <string name="reload_list">Reset search</string>
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
@@ -890,7 +887,6 @@
     <string name="account_disable_title">Account disabled</string>
     <string name="account_disable_message">Your account has been disabled by an administrator.</string>
     <string name="search_unable_search_outside">To search outside this program open the search form and fill one of the following %s fields:</string>
-    <string name="enrollment_org_unit">Enrollment Org Unit</string>
     <string name="customactivityoncrash_error_activity_build_version">Build version: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Build date: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Current date: %s</string>
@@ -959,8 +955,6 @@
     <string name="permission_notification_granted">Notification permission granted.</string>
     <string name="not_synced">Not synced</string>
     <string name="sync_retry">Retry sync</string>
-    <string name="enrollment_completed">Enrollment completed</string>
-    <string name="enrollment_cancelled">Enrollment cancelled</string>
     <string name="marked_follow_up">Marked for follow-up</string>
     <string name="overdue">Overdue %s</string>
     <string name="registered_in">Registered in:</string>

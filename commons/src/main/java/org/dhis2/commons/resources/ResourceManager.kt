@@ -25,6 +25,28 @@ class ResourceManager(
     fun getPlural(@PluralsRes pluralResource: Int, quantity: Int, vararg arguments: Any) =
         getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
 
+    fun formatWithEnrollmentLabel(
+        programUid: String,
+        @StringRes stringResource: Int,
+        quantity: Int,
+        formatWithQuantity: Boolean = false
+    ): String {
+        val enrollmentLabel = try {
+            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
+                ?.enrollmentLabel()
+        } catch (e: Exception) {
+            null
+        } ?: getPlural(R.plurals.enrollment, quantity)
+
+        return with(getString(stringResource)) {
+            if (formatWithQuantity) {
+                format(quantity, enrollmentLabel)
+            } else {
+                format(enrollmentLabel)
+            }
+        }
+    }
+
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"
