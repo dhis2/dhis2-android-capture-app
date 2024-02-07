@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParameter
@@ -44,9 +46,16 @@ fun SearchParametersScreen(
     val snackBarHostState = scaffoldState.snackbarHostState
     val coroutineScope = rememberCoroutineScope()
 
-    uiState.minAttributesMessage?.let {
+    uiState.minAttributesMessage?.let { message ->
         coroutineScope.launch {
-            snackBarHostState.showSnackbar(it)
+            uiState.shouldShowMinAttributeWarning.collectLatest {
+                if (it) {
+                    snackBarHostState.showSnackbar(
+                        message = message,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
         }
     }
 
