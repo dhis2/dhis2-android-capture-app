@@ -3,7 +3,6 @@ package org.dhis2.usescases.searchTrackEntity.ui
 import android.transition.TransitionManager
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 import org.dhis2.bindings.display
 import org.dhis2.bindings.dp
@@ -41,17 +40,6 @@ class SearchScreenConfigurator(
         binding.clearFilters?.display(searchConfiguration.displayResetFiltersButton())
         syncButtonVisibility(!searchConfiguration.searchForm.isOpened)
         setFiltersVisibility(!searchConfiguration.searchForm.isOpened)
-        binding.minAttributeMessage.setContent {
-            MdcTheme {
-                if (searchConfiguration.searchForm.minAttributesToSearch > 0 &&
-                    searchConfiguration.searchForm.isOpened
-                ) {
-                    MinAttributesMessage(
-                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch,
-                    )
-                }
-            }
-        }
     }
 
     private fun configureLandscapeListScreen(searchConfiguration: SearchList) {
@@ -63,17 +51,6 @@ class SearchScreenConfigurator(
 
         syncButtonVisibility(true)
         setFiltersVisibility(true)
-        binding.minAttributeMessage.setContent {
-            MdcTheme {
-                if (searchConfiguration.searchForm.minAttributesToSearch > 0 &&
-                    !searchConfiguration.searchFilters.isOpened
-                ) {
-                    MinAttributesMessage(
-                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch,
-                    )
-                }
-            }
-        }
     }
 
     private fun configureLandscapeAnalyticsScreen(expanded: Boolean) {

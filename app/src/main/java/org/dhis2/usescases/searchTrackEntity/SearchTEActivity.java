@@ -39,8 +39,6 @@ import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
-import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersViewModel;
-import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersViewModelFactory;
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
@@ -78,9 +76,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     SearchTeiViewModelFactory viewModelFactory;
 
     @Inject
-    SearchParametersViewModelFactory searchParametersViewModelFactory;
-
-    @Inject
     SearchNavigator searchNavigator;
 
     @Inject
@@ -103,8 +98,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private boolean fromAnalytics = false;
 
     private SearchTEIViewModel viewModel;
-
-    private SearchParametersViewModel searchParametersViewModel;
 
     private boolean initSearchNeeded = true;
     public SearchTEComponent searchComponent;
@@ -158,11 +151,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onCreate(savedInstanceState);
 
         viewModel = new ViewModelProvider(this, viewModelFactory).get(SearchTEIViewModel.class);
-
-        searchParametersViewModel = new ViewModelProvider(
-                this,
-                searchParametersViewModelFactory
-        ).get(SearchParametersViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
 
@@ -355,29 +343,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void initSearchParameters() {
-        initSearchScreen(binding.searchContainer, searchParametersViewModel, initialProgram, tEType,
-                (uid, value) -> {
-                    viewModel.updateQuery(uid, value);
-                    return Unit.INSTANCE;
-                },
+        initSearchScreen(binding.searchContainer, viewModel, initialProgram, tEType,
                 () -> {
-                    if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
-                    viewModel.onSearchClick(minNumberOfAttributes -> {
-                        showSnackbar(
-                                binding.searchContainer,
-                                String.format(getString(R.string.search_min_num_attr),
-                                        minNumberOfAttributes),
-                                getString(R.string.button_ok)
-
-                        );
-                        return Unit.INSTANCE;
-                    });
-                    return Unit.INSTANCE;
-                },
-                () -> {
-            presenter.clearFilterClick();
                     presenter.onClearClick();
-                    viewModel.clearQueryData();
                     return Unit.INSTANCE;
                 }
         );

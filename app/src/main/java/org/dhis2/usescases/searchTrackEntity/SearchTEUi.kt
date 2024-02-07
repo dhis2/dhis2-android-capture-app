@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInVertically
@@ -24,17 +23,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Snackbar
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,15 +33,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 
@@ -65,11 +51,13 @@ fun SearchResult(
             LoadingContent(
                 loadingDescription = stringResource(R.string.search_loading_more),
             )
+
         SearchResult.SearchResultType.SEARCH_OUTSIDE -> SearchOutsideProgram(
             resultText = stringResource(R.string.search_no_results_in_program),
             buttonText = stringResource(R.string.search_outside_action),
             onSearchOutsideClick = onSearchOutsideClick,
         )
+
         SearchResult.SearchResultType.NO_MORE_RESULTS -> NoMoreResults()
         SearchResult.SearchResultType.TOO_MANY_RESULTS -> TooManyResults()
         SearchResult.SearchResultType.NO_RESULTS -> NoResults()
@@ -128,7 +116,8 @@ fun FullSearchButton(modifier: Modifier, visible: Boolean = true, onClick: () ->
         exit = slideOutVertically(),
     ) {
         SearchButton(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(48.dp),
             onClick = onClick,
         )
@@ -334,86 +323,6 @@ fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () ->
     }
 }
 
-@Composable
-fun MinAttributesMessage(minAttributes: Int) {
-    val message = stringResource(R.string.search_min_attributes_message)
-        .format("$minAttributes")
-    var lineCount by remember { mutableStateOf(1) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ) {
-        Icon(
-            modifier = Modifier
-                .alignBy { it.measuredHeight / 2 }
-                .size(9.dp),
-            painter = painterResource(id = R.drawable.ic_info_outline),
-            contentDescription = "",
-            tint = colorResource(id = R.color.primaryBgTextColor),
-        )
-        Spacer(modifier = Modifier.size(9.dp))
-        Text(
-            modifier = Modifier
-                .alignBy {
-                    if (lineCount > 0) {
-                        it.measuredHeight / (2 * lineCount)
-                    } else {
-                        it.measuredHeight / 2
-                    }
-                }
-                .align(Alignment.CenterVertically),
-            text = AnnotatedString(
-                text = message,
-                spanStyles = listOf(
-                    AnnotatedString.Range(
-                        SpanStyle(fontWeight = FontWeight.Bold),
-                        start = message.indexOf("$minAttributes"),
-                        end = message.indexOf("$minAttributes") + "$minAttributes".length,
-                    ),
-                ),
-            ),
-            fontSize = 12.sp,
-            color = colorResource(id = R.color.primaryBgTextColor),
-            style = LocalTextStyle.current.copy(
-                lineHeight = 16.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular)),
-            ),
-            onTextLayout = {
-                lineCount = it.lineCount
-            },
-        )
-    }
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-fun MinAttributesSnackbar(minAttributes: Int) {
-    val message = stringResource(R.string.search_min_attributes_message)
-        .format("$minAttributes")
-
-    val snackState = remember { SnackbarHostState() }
-    val snackScope = rememberCoroutineScope()
-
-    SnackbarHost(
-        hostState = snackState,
-        snackbar = { snackBarData ->
-            Snackbar(
-                modifier = Modifier,
-                action = {
-                    TextButton(onClick = { }) {
-                        Text(text = stringResource(id = R.string.button_ok))
-                    }
-                },
-            ) {
-                Text(text = snackBarData.message)
-            }
-        },
-    )
-
-    snackScope.launch { snackState.showSnackbar(message) }
-}
-
 @ExperimentalAnimationApi
 @Preview(showBackground = true, backgroundColor = 0x2C98F0)
 @Composable
@@ -441,18 +350,6 @@ fun ExtendedCreateNewButtonPreview() {
 @Composable
 fun CreateNewButtonPreview() {
     CreateNewButton(modifier = Modifier, extended = false) {}
-}
-
-@Preview(showBackground = true, backgroundColor = 0x2C98F0)
-@Composable
-fun MinAttributesMessage() {
-    MinAttributesMessage(2)
-}
-
-@Preview(showBackground = true, backgroundColor = 0x2C98F0)
-@Composable
-fun MinAttributesSnackBarPreview() {
-    MinAttributesSnackbar(2)
 }
 
 @Preview(showBackground = true)

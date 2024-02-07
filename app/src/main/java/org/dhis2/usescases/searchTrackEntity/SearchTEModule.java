@@ -64,7 +64,6 @@ import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersRepository;
-import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersViewModelFactory;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -275,7 +274,9 @@ public class SearchTEModule {
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2,
-            FilterRepository filterRepository
+            FilterRepository filterRepository,
+            SearchParametersRepository searchParametersRepository,
+            ResourceManager resourceManager
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -286,16 +287,10 @@ public class SearchTEModule {
                 mapDataRepository,
                 networkUtils,
                 new SearchDispatchers(),
-                new MapStyleConfiguration(d2)
+                new MapStyleConfiguration(d2),
+                searchParametersRepository,
+                resourceManager
         );
-    }
-
-    @Provides
-    @PerActivity
-    SearchParametersViewModelFactory provideSearchParametersViewModelFactory(
-            SearchParametersRepository searchParametersRepository
-    ) {
-        return new SearchParametersViewModelFactory(searchParametersRepository);
     }
 
     @Provides

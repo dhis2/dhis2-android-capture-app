@@ -22,9 +22,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.dhis2.usescases.searchTrackEntity.SearchDispatchers
+import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
+import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParameter
+import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.searchparameters.provider.provideParameterSelectorItem
-import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelectorItem
@@ -33,7 +35,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
 fun SearchParametersScreen(
-    viewModel: SearchParametersViewModel,
+    uiState: SearchParametersUiState,
     onValueChange: (uid: String, value: String?) -> Unit,
     onSearchClick: () -> Unit,
     onClear: () -> Unit,
@@ -41,6 +43,12 @@ fun SearchParametersScreen(
     val scaffoldState = rememberScaffoldState()
     val snackBarHostState = scaffoldState.snackbarHostState
     val coroutineScope = rememberCoroutineScope()
+
+    uiState.minAttributesMessage?.let {
+        coroutineScope.launch {
+            snackBarHostState.showSnackbar(it)
+        }
+    }
 
     Scaffold(
         backgroundColor = Color.Transparent,
@@ -68,7 +76,7 @@ fun SearchParametersScreen(
                     .weight(1F)
                     .verticalScroll(rememberScrollState()),
             ) {
-                viewModel.uiState.items.forEach { searchParameter ->
+                uiState.items.forEach { searchParameter ->
                     ParameterSelectorItem(
                         model = provideParameterSelectorItem(
                             searchParameter = searchParameter,
@@ -101,13 +109,7 @@ fun SearchParametersScreen(
                 style = ButtonStyle.FILLED,
                 text = "Search",
             ) {
-//                onSearchClick()
-                /*val minAttributes= 2
-                val message = stringResource(R.string.search_min_attributes_message)
-                    .format("$minAttributes")*/
-                coroutineScope.launch {
-                    snackBarHostState.showSnackbar("This is a snackBar")
-                }
+                onSearchClick()
             }
         }
     }
@@ -117,10 +119,18 @@ fun SearchParametersScreen(
 @Composable
 fun SearchFormPreview() {
     SearchParametersScreen(
-        SearchParametersViewModel(
-            repository = SearchParametersRepository(
-                D2Manager.getD2(),
-                SearchDispatchers(),
+        uiState = SearchParametersUiState(
+            items = listOf(
+                SearchParameter(
+                    "uid1",
+                    "Label 1",
+                    ValueType.TEXT,
+                ),
+                SearchParameter(
+                    "uid2",
+                    "Label 2",
+                    ValueType.TEXT,
+                ),
             ),
         ),
         onValueChange = { _, _ -> },
@@ -131,11 +141,9 @@ fun SearchFormPreview() {
 
 fun initSearchScreen(
     composeView: ComposeView,
-    viewModel: SearchParametersViewModel,
+    viewModel: SearchTEIViewModel,
     program: String?,
     teiType: String,
-    onValueChange: (uid: String, value: String?) -> Unit,
-    onSearchClick: () -> Unit,
     onClear: () -> Unit,
 ) {
     viewModel.fetchSearchParameters(
@@ -144,10 +152,13 @@ fun initSearchScreen(
     )
     composeView.setContent {
         SearchParametersScreen(
-            viewModel = viewModel,
-            onValueChange = onValueChange,
-            onSearchClick = onSearchClick,
-            onClear = onClear,
+            uiState = viewModel.uiState,
+            onValueChange = viewModel::updateQuery,
+            onSearchClick = viewModel::onSearchClick,
+            onClear = {
+                onClear()
+                viewModel.clearQueryData()
+            },
         )
     }
 }

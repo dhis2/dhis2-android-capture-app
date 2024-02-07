@@ -21,6 +21,9 @@ class ResourceManager(
     fun getString(@StringRes stringResource: Int, vararg arguments: String) =
         getWrapperContext().getString(stringResource).format(*arguments)
 
+    fun getString(@StringRes stringResource: Int, quantity: Int) =
+        getWrapperContext().getString(stringResource).format(quantity)
+
     fun getPlural(@PluralsRes pluralResource: Int, quantity: Int) =
         getWrapperContext().resources.getQuantityString(pluralResource, quantity)
 

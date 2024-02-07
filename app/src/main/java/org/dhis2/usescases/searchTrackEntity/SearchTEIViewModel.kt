@@ -1,5 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,20 +10,25 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersRepository
+import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -38,6 +46,8 @@ class SearchTEIViewModel(
     private val networkUtils: NetworkUtils,
     private val dispatchers: DispatcherProvider,
     private val mapStyleConfig: MapStyleConfiguration,
+    private val searchParametersRepository: SearchParametersRepository,
+    private val resourceManager: ResourceManager,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -73,6 +83,11 @@ class SearchTEIViewModel(
 
     private val _filtersOpened = MutableLiveData(false)
     val filtersOpened: LiveData<Boolean> = _filtersOpened
+
+    var uiState by mutableStateOf(SearchParametersUiState())
+        private set
+
+    private var fetchJob: Job? = null
 
     init {
         viewModelScope.launch(dispatchers.io()) {
@@ -349,12 +364,12 @@ class SearchTEIViewModel(
         }
     }
 
-    fun onSearchClick(onMinAttributes: (Int) -> Unit = {}) {
+    fun onSearchClick() {
         searchRepository.clearFetchedList()
-        performSearch(onMinAttributes)
+        performSearch()
     }
 
-    private fun performSearch(onMinAttributes: (Int) -> Unit = {}) {
+    private fun performSearch() {
         viewModelScope.launch {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
@@ -375,11 +390,14 @@ class SearchTEIViewModel(
                     else -> searching = false
                 }
             } else {
-                onMinAttributes(
-                    searchRepository.getProgram(initialProgramUid)
-                        ?.minAttributesRequiredToSearch()
-                        ?: 0,
+                val minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                    ?.minAttributesRequiredToSearch()
+                    ?: 0
+                val message = resourceManager.getString(
+                    R.string.search_min_num_attr,
+                    minAttributesToSearch,
                 )
+                uiState = uiState.copy(minAttributesMessage = message)
             }
         }
     }
@@ -686,5 +704,17 @@ class SearchTEIViewModel(
 
     fun onLegacyInteractionConsumed() {
         _legacyInteraction.value = null
+    }
+
+    fun fetchSearchParameters(
+        programUid: String?,
+        teiTypeUid: String,
+    ) {
+        fetchJob?.cancel()
+        fetchJob = viewModelScope.launch {
+            val searchParameters =
+                searchParametersRepository.searchParameters(programUid, teiTypeUid)
+            uiState = uiState.copy(items = searchParameters)
+        }
     }
 }
