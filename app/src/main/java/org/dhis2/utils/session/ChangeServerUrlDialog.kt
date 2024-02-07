@@ -31,7 +31,12 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_NoActionBar)
-        app().createChangeServerULComponent(ChangeServerURLModule(this)).inject(this)
+        app().createChangeServerULComponent(
+            ChangeServerURLModule(
+                requireActivity().applicationContext,
+                this
+            )
+        ).inject(this)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -85,6 +90,12 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
         binding.dialogOk.text = getString(R.string.action_accept)
     }
 
+    override fun showEditMode() {
+        binding.serverUrl.visibility = View.VISIBLE
+        binding.dialogWarning.visibility = View.GONE
+        binding.dialogOk.text = getString(R.string.action_ok)
+    }
+
     override fun renderServerUrl(url: String) {
         binding.serverUrlEdit.setText(url)
     }
@@ -124,6 +135,14 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
         Toast.makeText(
             getAbstractContext(),
             error,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    override fun renderSuccess(message: String) {
+        Toast.makeText(
+            getAbstractContext(),
+            message,
             Toast.LENGTH_LONG
         ).show()
     }

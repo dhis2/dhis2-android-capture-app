@@ -1,15 +1,14 @@
 package org.dhis2.utils.session
 
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.App
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.SERVER
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.D2
-import retrofit2.Response
 import timber.log.Timber
 
 enum class Mode {
@@ -17,10 +16,9 @@ enum class Mode {
 }
 
 class ChangeServerURLPresenter(
-    val view: ChangeServerURLView,
-    val preferenceProvider: PreferenceProvider,
-    private val schedulers: SchedulerProvider,
-    val d2: D2?
+    private val view: ChangeServerURLView,
+    private val preferenceProvider: PreferenceProvider,
+    val d2: D2
 ) {
 
     private var currentServerURL: String = ""
@@ -40,8 +38,9 @@ class ChangeServerURLPresenter(
     }
 
     fun onServerChanged(serverUrl: CharSequence, start: Int, before: Int, count: Int) {
-        if (serverUrl.isNotEmpty()) {
-            this.newServerURL = serverUrl.toString()
+        this.newServerURL = serverUrl.toString()
+
+        if (serverUrl.isNotEmpty() && serverUrl.toString() != currentServerURL) {
             view.enableOk()
         } else {
             view.disableOk()
@@ -55,64 +54,62 @@ class ChangeServerURLPresenter(
                 view.requestConfirmation()
             }
         } else {
-            checkLogin()
+            saveInTheStore()
         }
     }
 
-    private fun checkLogin() {
+    private fun saveInTheStore() {
         view.showLoginProgress()
 
-        disposable.add(Observable.just(
-            (view.getAbstractContext().applicationContext as App).createServerComponent()
-                .userManager()
-        ).flatMap { userManager ->
-            userManager.logIn("android", "Android123", newServerURL)
-                .map<Response<Any>> { _ ->
-                    run {
-                        preferenceProvider.setValue(SERVER, "$newServerURL/api")
+        try {
+            updateUrlInPreference()
+            updateCredentialsAndDataBaseConfigurations()
 
-                        Response.success(null)
-                    }
-                }
-        }.subscribeOn(schedulers.io())
-            .observeOn(schedulers.ui())
-            .subscribe(
-                {
-                    this.handleResponse(it)
-                },
-                {
-                    this.handleError(it)
-                }
-            ))
-    }
+            d2.databaseAdapter().execSQL("DELETE FROM SystemInfo")
 
-    private fun handleResponse(userResponse: Response<*>) {
-        view.hideLoginProgress()
+            CoroutineScope(Dispatchers.IO).launch {
+                d2.systemInfoModule().systemInfo().download().blockingAwait()
+            }
 
-        if (userResponse.isSuccessful) {
-            val updatedServer =
-                (preferenceProvider.getSet(Constants.PREFS_URLS, HashSet()) as HashSet)
-
-            updatedServer.remove(currentServerURL)
-            updatedServer.add(newServerURL)
-
-            preferenceProvider.setValue(Constants.PREFS_URLS, updatedServer)
+            view.renderSuccess("Change realized successfully to$newServerURL")
 
             view.closeDialog()
+        } catch (e: Exception) {
+            handleError(e)
         }
     }
 
-    private fun handleError(
-        throwable: Throwable,
-    ) {
-        Timber.e(throwable)
+    private fun updateUrlInPreference() {
+        preferenceProvider.setValue(SERVER, newServerURL)
 
-        view.renderError(throwable)
+        preferenceProvider.updateServerURL(newServerURL)
+
+        val updatedServer =
+            (preferenceProvider.getSet(Constants.PREFS_URLS, HashSet()) as HashSet)
+
+        updatedServer.remove(currentServerURL)
+        updatedServer.add(newServerURL)
+
+        preferenceProvider.setValue(Constants.PREFS_URLS, updatedServer)
+
+        view.closeDialog()
+    }
+
+    private fun updateCredentialsAndDataBaseConfigurations() {
+        d2.userModule().accountManager().changeServerUrl(newServerURL)
+    }
+
+    private fun handleError(error: Throwable) {
+        Timber.e(error)
+
+        view.renderError(error)
         view.hideLoginProgress()
+        view.showEditMode()
     }
 }
 
 interface ChangeServerURLView {
+    fun showEditMode()
     fun requestConfirmation()
     fun renderServerUrl(url: String)
     fun enableOk()
@@ -121,5 +118,6 @@ interface ChangeServerURLView {
     fun showLoginProgress()
     fun hideLoginProgress()
     fun renderError(throwable: Throwable)
+    fun renderSuccess(message: String)
     fun closeDialog()
 }
