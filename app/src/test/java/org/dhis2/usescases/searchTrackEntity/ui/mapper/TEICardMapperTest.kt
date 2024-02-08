@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -36,7 +37,7 @@ class TEICardMapperTest {
         whenever(resourceManager.getString(R.string.show_less)) doReturn "Show less"
         whenever(resourceManager.getString(R.string.completed)) doReturn "Completed"
         whenever(
-            resourceManager.getString(R.string.enrollment_completed),
+            resourceManager.formatWithEnrollmentLabel(any(), any(), any(), any()),
         ) doReturn "Enrollment Completed"
         whenever(
             resourceManager.getString(R.string.overdue_today),
@@ -67,7 +68,7 @@ class TEICardMapperTest {
         )
         assertEquals(
             result.additionalInfo[3].value,
-            resourceManager.getString(R.string.enrollment_completed),
+            "Enrollment Completed",
         )
 
         assertEquals(
@@ -99,6 +100,7 @@ class TEICardMapperTest {
             setCurrentEnrollment(
                 Enrollment.builder()
                     .uid("EnrollmentUid")
+                    .program("programUid")
                     .status(EnrollmentStatus.COMPLETED)
                     .build(),
             )

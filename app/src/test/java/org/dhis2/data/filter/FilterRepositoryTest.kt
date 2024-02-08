@@ -74,11 +74,11 @@ class FilterRepositoryTest {
     private fun mockFilterLabels() {
         whenever(filterResources.filterOrgUnitLabel()) doReturn ORG_UNIT
         whenever(filterResources.filterSyncLabel()) doReturn SYNC_STATUS
-        whenever(filterResources.filterEnrollmentStatusLabel()) doReturn
+        whenever(filterResources.filterEnrollmentStatusLabel(any())) doReturn
             ENROLLMENT_STATUS
         whenever(filterResources.filterDateLabel()) doReturn EVENT_DATE
         whenever(filterResources.filterEventStatusLabel()) doReturn EVENT_STATUS
-        whenever(filterResources.filterEnrollmentDateLabel()) doReturn
+        whenever(filterResources.filterEnrollmentDateLabel(any())) doReturn
             ENROLLMENT_DATE
         whenever(filterResources.filterAssignedToMeLabel()) doReturn ASSIGN_TO_ME
         whenever(filterResources.filterEventDateLabel()) doReturn EVENT_DATE

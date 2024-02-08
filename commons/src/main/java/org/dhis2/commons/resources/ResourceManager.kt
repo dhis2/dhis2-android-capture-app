@@ -29,7 +29,7 @@ class ResourceManager(
         programUid: String,
         @StringRes stringResource: Int,
         quantity: Int,
-        formatWithQuantity: Boolean = false
+        formatWithQuantity: Boolean = false,
     ): String {
         val enrollmentLabel = try {
             D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
