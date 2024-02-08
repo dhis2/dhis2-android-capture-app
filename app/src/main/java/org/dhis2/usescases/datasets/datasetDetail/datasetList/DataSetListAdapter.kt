@@ -12,6 +12,7 @@ import org.dhis2.databinding.ItemDatasetBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.mapper.DatasetCardMapper
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 
 class DataSetListAdapter(
     val viewModel: DataSetListViewModel,
@@ -49,7 +50,7 @@ class DataSetListAdapter(
                 )
                 ListCard(
                     listAvatar = card.avatar,
-                    title = card.title,
+                    title = ListCardTitleModel(text = card.title),
                     lastUpdated = card.lastUpdated,
                     additionalInfoList = card.additionalInfo,
                     actionButton = card.actionButton,

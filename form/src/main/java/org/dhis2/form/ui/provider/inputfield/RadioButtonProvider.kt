@@ -26,7 +26,7 @@ internal fun ProvideRadioButtonInput(
             uid = option.uid(),
             selected = fieldUiModel.displayName == option.displayName(),
             enabled = true,
-            textInput = option.displayName(),
+            textInput = option.displayName() ?: "",
         )
     } ?: emptyList()
 

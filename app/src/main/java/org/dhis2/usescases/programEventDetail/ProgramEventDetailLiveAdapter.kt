@@ -16,6 +16,7 @@ import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMappe
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 
 class ProgramEventDetailLiveAdapter(
     private val program: Program,
@@ -65,7 +66,7 @@ class ProgramEventDetailLiveAdapter(
                 )
                 ListCard(
                     listAvatar = card.avatar,
-                    title = card.title,
+                    title = ListCardTitleModel(text = card.title),
                     lastUpdated = card.lastUpdated,
                     additionalInfoList = card.additionalInfo,
                     actionButton = card.actionButton,
