@@ -370,4 +370,7 @@ dependencies {
 
     //Conscrypt
     implementation "org.conscrypt:conscrypt-android:${libraries.conscrypt}"
+
+    //Eyeseetea
+    implementation "io.noties.markwon:core:${libraries.markwon}"
 }

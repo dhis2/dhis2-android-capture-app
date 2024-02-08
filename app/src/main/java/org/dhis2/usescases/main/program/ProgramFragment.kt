@@ -18,6 +18,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
+import io.noties.markwon.Markwon
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
@@ -284,9 +285,12 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     }
 
     private fun showNotification(notification: Notification) {
+        val markwon = Markwon.create(requireActivity())
+        val content = markwon.toMarkdown(notification.content)
+
         AlertDialog.Builder(context, R.style.CustomDialog)
             .setTitle("Notification")
-            .setMessage(notification.content)
+            .setMessage(content)
             .setPositiveButton(getString(R.string.wipe_data_ok)) { dialog, _ ->
                 dialog.dismiss()
             }
