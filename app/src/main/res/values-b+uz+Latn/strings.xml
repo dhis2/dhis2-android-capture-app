@@ -224,7 +224,6 @@
     <string name="add_note">Izoh qoldirish</string>
     <string name="revert">Qaytish</string>
     <string name="activated">Faollashtirildi</string>
-    <string name="enroll_in">Qayd qilingan %s</string>
     <string name="missing_mandatory_fields_title">Majburiy maydonlar qoldirib ketilgan</string>
     <string name="missing_mandatory_fields_text">Baʼzi majburiy maydonlar qoldirib ketilgan. Аgar hozir orqaga qaytsangiz, barcha saqlangan maʼlumotlar oʼchib ketadi.</string>
     <string name="missing_mandatory_fields_text_not_delete">Baʼzi majburiy maydonlar qoldirib ketilgan. Аgar orqaga qaytmoqchi boʼlsangiz, Iltimos, ularni toʼldiring.</string>

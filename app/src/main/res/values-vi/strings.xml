@@ -241,7 +241,6 @@
     <string name="add_note">Thêm ghi chú</string>
     <string name="revert">Hoàn tác</string>
     <string name="activated">Đã hoạt động</string>
-    <string name="enroll_in">Đăng ký vào %s</string>
     <string name="missing_mandatory_fields_title">Thiếu trường dữ liệu bắt buộc</string>
     <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
     <string name="missing_mandatory_fields_text_not_delete">Một số trường bắt buộc nhập bị thiếu. Nếu bạn muốn quay lại, vui lòng nhập giá trị cho chúng</string>

@@ -43,6 +43,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import java.io.File
 import javax.inject.Inject
+import org.dhis2.commons.resources.ResourceManager
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -50,6 +51,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private var forRelationship: Boolean = false
     private lateinit var formView: FormView
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
@@ -343,7 +347,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             binding.title.visibility = View.VISIBLE
             binding.teiDataHeader.root.visibility = View.GONE
             binding.title.text =
-                String.format(getString(R.string.enroll_in), presenter.getProgram()?.displayName())
+                resourceManager.formatWithEnrollmentLabel(
+                    programUid = presenter.getProgram()?.uid()!!,
+                    R.string.new_enrollment,
+                    1
+                )
         }
     }
 

@@ -253,7 +253,6 @@
     <string name="add_note">أضف ملاحظة</string>
     <string name="revert">العودة</string>
     <string name="activated">نشط</string>
-    <string name="enroll_in">تسجيل في %s</string>
     <string name="missing_mandatory_fields_title">بعض الحقول الإلزامية مفقودة</string>
     <string name="missing_mandatory_fields_text">بعض الحقول الإلزامية مفقودة. إذا كنت تريد الرجوع الآن ، فسيتم حذف جميع المعلومات المحفوظة.</string>
     <string name="missing_mandatory_fields_text_not_delete">بعض الحقول الإلزامية مفقودة. إذا كنت تريد العودة ، يرجى ملؤها.</string>

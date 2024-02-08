@@ -242,7 +242,6 @@
     <string name="add_note">Adicionar uma nota</string>
     <string name="revert">Reverter</string>
     <string name="activated">Ativado</string>
-    <string name="enroll_in">Inscreva-se %s</string>
     <string name="missing_mandatory_fields_title">Faltam campos obrigatórios</string>
     <string name="missing_mandatory_fields_text">Alguns campos obrigatórios estão ausentes. Se você quiser voltar agora, todas as informações salvas serão excluídas.</string>
     <string name="missing_mandatory_fields_text_not_delete">Alguns campos obrigatórios estão ausentes. Se você quiser voltar, por favor preencha-os. </string>

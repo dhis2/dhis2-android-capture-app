@@ -245,7 +245,6 @@
     <string name="add_note">Ajouter une note</string>
     <string name="revert">Annuler</string>
     <string name="activated">Activé</string>
-    <string name="enroll_in">S´inscrire à %s</string>
     <string name="missing_mandatory_fields_title">Les champs obligatoires sont manquant</string>
     <string name="missing_mandatory_fields_text">Certains des champs obligatoires sont manquant. Si vous voulez retourner, tout l´information sera supprimer</string>
     <string name="missing_mandatory_fields_text_not_delete">Certains champs obligatoires sont vides. Si vous voulez retourner, veuillez les renseigner. </string>

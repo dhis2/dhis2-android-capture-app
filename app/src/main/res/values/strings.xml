@@ -262,7 +262,6 @@
     <string name="add_note">Add note</string>
     <string name="revert">Revert</string>
     <string name="activated">Activated</string>
-    <string name="enroll_in">Enroll in %s</string>
     <string name="missing_mandatory_fields_title">Mandatory fields are missing</string>
     <string name="missing_mandatory_fields_text">Some mandatory fields are missing. If you want to go back now, all saved information will be deleted.</string>
     <string name="missing_mandatory_fields_text_not_delete">Some mandatory fields are missing. If you want to go back, please fill them.</string>

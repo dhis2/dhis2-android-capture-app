@@ -161,7 +161,6 @@
     <string name="add_note">Lägg till anteckning</string>
     <string name="revert">Återställ</string>
     <string name="activated">Aktiverad</string>
-    <string name="enroll_in">Registreras %s</string>
     <string name="missing_mandatory_fields_title">Obligatoriska fält saknas</string>
     <string name="missing_mandatory_fields_text">Några obligatoriska fält saknas. Om du vill gå tillbaka nu raderas alla sparade uppgifter.</string>
     <string name="missing_mandatory_fields_go_back">Ta bort och gå tillbaka</string>

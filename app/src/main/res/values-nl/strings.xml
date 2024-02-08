@@ -248,7 +248,6 @@
     <string name="add_note">Notitie toevoegen</string>
     <string name="revert">Terugdraaien</string>
     <string name="activated">Geactiveerd</string>
-    <string name="enroll_in">Schrijf je in bij %s</string>
     <string name="missing_mandatory_fields_title">Verplichte velden ontbreken</string>
     <string name="missing_mandatory_fields_text">Sommige verplichte velden ontbreken. Als u nu terug wilt gaan, wordt alle opgeslagen informatie verwijderd.</string>
     <string name="missing_mandatory_fields_text_not_delete">Sommige verplichte velden ontbreken. Als je terug wilt gaan, vul ze dan in.</string>

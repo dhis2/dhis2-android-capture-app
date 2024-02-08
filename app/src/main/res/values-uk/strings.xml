@@ -249,7 +249,6 @@
     <string name="add_note">Додати нотатку</string>
     <string name="revert">Повернути</string>
     <string name="activated">Активовано</string>
-    <string name="enroll_in">Реєстрація в %s</string>
     <string name="missing_mandatory_fields_title">Не заповнено обов\'язкові поля</string>
     <string name="missing_mandatory_fields_text">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися зараз, уся збережена інформація буде видалена.</string>
     <string name="missing_mandatory_fields_text_not_delete">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися, заповніть їх. </string>

@@ -247,7 +247,6 @@
     <string name="add_note">Añadir nota</string>
     <string name="revert">Deshacer</string>
     <string name="activated">Activado</string>
-    <string name="enroll_in">Enrolar en %s</string>
     <string name="missing_mandatory_fields_title">Los campos obligatorios no pueden estar vacios</string>
     <string name="missing_mandatory_fields_text">Algunos campos obligatorios están vacíos. Si desea ir atrás ahora, toda la información guardada se borrará.</string>
     <string name="missing_mandatory_fields_text_not_delete">Faltan campos obligatorios. Rellénelos para ir atrás. </string>

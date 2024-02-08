@@ -240,7 +240,6 @@
     <string name="add_note">Legg til notat</string>
     <string name="revert">Reverser</string>
     <string name="activated">Aktivert</string>
-    <string name="enroll_in">Registrer i %s</string>
     <string name="missing_mandatory_fields_title">Obligatoriske felter mangler</string>
     <string name="missing_mandatory_fields_text">Noen obligatoriske felt mangler. Hvis du vil gå tilbake nå, all lagret informasjon vil bli slettet.</string>
     <string name="missing_mandatory_fields_text_not_delete">Noen obligatoriske felt mangler. Hvis du vil gå tilbake, vennligst fyll inn dem.</string>

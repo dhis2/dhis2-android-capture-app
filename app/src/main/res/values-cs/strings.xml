@@ -249,7 +249,6 @@
     <string name="add_note">Přidat poznámku</string>
     <string name="revert">Vrátit zpět</string>
     <string name="activated">Aktivováno</string>
-    <string name="enroll_in">Zapsat do %s</string>
     <string name="missing_mandatory_fields_title">Chybí povinná pole</string>
     <string name="missing_mandatory_fields_text">Některá povinná pole chybí. Pokud se chcete vrátit zpět, budou všechny uložené informace odstraněny.</string>
     <string name="missing_mandatory_fields_text_not_delete">Některá povinná pole chybí. Pokud se chcete vrátit, vyplňte je prosím.</string>

@@ -164,7 +164,6 @@
     <string name="add_note">បន្ថែមការកត់ចំណាំ</string>
     <string name="revert">ត្រលប់ក្រោយ</string>
     <string name="activated">បានដាក់អោយដំណើរការ</string>
-    <string name="enroll_in">ចុះឈ្មោះក្នុង %s</string>
     <string name="missing_mandatory_fields_title">ទិន្នន័យចាំបាច់មិនមាន</string>
     <string name="missing_mandatory_fields_text">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន, ប្រសិនបើអ្នកចង់ត្រឡប់ទៅវិញ រាល់ពត៏មាននិងត្រូវលុយចោល</string>
     <string name="missing_mandatory_fields_go_back">លុប ហើយត្រឡប់ទៅវិញ</string>

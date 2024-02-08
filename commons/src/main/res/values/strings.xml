@@ -255,5 +255,6 @@
     <string name="edition_enrollment_is_no_open_V2">This data is not editable because the %s is completed or cancelled</string>
     <string name="enrollment_completed_V2">%s completed</string>
     <string name="enrollment_cancelled_V2">%s cancelled</string>
+    <string name="new_enrollment">New %s</string>
 
 </resources>

@@ -240,7 +240,6 @@
     <string name="add_note">Tambah catatan</string>
     <string name="revert">Kembali</string>
     <string name="activated">Diaktifkan</string>
-    <string name="enroll_in">Mendaftar %s</string>
     <string name="missing_mandatory_fields_title">Bidang wajib tidak ada</string>
     <string name="missing_mandatory_fields_text">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali sekarang, semua informasi yang disimpan akan dihapus.</string>
     <string name="missing_mandatory_fields_text_not_delete">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali, silakan isi.</string>

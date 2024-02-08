@@ -239,7 +239,6 @@
     <string name="add_note">添加笔记</string>
     <string name="revert">反转</string>
     <string name="activated">激活</string>
-    <string name="enroll_in">注册 %s</string>
     <string name="missing_mandatory_fields_title">强制字段缺失</string>
     <string name="missing_mandatory_fields_text">有些强制字段缺失，如果你后退，所有保存的信息将被删除。</string>
     <string name="missing_mandatory_fields_text_not_delete">有些强制字段缺失，如果你后退，请填充他们</string>
