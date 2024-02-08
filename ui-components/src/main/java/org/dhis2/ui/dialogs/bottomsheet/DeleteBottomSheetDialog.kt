@@ -81,9 +81,7 @@ DeleteBottomSheetDialog(
                                     },
                                     text = mainButtonText,
                                     colorStyle = ColorStyle.ERROR,
-                                    onClick = {
-                                        onMainButtonClick
-                                    },
+                                    onClick = onMainButtonClick,
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                 )
