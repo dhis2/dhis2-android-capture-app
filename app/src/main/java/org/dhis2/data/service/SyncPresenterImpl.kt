@@ -6,8 +6,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
-import java.util.Calendar
-import kotlin.math.ceil
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.commons.prefs.Preference.Companion.DATA
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
@@ -24,6 +22,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.usescases.notifications.domain.NotificationRepository
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.DEFAULT_EXTERNAL_TRACKER_NAME
@@ -40,6 +39,8 @@ import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import org.hisp.dhis.android.core.tracker.exporter.TrackerD2Progress
 import timber.log.Timber
+import java.util.Calendar
+import kotlin.math.ceil
 
 class SyncPresenterImpl(
     private val d2: D2,
@@ -47,7 +48,8 @@ class SyncPresenterImpl(
     private val workManagerController: WorkManagerController,
     private val analyticsHelper: AnalyticsHelper,
     private val syncStatusController: SyncStatusController,
-    private val syncRepository: SyncRepository
+    private val syncRepository: SyncRepository,
+    private val notificationRepository: NotificationRepository
 ) : SyncPresenter {
 
     override fun initSyncControllerMap() {
@@ -208,6 +210,7 @@ class SyncPresenterImpl(
                 .doOnComplete {
                     updateProyectAnalytics()
                     setUpSMS()
+                    syncNotifications()
                 }
 
         ).andThen(
@@ -625,5 +628,9 @@ class SyncPresenterImpl(
                 )
             }
         } ?: analyticsHelper.clearMatomoSecondaryTracker()
+    }
+
+    private fun syncNotifications() {
+        notificationRepository.sync()
     }
 }

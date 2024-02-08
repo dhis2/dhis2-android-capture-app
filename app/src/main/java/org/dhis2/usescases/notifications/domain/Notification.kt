@@ -24,5 +24,5 @@ data class Recipients(
 
 data class Ref(
     val id: String,
-    val name: String
+    val name: String?
 )
