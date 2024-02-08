@@ -27,7 +27,7 @@ internal fun ProvideCheckBoxInput(
             uid = option.uid(),
             checked = fieldUiModel.displayName == option.displayName(),
             enabled = true,
-            textInput = option.displayName(),
+            textInput = option.displayName() ?: "",
         )
     } ?: emptyList()
 

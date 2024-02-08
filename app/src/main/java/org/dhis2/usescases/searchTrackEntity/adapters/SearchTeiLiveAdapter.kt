@@ -14,6 +14,7 @@ import org.dhis2.databinding.ItemSearchErrorBinding
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 
 class SearchTeiLiveAdapter(
     private val fromRelationship: Boolean,
@@ -101,7 +102,7 @@ class SearchTeiLiveAdapter(
                         )
                         ListCard(
                             listAvatar = card.avatar,
-                            title = card.title,
+                            title = ListCardTitleModel(text = card.title),
                             lastUpdated = card.lastUpdated,
                             additionalInfoList = card.additionalInfo,
                             actionButton = card.actionButton,
