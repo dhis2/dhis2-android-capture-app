@@ -552,7 +552,7 @@ class TeiDashboardMobileActivity :
     override fun showMoreOptions(view: View?) {
         val menu: Int = if (enrollmentUid == null) {
             R.menu.dashboard_tei_menu
-        } else if (java.lang.Boolean.TRUE == dashboardViewModel.groupByStage.value) {
+        } else if (dashboardViewModel.groupByStage.value != false) {
             R.menu.dashboard_menu_group
         } else {
             R.menu.dashboard_menu

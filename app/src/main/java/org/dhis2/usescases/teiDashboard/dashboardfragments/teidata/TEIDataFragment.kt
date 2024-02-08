@@ -210,7 +210,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     followUpData = followUpInfoBar,
                     enrollmentData = enrollmentInfoBar,
                     card = card,
-                    isGrouped = groupingEvents ?: false,
+                    isGrouped = groupingEvents ?: true,
                     timelineEventHeaderModel = TimelineEventsHeaderModel(
                         displayEventCreationButton,
                         eventCount,

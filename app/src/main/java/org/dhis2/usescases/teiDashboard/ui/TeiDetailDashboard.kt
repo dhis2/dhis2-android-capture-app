@@ -23,7 +23,7 @@ fun TeiDetailDashboard(
     enrollmentData: InfoBarUiModel?,
     card: TeiCardUiModel?,
     timelineEventHeaderModel: TimelineEventsHeaderModel,
-    isGrouped: Boolean = false,
+    isGrouped: Boolean = true,
     timelineOnEventCreationOptionSelected: (EventCreationType) -> Unit,
 ) {
     Column(
