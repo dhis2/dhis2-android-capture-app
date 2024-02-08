@@ -26,3 +26,7 @@ data class Ref(
     val id: String,
     val name: String?
 )
+
+data class UserGroups(
+    val userGroups: List<Ref>,
+)

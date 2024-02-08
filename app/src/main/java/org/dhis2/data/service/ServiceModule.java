@@ -13,6 +13,7 @@ import org.dhis2.commons.prefs.BasicPreferenceProvider;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.notifications.NotificationD2Repository;
 import org.dhis2.data.notifications.NotificationsApi;
+import org.dhis2.data.notifications.UserGroupsApi;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.usescases.notifications.domain.NotificationRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -39,17 +40,10 @@ public class ServiceModule {
     @Provides
     @PerService
     NotificationRepository notificationsRepository(@NonNull D2 d2, BasicPreferenceProvider preference) {
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-                .create();
+        NotificationsApi notificationsApi = d2.retrofit().create(NotificationsApi.class);
+        UserGroupsApi userGroupsApi = d2.retrofit().create(UserGroupsApi.class);
 
-        NotificationsApi api =
-                d2.retrofit()
-                .create(NotificationsApi.class);
-
-
-
-        return new NotificationD2Repository(d2, preference, api);
+        return new NotificationD2Repository(d2, preference, notificationsApi, userGroupsApi);
     }
 
     @Provides

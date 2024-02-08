@@ -13,6 +13,7 @@ import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.notifications.NotificationD2Repository
 import org.dhis2.data.notifications.NotificationsApi
+import org.dhis2.data.notifications.UserGroupsApi
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.notifications.domain.GetNotifications
@@ -99,10 +100,15 @@ class ProgramModule(private val view: ProgramView, private val notificationsView
             NotificationsApi::class.java
         )
 
+        val userGroupsApi = d2.retrofit().create(
+            UserGroupsApi::class.java
+        )
+
         return NotificationD2Repository(
             d2,
             preferences,
-            biometricsConfigApi
+            biometricsConfigApi,
+            userGroupsApi
         )
     }
 }
