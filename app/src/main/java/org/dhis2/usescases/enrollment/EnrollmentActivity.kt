@@ -22,6 +22,7 @@ import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
@@ -43,7 +44,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import java.io.File
 import javax.inject.Inject
-import org.dhis2.commons.resources.ResourceManager
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -350,7 +350,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 resourceManager.formatWithEnrollmentLabel(
                     programUid = presenter.getProgram()?.uid()!!,
                     R.string.new_enrollment,
-                    1
+                    1,
                 )
         }
     }
