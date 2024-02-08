@@ -249,7 +249,6 @@
     <string name="missing_mandatory_fields_go_back">删除并后退</string>
     <string name="error_fields">有些字段有错误：%s。 \n 请检查。</string>
     <string name="missing_mandatory_fields_finish">有些强制字段缺失。你可以完成数据录入并退出，但不能完成该事件。</string>
-    <string name="enrollment_coordinates">注册坐标</string>
     <string name="tei_coordinates">坐标</string>
 
     <!--EVENT SUMMARY-->
@@ -607,7 +606,6 @@
     <string name="event_tei_limits_v2">设置限制：%s。\n 事件：%s/%s  实体：%s/%s</string>
     <string name="enrollment_data_hide">隐藏注册数据</string>
     <string name="enrollment_data_show">显示注册数据</string>
-    <string name="enrollment_data_section_label">注册数据</string>
     <string name="sms_enabled">短信模块被激活</string>
     <string name="sms_disabled">短信模块被关闭</string>
     <string name="sms_downloading_data">下载短信模块，请等待。</string>

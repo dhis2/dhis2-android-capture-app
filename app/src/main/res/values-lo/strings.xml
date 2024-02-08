@@ -245,7 +245,6 @@
     <string name="missing_mandatory_fields_go_back">ລືບຂໍ້ມູນ ແລະ ກັບຄືນ</string>
     <string name="error_fields">ບາງຊ່ອງມີຂໍ້ຜິດພາດ, %s ກະລຸນາກວດສອບ</string>
     <string name="missing_mandatory_fields_finish">ຊ່ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ທ່ານສາມາດປ້ອນຂໍ້ມູນ ແລະ ອອກໄດ້, ແຕ່ເຫດການຈະບໍ່ສາມາດເຮັດໃຫ້ສຳເລັດໄດ້</string>
-    <string name="enrollment_coordinates">ປະສານງານການລົງທະບຽນ</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>
 
     <!--EVENT SUMMARY-->
@@ -600,7 +599,6 @@
     <string name="event_tei_limits_v2">ຈຳກັດການຕັ້ງຄ່າ%s\nເຫດການ:%s/%sTEI:%s/%s</string>
     <string name="enrollment_data_hide">ເຊື່ອງຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="enrollment_data_show">ສະແດງຂໍ້ມູນການລົງທະບຽນ</string>
-    <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="sms_enabled">ເປິດໃຊ້ງານໂມດູນຂໍ້ຄວາມ</string>
     <string name="sms_disabled">ໂມດູນຂໍ້ຄວາມຖືກປິດໃຊ້ງານ</string>
     <string name="sms_downloading_data">ກຳລັງດາວໂຫຼດຂໍ້ມູນສຳລັບໂມດູນຂໍ້ຄວາມ. ກະ​ລຸ​ນາ​ລໍ​ຖ້າ</string>
@@ -717,7 +715,6 @@
     <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
     <string name="data_set_quality_check_done">ສຳເລັດແລ້ວ!</string>
     <string name="break_glass_dialog_title">ໂປຣແກຣມນີ້ໄດ້ຮັບການຄຸ້ມຄອງ</string>
-    <string name="break_glass_reason">ເຫດຜົນໃນການກວດສອບການລົງທະບຽນ</string>
     <string name="break_glass_hint">ອະທິບາຍເຫດຜົນຢູ່ບ່ອນນີ້</string>
     <string name="login_error_bad_credentials">ຄວາມຜິດພາດຈາກຢັ້ງຢືນເອກະລັກບຸກຄົນ</string>
     <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>

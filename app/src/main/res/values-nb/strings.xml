@@ -250,7 +250,6 @@
     <string name="missing_mandatory_fields_go_back">Slett og gå tilbake</string>
     <string name="error_fields">Noen felt har feil:\n%s\nVennligst, sjekk dem.</string>
     <string name="missing_mandatory_fields_finish">Noen obligatoriske felter mangler. Du kan fullføre dataregistrering og gå ut, men hendelsen kan ikke fullføres.</string>
-    <string name="enrollment_coordinates">Innmeldingskoordinater</string>
     <string name="tei_coordinates">Koordinater for</string>
 
     <!--EVENT SUMMARY-->
@@ -608,7 +607,6 @@
     <string name="event_tei_limits_v2">Begrensede innstillinger : %s\nEvents: %s/%sTEI: %s/%s</string>
     <string name="enrollment_data_hide">Skjul registreringsdata</string>
     <string name="enrollment_data_show">Vis registreringsdata</string>
-    <string name="enrollment_data_section_label">Registreringsdata</string>
     <string name="sms_enabled">SMS modul er aktivert.</string>
     <string name="sms_disabled">SMS modul er deaktivert.</string>
     <string name="sms_downloading_data">Laster ned data for SMS modul. Vennligst vent</string>

@@ -70,12 +70,9 @@
     <string name="from_gallery">Choisir depuis la galerie</string>
     <string name="warning_error_on_complete_title">Attention. Vérifiez ceci!</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
-    <string name="enrollment_data_section_label">Données d\'inscription</string>
     <string name="enrollment_single_section_label">Attributs - %s</string>
     <string name="enrolling_ou">Unté d\'organisation d\'enrôlement</string>
     <string name="tei_coordinates">Coordonnées pour</string>
-    <string name="enrollment_coordinates">Coordonnées de l\'enrôlement</string>
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
-    <string name="enrollmment_date">Date d\'enrôlement</string>
     <string name="incident_date">Date de l´incident</string>
     </resources>

@@ -250,7 +250,6 @@
     <string name="missing_mandatory_fields_go_back">Ўчириб ташлаш ва орқага қайтиш</string>
     <string name="error_fields">Баъзи маълумотларда хатоликлар мавжуд: \n%s\. Илтимос, уларни текширинг.</string>
     <string name="missing_mandatory_fields_finish">Баъзи мажбурий майдонлар қолдириб кетилган. Сиз маълумотларни киритишни якунлаб чиқишингиз мумкин. Аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
-    <string name="enrollment_coordinates">Рўйхатдан ўтиш координаталари</string>
     <string name="tei_coordinates">Учун координаталар</string>
 
     <!--EVENT SUMMARY-->
@@ -610,7 +609,6 @@
     <string name="event_tei_limits_v2">Созламалар чекланган %s \n  Ҳодиса/тадбирлар: %s / %s TEI: %s / %s</string>
     <string name="enrollment_data_hide">Қайд қилиш маълумотларини беркитиш</string>
     <string name="enrollment_data_show">Қайд қилиш маълумотларини кўрсатиш</string>
-    <string name="enrollment_data_section_label">Қайд қилиш маълумотлари</string>
     <string name="sms_enabled">СМС модуль ёқиб қўйилган</string>
     <string name="sms_disabled">СМС модуль ўчириб қўйилган</string>
     <string name="sms_downloading_data">СМС модуль учун маълумотлар юкланмоқда. Илтимос, кутинг</string>
@@ -768,8 +766,6 @@
     <string name="from_gallery">Галереядан танлаш</string>
     <string name="data_set_quality_check_done">Бажарилди!</string>
     <string name="break_glass_dialog_title">Ушбу дастур ҳимояланган</string>
-    <string name="break_glass_dialog_description">Ушбу дастурда қайд этишни текшириш учун сабаб кўрсатишингиз керак. Барча ҳаракатлар ёзиб борилади.</string>
-    <string name="break_glass_reason">Қайд этишни текшириш учун сабаб</string>
     <string name="break_glass_hint">Сабабини шу ерда ёзиб қолдиринг</string>
     <string name="authenticating">Аутентификация қилинмоқда</string>
     <string name="login_error_no_dhis_instance">Кўрсатиб ўтилган URL манзил DHIS шаблонида эмас</string>

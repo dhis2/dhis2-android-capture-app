@@ -5,6 +5,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.event.EventNonEditableReason
 
 class EventDetailResourcesProvider(
+    private val programUid: String,
     private val resourceManager: ResourceManager,
 ) {
     fun provideDueDate() = resourceManager.getString(R.string.due_date)
@@ -24,7 +25,11 @@ class EventDetailResourcesProvider(
             EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS ->
                 resourceManager.getString(R.string.edition_no_catcombo_access)
             EventNonEditableReason.ENROLLMENT_IS_NOT_OPEN ->
-                resourceManager.getString(R.string.edition_enrollment_is_no_open)
+                resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.edition_enrollment_is_no_open_V2,
+                    1,
+                )
             EventNonEditableReason.ORGUNIT_IS_NOT_IN_CAPTURE_SCOPE ->
                 resourceManager.getString(R.string.edition_orgunit_capture_scope)
         }

@@ -234,7 +234,6 @@
     <string name="missing_mandatory_fields_go_back">Oʼchirib tashlash va orqaga qaytish</string>
     <string name="error_fields">Baʼzi maʼlumotlarda xatoliklar mavjud: \n%s\. Iltimos, ularni tekshiring.</string>
     <string name="missing_mandatory_fields_finish">Baʼzi majburiy maydonlar qoldirib ketilgan. Siz maʼlumotlarni kiritishni yakunlab chiqishingiz mumkin. Аmmo bu holda hodisa/tadbirni yakunlab boʼlmaydi.</string>
-    <string name="enrollment_coordinates">Roʼyxatdan oʼtish koordinatalari</string>
     <string name="tei_coordinates">Uchun koordinatalar</string>
 
     <!--EVENT SUMMARY-->
@@ -588,7 +587,6 @@
     <string name="event_tei_limits_v2">Sozlamalar cheklangan %s \n Hodisa/tadbirlar: %s / %s TEI: %s / %s</string>
     <string name="enrollment_data_hide">Qayd qilish maʼlumotlarini berkitish</string>
     <string name="enrollment_data_show">Qayd qilish maʼlumotlarini koʼrsatish</string>
-    <string name="enrollment_data_section_label">Qayd qilish maʼlumotlari</string>
     <string name="sms_enabled">SMS modul yoqib qoʼyilgan</string>
     <string name="sms_disabled">SMS modul oʼchirib qoʼyilgan</string>
     <string name="sms_downloading_data">SMS modul uchun maʼlumotlar yuklanmoqda. Iltimos, kuting</string>

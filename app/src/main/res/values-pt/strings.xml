@@ -252,7 +252,6 @@
     <string name="missing_mandatory_fields_go_back">Suprimir e voltar</string>
     <string name="error_fields">Alguns campos têm erros:/n%s/nPor favor, verifique-os.</string>
     <string name="missing_mandatory_fields_finish">Alguns campos obrigatórios estão ausentes. Você pode concluir a entrada e saída de dados, mas o evento não pode ser concluído.</string>
-    <string name="enrollment_coordinates">Coordenadas de inscrição</string>
     <string name="tei_coordinates">Coordenadas para o</string>
 
     <!--EVENT SUMMARY-->
@@ -610,7 +609,6 @@
     <string name="event_tei_limits_v2">Configurações limitadas %s \nEventos: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Ocultar dados de inscrição</string>
     <string name="enrollment_data_show">Mostrar dados de inscrição</string>
-    <string name="enrollment_data_section_label">Dados de inscrição</string>
     <string name="sms_enabled">Módulo SMS ativado</string>
     <string name="sms_disabled">Módulo SMS desativado</string>
     <string name="sms_downloading_data">Baixando dados para o módulo SMS. Por favor espere.</string>

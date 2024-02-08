@@ -75,8 +75,6 @@
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
 
-    <string name="enrollment_org_unit">Enrollment Org Unit</string>
-
     <!-- Periods -->
     <string name="filter_period_today">Today</string>
     <string name="filter_period_yesterday">Yesterday</string>
@@ -255,8 +253,7 @@
     <string name="break_glass_dialog_description_V2">You must provide a reason to check for %s in this protected program. All activity will be logged.</string>
     <string name="break_glass_reason_V2">Reason to check for %s</string>
     <string name="edition_enrollment_is_no_open_V2">This data is not editable because the %s is completed or cancelled</string>
-    <string name="enrollment_org_unit_V2">Enrollment Org Unit</string>
-    <string name="enrollment_completed">%s completed</string>
-    <string name="enrollment_cancelled">%s cancelled</string>
+    <string name="enrollment_completed_V2">%s completed</string>
+    <string name="enrollment_cancelled_V2">%s cancelled</string>
 
 </resources>

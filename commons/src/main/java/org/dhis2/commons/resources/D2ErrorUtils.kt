@@ -152,6 +152,9 @@ class D2ErrorUtils(
                 } else {
                     context.getString(R.string.error_no_internet_connection)
                 }
+
+            D2ErrorCode.DATABASE_IMPORT_FAILED -> TODO()
+            D2ErrorCode.DATABASE_IMPORT_INVALID_FILE -> TODO()
         }
     }
 }

@@ -130,6 +130,7 @@ class TEICardMapper(
                 enrolledPrograms = searchTEIModel.programInfo,
             )
             checkEnrollmentStatus(
+                programUid = searchTEIModel.selectedEnrollment.program()!!,
                 list = list,
                 status = searchTEIModel.selectedEnrollment?.status(),
             )
@@ -175,35 +176,46 @@ class TEICardMapper(
     }
 
     private fun checkEnrollmentStatus(
+        programUid: String,
         list: MutableList<AdditionalInfoItem>,
         status: EnrollmentStatus?,
     ) {
         val item = when (status) {
             EnrollmentStatus.COMPLETED -> {
+                val label = resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.enrollment_completed_V2,
+                    1,
+                )
                 AdditionalInfoItem(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Check,
-                            contentDescription = resourceManager.getString(R.string.enrollment_completed),
+                            contentDescription = label,
                             tint = AdditionalInfoItemColor.SUCCESS.color,
                         )
                     },
-                    value = resourceManager.getString(R.string.enrollment_completed),
+                    value = label,
                     isConstantItem = true,
                     color = AdditionalInfoItemColor.SUCCESS.color,
                 )
             }
 
             EnrollmentStatus.CANCELLED -> {
+                val label = resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.enrollment_cancelled_V2,
+                    1,
+                )
                 AdditionalInfoItem(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Close,
-                            contentDescription = resourceManager.getString(R.string.enrollment_cancelled),
+                            contentDescription = label,
                             tint = AdditionalInfoItemColor.DISABLED.color,
                         )
                     },
-                    value = resourceManager.getString(R.string.enrollment_cancelled),
+                    value = label,
                     isConstantItem = true,
                     color = AdditionalInfoItemColor.DISABLED.color,
                 )

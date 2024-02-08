@@ -260,7 +260,6 @@
     <string name="missing_mandatory_fields_go_back">Видалити та повернутися назад</string>
     <string name="error_fields">У деяких полях є помилки:%s Будь ласка, перевірте їх.</string>
     <string name="missing_mandatory_fields_finish">Деякі обов’язкові поля не заповнено. Ви можете завершити введення даних і вийти, але випадок не може бути завершений.</string>
-    <string name="enrollment_coordinates">Координати реєстрації</string>
     <string name="tei_coordinates">Координати для</string>
 
     <!--EVENT SUMMARY-->
@@ -624,7 +623,6 @@
     <string name="event_tei_limits_v2">Налаштування обмежено%sВипадки: %s/%s Об\'єкти: %s/%s</string>
     <string name="enrollment_data_hide">Приховати дані реєстрації</string>
     <string name="enrollment_data_show">Показати дані реєстрації</string>
-    <string name="enrollment_data_section_label">Дані реєстрації</string>
     <string name="sms_enabled">SMS-модуль включений</string>
     <string name="sms_disabled">SMS-модуль відключений</string>
     <string name="sms_downloading_data">Завантаження даних для модуля SMS. Будь ласка, зачекайте</string>
@@ -794,8 +792,6 @@
     <string name="from_gallery">Обрати з галереї</string>
     <string name="data_set_quality_check_done">Готово!</string>
     <string name="break_glass_dialog_title">Ця програма закрита для Вас</string>
-    <string name="break_glass_dialog_description">Ви повинні вказати причину для перевірки реєстрації в цій програмі, яка є для Вас закритою. Уся активність буде зареєстрована.</string>
-    <string name="break_glass_reason">Причина для перевірки реєстрації</string>
     <string name="break_glass_hint">Опишіть причину тут</string>
     <string name="authenticating">Автентифікація</string>
     <string name="login_error_no_dhis_instance">Надана URL-адреса сервера не є екземпляром dhis</string>
@@ -820,7 +816,6 @@
     <string name="edition_no_write_access">Ви не маєте дозволу редагувати ці дані</string>
     <string name="event_date_not_in_orgunit_range">Ці дані не можна редагувати, оскільки організаційний підрозділ закрито</string>
     <string name="edition_no_catcombo_access">Ви не маєте дозволу редагувати ці дані</string>
-    <string name="edition_enrollment_is_no_open">Ці дані не можна редагувати, оскільки реєстрацію завершено або скасовано</string>
     <string name="edition_orgunit_capture_scope">Ви не можете редагувати дані з цього організаційного підрозділу</string>
     <string name="reload_list">Скинути пошук</string>
     <string name="error_tei_online_search_title">Онлайн-пошук дав таке повідомлення:</string>
@@ -865,7 +860,6 @@
     <string name="account_disable_title">Обліковий запис вимкнено</string>
     <string name="account_disable_message">Ваш обліковий запис було вимкнено адміністратором.</string>
     <string name="search_unable_search_outside">Для пошуку за межами цієї програми відкрийте форму пошуку та заповніть одне з наступних %s полів:</string>
-    <string name="enrollment_org_unit">Організаційний підрозділ, який здійснює реєстрацію</string>
     <string name="customactivityoncrash_error_activity_build_version">Версія збірки: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Дата збірки: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Поточна дата: %s</string>

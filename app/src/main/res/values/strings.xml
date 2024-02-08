@@ -273,7 +273,6 @@
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
     <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
     <string name="missing_mandatory_fields_finish">Some mandatory fields are missing. You can finish data entry and exit, but the event cannot be completed.</string>
-    <string name="enrollment_coordinates">Enrollment coordinates</string>
     <string name="tei_coordinates">Coordinates for the</string>
 
     <!--EVENT SUMMARY-->
@@ -640,7 +639,6 @@
     <string name="event_tei_limits_v2">Settings limited %s\nEvents: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Hide enrollment data</string>
     <string name="enrollment_data_show">Show enrollment data</string>
-    <string name="enrollment_data_section_label">Enrollment data</string>
     <string name="sms_enabled">SMS module enabled</string>
     <string name="sms_disabled">SMS module disabled</string>
     <string name="sms_downloading_data">Downloading data for SMS module. Please wait</string>
@@ -715,7 +713,7 @@
     <string name="complete_anyway">Complete anyway</string>
     <string name="fk_message">Missing %s %s from %s %s</string>
     <string name="filters_title_event_status">Event status</string>
-    <string name="filters_title_enrollment_status">Enrollment status</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="enrollment_date">Enrollment date</string>
     <string name="dataset_empty_list_can_create">There are no data. Click \"+\" to add new a new record</string>
     <string name="dataset_emtpy_list_can_not_create">There are no data. You don\'t have permission to add new records.</string>

@@ -264,7 +264,6 @@
     <string name="missing_mandatory_fields_go_back">الحذف والرجوع للخلف</string>
     <string name="error_fields">تحتوي بعض الحقول على أخطاء:\n%s\n يرجى التحقق منها.</string>
     <string name="missing_mandatory_fields_finish">بعض الحقول الإلزامية مفقودة. يمكنك إنهاء إدخال البيانات والخروج، لكن لا يمكن تعيين الحدث كمكتمل.</string>
-    <string name="enrollment_coordinates">إحداثيات التسجيل</string>
     <string name="tei_coordinates">إحداثيات لـ </string>
 
     <!--EVENT SUMMARY-->
@@ -628,7 +627,6 @@
     <string name="event_tei_limits_v2">الإعدادات محدودة %s\n الأحداث: %s/%s، TEI: %s/%s</string>
     <string name="enrollment_data_hide">إخفاء بيانات التسجيل</string>
     <string name="enrollment_data_show">إظهار بيانات التسجيل</string>
-    <string name="enrollment_data_section_label">بيانات التسجيل</string>
     <string name="sms_enabled">وحدة الرسائل القصيرة مفعلة</string>
     <string name="sms_disabled">وحدة الرسائل القصيرة غير مفعلة</string>
     <string name="sms_downloading_data">تحميل البيانات لوحدة الرسائل القصيرة. يرجى الإنتظار</string>
@@ -816,7 +814,6 @@
     <string name="edition_no_write_access">ليس لديك إذن لتحرير هذه البيانات</string>
     <string name="event_date_not_in_orgunit_range">هذه البيانات غير قابلة للتعديل لأنه تم اغلاق الوحدة التنظيمية</string>
     <string name="edition_no_catcombo_access">ليس لديك إذن لتحرير هذه البيانات</string>
-    <string name="edition_enrollment_is_no_open">هذه البيانات غير قابلة للتعديل بسبب اكتمال التسجيل أو إلغاؤه</string>
     <string name="edition_orgunit_capture_scope">لا يمكنك تحرير البيانات من هذه الوحدة التنظيمية</string>
     <string name="reload_list">إعادة البحث</string>
     <string name="error_tei_online_search_title">البحث عبر الإتصال بالسيرفر عن طريق الإنترنت ارجع الرسالة التالية:</string>

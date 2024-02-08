@@ -250,7 +250,6 @@
     <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
     <string name="error_fields">Beberapa parameter terjadi kesalahan:\n 1 %s \n Mohon, diperiksa</string>
     <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
-    <string name="enrollment_coordinates">Koordinat pendaftaran</string>
     <string name="tei_coordinates">Koordinat untuk</string>
 
     <!--EVENT SUMMARY-->
@@ -719,7 +718,6 @@
     <string name="event_tei_limits_v2">Pengaturan terbatas %s\nAcara: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Sembunyikan data pendaftaran</string>
     <string name="enrollment_data_show">Tampilkan data pendaftaran</string>
-    <string name="enrollment_data_section_label">Data pendaftaran</string>
     <string name="sms_enabled">Modul SMS diaktifkan</string>
     <string name="sms_disabled">Modul SMS dinonaktifkan</string>
     <string name="sms_downloading_data">Mengunduh data untuk modul SMS. Mohon tunggu</string>
@@ -884,8 +882,6 @@
     <string name="from_gallery">Pilih dari galeri</string>
     <string name="data_set_quality_check_done">Selesai!</string>
     <string name="break_glass_dialog_title">Program ini dilindungi</string>
-    <string name="break_glass_dialog_description">Anda harus memberikan alasan untuk memeriksa pendaftaran dalam program yang dilindungi ini. Semua aktivitas akan dicatat.</string>
-    <string name="break_glass_reason">Alasan untuk memeriksa pendaftaran</string>
     <string name="break_glass_hint">Jelaskan alasannya di sini</string>
     <string name="authenticating">Otentikasi</string>
     <string name="login_error_no_dhis_instance">URL server yang disediakan bukan instance dhis</string>
