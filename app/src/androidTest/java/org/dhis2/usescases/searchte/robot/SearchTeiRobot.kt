@@ -31,6 +31,7 @@ import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 
 
 fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
@@ -186,7 +187,7 @@ class SearchTeiRobot : BaseRobot() {
 
         composeTestRule.setContent {
             ListCard(
-                title = title,
+                title = ListCardTitleModel(text = title),
                 additionalInfoList = displayedAttributes,
                 onCardClick = { }
             )
