@@ -91,7 +91,6 @@
     <string name="data_values_save_error">Los DataValues no pueden guardarse con estos argumentos. Use el otro método.</string>
     <string name="leading_zero_error">No se permiten números con ceros a la izquierda</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="enrolling_ou">OU de admision:</string>
     <string name="tei_coordinates">Coordenadas para</string>
     <string name="no_reserved_values">No quedan valores reservados. Contacte con el administrador del sistema.</string>
     <string name="incident_date">Fecha del incidente</string>

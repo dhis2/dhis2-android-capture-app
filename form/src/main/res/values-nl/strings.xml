@@ -91,7 +91,6 @@
     <string name="data_values_save_error">DataValues kunnen niet worden opgeslagen met deze argumenten. Gebruik de andere.</string>
     <string name="leading_zero_error">Voorloopnullen zijn niet toegestaan</string>
     <string name="enrollment_single_section_label">Kenmerken - %s</string>
-    <string name="enrolling_ou">OU inschrijven:</string>
     <string name="tei_coordinates">Coördinaten voor de</string>
     <string name="no_reserved_values">Er zijn geen gereserveerde waarden meer. Neem contact op met uw systeembeheerder</string>
     <string name="incident_date">Incident datum</string>

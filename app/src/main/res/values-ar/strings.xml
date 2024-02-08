@@ -164,7 +164,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">انظر التفاصيل</string>
     <string name="view_more">عرض المزيد</string>
-    <string name="enrolling_ou">الوحدة التنظيمية المسجلة</string>
     <string name="follow_up">متابعة</string>
     <string name="follow_up_enabled">تم تمكين المتابعة</string>
     <string name="follow_up_disabled">تم ايقاف المتابعة</string>

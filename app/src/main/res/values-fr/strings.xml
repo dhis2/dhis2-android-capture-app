@@ -159,7 +159,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Voir les détails</string>
     <string name="view_more">Afficher plus</string>
-    <string name="enrolling_ou">Entité Org d´admission</string>
     <string name="follow_up">Suivi</string>
     <string name="follow_up_enabled">Suivi activé</string>
     <string name="follow_up_disabled">Suivi désactivé</string>

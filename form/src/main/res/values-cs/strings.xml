@@ -91,7 +91,6 @@
     <string name="data_values_save_error">DataValues nelze uložit pomocí těchto argumentů. Použijte ten druhý.</string>
     <string name="leading_zero_error">Čísla s úvodní nulou nejsou povolena</string>
     <string name="enrollment_single_section_label">Atributy - %s</string>
-    <string name="enrolling_ou">Zápis Org. J.:</string>
     <string name="tei_coordinates">Souřadnice pro</string>
     <string name="no_reserved_values">Neexistují žádné další rezervované hodnoty. Obraťte se na správce systému</string>
     <string name="incident_date">Datum incidentu</string>

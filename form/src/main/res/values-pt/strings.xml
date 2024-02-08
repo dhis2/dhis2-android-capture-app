@@ -51,7 +51,6 @@
     <string name="empty_description">Nenhuma informação para este campo</string>
     <string name="warning_error_on_complete_title">Verifique isso!</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="enrolling_ou">Inscrição UO:</string>
     <string name="tei_coordinates">Coordenadas para o</string>
     <string name="no_reserved_values">Não há mais valores reservados. Entre em contato com o administrador do sistema</string>
     <string name="incident_date">Data do incidente</string>

@@ -83,7 +83,6 @@
     <string name="data_values_save_error">لا يمكن حفظ DataValues باستخدام هذه المدخلات. استخدم المدخل الآخر.</string>
     <string name="leading_zero_error">غير مسموح بأرقام الصفر في البداية</string>
     <string name="enrollment_single_section_label">السمات - %s</string>
-    <string name="enrolling_ou">الوحدة التنظيمية المسجلة</string>
     <string name="tei_coordinates">إحداثيات لـ </string>
     <string name="no_reserved_values">لا يوجد المزيد من القيم المحجوزة. اتصل بمسؤول النظام</string>
     <string name="incident_date">تاريخ الحدوث</string>

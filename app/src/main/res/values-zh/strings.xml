@@ -159,7 +159,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">查看详情</string>
     <string name="view_more">更多</string>
-    <string name="enrolling_ou">注册机构</string>
     <string name="follow_up">后续跟踪</string>
     <string name="follow_up_enabled">使能后续跟踪</string>
     <string name="follow_up_disabled">后续跟踪关闭</string>

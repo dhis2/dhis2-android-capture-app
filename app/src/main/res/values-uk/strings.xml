@@ -162,7 +162,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Подивитись подробиці</string>
     <string name="view_more">ДИВИТИСЬ БІЛЬШЕ</string>
-    <string name="enrolling_ou">Організаційний підрозділ, який здійснює реєстрацію:</string>
     <string name="follow_up">Подальші дії</string>
     <string name="follow_up_enabled">Подальші дії увімкнено</string>
     <string name="follow_up_disabled">Подальші дії вимкнено</string>

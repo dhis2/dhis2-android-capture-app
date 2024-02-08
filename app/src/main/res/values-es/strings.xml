@@ -161,7 +161,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Ver detalles</string>
     <string name="view_more">Ver mas</string>
-    <string name="enrolling_ou">OU de admision:</string>
     <string name="follow_up">Seguimiento</string>
     <string name="follow_up_enabled">Seguimiento activado</string>
     <string name="follow_up_disabled">Seguimiento desactivado</string>

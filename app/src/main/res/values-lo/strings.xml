@@ -152,7 +152,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">ເບິ່ງຂໍ້ມູນເພີ່ມຕື່ມ</string>
     <string name="view_more">ເບີ່ງຕື່ມ</string>
-    <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
     <string name="follow_up">ຕິດຕາມ</string>
     <string name="follow_up_enabled">ເປີດການຕິດຕາມ</string>
     <string name="follow_up_disabled">ການຕິດຕາມບໍ່ສາມາດນໍາໃຊ້ໄດ້</string>

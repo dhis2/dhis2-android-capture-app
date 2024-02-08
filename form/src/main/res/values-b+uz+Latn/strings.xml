@@ -51,7 +51,6 @@
     <string name="empty_description">Ushbu maydon uchun maʼlumot yoʼq</string>
     <string name="warning_error_on_complete_title">Buni tekshiring!</string>
     <string name="enrollment_single_section_label">Аtribatlar - %s</string>
-    <string name="enrolling_ou">OUga roʼyxatga olish</string>
     <string name="tei_coordinates">Uchun koordinatalar</string>
     <string name="no_reserved_values">Saqlangan boshqa qiymatlar yoʼq. Tizim administratoriga murojaat qiling.</string>
     <string name="incident_date">Hodisa sanasi</string>

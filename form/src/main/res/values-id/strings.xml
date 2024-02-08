@@ -53,7 +53,6 @@
     <string name="warning_error_on_complete_title">Periksa ini!</string>
     <string name="action_do_not_show_again">Jangan perlihatkan lagi</string>
     <string name="enrollment_single_section_label">Atribut - %s</string>
-    <string name="enrolling_ou">Daftarkan OU:</string>
     <string name="tei_coordinates">Koordinat untuk</string>
     <string name="no_reserved_values">Tidak ada nilai lainnya. Hubungi admin sistem Anda.</string>
     <string name="incident_date">Tanggal insiden</string>
