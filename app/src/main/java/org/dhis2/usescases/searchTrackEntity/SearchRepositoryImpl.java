@@ -5,9 +5,14 @@ import android.database.sqlite.SQLiteConstraintException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
+import androidx.paging.Pager;
+import androidx.paging.PagingData;
+import androidx.paging.PagingDataTransforms;
+import androidx.paging.PagingLiveData;
 
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
@@ -97,6 +102,11 @@ import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import kotlinx.coroutines.ExecutorsKt;
+import kotlinx.coroutines.flow.Flow;
+import kotlinx.coroutines.flow.FlowCollector;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -105,7 +115,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final D2 d2;
     private final SearchSortingValueSetter sortingValueSetter;
     private TrackedEntitySearchCollectionRepository trackedEntityInstanceQuery;
-    private SearchParametersModel savedSearchParameters;
+    public SearchParametersModel savedSearchParameters;
     private FilterManager savedFilters;
     private FilterPresenter filterPresenter;
     private DhisPeriodUtils periodUtils;
@@ -170,40 +180,6 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline) {
-        boolean allowCache = false;
-        if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().sameFilters(savedFilters)) {
-            trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
-        } else {
-            getFilteredRepository(searchParametersModel);
-            allowCache = true;
-        }
-
-        if (!fetchedTeiUids.isEmpty() && searchParametersModel.getSelectedProgram() == null) {
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.excludeUids().in(new ArrayList<>(fetchedTeiUids));
-        }
-
-        DataSource<TrackedEntitySearchItem, SearchTeiModel> dataSource;
-
-        if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty()) {
-            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getResultDataSource()
-                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()));
-        } else {
-            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getResultDataSource()
-                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()));
-        }
-
-        return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntitySearchItem, SearchTeiModel>() {
-            @NonNull
-            @Override
-            public DataSource<TrackedEntitySearchItem, SearchTeiModel> create() {
-                return dataSource;
-            }
-        }, 10).build();
-    }
-
-    @NonNull
-    @Override
     public Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline) {
 
         boolean allowCache = false;
@@ -225,7 +201,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .toList().toFlowable();
     }
 
-    private TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
+    @Override
+    public TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
         this.savedSearchParameters = searchParametersModel.copy();
         this.savedFilters = FilterManager.getInstance().copy();
 
@@ -247,12 +224,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                 boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet().unique();
                 if (isUnique) {
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
                 } else if (dataValue.contains("_os_")) {
                     dataValue = dataValue.split("_os_")[1];
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
                 } else
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).like(dataValue);
             }
         }
 
@@ -725,7 +702,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return teiDownloader.download(teiUid, enrollmentUid, reason);
     }
 
-    private SearchTeiModel transformResult(Result<TrackedEntitySearchItem, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
+    public SearchTeiModel transformResult(Result<TrackedEntitySearchItem, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
         try {
             return transform(result.getOrThrow(), selectedProgram, offlineOnly, sortingItem);
         } catch (Exception e) {
@@ -736,7 +713,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
     }
 
-    private SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
+    @Override
+    public SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
         if (!fetchedTeiUids.contains(searchItem.uid())) {
             fetchedTeiUids.add(searchItem.uid());
         }

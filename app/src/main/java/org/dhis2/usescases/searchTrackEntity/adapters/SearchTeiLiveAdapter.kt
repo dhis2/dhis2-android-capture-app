@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import org.dhis2.R
@@ -28,7 +28,7 @@ class SearchTeiLiveAdapter(
     private val onDownloadTei: (teiUid: String, enrollmentUid: String?) -> Unit,
     private val onTeiClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Unit,
     private val onImageClick: (imagePath: String) -> Unit,
-) : PagedListAdapter<SearchTeiModel, RecyclerView.ViewHolder>(SearchAdapterDiffCallback()) {
+) : PagingDataAdapter<SearchTeiModel, RecyclerView.ViewHolder>(SearchAdapterDiffCallback()) {
 
     private enum class SearchItem {
         TEI,
@@ -133,9 +133,5 @@ class SearchTeiLiveAdapter(
 
             is SearchErrorViewHolder -> holder.bind(getItem(position)!!)
         }
-    }
-
-    fun clearList() {
-        submitList(null)
     }
 }

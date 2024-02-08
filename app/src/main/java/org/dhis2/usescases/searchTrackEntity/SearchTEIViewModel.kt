@@ -4,11 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagedList
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -29,6 +34,7 @@ class SearchTEIViewModel(
     private val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
     private val searchRepository: SearchRepository,
+    private val searchRepositoryKt: SearchRepositoryKt,
     private val searchNavPageConfigurator: SearchPageConfigurator,
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
@@ -226,11 +232,11 @@ class SearchTEIViewModel(
         }
     }
 
-    fun fetchListResults(onPagedListReady: (LiveData<PagedList<SearchTeiModel>>?) -> Unit) {
+    fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
         viewModelScope.launch {
             val resultPagedList = when {
-                searching -> loadSearchResults()
-                displayFrontPageList() -> loadDisplayInListResults()
+                searching -> loadSearchResults().cachedIn(viewModelScope)
+                displayFrontPageList() -> loadDisplayInListResults().cachedIn(viewModelScope)
                 else -> null
             }
             onPagedListReady(resultPagedList)
@@ -238,34 +244,94 @@ class SearchTEIViewModel(
     }
 
     private suspend fun loadSearchResults() = withContext(dispatchers.io()) {
-        return@withContext searchRepository.searchTrackedEntities(
-            SearchParametersModel(
-                selectedProgram = searchRepository.getProgram(initialProgramUid),
-                queryData = queryData,
-            ),
+        val searchParametersModel = SearchParametersModel(
+            selectedProgram = searchRepository.getProgram(initialProgramUid),
+            queryData = queryData,
+        )
+        val getPagingData = searchRepositoryKt.searchTrackedEntities(
+            searchParametersModel,
             searching && networkUtils.isOnline(),
         )
+
+        return@withContext getPagingData.map { pagingData ->
+            pagingData.map { item ->
+                if (
+                    searching && networkUtils.isOnline() &&
+                    FilterManager.getInstance().stateFilters.isEmpty()
+                ) {
+                    searchRepository.transform(
+                        item,
+                        searchParametersModel.selectedProgram,
+                        false,
+                        FilterManager.getInstance().sortingItem,
+                    )
+                } else {
+                    searchRepository.transform(
+                        item,
+                        searchParametersModel.selectedProgram,
+                        true,
+                        FilterManager.getInstance().sortingItem,
+                    )
+                }
+            }
+        }
     }
 
     private suspend fun loadDisplayInListResults() = withContext(dispatchers.io()) {
-        return@withContext searchRepository.searchTrackedEntities(
-            SearchParametersModel(
-                selectedProgram = searchRepository.getProgram(initialProgramUid),
-                queryData = queryData,
-            ),
+        val searchParametersModel = SearchParametersModel(
+            selectedProgram = searchRepository.getProgram(initialProgramUid),
+            queryData = queryData,
+        )
+        val getPagingData = searchRepositoryKt.searchTrackedEntities(
+            searchParametersModel,
             false,
         )
+
+        return@withContext getPagingData.map { pagingData ->
+            pagingData.map { item ->
+                searchRepository.transform(
+                    item,
+                    searchParametersModel.selectedProgram,
+                    true,
+                    FilterManager.getInstance().sortingItem,
+                )
+            }
+        }
     }
 
-    fun fetchGlobalResults(): LiveData<PagedList<SearchTeiModel>>? {
-        return if (searching) {
-            searchRepository.searchTrackedEntities(
-                SearchParametersModel(
-                    selectedProgram = null,
-                    queryData = queryData,
-                ),
-                searching && networkUtils.isOnline(),
-            )
+    suspend fun fetchGlobalResults() = withContext(dispatchers.io()) {
+        val searchParametersModel = SearchParametersModel(
+            selectedProgram = searchRepository.getProgram(initialProgramUid),
+            queryData = queryData,
+        )
+        val getPagingData = searchRepositoryKt.searchTrackedEntities(
+            searchParametersModel,
+            searching && networkUtils.isOnline(),
+        )
+
+        return@withContext if (searching) {
+            getPagingData.map { pagingData ->
+                pagingData.map { item ->
+                    if (
+                        searching && networkUtils.isOnline() &&
+                        FilterManager.getInstance().stateFilters.isEmpty()
+                    ) {
+                        searchRepository.transform(
+                            item,
+                            searchParametersModel.selectedProgram,
+                            false,
+                            FilterManager.getInstance().sortingItem,
+                        )
+                    } else {
+                        searchRepository.transform(
+                            item,
+                            searchParametersModel.selectedProgram,
+                            true,
+                            FilterManager.getInstance().sortingItem,
+                        )
+                    }
+                }
+            }
         } else {
             null
         }

@@ -17,9 +17,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.paging.PagedList
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
@@ -249,17 +251,14 @@ class SearchTEList : FragmentGlobalAbstract() {
             initLoading(emptyList())
             it.firstOrNull()?.let { searchResult ->
                 if (searchResult.shouldClearProgramData()) {
-                    liveAdapter.clearList()
+                    liveAdapter.refresh()
                 }
                 if (searchResult.shouldClearGlobalData()) {
-                    globalAdapter.clearList()
+                    globalAdapter.refresh()
                 }
             }
             displayResult(it)
             updateRecycler()
-            recycler.post {
-                recycler.smoothScrollToPosition(0)
-            }
         }
     }
 
@@ -283,51 +282,26 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun restoreAdapters() {
         initLoading(null)
-        liveAdapter.clearList()
+        liveAdapter.refresh()
         if (!viewModel.filtersApplyOnGlobalSearch()) {
-            globalAdapter.clearList()
+            globalAdapter.refresh()
         } else if (globalAdapter.itemCount > 0) {
             initGlobalData()
         }
         displayResult(null)
     }
 
-    private val initResultCallback = object : PagedList.Callback() {
-        override fun onChanged(position: Int, count: Int) {
-        }
-
-        override fun onInserted(position: Int, count: Int) {
-            onInitDataLoaded()
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-        }
-    }
-
-    private val globalResultCallback = object : PagedList.Callback() {
-        override fun onChanged(position: Int, count: Int) {
-        }
-
-        override fun onInserted(position: Int, count: Int) {
-            onGlobalDataLoaded()
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-        }
-    }
-
     private fun initData() {
         displayLoadingData()
         viewModel.fetchListResults {
-            it?.takeIf { view != null }?.apply {
-                removeObservers(viewLifecycleOwner)
-                observe(viewLifecycleOwner) { results ->
-                    liveAdapter.submitList(results) {
+            viewModel.viewModelScope.launch {
+                it?.takeIf { view != null }?.collectLatest {
+                    liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
                     }
-                    results.addWeakCallback(results.snapshot(), initResultCallback)
-                }
-            } ?: onInitDataLoaded()
+                    liveAdapter.submitData(it)
+                } ?: onInitDataLoaded()
+            }
         }
     }
 
@@ -340,7 +314,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                 null
             },
             isLandscape = isLandscape(),
-            onlineErrorCode = liveAdapter.currentList?.lastOrNull()?.onlineErrorCode,
+            onlineErrorCode = liveAdapter.snapshot().items.lastOrNull()?.onlineErrorCode,
         )
     }
 
@@ -354,13 +328,12 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun initGlobalData() {
         displayLoadingData()
-        viewModel.fetchGlobalResults()?.let {
-            it.removeObservers(viewLifecycleOwner)
-            it.observe(viewLifecycleOwner) { results ->
-                globalAdapter.submitList(results) {
+        viewModel.viewModelScope.launch {
+            viewModel.fetchGlobalResults()?.collectLatest {
+                globalAdapter.addOnPagesUpdatedListener {
                     onGlobalDataLoaded()
                 }
-                results.addWeakCallback(results.snapshot(), globalResultCallback)
+                globalAdapter.submitData(it)
             }
         }
     }

@@ -38,6 +38,7 @@ class SearchTEIViewModelTest {
     private val initialProgram = "programUid"
     private val initialQuery = mutableMapOf<String, String>()
     private val repository: SearchRepository = mock()
+    private val repositoryKt: SearchRepositoryKt = mock()
     private val pageConfigurator: SearchPageConfigurator = mock()
     private val mapDataRepository: MapDataRepository = mock()
     private val networkUtils: NetworkUtils = mock()
@@ -59,6 +60,7 @@ class SearchTEIViewModelTest {
             initialProgram,
             initialQuery,
             repository,
+            repositoryKt,
             pageConfigurator,
             mapDataRepository,
             networkUtils,
@@ -187,7 +189,7 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram)
         viewModel.fetchListResults {}
         testingDispatcher.scheduler.advanceUntilIdle()
-        verify(repository).searchTrackedEntities(
+        verify(repositoryKt).searchTrackedEntities(
             SearchParametersModel(
                 selectedProgram = testingProgram,
                 queryData = mutableMapOf(),
@@ -202,7 +204,7 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram)
         viewModel.fetchListResults {}
 
-        verify(repository, times(0)).searchTrackedEntities(
+        verify(repositoryKt, times(0)).searchTrackedEntities(
             SearchParametersModel(
                 selectedProgram = testingProgram,
                 queryData = mutableMapOf(),
@@ -210,7 +212,7 @@ class SearchTEIViewModelTest {
             true,
         )
 
-        verify(repository, times(0)).searchTrackedEntities(
+        verify(repositoryKt, times(0)).searchTrackedEntities(
             SearchParametersModel(
                 selectedProgram = testingProgram,
                 queryData = mutableMapOf(),
