@@ -1,8 +1,8 @@
 package org.dhis2.data.notifications
 
 import com.google.gson.reflect.TypeToken
+import org.dhis2.commons.prefs.BasicPreferenceProvider
 import org.dhis2.commons.prefs.Preference
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.usescases.notifications.domain.Notification
 import org.dhis2.usescases.notifications.domain.NotificationRepository
 import org.hisp.dhis.android.core.D2
@@ -11,21 +11,29 @@ import timber.log.Timber
 
 class NotificationD2Repository(
     private val d2: D2,
-    private val preferenceProvider: PreferenceProvider,
+    private val preferenceProvider: BasicPreferenceProvider,
     private val notificationsDataStoreApi: NotificationsApi
 ) : NotificationRepository {
 
     override fun sync() {
-        val response = notificationsDataStoreApi.getData().execute()
+        try {
+            val response = notificationsDataStoreApi.getData().execute()
 
-        if (!response.isSuccessful) {
-            val allNotifications = response.body() ?: listOf()
+            if (response.isSuccessful) {
+                val allNotifications = response.body() ?: listOf()
 
-            val userNotifications = getNotificationsForCurrentUser(allNotifications)
+                val userNotifications = getNotificationsForCurrentUser(allNotifications)
 
-            preferenceProvider.saveAsJson(Preference.NOTIFICATIONS, userNotifications)
-        } else {
-            Timber.e("Error getting notifications: ${response.errorBody()}")
+                preferenceProvider.saveAsJson(Preference.NOTIFICATIONS, userNotifications)
+
+                Timber.d("Notifications synced")
+                Timber.d(userNotifications.toString())
+            } else {
+                Timber.e("Error getting notifications: ${response.errorBody()}")
+                Timber.e("Error getting notifications: $response")
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
         }
     }
 

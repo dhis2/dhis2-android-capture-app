@@ -6,7 +6,7 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.matomo.MatomoAnalyticsController
-import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.BasicPreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
@@ -93,7 +93,7 @@ class ProgramModule(private val view: ProgramView, private val notificationsView
     @PerFragment
     internal fun notificationsRepository(
         d2: D2,
-        preferences: PreferenceProvider
+        preferences: BasicPreferenceProvider
     ): NotificationRepository {
         val biometricsConfigApi = d2.retrofit().create(
             NotificationsApi::class.java
