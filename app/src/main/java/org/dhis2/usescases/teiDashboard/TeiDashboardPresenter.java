@@ -28,7 +28,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final PreferenceProvider preferenceProvider;
     private final TeiDashboardContracts.View view;
 
-    private String teiUid;
     public String programUid;
 
     public CompositeDisposable compositeDisposable;
@@ -45,7 +44,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             MatomoAnalyticsController matomoAnalyticsController
     ) {
         this.view = view;
-        this.teiUid = teiUid;
         this.programUid = programUid;
         this.analyticsHelper = analyticsHelper;
         this.dashboardRepository = dashboardRepository;

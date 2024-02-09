@@ -76,14 +76,6 @@
 
         </androidx.core.widget.NestedScrollView>
 
-        <!--<org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
-            android:id="@+id/dialFabLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_extra_bottom_margin="@{52}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
--->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

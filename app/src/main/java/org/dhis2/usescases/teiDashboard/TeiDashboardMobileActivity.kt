@@ -419,7 +419,7 @@ class TeiDashboardMobileActivity :
             }
         }
         val enrollmentStatus =
-            dashboardModel.currentEnrollment != null && dashboardModel.currentEnrollment.status() == EnrollmentStatus.ACTIVE
+            dashboardModel.currentEnrollment.status() == EnrollmentStatus.ACTIVE
         if (intent.getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus) {
             dashboardViewModel.updateEventUid(
                 intent.getStringExtra(Constants.EVENT_UID),
@@ -665,7 +665,9 @@ class TeiDashboardMobileActivity :
             StatusChangeResultCode.FAILED -> displayMessage(getString(R.string.something_wrong))
             StatusChangeResultCode.ACTIVE_EXIST -> displayMessage(getString(R.string.status_change_error_active_exist))
             StatusChangeResultCode.WRITE_PERMISSION_FAIL -> displayMessage(getString(R.string.permission_denied))
-            StatusChangeResultCode.CHANGED -> {}
+            StatusChangeResultCode.CHANGED -> {
+                /*No message needed to be displayed*/
+            }
         }
     }
 

@@ -69,7 +69,8 @@ class DashboardViewModel(
                     _state.value =
                         model.currentEnrollment.aggregatedSyncState()
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Timber.e(e)
             }
         }
     }
@@ -81,7 +82,8 @@ class DashboardViewModel(
             }
             try {
                 _groupByStage.value = result.await()
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Timber.e(e)
             }
         }
     }
