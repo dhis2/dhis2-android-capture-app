@@ -40,9 +40,11 @@ class FormRepositoryIntegrationTest {
     private val conf: EnrollmentConfiguration = mock()
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock {
         on { provideEnrollmentOrgUnitLabel() } doReturn "OrgUnit label"
+        on { provideEnrollmentDataSectionLabel(any()) } doReturn "Enrollment data"
     }
 
     private val program: Program = mock {
+        on { uid() } doReturn "programUid"
         on { description() } doReturn "program description"
         on { enrollmentDateLabel() } doReturn "enrollment date label"
         on { selectEnrollmentDatesInFuture() } doReturn false
