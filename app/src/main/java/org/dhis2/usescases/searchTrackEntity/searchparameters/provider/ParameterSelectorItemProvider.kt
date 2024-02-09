@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParameter
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
@@ -23,8 +24,9 @@ fun provideParameterSelectorItem(
 ): ParameterSelectorItemModel {
     val focusRequester = remember { FocusRequester() }
 
+    val textSelection = TextRange(searchParameter.value?.length ?: 0)
     var value by remember(searchParameter.value) {
-        mutableStateOf(TextFieldValue(searchParameter.value ?: ""))
+        mutableStateOf(TextFieldValue(searchParameter.value ?: "", textSelection))
     }
 
     var status by remember {

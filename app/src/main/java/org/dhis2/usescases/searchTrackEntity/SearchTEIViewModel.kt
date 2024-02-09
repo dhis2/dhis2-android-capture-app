@@ -221,13 +221,33 @@ class SearchTEIViewModel(
             queryData[uid] = value
         }
 
+        updateSearchParameters(uid, value)
         updateSearch()
+    }
+
+    private fun updateSearchParameters(uid: String, value: String?) {
+        val updatedItems = uiState.items.map {
+            if (it.uid == uid) {
+                it.copy(value = value)
+            } else {
+                it
+            }
+        }
+        uiState = uiState.copy(items = updatedItems)
     }
 
     fun clearQueryData() {
         queryData.clear()
+        clearSearchParameters()
         updateSearch()
         performSearch()
+    }
+
+    private fun clearSearchParameters() {
+        val updatedItems = uiState.items.map {
+            it.copy(value = null)
+        }
+        uiState = uiState.copy(items = updatedItems)
     }
 
     private fun updateSearch() {
