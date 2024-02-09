@@ -3,6 +3,8 @@ package org.dhis2.usescases.searchte
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -145,7 +147,7 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
-            .format(context.resources.getQuantityString(R.plurals.enrollment, 1))
+            .format(context.resources.getQuantityString(R.plurals.enrollment, 1).capitalize(Locale.current))
         val totalFilterCount = "2"
         val filterCount = "1"
 
@@ -311,7 +313,7 @@ class SearchTETest : BaseTest() {
         val lastName = "Jones"
         val namePosition = 0
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
-            .format(context.resources.getQuantityString(R.plurals.enrollment, 1))
+            .format(context.resources.getQuantityString(R.plurals.enrollment, 1).capitalize(Locale.current))
         val totalCount = "2"
         val totalFilterCount = "1"
 

@@ -1,6 +1,8 @@
 package org.dhis2.usescases.flow.searchFlow
 
 import android.content.Intent
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
@@ -27,7 +29,7 @@ class SearchFlowTest : BaseTest() {
         setDatePicker()
         val registerTEIDetails = createRegisterTEI()
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
-            .format(context.resources.getQuantityString(R.plurals.enrollment, 1))
+            .format(context.resources.getQuantityString(R.plurals.enrollment, 1).capitalize(Locale.current))
         val filterCounter = "1"
         val filterTotalCount = "2"
         prepareWomanProgrammeIntentAndLaunchActivity(rule)
