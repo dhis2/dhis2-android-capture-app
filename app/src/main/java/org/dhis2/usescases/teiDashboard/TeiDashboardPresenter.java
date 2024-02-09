@@ -36,7 +36,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     public TeiDashboardPresenter(
             TeiDashboardContracts.View view,
-            String teiUid, String programUid,
+            String programUid,
             DashboardRepository dashboardRepository,
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper,
@@ -186,9 +186,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(statusCode -> {
-                            if (statusCode == StatusChangeResultCode.CHANGED) {
-                                view.updateStatus();
-                            } else {
+                            if (statusCode != StatusChangeResultCode.CHANGED) {
                                 view.displayStatusError(statusCode);
                             }
                         }, Timber::e)

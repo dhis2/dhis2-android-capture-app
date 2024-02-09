@@ -194,11 +194,6 @@ class TeiDashboardMobileActivity :
         dashboardViewModel.showStatusErrorMessages.observe(this) {
             displayStatusError(it)
         }
-        dashboardViewModel.updateEnrollment.observe(this) {
-            if (it) {
-                updateStatus()
-            }
-        }
         dashboardViewModel.dashboardModel.observe(this) {
             when (it) {
                 is DashboardEnrollmentModel -> setData(it)
@@ -655,9 +650,6 @@ class TeiDashboardMobileActivity :
 
     override fun showTabsAndEnableSwipe() {
         ViewCompat.setElevation(binding.toolbar, elevation)
-    }
-
-    override fun updateStatus() {
     }
 
     override fun displayStatusError(statusCode: StatusChangeResultCode) {

@@ -26,8 +26,6 @@ public class TeiDashboardContracts {
 
         void showTabsAndEnableSwipe();
 
-        void updateStatus();
-
         void displayStatusError(StatusChangeResultCode statusCode);
     }
 

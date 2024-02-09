@@ -47,7 +47,6 @@ class TeiDashboardPresenterTest {
     fun setup() {
         presenter = TeiDashboardPresenter(
             view,
-            teiUid,
             programUid,
             repository,
             schedulers,
@@ -180,18 +179,6 @@ class TeiDashboardPresenterTest {
         presenter.getEnrollmentStatus("uid")
 
         verify(repository).getEnrollmentStatus(any())
-    }
-
-    @Test
-    fun `Should update the status of the enrollment`() {
-        whenever(
-            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED),
-        ) doReturn Observable.just(StatusChangeResultCode.CHANGED)
-
-        presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
-
-        verify(view).updateStatus()
-        verifyNoMoreInteractions(view)
     }
 
     @Test

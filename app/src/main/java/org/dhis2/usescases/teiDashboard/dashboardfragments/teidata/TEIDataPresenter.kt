@@ -7,6 +7,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -250,12 +251,13 @@ class TEIDataPresenter(
 
         if (hasWriteAccessInProgram) {
             compositeDisposable.add(
-                dashboardRepository.completeEnrollment(enrollmentUid)
+                Completable.fromCallable {
+                    dashboardRepository.completeEnrollment(enrollmentUid).blockingFirst()
+                }
                     .subscribeOn(schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
-                    .map { obj -> obj.status() ?: EnrollmentStatus.ACTIVE }
                     .subscribe(
-                        view.enrollmentCompleted(),
+                        {},
                         Timber.Forest::d,
                     ),
             )

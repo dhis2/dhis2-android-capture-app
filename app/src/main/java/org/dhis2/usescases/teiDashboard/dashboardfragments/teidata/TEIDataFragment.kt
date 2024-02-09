@@ -382,12 +382,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun enrollmentCompleted(): Consumer<EnrollmentStatus> {
-        return Consumer { enrollmentStatus ->
-            if (enrollmentStatus == EnrollmentStatus.COMPLETED) dashboardActivity.updateStatus()
-        }
-    }
-
     override fun viewLifecycleOwner(): LifecycleOwner {
         return this.viewLifecycleOwner
     }

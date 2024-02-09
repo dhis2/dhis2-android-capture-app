@@ -42,7 +42,6 @@ class TeiDashboardModule(
     ): TeiDashboardContracts.Presenter {
         return TeiDashboardPresenter(
             view,
-            teiUid,
             programUid,
             dashboardRepository,
             schedulerProvider,

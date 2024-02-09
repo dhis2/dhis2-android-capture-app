@@ -11,7 +11,6 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 
@@ -22,7 +21,6 @@ class TEIDataContracts {
         fun displayScheduleEvent()
         fun showDialogCloseProgram()
         fun areEventsCompleted(): Consumer<Single<Boolean>>
-        fun enrollmentCompleted(): Consumer<EnrollmentStatus>
         fun switchFollowUp(followUp: Boolean)
         fun displayGenerateEvent(eventUid: String)
         fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String)
