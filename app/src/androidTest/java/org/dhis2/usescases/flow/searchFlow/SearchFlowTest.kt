@@ -27,6 +27,7 @@ class SearchFlowTest : BaseTest() {
         setDatePicker()
         val registerTEIDetails = createRegisterTEI()
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
+            .format(context.resources.getQuantityString(R.plurals.enrollment, 1))
         val filterCounter = "1"
         val filterTotalCount = "2"
         prepareWomanProgrammeIntentAndLaunchActivity(rule)

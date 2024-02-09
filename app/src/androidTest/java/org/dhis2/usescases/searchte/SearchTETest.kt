@@ -145,6 +145,7 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
+            .format(context.resources.getQuantityString(R.plurals.enrollment, 1))
         val totalFilterCount = "2"
         val filterCount = "1"
 
@@ -310,6 +311,7 @@ class SearchTETest : BaseTest() {
         val lastName = "Jones"
         val namePosition = 0
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
+            .format(context.resources.getQuantityString(R.plurals.enrollment, 1))
         val totalCount = "2"
         val totalFilterCount = "1"
 
