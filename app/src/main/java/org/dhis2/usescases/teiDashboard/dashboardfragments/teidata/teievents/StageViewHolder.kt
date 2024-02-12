@@ -87,10 +87,10 @@ internal class StageViewHolder(
             stageSelector.onNext(StageSection(stage.uid(), true))
         }
         val eventCount = "${eventItem.eventCount} " +
-                resourceManager.getEventLabel(
-                    programStageUid = stage.uid(),
-                    quantity = eventItem.eventCount,
-                )
+            resourceManager.getEventLabel(
+                programStageUid = stage.uid(),
+                quantity = eventItem.eventCount,
+            )
         binding.programStageCount.text = eventCount
 
         itemView.setOnClickListener { stageSelector.onNext(StageSection(stage.uid(), false)) }
