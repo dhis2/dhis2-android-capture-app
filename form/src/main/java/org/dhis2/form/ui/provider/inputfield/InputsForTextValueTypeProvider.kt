@@ -20,11 +20,13 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputBarCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 
 @Composable
 internal fun ProvideInputsForValueTypeText(
     modifier: Modifier = Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -35,6 +37,7 @@ internal fun ProvideInputsForValueTypeText(
         UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
             ProvideQRInput(
                 modifier = modifier,
+                inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
@@ -46,6 +49,7 @@ internal fun ProvideInputsForValueTypeText(
         UiRenderType.BAR_CODE -> {
             ProvideBarcodeInput(
                 modifier = modifier,
+                inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
@@ -55,6 +59,7 @@ internal fun ProvideInputsForValueTypeText(
         } else -> {
             ProvideDefaultTextInput(
                 modifier = modifier,
+                inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 focusManager = focusManager,
@@ -67,6 +72,7 @@ internal fun ProvideInputsForValueTypeText(
 @Composable
 private fun ProvideQRInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -85,6 +91,7 @@ private fun ProvideQRInput(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
+        inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
@@ -129,6 +136,7 @@ private fun ProvideQRInput(
 @Composable
 private fun ProvideDefaultTextInput(
     modifier: Modifier,
+    inputStyle: InputStyle = InputStyle.DataInputStyle(),
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -144,6 +152,7 @@ private fun ProvideDefaultTextInput(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
+        inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
@@ -166,6 +175,7 @@ private fun ProvideDefaultTextInput(
 @Composable
 private fun ProvideBarcodeInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -180,6 +190,7 @@ private fun ProvideBarcodeInput(
 
     InputBarCode(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),

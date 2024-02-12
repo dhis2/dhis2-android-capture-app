@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 
 @Composable
@@ -57,6 +58,7 @@ fun provideParameterSelectorItem(
         inputField = {
             FieldProvider(
                 modifier = modifierWithFocus,
+                inputStyle = InputStyle.ParameterInputStyle(),
                 fieldUiModel = fieldUiModel,
                 uiEventHandler = callback::recyclerViewUiEvents,
                 intentHandler = callback::intent,

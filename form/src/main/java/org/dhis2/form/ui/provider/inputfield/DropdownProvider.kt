@@ -12,10 +12,12 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 
 @Composable
 fun ProvideDropdownInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
 ) {
     var selectedItem by remember(fieldUiModel) {
@@ -27,6 +29,7 @@ fun ProvideDropdownInput(
     val dropdownItems = selectableOptions?.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
     InputDropDown(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         selectedItem = DropdownItem(selectedItem.label),

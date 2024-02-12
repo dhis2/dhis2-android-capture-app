@@ -21,6 +21,7 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.TimeTransformation
@@ -28,6 +29,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.TimeTransformatio
 @Composable
 fun ProvideInputDate(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -91,6 +93,7 @@ fun ProvideInputDate(
             }
         },
         modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value.text, fieldUiModel.valueType) },
+        inputStyle = inputStyle,
         state = fieldUiModel.inputState(),
         legendData = fieldUiModel.legend(),
         supportingText = fieldUiModel.supportingText(),
