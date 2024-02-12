@@ -64,6 +64,7 @@ class EventDetailsIntegrationTest {
     private val programStage: ProgramStage = mock {
         on { displayName() } doReturn PROGRAM_STAGE_NAME
         on { executionDateLabel() } doReturn EXECUTION_DATE
+        on { uid() } doReturn PROGRAM_STAGE
     }
     private val catCombo: CategoryCombo = mock {
         on { uid() } doReturn CAT_COMBO_UID
@@ -179,7 +180,7 @@ class EventDetailsIntegrationTest {
         enrollmentStatus = enrollmentStatus,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,
@@ -199,5 +200,6 @@ class EventDetailsIntegrationTest {
         const val COORDINATES = "coordinates"
         const val CAT_COMBO_UID = "CatComboUid"
         const val CAT_OPTION_COMBO_UID = "CategoryOptionComboUid"
+        const val PROGRAM_STAGE = "programStage"
     }
 }
