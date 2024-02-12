@@ -116,6 +116,8 @@ class ManageStockViewModel @Inject constructor(
 
     val tableConfigurationState: StateFlow<TableConfigurationState> = _tableConfigurationState
 
+    private var inputHelperText: String? = null
+
     init {
         configureRelays()
     }
@@ -321,6 +323,7 @@ class ManageStockViewModel @Inject constructor(
             id = cell.id ?: "",
             mainLabel = itemName,
             secondaryLabels = mutableListOf(resources.getString(R.string.quantity)),
+            helperText = inputHelperText,
             currentValue = cell.value,
             keyboardInputType = KeyboardInputType.NumberPassword(),
             error = stockEntry?.errorMessage,
@@ -589,6 +592,10 @@ class ManageStockViewModel @Inject constructor(
 
     fun onBottomSheetClosed() {
         _bottomSheetState.value = false
+    }
+
+    fun setHelperText(text: String?) {
+        inputHelperText = text
     }
 
     private fun refreshTableConfiguration() = TableConfigurationState(

@@ -41,6 +41,7 @@ import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.DrawableId
 import org.dhis2.composetable.ui.INPUT_ERROR_MESSAGE_TEST_TAG
+import org.dhis2.composetable.ui.INPUT_HELPER_TEXT_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_ICON_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
@@ -126,6 +127,7 @@ class TableRobot(
         fakeModelType: FakeModelType,
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
         tableConfiguration: TableConfiguration = TableConfiguration(headerActionsEnabled = true),
+        helperText: String? = null,
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         var fakeModel: List<TableModel> = emptyList()
@@ -152,6 +154,7 @@ class TableRobot(
                                 secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
                                     it.cells[cell.column!! % it.cells.size].value
                                 } ?: emptyList(),
+                                helperText = helperText,
                                 currentValue = cell.value,
                                 keyboardInputType = KeyboardInputType.TextInput(),
                                 error = null
@@ -343,6 +346,12 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_ERROR_MESSAGE_TEST_TAG)
             .assertIsDisplayed()
             .assertTextEquals(expectedErrorMessage)
+    }
+
+    fun assertInputComponentHelperTextIsDisplayed(expectedHelperText: String) {
+        composeTestRule.onNodeWithTag(INPUT_HELPER_TEXT_TEST_TAG)
+            .assertIsDisplayed()
+            .assertTextEquals(expectedHelperText)
     }
 
     fun assertCellWithErrorSetsErrorMessage(
