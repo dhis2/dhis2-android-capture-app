@@ -142,8 +142,9 @@ private fun ProvideDefaultTextInput(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(fieldUiModel.value?.length ?: 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value ?: ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
     InputText(
         modifier = modifier.fillMaxWidth(),

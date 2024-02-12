@@ -127,6 +127,7 @@ fun SearchParametersScreen(
                         )
                     },
                 ) {
+                    focusManager.clearFocus()
                     onClear()
                 }
             }

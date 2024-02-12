@@ -741,29 +741,33 @@ class SearchTEIViewModel(
         }
     }
 
-    fun onParameterIntent(formIntent: FormIntent) {
-        when (formIntent) {
-            is FormIntent.OnTextChange -> {
-                updateQuery(
-                    formIntent.uid,
-                    formIntent.value,
-                )
-            }
-            is FormIntent.OnFocus -> {
-                /*val updatedItems = uiState.items.map {
-                    if (it.uid == formIntent.uid) {
-                        (it as FieldUiModelImpl).copy(focused = true)
-                    } else {
-                        it
-                    }
-                }
-                uiState = uiState.copy(items = updatedItems)*/
-            }
-
-            is FormIntent.ClearValue -> {
-            }
-
-            else -> {}
+    fun onParameterIntent(formIntent: FormIntent) = when (formIntent) {
+        is FormIntent.OnTextChange -> {
+            updateQuery(
+                formIntent.uid,
+                formIntent.value,
+            )
         }
+        is FormIntent.OnFocus -> {
+            val updatedItems = uiState.items.map {
+                if (it.focused && it.uid != formIntent.uid) {
+                    (it as FieldUiModelImpl).copy(focused = false)
+                } else if (it.uid == formIntent.uid) {
+                    (it as FieldUiModelImpl).copy(focused = true)
+                } else {
+                    it
+                }
+            }
+            uiState = uiState.copy(items = updatedItems)
+        }
+
+        is FormIntent.ClearValue -> {
+            updateQuery(
+                formIntent.uid,
+                null,
+            )
+        }
+
+        else -> {}
     }
 }
