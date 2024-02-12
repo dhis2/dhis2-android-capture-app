@@ -126,8 +126,6 @@
     <string name="latitude">خط العرض</string>
     <string name="longitude">خط الطول</string>
     <string name="new_event">حدث جديد</string>
-    <string name="delete_event_error">This event has not been created yet</string>
-
     <string name="one_time">مرة واحدة</string>
     <string name="permanent">دائم</string>
 
