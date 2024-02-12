@@ -91,6 +91,7 @@ class EventInitialTest {
         on { displayName() } doReturn PROGRAM_STAGE_NAME
         on { executionDateLabel() } doReturn EXECUTION_DATE
         on { generatedByEnrollmentDate() } doReturn true
+        on { uid() } doReturn "programStage"
     }
     private val catCombo: CategoryCombo = mock {
         on { uid() } doReturn CAT_COMBO_UID
@@ -154,7 +155,7 @@ class EventInitialTest {
         enrollmentStatus = enrollmentStatus,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,

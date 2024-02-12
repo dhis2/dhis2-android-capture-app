@@ -204,67 +204,6 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage", "eventProgram"})
-    public static void setEventText(TextView view, Event event, Enrollment enrollment, ProgramStage eventProgramStage, Program program) {
-        if (event != null) {
-            EventStatus status = event.status();
-            EnrollmentStatus enrollmentStatus = enrollment.status();
-            if (status == null)
-                status = EventStatus.ACTIVE;
-            if (enrollmentStatus == null)
-                enrollmentStatus = EnrollmentStatus.ACTIVE;
-
-
-            if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-                switch (status) {
-                    case ACTIVE:
-                        Date eventDate = event.eventDate();
-                        if (eventProgramStage.periodType() != null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
-                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true);
-                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
-                            view.setText(view.getContext().getString(R.string.event_expired));
-                        } else {
-                            view.setText(view.getContext().getString(R.string.event_open));
-                        }
-                        break;
-                    case COMPLETED:
-                        if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
-                            view.setText(view.getContext().getString(R.string.event_expired));
-                        } else {
-                            view.setText(view.getContext().getString(R.string.event_completed));
-                        }
-                        break;
-                    case SCHEDULE:
-                        if (DateUtils.getInstance().isEventExpired(
-                                event.dueDate(),
-                                null,
-                                status,
-                                program.completeEventsExpiryDays(),
-                                eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(),
-                                program.expiryDays())) {
-                            view.setText(view.getContext().getString(R.string.event_expired));
-                        } else {
-                            view.setText(view.getContext().getString(R.string.event_schedule));
-                        }
-                        break;
-                    case SKIPPED:
-                        view.setText(view.getContext().getString(R.string.event_skipped));
-                        break;
-                    case OVERDUE:
-                        view.setText(R.string.event_overdue);
-                        break;
-                    default:
-                        view.setText(view.getContext().getString(R.string.read_only));
-                        break;
-                }
-            } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
-                view.setText(view.getContext().getString(R.string.program_completed));
-            } else { //EnrollmentStatus = CANCELLED
-                view.setText(view.getContext().getString(R.string.program_inactive));
-            }
-        }
-    }
-
     @BindingAdapter(value = {"eventColor", "eventProgramStage", "eventProgram"})
     public static void setEventColor(View view, Event event, ProgramStage programStage, Program program) {
         if (event != null) {
@@ -312,33 +251,6 @@ public class Bindings {
             view.setBackground(AppCompatResources.getDrawable(view.getContext(), bgColor));
         }
     }
-
-    @BindingAdapter("eventWithoutRegistrationStatusText")
-    public static void setEventWithoutRegistrationStatusText(TextView textView, ProgramEventViewModel event) {
-        switch (event.eventStatus()) {
-            case ACTIVE:
-                if (event.isExpired()) {
-                    textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                } else {
-                    textView.setText(textView.getContext().getString(R.string.event_open));
-                }
-                break;
-            case COMPLETED:
-                if (event.isExpired()) {
-                    textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                } else {
-                    textView.setText(textView.getContext().getString(R.string.event_completed));
-                }
-                break;
-            case SKIPPED:
-                textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                break;
-            default:
-                textView.setText(textView.getContext().getString(R.string.read_only));
-                break;
-        }
-    }
-
 
 
     @BindingAdapter("stateText")

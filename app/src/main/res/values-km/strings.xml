@@ -90,22 +90,15 @@
     <string name="latitude">រយៈទទឹង</string>
     <string name="longitude">រយៈបណ្តោយ</string>
     <string name="new_event">ព្រឹត្តិការណ៏ថ្មី</string>
-    <string name="failed_insert_event">បរាជ័យក្នុងការបន្ថែមព្រឹត្តិការណ៏ថ្មី</string>
-    <string name="event_created">ព្រឹត្តិការណ៏ត្រូវបានបង្កើត</string>
-    <string name="event_updated">ព្រឹត្តិការណ៏ត្រូវបានធ្វើបច្ចុប្បន្នភាព</string>
     <string name="one_time">មួយពេល</string>
     <string name="permanent">អចិន្ត្រៃយ៍</string>
 
     <!--Event Detail-->
-    <string name="event_date">ថ្ងៃខែឆ្នាំរបស់ព្រឹត្តិការណ៏</string>
     <string name="due_date">កាលបរិច្ឆេទកំណត់</string>
     <string name="cat_combo">ប្រភេទបន្សំចូលគ្នា</string>
     <string name="date_default">ថ្ងៃថ្ងៃ/ខែខែ/ឆ្នាំឆ្នាំឆ្នាំឆ្នាំ</string>
     <string name="cancel">បោះបង់</string>
     <string name="delete">​លុប​</string>
-    <string name="delete_event">លុបចោលព្រឹត្តិការណ៏</string>
-    <string name="confirm_delete_event">តើអ្នកច្បាស់ទេថាចង់លុបចោលព្រឹត្តិការណ៏នេះ?</string>
-    <string name="event_was_deleted">ព្រឹត្តិការណ៏បានលុបជោគជ័យ</string>
     <!--TEI Enrollment list-->
     <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
     <string name="active_programs">កម្មវិធីដំណើរការ</string>
@@ -219,7 +212,6 @@
     <string name="qr_error_id">លេខកូដ QR មិនត្រឹមត្រូវ</string>
     <string name="qr_error_attr">Attribute (លក្ខណៈនេះ) មិនអាចត្រូវបានបន្ថែមទេ</string>
     <string name="qr_error_enrollment">ការចុះឈ្មោះនេះមិនអាចបន្ថែមបានឡើយ</string>
-    <string name="qr_error_event">ព្រឹត្តិការណ៏នេះមិនអាចបន្ថែមបានឡើយ</string>
 
     <string name="jira_report">រាយការណ៏បញ្ហា Jira</string>
     <string name="about">អំពី</string>

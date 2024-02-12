@@ -186,7 +186,7 @@ class EventCapturePresenterImpl(
                     schedulerProvider,
                     { result ->
                         if (result) {
-                            view.showSnackBar(R.string.event_was_deleted)
+                            view.showSnackBar(R.string.event_label_was_deleted, programStage())
                         }
                     },
                     Timber::e,
@@ -200,7 +200,7 @@ class EventCapturePresenterImpl(
             eventCaptureRepository.updateEventStatus(EventStatus.SKIPPED)
                 .defaultSubscribe(
                     schedulerProvider,
-                    { view.showSnackBar(R.string.event_was_skipped) },
+                    { view.showSnackBar(R.string.event_label_was_skipped, programStage()) },
                     Timber::e,
                     view::finishDataEntry,
                 ),
@@ -268,4 +268,6 @@ class EventCapturePresenterImpl(
 
     private val eventStatus: EventStatus
         get() = eventCaptureRepository.eventStatus().blockingFirst()
+
+    override fun programStage(): String = eventCaptureRepository.programStage().blockingFirst()
 }

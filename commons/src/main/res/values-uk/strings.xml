@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Випадок</string>
     <string name="no_data">Немає даних</string>
     <string name="feature_configuration">Конфігурація функції</string>
     <string name="change_calendar_view">Змінити вид календаря</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Аналітика</string>
     <string name="navigation_tasks">Завдання</string>
     <string name="navigation_programs">Програми</string>
-    <string name="navigation_events">Випадки</string>
     <string name="navigation_relationships">Зв\'язки</string>
     <string name="navigation_notes">Примітки</string>
     <string name="navigation_data_entry">Введення даних</string>

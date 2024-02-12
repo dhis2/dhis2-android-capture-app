@@ -118,9 +118,6 @@
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="new_event">Novo evento</string>
-    <string name="failed_insert_event">Falha ao inserir novo Evento</string>
-    <string name="event_created">Evento criado</string>
-    <string name="event_updated">Evento atualizado</string>
     <string name="one_time">Um tempo</string>
     <string name="permanent">Permanente</string>
 
@@ -133,15 +130,11 @@
     <string name="datavalue_saved">O valor é salvo!</string>
     <string name="there_is_no_available_period">Não há períodos disponíveis para seleção.</string>
     <!--Event Detail-->
-    <string name="event_date">Data de incidente</string>
     <string name="due_date">Data de vencimento</string>
     <string name="cat_combo">Combinação de categoria</string>
     <string name="date_default">DD/MM/AAAA</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Apagar</string>
-    <string name="delete_event">Suprimir evento</string>
-    <string name="confirm_delete_event">Tem certeza de que deseja excluir este evento?</string>
-    <string name="event_was_deleted">Evento excluído com sucesso</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Data do evento mais recente</string>
 
@@ -246,7 +239,6 @@
     <string name="missing_mandatory_fields_text_not_delete">Alguns campos obrigatórios estão ausentes. Se você quiser voltar, por favor preencha-os. </string>
     <string name="title_delete_go_back">Seus dados não são salvos</string>
     <string name="delete_go_back">Se você voltar agora, todas as informações inseridas serão excluídas.</string>
-    <string name="missing_mandatory_fields_events_2.0">Alguns campos obrigatórios estão ausentes:/n%s/nVocê pode voltar agora, mas este evento não poderá ser concluído.</string>
     <string name="missing_mandatory_fields_go_back">Suprimir e voltar</string>
     <string name="error_fields">Alguns campos têm erros:/n%s/nPor favor, verifique-os.</string>
     <string name="missing_mandatory_fields_finish">Alguns campos obrigatórios estão ausentes. Você pode concluir a entrada e saída de dados, mas o evento não pode ser concluído.</string>
@@ -307,7 +299,6 @@
     <string name="qr_error_id">Código QR inválido</string>
     <string name="qr_error_attr">Este atributo não pode ser adicionado</string>
     <string name="qr_error_enrollment">Esta inscrição não pode ser adicionada</string>
-    <string name="qr_error_event">Este evento não pode ser adicionado</string>
 
     <string name="jira_report">Relatar problema de Jira</string>
     <string name="about">Acerca</string>
@@ -451,17 +442,14 @@
     <string name="finish">Terminar</string>
     <string name="error_fields_title">Campos com erros</string>
     <string name="error_fields_events">Alguns campos possuem erros. Eles não foram salvos. Por favor, verifique-os.</string>
-    <string name="event_reopened">Este evento agora pode ser editado</string>
     <string name="unique_warning">O valor deve ser único, uma coincidência foi encontrada. Não foi salvo. Por favor verifique isto.</string>
     <string name="unique_coincidence_found">Foi encontrada uma coincidência em um campo único. Verifique o formulário para salvar a Inscrição.</string>
     <string name="please_wait">Por favor aguarde...</string>
     <string name="skip">Saltar</string>
     <string name="reschedule">Reprogramar</string>
-    <string name="event_was_skipped">O evento foi marcado como ignorado</string>
     <string name="no_intructions">Não há informações para esta tela</string>
     <string name="event_overdue">Atrasado</string>
     <string name="unsupported_program_rule">There is one program rule which is not supported. Por favor verifique a documentação</string>
-    <string name="delete_event_error">Este evento ainda não foi criado</string>
     <string name="empty_description">Nenhuma informação para este campo</string>
     <string name="biometrics_dialog_title">Credenciais Vazias</string>
     <string name="biometrics_first_use_text">Para poder fazer login usando o scanner de impressão digital você precisa primeiro usar a maneira padrão</string>
@@ -514,7 +502,6 @@
     <string name="formatting_error">Erro de formatação</string>
     <string name="delete_authority_error">Você não tem autoridade para suprimir este registro</string>
     <string name="validation_url">Este url não é válido</string>
-    <string name="uncomplete_authority_error">Você não tem autoridade para reabrir este evento</string>
     <string name="adjusting_form">Ajustando formulário...</string>
 
     <string name="sms_receiver_number">Número do receptor</string>
@@ -615,7 +602,6 @@
     <string name="disable_pin_locked">Não mostrar novamente a tela de bloqueio</string>
     <string name="set_pin">Definir pino</string>
     <string name="conflict">Conflito</string>
-    <string name="event_date_in_future_message">Este evento não pode ter uma data no futuro. Por favor mude.</string>
     <string name="change_event_date">Mudar data</string>
     <string name="go_back">Voltar</string>
     <string name="data_sets">Agregação de Dados</string>

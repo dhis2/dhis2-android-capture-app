@@ -34,7 +34,6 @@
     <!--DataSet initial-->
     <string name="report_period">معیاد گزارش</string>
     <!--Event Detail-->
-    <string name="event_date">تاریخ واقعه</string>
     <string name="due_date">موعد مقرر</string>
     <string name="cancel">انصراف</string>
     <string name="delete">حذف</string>

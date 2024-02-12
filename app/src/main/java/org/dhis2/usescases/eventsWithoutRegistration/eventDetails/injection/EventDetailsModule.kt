@@ -61,7 +61,7 @@ class EventDetailsModule(
     fun provideEventDetailResourceProvider(
         resourceManager: ResourceManager,
     ): EventDetailResourcesProvider {
-        return EventDetailResourcesProvider(programUid, resourceManager)
+        return EventDetailResourcesProvider(programUid, programStageUid, resourceManager)
     }
 
     @Provides

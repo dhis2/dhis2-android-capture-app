@@ -22,6 +22,7 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.ui.ErrorFieldList
@@ -58,7 +59,7 @@ class EventCaptureActivity :
     EventCaptureContract.View,
     MapButtonObservable,
     EventDetailsComponentProvider {
-    private var binding: ActivityEventCaptureBinding? = null
+    private lateinit var binding: ActivityEventCaptureBinding
 
     @JvmField
     @Inject
@@ -73,6 +74,9 @@ class EventCaptureActivity :
     var themeManager: ThemeManager? = null
     private var isEventCompleted = false
     private var eventMode: EventMode? = null
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     @JvmField
     var eventCaptureComponent: EventCaptureComponent? = null
@@ -119,6 +123,7 @@ class EventCaptureActivity :
             this,
             intent.getStringExtra(Constants.PROGRAM_UID),
             intent.getStringExtra(Constants.EVENT_UID),
+            presenter?.programStage(),
             pageConfigurator!!.displayAnalytics(),
             pageConfigurator!!.displayRelationships(),
             intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
@@ -297,9 +302,16 @@ class EventCaptureActivity :
         }
     }
 
-    override fun showSnackBar(messageId: Int) {
+    override fun showSnackBar(messageId: Int, programStage: String) {
         val mySnackbar =
-            Snackbar.make(binding!!.root, messageId, BaseTransientBottomBar.LENGTH_SHORT)
+            Snackbar.make(
+                binding.root,
+                resourceManager.formatWithEventLabel(
+                    messageId,
+                    programStage,
+                ),
+                BaseTransientBottomBar.LENGTH_SHORT,
+            )
         mySnackbar.show()
     }
 
@@ -369,30 +381,43 @@ class EventCaptureActivity :
     }
 
     private fun confirmDeleteEvent() {
-        CustomDialog(
-            this,
-            getString(R.string.delete_event),
-            getString(R.string.confirm_delete_event),
-            getString(R.string.delete),
-            getString(R.string.cancel),
-            0,
-            object : DialogClickListener {
-                override fun onPositive() {
-                    analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT)
-                    presenter!!.deleteEvent()
-                }
+        presenter?.programStage().let {
+            CustomDialog(
+                this,
+                resourceManager.formatWithEventLabel(
+                    R.string.delete_event_label,
+                    programStageUid = it,
+                ),
+                resourceManager.formatWithEventLabel(
+                    R.string.confirm_delete_event_label,
+                    programStageUid = it,
+                ),
+                getString(R.string.delete),
+                getString(R.string.cancel),
+                0,
+                object : DialogClickListener {
+                    override fun onPositive() {
+                        analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT)
+                        presenter!!.deleteEvent()
+                    }
 
-                override fun onNegative() {
-                    // dismiss
-                }
-            },
-        ).show()
+                    override fun onNegative() {
+                        // dismiss
+                    }
+                },
+            ).show()
+        }
     }
 
     override fun showEventIntegrityAlert() {
         MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
             .setTitle(R.string.conflict)
-            .setMessage(R.string.event_date_in_future_message)
+            .setMessage(
+                resourceManager.formatWithEventLabel(
+                    R.string.event_label_date_in_future_message,
+                    programStageUid = presenter?.programStage(),
+                ),
+            )
             .setPositiveButton(
                 R.string.change_event_date,
             ) { _, _ -> binding!!.navigationBar.selectItemAt(0) }

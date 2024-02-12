@@ -126,9 +126,8 @@
     <string name="latitude">خط العرض</string>
     <string name="longitude">خط الطول</string>
     <string name="new_event">حدث جديد</string>
-    <string name="failed_insert_event">فشل إدراج حدث جديد</string>
-    <string name="event_created">تم إنشاء الحدث</string>
-    <string name="event_updated">تم تحديث الحدث</string>
+    <string name="delete_event_error">This event has not been created yet</string>
+
     <string name="one_time">مرة واحدة</string>
     <string name="permanent">دائم</string>
 
@@ -141,15 +140,11 @@
     <string name="datavalue_saved">تم حفظ القيمة!</string>
     <string name="there_is_no_available_period">لا توجد فترات متاحة للاختيار.</string>
     <!--Event Detail-->
-    <string name="event_date">تاريخ الحدث</string>
     <string name="due_date">تاريخ الاستحقاق</string>
     <string name="cat_combo">تجميع فئة</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">إلغاء</string>
     <string name="delete">حذف</string>
-    <string name="delete_event">حذف الحدث</string>
-    <string name="confirm_delete_event">هل أنت متأكد أنك تريد حذف هذا الحدث؟</string>
-    <string name="event_was_deleted">تم حذف الحدث بنجاح</string>
     <string name="total">الإجمالي</string>
     <string name="most_recent_event_date">تاريخ أحدث حدث</string>
 
@@ -258,7 +253,6 @@
     <string name="missing_mandatory_fields_events">تحتاج بعض الحقول إلى إطلاعك.\n هل تريد مراجعة النموذج؟</string>
     <string name="title_delete_go_back">لم يتم حفظ بياناتك</string>
     <string name="delete_go_back">إذا رجعت الآن سيتم حذف جميع المعلومات التي تم إدخالها.</string>
-    <string name="missing_mandatory_fields_events_2.0">بعض الحقول الإلزامية مفقودة:\n%s\n يمكنك الرجوع الآن ، ولكن لن تتمكن من إكمال هذا الحدث.</string>
     <string name="missing_mandatory_fields_go_back">الحذف والرجوع للخلف</string>
     <string name="error_fields">تحتوي بعض الحقول على أخطاء:\n%s\n يرجى التحقق منها.</string>
     <string name="missing_mandatory_fields_finish">بعض الحقول الإلزامية مفقودة. يمكنك إنهاء إدخال البيانات والخروج، لكن لا يمكن تعيين الحدث كمكتمل.</string>
@@ -319,7 +313,6 @@
     <string name="qr_error_id">رمز QR غير صالح</string>
     <string name="qr_error_attr">هذه السمة لايمكن إضافتها</string>
     <string name="qr_error_enrollment">هذا التسجيل لايمكن إضافته</string>
-    <string name="qr_error_event">هذا الحدث لا يمكن إضافته</string>
 
     <string name="jira_report">ابلاغ مشكلة إلى Jira</string>
     <string name="about">حول التطبيق</string>
@@ -466,17 +459,14 @@
     <string name="finish">إنهاء</string>
     <string name="error_fields_title">الحقول التي بها أخطاء</string>
     <string name="error_fields_events">تحتوي بعض الحقول على أخطاء. لم يتم حفظها. يرجى التحقق منها.</string>
-    <string name="event_reopened">بالإمكان الآن تعديل هذا الحدث</string>
     <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التحقق.</string>
     <string name="unique_coincidence_found">وجد تعارض في حقل ذو قيمة فريدة. لحفظ التسجيل، يرجي التحقق من النموذج.</string>
     <string name="please_wait">الرجاء الانتظار</string>
     <string name="skip">تخطى</string>
     <string name="reschedule">اعادة جدولة</string>
-    <string name="event_was_skipped">تم وضع علامة على الحدث بأنه تم تخطيه</string>
     <string name="no_intructions">لا توجد معلومات عن هذه الشاشة</string>
     <string name="event_overdue">متأخر</string>
     <string name="unsupported_program_rule">هناك قاعدة برنامج واحدة غير معتمدة. يرجى زيارة التوثيق للتحقق</string>
-    <string name="delete_event_error">لم يتم إنشاء هذا الحدث بعد</string>
     <string name="empty_description">لا توجد معلومات عن هذا الحقل</string>
     <string name="biometrics_dialog_title">إعتمادات فارغة</string>
     <string name="biometrics_first_use_text">لتتمكن من تسجيل الدخول باستخدام ماسح بصمة الإصبع، تحتاج أولاً إلى تسجيل الدخول بإستخدام الطريقة الافتراضية</string>
@@ -532,7 +522,6 @@
     <string name="dashboard_menu_delete_tei_v2">حذف %s</string>
     <string name="delete_authority_error">ليس لديك الصلاحية لحذف هذا السجل</string>
     <string name="validation_url">هذا ليس عنوان url صالحاً</string>
-    <string name="uncomplete_authority_error">ليس لديك الصلاحية لإعادة فتح هذا الحدث</string>
     <string name="adjusting_form">تسوية وضبط النموذج</string>
 
     <string name="sms_receiver_number">رقم المستلم</string>
@@ -633,7 +622,6 @@
     <string name="disable_pin_locked">لا تظهر قفل الشاشة مرة أخرى</string>
     <string name="set_pin">تعيين رمز</string>
     <string name="conflict">تعارض</string>
-    <string name="event_date_in_future_message">لا يمكن أن يكون لهذا الحدث تاريخ في المستقبل. يرجى تغيير التاريخ.</string>
     <string name="change_event_date">غير التاريخ</string>
     <string name="go_back">رجوع</string>
     <string name="data_sets">حزم البيانات</string>

@@ -40,7 +40,7 @@ public class EventCaptureContract {
 
         void SaveAndFinish();
 
-        void showSnackBar(int messageId);
+        void showSnackBar(int messageId, String programStage);
 
         void attemptToSkip();
 
@@ -100,6 +100,8 @@ public class EventCaptureContract {
         boolean getCompletionPercentageVisibility();
 
         void emitAction(@NotNull EventCaptureAction onBack);
+
+        String programStage();
     }
 
     public interface EventCaptureRepository {

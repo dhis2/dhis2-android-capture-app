@@ -29,6 +29,7 @@ import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
@@ -59,6 +60,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Inject
     EventInitialPresenter presenter;
+
+    @Inject
+    ResourceManager resourceManager;
 
     private ActivityEventInitialBinding binding;
 
@@ -239,14 +243,22 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
         } else {
 
-            activityTitle = eventUid == null ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
+            activityTitle = eventUid == null ?
+                    program.displayName() + " - " +
+                    resourceManager.formatWithEventLabel(R.string.new_event_label, programStageUid, 1, false)
+                    : program.displayName();
         }
         binding.setName(activityTitle);
     }
 
     @Override
     public void onEventCreated(String eventUid) {
-        showToast(getString(R.string.event_created));
+        showToast(
+                resourceManager.formatWithEventLabel(
+                        R.string.event_label_created,
+                        programStageUid,
+                1, false
+        ));
         if (eventCreationType != EventCreationType.SCHEDULE && eventCreationType != EventCreationType.REFERAL) {
             startFormActivity(eventUid, true);
         } else {
@@ -340,8 +352,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void confirmDeleteEvent() {
         new CustomDialog(
                 this,
-                getString(R.string.delete_event),
-                getString(R.string.confirm_delete_event),
+                resourceManager.formatWithEventLabel(
+                        R.string.delete_event_label,
+                        programStageUid,
+                        1, false),
+                resourceManager.formatWithEventLabel(
+                        R.string.confirm_delete_event_label,
+                        programStageUid,
+                        1, false),
                 getString(R.string.delete),
                 getString(R.string.cancel),
                 0,
@@ -362,8 +380,21 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showEventWasDeleted() {
-        showToast(getString(R.string.event_was_deleted));
+        showToast(resourceManager.formatWithEventLabel(
+                R.string.event_label_was_deleted,
+                programStageUid,
+                1, false
+        ));
         finish();
+    }
+
+    @Override
+    public void showDeleteEventError() {
+        showToast(resourceManager.formatWithEventLabel(
+                R.string.delete_event_label_error,
+                programStageUid,
+                1, false
+        ));
     }
 
     @Nullable
