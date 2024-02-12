@@ -21,6 +21,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -31,6 +32,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.ui.ThemeManager
@@ -302,7 +304,19 @@ class TeiDashboardMobileActivity :
                             finish()
                         }
                     }
-                }).show(TEI_SYNC)
+                })
+                .onNoConnectionListener(
+                    object : OnNoConnectionListener {
+                        override fun onNoConnection() {
+                            val contextView = findViewById<View>(R.id.navigationBar)
+                            Snackbar.make(
+                                contextView,
+                                R.string.sync_offline_check_connection,
+                                Snackbar.LENGTH_SHORT,
+                            ).show()
+                        }
+                    },
+                ).show(TEI_SYNC)
         }
     }
 

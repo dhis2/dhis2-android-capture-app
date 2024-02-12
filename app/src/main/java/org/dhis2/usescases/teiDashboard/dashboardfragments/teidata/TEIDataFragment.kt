@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
@@ -40,6 +41,7 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ObjectStyleUtils.getIconResource
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -619,7 +621,19 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            }).show(enrollmentUid)
+            })
+            .onNoConnectionListener(
+                object : OnNoConnectionListener {
+                    override fun onNoConnection() {
+                        val contextView = activity?.findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView!!,
+                            R.string.sync_offline_check_connection,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
+                    }
+                },
+            ).show(enrollmentUid)
     }
 
     override fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>) {

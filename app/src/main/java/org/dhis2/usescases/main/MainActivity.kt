@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -30,6 +31,7 @@ import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.ui.dialogs.alert.AlertDialog
@@ -301,6 +303,18 @@ class MainActivity :
                         if (hasChanged) {
                             mainNavigator.getCurrentIfProgram()?.presenter?.updateProgramQueries()
                         }
+                    }
+                },
+            )
+            .onNoConnectionListener(
+                object : OnNoConnectionListener {
+                    override fun onNoConnection() {
+                        val contextView = findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView,
+                            R.string.sync_offline_check_connection,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
                     }
                 },
             )

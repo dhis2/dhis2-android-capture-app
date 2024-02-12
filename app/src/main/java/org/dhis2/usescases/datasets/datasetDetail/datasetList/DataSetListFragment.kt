@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentDataSetListBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -132,7 +134,20 @@ class DataSetListFragment : FragmentGlobalAbstract() {
                         viewModel.updateData()
                     }
                 }
-            }).show(FRAGMENT_TAG)
+            })
+            .onNoConnectionListener(
+                object : OnNoConnectionListener {
+                    override fun onNoConnection() {
+                        val contextView = activity.findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView,
+                            R.string.sync_offline_check_connection,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
+                    }
+                },
+            )
+            .show(FRAGMENT_TAG)
     }
 
     companion object {

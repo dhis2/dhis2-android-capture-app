@@ -38,6 +38,7 @@ import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.matomo.Labels.Companion.CLICK
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDatasetTableBinding
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailFragment.Companion.create
@@ -172,6 +173,18 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                     if (hasChanged) presenter.updateData()
                 }
             })
+            .onNoConnectionListener(
+                object : OnNoConnectionListener {
+                    override fun onNoConnection() {
+                        val contextView = findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView,
+                            R.string.sync_offline_check_connection,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
+                    }
+                },
+            )
             .show(DATAVALUE_SYNC)
     }
 

@@ -16,6 +16,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
@@ -27,6 +28,7 @@ import org.dhis2.bindings.dp
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -220,7 +222,20 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                         }
                     }
                 },
-            ).show(FRAGMENT_TAG)
+            )
+            .onNoConnectionListener(
+                object : OnNoConnectionListener {
+                    override fun onNoConnection() {
+                        val contextView = activity?.findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView!!,
+                            R.string.sync_offline_check_connection,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
+                    }
+                },
+            )
+            .show(FRAGMENT_TAG)
     }
 
     fun sharedView() = binding.drawerLayout
