@@ -24,6 +24,8 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
+import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
@@ -214,7 +216,7 @@ class SearchTEIViewModel(
         performSearch()
     }
 
-    fun updateQuery(uid: String, value: String?) {
+    private fun updateQuery(uid: String, value: String?) {
         if (value.isNullOrEmpty()) {
             queryData.remove(uid)
         } else {
@@ -228,7 +230,7 @@ class SearchTEIViewModel(
     private fun updateSearchParameters(uid: String, value: String?) {
         val updatedItems = uiState.items.map {
             if (it.uid == uid) {
-                it.copy(value = value)
+                (it as FieldUiModelImpl).copy(value = value)
             } else {
                 it
             }
@@ -245,7 +247,7 @@ class SearchTEIViewModel(
 
     private fun clearSearchParameters() {
         val updatedItems = uiState.items.map {
-            it.copy(value = null)
+            (it as FieldUiModelImpl).copy(value = null)
         }
         uiState = uiState.copy(items = updatedItems)
     }
@@ -733,9 +735,35 @@ class SearchTEIViewModel(
     ) {
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
-            val searchParameters =
+            val fieldUiModels =
                 searchParametersRepository.searchParameters(programUid, teiTypeUid)
-            uiState = uiState.copy(items = searchParameters)
+            uiState = uiState.copy(items = fieldUiModels)
+        }
+    }
+
+    fun onParameterIntent(formIntent: FormIntent) {
+        when (formIntent) {
+            is FormIntent.OnTextChange -> {
+                updateQuery(
+                    formIntent.uid,
+                    formIntent.value,
+                )
+            }
+            is FormIntent.OnFocus -> {
+                /*val updatedItems = uiState.items.map {
+                    if (it.uid == formIntent.uid) {
+                        (it as FieldUiModelImpl).copy(focused = true)
+                    } else {
+                        it
+                    }
+                }
+                uiState = uiState.copy(items = updatedItems)*/
+            }
+
+            is FormIntent.ClearValue -> {
+            }
+
+            else -> {}
         }
     }
 }

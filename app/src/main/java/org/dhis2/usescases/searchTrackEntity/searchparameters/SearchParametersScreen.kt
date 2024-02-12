@@ -15,20 +15,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
-import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParameter
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.searchparameters.provider.provideParameterSelectorItem
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelectorItem
@@ -37,14 +41,27 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
 fun SearchParametersScreen(
+    resourceManager: ResourceManager,
     uiState: SearchParametersUiState,
-    onValueChange: (uid: String, value: String?) -> Unit,
+    intentHandler: (FormIntent) -> Unit,
     onSearchClick: () -> Unit,
     onClear: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
     val snackBarHostState = scaffoldState.snackbarHostState
     val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val callback = remember {
+        object : FieldUiModel.Callback {
+            override fun intent(intent: FormIntent) {
+                intentHandler.invoke(intent)
+            }
+
+            override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
+//                uiEventHandler(uiEvent)
+            }
+        }
+    }
 
     uiState.minAttributesMessage?.let { message ->
         coroutineScope.launch {
@@ -85,11 +102,14 @@ fun SearchParametersScreen(
                     .weight(1F)
                     .verticalScroll(rememberScrollState()),
             ) {
-                uiState.items.forEach { searchParameter ->
+                uiState.items.forEach { fieldUiModel ->
+                    fieldUiModel.setCallback(callback)
                     ParameterSelectorItem(
                         model = provideParameterSelectorItem(
-                            searchParameter = searchParameter,
-                            onValueChange = onValueChange,
+                            resources = resourceManager,
+                            focusManager = focusManager,
+                            fieldUiModel = fieldUiModel,
+                            callback = callback,
                         ),
                     )
                 }
@@ -127,7 +147,7 @@ fun SearchParametersScreen(
 @Preview(showBackground = true)
 @Composable
 fun SearchFormPreview() {
-    SearchParametersScreen(
+    /*SearchParametersScreen(
         uiState = SearchParametersUiState(
             items = listOf(
                 SearchParameter(
@@ -145,7 +165,7 @@ fun SearchFormPreview() {
         onValueChange = { _, _ -> },
         onSearchClick = {},
         onClear = {},
-    )
+    )*/
 }
 
 fun initSearchScreen(
@@ -153,6 +173,7 @@ fun initSearchScreen(
     viewModel: SearchTEIViewModel,
     program: String?,
     teiType: String,
+    resources: ResourceManager,
     onClear: () -> Unit,
 ) {
     viewModel.fetchSearchParameters(
@@ -161,9 +182,10 @@ fun initSearchScreen(
     )
     composeView.setContent {
         SearchParametersScreen(
+            resourceManager = resources,
             uiState = viewModel.uiState,
-            onValueChange = viewModel::updateQuery,
             onSearchClick = viewModel::onSearchClick,
+            intentHandler = viewModel::onParameterIntent,
             onClear = {
                 onClear()
                 viewModel.clearQueryData()

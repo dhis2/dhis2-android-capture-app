@@ -55,7 +55,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun FieldProvider(
+fun FieldProvider(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,

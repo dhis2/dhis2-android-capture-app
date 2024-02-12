@@ -2,8 +2,9 @@ package org.dhis2.usescases.searchTrackEntity.searchparameters
 
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
-import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParameter
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ValueType
@@ -11,17 +12,17 @@ import org.hisp.dhis.android.core.common.ValueType
 class SearchParametersRepository(
     private val d2: D2,
     private val dispatcher: DispatcherProvider,
-
+    private val fieldViewModelFactory: FieldViewModelFactory,
 ) {
 
-    suspend fun searchParameters(programUid: String?, teiTypeUid: String): List<SearchParameter> =
+    suspend fun searchParameters(programUid: String?, teiTypeUid: String): List<FieldUiModel> =
         withContext(dispatcher.io()) {
             programUid?.let {
                 programTrackedEntityAttributes(programUid)
             } ?: trackedEntitySearchFields(teiTypeUid)
         }
 
-    private fun programTrackedEntityAttributes(programUid: String): List<SearchParameter> {
+    private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
         val searchableAttributes = d2.programModule().programTrackedEntityAttributes()
             .withRenderType()
             .byProgram().eq(programUid)
@@ -50,17 +51,12 @@ class SearchParametersRepository(
                                 .blockingGet()
                         }
                     }
-                    /*fieldViewModelFactory.createForAttribute(
-                        attribute,
-                        programAttribute,
-                        currentSearchValues[attribute.uid()],
-                        true,
-                        optionSetConfiguration,
-                    )*/
-                    SearchParameter(
-                        uid = attribute.uid(),
-                        label = attribute.displayFormName() ?: "",
-                        valueType = attribute.valueType()!!,
+                    fieldViewModelFactory.createForAttribute(
+                        trackedEntityAttribute = attribute,
+                        programTrackedEntityAttribute = programAttribute,
+                        value = null,
+                        editable = true,
+                        optionSetConfiguration = optionSetConfiguration,
                     )
                 }
         }.filter { parameter ->
@@ -70,7 +66,7 @@ class SearchParametersRepository(
         }
     }
 
-    private fun trackedEntitySearchFields(teiTypeUid: String): List<SearchParameter> {
+    private fun trackedEntitySearchFields(teiTypeUid: String): List<FieldUiModel> {
         val teTypeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
             .byTrackedEntityTypeUid().eq(teiTypeUid)
             .bySearchable().isTrue
@@ -94,17 +90,12 @@ class SearchParametersRepository(
                         }
                     }
 
-                    /*fieldViewModelFactory.createForAttribute(
-                        attribute,
-                        null,
-                        currentSearchValues[attribute.uid()],
-                        true,
-                        optionSetConfiguration,
-                    )*/
-                    SearchParameter(
-                        attribute.uid(),
-                        attribute.displayFormName() ?: "",
-                        attribute.valueType()!!,
+                    fieldViewModelFactory.createForAttribute(
+                        trackedEntityAttribute = attribute,
+                        programTrackedEntityAttribute = null,
+                        value = null,
+                        editable = true,
+                        optionSetConfiguration = optionSetConfiguration,
                     )
                 }
         }.filter { parameter ->

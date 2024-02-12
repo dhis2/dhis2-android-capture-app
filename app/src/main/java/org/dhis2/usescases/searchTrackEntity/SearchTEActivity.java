@@ -31,6 +31,7 @@ import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
@@ -86,6 +87,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Inject
     FeatureConfigRepository featureConfig;
+
+    @Inject
+    ResourceManager resourceManager;
 
     private static final String INITIAL_PAGE = "initialPage";
 
@@ -343,7 +347,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void initSearchParameters() {
-        initSearchScreen(binding.searchContainer, viewModel, initialProgram, tEType,
+        initSearchScreen(
+                binding.searchContainer,
+                viewModel,
+                initialProgram,
+                tEType,
+                resourceManager,
                 () -> {
                     presenter.onClearClick();
                     return Unit.INSTANCE;

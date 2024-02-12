@@ -297,9 +297,10 @@ public class SearchTEModule {
     @PerActivity
     SearchParametersRepository provideSearchParametersRepository(
             D2 d2,
-            DispatcherProvider dispatcherProvider
+            DispatcherProvider dispatcherProvider,
+            FieldViewModelFactory fieldViewModelFactory
     ) {
-        return new SearchParametersRepository(d2, dispatcherProvider);
+        return new SearchParametersRepository(d2, dispatcherProvider, fieldViewModelFactory);
     }
 
     @Provides
