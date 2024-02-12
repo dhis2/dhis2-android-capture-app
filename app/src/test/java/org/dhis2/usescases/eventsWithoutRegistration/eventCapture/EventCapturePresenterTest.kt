@@ -138,7 +138,6 @@ class EventCapturePresenterTest {
     @Test
     fun `Should close form if it could not delete an event`() {
         whenever(eventRepository.deleteEvent()) doReturn Observable.just(false)
-        whenever(eventRepository.programStage()) doReturn Observable.just("programStage")
 
         presenter.deleteEvent()
         verify(view).finishDataEntry()
@@ -149,6 +148,7 @@ class EventCapturePresenterTest {
     fun `Should skip an event`() {
         val status = EventStatus.SKIPPED
         whenever(eventRepository.updateEventStatus(status)) doReturn Observable.just(true)
+        whenever(eventRepository.programStage()) doReturn Observable.just("programStage")
 
         presenter.skipEvent()
         verify(view).showSnackBar(any(), any())
