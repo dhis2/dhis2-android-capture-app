@@ -50,6 +50,7 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.getFileFrom
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
+import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
@@ -1004,18 +1005,32 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        event.field.displayName?.let { filePath ->
-            val file = File(filePath)
-            val fileUri = FileProvider.getUriForFile(
-                requireContext(),
-                FormFileProvider.fileProviderAuthority,
-                file,
-            )
-            startActivity(
-                Intent(Intent.ACTION_VIEW)
-                    .setDataAndType(fileUri, "*/*")
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-            )
+        activity?.activityResultRegistry?.let {
+            event.field.displayName?.let { filePath ->
+                val file = File(filePath)
+
+                FileHandler(it).copyAndOpen(
+                    file,
+                    { isGranted ->
+                        isGranted.observe(viewLifecycleOwner) {
+                        }
+                    },
+                    { file ->
+                        file.observe(viewLifecycleOwner) {
+                            val uri = FileProvider.getUriForFile(
+                                requireContext(),
+                                FormFileProvider.fileProviderAuthority,
+                                it,
+                            )
+                            startActivity(
+                                Intent(Intent.ACTION_VIEW)
+                                    .setDataAndType(uri, requireContext().contentResolver.getType(uri))
+                                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                            )
+                        }
+                    },
+                )
+            }
         }
     }
 
