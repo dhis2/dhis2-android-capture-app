@@ -36,6 +36,7 @@ import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
+import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
@@ -274,9 +275,9 @@ public class SearchTEModule {
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2,
-            FilterRepository filterRepository,
             SearchParametersRepository searchParametersRepository,
-            ResourceManager resourceManager
+            ResourceManager resourceManager,
+            DisplayNameProvider displayNameProvider
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -289,7 +290,18 @@ public class SearchTEModule {
                 new SearchDispatchers(),
                 new MapStyleConfiguration(d2),
                 searchParametersRepository,
-                resourceManager
+                resourceManager,
+                displayNameProvider
+        );
+    }
+
+    @Provides
+    @PerActivity
+    DisplayNameProvider provideDisplayNameProvider(D2 d2) {
+        return new DisplayNameProviderImpl(
+                new OptionSetConfiguration(d2),
+                new OrgUnitConfiguration(d2),
+                new FileResourceConfiguration(d2)
         );
     }
 

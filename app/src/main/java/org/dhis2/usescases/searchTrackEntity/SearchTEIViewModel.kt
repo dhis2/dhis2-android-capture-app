@@ -26,6 +26,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
@@ -50,6 +51,7 @@ class SearchTEIViewModel(
     private val mapStyleConfig: MapStyleConfiguration,
     private val searchParametersRepository: SearchParametersRepository,
     private val resourceManager: ResourceManager,
+    private val displayNameProvider: DisplayNameProvider,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -230,7 +232,14 @@ class SearchTEIViewModel(
     private fun updateSearchParameters(uid: String, value: String?) {
         val updatedItems = uiState.items.map {
             if (it.uid == uid) {
-                (it as FieldUiModelImpl).copy(value = value)
+                (it as FieldUiModelImpl).copy(
+                    value = value,
+                    displayName = displayNameProvider.provideDisplayName(
+                        valueType = it.valueType,
+                        value = value,
+                        optionSet = it.optionSet,
+                    ),
+                )
             } else {
                 it
             }
@@ -247,7 +256,7 @@ class SearchTEIViewModel(
 
     private fun clearSearchParameters() {
         val updatedItems = uiState.items.map {
-            (it as FieldUiModelImpl).copy(value = null)
+            (it as FieldUiModelImpl).copy(value = null, displayName = null)
         }
         uiState = uiState.copy(items = updatedItems)
     }
@@ -748,6 +757,14 @@ class SearchTEIViewModel(
                 formIntent.value,
             )
         }
+
+        is FormIntent.OnSave -> {
+            updateQuery(
+                formIntent.uid,
+                formIntent.value,
+            )
+        }
+
         is FormIntent.OnFocus -> {
             val updatedItems = uiState.items.map {
                 if (it.focused && it.uid != formIntent.uid) {

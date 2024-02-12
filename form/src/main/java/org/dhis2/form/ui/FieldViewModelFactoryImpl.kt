@@ -124,8 +124,7 @@ class FieldViewModelFactoryImpl(
             allowFutureDates = programTrackedEntityAttribute?.allowFutureDate() ?: true,
             editable = editable,
             renderingType = SectionRenderingType.LISTING,
-            description = programTrackedEntityAttribute?.displayDescription()
-                ?: trackedEntityAttribute.displayDescription(),
+            description = null,
             fieldRendering = programTrackedEntityAttribute?.renderType()?.mobile(),
             objectStyle = trackedEntityAttribute.style() ?: ObjectStyle.builder().build(),
             fieldMask = trackedEntityAttribute.fieldMask(),
