@@ -62,7 +62,7 @@ class SyncFlowTest : BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, 0)
             typeAttributeAtPosition(teiLastName, 1)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             clickOnTEI(teiName, teiLastName)
         }
 

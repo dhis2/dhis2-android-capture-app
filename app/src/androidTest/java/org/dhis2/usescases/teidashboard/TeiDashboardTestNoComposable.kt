@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -17,6 +18,9 @@ class TeiDashboardTestNoComposable : BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Ignore
     @Test
@@ -49,7 +53,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition(relationshipName, 0)
             typeAttributeAtPosition(relationshipLastName, 1)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             waitToDebounce(5000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
@@ -73,7 +77,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, firstNamePosition)
             typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             clickOnTEI(teiName, teiLastName)
             //scrollToTEIandClick()
         }
@@ -102,7 +106,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, firstNamePosition)
             typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             //     waitToDebounce(400)
             clickOnTEI(teiName, teiLastName)
         }

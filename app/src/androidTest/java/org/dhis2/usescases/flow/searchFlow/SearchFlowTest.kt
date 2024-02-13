@@ -3,6 +3,7 @@ package org.dhis2.usescases.flow.searchFlow
 import android.content.Intent
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
@@ -21,6 +22,9 @@ class SearchFlowTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     private val dateRegistration = createFirstSpecificDate()
     private val dateEnrollment = createEnrollmentDate()
 
@@ -35,7 +39,7 @@ class SearchFlowTest : BaseTest() {
         prepareWomanProgrammeIntentAndLaunchActivity(rule)
 
         teiFlowRobot {
-            registerTEI(registerTEIDetails)
+            registerTEI(registerTEIDetails, composeTestRule)
             pressBack()
         }
 

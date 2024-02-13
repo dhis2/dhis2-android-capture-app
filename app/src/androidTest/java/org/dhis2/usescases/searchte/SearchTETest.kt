@@ -68,7 +68,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot {
             clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             checkListOfSearchTEI(firstName, orgUnit)
         }
     }
@@ -83,7 +83,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot {
             clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             checkNoSearchResult()
         }
     }
@@ -101,7 +101,7 @@ class SearchTETest : BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
             typeAttributeAtPosition(lastName, lastNamePosition)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             checkListOfSearchTEI(firstName, lastName)
         }
     }
@@ -136,7 +136,7 @@ class SearchTETest : BaseTest() {
             clickOnDateField()
             selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
             acceptDate()
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             checkFieldsFromDisplayList(
                 composeTestRule,
                 displayInListData,
@@ -179,7 +179,7 @@ class SearchTETest : BaseTest() {
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         teiFlowRobot {
-            registerTEI(registerTeiDetails)
+            registerTEI(registerTeiDetails, composeTestRule)
             changeDueDate(overdueDate, programStage, orgUnit, composeTestRule)
             pressBack()
             composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
@@ -286,7 +286,7 @@ class SearchTETest : BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, firstNamePosition)
             typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -322,7 +322,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot {
             clickOnOpenSearch()
             typeAttributeAtPosition(name, namePosition)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
         }
 
         filterRobot {

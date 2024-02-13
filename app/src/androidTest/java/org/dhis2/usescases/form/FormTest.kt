@@ -11,7 +11,6 @@ import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
 import org.junit.Ignore
 import org.junit.Rule
@@ -244,7 +243,7 @@ class FormTest : BaseTest() {
         searchTeiRobot {
             clickOnOpenSearch()
             typeAttributeAtPosition("optionGroup", 1)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             clickOnEnroll()
             orgUnitSelectorRobot(composeTestRule) {
                 selectTreeOrgUnit("Ngelehun CHC")
@@ -288,7 +287,7 @@ class FormTest : BaseTest() {
         searchTeiRobot {
             clickOnOpenSearch()
             typeAttributeAtPosition("abc", 1)
-            clickOnSearch()
+            clickOnSearch(composeTestRule)
             clickOnEnroll()
             orgUnitSelectorRobot(composeTestRule) {
                 selectTreeOrgUnit("Ngelehun CHC")

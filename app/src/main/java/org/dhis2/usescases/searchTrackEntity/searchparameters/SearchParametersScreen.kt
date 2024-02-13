@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.collectLatest
@@ -154,7 +155,8 @@ fun SearchParametersScreen(
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 8.dp, 16.dp, 8.dp),
+                    .padding(16.dp, 8.dp, 16.dp, 8.dp)
+                    .testTag("SEARCH_BUTTON"),
                 style = ButtonStyle.FILLED,
                 text = "Search",
             ) {

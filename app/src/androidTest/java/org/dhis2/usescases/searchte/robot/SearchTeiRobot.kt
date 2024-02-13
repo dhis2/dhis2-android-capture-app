@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.recyclerview.widget.RecyclerView
@@ -130,9 +131,9 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.acceptBtn)).perform(click())
     }
 
-    fun clickOnSearch() {
+    fun clickOnSearch(composeTestRule: ComposeContentTestRule) {
         closeKeyboard()
-        onView(withId(R.id.searchButton)).perform(click())
+        composeTestRule.onNodeWithTag("SEARCH_BUTTON").performClick()
     }
 
     fun checkListOfSearchTEI(firstSearchWord: String, secondSearchWord: String) {
