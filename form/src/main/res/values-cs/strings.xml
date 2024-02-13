@@ -46,7 +46,6 @@
     <string name="enter_long_text">Zadejte dlouhý text</string>
     <string name="enter_text">Zadejte text</string>
     <string name="due_date">Datum vypršení</string>
-    <string name="event_date">Datum události</string>
     <string name="mandatory_field">Povinné pole</string>
     <string name="form_latitude_prefix">Šířka:</string>
     <string name="form_longitude_prefix">Délka:</string>

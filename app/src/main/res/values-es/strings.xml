@@ -725,7 +725,6 @@
     <string name="navigation_analytics">Analíticas</string>
     <string name="navigation_tasks">Tareas</string>
     <string name="navigation_programs">Programas</string>
-    <string name="navigation_events">Eventos</string>
     <string name="navigation_relationships">Relaciones</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>

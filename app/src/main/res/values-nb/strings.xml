@@ -708,7 +708,6 @@
     <string name="navigation_analytics">Analyser</string>
     <string name="navigation_tasks">Oppgaver</string>
     <string name="navigation_programs">Programmer</string>
-    <string name="navigation_events">Hendelser</string>
     <string name="navigation_relationships">Relasjoner</string>
     <string name="navigation_notes">Notater</string>
     <string name="navigation_data_entry">Dataregistrering</string>

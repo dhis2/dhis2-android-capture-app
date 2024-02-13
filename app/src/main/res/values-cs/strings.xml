@@ -727,7 +727,6 @@
     <string name="navigation_analytics">Analýza</string>
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
-    <string name="navigation_events">Události</string>
     <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>

@@ -46,7 +46,6 @@
     <string name="enter_long_text">输入长文本</string>
     <string name="enter_text">输入文本</string>
     <string name="due_date">到期日期</string>
-    <string name="event_date">事件日期</string>
     <string name="mandatory_field">强制字段</string>
     <string name="form_latitude_prefix">纬度：</string>
     <string name="form_longitude_prefix">经度：</string>

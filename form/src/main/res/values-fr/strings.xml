@@ -45,7 +45,6 @@
     <string name="enter_long_text">Saisir texte long</string>
     <string name="enter_text">Saisir du texte</string>
     <string name="due_date">Date d\'échéance</string>
-    <string name="event_date">Date d\'événement</string>
     <string name="mandatory_field">Champ obligatoire</string>
     <string name="not_saved">Non enregistré!</string>
     <string name="review">Vérifier</string>

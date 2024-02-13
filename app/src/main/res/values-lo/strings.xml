@@ -666,7 +666,6 @@
     <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
     <string name="navigation_analytics">ການວິເຄາະ</string>
     <string name="navigation_programs">ສາຍງານ</string>
-    <string name="navigation_events">ເຫດການ</string>
     <string name="navigation_relationships">ສາຍພົວພັນ</string>
     <string name="navigation_notes">ຂໍ້ຄວາມ</string>
     <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>

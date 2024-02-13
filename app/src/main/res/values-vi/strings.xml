@@ -719,7 +719,6 @@
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Các nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
-    <string name="navigation_events">Sự kiện</string>
     <string name="navigation_relationships">Quan hệ với bệnh nhân</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
