@@ -63,8 +63,8 @@ class SearchParametersRepository(
                 }
         }.filter { parameter ->
             parameter.valueType !== ValueType.IMAGE &&
-                    parameter.valueType !== ValueType.COORDINATE &&
-                    parameter.valueType !== ValueType.FILE_RESOURCE
+                parameter.valueType !== ValueType.COORDINATE &&
+                parameter.valueType !== ValueType.FILE_RESOURCE
         }
     }
 
@@ -100,8 +100,8 @@ class SearchParametersRepository(
                 }
         }.filter { parameter ->
             parameter.valueType !== ValueType.IMAGE &&
-                    parameter.valueType !== ValueType.COORDINATE &&
-                    parameter.valueType !== ValueType.FILE_RESOURCE
+                parameter.valueType !== ValueType.COORDINATE &&
+                parameter.valueType !== ValueType.FILE_RESOURCE
         }
     }
 

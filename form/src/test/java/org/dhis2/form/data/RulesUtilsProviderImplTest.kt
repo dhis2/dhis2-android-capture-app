@@ -80,7 +80,6 @@ class RulesUtilsProviderImplTest {
     fun setUp() {
         ruleUtils = RulesUtilsProviderImpl(d2, optionsRepository)
         fieldFactory = FieldViewModelFactoryImpl(
-            false,
             uiStyleProvider,
             layoutProvider,
             hintProvider,
