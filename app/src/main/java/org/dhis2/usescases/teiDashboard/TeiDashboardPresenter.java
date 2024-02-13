@@ -1,10 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
-import static androidx.core.content.ContextCompat.getString;
-
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.R;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -26,13 +23,11 @@ import timber.log.Timber;
 
 import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
 import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
-import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
 import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.commons.matomo.Categories.DASHBOARD;
-import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
@@ -136,6 +131,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public Boolean checkIfTEICanBeDeleted() {
+        return dashboardRepository.checkIfDeleteTeiIsPossible();
+    }
+
+    @Override
+    public Boolean checkIfEnrollmentCanBeDeleted(String enrollmentUid) {
+        return dashboardRepository.checkIfDeleteEnrollmentIsPossible(enrollmentUid);
+    }
+
+    @Override
     public void onEnrollmentSelectorClick() {
         view.goToEnrollmentList();
     }
@@ -150,7 +155,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void deleteTei() {
         compositeDisposable.add(
-                dashboardRepository.deleteTeiIfPossible()
+                dashboardRepository.deleteTei()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -170,7 +175,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void deleteEnrollment() {
         compositeDisposable.add(
-                dashboardRepository.deleteEnrollmentIfPossible(
+                dashboardRepository.deleteEnrollment(
                         dashboardProgramModel.getCurrentEnrollment().uid()
                 )
                         .subscribeOn(schedulerProvider.io())

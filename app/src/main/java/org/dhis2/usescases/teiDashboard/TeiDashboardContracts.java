@@ -74,5 +74,9 @@ public class TeiDashboardContracts {
         void trackDashboardRelationships();
 
         void trackDashboardNotes();
+
+        Boolean checkIfTEICanBeDeleted();
+
+        Boolean checkIfEnrollmentCanBeDeleted(String enrollmentUid);
     }
 }

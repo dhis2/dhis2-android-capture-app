@@ -33,6 +33,7 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.ui.ThemeManager
+import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -133,6 +134,7 @@ class TeiDashboardMobileActivity :
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE)
@@ -563,8 +565,18 @@ class TeiDashboardMobileActivity :
             .menu(this, menu)
             .onMenuInflated { popupMenu: PopupMenu ->
                 val deleteTeiItem = popupMenu.menu.findItem(R.id.deleteTei)
-                deleteTeiItem.title =
-                    String.format(deleteTeiItem.title.toString(), presenter.teType)
+                val showDeleteTeiItem = presenter.checkIfTEICanBeDeleted()
+                if (showDeleteTeiItem) {
+                    deleteTeiItem.isVisible = true
+                    deleteTeiItem.title =
+                        String.format(deleteTeiItem.title.toString(), presenter.teType)
+                } else {
+                    deleteTeiItem.isVisible = false
+                }
+
+                val deleteEnrollmentItem = popupMenu.menu.findItem(R.id.deleteEnrollment)
+                deleteEnrollmentItem.isVisible = presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
+
                 if (enrollmentUid != null) {
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
                     if (status == EnrollmentStatus.COMPLETED) {
@@ -586,9 +598,10 @@ class TeiDashboardMobileActivity :
                         analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         showTutorial(true)
                     }
+
                     R.id.markForFollowUp -> dashboardViewModel.onFollowUp(programModel)
-                    R.id.deleteTei -> presenter.deleteTei()
-                    R.id.deleteEnrollment -> presenter.deleteEnrollment()
+                    R.id.deleteTei -> showDeleteTEIConfirmationDialog()
+                    R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()
                     R.id.programSelector -> presenter.onEnrollmentSelectorClick()
                     R.id.groupEvents -> groupByStage?.setValue(true)
                     R.id.showTimeline -> groupByStage?.setValue(false)
@@ -652,6 +665,35 @@ class TeiDashboardMobileActivity :
             StatusChangeResultCode.WRITE_PERMISSION_FAIL -> displayMessage(getString(R.string.permission_denied))
             StatusChangeResultCode.CHANGED -> {}
         }
+    }
+
+    private fun showDeleteTEIConfirmationDialog() {
+        DeleteBottomSheetDialog(
+            title = getString(R.string.delete_tei_dialog_title).format(presenter.teType),
+            description = getString(R.string.delete_tei_dialog_message).format(presenter.teType),
+            mainButtonText = getString(R.string.delete),
+            deleteForever = true,
+            onMainButtonClick = {
+                presenter.deleteTei()
+            },
+        ).show(
+            supportFragmentManager,
+            DeleteBottomSheetDialog.TAG,
+        )
+    }
+
+    private fun showRemoveEnrollmentConfirmationDialog() {
+        DeleteBottomSheetDialog(
+            title = getString(R.string.remove_enrollment_dialog_title).format(programModel.currentProgram.displayName()),
+            description = getString(R.string.remove_enrollment_dialog_message).format(programModel.currentProgram.displayName()),
+            mainButtonText = getString(R.string.remove),
+            onMainButtonClick = {
+                presenter.deleteEnrollment()
+            },
+        ).show(
+            supportFragmentManager,
+            DeleteBottomSheetDialog.TAG,
+        )
     }
 
     override fun onRelationshipMapLoaded() {
