@@ -36,6 +36,8 @@ import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
+import org.dhis2.form.ui.event.RecyclerViewUiEvents;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
@@ -47,6 +49,7 @@ import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.io.Serializable;
@@ -353,6 +356,31 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 initialProgram,
                 tEType,
                 resourceManager,
+                (uid, preselectedOrgUnits, orgUnitScope) -> {
+                        new OUTreeFragment.Builder()
+                                .showAsDialog()
+                                .withPreselectedOrgUnits(preselectedOrgUnits)
+                                .singleSelection()
+                                .onSelection(selectedOrgUnits -> {
+                                    String selecteOrgUnit = null;
+                                    if(!selectedOrgUnits.isEmpty()) {
+                                        selecteOrgUnit = selectedOrgUnits.get(0).uid();
+                                    }
+                                    viewModel.onParameterIntent(
+                                            new FormIntent.OnSave(
+                                                    uid,
+                                                    selecteOrgUnit,
+                                                    ValueType.ORGANISATION_UNIT,
+                                                    null
+                                            )
+                                    );
+                                    return Unit.INSTANCE;
+                                })
+                                .orgUnitScope(orgUnitScope)
+                                .build()
+                                .show(getSupportFragmentManager(), "OUTreeFragment");
+                    return Unit.INSTANCE;
+                },
                 () -> {
                     presenter.onClearClick();
                     return Unit.INSTANCE;
