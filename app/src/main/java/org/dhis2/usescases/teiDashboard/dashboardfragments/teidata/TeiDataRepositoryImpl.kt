@@ -159,14 +159,12 @@ class TeiDataRepositoryImpl(
                         .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet()
 
-                    val isSelected = programStage.uid() == selectedStage.stageUid
-
                     val canAddEventToEnrollment = enrollmentUid?.let {
                         programStage.access()?.data()?.write() == true &&
-                            d2.eventModule().eventService().blockingCanAddEventToEnrollment(
-                                it,
-                                programStage.uid(),
-                            )
+                                d2.eventModule().eventService().blockingCanAddEventToEnrollment(
+                                    it,
+                                    programStage.uid(),
+                                )
                     } ?: false
 
                     eventViewModels.add(
@@ -176,7 +174,7 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            selectedStage.showOptions && isSelected,
+                            selectedStage.showOptions,
                             canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
@@ -186,40 +184,38 @@ class TeiDataRepositoryImpl(
                             nameCategoryOptionCombo = null,
                         ),
                     )
-                    if (isSelected) {
-                        checkEventStatus(eventList).forEachIndexed { index, event ->
-                            val showTopShadow = index == 0
-                            val showBottomShadow = index == eventList.size - 1
-                            eventViewModels.add(
-                                EventViewModel(
-                                    EventViewModelType.EVENT,
-                                    programStage,
-                                    event,
-                                    0,
-                                    null,
-                                    isSelected = true,
-                                    canAddNewEvent = true,
-                                    orgUnitName = d2.organisationUnitModule().organisationUnits()
-                                        .uid(event.organisationUnit()).blockingGet()?.displayName()
-                                        ?: "",
-                                    catComboName = getCatOptionComboName(event.attributeOptionCombo()),
-                                    dataElementValues = getEventValues(
-                                        event.uid(),
-                                        programStage.uid(),
-                                    ),
-                                    groupedByStage = true,
-                                    showTopShadow = showTopShadow,
-                                    showBottomShadow = showBottomShadow,
-                                    displayDate = periodUtils.getPeriodUIString(
-                                        programStage.periodType() ?: PeriodType.Daily,
-                                        event.eventDate() ?: event.dueDate()!!,
-                                        Locale.getDefault(),
-                                    ),
-                                    nameCategoryOptionCombo =
-                                    getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                    checkEventStatus(eventList).forEachIndexed { index, event ->
+                        val showTopShadow = index == 0
+                        val showBottomShadow = index == eventList.size - 1
+                        eventViewModels.add(
+                            EventViewModel(
+                                EventViewModelType.EVENT,
+                                programStage,
+                                event,
+                                0,
+                                null,
+                                isSelected = true,
+                                canAddNewEvent = true,
+                                orgUnitName = d2.organisationUnitModule().organisationUnits()
+                                    .uid(event.organisationUnit()).blockingGet()?.displayName()
+                                    ?: "",
+                                catComboName = getCatOptionComboName(event.attributeOptionCombo()),
+                                dataElementValues = getEventValues(
+                                    event.uid(),
+                                    programStage.uid(),
                                 ),
-                            )
-                        }
+                                groupedByStage = true,
+                                showTopShadow = showTopShadow,
+                                showBottomShadow = showBottomShadow,
+                                displayDate = periodUtils.getPeriodUIString(
+                                    programStage.periodType() ?: PeriodType.Daily,
+                                    event.eventDate() ?: event.dueDate()!!,
+                                    Locale.getDefault(),
+                                ),
+                                nameCategoryOptionCombo =
+                                getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                            ),
+                        )
                     }
                 }
                 eventViewModels

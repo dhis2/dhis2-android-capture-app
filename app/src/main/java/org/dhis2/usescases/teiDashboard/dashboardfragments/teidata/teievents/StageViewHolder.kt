@@ -8,7 +8,6 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
-import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -64,18 +63,13 @@ internal class StageViewHolder(
             false,
         )
 
-        binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
-
         binding.addStageButton.visibility =
             if (eventItem.canShowAddButton()) {
                 View.VISIBLE
             } else {
                 View.GONE
             }
-        binding.lastUpdatedEvent.visibility = when (binding.addStageButton.visibility) {
-            View.VISIBLE -> View.GONE
-            else -> View.VISIBLE
-        }
+
         binding.addStageButton.setContent {
             MdcTheme {
                 NewEventOptions(presenter.getNewEventOptionsByStages(stage)) {
@@ -86,14 +80,13 @@ internal class StageViewHolder(
         binding.addStageButton.setOnClickListener {
             stageSelector.onNext(StageSection(stage.uid(), true))
         }
-        val eventCount = "${eventItem.eventCount} " +
-            resourceManager.getEventLabel(
-                programStageUid = stage.uid(),
-                quantity = eventItem.eventCount,
-            )
-        binding.programStageCount.text = eventCount
 
-        itemView.setOnClickListener { stageSelector.onNext(StageSection(stage.uid(), false)) }
+        binding.programNoStageText.visibility =
+            if (eventItem.eventCount < 1) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
 
         if (eventItem.isSelected) {
             eventItem.isSelected = false

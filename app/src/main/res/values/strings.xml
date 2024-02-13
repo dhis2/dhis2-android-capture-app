@@ -167,6 +167,7 @@
     <string name="program_not_allow_events">This program does not allow more events</string>
 
     <!--DONE TASKS-->
+    <string name="events_no_data">No data</string>
     <string name="events">events</string>
     <string name="done_task">Home</string>
     <string name="app_info">App Info</string>
