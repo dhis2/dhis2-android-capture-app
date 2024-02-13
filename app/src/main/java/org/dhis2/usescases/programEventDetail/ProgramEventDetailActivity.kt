@@ -28,7 +28,6 @@ import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
-import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
 import org.dhis2.ui.ThemeManager
@@ -198,18 +197,14 @@ class ProgramEventDetailActivity :
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
             })
-            .onNoConnectionListener(
-                object : OnNoConnectionListener {
-                    override fun onNoConnection() {
-                        val contextView = findViewById<View>(R.id.navigationBar)
-                        Snackbar.make(
-                            contextView,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT,
-                        ).show()
-                    }
-                },
-            )
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
             .show("EVENT_SYNC")
     }
 
@@ -392,18 +387,14 @@ class ProgramEventDetailActivity :
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
             })
-            .onNoConnectionListener(
-                object : OnNoConnectionListener {
-                    override fun onNoConnection() {
-                        val contextView = findViewById<View>(R.id.rootView)
-                        Snackbar.make(
-                            contextView,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT,
-                        ).show()
-                    }
-                },
-            )
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.rootView)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
             .show(FRAGMENT_TAG)
     }
 

@@ -22,7 +22,6 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.popupmenu.AppMenuHelper
-import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.ui.ErrorFieldList
@@ -445,18 +444,14 @@ class EventCaptureActivity :
         SyncStatusDialog.Builder()
             .withContext(this)
             .withSyncContext(SyncContext.Event(eventUid!!))
-            .onNoConnectionListener(
-                object : OnNoConnectionListener {
-                    override fun onNoConnection() {
-                        val contextView = findViewById<View>(R.id.navigationBar)
-                        Snackbar.make(
-                            contextView,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT,
-                        ).show()
-                    }
-                },
-            )
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
             .show("EVENT_SYNC")
     }
 

@@ -41,7 +41,6 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ObjectStyleUtils.getIconResource
 import org.dhis2.commons.sync.OnDismissListener
-import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -622,18 +621,14 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
             })
-            .onNoConnectionListener(
-                object : OnNoConnectionListener {
-                    override fun onNoConnection() {
-                        val contextView = activity?.findViewById<View>(R.id.navigationBar)
-                        Snackbar.make(
-                            contextView!!,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT,
-                        ).show()
-                    }
-                },
-            ).show(enrollmentUid)
+            .onNoConnectionListener {
+                val contextView = activity?.findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView!!,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }.show(enrollmentUid)
     }
 
     override fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>) {

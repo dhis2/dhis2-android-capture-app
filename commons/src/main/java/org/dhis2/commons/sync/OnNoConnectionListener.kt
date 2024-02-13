@@ -1,5 +1,5 @@
 package org.dhis2.commons.sync
 
-interface OnNoConnectionListener {
+fun interface OnNoConnectionListener {
     fun onNoConnection()
 }

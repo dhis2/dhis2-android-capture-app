@@ -28,7 +28,6 @@ import org.dhis2.bindings.dp
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
-import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -223,18 +222,14 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                     }
                 },
             )
-            .onNoConnectionListener(
-                object : OnNoConnectionListener {
-                    override fun onNoConnection() {
-                        val contextView = activity?.findViewById<View>(R.id.navigationBar)
-                        Snackbar.make(
-                            contextView!!,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT,
-                        ).show()
-                    }
-                },
-            )
+            .onNoConnectionListener {
+                val contextView = activity?.findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView!!,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
             .show(FRAGMENT_TAG)
     }
 

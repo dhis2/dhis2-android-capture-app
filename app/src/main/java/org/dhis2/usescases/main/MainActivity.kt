@@ -31,7 +31,6 @@ import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.sync.OnDismissListener
-import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.ui.dialogs.alert.AlertDialog
@@ -306,18 +305,14 @@ class MainActivity :
                     }
                 },
             )
-            .onNoConnectionListener(
-                object : OnNoConnectionListener {
-                    override fun onNoConnection() {
-                        val contextView = findViewById<View>(R.id.navigationBar)
-                        Snackbar.make(
-                            contextView,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT,
-                        ).show()
-                    }
-                },
-            )
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
             .show("ALL_SYNC")
     }
 
