@@ -3,6 +3,7 @@ package org.dhis2.commons.dialogs.imagedetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
@@ -33,6 +34,8 @@ class ImageDetailActivity : AppCompatActivity() {
         }
     }
 
+    private val fileHandler = FileHandler()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val title = intent.getStringExtra(ARG_IMAGE_TITLE)
@@ -48,27 +51,17 @@ class ImageDetailActivity : AppCompatActivity() {
                 title = title.orEmpty(),
                 onDismiss = { finish() },
                 onDownloadButtonClick = {
-                    FileHandler(activityResultRegistry).copyAndOpen(
+                    fileHandler.copyAndOpen(
                         File(imagePath),
-                        { isGranted ->
-                            isGranted.observe(this) {
-                            }
-                        },
-                        { file ->
-                            file.observe(this) {
-                                val uri = FileProvider.getUriForFile(
-                                    this,
-                                    FormFileProvider.fileProviderAuthority,
-                                    it,
-                                )
-                                startActivity(
-                                    Intent(Intent.ACTION_VIEW)
-                                        .setDataAndType(uri, contentResolver.getType(uri))
-                                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                                )
-                            }
-                        },
-                    )
+                    ) { file ->
+                        file.observe(this) {
+                            Toast.makeText(
+                                this,
+                                getString(R.string.file_downladed),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                    }
                 },
                 onShareButtonClick = { shareImage(imagePath) },
             )

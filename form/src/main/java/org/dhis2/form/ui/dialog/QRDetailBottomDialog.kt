@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Icon
@@ -68,6 +69,8 @@ QRDetailBottomDialog(
     }
 
     private var showBottomSheet: Boolean = true
+    private val fileHandler = FileHandler()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
@@ -210,32 +213,19 @@ QRDetailBottomDialog(
                 enabled = true,
                 text = resources.getString(R.string.download),
                 onClick = {
-                    viewModel.qrBitmap.value?.onSuccess {
-                        FileHandler(requireActivity().activityResultRegistry).saveBitmap(
-                            it,
+                    viewModel.qrBitmap.value?.onSuccess { bitmap ->
+                        fileHandler.saveBitmapAndOpen(
+                            bitmap,
                             "$label.png",
-                            { isGranted ->
-                                isGranted.observe(viewLifecycleOwner) {
-                                }
-                            },
-                            { file ->
-                                file.observe(viewLifecycleOwner) {
-                                    val uri = FileProvider.getUriForFile(
-                                        requireContext(),
-                                        FormFileProvider.fileProviderAuthority,
-                                        it,
-                                    )
-                                    startActivity(
-                                        Intent(Intent.ACTION_VIEW)
-                                            .setDataAndType(
-                                                uri,
-                                                requireContext().contentResolver.getType(uri),
-                                            )
-                                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                                    )
-                                }
-                            },
-                        )
+                        ) { file ->
+                            file.observe(viewLifecycleOwner) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.file_downladed),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            }
+                        }
                     }
                 },
             ),

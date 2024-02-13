@@ -325,6 +325,8 @@ class FormView : Fragment() {
         Manifest.permission.READ_MEDIA_VIDEO,
     )
 
+    private val fileHandler = FileHandler()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -1007,29 +1009,15 @@ class FormView : Fragment() {
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
         activity?.activityResultRegistry?.let {
             event.field.displayName?.let { filePath ->
-                val file = File(filePath)
-
-                FileHandler(it).copyAndOpen(
-                    file,
-                    { isGranted ->
-                        isGranted.observe(viewLifecycleOwner) {
-                        }
-                    },
-                    { file ->
-                        file.observe(viewLifecycleOwner) {
-                            val uri = FileProvider.getUriForFile(
-                                requireContext(),
-                                FormFileProvider.fileProviderAuthority,
-                                it,
-                            )
-                            startActivity(
-                                Intent(Intent.ACTION_VIEW)
-                                    .setDataAndType(uri, requireContext().contentResolver.getType(uri))
-                                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                            )
-                        }
-                    },
-                )
+                fileHandler.copyAndOpen(File(filePath)) { file ->
+                    file.observe(viewLifecycleOwner) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.file_downladed),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
             }
         }
     }
