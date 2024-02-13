@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -25,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
@@ -43,6 +46,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
 import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -114,6 +119,7 @@ fun Form(
                     state = section.state,
                     errorCount = section.errorCount(),
                     warningCount = section.warningCount(),
+                    warningMessage = resources.getString(R.string.form_without_fields),
                     onNextSection = onNextSection,
                     onSectionClick = {
                         intentHandler.invoke(FormIntent.OnSection(section.uid))
@@ -144,42 +150,18 @@ fun Form(
                                     },
                                 )
                             }
-                        } else {
-                            Column(
-                                modifier = Modifier
-                                    .height(120.dp),
-                            ) {
-                                InfoBar(
-                                    infoBarData = InfoBarData(
-                                        text = resources.getString(R.string.form_without_fields),
-                                        icon = {
-                                            Icon(
-                                                imageVector = Icons.Outlined.ErrorOutline,
-                                                contentDescription = "no fields",
-                                                tint = SurfaceColor.Warning,
-                                            )
-                                        },
-                                        color = SurfaceColor.Warning,
-                                        backgroundColor = SurfaceColor.WarningContainer,
-                                        actionText = null,
-                                        onClick = null,
-                                    ),
-                                    modifier = Modifier
-                                        .background(SurfaceColor.WarningContainer),
-                                )
-                            }
                         }
                     },
                 )
             }
             item(sections.size - 1) {
-                Spacer(modifier = Modifier.height(120.dp))
+                Spacer(modifier = Modifier.height(Spacing.Spacing120))
             }
         }
     } else {
         Column(
             modifier = Modifier
-                .height(120.dp),
+                .padding(Spacing.Spacing16),
         ) {
             InfoBar(
                 infoBarData = InfoBarData(
@@ -197,6 +179,7 @@ fun Form(
                     onClick = null,
                 ),
                 modifier = Modifier
+                    .clip(shape = RoundedCornerShape(Radius.Full))
                     .background(SurfaceColor.WarningContainer),
             )
         }
