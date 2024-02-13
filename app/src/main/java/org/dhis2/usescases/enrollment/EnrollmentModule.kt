@@ -117,10 +117,9 @@ class EnrollmentModule(
         colorUtils: ColorUtils,
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
-            false,
             UiStyleProviderImpl(
-                FormUiModelColorFactoryImpl(activityContext, true, colorUtils),
-                LongTextUiColorFactoryImpl(activityContext, true, colorUtils),
+                FormUiModelColorFactoryImpl(activityContext, colorUtils),
+                LongTextUiColorFactoryImpl(activityContext, colorUtils),
                 true,
             ),
             LayoutProviderImpl(),

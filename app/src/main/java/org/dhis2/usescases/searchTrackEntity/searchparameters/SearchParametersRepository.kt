@@ -7,7 +7,11 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
+import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 
 class SearchParametersRepository(
     private val d2: D2,
@@ -51,18 +55,16 @@ class SearchParametersRepository(
                                 .blockingGet()
                         }
                     }
-                    fieldViewModelFactory.createForAttribute(
+                    createField(
                         trackedEntityAttribute = attribute,
                         programTrackedEntityAttribute = programAttribute,
-                        value = null,
-                        editable = true,
                         optionSetConfiguration = optionSetConfiguration,
                     )
                 }
         }.filter { parameter ->
             parameter.valueType !== ValueType.IMAGE &&
-                parameter.valueType !== ValueType.COORDINATE &&
-                parameter.valueType !== ValueType.FILE_RESOURCE
+                    parameter.valueType !== ValueType.COORDINATE &&
+                    parameter.valueType !== ValueType.FILE_RESOURCE
         }
     }
 
@@ -90,18 +92,41 @@ class SearchParametersRepository(
                         }
                     }
 
-                    fieldViewModelFactory.createForAttribute(
+                    createField(
                         trackedEntityAttribute = attribute,
                         programTrackedEntityAttribute = null,
-                        value = null,
-                        editable = true,
                         optionSetConfiguration = optionSetConfiguration,
                     )
                 }
         }.filter { parameter ->
             parameter.valueType !== ValueType.IMAGE &&
-                parameter.valueType !== ValueType.COORDINATE &&
-                parameter.valueType !== ValueType.FILE_RESOURCE
+                    parameter.valueType !== ValueType.COORDINATE &&
+                    parameter.valueType !== ValueType.FILE_RESOURCE
         }
+    }
+
+    private fun createField(
+        trackedEntityAttribute: TrackedEntityAttribute,
+        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
+        optionSetConfiguration: OptionSetConfiguration?,
+    ): FieldUiModel {
+        return fieldViewModelFactory.create(
+            id = trackedEntityAttribute.uid(),
+            label = trackedEntityAttribute.displayFormName() ?: "",
+            valueType = trackedEntityAttribute.valueType()!!,
+            mandatory = false,
+            optionSet = trackedEntityAttribute.optionSet()?.uid(),
+            value = null,
+            programStageSection = null,
+            allowFutureDates = programTrackedEntityAttribute?.allowFutureDate() ?: true,
+            editable = true,
+            renderingType = SectionRenderingType.LISTING,
+            description = null,
+            fieldRendering = programTrackedEntityAttribute?.renderType()?.mobile(),
+            objectStyle = trackedEntityAttribute.style() ?: ObjectStyle.builder().build(),
+            fieldMask = trackedEntityAttribute.fieldMask(),
+            optionSetConfiguration = optionSetConfiguration,
+            featureType = null,
+        )
     }
 }

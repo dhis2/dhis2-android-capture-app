@@ -20,7 +20,6 @@ import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
-import org.dhis2.form.data.SearchRepository
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
@@ -28,7 +27,6 @@ import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.FormRepositoryRecords
-import org.dhis2.form.model.SearchRecords
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
@@ -119,33 +117,11 @@ object Injector {
                 repositoryRecords as EnrollmentRecords,
             )
 
-            EntryMode.DE -> provideEventRepository(
+            else -> provideEventRepository(
                 context,
                 repositoryRecords as EventRecords,
             )
-
-            else -> provideSearchRepository(
-                context,
-                repositoryRecords as SearchRecords,
-            )
         }
-    }
-
-    private fun provideSearchRepository(
-        context: Context,
-        searchRecords: SearchRecords,
-    ): DataEntryRepository {
-        return SearchRepository(
-            d2 = provideD2(),
-            fieldViewModelFactory = provideFieldFactory(
-                context,
-                searchRecords.allowMandatoryFields,
-                searchRecords.isBackgroundTransparent,
-            ),
-            programUid = searchRecords.programUid,
-            teiTypeUid = searchRecords.teiTypeUid,
-            currentSearchValues = searchRecords.currentSearchValues,
-        )
     }
 
     private fun provideEnrollmentRepository(
@@ -153,11 +129,7 @@ object Injector {
         enrollmentRecords: EnrollmentRecords,
     ): DataEntryRepository {
         return EnrollmentRepository(
-            fieldFactory = provideFieldFactory(
-                context,
-                enrollmentRecords.allowMandatoryFields,
-                enrollmentRecords.isBackgroundTransparent,
-            ),
+            fieldFactory = provideFieldFactory(context),
             conf = EnrollmentConfiguration(provideD2(), enrollmentRecords.enrollmentUid),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
@@ -169,11 +141,7 @@ object Injector {
         eventRecords: EventRecords,
     ): DataEntryRepository {
         return EventRepository(
-            fieldFactory = provideFieldFactory(
-                context,
-                eventRecords.allowMandatoryFields,
-                eventRecords.isBackgroundTransparent,
-            ),
+            fieldFactory = provideFieldFactory(context),
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
         )
@@ -184,11 +152,8 @@ object Injector {
 
     private fun provideFieldFactory(
         context: Context,
-        allowMandatoryFields: Boolean,
-        isBackgroundTransparent: Boolean,
     ): FieldViewModelFactory = FieldViewModelFactoryImpl(
-        noMandatoryFields = !allowMandatoryFields,
-        uiStyleProvider = provideUiStyleProvider(context, isBackgroundTransparent),
+        uiStyleProvider = provideUiStyleProvider(context),
         layoutProvider = provideLayoutProvider(),
         hintProvider = provideHintProvider(context),
         displayNameProvider = provideDisplayNameProvider(),
@@ -208,19 +173,16 @@ object Injector {
 
     private fun provideUiStyleProvider(
         context: Context,
-        isBackgroundTransparent: Boolean,
     ): UiStyleProvider = UiStyleProviderImpl(
         colorFactory = FormUiModelColorFactoryImpl(
             context,
-            isBackgroundTransparent,
             provideColorUtils(),
         ),
         longTextColorFactory = LongTextUiColorFactoryImpl(
             context,
-            isBackgroundTransparent,
             provideColorUtils(),
         ),
-        actionIconClickable = isBackgroundTransparent,
+        actionIconClickable = true,
     )
 
     private fun provideFormValueStore(

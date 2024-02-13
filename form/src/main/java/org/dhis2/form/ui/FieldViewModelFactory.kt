@@ -33,14 +33,6 @@ interface FieldViewModelFactory {
         orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     ): FieldUiModel
 
-    fun createForAttribute(
-        trackedEntityAttribute: TrackedEntityAttribute,
-        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
-        value: String?,
-        editable: Boolean,
-        optionSetConfiguration: OptionSetConfiguration?,
-    ): FieldUiModel
-
     fun createSingleSection(singleSectionName: String): FieldUiModel
 
     fun createSection(

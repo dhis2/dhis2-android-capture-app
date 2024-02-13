@@ -182,10 +182,9 @@ public class SearchTEModule {
             ColorUtils colorUtils
     ) {
         return new FieldViewModelFactoryImpl(
-                true,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(moduleContext, false, colorUtils),
-                        new LongTextUiColorFactoryImpl(moduleContext, false, colorUtils),
+                        new FormUiModelColorFactoryImpl(moduleContext, colorUtils),
+                        new LongTextUiColorFactoryImpl(moduleContext, colorUtils),
                         false
                 ),
                 new LayoutProviderImpl(),
