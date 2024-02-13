@@ -518,7 +518,6 @@
     <string name="relationship_without_enrollment">Hồ sơ bạn đang truy suất không có đăng ký. Bạn không thể mở bảng trình bày dữ liệu</string>
     <string name="formatting_error">Lỗi định dạng</string>
     <string name="dashboard_menu_delete_tei_v2">Xóa %s</string>
-    <string name="dashboard_menu_delete_enrollment">Chỉ xóa đăng ký</string>
     <string name="delete_authority_error">Bạn không có quyền để xóa dữ liệu này</string>
     <string name="validation_url">Đường dẫn liên kết không đúng</string>
     <string name="uncomplete_authority_error">Bạn không có quyền để mở-lại sự kiện này.</string>
@@ -636,7 +635,6 @@
     <string name="interval_hour_ago">%d giờ trước</string>
     <string name="interval_yesterday">Hôm Qua</string>
     <string name="enrollment_single_section_label">Thuộc tính - %s</string>
-    <string name="program_selector">Các chương trình đăng ký</string>
     <string name="select_time">Chọn thời gian</string>
     <string name="enter_letter">Nhập ký tự</string>
     <string name="enter_unit_interval">Nhập số từ 0 đến 1</string>

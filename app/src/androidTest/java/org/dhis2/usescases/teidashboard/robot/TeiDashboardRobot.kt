@@ -319,7 +319,12 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuProgramEnrollments() {
-        onView(withText(R.string.program_selector)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext){
+            val programSelectorLabel = getString(R.string.program_selector_V2)
+            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment,2)
+            val itemLabel = programSelectorLabel.format(enrollmentLabel)
+            onView(withText(itemLabel)).perform(click())
+        }
     }
 
     fun clickOnCreateNewEvent() {
@@ -376,7 +381,12 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuDeleteEnrollment() {
-        onView(withText(R.string.dashboard_menu_delete_enrollment)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext){
+            val deleteEnrollmentLabel = getString(R.string.dashboard_menu_delete_enrollment_V2)
+            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment,1)
+            val itemLabel = deleteEnrollmentLabel.format(enrollmentLabel)
+            onView(withText(itemLabel)).perform(click())
+        }
     }
 
     fun clickOnGroupByStage() {

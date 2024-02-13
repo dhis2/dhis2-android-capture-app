@@ -524,7 +524,6 @@
     <string name="relationship_without_enrollment">Este registro no tiene ninguna inscripción. No se puede acceder al dashboard.</string>
     <string name="formatting_error">Error de formato</string>
     <string name="dashboard_menu_delete_tei_v2">Eliminar %s</string>
-    <string name="dashboard_menu_delete_enrollment">Borrar solo la admisión </string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
@@ -642,7 +641,6 @@
     <string name="interval_hour_ago">Hace %d horas</string>
     <string name="interval_yesterday">Ayer</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="program_selector">Registros en programas</string>
     <string name="select_time">Selecciona hora</string>
     <string name="enter_letter">Introduzca una letra</string>
     <string name="enter_unit_interval">Introduzca un número de 0 a 1</string>

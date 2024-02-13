@@ -510,7 +510,6 @@
     <string name="sync_setting">Synkroniseringsinnstillinger: %s</string>
     <string name="relationship_without_enrollment">Oppføringen du prøver å gå inn på har ingen registrering. Du kan ikke gå til dashbord.</string>
     <string name="formatting_error">Formateringsfeil</string>
-    <string name="dashboard_menu_delete_enrollment">Slett kun registrering</string>
     <string name="delete_authority_error">Du har ikke autoritet til å slette denne oppføringen</string>
     <string name="validation_url">Dette er ikke en gyldig URL</string>
     <string name="uncomplete_authority_error">Du har ikke autoritet til å gjenåpne denne hendelsen</string>
@@ -628,7 +627,6 @@
     <string name="interval_hour_ago">%dtimer siden</string>
     <string name="interval_yesterday">I går</string>
     <string name="enrollment_single_section_label">Attributter - %s</string>
-    <string name="program_selector">Programregistreringer</string>
     <string name="select_time">Velg klokkeslett</string>
     <string name="enter_letter">Skriv inn brev</string>
     <string name="enter_unit_interval">Angi nummer fra 0 til 1</string>

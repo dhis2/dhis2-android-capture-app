@@ -526,7 +526,6 @@
     <string name="relationship_without_enrollment">Záznam, ke kterému se pokoušíte získat přístup, nemá žádnou registraci. K hlavnímu panelu nemáte přístup.</string>
     <string name="formatting_error">Chyba formátování</string>
     <string name="dashboard_menu_delete_tei_v2">Smazat %s</string>
-    <string name="dashboard_menu_delete_enrollment">Smazat pouze zápis</string>
     <string name="delete_authority_error">Nemáte oprávnění tento záznam mazat</string>
     <string name="validation_url">Toto není platné URL</string>
     <string name="uncomplete_authority_error">Nemáte oprávnění znovu otevřít tuto událost</string>
@@ -644,7 +643,6 @@
     <string name="interval_hour_ago">před %d hodinami</string>
     <string name="interval_yesterday">Včera</string>
     <string name="enrollment_single_section_label">Atributy - %s</string>
-    <string name="program_selector">Programové zápisy</string>
     <string name="select_time">Vyberte čas</string>
     <string name="enter_letter">Zadejte písmeno</string>
     <string name="enter_unit_interval">Zadejte číslo od 0 do 1</string>

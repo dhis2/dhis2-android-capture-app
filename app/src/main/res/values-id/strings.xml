@@ -511,7 +511,6 @@
     <string name="sync_setting">Pengaturan sinkronisasi: %s</string>
     <string name="relationship_without_enrollment">Catatan yang Anda coba akses tidak memiliki pendaftaran. Anda tidak dapat mengakses dasbor.</string>
     <string name="formatting_error">Memformat kesalahan</string>
-    <string name="dashboard_menu_delete_enrollment">Hapus pendaftaran saja</string>
     <string name="delete_authority_error">Anda tidak memiliki wewenang untuk menghapus catatan ini</string>
     <string name="validation_url">Ini bukan url yang valid</string>
     <string name="uncomplete_authority_error">Anda tidak memiliki wewenang untuk membuka kembali acara ini</string>
@@ -739,7 +738,6 @@
     <string name="interval_hour_ago">%d jam yang lalu</string>
     <string name="interval_yesterday">Kemarin</string>
     <string name="enrollment_single_section_label">Atribut - %s</string>
-    <string name="program_selector">Pendaftaran program</string>
     <string name="select_time">Pilih waktu</string>
     <string name="enter_letter">Masukkan huruf</string>
     <string name="enter_unit_interval">Masukkan nomor dari 0 hingga 1</string>

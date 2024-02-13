@@ -490,7 +490,6 @@
     <string name="sync_setting">Sinxronizatsiya sozlanmasi: %s</string>
     <string name="relationship_without_enrollment">Siz kirib koʼrmoqchi boʼlgan yozuv qayd etilmagan. Siz boshqaruv paneliga kira olmaysiz</string>
     <string name="formatting_error">Formatlashda xatolik</string>
-    <string name="dashboard_menu_delete_enrollment">Faqat qaydlarni oʼchirib tashlash</string>
     <string name="delete_authority_error">Ushbu yozuvni oʼchirib tashlash huquqiga ega emassiz</string>
     <string name="validation_url">Bu haqiqiy URL emas</string>
     <string name="uncomplete_authority_error">Ushbu hodisa/tadbirni qayta ochishga vakolatingiz yoʼq</string>
@@ -608,7 +607,6 @@
     <string name="interval_hour_ago">%d soat oldin</string>
     <string name="interval_yesterday">Кеча</string>
     <string name="enrollment_single_section_label">Аtribatlar - %s</string>
-    <string name="program_selector">Dastur qaydlari</string>
     <string name="select_time">Vaqtni tanlang</string>
     <string name="enter_letter">Xatni kiriting</string>
     <string name="enter_unit_interval">0 dan 1 gacha raqamni kiriting</string>

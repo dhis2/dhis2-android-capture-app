@@ -506,7 +506,6 @@
     <string name="relationship_without_enrollment">ບັນທຶກທີ່ທ່ານພະຍາຍາມເຂົ້າບໍ່ມີການລົງທະບຽນ. ທ່ານບໍສາມາດເຂົ້າເຖີງໜ້າກະດານຂ່າວໄດ້</string>
     <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
     <string name="dashboard_menu_delete_tei_v2">ລົບ%s</string>
-    <string name="dashboard_menu_delete_enrollment">ລົບການລົງທະບຽນເທົ່ານັ້ນ</string>
     <string name="delete_authority_error">ທ່ານບໍສາມາດທີ່ຈະລົບບັນທຶກນີ້ໄດ້</string>
     <string name="validation_url">ຊື່ url ບໍ່ຖຶກຕ້ອງ</string>
     <string name="uncomplete_authority_error">ທ່ານບໍສາມາດເປິດເຫດການນີ້ຄືນໄດ້</string>
@@ -618,7 +617,6 @@
     <string name="interval_minute_ago">%dນາທີທີ່ຜ່ານມາ</string>
     <string name="interval_hour_ago">%dຊົ່ວໂມງທີ່ຜ່ານມາ</string>
     <string name="interval_yesterday">ມື້ວານນີ</string>
-    <string name="program_selector">ການລົງທະບຽນໂປຣແກຣມ</string>
     <string name="select_time">ເລືອກເວລາ</string>
     <string name="enter_letter">ປ້ອນຕົວອັກສອນ</string>
     <string name="enter_unit_interval">ປ້ອນຕົວເລກຈາກ 0 ຫາ 1</string>

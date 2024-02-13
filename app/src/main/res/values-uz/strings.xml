@@ -512,7 +512,6 @@
     <string name="sync_setting">Синхронизация созланмаси: %s</string>
     <string name="relationship_without_enrollment">Сиз кириб кўрмоқчи бўлган ёзув қайд этилмаган. Сиз бошқарув панелига кира олмайсиз</string>
     <string name="formatting_error">Форматлашда хатолик</string>
-    <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириб ташлаш</string>
     <string name="delete_authority_error">Ҳуқуқингиз чегараланганлиги сабабни ушбу ёзувни ўчириб ташлолмайсиз</string>
     <string name="validation_url">Бу ҳақиқий URL эмас</string>
     <string name="uncomplete_authority_error">Ушбу ҳодиса/тадбирни қайта очишга ваколатингиз йўқ</string>
@@ -630,7 +629,6 @@
     <string name="interval_hour_ago">%d соат олдин</string>
     <string name="interval_yesterday">Кеча</string>
     <string name="enrollment_single_section_label">Атрибатлар - %s</string>
-    <string name="program_selector">Дастур қайдлари</string>
     <string name="select_time">Вақтни танланг</string>
     <string name="enter_letter">Хатни киритинг</string>
     <string name="enter_unit_interval">0 дан 1 гача рақамни киритинг</string>

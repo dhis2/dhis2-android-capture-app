@@ -528,7 +528,6 @@
     <string name="relationship_without_enrollment">Het record dat u probeert te openen heeft geen inschrijving. U heeft geen toegang tot het dashboard.</string>
     <string name="formatting_error">Formatteringsfout</string>
     <string name="dashboard_menu_delete_tei_v2">Verwijder %s</string>
-    <string name="dashboard_menu_delete_enrollment">Alleen inschrijving verwijderen</string>
     <string name="delete_authority_error">U bent niet bevoegd om dit record te verwijderen</string>
     <string name="validation_url">Dit is geen geldige URL</string>
     <string name="uncomplete_authority_error">Je hebt niet de bevoegdheid om dit evenement opnieuw te openen</string>
@@ -645,7 +644,6 @@
     <string name="interval_hour_ago">%d uur geleden</string>
     <string name="interval_yesterday">Gisteren</string>
     <string name="enrollment_single_section_label">Kenmerken - %s</string>
-    <string name="program_selector">Programma inschrijvingen</string>
     <string name="select_time">Selecteer tijd</string>
     <string name="enter_letter">Voer brief in</string>
     <string name="enter_unit_interval">Voer een getal in van 0 tot 1</string>

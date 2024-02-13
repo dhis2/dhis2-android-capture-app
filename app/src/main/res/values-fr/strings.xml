@@ -521,7 +521,6 @@
     <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
     <string name="dashboard_menu_delete_tei_v2">Supprimer 1%s</string>
-    <string name="dashboard_menu_delete_enrollment">Supprimer seulement l\'enrôlement</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
     <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
     <string name="uncomplete_authority_error">Vous n\'avez pas l\'autorité pour rouvrir cet évènement</string>
@@ -639,7 +638,6 @@
     <string name="interval_hour_ago">%d heures depuis</string>
     <string name="interval_yesterday">Hier</string>
     <string name="enrollment_single_section_label">Attributs - %s</string>
-    <string name="program_selector">Inscriptions au programme</string>
     <string name="select_time">Sélectionnez l\'heure</string>
     <string name="enter_letter">Entrez une lettre</string>
     <string name="enter_unit_interval">Entrez un numéro de 0 à 1</string>

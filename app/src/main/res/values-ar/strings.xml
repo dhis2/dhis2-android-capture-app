@@ -530,7 +530,6 @@
     <string name="relationship_without_enrollment">السجل الذي تحاول الوصول إليه ليس لديه تسجيل. لا يمكنك الوصول إلى لوحة المعلومات.</string>
     <string name="formatting_error">خطأ في التنسيق</string>
     <string name="dashboard_menu_delete_tei_v2">حذف %s</string>
-    <string name="dashboard_menu_delete_enrollment">حذف التسجيل فقط</string>
     <string name="delete_authority_error">ليس لديك الصلاحية لحذف هذا السجل</string>
     <string name="validation_url">هذا ليس عنوان url صالحاً</string>
     <string name="uncomplete_authority_error">ليس لديك الصلاحية لإعادة فتح هذا الحدث</string>
@@ -648,7 +647,6 @@
     <string name="interval_hour_ago">منذ %d ساعة</string>
     <string name="interval_yesterday">الأمس</string>
     <string name="enrollment_single_section_label">السمات - %s</string>
-    <string name="program_selector">التسجيلات في البرنامج</string>
     <string name="select_time">إختر الوقت</string>
     <string name="enter_letter">ادخل حرف</string>
     <string name="enter_unit_interval">أدخل رقماً من 0 إلى 1</string>

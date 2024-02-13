@@ -542,7 +542,6 @@
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
     <string name="formatting_error">Formatting error</string>
     <string name="dashboard_menu_delete_tei_v2">Delete %s</string>
-    <string name="dashboard_menu_delete_enrollment">Delete enrollment only</string>
     <string name="delete_authority_error">You do not have the authority to delete this record</string>
     <string name="validation_url">This is not a valid url</string>
     <string name="uncomplete_authority_error">You do not have the authority to re-open this event</string>
@@ -665,7 +664,6 @@
     <string name="interval_hour_ago">%d hours ago</string>
     <string name="interval_yesterday">Yesterday</string>
     <string name="enrollment_single_section_label">Attributes - %s</string>
-    <string name="program_selector">Program enrollments</string>
     <string name="select_time">Select time</string>
     <string name="enter_letter">Enter letter</string>
     <string name="enter_unit_interval">Enter number from 0 to 1</string>

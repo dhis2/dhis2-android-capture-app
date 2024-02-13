@@ -509,7 +509,6 @@
     <string name="sync_setting">同步设置：%s</string>
     <string name="relationship_without_enrollment">你试图访问的记录还没有注册。你不能访问仪表盘。</string>
     <string name="formatting_error">格式化错误</string>
-    <string name="dashboard_menu_delete_enrollment">仅仅删除注册</string>
     <string name="delete_authority_error">你没有删除记录的权限</string>
     <string name="validation_url">没有有效的URL</string>
     <string name="uncomplete_authority_error">你没有打开该事件的权限。</string>
@@ -627,7 +626,6 @@
     <string name="interval_hour_ago">%d小时前</string>
     <string name="interval_yesterday">昨天</string>
     <string name="enrollment_single_section_label">属性- %s</string>
-    <string name="program_selector">项目注册</string>
     <string name="select_time">选择时间</string>
     <string name="enter_letter">输入字符</string>
     <string name="enter_unit_interval">输入0-1之间的数</string>

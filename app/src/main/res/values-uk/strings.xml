@@ -526,7 +526,6 @@
     <string name="relationship_without_enrollment">Запис, до якого Ви намагаєтеся отримати доступ, не зареєстрований. Ви не можете отримати доступ до інформаційної панелі.</string>
     <string name="formatting_error">Помилка форматування</string>
     <string name="dashboard_menu_delete_tei_v2">Видалити %s</string>
-    <string name="dashboard_menu_delete_enrollment">Видалити лише реєстрацію</string>
     <string name="delete_authority_error">Ви не маєте повноважень видаляти цей запис</string>
     <string name="validation_url">Це недійсна URL-адреса</string>
     <string name="uncomplete_authority_error">Ви не маєте повноважень повторно відкривати цей випадок</string>
@@ -644,7 +643,6 @@
     <string name="interval_hour_ago">%d годин тому</string>
     <string name="interval_yesterday">Вчора</string>
     <string name="enrollment_single_section_label">Атрибути - %s</string>
-    <string name="program_selector">Програми реєстрації</string>
     <string name="select_time">Оберіть час</string>
     <string name="enter_letter">Введіть літеру</string>
     <string name="enter_unit_interval">Введіть число від 0 до 1</string>
