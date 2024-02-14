@@ -13,32 +13,24 @@ import timber.log.Timber
 class NotificationD2Repository(
     private val d2: D2,
     private val preferenceProvider: BasicPreferenceProvider,
-    private val notificationsDataStoreApi: NotificationsApi,
+    private val notificationsApi: NotificationsApi,
     private val userGroupsApi: UserGroupsApi
 ) : NotificationRepository {
 
     override fun sync() {
         try {
-            val notificationsResponse = notificationsDataStoreApi.getData().execute()
+            val allNotifications = getAllNotificationsFromRemote()
 
-            val userGroupsResponse =
-                userGroupsApi.getData(d2.userModule().user().blockingGet().uid()).execute()
+            val userGroups = getUserGroups()
 
+            val userNotifications =
+                getNotificationsForCurrentUser(allNotifications, userGroups.userGroups)
 
-            if (notificationsResponse.isSuccessful && userGroupsResponse.isSuccessful) {
-                val allNotifications = notificationsResponse.body() ?: listOf()
-                val userGroups = userGroupsResponse.body() ?: UserGroups(listOf())
+            preferenceProvider.saveAsJson(Preference.NOTIFICATIONS, userNotifications)
 
-                val userNotifications = getNotificationsForCurrentUser(allNotifications, userGroups.userGroups)
+            Timber.d("Notifications synced")
+            Timber.d("Notifications: $userNotifications")
 
-                preferenceProvider.saveAsJson(Preference.NOTIFICATIONS, userNotifications)
-
-                Timber.d("Notifications synced")
-                Timber.d("Notifications: $userNotifications")
-            } else {
-                Timber.e("Error getting notifications: ${notificationsResponse.errorBody()}")
-                Timber.e("Error getting userGroups: ${userGroupsResponse.errorBody()}")
-            }
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -55,6 +47,56 @@ class NotificationD2Repository(
         )
     }
 
+    override fun getById(id: String): Notification? {
+        sync()
+        val notifications = get()
+
+        return notifications.find { it.id == id }
+    }
+
+    override fun save(notification: Notification) {
+        val notifications = getAllNotificationsFromRemote()
+
+        val notificationUpdated = notifications.map {
+            if (it.id == notification.id) {
+                notification
+            } else {
+                it
+            }
+        }
+
+        val response = notificationsApi.postData(notificationUpdated).execute()
+
+        if (response.isSuccessful) {
+            sync()
+        } else {
+            Timber.e("Error updating notifications: ${response.errorBody()}")
+        }
+    }
+
+    private fun getAllNotificationsFromRemote(): List<Notification> {
+        val notificationsResponse = notificationsApi.getData().execute()
+
+        return if (notificationsResponse.isSuccessful) {
+            notificationsResponse.body() ?: listOf()
+        } else {
+            Timber.e("Error getting notifications: ${notificationsResponse.errorBody()}")
+            emptyList()
+        }
+    }
+
+    private fun getUserGroups(): UserGroups {
+        val userGroupsResponse =
+            userGroupsApi.getData(d2.userModule().user().blockingGet().uid()).execute()
+
+        return if (userGroupsResponse.isSuccessful) {
+            userGroupsResponse.body() ?: UserGroups(listOf())
+        } else {
+            Timber.e("Error getting userGroups: ${userGroupsResponse.errorBody()}")
+            UserGroups(listOf())
+        }
+    }
+
     private fun getNotificationsForCurrentUser(
         allNotifications: List<Notification>,
         userGroups: List<Ref>
@@ -67,27 +109,19 @@ class NotificationD2Repository(
             }
         }
 
-        Timber.d("nonReadByUserNotifications: $nonReadByUserNotifications")
-
         val notificationsByAll = nonReadByUserNotifications.filter { notification ->
             notification.recipients.wildcard == "ALL"
         }
 
-        Timber.d("notificationsByAll: $notificationsByAll")
-
         val notificationsByUserGroup = nonReadByUserNotifications.filter { notification ->
             notification.recipients.userGroups.any { userGroupIds.contains(it.id) }
         }
-
-        Timber.d("notificationsByUserGroup: $notificationsByUserGroup")
 
         val notificationsByUser = nonReadByUserNotifications.filter { notification ->
             notification.recipients.users.any {
                 it.id == d2.userModule().user().blockingGet().uid()
             }
         }
-
-        Timber.d("notificationsByUser: $notificationsByUser")
 
         return notificationsByAll + notificationsByUserGroup + notificationsByUser
     }

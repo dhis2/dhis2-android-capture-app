@@ -13,17 +13,23 @@ import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.notifications.NotificationD2Repository
 import org.dhis2.data.notifications.NotificationsApi
+import org.dhis2.data.notifications.UserD2Repository
 import org.dhis2.data.notifications.UserGroupsApi
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.notifications.domain.GetNotifications
+import org.dhis2.usescases.notifications.domain.MarkNotificationAsRead
 import org.dhis2.usescases.notifications.domain.NotificationRepository
+import org.dhis2.usescases.notifications.domain.UserRepository
 import org.dhis2.usescases.notifications.presentation.NotificationsPresenter
 import org.dhis2.usescases.notifications.presentation.NotificationsView
 import org.hisp.dhis.android.core.D2
 
 @Module
-class ProgramModule(private val view: ProgramView, private val notificationsView: NotificationsView) {
+class ProgramModule(
+    private val view: ProgramView,
+    private val notificationsView: NotificationsView
+) {
 
     @Provides
     @PerFragment
@@ -75,11 +81,22 @@ class ProgramModule(private val view: ProgramView, private val notificationsView
     @PerFragment
     internal fun notificationsPresenter(
         getNotifications: GetNotifications,
+        markNotificationAsRead: MarkNotificationAsRead
     ): NotificationsPresenter {
         return NotificationsPresenter(
             notificationsView,
-            getNotifications
+            getNotifications,
+            markNotificationAsRead
         )
+    }
+
+    @Provides
+    @PerFragment
+    internal fun getMarkNotificationAsRead(
+        notificationRepository: NotificationRepository,
+        userRepository: UserRepository
+    ): MarkNotificationAsRead {
+        return MarkNotificationAsRead(notificationRepository, userRepository)
     }
 
     @Provides
@@ -109,6 +126,16 @@ class ProgramModule(private val view: ProgramView, private val notificationsView
             preferences,
             biometricsConfigApi,
             userGroupsApi
+        )
+    }
+
+    @Provides
+    @PerFragment
+    internal fun userRepository(
+        d2: D2,
+    ): UserRepository {
+        return UserD2Repository(
+            d2
         )
     }
 }

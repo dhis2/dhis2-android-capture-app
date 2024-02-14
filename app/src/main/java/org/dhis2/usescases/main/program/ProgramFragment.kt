@@ -292,7 +292,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
             .setTitle("Notification")
             .setMessage(content)
             .setPositiveButton(getString(R.string.wipe_data_ok)) { dialog, _ ->
-                dialog.dismiss()
+                notificationsPresenter.markNotificationAsRead(notification)
             }
             .setCancelable(true)
             .show()
