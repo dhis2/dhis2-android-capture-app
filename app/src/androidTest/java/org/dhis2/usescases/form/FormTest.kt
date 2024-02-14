@@ -240,10 +240,10 @@ class FormTest : BaseTest() {
         val firstSectionPosition = 1
         startSearchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition("optionGroup", 1)
-            clickOnSearch(composeTestRule)
+            clickOnSearch()
             clickOnEnroll()
             orgUnitSelectorRobot(composeTestRule) {
                 selectTreeOrgUnit("Ngelehun CHC")
@@ -284,10 +284,11 @@ class FormTest : BaseTest() {
 
         startSearchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition("abc", 1)
-            clickOnSearch(composeTestRule)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter("abc")
+            clickOnSearch()
             clickOnEnroll()
             orgUnitSelectorRobot(composeTestRule) {
                 selectTreeOrgUnit("Ngelehun CHC")

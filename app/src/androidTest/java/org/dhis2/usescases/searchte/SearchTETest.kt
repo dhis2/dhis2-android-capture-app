@@ -60,15 +60,15 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullySearchByName() {
         val firstName = "Tim"
-        val firstNamePosition = 0
         val orgUnit = "Ngelehun CHC"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnSearch(composeTestRule)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(firstName)
+            clickOnSearch()
             checkListOfSearchTEI(firstName, orgUnit)
         }
     }
@@ -76,14 +76,14 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldShowErrorWhenCanNotFindSearchResult() {
         val firstName = "asdssds"
-        val firstNamePosition = 1
 
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnSearch(composeTestRule)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(firstName)
+            clickOnSearch()
             checkNoSearchResult()
         }
     }
@@ -91,17 +91,17 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullySearchUsingMoreThanOneField() {
         val firstName = "Anna"
-        val firstNamePosition = 0
         val lastName = "Jones"
-        val lastNamePosition = 1
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(firstName, firstNamePosition)
-            typeAttributeAtPosition(lastName, lastNamePosition)
-            clickOnSearch(composeTestRule)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(firstName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(lastName)
+            clickOnSearch()
             checkListOfSearchTEI(firstName, lastName)
         }
     }
@@ -113,7 +113,7 @@ class SearchTETest : BaseTest() {
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnProgramSpinner()
             selectAProgram(tbProgram)
             checkProgramHasChanged(tbProgram)
@@ -122,23 +122,20 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldCheckDisplayInList() {
-        val birthdaySearch = createDateOfBirthSearch()
         val displayInListData = createDisplayListFields()
-        val namePosition = 0
-        val lastNamePosition = 1
 
         setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
-            typeAttributeAtPosition(displayInListData.name, namePosition)
-            typeAttributeAtPosition(displayInListData.lastName, lastNamePosition)
-            clickOnDateField()
-            selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
-            acceptDate()
-            clickOnSearch(composeTestRule)
+        searchTeiRobot(composeTestRule) {
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(displayInListData.name)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(displayInListData.lastName)
+            openNextSearchParameter("Date of birth")
+            typeOnDateParameter("01012001")
+            clickOnSearch()
             checkFieldsFromDisplayList(
-                composeTestRule,
                 displayInListData,
             )
         }
@@ -276,17 +273,17 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterBySync() {
         val teiName = "Frank"
         val teiLastName = "Fjordsen"
-        val firstNamePosition = 0
-        val lastNamePosition = 1
         val syncFilter = context.getString(R.string.action_sync)
         val totalCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, firstNamePosition)
-            typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch(composeTestRule)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(teiName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(teiLastName)
+            clickOnSearch()
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -311,7 +308,6 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullySearchAndFilter() {
         val name = "Anna"
         val lastName = "Jones"
-        val namePosition = 0
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
             .format(context.resources.getQuantityString(R.plurals.enrollment, 1).capitalize(Locale.current))
         val totalCount = "2"
@@ -319,10 +315,11 @@ class SearchTETest : BaseTest() {
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(name, namePosition)
-            clickOnSearch(composeTestRule)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(name)
+            clickOnSearch()
         }
 
         filterRobot {
@@ -336,7 +333,7 @@ class SearchTETest : BaseTest() {
             checkTEIsAreOpen()
         }
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             checkListOfSearchTEI(name, lastName)
         }
     }
@@ -347,7 +344,7 @@ class SearchTETest : BaseTest() {
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnShowMap()
             try {
                 val device = UiDevice.getInstance(getInstrumentation())

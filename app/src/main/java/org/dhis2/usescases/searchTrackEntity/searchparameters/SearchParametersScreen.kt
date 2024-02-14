@@ -77,6 +77,10 @@ fun SearchParametersScreen(
                             uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope(),
                         )
 
+                    is RecyclerViewUiEvents.ScanQRCode -> {
+                        TODO()
+                    }
+
                     else -> {}
                 }
             }
@@ -125,6 +129,8 @@ fun SearchParametersScreen(
                 uiState.items.forEach { fieldUiModel ->
                     fieldUiModel.setCallback(callback)
                     ParameterSelectorItem(
+                        modifier = Modifier
+                            .testTag("SEARCH_PARAM_ITEM"),
                         model = provideParameterSelectorItem(
                             resources = resourceManager,
                             focusManager = focusManager,

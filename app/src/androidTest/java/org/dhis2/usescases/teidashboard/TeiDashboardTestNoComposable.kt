@@ -34,7 +34,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -49,11 +49,11 @@ class TeiDashboardTestNoComposable : BaseTest() {
             waitToDebounce(500)
         }
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition(relationshipName, 0)
             typeAttributeAtPosition(relationshipLastName, 1)
-            clickOnSearch(composeTestRule)
+            clickOnSearch()
             waitToDebounce(5000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
@@ -73,11 +73,11 @@ class TeiDashboardTestNoComposable : BaseTest() {
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, firstNamePosition)
             typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch(composeTestRule)
+            clickOnSearch()
             clickOnTEI(teiName, teiLastName)
             //scrollToTEIandClick()
         }
@@ -87,7 +87,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnMenuDeleteTEI()
         }
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             checkTEIsDelete(teiName, teiLastName)
         }
     }
@@ -102,11 +102,11 @@ class TeiDashboardTestNoComposable : BaseTest() {
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, firstNamePosition)
             typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch(composeTestRule)
+            clickOnSearch()
             //     waitToDebounce(400)
             clickOnTEI(teiName, teiLastName)
         }
@@ -116,7 +116,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnMenuDeleteEnrollment()
         }
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             checkTEIsDelete(teiName, teiLastName)
         }
     }
