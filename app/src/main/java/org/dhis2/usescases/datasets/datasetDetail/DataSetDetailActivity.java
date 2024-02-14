@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
@@ -26,6 +28,7 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.OnNoConnectionListener;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
@@ -240,10 +243,18 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void showGranularSync() {
         presenter.trackDataSetGranularSync();
+        View contextView = findViewById(R.id.navigationBar);
         new SyncStatusDialog.Builder()
                 .withContext(this, null)
                 .withSyncContext(new SyncContext.DataSet(dataSetUid))
                 .onDismissListener(hasChanged -> presenter.refreshList())
+                .onNoConnectionListener(() ->
+                    Snackbar.make(
+                        contextView,
+                        R.string.sync_offline_check_connection,
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                )
                 .show("DATASET_SYNC");
     }
 }

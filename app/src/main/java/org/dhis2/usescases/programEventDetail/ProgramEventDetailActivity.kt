@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -195,7 +196,16 @@ class ProgramEventDetailActivity :
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            }).show("EVENT_SYNC")
+            })
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
+            .show("EVENT_SYNC")
     }
 
     public override fun onPause() {
@@ -376,7 +386,16 @@ class ProgramEventDetailActivity :
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            }).show(FRAGMENT_TAG)
+            })
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.rootView)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
+            .show(FRAGMENT_TAG)
     }
 
     private fun showList() {

@@ -332,6 +332,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void openSyncDialog() {
+        View contextView = findViewById(R.id.navigationBar);
         new SyncStatusDialog.Builder()
                 .withContext(this, null)
                 .withSyncContext(
@@ -339,7 +340,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                }).show("PROGRAM_SYNC");
+                })
+                .onNoConnectionListener(() ->
+                    Snackbar.make(
+                        contextView,
+                        R.string.sync_offline_check_connection,
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                )
+                .show("PROGRAM_SYNC");
     }
 
     @Override
@@ -582,6 +591,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void showSyncDialog(String enrollmentUid) {
+        View contextView = findViewById(R.id.navigationBar);
         new SyncStatusDialog.Builder()
                 .withContext(this, null)
                 .withSyncContext(
@@ -589,7 +599,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                }).show("TEI_SYNC");
+                })
+                .onNoConnectionListener(() ->
+                    Snackbar.make(
+                            contextView,
+                            R.string.sync_offline_check_connection,
+                            Snackbar.LENGTH_SHORT
+                    ).show()
+                ).show("TEI_SYNC");
     }
 
     private void setInitialProgram(List<ProgramSpinnerModel> programs) {

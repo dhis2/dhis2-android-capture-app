@@ -9,6 +9,7 @@ class SyncDialog(
     val syncContext: SyncContext,
     private val dismissListener: OnDismissListener? = null,
     private val onSyncNavigationListener: OnSyncNavigationListener? = null,
+    private val onNoConnectionListener: OnNoConnectionListener? = null,
 ) {
     fun show() {
         (activity.applicationContext as? ComponentProvider)
@@ -18,6 +19,7 @@ class SyncDialog(
                 syncContext,
                 dismissListener,
                 onSyncNavigationListener,
+                onNoConnectionListener,
             )
     }
 }

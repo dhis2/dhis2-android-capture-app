@@ -32,6 +32,7 @@ import org.dhis2.bindings.showSMS
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
@@ -68,6 +69,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     lateinit var viewModelFactory: GranularSyncViewModelFactory
 
     private val viewModel: GranularSyncPresenter by viewModels { viewModelFactory }
+
+    var onNoConnectionListener: OnNoConnectionListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -172,7 +175,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             networkUtils.isOnline() -> syncGranular()
             viewModel.canSendSMS() &&
                 viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
+            !networkUtils.isOnline() &&
+                !viewModel.isSMSEnabled(context?.showSMS() == true) -> showSnackbar()
         }
+    }
+
+    private fun showSnackbar() {
+        dismiss()
+        onNoConnectionListener?.onNoConnection()
     }
 
     private fun syncGranular() {
@@ -335,6 +345,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         private var navigator: SyncStatusDialogNavigator? = null
         private lateinit var syncContext: SyncContext
         private var dismissListener: OnDismissListener? = null
+        private var noConnectionListener: OnNoConnectionListener? = null
 
         fun withContext(
             context: FragmentActivity,
@@ -372,12 +383,18 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return this
         }
 
+        fun onNoConnectionListener(noConnectionListener: OnNoConnectionListener): Builder {
+            this.noConnectionListener = noConnectionListener
+            return this
+        }
+
         private fun build(): SyncStatusDialog {
             return SyncStatusDialog().apply {
                 arguments = Bundle().apply {
                     putParcelable(SYNC_CONTEXT, syncContext)
                 }
                 dismissListenerDialog = dismissListener
+                onNoConnectionListener = noConnectionListener
                 syncStatusDialogNavigator = navigator
             }
         }

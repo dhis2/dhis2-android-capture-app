@@ -444,6 +444,14 @@ class EventCaptureActivity :
         SyncStatusDialog.Builder()
             .withContext(this)
             .withSyncContext(SyncContext.Event(eventUid!!))
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
             .show("EVENT_SYNC")
     }
 
