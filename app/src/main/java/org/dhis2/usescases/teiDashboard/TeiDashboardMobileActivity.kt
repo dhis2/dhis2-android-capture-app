@@ -29,6 +29,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
@@ -82,6 +83,9 @@ class TeiDashboardMobileActivity :
 
     @Inject
     lateinit var networkUtils: NetworkUtils
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     lateinit var programModel: DashboardProgramModel
     var teiUid: String? = null
@@ -157,7 +161,8 @@ class TeiDashboardMobileActivity :
         super.onCreate(savedInstanceState)
         groupByStage = MutableLiveData(presenter.programGrouping)
         currentEnrollment = MutableLiveData()
-        dashboardViewModel = ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
+        dashboardViewModel =
+            ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
         showLoadingProgress(true)
         binding.presenter = presenter
@@ -290,7 +295,10 @@ class TeiDashboardMobileActivity :
                                 android.R.anim.fade_in,
                                 android.R.anim.fade_out,
                             )
-                            startActivity(intent(context, teiUid, programUid, enrollmentUid), activityOptions.toBundle())
+                            startActivity(
+                                intent(context, teiUid, programUid, enrollmentUid),
+                                activityOptions.toBundle(),
+                            )
                             finish()
                         }
                     }
@@ -578,6 +586,20 @@ class TeiDashboardMobileActivity :
                 deleteEnrollmentItem.isVisible = presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
 
                 if (enrollmentUid != null) {
+                    popupMenu.menu.findItem(R.id.deleteEnrollment).let { deleteEnrollmentItem ->
+                        deleteEnrollmentItem.title = resourceManager.formatWithEnrollmentLabel(
+                            programUid!!,
+                            R.string.dashboard_menu_delete_enrollment_V2,
+                            1,
+                        )
+                    }
+                    popupMenu.menu.findItem(R.id.programSelector).let { programSelectorItem ->
+                        programSelectorItem.title = resourceManager.formatWithEnrollmentLabel(
+                            programUid!!,
+                            R.string.program_selector_V2,
+                            2,
+                        )
+                    }
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
                     if (status == EnrollmentStatus.COMPLETED) {
                         popupMenu.menu.findItem(R.id.complete).isVisible = false
@@ -611,14 +633,17 @@ class TeiDashboardMobileActivity :
                             EnrollmentStatus.COMPLETED,
                         )
                     }
+
                     R.id.activate -> dashboardViewModel.updateEnrollmentStatus(
                         programModel,
                         EnrollmentStatus.ACTIVE,
                     )
+
                     R.id.deactivate -> dashboardViewModel.updateEnrollmentStatus(
                         programModel,
                         EnrollmentStatus.CANCELLED,
                     )
+
                     R.id.share -> startQRActivity()
                 }
                 true

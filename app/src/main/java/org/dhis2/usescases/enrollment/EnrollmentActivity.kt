@@ -22,6 +22,7 @@ import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
@@ -50,6 +51,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private var forRelationship: Boolean = false
     private lateinit var formView: FormView
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
@@ -343,7 +347,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             binding.title.visibility = View.VISIBLE
             binding.teiDataHeader.root.visibility = View.GONE
             binding.title.text =
-                String.format(getString(R.string.enroll_in), presenter.getProgram()?.displayName())
+                resourceManager.formatWithEnrollmentLabel(
+                    programUid = presenter.getProgram()?.uid()!!,
+                    R.string.new_enrollment,
+                    1,
+                )
         }
     }
 

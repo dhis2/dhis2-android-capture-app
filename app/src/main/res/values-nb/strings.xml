@@ -155,7 +155,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VIS MER</string>
-    <string name="enrolling_ou">Registrerer OU:</string>
     <string name="follow_up">Oppfølging</string>
     <string name="follow_up_enabled">Oppfølging er aktivert</string>
     <string name="follow_up_disabled">Oppfølging er deaktivert</string>
@@ -240,7 +239,6 @@
     <string name="add_note">Legg til notat</string>
     <string name="revert">Reverser</string>
     <string name="activated">Aktivert</string>
-    <string name="enroll_in">Registrer i %s</string>
     <string name="missing_mandatory_fields_title">Obligatoriske felter mangler</string>
     <string name="missing_mandatory_fields_text">Noen obligatoriske felt mangler. Hvis du vil gå tilbake nå, all lagret informasjon vil bli slettet.</string>
     <string name="missing_mandatory_fields_text_not_delete">Noen obligatoriske felt mangler. Hvis du vil gå tilbake, vennligst fyll inn dem.</string>
@@ -250,7 +248,6 @@
     <string name="missing_mandatory_fields_go_back">Slett og gå tilbake</string>
     <string name="error_fields">Noen felt har feil:\n%s\nVennligst, sjekk dem.</string>
     <string name="missing_mandatory_fields_finish">Noen obligatoriske felter mangler. Du kan fullføre dataregistrering og gå ut, men hendelsen kan ikke fullføres.</string>
-    <string name="enrollment_coordinates">Innmeldingskoordinater</string>
     <string name="tei_coordinates">Koordinater for</string>
 
     <!--EVENT SUMMARY-->
@@ -513,7 +510,6 @@
     <string name="sync_setting">Synkroniseringsinnstillinger: %s</string>
     <string name="relationship_without_enrollment">Oppføringen du prøver å gå inn på har ingen registrering. Du kan ikke gå til dashbord.</string>
     <string name="formatting_error">Formateringsfeil</string>
-    <string name="dashboard_menu_delete_enrollment">Slett kun registrering</string>
     <string name="delete_authority_error">Du har ikke autoritet til å slette denne oppføringen</string>
     <string name="validation_url">Dette er ikke en gyldig URL</string>
     <string name="uncomplete_authority_error">Du har ikke autoritet til å gjenåpne denne hendelsen</string>
@@ -608,7 +604,6 @@
     <string name="event_tei_limits_v2">Begrensede innstillinger : %s\nEvents: %s/%sTEI: %s/%s</string>
     <string name="enrollment_data_hide">Skjul registreringsdata</string>
     <string name="enrollment_data_show">Vis registreringsdata</string>
-    <string name="enrollment_data_section_label">Registreringsdata</string>
     <string name="sms_enabled">SMS modul er aktivert.</string>
     <string name="sms_disabled">SMS modul er deaktivert.</string>
     <string name="sms_downloading_data">Laster ned data for SMS modul. Vennligst vent</string>
@@ -632,7 +627,6 @@
     <string name="interval_hour_ago">%dtimer siden</string>
     <string name="interval_yesterday">I går</string>
     <string name="enrollment_single_section_label">Attributter - %s</string>
-    <string name="program_selector">Programregistreringer</string>
     <string name="select_time">Velg klokkeslett</string>
     <string name="enter_letter">Skriv inn brev</string>
     <string name="enter_unit_interval">Angi nummer fra 0 til 1</string>

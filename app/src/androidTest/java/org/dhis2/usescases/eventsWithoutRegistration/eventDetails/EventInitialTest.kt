@@ -154,7 +154,7 @@ class EventInitialTest {
         enrollmentStatus = enrollmentStatus,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, resourceManager)
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,

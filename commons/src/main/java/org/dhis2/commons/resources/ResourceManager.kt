@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.core.content.ContextCompat
 import org.dhis2.commons.R
 import org.dhis2.commons.network.NetworkUtils
@@ -24,6 +26,34 @@ class ResourceManager(
 
     fun getPlural(@PluralsRes pluralResource: Int, quantity: Int, vararg arguments: Any) =
         getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
+
+    fun formatWithEnrollmentLabel(
+        programUid: String,
+        @StringRes stringResource: Int,
+        quantity: Int,
+        formatWithQuantity: Boolean = false,
+    ): String {
+        val enrollmentLabel = try {
+            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
+                ?.enrollmentLabel()
+        } catch (e: Exception) {
+            null
+        } ?: getPlural(R.plurals.enrollment, quantity)
+
+        return with(getString(stringResource)) {
+            val finalLabel = if (this@with.startsWith("%s")) {
+                enrollmentLabel.capitalize(Locale.current)
+            } else {
+                enrollmentLabel
+            }
+
+            if (formatWithQuantity) {
+                format(quantity, finalLabel)
+            } else {
+                format(finalLabel)
+            }
+        }
+    }
 
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {

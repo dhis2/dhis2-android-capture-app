@@ -267,7 +267,7 @@ class EnrollmentRepository(
         enrollmentDataList.add(
             getEnrollmentDateField(
                 conf.program()?.enrollmentDateLabel()
-                    ?: enrollmentFormLabelsProvider.provideEnrollmentDateDefaultLabel(),
+                    ?: enrollmentFormLabelsProvider.provideEnrollmentDateDefaultLabel(programUid!!),
                 conf.program()?.selectEnrollmentDatesInFuture(),
             ),
         )
@@ -307,7 +307,7 @@ class EnrollmentRepository(
     private fun getEnrollmentDataSection(description: String?): FieldUiModel {
         return fieldFactory.createSection(
             ENROLLMENT_DATA_SECTION_UID,
-            enrollmentFormLabelsProvider.provideEnrollmentDataSectionLabel(),
+            enrollmentFormLabelsProvider.provideEnrollmentDataSectionLabel(programUid!!),
             description,
             false,
             0,
@@ -419,7 +419,7 @@ class EnrollmentRepository(
     private fun getEnrollmentCoordinatesField(featureType: FeatureType?): FieldUiModel {
         return fieldFactory.create(
             ENROLLMENT_COORDINATES_UID,
-            enrollmentFormLabelsProvider.provideEnrollmentCoordinatesLabel(),
+            enrollmentFormLabelsProvider.provideEnrollmentCoordinatesLabel(programUid!!),
             ValueType.COORDINATE,
             false,
             null,

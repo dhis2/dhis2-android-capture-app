@@ -694,6 +694,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showBreakTheGlass(String teiUid, String enrollmentUid) {
         new BreakTheGlassBottomDialog()
+                .setProgram(presenter.getProgram().uid())
                 .setPositiveButton(reason -> {
                     viewModel.onDownloadTei(teiUid, enrollmentUid, reason);
                     return Unit.INSTANCE;

@@ -156,7 +156,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Veja detalhes</string>
     <string name="view_more">VEJA MAIS</string>
-    <string name="enrolling_ou">Inscrição UO:</string>
     <string name="follow_up">Acompanhamento</string>
     <string name="follow_up_enabled">Acompanhamento ativado</string>
     <string name="follow_up_disabled">Acompanhamento desativado</string>
@@ -242,7 +241,6 @@
     <string name="add_note">Adicionar uma nota</string>
     <string name="revert">Reverter</string>
     <string name="activated">Ativado</string>
-    <string name="enroll_in">Inscreva-se %s</string>
     <string name="missing_mandatory_fields_title">Faltam campos obrigatórios</string>
     <string name="missing_mandatory_fields_text">Alguns campos obrigatórios estão ausentes. Se você quiser voltar agora, todas as informações salvas serão excluídas.</string>
     <string name="missing_mandatory_fields_text_not_delete">Alguns campos obrigatórios estão ausentes. Se você quiser voltar, por favor preencha-os. </string>
@@ -252,7 +250,6 @@
     <string name="missing_mandatory_fields_go_back">Suprimir e voltar</string>
     <string name="error_fields">Alguns campos têm erros:/n%s/nPor favor, verifique-os.</string>
     <string name="missing_mandatory_fields_finish">Alguns campos obrigatórios estão ausentes. Você pode concluir a entrada e saída de dados, mas o evento não pode ser concluído.</string>
-    <string name="enrollment_coordinates">Coordenadas de inscrição</string>
     <string name="tei_coordinates">Coordenadas para o</string>
 
     <!--EVENT SUMMARY-->
@@ -515,7 +512,6 @@
     <string name="sync_setting">Configuração de sincronização: %s</string>
     <string name="relationship_without_enrollment">O registro que você está tentando acessar não tem inscrição. Você não pode acessar o painel.</string>
     <string name="formatting_error">Erro de formatação</string>
-    <string name="dashboard_menu_delete_enrollment">Suprimir somente inscrição</string>
     <string name="delete_authority_error">Você não tem autoridade para suprimir este registro</string>
     <string name="validation_url">Este url não é válido</string>
     <string name="uncomplete_authority_error">Você não tem autoridade para reabrir este evento</string>
@@ -610,7 +606,6 @@
     <string name="event_tei_limits_v2">Configurações limitadas %s \nEventos: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Ocultar dados de inscrição</string>
     <string name="enrollment_data_show">Mostrar dados de inscrição</string>
-    <string name="enrollment_data_section_label">Dados de inscrição</string>
     <string name="sms_enabled">Módulo SMS ativado</string>
     <string name="sms_disabled">Módulo SMS desativado</string>
     <string name="sms_downloading_data">Baixando dados para o módulo SMS. Por favor espere.</string>
@@ -634,7 +629,6 @@
     <string name="interval_hour_ago">%d horas atrás</string>
     <string name="interval_yesterday">Ontém</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="program_selector">Inscrições no programa</string>
     <string name="select_time">Selecionar hora</string>
     <string name="enter_letter">Inserir letra</string>
     <string name="enter_unit_interval">Digite o número de 0 a 1</string>

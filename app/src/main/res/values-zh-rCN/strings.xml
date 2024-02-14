@@ -154,7 +154,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">查看详情</string>
     <string name="view_more">更多</string>
-    <string name="enrolling_ou">注册机构</string>
     <string name="follow_up">后续跟踪</string>
     <string name="follow_up_enabled">使能后续跟踪</string>
     <string name="follow_up_disabled">后续跟踪关闭</string>
@@ -239,7 +238,6 @@
     <string name="add_note">添加笔记</string>
     <string name="revert">反转</string>
     <string name="activated">激活</string>
-    <string name="enroll_in">注册 %s</string>
     <string name="missing_mandatory_fields_title">强制字段缺失</string>
     <string name="missing_mandatory_fields_text">有些强制字段缺失，如果你后退，所有保存的信息将被删除。</string>
     <string name="missing_mandatory_fields_text_not_delete">有些强制字段缺失，如果你后退，请填充他们</string>
@@ -249,7 +247,6 @@
     <string name="missing_mandatory_fields_go_back">删除并后退</string>
     <string name="error_fields">有些字段有错误：%s。 \n 请检查。</string>
     <string name="missing_mandatory_fields_finish">有些强制字段缺失。你可以完成数据录入并退出，但不能完成该事件。</string>
-    <string name="enrollment_coordinates">注册坐标</string>
     <string name="tei_coordinates">坐标</string>
 
     <!--EVENT SUMMARY-->
@@ -512,7 +509,6 @@
     <string name="sync_setting">同步设置：%s</string>
     <string name="relationship_without_enrollment">你试图访问的记录还没有注册。你不能访问仪表盘。</string>
     <string name="formatting_error">格式化错误</string>
-    <string name="dashboard_menu_delete_enrollment">仅仅删除注册</string>
     <string name="delete_authority_error">你没有删除记录的权限</string>
     <string name="validation_url">没有有效的URL</string>
     <string name="uncomplete_authority_error">你没有打开该事件的权限。</string>
@@ -607,7 +603,6 @@
     <string name="event_tei_limits_v2">设置限制：%s。\n 事件：%s/%s  实体：%s/%s</string>
     <string name="enrollment_data_hide">隐藏注册数据</string>
     <string name="enrollment_data_show">显示注册数据</string>
-    <string name="enrollment_data_section_label">注册数据</string>
     <string name="sms_enabled">短信模块被激活</string>
     <string name="sms_disabled">短信模块被关闭</string>
     <string name="sms_downloading_data">下载短信模块，请等待。</string>
@@ -631,7 +626,6 @@
     <string name="interval_hour_ago">%d小时前</string>
     <string name="interval_yesterday">昨天</string>
     <string name="enrollment_single_section_label">属性- %s</string>
-    <string name="program_selector">项目注册</string>
     <string name="select_time">选择时间</string>
     <string name="enter_letter">输入字符</string>
     <string name="enter_unit_interval">输入0-1之间的数</string>

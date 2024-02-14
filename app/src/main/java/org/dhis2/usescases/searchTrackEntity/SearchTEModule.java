@@ -225,11 +225,23 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchSortingValueSetter searchSortingValueSetter(Context context, D2 d2, EnrollmentUiDataHelper enrollmentUiDataHelper) {
+    SearchSortingValueSetter searchSortingValueSetter(
+            Context context,
+            D2 d2,
+            EnrollmentUiDataHelper enrollmentUiDataHelper,
+            ResourceManager resourceManager) {
         String unknownLabel = context.getString(R.string.unknownValue);
         String eventDateLabel = context.getString(R.string.most_recent_event_date);
-        String enrollmentStatusLabel = context.getString(R.string.filters_title_enrollment_status);
-        String enrollmentDateDefaultLabel = context.getString(R.string.enrollment_date);
+        String enrollmentStatusLabel = resourceManager.formatWithEnrollmentLabel(
+                initialProgram,
+                R.string.filters_title_enrollment_status,
+                1,
+                false);
+        String enrollmentDateDefaultLabel = resourceManager.formatWithEnrollmentLabel(
+                initialProgram,
+                R.string.enrollment_date_V2,
+                1,
+                false);
         String uiDateFormat = DateUtils.SIMPLE_DATE_FORMAT;
         return new SearchSortingValueSetter(d2,
                 unknownLabel,

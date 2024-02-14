@@ -159,7 +159,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Voir les détails</string>
     <string name="view_more">Afficher plus</string>
-    <string name="enrolling_ou">Entité Org d´admission</string>
     <string name="follow_up">Suivi</string>
     <string name="follow_up_enabled">Suivi activé</string>
     <string name="follow_up_disabled">Suivi désactivé</string>
@@ -245,7 +244,6 @@
     <string name="add_note">Ajouter une note</string>
     <string name="revert">Annuler</string>
     <string name="activated">Activé</string>
-    <string name="enroll_in">S´inscrire à %s</string>
     <string name="missing_mandatory_fields_title">Les champs obligatoires sont manquant</string>
     <string name="missing_mandatory_fields_text">Certains des champs obligatoires sont manquant. Si vous voulez retourner, tout l´information sera supprimer</string>
     <string name="missing_mandatory_fields_text_not_delete">Certains champs obligatoires sont vides. Si vous voulez retourner, veuillez les renseigner. </string>
@@ -256,7 +254,6 @@
     <string name="missing_mandatory_fields_go_back">Supprimer et retourner</string>
     <string name="error_fields">Certains champs ont des erreurs:\n%s\nVeuillez les vérifier.</string>
     <string name="missing_mandatory_fields_finish">Des champs obligatoires ne sont pas renseignés. Vous pouvez terminer la saisie et quitter, mais l\'évènement ne peut être complété.</string>
-    <string name="enrollment_coordinates">Coordonnées de l\'enrôlement</string>
     <string name="tei_coordinates">Coordonnées pour</string>
 
     <!--EVENT SUMMARY-->
@@ -524,7 +521,6 @@
     <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
     <string name="dashboard_menu_delete_tei_v2">Supprimer 1%s</string>
-    <string name="dashboard_menu_delete_enrollment">Supprimer seulement l\'enrôlement</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
     <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
     <string name="uncomplete_authority_error">Vous n\'avez pas l\'autorité pour rouvrir cet évènement</string>
@@ -619,7 +615,6 @@
     <string name="event_tei_limits_v2">Paramètres limités %s \nEvénements: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Masquer les données d\'inscription</string>
     <string name="enrollment_data_show">Afficher les données d\'inscription</string>
-    <string name="enrollment_data_section_label">Données d\'inscription</string>
     <string name="sms_enabled">Le module SMS est activé</string>
     <string name="sms_disabled">Le module SMS est désactivé</string>
     <string name="sms_downloading_data">Téléchargement des données pour le module SMS. S\'il vous plaît, attendez</string>
@@ -643,7 +638,6 @@
     <string name="interval_hour_ago">%d heures depuis</string>
     <string name="interval_yesterday">Hier</string>
     <string name="enrollment_single_section_label">Attributs - %s</string>
-    <string name="program_selector">Inscriptions au programme</string>
     <string name="select_time">Sélectionnez l\'heure</string>
     <string name="enter_letter">Entrez une lettre</string>
     <string name="enter_unit_interval">Entrez un numéro de 0 à 1</string>
@@ -787,8 +781,6 @@
     <string name="from_gallery">Choisir depuis la galerie</string>
     <string name="data_set_quality_check_done">Terminé!</string>
     <string name="break_glass_dialog_title">Ce programme est protégé</string>
-    <string name="break_glass_dialog_description">Vous devez fournir une raison pour vérifier l\'inscription à ce programme protégé. Toutes les activités seront enregistrées.</string>
-    <string name="break_glass_reason">Raison de vérifier l\'inscription</string>
     <string name="break_glass_hint">Décrivez la raison ici</string>
     <string name="authenticating">En cours d\'authentification</string>
     <string name="login_error_no_dhis_instance">L\'URL du serveur fournie n\'est pas une instance dhis</string>
@@ -805,7 +797,6 @@
     <string name="blocked_by_completion">Ces données ne sont pas modifiables car elles sont marquées comme terminées</string>
     <string name="edition_no_write_access">Vous n\'êtes pas autorisé à modifier ces données</string>
     <string name="edition_no_catcombo_access">Vous n\'êtes pas autorisé à modifier ces données</string>
-    <string name="edition_enrollment_is_no_open">Ces données ne sont pas modifiables car l\'inscription est terminée ou annulée</string>
     <string name="reload_list">Réinitialiser la recherche</string>
     <string name="error_tei_online_search_title">La recherche en ligne a renvoyé le message suivant :</string>
     <string name="program_rules_loop_warning_title">Avertissement relatif aux règles du programme</string>

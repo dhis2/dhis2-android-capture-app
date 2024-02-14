@@ -58,9 +58,17 @@ class InfoBarMapper(
             InfoBarType.FOLLOW_UP -> resourceManager.getString(R.string.marked_follow_up)
             InfoBarType.ENROLLMENT_STATUS -> {
                 if (item.currentEnrollmentStatus == EnrollmentStatus.COMPLETED) {
-                    resourceManager.getString(R.string.enrollment_completed)
+                    resourceManager.formatWithEnrollmentLabel(
+                        item.currentProgram.uid(),
+                        R.string.enrollment_completed_V2,
+                        1,
+                    )
                 } else {
-                    resourceManager.getString(R.string.enrollment_cancelled)
+                    resourceManager.formatWithEnrollmentLabel(
+                        item.currentProgram.uid(),
+                        R.string.enrollment_cancelled_V2,
+                        1,
+                    )
                 }
             }
         }

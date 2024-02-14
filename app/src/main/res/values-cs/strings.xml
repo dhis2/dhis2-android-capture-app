@@ -162,7 +162,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Prohlednout detaily</string>
     <string name="view_more">UKÁZAT VÍCE</string>
-    <string name="enrolling_ou">Zápis Org. J.:</string>
     <string name="follow_up">Následovat</string>
     <string name="follow_up_enabled">Sledování povoleno</string>
     <string name="follow_up_disabled">Sledování zakázáno</string>
@@ -249,7 +248,6 @@
     <string name="add_note">Přidat poznámku</string>
     <string name="revert">Vrátit zpět</string>
     <string name="activated">Aktivováno</string>
-    <string name="enroll_in">Zapsat do %s</string>
     <string name="missing_mandatory_fields_title">Chybí povinná pole</string>
     <string name="missing_mandatory_fields_text">Některá povinná pole chybí. Pokud se chcete vrátit zpět, budou všechny uložené informace odstraněny.</string>
     <string name="missing_mandatory_fields_text_not_delete">Některá povinná pole chybí. Pokud se chcete vrátit, vyplňte je prosím.</string>
@@ -260,7 +258,6 @@
     <string name="missing_mandatory_fields_go_back">Smazat a vrátit se zpět</string>
     <string name="error_fields">Některá pole obsahují chyby:\n%s\nProsím zkontrolujte je.</string>
     <string name="missing_mandatory_fields_finish">Některá povinná pole chybí. Zadávání a ukončení dat můžete dokončit, ale událost nelze dokončit.</string>
-    <string name="enrollment_coordinates">Souřadnice registrace</string>
     <string name="tei_coordinates">Souřadnice pro</string>
 
     <!--EVENT SUMMARY-->
@@ -529,7 +526,6 @@
     <string name="relationship_without_enrollment">Záznam, ke kterému se pokoušíte získat přístup, nemá žádnou registraci. K hlavnímu panelu nemáte přístup.</string>
     <string name="formatting_error">Chyba formátování</string>
     <string name="dashboard_menu_delete_tei_v2">Smazat %s</string>
-    <string name="dashboard_menu_delete_enrollment">Smazat pouze zápis</string>
     <string name="delete_authority_error">Nemáte oprávnění tento záznam mazat</string>
     <string name="validation_url">Toto není platné URL</string>
     <string name="uncomplete_authority_error">Nemáte oprávnění znovu otevřít tuto událost</string>
@@ -624,7 +620,6 @@
     <string name="event_tei_limits_v2">Nastavení omezeno %s\nUdálosti: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Skrýt údaje o zápisu</string>
     <string name="enrollment_data_show">Zobrazit údaje o zápisu</string>
-    <string name="enrollment_data_section_label">Údaje o zápisu</string>
     <string name="sms_enabled">SMS modul povolen</string>
     <string name="sms_disabled">SMS modul deaktivován</string>
     <string name="sms_downloading_data">Stahování dat pro modul SMS. Prosím, čekejte</string>
@@ -648,7 +643,6 @@
     <string name="interval_hour_ago">před %d hodinami</string>
     <string name="interval_yesterday">Včera</string>
     <string name="enrollment_single_section_label">Atributy - %s</string>
-    <string name="program_selector">Programové zápisy</string>
     <string name="select_time">Vyberte čas</string>
     <string name="enter_letter">Zadejte písmeno</string>
     <string name="enter_unit_interval">Zadejte číslo od 0 do 1</string>
@@ -794,8 +788,6 @@
     <string name="from_gallery">Vybrat z galerie</string>
     <string name="data_set_quality_check_done">Hotovo!</string>
     <string name="break_glass_dialog_title">Tento program je chráněn</string>
-    <string name="break_glass_dialog_description">Musíte uvést důvod ke kontrole registrace v tomto chráněném programu. Veškerá aktivita bude zaznamenána.</string>
-    <string name="break_glass_reason">Důvod ke kontrole zápisu</string>
     <string name="break_glass_hint">Zde popište důvod</string>
     <string name="authenticating">Ověření</string>
     <string name="login_error_no_dhis_instance">Zadaná adresa URL serveru není instance dhis</string>
@@ -820,7 +812,6 @@
     <string name="edition_no_write_access">K úpravě těchto údajů nemáte oprávnění</string>
     <string name="event_date_not_in_orgunit_range">Tato data nelze upravovat, protože organizační jednotka je zavřená</string>
     <string name="edition_no_catcombo_access">K úpravě těchto údajů nemáte oprávnění</string>
-    <string name="edition_enrollment_is_no_open">Tato data nelze upravovat, protože zápis je dokončen nebo zrušen</string>
     <string name="edition_orgunit_capture_scope">Data z této organizační jednotky nemůžete upravovat</string>
     <string name="reload_list">Obnovit vyhledávání</string>
     <string name="error_tei_online_search_title">Online vyhledávání vrátilo následující zprávu:</string>
@@ -865,7 +856,6 @@
     <string name="account_disable_title">Účet zakázán</string>
     <string name="account_disable_message">Váš účet byl zakázán správcem.</string>
     <string name="search_unable_search_outside">Chcete-li vyhledávat mimo tento program, otevřete vyhledávací formulář a vyplňte jedno z následujících %s polí:</string>
-    <string name="enrollment_org_unit">Zápis Organizační jednotky</string>
     <string name="customactivityoncrash_error_activity_build_version">Verze sestavení: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Datum sestavení: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Aktuální datum: %s</string>

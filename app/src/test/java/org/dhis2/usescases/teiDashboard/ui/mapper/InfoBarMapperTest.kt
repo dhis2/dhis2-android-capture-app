@@ -33,8 +33,19 @@ class InfoBarMapperTest {
         whenever(resourceManager.getString(R.string.sync_warning)) doReturn "Sync warning"
         whenever(resourceManager.getString(R.string.sync_error)) doReturn "Sync Error"
         whenever(resourceManager.getString(R.string.marked_follow_up)) doReturn "Marked for follow up"
-        whenever(resourceManager.getString(R.string.enrollment_completed)) doReturn "Enrollment completed"
-        whenever(resourceManager.getString(R.string.enrollment_cancelled)) doReturn "Enrollment cancelled"
+        setPrograms().forEach {
+            whenever(
+                resourceManager.formatWithEnrollmentLabel(
+                    it.uid(), R.string.enrollment_completed_V2, 1,
+                ),
+            ) doReturn "Enrollment completed"
+            whenever(
+                resourceManager.formatWithEnrollmentLabel(
+                    it.uid(), R.string.enrollment_cancelled_V2, 1,
+                ),
+            ) doReturn "Enrollment cancelled"
+        }
+
         whenever(resourceManager.getString(R.string.sync)) doReturn "Sync"
         whenever(resourceManager.getString(R.string.sync_retry)) doReturn "Retry sync"
         whenever(resourceManager.getString(R.string.remove)) doReturn "remove"

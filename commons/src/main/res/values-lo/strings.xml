@@ -66,7 +66,6 @@
     <string name="enrollment_status_active">ເປີດ</string>
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
-    <string name="enrollment_org_unit">ລົງທະບຽນຫົວໜ່ວຍການຈັດຕັ້ງ</string>
 
     <!-- Periods -->
     <string name="filter_period_today">ມື້ນີ້</string>

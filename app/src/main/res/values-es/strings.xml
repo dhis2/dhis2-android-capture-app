@@ -161,7 +161,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Ver detalles</string>
     <string name="view_more">Ver mas</string>
-    <string name="enrolling_ou">OU de admision:</string>
     <string name="follow_up">Seguimiento</string>
     <string name="follow_up_enabled">Seguimiento activado</string>
     <string name="follow_up_disabled">Seguimiento desactivado</string>
@@ -247,7 +246,6 @@
     <string name="add_note">Añadir nota</string>
     <string name="revert">Deshacer</string>
     <string name="activated">Activado</string>
-    <string name="enroll_in">Enrolar en %s</string>
     <string name="missing_mandatory_fields_title">Los campos obligatorios no pueden estar vacios</string>
     <string name="missing_mandatory_fields_text">Algunos campos obligatorios están vacíos. Si desea ir atrás ahora, toda la información guardada se borrará.</string>
     <string name="missing_mandatory_fields_text_not_delete">Faltan campos obligatorios. Rellénelos para ir atrás. </string>
@@ -258,7 +256,6 @@
     <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
     <string name="error_fields">Algunos campos tienen errores:\n%s\nRevíselos, por favor.</string>
     <string name="missing_mandatory_fields_finish">Algunos campos obligatorios están vacíos. Puede terminar la entrada de datos y salir, pero el evento no podrá ser completado.</string>
-    <string name="enrollment_coordinates">Coordenadas de admisión </string>
     <string name="tei_coordinates">Coordenadas para</string>
 
     <!--EVENT SUMMARY-->
@@ -527,7 +524,6 @@
     <string name="relationship_without_enrollment">Este registro no tiene ninguna inscripción. No se puede acceder al dashboard.</string>
     <string name="formatting_error">Error de formato</string>
     <string name="dashboard_menu_delete_tei_v2">Eliminar %s</string>
-    <string name="dashboard_menu_delete_enrollment">Borrar solo la admisión </string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
@@ -622,7 +618,6 @@
     <string name="event_tei_limits_v2">Configuración limitada %s\nEventos: %s/%s Entidades: %s/%s</string>
     <string name="enrollment_data_hide">Ocultar datos de registro</string>
     <string name="enrollment_data_show">Mostrar datos de registro</string>
-    <string name="enrollment_data_section_label">Datos de registro</string>
     <string name="sms_enabled">Módulo de SMS activado</string>
     <string name="sms_disabled">Módulo de SMS desactivado</string>
     <string name="sms_downloading_data">Descargando datos para el módulo de SMS. Por favor espere.</string>
@@ -646,7 +641,6 @@
     <string name="interval_hour_ago">Hace %d horas</string>
     <string name="interval_yesterday">Ayer</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="program_selector">Registros en programas</string>
     <string name="select_time">Selecciona hora</string>
     <string name="enter_letter">Introduzca una letra</string>
     <string name="enter_unit_interval">Introduzca un número de 0 a 1</string>
@@ -792,8 +786,6 @@
     <string name="from_gallery">Elija de la galería</string>
     <string name="data_set_quality_check_done">¡Listo!</string>
     <string name="break_glass_dialog_title">Este programa está protegido</string>
-    <string name="break_glass_dialog_description">Debe proporcionar una razón para comprobar la inscripción en este programa protegido. Se registrará toda la actividad.</string>
-    <string name="break_glass_reason">Razón para verificar la inscripción</string>
     <string name="break_glass_hint">Describe aquí la razón</string>
     <string name="authenticating">Autentificando</string>
     <string name="login_error_no_dhis_instance">El enlace del servidor proporcionada no es una instancia de dhis</string>
@@ -818,7 +810,6 @@
     <string name="edition_no_write_access">No tiene permisos de edición para estos datos.</string>
     <string name="event_date_not_in_orgunit_range">Los datos no son editables por que la unidad organizativa está cerrada.</string>
     <string name="edition_no_catcombo_access">No tiene permisos de edición para estos datos.</string>
-    <string name="edition_enrollment_is_no_open">Los datos no son editables por que el registro está cerrado o cancelado.</string>
     <string name="edition_orgunit_capture_scope">No puede editar datos en esta unidad organizativa.</string>
     <string name="reload_list">Reiniciar búsqueda</string>
     <string name="error_tei_online_search_title">La búsqueda online a devuelto este mensaje:</string>
@@ -863,7 +854,6 @@
     <string name="account_disable_title">Cuenta deshabilitada</string>
     <string name="account_disable_message">Tu cuenta ha sido deshabilitada por un administrador</string>
     <string name="search_unable_search_outside">Para hacer una búsqueda fuera del programa, debe abrir el formulario de búsqueda y llenar uno de los siguientes campos %s :</string>
-    <string name="enrollment_org_unit">Unid. Org. del registro</string>
     <string name="customactivityoncrash_error_activity_build_version">Versión de compilación: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Fecha de compilación: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Fecha actual: %s</string>

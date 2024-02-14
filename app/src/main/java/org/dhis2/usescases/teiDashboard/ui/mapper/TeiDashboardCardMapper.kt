@@ -144,6 +144,7 @@ class TeiDashboardCardMapper(
             }
         }.also { list ->
             addEnrollmentDate(
+                item.currentProgram.uid(),
                 list,
                 item.currentProgram.enrollmentDateLabel(),
                 item.currentEnrollment.enrollmentDate(),
@@ -211,13 +212,20 @@ class TeiDashboardCardMapper(
     }
 
     private fun addEnrollmentDate(
+        programUid: String,
         list: MutableList<AdditionalInfoItem>,
         programLabel: String?,
         enrollmentDate: Date?,
     ) {
         list.add(
             AdditionalInfoItem(
-                key = "${programLabel ?: resourceManager.getString(R.string.enrollment_date)}:",
+                key = "${
+                    programLabel ?: resourceManager.formatWithEnrollmentLabel(
+                        programUid,
+                        R.string.enrollment_date_V2,
+                        1,
+                    )
+                }:",
                 value = enrollmentDate.toUi() ?: "",
                 isConstantItem = true,
             ),

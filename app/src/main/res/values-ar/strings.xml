@@ -164,7 +164,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">انظر التفاصيل</string>
     <string name="view_more">عرض المزيد</string>
-    <string name="enrolling_ou">الوحدة التنظيمية المسجلة</string>
     <string name="follow_up">متابعة</string>
     <string name="follow_up_enabled">تم تمكين المتابعة</string>
     <string name="follow_up_disabled">تم ايقاف المتابعة</string>
@@ -253,7 +252,6 @@
     <string name="add_note">أضف ملاحظة</string>
     <string name="revert">العودة</string>
     <string name="activated">نشط</string>
-    <string name="enroll_in">تسجيل في %s</string>
     <string name="missing_mandatory_fields_title">بعض الحقول الإلزامية مفقودة</string>
     <string name="missing_mandatory_fields_text">بعض الحقول الإلزامية مفقودة. إذا كنت تريد الرجوع الآن ، فسيتم حذف جميع المعلومات المحفوظة.</string>
     <string name="missing_mandatory_fields_text_not_delete">بعض الحقول الإلزامية مفقودة. إذا كنت تريد العودة ، يرجى ملؤها.</string>
@@ -264,7 +262,6 @@
     <string name="missing_mandatory_fields_go_back">الحذف والرجوع للخلف</string>
     <string name="error_fields">تحتوي بعض الحقول على أخطاء:\n%s\n يرجى التحقق منها.</string>
     <string name="missing_mandatory_fields_finish">بعض الحقول الإلزامية مفقودة. يمكنك إنهاء إدخال البيانات والخروج، لكن لا يمكن تعيين الحدث كمكتمل.</string>
-    <string name="enrollment_coordinates">إحداثيات التسجيل</string>
     <string name="tei_coordinates">إحداثيات لـ </string>
 
     <!--EVENT SUMMARY-->
@@ -533,7 +530,6 @@
     <string name="relationship_without_enrollment">السجل الذي تحاول الوصول إليه ليس لديه تسجيل. لا يمكنك الوصول إلى لوحة المعلومات.</string>
     <string name="formatting_error">خطأ في التنسيق</string>
     <string name="dashboard_menu_delete_tei_v2">حذف %s</string>
-    <string name="dashboard_menu_delete_enrollment">حذف التسجيل فقط</string>
     <string name="delete_authority_error">ليس لديك الصلاحية لحذف هذا السجل</string>
     <string name="validation_url">هذا ليس عنوان url صالحاً</string>
     <string name="uncomplete_authority_error">ليس لديك الصلاحية لإعادة فتح هذا الحدث</string>
@@ -628,7 +624,6 @@
     <string name="event_tei_limits_v2">الإعدادات محدودة %s\n الأحداث: %s/%s، TEI: %s/%s</string>
     <string name="enrollment_data_hide">إخفاء بيانات التسجيل</string>
     <string name="enrollment_data_show">إظهار بيانات التسجيل</string>
-    <string name="enrollment_data_section_label">بيانات التسجيل</string>
     <string name="sms_enabled">وحدة الرسائل القصيرة مفعلة</string>
     <string name="sms_disabled">وحدة الرسائل القصيرة غير مفعلة</string>
     <string name="sms_downloading_data">تحميل البيانات لوحدة الرسائل القصيرة. يرجى الإنتظار</string>
@@ -652,7 +647,6 @@
     <string name="interval_hour_ago">منذ %d ساعة</string>
     <string name="interval_yesterday">الأمس</string>
     <string name="enrollment_single_section_label">السمات - %s</string>
-    <string name="program_selector">التسجيلات في البرنامج</string>
     <string name="select_time">إختر الوقت</string>
     <string name="enter_letter">ادخل حرف</string>
     <string name="enter_unit_interval">أدخل رقماً من 0 إلى 1</string>
@@ -816,7 +810,6 @@
     <string name="edition_no_write_access">ليس لديك إذن لتحرير هذه البيانات</string>
     <string name="event_date_not_in_orgunit_range">هذه البيانات غير قابلة للتعديل لأنه تم اغلاق الوحدة التنظيمية</string>
     <string name="edition_no_catcombo_access">ليس لديك إذن لتحرير هذه البيانات</string>
-    <string name="edition_enrollment_is_no_open">هذه البيانات غير قابلة للتعديل بسبب اكتمال التسجيل أو إلغاؤه</string>
     <string name="edition_orgunit_capture_scope">لا يمكنك تحرير البيانات من هذه الوحدة التنظيمية</string>
     <string name="reload_list">إعادة البحث</string>
     <string name="error_tei_online_search_title">البحث عبر الإتصال بالسيرفر عن طريق الإنترنت ارجع الرسالة التالية:</string>

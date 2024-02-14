@@ -156,7 +156,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Lihat rincian</string>
     <string name="view_more">LIHAT LAINNYA</string>
-    <string name="enrolling_ou">Daftarkan OU:</string>
     <string name="follow_up">Tindak lanjut</string>
     <string name="follow_up_enabled">Tindak lanjut diterapkan</string>
     <string name="follow_up_disabled">Tindak lanjut ditutup</string>
@@ -240,7 +239,6 @@
     <string name="add_note">Tambah catatan</string>
     <string name="revert">Kembali</string>
     <string name="activated">Diaktifkan</string>
-    <string name="enroll_in">Mendaftar %s</string>
     <string name="missing_mandatory_fields_title">Bidang wajib tidak ada</string>
     <string name="missing_mandatory_fields_text">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali sekarang, semua informasi yang disimpan akan dihapus.</string>
     <string name="missing_mandatory_fields_text_not_delete">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali, silakan isi.</string>
@@ -250,7 +248,6 @@
     <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
     <string name="error_fields">Beberapa parameter terjadi kesalahan:\n 1 %s \n Mohon, diperiksa</string>
     <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
-    <string name="enrollment_coordinates">Koordinat pendaftaran</string>
     <string name="tei_coordinates">Koordinat untuk</string>
 
     <!--EVENT SUMMARY-->
@@ -514,7 +511,6 @@
     <string name="sync_setting">Pengaturan sinkronisasi: %s</string>
     <string name="relationship_without_enrollment">Catatan yang Anda coba akses tidak memiliki pendaftaran. Anda tidak dapat mengakses dasbor.</string>
     <string name="formatting_error">Memformat kesalahan</string>
-    <string name="dashboard_menu_delete_enrollment">Hapus pendaftaran saja</string>
     <string name="delete_authority_error">Anda tidak memiliki wewenang untuk menghapus catatan ini</string>
     <string name="validation_url">Ini bukan url yang valid</string>
     <string name="uncomplete_authority_error">Anda tidak memiliki wewenang untuk membuka kembali acara ini</string>
@@ -719,7 +715,6 @@
     <string name="event_tei_limits_v2">Pengaturan terbatas %s\nAcara: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Sembunyikan data pendaftaran</string>
     <string name="enrollment_data_show">Tampilkan data pendaftaran</string>
-    <string name="enrollment_data_section_label">Data pendaftaran</string>
     <string name="sms_enabled">Modul SMS diaktifkan</string>
     <string name="sms_disabled">Modul SMS dinonaktifkan</string>
     <string name="sms_downloading_data">Mengunduh data untuk modul SMS. Mohon tunggu</string>
@@ -743,7 +738,6 @@
     <string name="interval_hour_ago">%d jam yang lalu</string>
     <string name="interval_yesterday">Kemarin</string>
     <string name="enrollment_single_section_label">Atribut - %s</string>
-    <string name="program_selector">Pendaftaran program</string>
     <string name="select_time">Pilih waktu</string>
     <string name="enter_letter">Masukkan huruf</string>
     <string name="enter_unit_interval">Masukkan nomor dari 0 hingga 1</string>
@@ -884,8 +878,6 @@
     <string name="from_gallery">Pilih dari galeri</string>
     <string name="data_set_quality_check_done">Selesai!</string>
     <string name="break_glass_dialog_title">Program ini dilindungi</string>
-    <string name="break_glass_dialog_description">Anda harus memberikan alasan untuk memeriksa pendaftaran dalam program yang dilindungi ini. Semua aktivitas akan dicatat.</string>
-    <string name="break_glass_reason">Alasan untuk memeriksa pendaftaran</string>
     <string name="break_glass_hint">Jelaskan alasannya di sini</string>
     <string name="authenticating">Otentikasi</string>
     <string name="login_error_no_dhis_instance">URL server yang disediakan bukan instance dhis</string>

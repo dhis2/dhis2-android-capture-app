@@ -146,7 +146,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Tafsilotlarni koʼring</string>
     <string name="view_more">KOʼPROQ KOʼRISh</string>
-    <string name="enrolling_ou">OUga roʼyxatga olish</string>
     <string name="follow_up">Kuzatib borish</string>
     <string name="follow_up_enabled">Kuzatuv yoqilgan</string>
     <string name="follow_up_disabled">Kuzatuv oʼchirilgan</string>
@@ -224,7 +223,6 @@
     <string name="add_note">Izoh qoldirish</string>
     <string name="revert">Qaytish</string>
     <string name="activated">Faollashtirildi</string>
-    <string name="enroll_in">Qayd qilingan %s</string>
     <string name="missing_mandatory_fields_title">Majburiy maydonlar qoldirib ketilgan</string>
     <string name="missing_mandatory_fields_text">Baʼzi majburiy maydonlar qoldirib ketilgan. Аgar hozir orqaga qaytsangiz, barcha saqlangan maʼlumotlar oʼchib ketadi.</string>
     <string name="missing_mandatory_fields_text_not_delete">Baʼzi majburiy maydonlar qoldirib ketilgan. Аgar orqaga qaytmoqchi boʼlsangiz, Iltimos, ularni toʼldiring.</string>
@@ -234,7 +232,6 @@
     <string name="missing_mandatory_fields_go_back">Oʼchirib tashlash va orqaga qaytish</string>
     <string name="error_fields">Baʼzi maʼlumotlarda xatoliklar mavjud: \n%s\. Iltimos, ularni tekshiring.</string>
     <string name="missing_mandatory_fields_finish">Baʼzi majburiy maydonlar qoldirib ketilgan. Siz maʼlumotlarni kiritishni yakunlab chiqishingiz mumkin. Аmmo bu holda hodisa/tadbirni yakunlab boʼlmaydi.</string>
-    <string name="enrollment_coordinates">Roʼyxatdan oʼtish koordinatalari</string>
     <string name="tei_coordinates">Uchun koordinatalar</string>
 
     <!--EVENT SUMMARY-->
@@ -493,7 +490,6 @@
     <string name="sync_setting">Sinxronizatsiya sozlanmasi: %s</string>
     <string name="relationship_without_enrollment">Siz kirib koʼrmoqchi boʼlgan yozuv qayd etilmagan. Siz boshqaruv paneliga kira olmaysiz</string>
     <string name="formatting_error">Formatlashda xatolik</string>
-    <string name="dashboard_menu_delete_enrollment">Faqat qaydlarni oʼchirib tashlash</string>
     <string name="delete_authority_error">Ushbu yozuvni oʼchirib tashlash huquqiga ega emassiz</string>
     <string name="validation_url">Bu haqiqiy URL emas</string>
     <string name="uncomplete_authority_error">Ushbu hodisa/tadbirni qayta ochishga vakolatingiz yoʼq</string>
@@ -588,7 +584,6 @@
     <string name="event_tei_limits_v2">Sozlamalar cheklangan %s \n Hodisa/tadbirlar: %s / %s TEI: %s / %s</string>
     <string name="enrollment_data_hide">Qayd qilish maʼlumotlarini berkitish</string>
     <string name="enrollment_data_show">Qayd qilish maʼlumotlarini koʼrsatish</string>
-    <string name="enrollment_data_section_label">Qayd qilish maʼlumotlari</string>
     <string name="sms_enabled">SMS modul yoqib qoʼyilgan</string>
     <string name="sms_disabled">SMS modul oʼchirib qoʼyilgan</string>
     <string name="sms_downloading_data">SMS modul uchun maʼlumotlar yuklanmoqda. Iltimos, kuting</string>
@@ -612,7 +607,6 @@
     <string name="interval_hour_ago">%d soat oldin</string>
     <string name="interval_yesterday">Кеча</string>
     <string name="enrollment_single_section_label">Аtribatlar - %s</string>
-    <string name="program_selector">Dastur qaydlari</string>
     <string name="select_time">Vaqtni tanlang</string>
     <string name="enter_letter">Xatni kiriting</string>
     <string name="enter_unit_interval">0 dan 1 gacha raqamni kiriting</string>
