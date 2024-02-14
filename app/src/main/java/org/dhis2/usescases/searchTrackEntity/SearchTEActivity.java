@@ -6,7 +6,6 @@ import static org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParam
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
@@ -35,8 +34,6 @@ import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
-import org.dhis2.databinding.SnackbarMinAttrBinding;
-import org.dhis2.form.ui.event.RecyclerViewUiEvents;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -226,26 +223,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         searchComponent.inject(this);
     }
 
-    private void showSnackbar(View view, String message, String actionText) {
-        Snackbar snackbar = Snackbar.make(
-                view,
-                actionText,
-                BaseTransientBottomBar.LENGTH_LONG
-        );
-        SnackbarMinAttrBinding snackbarBinding = SnackbarMinAttrBinding.inflate(getLayoutInflater());
-        snackbarBinding.message.setText(message);
-        snackbarBinding.actionButton.setOnClickListener(v -> {
-            if (snackbar.isShown()) snackbar.dismiss();
-        });
-        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
-        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
-        snackbarLayout.setPadding(0, 0, 0, 0);
-
-        snackbarLayout.addView(snackbarBinding.getRoot(), 0);
-
-        snackbar.show();
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -332,11 +309,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     if (hasChanged) viewModel.refreshData();
                 })
                 .onNoConnectionListener(() ->
-                    Snackbar.make(
-                        contextView,
-                        R.string.sync_offline_check_connection,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                        Snackbar.make(
+                                contextView,
+                                R.string.sync_offline_check_connection,
+                                Snackbar.LENGTH_SHORT
+                        ).show()
                 )
                 .show("PROGRAM_SYNC");
     }
@@ -356,29 +333,34 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 initialProgram,
                 tEType,
                 resourceManager,
-                (uid, preselectedOrgUnits, orgUnitScope) -> {
-                        new OUTreeFragment.Builder()
-                                .showAsDialog()
-                                .withPreselectedOrgUnits(preselectedOrgUnits)
-                                .singleSelection()
-                                .onSelection(selectedOrgUnits -> {
-                                    String selecteOrgUnit = null;
-                                    if(!selectedOrgUnits.isEmpty()) {
-                                        selecteOrgUnit = selectedOrgUnits.get(0).uid();
-                                    }
-                                    viewModel.onParameterIntent(
-                                            new FormIntent.OnSave(
-                                                    uid,
-                                                    selecteOrgUnit,
-                                                    ValueType.ORGANISATION_UNIT,
-                                                    null
-                                            )
-                                    );
-                                    return Unit.INSTANCE;
-                                })
-                                .orgUnitScope(orgUnitScope)
-                                .build()
-                                .show(getSupportFragmentManager(), "OUTreeFragment");
+                (uid, preselectedOrgUnits, orgUnitScope, label) -> {
+                    new OUTreeFragment.Builder()
+                            .showAsDialog()
+                            .withPreselectedOrgUnits(preselectedOrgUnits)
+                            .singleSelection()
+                            .onSelection(selectedOrgUnits -> {
+                                String selecteOrgUnit = null;
+                                if (!selectedOrgUnits.isEmpty()) {
+                                    selecteOrgUnit = selectedOrgUnits.get(0).uid();
+                                }
+                                viewModel.onParameterIntent(
+                                        new FormIntent.OnSave(
+                                                uid,
+                                                selecteOrgUnit,
+                                                ValueType.ORGANISATION_UNIT,
+                                                null
+                                        )
+                                );
+                                return Unit.INSTANCE;
+                            })
+                            .orgUnitScope(orgUnitScope)
+                            .build()
+                            .show(getSupportFragmentManager(), label);
+                    return Unit.INSTANCE;
+                },
+                (uid, optionSet, renderingType) -> {
+
+                    // TODO
                     return Unit.INSTANCE;
                 },
                 () -> {
@@ -598,11 +580,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     if (hasChanged) viewModel.refreshData();
                 })
                 .onNoConnectionListener(() ->
-                    Snackbar.make(
-                            contextView,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT
-                    ).show()
+                        Snackbar.make(
+                                contextView,
+                                R.string.sync_offline_check_connection,
+                                Snackbar.LENGTH_SHORT
+                        ).show()
                 ).show("TEI_SYNC");
     }
 

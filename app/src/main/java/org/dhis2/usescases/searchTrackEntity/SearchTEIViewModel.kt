@@ -30,7 +30,6 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
-import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersRepository
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -49,7 +48,6 @@ class SearchTEIViewModel(
     private val networkUtils: NetworkUtils,
     private val dispatchers: DispatcherProvider,
     private val mapStyleConfig: MapStyleConfiguration,
-    private val searchParametersRepository: SearchParametersRepository,
     private val resourceManager: ResourceManager,
     private val displayNameProvider: DisplayNameProvider,
 ) : ViewModel() {
@@ -745,7 +743,7 @@ class SearchTEIViewModel(
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
             val fieldUiModels =
-                searchParametersRepository.searchParameters(programUid, teiTypeUid)
+                searchRepositoryKt.searchParameters(programUid, teiTypeUid)
             uiState = uiState.copy(items = fieldUiModels)
         }
     }
@@ -785,6 +783,8 @@ class SearchTEIViewModel(
             )
         }
 
-        else -> {}
+        else -> {
+            // no-op
+        }
     }
 }

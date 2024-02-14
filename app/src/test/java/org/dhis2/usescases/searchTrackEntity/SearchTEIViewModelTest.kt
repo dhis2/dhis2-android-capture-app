@@ -19,7 +19,6 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
-import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersRepository
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -48,7 +47,6 @@ class SearchTEIViewModelTest {
     private val mapDataRepository: MapDataRepository = mock()
     private val networkUtils: NetworkUtils = mock()
     private val mapStyleConfiguration: MapStyleConfiguration = mock()
-    private val searchParametersRepository: SearchParametersRepository = mock()
     private val resourceManager: ResourceManager = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
 
@@ -86,7 +84,6 @@ class SearchTEIViewModelTest {
                 }
             },
             mapStyleConfiguration,
-            searchParametersRepository = searchParametersRepository,
             resourceManager = resourceManager,
             displayNameProvider = displayNameProvider,
         )

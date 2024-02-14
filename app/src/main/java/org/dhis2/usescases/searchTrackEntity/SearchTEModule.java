@@ -64,7 +64,6 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
-import org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersRepository;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -162,9 +161,17 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchRepositoryKt searchRepositoryKt(
-            SearchRepository searchRepository
+            SearchRepository searchRepository,
+            D2 d2,
+            DispatcherProvider dispatcherProvider,
+            FieldViewModelFactory fieldViewModelFactory
     ) {
-        return new SearchRepositoryImplKt(searchRepository);
+        return new SearchRepositoryImplKt(
+                searchRepository,
+                d2,
+                dispatcherProvider,
+                fieldViewModelFactory
+        );
     }
 
     @Provides
@@ -274,7 +281,6 @@ public class SearchTEModule {
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2,
-            SearchParametersRepository searchParametersRepository,
             ResourceManager resourceManager,
             DisplayNameProvider displayNameProvider
     ) {
@@ -288,7 +294,6 @@ public class SearchTEModule {
                 networkUtils,
                 new SearchDispatchers(),
                 new MapStyleConfiguration(d2),
-                searchParametersRepository,
                 resourceManager,
                 displayNameProvider
         );
@@ -302,16 +307,6 @@ public class SearchTEModule {
                 new OrgUnitConfiguration(d2),
                 new FileResourceConfiguration(d2)
         );
-    }
-
-    @Provides
-    @PerActivity
-    SearchParametersRepository provideSearchParametersRepository(
-            D2 d2,
-            DispatcherProvider dispatcherProvider,
-            FieldViewModelFactory fieldViewModelFactory
-    ) {
-        return new SearchParametersRepository(d2, dispatcherProvider, fieldViewModelFactory);
     }
 
     @Provides

@@ -33,6 +33,7 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
@@ -50,10 +51,16 @@ fun SearchParametersScreen(
     resourceManager: ResourceManager,
     uiState: SearchParametersUiState,
     intentHandler: (FormIntent) -> Unit,
-    showOrgUnit: (
+    onShowOrgUnit: (
         uid: String,
         preselectedOrgUnits: List<String>,
         orgUnitScope: OrgUnitSelectorScope,
+        label: String,
+    ) -> Unit,
+    onScanQRCode: (
+        uid: String,
+        optionSet: String?,
+        renderingType: UiRenderType?,
     ) -> Unit,
     onSearchClick: () -> Unit,
     onClear: () -> Unit,
@@ -71,17 +78,24 @@ fun SearchParametersScreen(
             override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
                 when (uiEvent) {
                     is RecyclerViewUiEvents.OpenOrgUnitDialog ->
-                        showOrgUnit(
+                        onShowOrgUnit(
                             uiEvent.uid,
                             uiEvent.value?.let { listOf(it) } ?: emptyList(),
                             uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope(),
+                            uiEvent.label,
                         )
 
                     is RecyclerViewUiEvents.ScanQRCode -> {
-                        TODO()
+                        onScanQRCode(
+                            uiEvent.uid,
+                            uiEvent.optionSet,
+                            uiEvent.renderingType,
+                        )
                     }
 
-                    else -> {}
+                    else -> {
+                        // no-op
+                    }
                 }
             }
         }
@@ -198,7 +212,8 @@ fun SearchFormPreview() {
             ),
         ),
         intentHandler = {},
-        showOrgUnit = { _, _, _ -> },
+        onShowOrgUnit = { _, _, _, _ -> },
+        onScanQRCode = { _, _, _ -> },
         onSearchClick = {},
         onClear = {},
     )
@@ -210,10 +225,16 @@ fun initSearchScreen(
     program: String?,
     teiType: String,
     resources: ResourceManager,
-    showOrgUnit: (
+    onShowOrgUnit: (
         uid: String,
         preselectedOrgUnits: List<String>,
         orgUnitScope: OrgUnitSelectorScope,
+        label: String,
+    ) -> Unit,
+    onScanQRCode: (
+        uid: String,
+        optionSet: String?,
+        renderingType: UiRenderType?,
     ) -> Unit,
     onClear: () -> Unit,
 ) {
@@ -227,7 +248,8 @@ fun initSearchScreen(
             uiState = viewModel.uiState,
             onSearchClick = viewModel::onSearchClick,
             intentHandler = viewModel::onParameterIntent,
-            showOrgUnit = showOrgUnit,
+            onShowOrgUnit = onShowOrgUnit,
+            onScanQRCode = onScanQRCode,
             onClear = {
                 onClear()
                 viewModel.clearQueryData()
