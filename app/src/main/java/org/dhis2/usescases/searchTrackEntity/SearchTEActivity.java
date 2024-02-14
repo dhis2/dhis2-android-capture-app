@@ -358,11 +358,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             .show(getSupportFragmentManager(), label);
                     return Unit.INSTANCE;
                 },
-                (uid, optionSet, renderingType) -> {
-
-                    // TODO
-                    return Unit.INSTANCE;
-                },
                 () -> {
                     presenter.onClearClick();
                     return Unit.INSTANCE;

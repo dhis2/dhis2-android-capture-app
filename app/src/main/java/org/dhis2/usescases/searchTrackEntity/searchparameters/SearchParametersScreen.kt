@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity.searchparameters
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,14 +27,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
-import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
@@ -57,11 +61,6 @@ fun SearchParametersScreen(
         orgUnitScope: OrgUnitSelectorScope,
         label: String,
     ) -> Unit,
-    onScanQRCode: (
-        uid: String,
-        optionSet: String?,
-        renderingType: UiRenderType?,
-    ) -> Unit,
     onSearchClick: () -> Unit,
     onClear: () -> Unit,
 ) {
@@ -69,6 +68,20 @@ fun SearchParametersScreen(
     val snackBarHostState = scaffoldState.snackbarHostState
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+
+    val qrScanLauncher = rememberLauncherForActivityResult(
+        contract = ScanContract(),
+    ) { result ->
+        result.contents?.let { qrData ->
+            val intent = FormIntent.OnSave(
+                result.originalIntent.getStringExtra(Constants.UID)!!,
+                qrData,
+                ValueType.TEXT,
+            )
+            intentHandler(intent)
+        }
+    }
+
     val callback = remember {
         object : FieldUiModel.Callback {
             override fun intent(intent: FormIntent) {
@@ -86,10 +99,21 @@ fun SearchParametersScreen(
                         )
 
                     is RecyclerViewUiEvents.ScanQRCode -> {
-                        onScanQRCode(
-                            uiEvent.uid,
-                            uiEvent.optionSet,
-                            uiEvent.renderingType,
+                        qrScanLauncher.launch(
+                            ScanOptions().apply {
+                                setDesiredBarcodeFormats()
+                                setPrompt("")
+                                setBeepEnabled(true)
+                                setBarcodeImageEnabled(false)
+                                addExtra(Constants.UID, uiEvent.uid)
+                                uiEvent.optionSet?.let {
+                                    addExtra(
+                                        Constants.OPTION_SET,
+                                        uiEvent.optionSet,
+                                    )
+                                }
+                                addExtra(Constants.SCAN_RENDERING_TYPE, uiEvent.renderingType)
+                            },
                         )
                     }
 
@@ -158,11 +182,11 @@ fun SearchParametersScreen(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
                     style = ButtonStyle.TEXT,
-                    text = "Clear search",
+                    text = resourceManager.getString(R.string.clear_search),
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Cancel,
-                            contentDescription = "Clear search",
+                            contentDescription = resourceManager.getString(R.string.clear_search),
                             tint = SurfaceColor.Primary,
                         )
                     },
@@ -178,7 +202,7 @@ fun SearchParametersScreen(
                     .padding(16.dp, 8.dp, 16.dp, 8.dp)
                     .testTag("SEARCH_BUTTON"),
                 style = ButtonStyle.FILLED,
-                text = "Search",
+                text = resourceManager.getString(R.string.search),
             ) {
                 onSearchClick()
             }
@@ -213,7 +237,6 @@ fun SearchFormPreview() {
         ),
         intentHandler = {},
         onShowOrgUnit = { _, _, _, _ -> },
-        onScanQRCode = { _, _, _ -> },
         onSearchClick = {},
         onClear = {},
     )
@@ -231,11 +254,6 @@ fun initSearchScreen(
         orgUnitScope: OrgUnitSelectorScope,
         label: String,
     ) -> Unit,
-    onScanQRCode: (
-        uid: String,
-        optionSet: String?,
-        renderingType: UiRenderType?,
-    ) -> Unit,
     onClear: () -> Unit,
 ) {
     viewModel.fetchSearchParameters(
@@ -249,7 +267,6 @@ fun initSearchScreen(
             onSearchClick = viewModel::onSearchClick,
             intentHandler = viewModel::onParameterIntent,
             onShowOrgUnit = onShowOrgUnit,
-            onScanQRCode = onScanQRCode,
             onClear = {
                 onClear()
                 viewModel.clearQueryData()
