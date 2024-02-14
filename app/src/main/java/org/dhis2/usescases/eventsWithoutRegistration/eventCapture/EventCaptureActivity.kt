@@ -148,7 +148,7 @@ class EventCaptureActivity :
     private fun setUpNavigationBar(initialPage: Int) {
         binding.navigationBar.setInitialPage(initialPage)
         binding.navigationBar.pageConfiguration(pageConfigurator!!)
-        binding.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
+        binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
             binding.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
             true
         }
@@ -342,7 +342,7 @@ class EventCaptureActivity :
     ) {
         binding.programStageName.text = stageName
         val eventDataString = StringBuilder(String.format("%s | %s", eventDate, orgUnit))
-        if (catOption != null && !catOption.isEmpty()) {
+        if (catOption.isNotEmpty()) {
             eventDataString.append(String.format(" | %s", catOption))
         }
         binding.eventSecundaryInfo.text = eventDataString
