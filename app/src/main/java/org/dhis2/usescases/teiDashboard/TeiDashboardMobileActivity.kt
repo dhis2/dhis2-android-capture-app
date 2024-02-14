@@ -567,7 +567,8 @@ class TeiDashboardMobileActivity :
                 }
 
                 val deleteEnrollmentItem = popupMenu.menu.findItem(R.id.deleteEnrollment)
-                deleteEnrollmentItem.isVisible = presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
+                deleteEnrollmentItem.isVisible =
+                    presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
 
                 if (enrollmentUid != null) {
                     popupMenu.menu.findItem(R.id.deleteEnrollment).let { deleteEnrollmentItem ->
@@ -605,7 +606,7 @@ class TeiDashboardMobileActivity :
                         showTutorial(true)
                     }
 
-                    R.id.markForFollowUp -> dashboardViewModel.onFollowUp(programModel)
+                    R.id.markForFollowUp -> dashboardViewModel.onFollowUp()
                     R.id.deleteTei -> showDeleteTEIConfirmationDialog()
                     R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()
                     R.id.programSelector -> presenter.onEnrollmentSelectorClick()
@@ -679,17 +680,24 @@ class TeiDashboardMobileActivity :
     }
 
     private fun showRemoveEnrollmentConfirmationDialog() {
-        DeleteBottomSheetDialog(
-            title = getString(R.string.remove_enrollment_dialog_title).format(programModel.currentProgram.displayName()),
-            description = getString(R.string.remove_enrollment_dialog_message).format(programModel.currentProgram.displayName()),
-            mainButtonText = getString(R.string.remove),
-            onMainButtonClick = {
-                presenter.deleteEnrollment()
-            },
-        ).show(
-            supportFragmentManager,
-            DeleteBottomSheetDialog.TAG,
-        )
+        val dashboardModel = dashboardViewModel.dashboardModel.value
+        if (dashboardModel is DashboardEnrollmentModel) {
+            DeleteBottomSheetDialog(
+                title = getString(R.string.remove_enrollment_dialog_title).format(
+                    dashboardModel.currentProgram().displayName(),
+                ),
+                description = getString(R.string.remove_enrollment_dialog_message).format(
+                    dashboardModel.currentProgram().displayName(),
+                ),
+                mainButtonText = getString(R.string.remove),
+                onMainButtonClick = {
+                    dashboardViewModel.deleteEnrollment { authorityErrorMessage() }
+                },
+            ).show(
+                supportFragmentManager,
+                DeleteBottomSheetDialog.TAG,
+            )
+        }
     }
 
     override fun onRelationshipMapLoaded() {

@@ -143,7 +143,7 @@ class DashboardViewModel(
         viewModelScope.launch(dispatcher.io()) {
             val result = async {
                 dashboardModel.value.takeIf { it is DashboardEnrollmentModel }?.let {
-                    repository.deleteEnrollmentIfPossible((it as DashboardEnrollmentModel).currentEnrollment.uid())
+                    repository.deleteEnrollment((it as DashboardEnrollmentModel).currentEnrollment.uid())
                         .blockingGet()
                 }
             }

@@ -486,7 +486,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun updateEnrollment(update: Boolean) {
-        if(update) {
+        if (update) {
             presenter.fetchEvents(update)
             presenter.getEnrollment()?.let { eventAdapter?.setEnrollment(it) }
             dashboardViewModel.updateDashboard()
