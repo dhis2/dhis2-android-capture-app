@@ -427,7 +427,7 @@ class SearchTEIViewModel(
                     minAttributesToSearch,
                 )
                 uiState = uiState.copy(minAttributesMessage = message)
-                uiState.shouldShowMinAttributeWarning.emit(true)
+                uiState.updateMinAttributeWarning(true)
             }
         }
     }
