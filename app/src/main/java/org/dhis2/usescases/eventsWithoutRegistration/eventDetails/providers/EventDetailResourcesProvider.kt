@@ -6,8 +6,8 @@ import org.hisp.dhis.android.core.event.EventNonEditableReason
 
 class EventDetailResourcesProvider(
     private val programUid: String,
-    private val resourceManager: ResourceManager,
     private val programStage: String?,
+    private val resourceManager: ResourceManager,
 ) {
     fun provideDueDate() = resourceManager.getString(R.string.due_date)
 
