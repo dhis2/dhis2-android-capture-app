@@ -97,7 +97,7 @@ class EventCaptureActivity :
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
-        binding?.presenter = presenter
+        binding.presenter = presenter
         val navigationInitialPage =
             if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
                 0
@@ -110,7 +110,7 @@ class EventCaptureActivity :
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
-        binding?.syncButton?.setOnClickListener { showSyncDialog() }
+        binding.syncButton.setOnClickListener { showSyncDialog() }
 
         if (intent.shouldLaunchSyncDialog()) {
             showSyncDialog()
@@ -118,7 +118,7 @@ class EventCaptureActivity :
     }
 
     private fun setUpViewPagerAdapter(initialPage: Int) {
-        binding!!.eventViewPager.isUserInputEnabled = false
+        binding.eventViewPager.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
             this,
             intent.getStringExtra(Constants.PROGRAM_UID),
@@ -128,15 +128,15 @@ class EventCaptureActivity :
             pageConfigurator!!.displayRelationships(),
             intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
         )
-        binding!!.eventViewPager.adapter = adapter
-        binding!!.eventViewPager.setCurrentItem(initialPage, false)
-        binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+        binding.eventViewPager.adapter = adapter
+        binding.eventViewPager.setCurrentItem(initialPage, false)
+        binding.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 if (position == 0 && eventMode !== EventMode.NEW) {
-                    binding!!.syncButton.visibility = View.VISIBLE
+                    binding.syncButton.visibility = View.VISIBLE
                 } else {
-                    binding!!.syncButton.visibility = View.GONE
+                    binding.syncButton.visibility = View.GONE
                 }
                 if (position != 1) {
                     hideProgress()
@@ -146,16 +146,16 @@ class EventCaptureActivity :
     }
 
     private fun setUpNavigationBar(initialPage: Int) {
-        binding!!.navigationBar.setInitialPage(initialPage)
-        binding!!.navigationBar.pageConfiguration(pageConfigurator!!)
-        binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
-            binding!!.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+        binding.navigationBar.setInitialPage(initialPage)
+        binding.navigationBar.pageConfiguration(pageConfigurator!!)
+        binding.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
+            binding.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
             true
         }
     }
 
     fun openDetails() {
-        binding?.navigationBar?.selectItemAt(0)
+        binding.navigationBar.selectItemAt(0)
     }
 
     fun openForm() {
@@ -164,7 +164,7 @@ class EventCaptureActivity :
                 it.dismiss()
             }
         }
-        binding?.navigationBar?.selectItemAt(1)
+        binding.navigationBar.selectItemAt(1)
     }
 
     override fun onResume() {
@@ -190,7 +190,7 @@ class EventCaptureActivity :
     }
 
     private fun finishEditMode() {
-        if (binding!!.navigationBar.isHidden()) {
+        if (binding.navigationBar.isHidden()) {
             showNavigationBar()
         } else {
             attemptFinish()
@@ -222,13 +222,13 @@ class EventCaptureActivity :
     }
 
     private fun isFormScreen(): Boolean {
-        return adapter?.isFormScreenShown(binding?.eventViewPager?.currentItem) == true
+        return adapter?.isFormScreenShown(binding.eventViewPager.currentItem) == true
     }
 
     override fun updatePercentage(primaryValue: Float) {
-        binding!!.completion.setCompletionPercentage(primaryValue)
+        binding.completion.setCompletionPercentage(primaryValue)
         if (!presenter!!.completionPercentageVisibility) {
-            binding!!.completion.visibility = View.GONE
+            binding.completion.visibility = View.GONE
         }
     }
 
@@ -237,7 +237,7 @@ class EventCaptureActivity :
         emptyMandatoryFields: Map<String, String>,
         eventCompletionDialog: EventCompletionDialog,
     ) {
-        if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
+        if (binding.navigationBar.selectedItemId == R.id.navigation_data_entry) {
             val dialog = BottomSheetDialog(
                 bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
                 onMainButtonClicked = {
@@ -340,12 +340,12 @@ class EventCaptureActivity :
         orgUnit: String,
         catOption: String,
     ) {
-        binding!!.programStageName.text = stageName
+        binding.programStageName.text = stageName
         val eventDataString = StringBuilder(String.format("%s | %s", eventDate, orgUnit))
         if (catOption != null && !catOption.isEmpty()) {
             eventDataString.append(String.format(" | %s", catOption))
         }
-        binding!!.eventSecundaryInfo.text = eventDataString
+        binding.eventSecundaryInfo.text = eventDataString
     }
 
     override fun getPresenter(): EventCaptureContract.Presenter {
@@ -420,33 +420,33 @@ class EventCaptureActivity :
             )
             .setPositiveButton(
                 R.string.change_event_date,
-            ) { _, _ -> binding!!.navigationBar.selectItemAt(0) }
+            ) { _, _ -> binding.navigationBar.selectItemAt(0) }
             .setNegativeButton(R.string.go_back) { _, _ -> back() }
             .setCancelable(false)
             .show()
     }
 
     override fun updateNoteBadge(numberOfNotes: Int) {
-        binding!!.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes)
+        binding.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes)
     }
 
     override fun showProgress() {
-        runOnUiThread { binding!!.toolbarProgress.show() }
+        runOnUiThread { binding.toolbarProgress.show() }
     }
 
     override fun hideProgress() {
         Handler(Looper.getMainLooper()).postDelayed(
-            { runOnUiThread { binding!!.toolbarProgress.hide() } },
+            { runOnUiThread { binding.toolbarProgress.hide() } },
             1000,
         )
     }
 
     override fun showNavigationBar() {
-        binding!!.navigationBar.show()
+        binding.navigationBar.show()
     }
 
     override fun hideNavigationBar() {
-        binding!!.navigationBar.hide()
+        binding.navigationBar.hide()
     }
 
     override fun relationshipMap(): LiveData<Boolean> {
