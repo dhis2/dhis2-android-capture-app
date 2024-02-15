@@ -107,9 +107,9 @@ class SearchTEIViewModel(
         val displayFrontPageList =
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-            !searchRepository.canCreateInProgramWithoutSearch() &&
-            !searching &&
-            _filtersActive.value == false
+                !searchRepository.canCreateInProgramWithoutSearch() &&
+                !searching &&
+                _filtersActive.value == false
 
         createButtonScrollVisibility.value = if (searching) {
             true
@@ -569,20 +569,20 @@ class SearchTEIViewModel(
             }
 
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
-                searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
                         searchRepository.getProgram(initialProgramUid)?.displayName(),
 
-                    ),
+                        ),
                 )
             }
 
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.trackedEntityTypeFields().isNotEmpty() &&
-                searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -786,5 +786,16 @@ class SearchTEIViewModel(
         else -> {
             // no-op
         }
+    }
+
+    fun clearFocus() {
+        val updatedItems = uiState.items.map {
+            if (it.focused) {
+                (it as FieldUiModelImpl).copy(focused = false)
+            } else {
+                it
+            }
+        }
+        uiState = uiState.copy(items = updatedItems)
     }
 }

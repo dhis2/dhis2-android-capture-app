@@ -270,6 +270,7 @@ fun initSearchScreen(
             onClear = {
                 onClear()
                 viewModel.clearQueryData()
+                viewModel.clearFocus()
             },
         )
     }
