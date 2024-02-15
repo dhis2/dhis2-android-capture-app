@@ -398,11 +398,18 @@ fun FieldProvider(
                 )
             }
 
+            ValueType.MULTI_TEXT -> {
+                ProvideMultiSelectionInput(
+                    modifier = modifierWithFocus,
+                    fieldUiModel = fieldUiModel,
+                    intentHandler = intentHandler
+                )
+            }
+
             ValueType.REFERENCE,
             ValueType.GEOJSON,
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE,
-            ValueType.MULTI_TEXT,
             null,
             -> {
                 InputNotSupported(title = fieldUiModel.label)
