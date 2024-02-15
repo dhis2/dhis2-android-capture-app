@@ -3,6 +3,7 @@ package org.dhis2.commons.dialogs.imagedetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
@@ -10,6 +11,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.core.content.FileProvider
 import org.dhis2.commons.R
+import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.extensions.getBitmap
 import org.hisp.dhis.mobile.ui.designsystem.component.FullScreenImage
@@ -32,6 +34,8 @@ class ImageDetailActivity : AppCompatActivity() {
         }
     }
 
+    private val fileHandler = FileHandler()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val title = intent.getStringExtra(ARG_IMAGE_TITLE)
@@ -46,14 +50,26 @@ class ImageDetailActivity : AppCompatActivity() {
                 painter = painter!!,
                 title = title.orEmpty(),
                 onDismiss = { finish() },
-                onDownloadButtonClick = { },
+                onDownloadButtonClick = {
+                    fileHandler.copyAndOpen(
+                        File(imagePath),
+                    ) { file ->
+                        file.observe(this) {
+                            Toast.makeText(
+                                this,
+                                getString(R.string.file_downladed),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                    }
+                },
                 onShareButtonClick = { shareImage(imagePath) },
             )
         }
     }
 
     private fun shareImage(image: String) {
-        val intent = Intent(Intent.ACTION_SEND).apply {
+        with(Intent(Intent.ACTION_SEND)) {
             val contentUri = FileProvider.getUriForFile(
                 this@ImageDetailActivity,
                 FormFileProvider.fileProviderAuthority,
@@ -62,14 +78,14 @@ class ImageDetailActivity : AppCompatActivity() {
             setDataAndType(contentUri, contentResolver.getType(contentUri))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             putExtra(Intent.EXTRA_STREAM, contentUri)
-        }
 
-        val title = resources.getString(R.string.open_with)
-        val chooser = Intent.createChooser(intent, title)
-        try {
-            startActivity(chooser)
-        } catch (e: IOException) {
-            Timber.e(e)
+            val title = resources.getString(R.string.open_with)
+            val chooser = Intent.createChooser(intent, title)
+            try {
+                startActivity(chooser)
+            } catch (e: IOException) {
+                Timber.e(e)
+            }
         }
     }
 }

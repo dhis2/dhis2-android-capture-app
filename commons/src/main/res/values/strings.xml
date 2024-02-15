@@ -236,6 +236,8 @@
     </plurals>
     <string name="open_with">Open with</string>
 
+    <string name="file_downladed">File downladed successfully</string>
+
 
     <!--Enrollment labels-->
     <plurals name="enrollment">
