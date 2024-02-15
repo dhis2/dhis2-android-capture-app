@@ -402,7 +402,7 @@ fun FieldProvider(
                 ProvideMultiSelectionInput(
                     modifier = modifierWithFocus,
                     fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler
+                    intentHandler = intentHandler,
                 )
             }
 
