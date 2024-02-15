@@ -61,7 +61,7 @@ fun SearchParametersScreen(
         orgUnitScope: OrgUnitSelectorScope,
         label: String,
     ) -> Unit,
-    onSearchClick: () -> Unit,
+    onSearch: () -> Unit,
     onClear: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -204,7 +204,8 @@ fun SearchParametersScreen(
                 style = ButtonStyle.FILLED,
                 text = resourceManager.getString(R.string.search),
             ) {
-                onSearchClick()
+                focusManager.clearFocus()
+                onSearch()
             }
         }
     }
@@ -237,7 +238,7 @@ fun SearchFormPreview() {
         ),
         intentHandler = {},
         onShowOrgUnit = { _, _, _, _ -> },
-        onSearchClick = {},
+        onSearch = {},
         onClear = {},
     )
 }
@@ -264,7 +265,7 @@ fun initSearchScreen(
         SearchParametersScreen(
             resourceManager = resources,
             uiState = viewModel.uiState,
-            onSearchClick = viewModel::onSearchClick,
+            onSearch = viewModel::onSearch,
             intentHandler = viewModel::onParameterIntent,
             onShowOrgUnit = onShowOrgUnit,
             onClear = {

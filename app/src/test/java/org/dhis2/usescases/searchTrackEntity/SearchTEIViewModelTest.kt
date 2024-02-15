@@ -267,7 +267,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should use callback to perform min attributes warning`() = runTest {
         setCurrentProgram(testingProgram(displayFrontPageList = false))
-        viewModel.onSearchClick()
+        viewModel.onSearch()
         viewModel.uiState.shouldShowMinAttributeWarning.test {
             assertTrue(awaitItem())
         }
@@ -285,7 +285,7 @@ class SearchTEIViewModelTest {
                 valueType = ValueType.TEXT,
             ),
         )
-        viewModel.onSearchClick()
+        viewModel.onSearch()
 
         assertTrue(viewModel.refreshData.value != null)
     }
@@ -321,7 +321,7 @@ class SearchTEIViewModelTest {
                 valueType = ValueType.TEXT,
             ),
         )
-        viewModel.onSearchClick()
+        viewModel.onSearch()
 
         testingDispatcher.scheduler.advanceUntilIdle()
 
@@ -663,7 +663,7 @@ class SearchTEIViewModelTest {
         )
         viewModel.setListScreen()
         viewModel.setSearchScreen()
-        viewModel.onSearchClick()
+        viewModel.onSearch()
         testingDispatcher.scheduler.advanceUntilIdle()
     }
 
