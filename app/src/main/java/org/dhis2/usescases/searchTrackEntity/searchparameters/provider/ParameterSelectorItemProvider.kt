@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -29,6 +28,7 @@ fun provideParameterSelectorItem(
     focusManager: FocusManager,
     fieldUiModel: FieldUiModel,
     callback: FieldUiModel.Callback,
+    onNextClicked: () -> Unit,
 ): ParameterSelectorItemModel {
     val focusRequester = remember { FocusRequester() }
 
@@ -60,7 +60,7 @@ fun provideParameterSelectorItem(
                 intentHandler = callback::intent,
                 resources = resources,
                 focusManager = focusManager,
-                onNextClicked = { focusManager.moveFocus(FocusDirection.Down) },
+                onNextClicked = onNextClicked,
             )
         },
         status = status,

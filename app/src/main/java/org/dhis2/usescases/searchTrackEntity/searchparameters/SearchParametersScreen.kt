@@ -164,7 +164,7 @@ fun SearchParametersScreen(
                     .weight(1F)
                     .verticalScroll(rememberScrollState()),
             ) {
-                uiState.items.forEach { fieldUiModel ->
+                uiState.items.forEachIndexed { index, fieldUiModel ->
                     fieldUiModel.setCallback(callback)
                     ParameterSelectorItem(
                         modifier = Modifier
@@ -174,6 +174,10 @@ fun SearchParametersScreen(
                             focusManager = focusManager,
                             fieldUiModel = fieldUiModel,
                             callback = callback,
+                            onNextClicked = {
+                                val nextItemIndex = (index + 1) % uiState.items.size
+                                uiState.items[nextItemIndex].onItemClick()
+                            },
                         ),
                     )
                 }
