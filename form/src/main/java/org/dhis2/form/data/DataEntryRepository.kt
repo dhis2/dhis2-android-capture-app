@@ -26,5 +26,7 @@ interface DataEntryRepository {
 
     fun isEvent(): Boolean
 
+    fun dateFormatConfiguration(): String?
+
     fun disableCollapsableSections(): Boolean?
 }

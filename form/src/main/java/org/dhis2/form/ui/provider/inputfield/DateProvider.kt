@@ -10,21 +10,23 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
+import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.TimeTransformation
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.Locale
 
 @Composable
 fun ProvideInputDate(
@@ -32,13 +34,12 @@ fun ProvideInputDate(
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     onNextClicked: () -> Unit,
 ) {
     val (actionType, visualTransformation) = when (fieldUiModel.valueType) {
-        ValueType.DATETIME -> DateTimeActionIconType.DATE_TIME to DateTimeTransformation()
-        ValueType.TIME -> DateTimeActionIconType.TIME to TimeTransformation()
-        else -> DateTimeActionIconType.DATE to DateTransformation()
+        ValueType.DATETIME -> DateTimeActionType.DATE_TIME to DateTimeTransformation()
+        ValueType.TIME -> DateTimeActionType.TIME to TimeTransformation()
+        else -> DateTimeActionType.DATE to DateTransformation()
     }
     val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
@@ -51,68 +52,40 @@ fun ProvideInputDate(
             },
         )
     }
-
+    val selectableDates = if (fieldUiModel.allowFutureDates == true) {
+        SelectableDates(initialDate = "12111924", endDate = "12112124")
+    } else {
+        SelectableDates(initialDate = "12111924", endDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(LocalDate.now()))
+    }
     InputDateTime(
-        title = fieldUiModel.label,
-        inputTextFieldValue = value,
-        actionIconType = actionType,
-        onActionClicked = {
-            when (actionType) {
-                DateTimeActionIconType.DATE -> uiEventHandler.invoke(
-                    RecyclerViewUiEvents.OpenCustomCalendar(
+        InputDateTimeModel(
+            title = fieldUiModel.label,
+            inputTextFieldValue = value,
+            actionType = actionType,
+            state = fieldUiModel.inputState(),
+            legendData = fieldUiModel.legend(),
+            supportingText = fieldUiModel.supportingText(),
+            isRequired = fieldUiModel.mandatory,
+            visualTransformation = visualTransformation,
+            onFocusChanged = {},
+            onNextClicked = onNextClicked,
+            onValueChanged = {
+                value = it ?: TextFieldValue()
+                intentHandler.invoke(
+                    FormIntent.OnTextChange(
                         uid = fieldUiModel.uid,
-                        label = fieldUiModel.label,
-                        date = value.text.toDate(),
+                        value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
+                        valueType = fieldUiModel.valueType,
                         allowFutureDates = fieldUiModel.allowFutureDates ?: true,
-                        isDateTime = false,
                     ),
                 )
-
-                DateTimeActionIconType.TIME -> uiEventHandler.invoke(
-                    RecyclerViewUiEvents.OpenTimePicker(
-                        uid = fieldUiModel.uid,
-                        label = fieldUiModel.label,
-                        date = formatUIDateToStored(value.text, fieldUiModel.valueType)?.let {
-                            DateUtils.timeFormat().parse(it)
-                        },
-                        isDateTime = false,
-                    ),
-                )
-
-                DateTimeActionIconType.DATE_TIME -> uiEventHandler.invoke(
-                    RecyclerViewUiEvents.OpenCustomCalendar(
-                        uid = fieldUiModel.uid,
-                        label = fieldUiModel.label,
-                        date = formatUIDateToStored(value.text, fieldUiModel.valueType)?.let {
-                            DateUtils.databaseDateFormatNoSeconds().parse(it)
-                        },
-                        allowFutureDates = fieldUiModel.allowFutureDates ?: true,
-                        isDateTime = true,
-                    ),
-                )
-            }
-        },
+            },
+            format = "ddMMyyyy",
+            selectableDates = selectableDates,
+            inputStyle = inputStyle,
+            ),
         modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value.text, fieldUiModel.valueType) },
-        inputStyle = inputStyle,
-        state = fieldUiModel.inputState(),
-        legendData = fieldUiModel.legend(),
-        supportingText = fieldUiModel.supportingText(),
-        isRequired = fieldUiModel.mandatory,
-        visualTransformation = visualTransformation,
-        onFocusChanged = {},
-        onNextClicked = onNextClicked,
-        onValueChanged = {
-            value = it
-            intentHandler.invoke(
-                FormIntent.OnTextChange(
-                    uid = fieldUiModel.uid,
-                    value = formatUIDateToStored(it.text, fieldUiModel.valueType),
-                    valueType = fieldUiModel.valueType,
-                    allowFutureDates = fieldUiModel.allowFutureDates ?: true,
-                ),
-            )
-        },
-    )
+        )
 }
 
 private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String {

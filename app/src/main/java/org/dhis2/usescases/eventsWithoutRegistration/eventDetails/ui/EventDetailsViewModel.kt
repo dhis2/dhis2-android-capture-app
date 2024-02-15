@@ -243,10 +243,10 @@ class EventDetailsViewModel(
         EventDetailIdlingResourceSingleton.decrement()
     }
 
-    fun onDateClick() {
+    fun showPeriodDialog() {
         periodType?.let {
             showPeriods?.invoke()
-        } ?: showCalendar?.invoke()
+        }
     }
 
     fun onDateSet(year: Int, month: Int, day: Int) {
@@ -321,6 +321,10 @@ class EventDetailsViewModel(
                 }
             }
         }
+    }
+
+    fun getPeriodType(): PeriodType? {
+        return periodType
     }
 
     fun onReopenClick() {

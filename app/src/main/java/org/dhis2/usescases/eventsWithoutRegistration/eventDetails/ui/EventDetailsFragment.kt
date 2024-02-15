@@ -236,18 +236,20 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         coordinates: EventCoordinates,
         eventTemp: EventTemp,
     ) {
+        val eventDateAction = if (viewModel.getPeriodType() == null) null else viewModel.showPeriodDialog()
         Column {
             ProvideInputDate(
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick = { viewModel.onDateClick() },
+                    onDateClick = eventDateAction,
                     onDateSet = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
                     },
                     onClear = { viewModel.onClearEventReportDate() },
                     required = true,
                     showField = date.active,
+
                 ),
             )
             ProvideOrgUnit(

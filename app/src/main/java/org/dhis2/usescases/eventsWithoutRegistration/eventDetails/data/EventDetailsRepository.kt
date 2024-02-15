@@ -46,6 +46,10 @@ class EventDetailsRepository(
             .blockingGet()
     }
 
+    fun getDateFormatConfiguration(): String? {
+        return d2.systemInfoModule().systemInfo().blockingGet()?.dateFormat()
+    }
+
     fun getObjectStyle(): ObjectStyle? {
         val programStage = getProgramStage()
         val program = getProgram()

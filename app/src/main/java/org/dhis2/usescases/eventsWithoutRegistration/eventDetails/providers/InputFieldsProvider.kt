@@ -30,10 +30,11 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
-import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
+import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPolygon
@@ -41,6 +42,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -54,7 +56,6 @@ fun ProvideInputDate(
     if (uiModel.showField) {
         Spacer(modifier = Modifier.height(16.dp))
         val textSelection = TextRange(if (uiModel.eventDate.dateValue != null) uiModel.eventDate.dateValue.length else 0)
-
         var value by remember(uiModel.eventDate.dateValue) {
             if (uiModel.eventDate.dateValue != null) {
                 mutableStateOf(TextFieldValue(formatStoredDateToUI(uiModel.eventDate.dateValue) ?: "", textSelection))
@@ -68,25 +69,36 @@ fun ProvideInputDate(
         }
 
         InputDateTime(
-            title = uiModel.eventDate.label ?: "",
-            allowsManualInput = uiModel.allowsManualInput,
-            inputTextFieldValue = value,
-            actionIconType = DateTimeActionIconType.DATE,
-            onActionClicked = uiModel.onDateClick,
-            state = state,
-            visualTransformation = DateTransformation(),
-            onValueChanged = {
-                value = it
-                state = getInputShellStateBasedOnValue(it.text)
-                manageActionBasedOnValue(uiModel, it.text)
-            },
-            isRequired = uiModel.required,
+            InputDateTimeModel(
+                title = uiModel.eventDate.label ?: "",
+                allowsManualInput = uiModel.allowsManualInput,
+                inputTextFieldValue = value,
+                actionType = DateTimeActionType.DATE,
+                state = state,
+                visualTransformation = DateTransformation(),
+                onValueChanged = {
+                    value = it ?: TextFieldValue()
+                    state = getInputShellStateBasedOnValue(it?.text)
+                    it?.let { it1 -> manageActionBasedOnValue(uiModel, it1.text) }
+                },
+                isRequired = uiModel.required,
+                onFocusChanged = { focused ->
+                    if (!focused && !isValid(value.text)) {
+                        state = InputShellState.ERROR
+                    }
+                },
+                format = "ddMMyyyy",
+                is24hourFormat = uiModel.is24HourFormat,
+                selectableDates = uiModel.selectableDates ?: SelectableDates("01011924", "12312124"),
+                onDateSelected = { dateString ->
+                    dateString?.let {
+                        formatUIDateToStored(it)?.let { formatedDate ->
+                            uiModel.onDateSet.invoke(formatedDate)
+                        }
+                    }
+                },
+            ),
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
-            onFocusChanged = { focused ->
-                if (!focused && !isValid(value.text)) {
-                    state = InputShellState.ERROR
-                }
-            },
         )
     }
 }

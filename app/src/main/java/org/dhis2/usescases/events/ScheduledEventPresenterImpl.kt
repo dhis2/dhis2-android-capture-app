@@ -4,13 +4,20 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.dhislogic.DhisEventUtils
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.InputDateValues
+import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class ScheduledEventPresenterImpl(
     val view: ScheduledEventContract.View,
@@ -80,6 +87,32 @@ class ScheduledEventPresenterImpl(
         } else {
             view.openFormActivity()
         }
+    }
+
+    override fun formatDateValues(date: InputDateValues): Date {
+        val calendar = Calendar.getInstance()
+        calendar[date.year, date.month - 1, date.day, 0, 0] = 0
+        calendar[Calendar.MILLISECOND] = 0
+        return calendar.time
+    }
+
+    override fun getDateFormatConfiguration(): String? {
+        return d2.systemInfoModule().systemInfo().blockingGet()?.dateFormat()
+    }
+
+    override fun getSelectableDates(program: Program, isDueDate: Boolean): SelectableDates? {
+        val minDate = if (program.expiryPeriodType() != null) {
+            DateUtils.getInstance().expDate(
+                null,
+                program.expiryDays() ?: 0,
+                program.expiryPeriodType(),
+            )
+        } else {
+            null
+        }
+        val minDateString = if (minDate == null) null else SimpleDateFormat("ddMMyyyy", Locale.US).format(minDate)
+        val maxDateString = if (isDueDate)"12112124" else SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis() - 1000))
+        return SelectableDates(minDateString ?: "12111924", maxDateString)
     }
 
     override fun setDueDate(date: Date) {

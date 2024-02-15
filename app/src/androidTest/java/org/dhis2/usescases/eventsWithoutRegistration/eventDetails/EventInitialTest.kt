@@ -224,7 +224,7 @@ class EventInitialTest {
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick = { viewModel.onDateClick() },
+                    onDateClick =  viewModel.showPeriodDialog() ,
                     onDateSet = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
@@ -257,7 +257,7 @@ class EventInitialTest {
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick = { viewModel.onDateClick() },
+                    onDateClick =  viewModel.showPeriodDialog(),
                     onDateSet = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
