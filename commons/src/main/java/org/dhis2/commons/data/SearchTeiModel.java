@@ -111,11 +111,6 @@ public class SearchTeiModel implements CarouselItemModel {
         this.enrollmentsInfo.clear();
     }
 
-    public List<Trio<String, String, String>> getEnrollmentInfo() {
-        Collections.sort(enrollmentsInfo, (enrollment1, enrollment2) -> enrollment1.val0().compareToIgnoreCase(enrollment2.val0()));
-        return enrollmentsInfo;
-    }
-
     public void setAttributeValues(LinkedHashMap<String, TrackedEntityAttributeValue> attributeValues) {
         this.attributeValues = attributeValues;
     }
