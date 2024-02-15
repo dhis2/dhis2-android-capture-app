@@ -109,7 +109,7 @@ fun Form(
                         focusManager.clearFocus()
                     }
                 }
-                
+
                 val sectionMessage = if (section.fields.isEmpty()) resources.getString(R.string.form_without_fields) else null
 
                 val sectionState = if (section.fields.isEmpty()) SectionState.FIXED else section.state
@@ -117,7 +117,7 @@ fun Form(
                 Section(
                     title = section.title,
                     isLastSection = getNextSection(section, sections) == null,
-                    description = if (sections.size >= 2 && section.fields.isNotEmpty()) section.description else null,
+                    description = if (section.fields.isNotEmpty()) section.description else null,
                     completedFields = section.completedFields(),
                     totalFields = section.fields.size,
                     state = sectionState,
