@@ -47,7 +47,9 @@ internal class StageViewHolder(
             ),
         )
 
-        val iconResource = ResourceManager(itemView.context, colorUtils)
+        val resourceManager = ResourceManager(itemView.context, colorUtils)
+
+        val iconResource = resourceManager
             .getObjectStyleDrawableResource(
                 stage.style().icon(),
                 R.drawable.ic_default_outline,
@@ -84,8 +86,12 @@ internal class StageViewHolder(
         binding.addStageButton.setOnClickListener {
             stageSelector.onNext(StageSection(stage.uid(), true))
         }
-        binding.programStageCount.text =
-            "${eventItem.eventCount} ${itemView.context.getString(R.string.events)}"
+        val eventCount = "${eventItem.eventCount} " +
+            resourceManager.getEventLabel(
+                programStageUid = stage.uid(),
+                quantity = eventItem.eventCount,
+            )
+        binding.programStageCount.text = eventCount
 
         itemView.setOnClickListener { stageSelector.onNext(StageSection(stage.uid(), false)) }
 

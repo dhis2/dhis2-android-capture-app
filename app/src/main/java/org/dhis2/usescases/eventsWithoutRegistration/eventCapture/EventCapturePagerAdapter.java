@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import static org.dhis2.commons.Constants.PROGRAM_STAGE_UID;
 import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
 import static org.dhis2.commons.Constants.PROGRAM_UID;
 
@@ -31,6 +32,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     private final String programUid;
     private final String eventUid;
     private final List<EventPageType> pages;
+    private final String programStage;
     private EventCaptureFormFragment formFragment;
 
     private final boolean shouldOpenErrorSection;
@@ -46,6 +48,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     public EventCapturePagerAdapter(FragmentActivity fragmentActivity,
                                     String programUid,
                                     String eventUid,
+                                    String programStage,
                                     boolean displayAnalyticScreen,
                                     boolean displayRelationshipScreen,
                                     boolean openErrorSection
@@ -54,6 +57,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
+        this.programStage = programStage;
         this.shouldOpenErrorSection = openErrorSection;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
@@ -93,6 +97,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                 Bundle bundle = new Bundle();
                 bundle.putString(Constants.EVENT_UID, eventUid);
                 bundle.putString(PROGRAM_UID, programUid);
+                bundle.putString(PROGRAM_STAGE_UID, programStage);
                 EventDetailsFragment eventDetailsFragment = new EventDetailsFragment();
                 eventDetailsFragment.setArguments(bundle);
                 eventDetailsFragment.setOnEventReopened(() -> {

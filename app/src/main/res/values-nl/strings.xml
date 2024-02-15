@@ -122,9 +122,6 @@
     <string name="latitude">Breedtegraad</string>
     <string name="longitude">Lengtegraad</string>
     <string name="new_event">Nieuw evenement</string>
-    <string name="failed_insert_event">Kan geen nieuwe gebeurtenis invoegen</string>
-    <string name="event_created">Evenement gemaakt</string>
-    <string name="event_updated">Evenement bijgewerkt</string>
     <string name="one_time">Een keer</string>
     <string name="permanent">permanent</string>
 
@@ -137,15 +134,11 @@
     <string name="datavalue_saved">Waarde is opgeslagen!</string>
     <string name="there_is_no_available_period">Er zijn geen beschikbare periodes om te selecteren.</string>
     <!--Event Detail-->
-    <string name="event_date">Evenement datum</string>
     <string name="due_date">Deadline</string>
     <string name="cat_combo">Katten combinatie</string>
     <string name="date_default">DD/MM/JJJJ</string>
     <string name="cancel">Annuleren</string>
     <string name="delete">Verwijder</string>
-    <string name="delete_event">evenement verwijderen</string>
-    <string name="confirm_delete_event">Weet je zeker dat je dit evenement wilt verwijderen?</string>
-    <string name="event_was_deleted">Evenement succesvol verwijderd</string>
     <string name="total">Totaal</string>
     <string name="most_recent_event_date">Datum meest recente evenement</string>
 
@@ -253,7 +246,6 @@
     <string name="missing_mandatory_fields_events">Sommige velden hebben uw aandacht nodig.\Wilt u het formulier bekijken?</string>
     <string name="title_delete_go_back">Uw gegevens worden niet bewaard</string>
     <string name="delete_go_back">Als u nu teruggaat, wordt alle ingevoerde informatie verwijderd.</string>
-    <string name="missing_mandatory_fields_events_2.0">Er ontbreken enkele verplichte velden:\n%s\nJe kunt nu teruggaan, maar dit evenement kan niet worden voltooid.</string>
     <string name="missing_mandatory_fields_go_back">Verwijderen en teruggaan</string>
     <string name="error_fields">Sommige velden bevatten fouten:\n%s\nControleer ze alsjeblieft.</string>
     <string name="missing_mandatory_fields_finish">Sommige verplichte velden ontbreken. U kunt het invoeren en afsluiten van gegevens voltooien, maar de gebeurtenis kan niet worden voltooid.</string>
@@ -314,7 +306,6 @@
     <string name="qr_error_id">Ongeldige QR-code</string>
     <string name="qr_error_attr">Dit kenmerk kan niet worden toegevoegd</string>
     <string name="qr_error_enrollment">Deze inschrijving kan niet worden toegevoegd</string>
-    <string name="qr_error_event">Dit evenement kan niet worden toegevoegd</string>
 
     <string name="jira_report">Rapporteer Jira-probleem</string>
     <string name="about">Over</string>
@@ -461,17 +452,14 @@
     <string name="finish">Finish</string>
     <string name="error_fields_title">Velden met fouten</string>
     <string name="error_fields_events">Sommige velden bevatten fouten. Ze zijn niet opgeslagen. Controleer ze alsjeblieft.</string>
-    <string name="event_reopened">Dit evenement kan nu worden bewerkt</string>
     <string name="unique_warning">De waarde moet uniek zijn, er is een toeval gevonden. Het is niet opgeslagen. Controleer het alstublieft.</string>
     <string name="unique_coincidence_found">Er is een toeval gevonden in een uniek veld. Controleer het formulier om de inschrijving op te slaan.</string>
     <string name="please_wait">Even geduld alstublieft</string>
     <string name="skip">Overslaan</string>
     <string name="reschedule">Opnieuw plannen</string>
-    <string name="event_was_skipped">Het evenement is gemarkeerd als overgeslagen</string>
     <string name="no_intructions">Er is geen informatie voor dit scherm</string>
     <string name="event_overdue">Verlopen</string>
     <string name="unsupported_program_rule">Er is één programmaregel die niet wordt ondersteund. Controleer de documentatie</string>
-    <string name="delete_event_error">Dit evenement is nog niet aangemaakt</string>
     <string name="empty_description">Geen info voor dit veld</string>
     <string name="biometrics_dialog_title">Lege inloggegevens</string>
     <string name="biometrics_first_use_text">Om in te kunnen loggen met de vingerafdrukscanner moet je eerst de standaardmanier gebruiken</string>
@@ -530,7 +518,6 @@
     <string name="dashboard_menu_delete_tei_v2">Verwijder %s</string>
     <string name="delete_authority_error">U bent niet bevoegd om dit record te verwijderen</string>
     <string name="validation_url">Dit is geen geldige URL</string>
-    <string name="uncomplete_authority_error">Je hebt niet de bevoegdheid om dit evenement opnieuw te openen</string>
     <string name="adjusting_form">Formulier aanpassen…</string>
 
     <string name="sms_receiver_number">Ontvanger nummer</string>
@@ -630,7 +617,6 @@
     <string name="disable_pin_locked">Vergrendelscherm niet meer weergeven</string>
     <string name="set_pin">Speld instellen</string>
     <string name="conflict">Conflict</string>
-    <string name="event_date_in_future_message">Dit evenement kan geen datum in de toekomst hebben. Wijzig het alstublieft.</string>
     <string name="change_event_date">Verander de datum</string>
     <string name="go_back">Ga terug</string>
     <string name="data_sets">Gegevensreeksen</string>
@@ -742,7 +728,6 @@
     <string name="navigation_analytics">Analyse</string>
     <string name="navigation_tasks">Taken</string>
     <string name="navigation_programs">Programma\'s</string>
-    <string name="navigation_events">Gebeurtenissen</string>
     <string name="navigation_relationships">Relaties</string>
     <string name="navigation_notes">Notities</string>
     <string name="navigation_data_entry">Gegevensinvoer</string>

@@ -43,7 +43,6 @@
     <string name="enter_long_text">أدخل نصًا طويلاً</string>
     <string name="enter_text">أدخل نصًا</string>
     <string name="due_date">تاريخ الاستحقاق</string>
-    <string name="event_date">تاريخ الحدث</string>
     <string name="mandatory_field">حقل الزامي</string>
     <string name="form_latitude_prefix">خط العرض:</string>
     <string name="form_longitude_prefix">خط الطول:</string>

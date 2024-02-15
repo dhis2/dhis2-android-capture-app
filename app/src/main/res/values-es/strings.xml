@@ -123,9 +123,6 @@
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="new_event">Evento nuevo</string>
-    <string name="failed_insert_event">Error/Fallo al crear un nuevo evento</string>
-    <string name="event_created">Evento creado</string>
-    <string name="event_updated">Evento actualizado</string>
     <string name="one_time">Una vez</string>
     <string name="permanent">Permanente</string>
 
@@ -138,15 +135,11 @@
     <string name="datavalue_saved">Guardado!</string>
     <string name="there_is_no_available_period">No hay periodos disponibles.</string>
     <!--Event Detail-->
-    <string name="event_date">Fecha de evento</string>
     <string name="due_date">Fecha de vencimiento</string>
     <string name="cat_combo">Cat Combo</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Borrar</string>
-    <string name="delete_event">Eliminar evento</string>
-    <string name="confirm_delete_event">¿Está seguro de querer eliminar este evento?</string>
-    <string name="event_was_deleted">Evento eliminado</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Fecha de evento más reciente</string>
 
@@ -252,7 +245,6 @@
     <string name="missing_mandatory_fields_events">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="title_delete_go_back">Los datos no se han guardado</string>
     <string name="delete_go_back">Si vuelve ahora la información registrada se perderá </string>
-    <string name="missing_mandatory_fields_events_2.0">Faltan campos obligatorios:+n%s\nPuede ir atrás, pero el evento no se puede completar.</string>
     <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
     <string name="error_fields">Algunos campos tienen errores:\n%s\nRevíselos, por favor.</string>
     <string name="missing_mandatory_fields_finish">Algunos campos obligatorios están vacíos. Puede terminar la entrada de datos y salir, pero el evento no podrá ser completado.</string>
@@ -313,7 +305,6 @@
     <string name="qr_error_id">Código QR no válido</string>
     <string name="qr_error_attr">Este atributo no puede ser añadido</string>
     <string name="qr_error_enrollment">Esta admisión no puede ser añadida</string>
-    <string name="qr_error_event">Este evento no puede ser añadido</string>
 
     <string name="jira_report">Reportar problema en Jira</string>
     <string name="about">Acerca de</string>
@@ -460,17 +451,14 @@
     <string name="finish">Acabar</string>
     <string name="error_fields_title">Campos con errores</string>
     <string name="error_fields_events">Algunos campos presentan errores. No se han guardado. Revíselos por favor.</string>
-    <string name="event_reopened">Ahora puede editar este evento</string>
     <string name="unique_warning">El valor debe ser único, se ha encontrado una coincidencia. El campo no se ha guardado, revíselo.</string>
     <string name="unique_coincidence_found">Se ha encontrado una coincidencia en un campo único. Por favor compruebe el formulario para guardar el registro.</string>
     <string name="please_wait">Por favor, espere</string>
     <string name="skip">Omitir</string>
     <string name="reschedule">Reprogramar</string>
-    <string name="event_was_skipped">El evento se ha marcado como omitido</string>
     <string name="no_intructions">No hay información sobre esta pantalla</string>
     <string name="event_overdue">Atrasado</string>
     <string name="unsupported_program_rule">Hay alguna program rule no soportada. Revise la documentación.</string>
-    <string name="delete_event_error">Este evento aun no se ha creado</string>
     <string name="empty_description">No hay información para este campo</string>
     <string name="biometrics_dialog_title">Vaciar credenciales</string>
     <string name="biometrics_first_use_text">Para poder iniciar sesión por huella dactilar debe entrar primero por el modo normal</string>
@@ -526,7 +514,6 @@
     <string name="dashboard_menu_delete_tei_v2">Eliminar %s</string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
     <string name="validation_url">La URL no es válida</string>
-    <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
     <string name="adjusting_form">Adaptando el formulario...</string>
 
     <string name="sms_receiver_number">Numero receptor</string>
@@ -627,7 +614,6 @@
     <string name="disable_pin_locked">No volver a mostrar la pantalla de bloqueo</string>
     <string name="set_pin">Establecer pin</string>
     <string name="conflict">Conflicto</string>
-    <string name="event_date_in_future_message">Este evento no puede tener una fecha en el futuro. Por favor cámbiela.</string>
     <string name="change_event_date">Cambiar fecha</string>
     <string name="go_back">Ir atrás</string>
     <string name="data_sets">Sets de datos</string>
@@ -739,7 +725,6 @@
     <string name="navigation_analytics">Analíticas</string>
     <string name="navigation_tasks">Tareas</string>
     <string name="navigation_programs">Programas</string>
-    <string name="navigation_events">Eventos</string>
     <string name="navigation_relationships">Relaciones</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>

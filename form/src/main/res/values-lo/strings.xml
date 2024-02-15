@@ -36,7 +36,6 @@
     <string name="enter_long_text">ປ້ອນຂໍ້ມູນເປັນຂໍ້ຄວາມຍາວ</string>
     <string name="enter_text">ຂຽນຄໍາຕອບ</string>
     <string name="due_date">ວັນທີຕ້ອງແລ້ວ</string>
-    <string name="event_date">ວັນທີເຫດການ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
     <string name="review">ທົບທວນຄືນ</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>

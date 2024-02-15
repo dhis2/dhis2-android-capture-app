@@ -46,7 +46,6 @@
     <string name="enter_long_text">Introducir texto largo</string>
     <string name="enter_text">Introducir texto</string>
     <string name="due_date">Fecha de vencimiento</string>
-    <string name="event_date">Fecha de evento</string>
     <string name="mandatory_field">Campo obligatorio</string>
     <string name="form_latitude_prefix">Lat:</string>
     <string name="form_longitude_prefix">Long:</string>

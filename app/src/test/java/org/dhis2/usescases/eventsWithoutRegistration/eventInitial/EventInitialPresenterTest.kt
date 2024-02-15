@@ -122,10 +122,9 @@ class EventInitialPresenterTest {
     @Test
     fun `Should show message when event is not yet created and the delete option is clicked`() {
         whenever(view.context) doReturn mock()
-        whenever(view.context.getString(any())) doReturn "display message"
 
         presenter.deleteEvent("tei_uid")
-        verify(view).displayMessage(any())
+        verify(view).showDeleteEventError()
     }
 
     @Test

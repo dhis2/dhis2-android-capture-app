@@ -46,7 +46,6 @@
     <string name="enter_long_text">Введіть довгий текст</string>
     <string name="enter_text">Введіть текст</string>
     <string name="due_date">Запланована дата</string>
-    <string name="event_date">Дата випадку</string>
     <string name="mandatory_field">Обов\'язкове поле</string>
     <string name="form_latitude_prefix">Широта:</string>
     <string name="form_longitude_prefix">Довгота:</string>

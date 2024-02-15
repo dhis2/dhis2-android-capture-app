@@ -100,6 +100,38 @@ class ResourceManager(
             .getErrorMessage(throwable)
 
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
+    fun getEventLabel(
+        programStageUid: String? = null,
+        quantity: Int = 1,
+    ) = try {
+        D2Manager.getD2().programModule()
+            .programStages().uid(programStageUid)
+            .blockingGet()?.eventLabel()
+    } catch (e: Exception) {
+        null
+    } ?: getPlural(R.plurals.event_label, quantity)
+
+    fun formatWithEventLabel(
+        @StringRes stringResource: Int,
+        programStageUid: String? = null,
+        quantity: Int = 1,
+        formatWithQuantity: Boolean = false,
+    ): String {
+        val eventLabel = getEventLabel(programStageUid, quantity)
+        return with(getString(stringResource)) {
+            val finalLabel = if (this@with.startsWith("%s")) {
+                eventLabel.capitalize(Locale.current)
+            } else {
+                eventLabel
+            }
+            if (formatWithQuantity) {
+                format(quantity, finalLabel)
+            } else {
+                format(finalLabel)
+            }
+        }
+    }
+
     fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)
     fun defaultTeiLabel(): String = getWrapperContext().getString(R.string.tei)
     fun jiraIssueSentMessage(): String = getWrapperContext().getString(R.string.jira_issue_sent)

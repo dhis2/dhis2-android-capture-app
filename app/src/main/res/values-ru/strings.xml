@@ -39,7 +39,6 @@
     <!--DataSet initial-->
     <string name="report_period">Отчет за период</string>
     <!--Event Detail-->
-    <string name="event_date">Дата события</string>
     <string name="due_date">Дата выполнения</string>
     <string name="cancel">Отмена</string>
     <string name="delete">Удалить</string>

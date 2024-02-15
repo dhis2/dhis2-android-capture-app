@@ -29,5 +29,7 @@ public class EventInitialContract {
         void showQR();
 
         void showEventWasDeleted();
+
+        void showDeleteEventError();
     }
 }

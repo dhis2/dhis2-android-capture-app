@@ -110,9 +110,6 @@
     <string name="latitude">Kenglik</string>
     <string name="longitude">Kenglik</string>
     <string name="new_event">Yangi tadbir</string>
-    <string name="failed_insert_event">Yangi tadbirni kiritish amalga oshmadi</string>
-    <string name="event_created">Tadbir yaratildi</string>
-    <string name="event_updated">Tadbir yangilandi</string>
     <string name="one_time">Bir marta</string>
     <string name="permanent">Doimiy</string>
 
@@ -125,15 +122,11 @@
     <string name="datavalue_saved">Qiymat saqlandi!</string>
     <string name="there_is_no_available_period">Tanlash uchun yaroqli davr mavjud emas</string>
     <!--Event Detail-->
-    <string name="event_date">Hodisa/Tadbir sanasi</string>
     <string name="due_date">Muddati</string>
     <string name="cat_combo">Kategoriya kombinatsiyasi</string>
     <string name="date_default">KK/OO/YYYY</string>
     <string name="cancel">Бекор қилиш</string>
     <string name="delete">Oʼchirib tashlash</string>
-    <string name="delete_event">Hodisa/Tadbirni oʼchirib tashlash</string>
-    <string name="confirm_delete_event">Haqiqatdan ham ushbu hodisa/tadbirni oʼchirib tashlamoqchimisiz?</string>
-    <string name="event_was_deleted">Tadbir muvaffaqiyatli oʼchirib tashlandi</string>
     <string name="total">Jami</string>
     <string name="most_recent_event_date">Oxirgi tadbir sanasi</string>
 
@@ -228,7 +221,6 @@
     <string name="missing_mandatory_fields_text_not_delete">Baʼzi majburiy maydonlar qoldirib ketilgan. Аgar orqaga qaytmoqchi boʼlsangiz, Iltimos, ularni toʼldiring.</string>
     <string name="title_delete_go_back">Maʼlumotingiz saqlanmadi</string>
     <string name="delete_go_back">Аgarda hozir orqaga qaytsangiz, barcha kiritilgan maʼlumotlar oʼchiriladi.</string>
-    <string name="missing_mandatory_fields_events_2.0">Baʼzi majburiy maydonlar qoldirib ketilgan: \n %sda\n. Hozir orqaga qayta olasiz, ammo bu holda hodisa/tadbirni yakunlab boʼlmaydi.</string>
     <string name="missing_mandatory_fields_go_back">Oʼchirib tashlash va orqaga qaytish</string>
     <string name="error_fields">Baʼzi maʼlumotlarda xatoliklar mavjud: \n%s\. Iltimos, ularni tekshiring.</string>
     <string name="missing_mandatory_fields_finish">Baʼzi majburiy maydonlar qoldirib ketilgan. Siz maʼlumotlarni kiritishni yakunlab chiqishingiz mumkin. Аmmo bu holda hodisa/tadbirni yakunlab boʼlmaydi.</string>
@@ -289,7 +281,6 @@
     <string name="qr_error_id">QR kod yaroqsiz</string>
     <string name="qr_error_attr">Ushbu atributlarrni qoʼshib boʼlmadi</string>
     <string name="qr_error_enrollment">Ushbu qaydlarni qoʼshib boʼlmadi</string>
-    <string name="qr_error_event">Ushbu hodisa/tadbirni qoʼshib boʼlmadi</string>
 
     <string name="jira_report">Jira nashri uchun xabar berish</string>
     <string name="about">Ҳақида</string>
@@ -430,17 +421,14 @@
     <string name="finish">Tugatish</string>
     <string name="error_fields_title">Xatoliklar mavjud boʼlgan maydonlar</string>
     <string name="error_fields_events">Baʼzi maydonlarda xatoliklar mavjud.Ular saqlanmadi. Iltimos,, ularni tekshirib koʼring.</string>
-    <string name="event_reopened">Ushbu hodisa/tadbirni endi tahrir qilish mumkin</string>
     <string name="unique_warning">Qiymat noyob boʼlishi lozim, bir biriga oʼxshash topildi. U saqlanmadi. Iltimos, tekshirib koʼrish.</string>
     <string name="unique_coincidence_found">Noyob sohada bir biriga oʼxshash qiymat topildi. Roʼyxatdan oʼtishni saqlash uchun formani tekshirish.</string>
     <string name="please_wait">Iltimos, kuting</string>
     <string name="skip">Oʼtkazib yuborish</string>
     <string name="reschedule">Qayta rejalang</string>
-    <string name="event_was_skipped">Hodisa/tadbir oʼtkazib yuborilgan deb belgilandi</string>
     <string name="no_intructions">Ushbu ekrandagi haqida maʼlumot yoʼq</string>
     <string name="event_overdue">Muddat oʼtgan</string>
     <string name="unsupported_program_rule">Bu yerda dasturning qoʼllab quvvatlanmaydigan bir qoidasi mavjud. Iltimos, hujjatlarni tekshiring.</string>
-    <string name="delete_event_error">Ushbu hodisa/dastur hali yaratilmagan</string>
     <string name="empty_description">Ushbu maydon uchun maʼlumot yoʼq</string>
     <string name="biometrics_dialog_title">Ishonch yorliqlari boʼsh</string>
     <string name="biometrics_first_use_text">Barmoq izlari skaneri yordamida tizimga kirish uchun avval standart usuldan foydalanishingiz kerak</string>
@@ -492,7 +480,6 @@
     <string name="formatting_error">Formatlashda xatolik</string>
     <string name="delete_authority_error">Ushbu yozuvni oʼchirib tashlash huquqiga ega emassiz</string>
     <string name="validation_url">Bu haqiqiy URL emas</string>
-    <string name="uncomplete_authority_error">Ushbu hodisa/tadbirni qayta ochishga vakolatingiz yoʼq</string>
     <string name="adjusting_form">Shakl sozlanmoqda...</string>
 
     <string name="sms_receiver_number">Qabul qiluvchining raqami</string>
@@ -593,7 +580,6 @@
     <string name="disable_pin_locked">Bloklangan ekranni qayta koʼrsatmaslik</string>
     <string name="set_pin">PIN kodni oʼrnating</string>
     <string name="conflict">Nomutanosiblik</string>
-    <string name="event_date_in_future_message">Ushbu hodisa/tadbirning sanasi kelajakda boʼlishi mumkin emas. Iltimos, oʼzgartiring</string>
     <string name="change_event_date">Sanani oʼzgartirish</string>
     <string name="go_back">Orqaga qayting</string>
     <string name="data_sets">Maʼlumotlar toʼplami</string>
@@ -700,7 +686,6 @@
     <string name="navigation_analytics">Аnalitika</string>
     <string name="navigation_tasks">Vazifalar</string>
     <string name="navigation_programs">Dasturlar</string>
-    <string name="navigation_events">Hodisa/tadbirlar</string>
     <string name="navigation_relationships">Oʼzaro aloqalar</string>
     <string name="navigation_notes">Izohlar</string>
     <string name="navigation_data_entry">Maʼlumot kiritish</string>

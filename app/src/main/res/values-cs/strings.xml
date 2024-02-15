@@ -124,9 +124,6 @@
     <string name="latitude">Zeměpisná šířka</string>
     <string name="longitude">Zeměpisná délka</string>
     <string name="new_event">Nová událost</string>
-    <string name="failed_insert_event">Vložení nové události se nezdařilo</string>
-    <string name="event_created">Událost vytvořena</string>
-    <string name="event_updated">Událost aktualizována</string>
     <string name="one_time">Jednou</string>
     <string name="permanent">Trvale</string>
 
@@ -139,15 +136,11 @@
     <string name="datavalue_saved">Hodnota je uložena!</string>
     <string name="there_is_no_available_period">Nejsou k dispozici žádná období k výběru.</string>
     <!--Event Detail-->
-    <string name="event_date">Datum události</string>
     <string name="due_date">Poslední termín</string>
     <string name="cat_combo">Kombinace kategorií</string>
     <string name="date_default">DD/MM/RRRR</string>
     <string name="cancel">Zrušit</string>
     <string name="delete">Smazat</string>
-    <string name="delete_event">Smazat událost</string>
-    <string name="confirm_delete_event">Opravdu chcete tuto událost smazat?</string>
-    <string name="event_was_deleted">Událost byla úspěšně smazána</string>
     <string name="total">Celkem</string>
     <string name="most_recent_event_date">Datum poslední události</string>
 
@@ -254,7 +247,6 @@
     <string name="missing_mandatory_fields_events">Některá pole vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
     <string name="title_delete_go_back">Vaše data nejsou uložena</string>
     <string name="delete_go_back">Pokud se nyní vrátíte zpět, všechny zadané informace budou smazány.</string>
-    <string name="missing_mandatory_fields_events_2.0">Chybí některá povinná pole:\n%s\nMůžete se nyní vrátit, ale tuto událost nebude možné dokončit.</string>
     <string name="missing_mandatory_fields_go_back">Smazat a vrátit se zpět</string>
     <string name="error_fields">Některá pole obsahují chyby:\n%s\nProsím zkontrolujte je.</string>
     <string name="missing_mandatory_fields_finish">Některá povinná pole chybí. Zadávání a ukončení dat můžete dokončit, ale událost nelze dokončit.</string>
@@ -315,7 +307,6 @@
     <string name="qr_error_id">Neplatný QR kód</string>
     <string name="qr_error_attr">Tento atribut nelze přidat</string>
     <string name="qr_error_enrollment">Tento zápis nelze přidat</string>
-    <string name="qr_error_event">Tuto událost nelze přidat</string>
 
     <string name="jira_report">Nahlásit problém do Jira</string>
     <string name="about">O nás</string>
@@ -462,17 +453,14 @@
     <string name="finish">Dokončit</string>
     <string name="error_fields_title">Pole s chybami</string>
     <string name="error_fields_events">Některá pole obsahují chyby. Nebyla uložena. Prosím, zkontrolujte je.</string>
-    <string name="event_reopened">Tuto událost lze nyní upravit</string>
     <string name="unique_warning">Hodnota by měla být jedinečná, byla nalezena koincidence. Nebylo uloženo. Prosím zkontrolujte to.</string>
     <string name="unique_coincidence_found">Byla nalezena koincidence v jedinečném poli. Pro uložení zápisu prosím zkontrolujte formulář.</string>
     <string name="please_wait">Prosím, čekejte</string>
     <string name="skip">Přeskočit</string>
     <string name="reschedule">Přeplánovat</string>
-    <string name="event_was_skipped">Událost byla označena jako přeskočená</string>
     <string name="no_intructions">O této obrazovce nejsou žádné informace</string>
     <string name="event_overdue">Vypršelo</string>
     <string name="unsupported_program_rule">Existuje jedno programové pravidlo, které není podporováno. Zkontrolujte dokumentaci</string>
-    <string name="delete_event_error">Tato událost ještě nebyla vytvořena</string>
     <string name="empty_description">Žádné informace pro toto pole</string>
     <string name="biometrics_dialog_title">Prázdné pověření</string>
     <string name="biometrics_first_use_text">Abyste se mohli přihlásit pomocí snímače otisků prstů, musíte nejprve použít výchozí způsob</string>
@@ -528,7 +516,6 @@
     <string name="dashboard_menu_delete_tei_v2">Smazat %s</string>
     <string name="delete_authority_error">Nemáte oprávnění tento záznam mazat</string>
     <string name="validation_url">Toto není platné URL</string>
-    <string name="uncomplete_authority_error">Nemáte oprávnění znovu otevřít tuto událost</string>
     <string name="adjusting_form">Úprava formuláře…</string>
 
     <string name="sms_receiver_number">Číslo příjemce</string>
@@ -629,7 +616,6 @@
     <string name="disable_pin_locked">Nezobrazovat znovu zamykací obrazovku</string>
     <string name="set_pin">Nastavit PIN</string>
     <string name="conflict">Konflikt</string>
-    <string name="event_date_in_future_message">Tato událost nemůže mít datum v budoucnu. Změňte to prosím.</string>
     <string name="change_event_date">Změnit datum</string>
     <string name="go_back">Zpět</string>
     <string name="data_sets">Datové sady</string>
@@ -741,7 +727,6 @@
     <string name="navigation_analytics">Analýza</string>
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
-    <string name="navigation_events">Události</string>
     <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>

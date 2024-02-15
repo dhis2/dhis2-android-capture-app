@@ -119,9 +119,6 @@
     <string name="latitude">Vĩ độ</string>
     <string name="longitude">Kinh độ</string>
     <string name="new_event">Sự kiện mới</string>
-    <string name="failed_insert_event">Lỗi khi thêm Sự Kiện mới</string>
-    <string name="event_created">Sự kiện đã tạo</string>
-    <string name="event_updated">Sự kiện đã cập nhật</string>
     <string name="one_time">Một lần</string>
     <string name="permanent">Cố định</string>
 
@@ -134,15 +131,11 @@
     <string name="datavalue_saved">Giá trị đã được lưu!</string>
     <string name="there_is_no_available_period">Không có thời điểm để chọn.</string>
     <!--Event Detail-->
-    <string name="event_date">Ngày sự kiện</string>
     <string name="due_date">Ngày đến hạn</string>
     <string name="cat_combo">Tổ hợp Phân Loại</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Hủy</string>
     <string name="delete">Xóa</string>
-    <string name="delete_event">Xóa sự kiện</string>
-    <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
-    <string name="event_was_deleted">Sự kiện đã được xóa</string>
     <string name="total">Tổng số</string>
     <string name="most_recent_event_date">Ngày sự kiện gần nhất</string>
 
@@ -246,7 +239,6 @@
     <string name="missing_mandatory_fields_events">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="title_delete_go_back">Dữ liệu của bạn chưa được lưu</string>
     <string name="delete_go_back">Nếu bạn quay lại bây giờ, tất cả thông tin đã nhập sẽ bị xóa.</string>
-    <string name="missing_mandatory_fields_events_2.0">Một số trường bắt buộc nhập bị thiếu:\n %s\n Bạn có thể quay trở lại bây giờ, nhưng sự kiện này sẽ không thể hoàn tất.</string>
     <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
     <string name="error_fields">Một vài trường dữ liệu có lỗi:\n %s\nVui lòng kiểm tra.</string>
     <string name="missing_mandatory_fields_finish">Một số trường bắt buộc bị thiếu. Bạn có thể lưu biểu nhập và tắt, nhưng sự kiện chưa hoàn tất.</string>
@@ -307,7 +299,6 @@
     <string name="qr_error_id">Mã QR không hợp lệ</string>
     <string name="qr_error_attr">Không thể thêm thuộc tính này</string>
     <string name="qr_error_enrollment">Không thể đăng ký</string>
-    <string name="qr_error_event">Không thể thêm sự kiện này</string>
 
     <string name="jira_report">Báo cáo vấn đề lên Jira</string>
     <string name="about">Giới thiệu</string>
@@ -454,17 +445,14 @@
     <string name="finish">Lưu</string>
     <string name="error_fields_title">Các trường dữ liệu có lỗi</string>
     <string name="error_fields_events">Một số trường dữ liệu có lỗi. Chúng chưa được lưu. Xin vui lòng kiểm tra lại.</string>
-    <string name="event_reopened">Bây giờ sự kiện này có thể chỉnh sửa</string>
     <string name="unique_warning">Giá trị phải là duy nhất, có một giá trị bị trùng. Nó chưa được lưu lại. Xin vui lòng kiểm tra. </string>
     <string name="unique_coincidence_found">Có một sự trùng lặp trong trường duy nhất. Xin vui lòng kiểm tra lại biểu nhập để lưu Đăng ký này. </string>
     <string name="please_wait">Xin vui lòng đợi</string>
     <string name="skip">Bỏ qua</string>
     <string name="reschedule">Sửa lịch hẹn</string>
-    <string name="event_was_skipped">Sự kiện đã được đánh dấu là đã bỏ qua</string>
     <string name="no_intructions">Không có thông tin cho màn hình này</string>
     <string name="event_overdue">Quá hạn</string>
     <string name="unsupported_program_rule">Có một quy tắc chương trình không được hỗ trợ. Vui lòng kiểm tra tài liệu.</string>
-    <string name="delete_event_error">Sự kiện này chưa được tạo.</string>
     <string name="empty_description">Không có thông tin cho trường dữ liệu này</string>
     <string name="biometrics_dialog_title">Xóa hết thông tin đăng nhập</string>
     <string name="biometrics_first_use_text">Để có thể đăng nhập bằng cách sử dụng máy quét dấu vân tay, trước tiên bạn cần phải sử dụng cách mặc định.</string>
@@ -520,7 +508,6 @@
     <string name="dashboard_menu_delete_tei_v2">Xóa %s</string>
     <string name="delete_authority_error">Bạn không có quyền để xóa dữ liệu này</string>
     <string name="validation_url">Đường dẫn liên kết không đúng</string>
-    <string name="uncomplete_authority_error">Bạn không có quyền để mở-lại sự kiện này.</string>
     <string name="adjusting_form">Đang điều chỉnh biểu nhập...</string>
 
     <string name="sms_receiver_number">Số người nhận</string>
@@ -621,7 +608,6 @@
     <string name="disable_pin_locked">Không hiển thị lại màn hình khóa</string>
     <string name="set_pin">Cài đặt mã pin</string>
     <string name="conflict">Xung đột</string>
-    <string name="event_date_in_future_message">Sự kiện này không thể có ngày trong tương lai. Vui lòng thay đổi nó.</string>
     <string name="change_event_date">Thay đổi ngày</string>
     <string name="go_back">Trở lại</string>
     <string name="data_sets">Biểu nhập</string>
@@ -733,7 +719,6 @@
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Các nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
-    <string name="navigation_events">Sự kiện</string>
     <string name="navigation_relationships">Quan hệ với bệnh nhân</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>

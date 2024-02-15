@@ -88,20 +88,13 @@
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="new_event">Ny händelse</string>
-    <string name="failed_insert_event">Det gick inte att spara ny händelse</string>
-    <string name="event_created">Händelse skapad</string>
-    <string name="event_updated">Händelse uppdaterad</string>
     <string name="one_time">En gång</string>
     <!--Event Detail-->
-    <string name="event_date">Händelse datum</string>
     <string name="due_date">Förfallodatum</string>
     <string name="cat_combo">Kategori kombination</string>
     <string name="date_default">DD/MM/ÅÅÅÅ</string>
     <string name="cancel">Avbryt</string>
     <string name="delete">Radera</string>
-    <string name="delete_event">Ta bort händelse</string>
-    <string name="confirm_delete_event">Är du säker på att du vill radera den här händelsen?</string>
-    <string name="event_was_deleted">Händelse raderats</string>
     <string name="total">Totalt</string>
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Inskrivningslista</string>
@@ -216,7 +209,6 @@
     <string name="qr_error_id">Ogiltig QR-kod</string>
     <string name="qr_error_attr">Det här attributet kan inte läggas till</string>
     <string name="qr_error_enrollment">Denna inskrivning kan inte läggas till</string>
-    <string name="qr_error_event">Den här händelsen kan inte läggas till</string>
 
     <string name="jira_report">Rapportera ett problem i JIRA</string>
     <string name="about">Handla om</string>

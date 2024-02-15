@@ -40,6 +40,7 @@ import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ObjectStyleUtils.getIconResource
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
@@ -96,6 +97,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     @Inject
     lateinit var contractHandler: TeiDataContractHandler
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     private var eventAdapter: EventAdapter? = null
     private var dialog: CustomDialog? = null
@@ -400,7 +404,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private fun showDialogCloseProgram() {
         dialog = CustomDialog(
             requireContext(),
-            getString(R.string.event_completed),
+            resourceManager.formatWithEventLabel(
+                R.string.event_label_completed,
+                programStageFromEvent?.uid(),
+            ),
             getString(R.string.complete_enrollment_message),
             getString(R.string.button_ok),
             getString(R.string.cancel),
