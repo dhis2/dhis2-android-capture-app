@@ -5,9 +5,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
@@ -26,6 +30,8 @@ fun provideParameterSelectorItem(
     fieldUiModel: FieldUiModel,
     callback: FieldUiModel.Callback,
 ): ParameterSelectorItemModel {
+    val focusRequester = remember { FocusRequester() }
+
     val status = if (fieldUiModel.focused) {
         ParameterSelectorItemModel.Status.FOCUSED
     } else if (fieldUiModel.value.isNullOrEmpty()) {
@@ -34,13 +40,20 @@ fun provideParameterSelectorItem(
         ParameterSelectorItemModel.Status.UNFOCUSED
     }
 
+    LaunchedEffect(key1 = status) {
+        if (status == ParameterSelectorItemModel.Status.FOCUSED) {
+            focusRequester.requestFocus()
+        }
+    }
+
     return ParameterSelectorItemModel(
         icon = { ProvideIcon(fieldUiModel.valueType, fieldUiModel.renderingType) },
         label = fieldUiModel.label,
         helper = resources.getString(R.string.optional),
         inputField = {
             FieldProvider(
-                modifier = Modifier,
+                modifier = Modifier
+                    .focusRequester(focusRequester),
                 inputStyle = InputStyle.ParameterInputStyle(),
                 fieldUiModel = fieldUiModel,
                 uiEventHandler = callback::recyclerViewUiEvents,
