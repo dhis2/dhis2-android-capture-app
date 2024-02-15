@@ -383,8 +383,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
                 ?.mapNotNull { it.stage }
                 ?: emptyList(),
-            onScheduled = {
-                showToast(getString(R.string.event_created))
+            onScheduled = { programStageUid ->
+                showToast(
+                    resourceManager.formatWithEventLabel(
+                        R.string.event_label_created,
+                        programStageUid,
+                    ),
+                )
                 presenter.updateEventList()
             },
         ).show(childFragmentManager, SCHEDULING_DIALOG)

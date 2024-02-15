@@ -23,7 +23,7 @@ import javax.inject.Inject
 class SchedulingDialog(
     val enrollment: Enrollment,
     val programStages: List<ProgramStage>,
-    val onScheduled: () -> Unit,
+    val onScheduled: (String) -> Unit,
 ) : BottomSheetDialogFragment() {
     companion object {
         const val SCHEDULING_DIALOG = "SCHEDULING_DIALOG"
@@ -63,7 +63,7 @@ class SchedulingDialog(
 
         viewModel.onEventScheduled = {
             dismiss()
-            onScheduled()
+            onScheduled(viewModel.programStage.value.uid())
         }
 
         return ComposeView(requireContext()).apply {

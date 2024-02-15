@@ -62,7 +62,11 @@ class SchedulingViewModel(
         )
         configureEventReportDate = ConfigureEventReportDate(
             creationType = EventCreationType.SCHEDULE,
-            resourceProvider = EventDetailResourcesProvider(resourceManager),
+            resourceProvider = EventDetailResourcesProvider(
+                enrollment.program().orEmpty(),
+                programStage.value.uid(),
+                resourceManager,
+            ),
             repository = repository,
             periodType = programStage.value.periodType(),
             periodUtils = periodUtils,
