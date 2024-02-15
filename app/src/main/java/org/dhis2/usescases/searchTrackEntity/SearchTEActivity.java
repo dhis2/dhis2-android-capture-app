@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import static android.view.View.GONE;
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersScreenKt.initSearchScreen;
 
 import android.annotation.SuppressLint;
@@ -359,6 +360,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return Unit.INSTANCE;
                 },
                 () -> {
+                    closeKeyboard(binding.root);
                     presenter.onClearClick();
                     return Unit.INSTANCE;
                 }
@@ -425,6 +427,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.mainComponent, SearchTEList.Companion.get(fromRelationship)).commit();
         }
+        viewModel.getRefreshData().observe(this, refresh -> {
+            closeKeyboard(binding.root);
+        });
     }
 
     private void showMap() {
