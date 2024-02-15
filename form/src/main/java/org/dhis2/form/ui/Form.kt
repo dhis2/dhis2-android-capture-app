@@ -109,6 +109,10 @@ fun Form(
                         focusManager.clearFocus()
                     }
                 }
+                
+                val sectionMessage = if (section.fields.isEmpty()) resources.getString(R.string.form_without_fields) else null
+
+                val sectionState = if (section.fields.isEmpty()) SectionState.FIXED else section.state
 
                 Section(
                     title = section.title,
@@ -116,16 +120,16 @@ fun Form(
                     description = if (sections.size >= 2 && section.fields.isNotEmpty()) section.description else null,
                     completedFields = section.completedFields(),
                     totalFields = section.fields.size,
-                    state = section.state,
+                    state = sectionState,
                     errorCount = section.errorCount(),
                     warningCount = section.warningCount(),
-                    warningMessage = resources.getString(R.string.form_without_fields),
+                    warningMessage = sectionMessage,
                     onNextSection = onNextSection,
                     onSectionClick = {
                         intentHandler.invoke(FormIntent.OnSection(section.uid))
                     },
                     content = {
-                        if (sections.size >= 2 && section.fields.isNotEmpty()) {
+                        if (section.fields.isNotEmpty()) {
                             section.fields.forEachIndexed { index, fieldUiModel ->
                                 fieldUiModel.setCallback(callback)
                                 FieldProvider(
