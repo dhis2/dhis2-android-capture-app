@@ -201,6 +201,7 @@ fun SearchParametersScreen(
             }
 
             Button(
+                enabled = uiState.searchEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp, 8.dp, 16.dp, 8.dp)

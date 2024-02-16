@@ -269,6 +269,7 @@ class SearchTEIViewModel(
                     ),
                 )
         }
+        uiState = uiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
     fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
