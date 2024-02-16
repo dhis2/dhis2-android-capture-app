@@ -100,7 +100,7 @@ class ScheduledEventPresenterImpl(
         return d2.systemInfoModule().systemInfo().blockingGet()?.dateFormat()
     }
 
-    override fun getSelectableDates(program: Program, isDueDate: Boolean): SelectableDates? {
+    override fun getSelectableDates(program: Program, isDueDate: Boolean): SelectableDates {
         val minDate = if (program.expiryPeriodType() != null) {
             DateUtils.getInstance().expDate(
                 null,

@@ -104,7 +104,9 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                         dateValue = "",
                     )
 
-                    val eventDateAction = if (programStage.periodType() == null) null else showEventDatePeriodDialog(programStage.periodType())
+                    val eventDateAction = programStage.periodType()?.let {
+                        showEventDatePeriodDialog(programStage.periodType())
+                    }
 
                     ProvideInputDate(
                         EventInputDateUiModel(
@@ -112,8 +114,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             allowsManualInput = false,
                             detailsEnabled = true,
                             onDateClick = eventDateAction,
-                            onDateSet = {},
-                            onClear = {},
+                            onDateSelected = { date -> presenter.setEventDate(presenter.formatDateValues(date)) },
                             selectableDates = presenter.getSelectableDates(program, false),
                         ),
 
@@ -123,17 +124,19 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             label = programStage.dueDateLabel() ?: getString(R.string.due_date),
                             dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
                         )
-                        val dueDateAction = if (programStage.periodType() == null) null else showDueDatePeriodDialog(programStage.periodType())
+                        val dueDateAction = programStage.periodType().let {
+                            showDueDatePeriodDialog(programStage.periodType())
+                        }
 
                         ProvideInputDate(
                             EventInputDateUiModel(
                                 eventDate = dueDate,
+                                allowsManualInput = false,
                                 detailsEnabled = true,
                                 onDateClick = dueDateAction,
-                                onDateSet = { date ->
-                                    presenter.setEventDate(presenter.formatDateValues(date))
+                                onDateSelected = { date ->
+                                    presenter.setDueDate(presenter.formatDateValues(date))
                                 },
-                                onClear = {},
                                 selectableDates = presenter.getSelectableDates(program, true),
                             ),
                         )

@@ -225,7 +225,7 @@ class EventInitialTest {
                     eventDate = date,
                     detailsEnabled = details.enabled,
                     onDateClick =  viewModel.showPeriodDialog() ,
-                    onDateSet = { dateValues ->
+                    onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
                     onClear = { viewModel.onClearEventReportDate() },
@@ -258,7 +258,7 @@ class EventInitialTest {
                     eventDate = date,
                     detailsEnabled = details.enabled,
                     onDateClick =  viewModel.showPeriodDialog(),
-                    onDateSet = { dateValues ->
+                    onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
                     onClear = { viewModel.onClearEventReportDate() },

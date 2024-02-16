@@ -25,7 +25,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeTransform
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.TimeTransformation
 import java.text.SimpleDateFormat
-import java.time.LocalDate
+import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -55,7 +55,12 @@ fun ProvideInputDate(
     val selectableDates = if (fieldUiModel.allowFutureDates == true) {
         SelectableDates(initialDate = "12111924", endDate = "12112124")
     } else {
-        SelectableDates(initialDate = "12111924", endDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(LocalDate.now()))
+        SelectableDates(
+            initialDate = "12111924",
+            endDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(
+                Date(System.currentTimeMillis() - 1000),
+            ),
+        )
     }
     InputDateTime(
         InputDateTimeModel(
@@ -67,7 +72,6 @@ fun ProvideInputDate(
             supportingText = fieldUiModel.supportingText(),
             isRequired = fieldUiModel.mandatory,
             visualTransformation = visualTransformation,
-            onFocusChanged = {},
             onNextClicked = onNextClicked,
             onValueChanged = {
                 value = it ?: TextFieldValue()

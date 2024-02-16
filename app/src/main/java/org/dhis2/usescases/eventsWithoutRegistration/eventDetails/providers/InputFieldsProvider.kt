@@ -90,12 +90,7 @@ fun ProvideInputDate(
                 format = "ddMMyyyy",
                 is24hourFormat = uiModel.is24HourFormat,
                 selectableDates = uiModel.selectableDates ?: SelectableDates("01011924", "12312124"),
-                onDateSelected = { dateString ->
-                    dateString?.let {
-                        formatUIDateToStored(it)?.let { formatedDate ->
-                            uiModel.onDateSet.invoke(formatedDate)
-                        }
-                    }
+                onDateSelected = {
                 },
             ),
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
@@ -136,10 +131,10 @@ fun getInputShellStateBasedOnValue(dateString: String?): InputShellState {
 
 fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String) {
     if (dateString.isEmpty()) {
-        uiModel.onClear()
+        uiModel.onClear?.invoke()
     } else if (isValid(dateString) && isValidDateFormat(dateString)) {
         formatUIDateToStored(dateString)?.let { dateValues ->
-            uiModel.onDateSet(dateValues)
+            uiModel.onDateSelected(dateValues)
         }
     }
 }

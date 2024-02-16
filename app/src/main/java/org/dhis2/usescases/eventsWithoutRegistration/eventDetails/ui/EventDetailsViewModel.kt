@@ -29,8 +29,11 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class EventDetailsViewModel(
     private val configureEventDetails: ConfigureEventDetails,
@@ -47,7 +50,6 @@ class EventDetailsViewModel(
     private val resourcesProvider: EventDetailResourcesProvider,
 ) : ViewModel() {
 
-    var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
     var showNoOrgUnits: (() -> Unit)? = null
@@ -241,6 +243,15 @@ class EventDetailsViewModel(
             }
         }
         EventDetailIdlingResourceSingleton.decrement()
+    }
+
+    fun getSelectableDates(eventDate: EventDate): SelectableDates {
+        return if (eventDate.allowFutureDates) {
+            SelectableDates("12111924", "12112124")
+        } else {
+            val currentDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis()))
+            SelectableDates("12111924", currentDate)
+        }
     }
 
     fun showPeriodDialog() {
