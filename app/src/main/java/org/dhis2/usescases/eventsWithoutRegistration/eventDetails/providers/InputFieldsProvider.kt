@@ -87,11 +87,8 @@ fun ProvideInputDate(
                         state = InputShellState.ERROR
                     }
                 },
-                format = "ddMMyyyy",
                 is24hourFormat = uiModel.is24HourFormat,
                 selectableDates = uiModel.selectableDates ?: SelectableDates("01011924", "12312124"),
-                onDateSelected = {
-                },
             ),
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
         )

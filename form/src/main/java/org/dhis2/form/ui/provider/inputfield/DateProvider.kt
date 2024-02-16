@@ -84,7 +84,6 @@ fun ProvideInputDate(
                     ),
                 )
             },
-            format = "ddMMyyyy",
             selectableDates = selectableDates,
             inputStyle = inputStyle,
             ),
