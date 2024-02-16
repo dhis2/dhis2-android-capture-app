@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -37,6 +38,7 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
 
@@ -50,6 +52,7 @@ import org.dhis2.bindings.ContextExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
+import org.dhis2.commons.data.FormFileProvider;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
@@ -77,7 +80,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
+import timber.log.Timber;
 
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
@@ -133,8 +136,28 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.setPresenter(presenter);
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
         binding.setVersionName(BuildConfig.VERSION_NAME);
+        FormFileProvider.INSTANCE.init(requireContext());
+        presenter.getExportedDb().observe(getViewLifecycleOwner(), fileData -> {
+            Uri contentUri = FileProvider.getUriForFile(requireContext(),
+                    FormFileProvider.INSTANCE.fileProviderAuthority,
+                    fileData.getFile());
+            Intent intentShare = new Intent(Intent.ACTION_SEND)
+                    .setDataAndType(contentUri, requireContext().getContentResolver().getType(contentUri))
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    .putExtra(Intent.EXTRA_STREAM, contentUri);
 
-        ExportOptionKt.setExportOption(binding.exportShare, () -> null);
+            Intent chooser = Intent.createChooser(intentShare, getString(R.string.open_with));
+            try {
+                startActivity(chooser);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+        });
+
+        ExportOptionKt.setExportOption(binding.exportShare, () -> {
+            presenter.onExportAndShareDB();
+            return null;
+        });
         return binding.getRoot();
     }
 
@@ -282,73 +305,65 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.metaDivider.setVisibility(View.VISIBLE);
             binding.parameterDivider.setVisibility(View.VISIBLE);
             binding.reservedValueDivider.setVisibility(View.VISIBLE);
+            binding.exportDivider.setVisibility(View.VISIBLE);
 
             switch (settingsItem) {
-                case DATA_SYNC:
-                    ViewAnimationsKt.expand(binding.syncDataActions, true, () -> {
-                        binding.syncDataActions.setVisibility(View.VISIBLE);
-                        binding.dataDivider.setVisibility(View.GONE);
-                        binding.dataSyncBottomShadow.setVisibility(View.VISIBLE);
-                        binding.dataSyncTopShadow.setVisibility(View.VISIBLE);
-                        scrollToChild(binding.settingsItemData);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case META_SYNC:
-                    ViewAnimationsKt.expand(binding.syncMetadataActions, true, () -> {
-                        binding.syncMetadataActions.setVisibility(View.VISIBLE);
-                        binding.metaDivider.setVisibility(View.GONE);
-                        binding.metaDataTopShadow.setVisibility(View.VISIBLE);
-                        binding.metaDataBottomShadow.setVisibility(View.VISIBLE);
-                        scrollToChild(binding.settingsItemMeta);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case SYNC_PARAMETERS:
-                    ViewAnimationsKt.expand(binding.parameterData, true, () -> {
-                        binding.parameterData.setVisibility(View.VISIBLE);
-                        binding.parameterDivider.setVisibility(View.GONE);
-                        binding.itemParamsSyncTopShadow.setVisibility(View.VISIBLE);
-                        binding.itemParamsSyncBottomShadow.setVisibility(View.VISIBLE);
-                        scrollToChild(binding.settingsItemParams);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case RESERVED_VALUES:
-                    ViewAnimationsKt.expand(binding.reservedValuesActions, true, () -> {
-                        binding.reservedValuesActions.setVisibility(View.VISIBLE);
-                        binding.reservedValueDivider.setVisibility(View.GONE);
-                        binding.reservedValueTopShadow.setVisibility(View.VISIBLE);
-                        binding.reservedValueBottomShadow.setVisibility(View.VISIBLE);
-                        scrollToChild(binding.settingsItemValues);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case DELETE_LOCAL_DATA:
-                    ViewAnimationsKt.expand(binding.deleteDataButton, true, () -> {
-                        binding.deleteDataButton.setVisibility(View.VISIBLE);
-                        scrollToChild(binding.settingsItemDeleteData);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case SMS:
-                    ViewAnimationsKt.expand(binding.smsContent, true, () -> {
-                        binding.smsContent.setVisibility(View.VISIBLE);
-                        binding.smsTopShadow.setVisibility(View.VISIBLE);
-                        binding.smsBottomShadow.setVisibility(View.VISIBLE);
-                        scrollToChild(binding.smsSettings);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case VERSION_UPDATE:
-                    ViewAnimationsKt.expand(binding.versionButton, true, () -> {
-                        binding.versionButton.setVisibility(View.VISIBLE);
-                        scrollToChild(binding.settingsItemVersion);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                default:
-                    break;
+                case DATA_SYNC -> ViewAnimationsKt.expand(binding.syncDataActions, true, () -> {
+                    binding.syncDataActions.setVisibility(View.VISIBLE);
+                    binding.dataDivider.setVisibility(View.GONE);
+                    binding.dataSyncBottomShadow.setVisibility(View.VISIBLE);
+                    binding.dataSyncTopShadow.setVisibility(View.VISIBLE);
+                    scrollToChild(binding.settingsItemData);
+                    return Unit.INSTANCE;
+                });
+                case META_SYNC -> ViewAnimationsKt.expand(binding.syncMetadataActions, true, () -> {
+                    binding.syncMetadataActions.setVisibility(View.VISIBLE);
+                    binding.metaDivider.setVisibility(View.GONE);
+                    binding.metaDataTopShadow.setVisibility(View.VISIBLE);
+                    binding.metaDataBottomShadow.setVisibility(View.VISIBLE);
+                    scrollToChild(binding.settingsItemMeta);
+                    return Unit.INSTANCE;
+                });
+                case SYNC_PARAMETERS -> ViewAnimationsKt.expand(binding.parameterData, true, () -> {
+                    binding.parameterData.setVisibility(View.VISIBLE);
+                    binding.parameterDivider.setVisibility(View.GONE);
+                    binding.itemParamsSyncTopShadow.setVisibility(View.VISIBLE);
+                    binding.itemParamsSyncBottomShadow.setVisibility(View.VISIBLE);
+                    scrollToChild(binding.settingsItemParams);
+                    return Unit.INSTANCE;
+                });
+                case RESERVED_VALUES ->
+                        ViewAnimationsKt.expand(binding.reservedValuesActions, true, () -> {
+                            binding.reservedValuesActions.setVisibility(View.VISIBLE);
+                            binding.reservedValueDivider.setVisibility(View.GONE);
+                            binding.reservedValueTopShadow.setVisibility(View.VISIBLE);
+                            binding.reservedValueBottomShadow.setVisibility(View.VISIBLE);
+                            scrollToChild(binding.settingsItemValues);
+                            return Unit.INSTANCE;
+                        });
+                case EXPORT_DB -> ViewAnimationsKt.expand(binding.exportOptions, true, () -> {
+                    binding.exportShare.setVisibility(View.VISIBLE);
+                    scrollToChild(binding.settingsItemExport);
+                    return Unit.INSTANCE;
+                });
+                case DELETE_LOCAL_DATA ->
+                        ViewAnimationsKt.expand(binding.deleteDataButton, true, () -> {
+                            binding.deleteDataButton.setVisibility(View.VISIBLE);
+                            scrollToChild(binding.settingsItemDeleteData);
+                            return Unit.INSTANCE;
+                        });
+                case SMS -> ViewAnimationsKt.expand(binding.smsContent, true, () -> {
+                    binding.smsContent.setVisibility(View.VISIBLE);
+                    binding.smsTopShadow.setVisibility(View.VISIBLE);
+                    binding.smsBottomShadow.setVisibility(View.VISIBLE);
+                    scrollToChild(binding.smsSettings);
+                    return Unit.INSTANCE;
+                });
+                case VERSION_UPDATE -> ViewAnimationsKt.expand(binding.versionButton, true, () -> {
+                    binding.versionButton.setVisibility(View.VISIBLE);
+                    scrollToChild(binding.settingsItemVersion);
+                    return Unit.INSTANCE;
+                });
             }
         } else {
             closedSettingItem(settingOpened);
@@ -360,13 +375,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         int[] l = new int[2];
         child.getLocationOnScreen(l);
         Rect rect = new Rect(l[0], l[1], l[0] + child.getWidth(), l[1] + child.getHeight());
-        binding.scrollView.requestChildRectangleOnScreen(child,rect, false);
+        binding.scrollView.requestChildRectangleOnScreen(child, rect, false);
     }
 
     private void closedSettingItem(SettingItem settingItemToClose) {
         if (settingItemToClose != null) {
             switch (settingItemToClose) {
-                case DATA_SYNC:
+                case DATA_SYNC -> {
                     ViewAnimationsKt.collapse(binding.syncDataActions, () -> {
                         binding.syncDataActions.setVisibility(View.GONE);
                         binding.dataSyncTopShadow.setVisibility(View.GONE);
@@ -374,8 +389,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     binding.dataDivider.setVisibility(View.VISIBLE);
-                    break;
-                case META_SYNC:
+                }
+                case META_SYNC -> {
                     ViewAnimationsKt.collapse(binding.syncMetadataActions, () -> {
                         binding.syncMetadataActions.setVisibility(View.GONE);
                         binding.metaDataTopShadow.setVisibility(View.GONE);
@@ -383,8 +398,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     binding.metaDivider.setVisibility(View.VISIBLE);
-                    break;
-                case SYNC_PARAMETERS:
+                }
+                case SYNC_PARAMETERS -> {
                     ViewAnimationsKt.collapse(binding.parameterData, () -> {
                         binding.parameterData.setVisibility(View.GONE);
                         binding.itemParamsSyncTopShadow.setVisibility(View.GONE);
@@ -392,8 +407,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     binding.parameterDivider.setVisibility(View.VISIBLE);
-                    break;
-                case RESERVED_VALUES:
+                }
+                case RESERVED_VALUES -> {
                     ViewAnimationsKt.collapse(binding.reservedValuesActions, () -> {
                         binding.reservedValuesActions.setVisibility(View.GONE);
                         binding.reservedValueTopShadow.setVisibility(View.GONE);
@@ -401,29 +416,29 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     binding.reservedValueDivider.setVisibility(View.VISIBLE);
-                    break;
-                case DELETE_LOCAL_DATA:
-                    ViewAnimationsKt.collapse(binding.deleteDataButton, () -> {
-                        binding.deleteDataButton.setVisibility(View.GONE);
+                }
+                case EXPORT_DB -> {
+                    ViewAnimationsKt.collapse(binding.exportOptions, () -> {
+                        binding.exportShare.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
-                    break;
-                case SMS:
-                    ViewAnimationsKt.collapse(binding.smsContent, () -> {
-                        binding.smsContent.setVisibility(View.GONE);
-                        binding.smsTopShadow.setVisibility(View.GONE);
-                        binding.smsBottomShadow.setVisibility(View.GONE);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case VERSION_UPDATE:
-                    ViewAnimationsKt.collapse(binding.versionButton, () -> {
-                        binding.versionButton.setVisibility(View.GONE);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                default:
-                    break;
+                    binding.exportDivider.setVisibility(View.VISIBLE);
+                }
+                case DELETE_LOCAL_DATA ->
+                        ViewAnimationsKt.collapse(binding.deleteDataButton, () -> {
+                            binding.deleteDataButton.setVisibility(View.GONE);
+                            return Unit.INSTANCE;
+                        });
+                case SMS -> ViewAnimationsKt.collapse(binding.smsContent, () -> {
+                    binding.smsContent.setVisibility(View.GONE);
+                    binding.smsTopShadow.setVisibility(View.GONE);
+                    binding.smsBottomShadow.setVisibility(View.GONE);
+                    return Unit.INSTANCE;
+                });
+                case VERSION_UPDATE -> ViewAnimationsKt.collapse(binding.versionButton, () -> {
+                    binding.versionButton.setVisibility(View.GONE);
+                    return Unit.INSTANCE;
+                });
             }
         }
     }
