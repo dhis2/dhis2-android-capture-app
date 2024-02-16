@@ -946,4 +946,8 @@
     <string name="delete_tei_dialog_message">This %s and all its data across all programs will be deleted. This action cannot be undone.</string>
     <string name="remove_enrollment_dialog_title">Remove from %s?</string>
     <string name="remove_enrollment_dialog_message">Data from %s will de deleted. This action cannot be undone.</string>
+    <string name="schedule_next">Schedule next</string>
+    <string name="schedule">Schedule</string>
+    <string name="program_stage">Program stage</string>
+    <string name="event">event</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
@@ -197,6 +198,36 @@ class TeiDataPresenterTest {
         whenever(d2.canCreateEventInEnrollment(enrollmentUid, emptyList())) doReturn true
         teiDataPresenter.updateCreateEventButtonVisibility(false)
         assertTrue(teiDataPresenter.shouldDisplayEventCreationButton.value == false)
+    }
+
+    @Test
+    fun `Should display schedule events dialogs when configured`() {
+        val programStage = ProgramStage.builder()
+            .uid("programStage")
+            .allowGenerateNextVisit(true)
+            .displayGenerateEventBox(true)
+            .remindCompleted(false)
+            .build()
+        whenever(
+            dashboardRepository.displayGenerateEvent("eventUid"),
+        ) doReturn Observable.just(programStage)
+        teiDataPresenter.displayGenerateEvent("eventUid")
+        verify(view).displayScheduleEvent()
+    }
+
+    @Test
+    fun `Should display close program dialogs when configured`() {
+        val programStage = ProgramStage.builder()
+            .uid("programStage")
+            .allowGenerateNextVisit(false)
+            .displayGenerateEventBox(false)
+            .remindCompleted(true)
+            .build()
+        whenever(
+            dashboardRepository.displayGenerateEvent("eventUid"),
+        ) doReturn Observable.just(programStage)
+        teiDataPresenter.displayGenerateEvent("eventUid")
+        verify(view).showDialogCloseProgram()
     }
 
     private fun fakeModel(

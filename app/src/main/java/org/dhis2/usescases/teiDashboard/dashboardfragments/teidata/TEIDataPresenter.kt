@@ -339,7 +339,13 @@ class TEIDataPresenter(
             dashboardRepository.displayGenerateEvent(eventUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe(view.displayGenerateEvent(), Timber.Forest::d),
+                .subscribe({ programStage ->
+                    if (programStage.displayGenerateEventBox() == true || programStage.allowGenerateNextVisit() == true) {
+                        view.displayScheduleEvent()
+                    } else if (programStage.remindCompleted() == true) {
+                        view.showDialogCloseProgram()
+                    }
+                }, Timber.Forest::d),
         )
     }
 
@@ -578,5 +584,9 @@ class TEIDataPresenter(
 
     fun getTeiHeader(): String? {
         return teiDataRepository.getTeiHeader()
+    }
+
+    fun updateEventList() {
+        groupingProcessor.onNext(_groupEvents.value)
     }
 }
