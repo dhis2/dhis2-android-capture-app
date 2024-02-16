@@ -1,7 +1,6 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
-import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
@@ -14,7 +13,6 @@ import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
@@ -23,6 +21,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import java.io.File
 
 class FormValueStore(
     private val d2: D2,
@@ -334,7 +333,9 @@ class FormValueStore(
     }
 
     private fun saveFileResource(path: String): String {
-        val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        //Eyeseetea customization - No resize
+        //val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        val file = File(path)
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
