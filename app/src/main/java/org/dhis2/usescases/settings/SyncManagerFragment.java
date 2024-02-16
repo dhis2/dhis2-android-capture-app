@@ -66,6 +66,7 @@ import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
+import org.dhis2.usescases.settings.ui.ExportOptionKt;
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity;
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -132,6 +133,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.setPresenter(presenter);
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
         binding.setVersionName(BuildConfig.VERSION_NAME);
+
+        ExportOptionKt.setExportOption(binding.exportShare, () -> null);
         return binding.getRoot();
     }
 

@@ -551,6 +551,43 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemExport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->presenter.onItemClick(SettingItem.DELETE_LOCAL_DATA)}">
+
+                <include
+                    android:id="@+id/exportLayout"
+                    layout="@layout/fragment_settings_item"
+                    app:icon="@{R.drawable.ic_delete_local_data}"
+                    app:message="@{@string/settingsExportDBMessage}"
+                    app:title="@{@string/settingsExportDB}" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/exportOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/exportShare"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="@id/exportOptions"
+                        app:layout_constraintTop_toTopOf="@id/exportOptions" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="72dp"
+                    android:background="@color/gray_afa"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/exportOptions" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/settingsItemDeleteData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
