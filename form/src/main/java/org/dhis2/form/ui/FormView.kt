@@ -365,12 +365,14 @@ class FormView : Fragment() {
                     val sections = items?.let {
                         formSectionMapper.mapFromFieldUiModelList(it)
                     } ?: emptyList()
-                    Form(
-                        sections = sections,
-                        intentHandler = ::intentHandler,
-                        uiEventHandler = ::uiEventHandler,
-                        resources = Injector.provideResourcesManager(context),
-                    )
+                    if (viewModel.loading.value == false) {
+                        Form(
+                            sections = sections,
+                            intentHandler = ::intentHandler,
+                            uiEventHandler = ::uiEventHandler,
+                            resources = Injector.provideResourcesManager(context),
+                        )
+                    }
                 }
             }
         } else {
