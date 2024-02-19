@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
-import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
@@ -15,10 +14,10 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import java.io.File
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -207,7 +206,9 @@ class ValueStoreImpl(
     }
 
     private fun saveFileResource(path: String): String {
-        val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        //Eyeseetea customization - No resize
+        //val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        val file = File(path)
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
