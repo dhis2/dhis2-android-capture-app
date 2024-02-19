@@ -102,12 +102,13 @@ fun SchedulingDialogUi(
                             },
                         )
                     }
+                    val eventDateAction = selectedProgramStage.periodType()?.let { viewModel.showPeriodDialog() }
                     ProvideInputDate(
                         EventInputDateUiModel(
                             eventDate = date,
                             detailsEnabled = true,
-                            onDateClick = { viewModel.onDateClick() },
-                            onDateSet = { viewModel.onDateSet(it.year, it.month, it.day) },
+                            onDateClick = eventDateAction,
+                            onDateSelected = { viewModel.onDateSet(it.year, it.month, it.day) },
                             onClear = { viewModel.onClearEventReportDate() },
                         ),
                     )

@@ -19,8 +19,11 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Even
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class SchedulingViewModel(
     val enrollment: Enrollment,
@@ -92,6 +95,23 @@ class SchedulingViewModel(
         }
     }
 
+    fun getSelectableDates(): SelectableDates {
+        val maxDate = if (!eventDate.value.allowFutureDates) {
+            SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis() - 1000))
+        } else if (eventDate.value.maxDate != null) {
+            SimpleDateFormat("ddMMyyyy", Locale.US).format(eventDate.value.maxDate)
+        } else {
+            "12112124"
+        }
+        val minDate = if (eventDate.value.minDate != null) {
+            SimpleDateFormat("ddMMyyyy", Locale.US).format(eventDate.value.minDate)
+        } else {
+            "12111924"
+        }
+
+        return SelectableDates(minDate, maxDate)
+    }
+
     fun setUpEventReportDate(selectedDate: Date? = null) {
         viewModelScope.launch {
             configureEventReportDate(selectedDate)
@@ -120,10 +140,10 @@ class SchedulingViewModel(
         _eventCatCombo.value = eventCatCombo.value.copy(isCompleted = false)
     }
 
-    fun onDateClick() {
+    fun showPeriodDialog() {
         programStage.value.periodType()?.let {
             showPeriods?.invoke()
-        } ?: showCalendar?.invoke()
+        }
     }
 
     fun onDateSet(year: Int, month: Int, day: Int) {
