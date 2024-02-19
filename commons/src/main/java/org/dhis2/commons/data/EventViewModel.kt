@@ -19,7 +19,8 @@ data class EventViewModel(
     var valueListIsOpen: Boolean = false,
     val showTopShadow: Boolean = false,
     val showBottomShadow: Boolean = false,
-    var showAllEvents: Boolean = false,
+    val showAllEvents: Boolean = false,
+    val maxEventsToShow: Int = 0,
     val displayDate: String?,
     val nameCategoryOptionCombo: String?,
 ) {

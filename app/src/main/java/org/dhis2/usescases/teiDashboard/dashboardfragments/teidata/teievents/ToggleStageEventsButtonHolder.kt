@@ -18,7 +18,6 @@ class ToggleStageEventsButtonHolder(
     fun bind(
         eventViewModel: EventViewModel
     ) {
-
         composeView.setContent {
             MdcTheme {
                 Text(
@@ -35,7 +34,7 @@ class ToggleStageEventsButtonHolder(
                     text = if (eventViewModel.showAllEvents)
                         composeView.context.getString(R.string.show_less_events)
                     else
-                        composeView.context.getString(R.string.show_more_events, (eventViewModel.eventCount - 3).toString())
+                        composeView.context.getString(R.string.show_more_events, (eventViewModel.eventCount - eventViewModel.maxEventsToShow).toString())
                 )
             }
         }

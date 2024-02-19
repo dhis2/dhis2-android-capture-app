@@ -39,7 +39,7 @@ class TeiDataRepositoryImpl(
         return if (groupedByStage) {
             getGroupedEvents(eventRepo, selectedStage)
         } else {
-            getTimelineEvents(eventRepo)
+            getTimelineEvents(eventRepo, selectedStage.showAllEvents)
         }
     }
 
@@ -228,16 +228,17 @@ class TeiDataRepositoryImpl(
                                 programStage,
                                 null,
                                 eventList.size,
-                                if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                                selectedStage.showOptions,
-                                canAddEventToEnrollment,
+                                null,
+                                isSelected = false,
+                                canAddNewEvent = false,
                                 orgUnitName = "",
                                 catComboName = "",
                                 dataElementValues = emptyList(),
                                 groupedByStage = true,
                                 displayDate = null,
                                 nameCategoryOptionCombo = null,
-                                showAllEvents = selectedStage.showAllEvents
+                                showAllEvents = selectedStage.showAllEvents,
+                                maxEventsToShow = maxEventToShow
                             ),
                         )
                     }
@@ -248,15 +249,19 @@ class TeiDataRepositoryImpl(
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
+        showAllEvents: Boolean
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
+        val maxEventToShow = 5
 
         return eventRepository
             .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                checkEventStatus(eventList).forEachIndexed { _, event ->
+                checkEventStatus(eventList).take(
+                    if (showAllEvents) eventList.size else maxEventToShow
+                ).forEachIndexed { _, event ->
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
@@ -282,6 +287,31 @@ class TeiDataRepositoryImpl(
                             ),
                             nameCategoryOptionCombo =
                             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                        ),
+                    )
+                }
+
+                if (eventList.size > maxEventToShow) {
+                    val programStage = d2.programModule().programStages()
+                        .uid(eventList[maxEventToShow - 1].programStage())
+                        .blockingGet()
+                    eventViewModels.add(
+                        EventViewModel(
+                            EventViewModelType.TOGGLE_BUTTON,
+                            programStage,
+                            null,
+                            eventList.size,
+                            null,
+                            isSelected = false,
+                            canAddNewEvent = false,
+                            orgUnitName = "",
+                            catComboName = "",
+                            dataElementValues = emptyList(),
+                            groupedByStage = false,
+                            displayDate = null,
+                            nameCategoryOptionCombo = null,
+                            showAllEvents = showAllEvents,
+                            maxEventsToShow = maxEventToShow,
                         ),
                     )
                 }
