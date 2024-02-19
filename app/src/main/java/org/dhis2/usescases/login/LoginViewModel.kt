@@ -566,8 +566,7 @@ class LoginViewModel(
             }
             val importedMetadata = try {
                 importResult.await()
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 view.displayMessage(resourceManager.parseD2Error(e))
                 Timber.e(e)
                 null
