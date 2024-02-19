@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import java.io.File
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants.PREFS_URLS
@@ -47,6 +46,7 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import retrofit2.Response
 import timber.log.Timber
+import java.io.File
 
 const val VERSION = "version"
 
@@ -77,7 +77,7 @@ class LoginViewModel(
     val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
 
     private val _hasAccounts = MutableLiveData<Boolean>()
-    val hasAccounts : LiveData<Boolean> = _hasAccounts
+    val hasAccounts: LiveData<Boolean> = _hasAccounts
 
     init {
         this.userManager?.let {
@@ -367,13 +367,13 @@ class LoginViewModel(
 
     fun areSameCredentials(): Boolean {
         return (
-                preferenceProvider.areCredentialsSet() &&
-                        preferenceProvider.areSameCredentials(
-                            serverUrl.value!!,
-                            userName.value!!,
-                            password.value!!,
-                        )
-                ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
+            preferenceProvider.areCredentialsSet() &&
+                preferenceProvider.areSameCredentials(
+                    serverUrl.value!!,
+                    userName.value!!,
+                    password.value!!,
+                )
+            ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
     }
 
     private fun saveUserCredentials() {
@@ -530,8 +530,8 @@ class LoginViewModel(
 
     private fun checkData() {
         val newValue = !serverUrl.value.isNullOrEmpty() &&
-                !userName.value.isNullOrEmpty() &&
-                !password.value.isNullOrEmpty()
+            !userName.value.isNullOrEmpty() &&
+            !password.value.isNullOrEmpty()
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }
@@ -566,7 +566,8 @@ class LoginViewModel(
             }
             val importedMetadata = try {
                 importResult.await()
-            }catch (e:Exception){
+            }
+            catch (e: Exception) {
                 view.displayMessage(resourceManager.parseD2Error(e))
                 Timber.e(e)
                 null

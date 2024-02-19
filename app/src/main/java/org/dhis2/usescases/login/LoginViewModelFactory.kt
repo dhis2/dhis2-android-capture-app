@@ -14,7 +14,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 class LoginViewModelFactory(
     private val view: LoginContracts.View,
     private val preferenceProvider: PreferenceProvider,
-    private val resources:ResourceManager,
+    private val resources: ResourceManager,
     private val schedulerProvider: SchedulerProvider,
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,

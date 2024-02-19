@@ -43,7 +43,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 @Composable
 fun LoginTopBar(
     version: String,
-    onImportDatabase: () -> Unit
+    onImportDatabase: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -51,7 +51,7 @@ fun LoginTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(MaterialTheme.colors.primary)
+            .background(MaterialTheme.colors.primary),
     ) {
         val (logoLayout, versionLabel) = createRefs()
 
@@ -65,29 +65,30 @@ fun LoginTopBar(
                 }
                 .padding(horizontal = 4.dp),
             horizontalArrangement = spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(48.dp),
             )
             Image(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
                 painter = painterResource(id = R.drawable.ic_dhis_white),
-                contentDescription = "dhis2 logo"
+                contentDescription = "dhis2 logo",
             )
 
             Box {
                 IconButton(
                     modifier = Modifier
                         .size(48.dp),
-                    onClick = { expanded = true }) {
+                    onClick = { expanded = true },
+                ) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
                         contentDescription = "More options",
-                        tint = MaterialTheme.colors.onPrimary
+                        tint = MaterialTheme.colors.onPrimary,
                     )
                 }
 
@@ -102,12 +103,12 @@ fun LoginTopBar(
                                 .height(48.dp)
                                 .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = spacedBy(16.dp)
+                            horizontalArrangement = spacedBy(16.dp),
                         ) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_import_db),
                                 contentDescription = "Import database",
-                                tint = MaterialTheme.colors.primary
+                                tint = MaterialTheme.colors.primary,
                             )
 
                             Text(
@@ -119,7 +120,7 @@ fun LoginTopBar(
                                     fontWeight = FontWeight.Medium,
                                     color = Color.Black,
                                     letterSpacing = 0.5.sp,
-                                )
+                                ),
                             )
                         }
                     }
@@ -140,7 +141,7 @@ fun LoginTopBar(
                 fontWeight = FontWeight.Medium,
                 color = TextColor.OnPrimary,
                 letterSpacing = 0.5.sp,
-            )
+            ),
         )
     }
 }

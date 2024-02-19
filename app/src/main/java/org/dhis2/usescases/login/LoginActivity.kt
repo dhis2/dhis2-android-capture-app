@@ -19,13 +19,6 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dhis2.App
 import org.dhis2.R
@@ -65,6 +58,13 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
@@ -114,8 +114,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 } catch (e: IOException) {
                     Timber.e("Failed to load file: ", e.message.toString())
                 }
-                if (file.exists())
+                if (file.exists()) {
                     presenter.onImportDataBase(file)
+                }
             }
         }
 
@@ -258,7 +259,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun setTestingCredentials() {
