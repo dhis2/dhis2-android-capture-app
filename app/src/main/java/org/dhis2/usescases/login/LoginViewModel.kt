@@ -6,8 +6,12 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import java.io.File
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
@@ -22,6 +26,7 @@ import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
@@ -35,6 +40,7 @@ import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.dhis2.utils.analytics.USER_PROPERTY_SERVER
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
@@ -47,6 +53,7 @@ const val VERSION = "version"
 class LoginViewModel(
     private val view: LoginContracts.View,
     private val preferenceProvider: PreferenceProvider,
+    private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,
@@ -68,6 +75,9 @@ class LoginViewModel(
     var testingCredentials: MutableMap<String, TestingCredential>? = null
     private val _loginProgressVisible = MutableLiveData(false)
     val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
+
+    private val _hasAccounts = MutableLiveData<Boolean>()
+    val hasAccounts : LiveData<Boolean> = _hasAccounts
 
     init {
         this.userManager?.let {
@@ -103,6 +113,7 @@ class LoginViewModel(
                     ),
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
+        displayManageAccount()
     }
 
     private fun trackServerVersion() {
@@ -356,13 +367,13 @@ class LoginViewModel(
 
     fun areSameCredentials(): Boolean {
         return (
-            preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(
-                    serverUrl.value!!,
-                    userName.value!!,
-                    password.value!!,
-                )
-            ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
+                preferenceProvider.areCredentialsSet() &&
+                        preferenceProvider.areSameCredentials(
+                            serverUrl.value!!,
+                            userName.value!!,
+                            password.value!!,
+                        )
+                ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
     }
 
     private fun saveUserCredentials() {
@@ -462,9 +473,9 @@ class LoginViewModel(
         return Pair(urls, users)
     }
 
-    fun displayManageAccount(): Boolean {
+    fun displayManageAccount() {
         val users = userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
-        return users >= 1
+        _hasAccounts.value = (users >= 1)
     }
 
     fun onManageAccountClicked() {
@@ -519,8 +530,8 @@ class LoginViewModel(
 
     private fun checkData() {
         val newValue = !serverUrl.value.isNullOrEmpty() &&
-            !userName.value.isNullOrEmpty() &&
-            !password.value.isNullOrEmpty()
+                !userName.value.isNullOrEmpty() &&
+                !password.value.isNullOrEmpty()
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }
@@ -548,7 +559,25 @@ class LoginViewModel(
         this.userName.value = userName
     }
 
-    fun testCoverage() {
-        view.setUser("Coverage test")
+    fun onImportDataBase(file: File) {
+        viewModelScope.launch {
+            val importResult = async {
+                D2Manager.getD2().maintenanceModule().databaseImportExport().importDatabase(file)
+            }
+            val importedMetadata = try {
+                importResult.await()
+            }catch (e:Exception){
+                view.displayMessage(resourceManager.parseD2Error(e))
+                Timber.e(e)
+                null
+            }
+            importedMetadata?.let {
+                setAccountInfo(it.serverUrl, it.username)
+                view.setUrl(it.serverUrl)
+                view.setUser(it.username)
+                displayManageAccount()
+            }
+            view.onDbImportFinished()
+        }
     }
 }

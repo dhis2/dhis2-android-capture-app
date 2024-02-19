@@ -52,6 +52,7 @@ import org.dhis2.bindings.ContextExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
+import org.dhis2.commons.data.FileHandler;
 import org.dhis2.commons.data.FormFileProvider;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.ColorType;
@@ -138,20 +139,24 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.setVersionName(BuildConfig.VERSION_NAME);
         FormFileProvider.INSTANCE.init(requireContext());
         presenter.getExportedDb().observe(getViewLifecycleOwner(), fileData -> {
-            Uri contentUri = FileProvider.getUriForFile(requireContext(),
-                    FormFileProvider.INSTANCE.fileProviderAuthority,
-                    fileData.getFile());
-            Intent intentShare = new Intent(Intent.ACTION_SEND)
-                    .setDataAndType(contentUri, requireContext().getContentResolver().getType(contentUri))
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    .putExtra(Intent.EXTRA_STREAM, contentUri);
-
-            Intent chooser = Intent.createChooser(intentShare, getString(R.string.open_with));
-            try {
-                startActivity(chooser);
-            } catch (Exception e) {
-                Timber.e(e);
-            }
+            new FileHandler().copyAndOpen(fileData.getFile(), fileLiveData -> {
+                fileLiveData.observe(getViewLifecycleOwner(), file -> {
+                    Uri contentUri = FileProvider.getUriForFile(requireContext(),
+                            FormFileProvider.fileProviderAuthority,
+                            fileData.getFile());
+                    Intent intentShare = new Intent(Intent.ACTION_SEND)
+                            .setDataAndType(contentUri, requireContext().getContentResolver().getType(contentUri))
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            .putExtra(Intent.EXTRA_STREAM, contentUri);
+                    Intent chooser = Intent.createChooser(intentShare, getString(R.string.open_with));
+                    try {
+                        startActivity(chooser);
+                    } catch (Exception e) {
+                        Timber.e(e);
+                    }
+                });
+                return null;
+            });
         });
 
         ExportOptionKt.setExportOption(binding.exportShare, () -> {

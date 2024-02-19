@@ -10,13 +10,22 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
 import android.view.WindowManager
+import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dhis2.App
 import org.dhis2.R
@@ -42,6 +51,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.accounts.AccountsActivity
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.login.auth.OpenIdProviders
+import org.dhis2.usescases.login.ui.LoginTopBar
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
@@ -55,10 +65,6 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
@@ -89,6 +95,34 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var skipSync = false
     private var openIDRequestCode = -1
 
+    private val filePickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.data?.let { uri ->
+                val fileType = with(contentResolver) {
+                    MimeTypeMap.getSingleton().getExtensionFromMimeType(getType(uri))
+                }
+                val file = File.createTempFile("importedDb", fileType)
+                val inputStream = contentResolver.openInputStream(uri)!!
+                try {
+                    FileOutputStream(file, false).use { outputStream ->
+                        var read: Int
+                        val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
+                        while (inputStream.read(bytes).also { read = it } != -1) {
+                            outputStream.write(bytes, 0, read)
+                        }
+                    }
+                } catch (e: IOException) {
+                    Timber.e("Failed to load file: ", e.message.toString())
+                }
+                if (file.exists())
+                    presenter.onImportDataBase(file)
+            }
+        }
+
+    override fun onDbImportFinished() {
+        showLoginProgress(false)
+    }
+
     companion object {
         fun bundle(
             skipSync: Boolean = false,
@@ -106,6 +140,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         EXTRA_ACCOUNT_DISABLED,
                         true,
                     )
+
                     null -> {
                         // Nothing to do in this case
                     }
@@ -148,6 +183,18 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
+
+        binding.topbar.setContent {
+            MdcTheme {
+                LoginTopBar(version = buildInfo(), onImportDatabase = {
+                    showLoginProgress(false, "Importing database")
+                    val intent = Intent()
+                    intent.type = "*/*"
+                    intent.action = Intent.ACTION_GET_CONTENT
+                    filePickerLauncher.launch(intent)
+                })
+            }
+        }
 
         binding.presenter = presenter
         setLoginVisibility(false)
@@ -194,12 +241,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.clearUrl.setOnClickListener { binding.serverUrlEdit.text = null }
 
         presenter.loginProgressVisible.observe(this) { show ->
-            showLoginProgress(show)
+            showLoginProgress(show, getString(R.string.authenticating))
         }
 
         setTestingCredentials()
         setAutocompleteAdapters()
-        setUpLoginInfo()
         checkMessage()
         presenter.apply {
             checkServerInfoAndShowBiometricButton()
@@ -212,7 +258,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun setTestingCredentials() {
@@ -294,7 +340,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.login.isEnabled = isVisible
     }
 
-    private fun showLoginProgress(showLogin: Boolean) {
+    private fun showLoginProgress(showLogin: Boolean, message: String? = null) {
         if (showLogin) {
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
@@ -304,6 +350,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.progressLayout.visibility = View.VISIBLE
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            binding.progressMessage.text = message
             binding.credentialLayout.visibility = View.VISIBLE
             binding.progressLayout.visibility = View.GONE
         }
@@ -388,6 +435,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 handleFingerPrint()
                 goToNextScreen()
             }
+
             else -> goToNextScreen()
         }
     }
@@ -542,10 +590,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun navigateToQRActivity() {
         requestQRScanner.launch(Intent(context, ScanActivity::class.java))
-    }
-
-    private fun setUpLoginInfo() {
-        binding.appBuildInfo.text = buildInfo()
     }
 
     override fun getDefaultServerProtocol(): String = getString(R.string.login_https)
