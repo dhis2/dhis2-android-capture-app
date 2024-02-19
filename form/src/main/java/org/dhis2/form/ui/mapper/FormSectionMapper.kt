@@ -29,18 +29,7 @@ class FormSectionMapper {
                     )
                 }
             }
-        } else {
-            sections.add(
-                FormSection(
-                    uid = "DUMMY",
-                    title = "TITLE",
-                    description = null,
-                    state = SectionState.NO_HEADER,
-                    fields = items.filterIsInstance<FieldUiModelImpl>(),
-                ),
-            )
         }
-
         return sections
     }
 
