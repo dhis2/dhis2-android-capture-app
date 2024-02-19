@@ -33,11 +33,12 @@ class TeiDataRepositoryImpl(
     override fun getTEIEnrollmentEvents(
         selectedStage: StageSection,
         groupedByStage: Boolean,
+        showAllItems: Boolean,
     ): Single<List<EventViewModel>> {
         val eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
         return if (groupedByStage) {
-            getGroupedEvents(eventRepo, selectedStage)
+            getGroupedEvents(eventRepo, selectedStage, showAllItems)
         } else {
             getTimelineEvents(eventRepo)
         }
@@ -142,6 +143,7 @@ class TeiDataRepositoryImpl(
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,
+        showAllItems: Boolean,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
@@ -184,7 +186,9 @@ class TeiDataRepositoryImpl(
                             nameCategoryOptionCombo = null,
                         ),
                     )
-                    checkEventStatus(eventList).forEachIndexed { index, event ->
+                    checkEventStatus(eventList).take(
+                        if (showAllItems) eventList.size else 3
+                    ).forEachIndexed { index, event ->
                         val showTopShadow = index == 0
                         val showBottomShadow = index == eventList.size - 1
                         eventViewModels.add(
@@ -217,6 +221,23 @@ class TeiDataRepositoryImpl(
                             ),
                         )
                     }
+                    eventViewModels.add(
+                        EventViewModel(
+                            EventViewModelType.SHOW_MORE,
+                            programStage,
+                            null,
+                            eventList.size,
+                            if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
+                            selectedStage.showOptions,
+                            canAddEventToEnrollment,
+                            orgUnitName = "",
+                            catComboName = "",
+                            dataElementValues = emptyList(),
+                            groupedByStage = true,
+                            displayDate = null,
+                            nameCategoryOptionCombo = null,
+                        ),
+                    )
                 }
                 eventViewModels
             }

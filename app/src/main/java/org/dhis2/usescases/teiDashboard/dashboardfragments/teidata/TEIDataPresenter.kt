@@ -110,6 +110,7 @@ class TEIDataPresenter(
                             teiDataRepository.getTEIEnrollmentEvents(
                                 stageAndGrouping.first,
                                 stageAndGrouping.second,
+                                false
                             ).toFlowable(),
                             ruleEngineRepository.updateRuleEngine()
                                 .flatMap { ruleEngineRepository.reCalculate() },

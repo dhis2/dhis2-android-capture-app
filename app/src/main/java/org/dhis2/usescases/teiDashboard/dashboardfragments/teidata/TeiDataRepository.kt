@@ -12,6 +12,7 @@ interface TeiDataRepository {
     fun getTEIEnrollmentEvents(
         selectedStage: StageSection,
         groupedByStage: Boolean,
+        showAllItems: Boolean,
     ): Single<List<EventViewModel>>
 
     fun getEnrollment(): Single<Enrollment?>

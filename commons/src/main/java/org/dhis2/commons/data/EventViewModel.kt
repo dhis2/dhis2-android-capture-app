@@ -4,6 +4,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 
+sealed interface Test
 data class EventViewModel(
     val type: EventViewModelType,
     val stage: ProgramStage?,
@@ -21,7 +22,7 @@ data class EventViewModel(
     val showBottomShadow: Boolean = false,
     val displayDate: String?,
     val nameCategoryOptionCombo: String?,
-) {
+): Test {
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen
     }
