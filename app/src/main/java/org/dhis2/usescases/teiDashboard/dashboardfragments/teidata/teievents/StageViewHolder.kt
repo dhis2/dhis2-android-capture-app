@@ -78,7 +78,13 @@ internal class StageViewHolder(
             }
         }
         binding.addStageButton.setOnClickListener {
-            stageSelector.onNext(StageSection(stage.uid(), true))
+            stageSelector.onNext(
+                StageSection(
+                    stageUid = stage.uid(),
+                    showOptions = true,
+                    showAllEvents = false
+                )
+            )
         }
 
         binding.programNoStageText.visibility =

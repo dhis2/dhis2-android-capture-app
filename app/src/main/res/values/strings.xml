@@ -173,6 +173,8 @@
     <string name="app_info">App Info</string>
     <string name="log_out">Log Out</string>
     <string name="block_session">Block Session</string>
+    <string name="show_more_events">Show %s more…</string>
+    <string name="show_less_events">Show less…</string>
 
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>

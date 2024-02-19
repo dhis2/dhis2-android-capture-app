@@ -3,5 +3,5 @@ package org.dhis2.commons.data
 enum class EventViewModelType {
     STAGE,
     EVENT,
-    SHOW_MORE,
+    TOGGLE_BUTTON,
 }

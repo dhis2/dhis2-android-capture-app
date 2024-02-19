@@ -33,12 +33,11 @@ class TeiDataRepositoryImpl(
     override fun getTEIEnrollmentEvents(
         selectedStage: StageSection,
         groupedByStage: Boolean,
-        showAllItems: Boolean,
     ): Single<List<EventViewModel>> {
         val eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
         return if (groupedByStage) {
-            getGroupedEvents(eventRepo, selectedStage, showAllItems)
+            getGroupedEvents(eventRepo, selectedStage)
         } else {
             getTimelineEvents(eventRepo)
         }
@@ -143,10 +142,10 @@ class TeiDataRepositoryImpl(
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,
-        showAllItems: Boolean,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
+        val maxEventToShow = 3
 
         return d2.programModule().programStages()
             .byProgramUid().eq(programUid)
@@ -187,7 +186,7 @@ class TeiDataRepositoryImpl(
                         ),
                     )
                     checkEventStatus(eventList).take(
-                        if (showAllItems) eventList.size else 3
+                        if (selectedStage.showAllEvents) eventList.size else maxEventToShow
                     ).forEachIndexed { index, event ->
                         val showTopShadow = index == 0
                         val showBottomShadow = index == eventList.size - 1
@@ -221,23 +220,27 @@ class TeiDataRepositoryImpl(
                             ),
                         )
                     }
-                    eventViewModels.add(
-                        EventViewModel(
-                            EventViewModelType.SHOW_MORE,
-                            programStage,
-                            null,
-                            eventList.size,
-                            if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            selectedStage.showOptions,
-                            canAddEventToEnrollment,
-                            orgUnitName = "",
-                            catComboName = "",
-                            dataElementValues = emptyList(),
-                            groupedByStage = true,
-                            displayDate = null,
-                            nameCategoryOptionCombo = null,
-                        ),
-                    )
+
+                    if (eventList.size > maxEventToShow) {
+                        eventViewModels.add(
+                            EventViewModel(
+                                EventViewModelType.TOGGLE_BUTTON,
+                                programStage,
+                                null,
+                                eventList.size,
+                                if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
+                                selectedStage.showOptions,
+                                canAddEventToEnrollment,
+                                orgUnitName = "",
+                                catComboName = "",
+                                dataElementValues = emptyList(),
+                                groupedByStage = true,
+                                displayDate = null,
+                                nameCategoryOptionCombo = null,
+                                showAllEvents = selectedStage.showAllEvents
+                            ),
+                        )
+                    }
                 }
                 eventViewModels
             }

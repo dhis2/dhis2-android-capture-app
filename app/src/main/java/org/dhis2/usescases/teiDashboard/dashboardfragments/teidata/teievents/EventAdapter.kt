@@ -2,21 +2,19 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.compose.material.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.composethemeadapter.MdcTheme
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType.EVENT
-import org.dhis2.commons.data.EventViewModelType.SHOW_MORE
 import org.dhis2.commons.data.EventViewModelType.STAGE
+import org.dhis2.commons.data.EventViewModelType.TOGGLE_BUTTON
 import org.dhis2.commons.data.EventViewModelType.values
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
@@ -99,8 +97,11 @@ class EventAdapter(
                 )
             }
 
-            SHOW_MORE -> {
-                MyComposeViewHolder(ComposeView(parent.context))
+            TOGGLE_BUTTON -> {
+                ToggleStageEventsButtonHolder(
+                    ComposeView(parent.context),
+                    stageSelector
+                )
             }
         }
     }
@@ -125,8 +126,8 @@ class EventAdapter(
                 holder.bind(getItem(position))
             }
 
-            is MyComposeViewHolder -> {
-                holder.bind("Show More")
+            is ToggleStageEventsButtonHolder -> {
+                holder.bind(getItem(position))
             }
         }
     }
@@ -138,17 +139,5 @@ class EventAdapter(
     fun setEnrollment(enrollment: Enrollment) {
         this.enrollment = enrollment
         this.notifyDataSetChanged()
-    }
-}
-
-class MyComposeViewHolder(
-    val composeView: ComposeView
-) : RecyclerView.ViewHolder(composeView) {
-    fun bind(input: String) {
-        composeView.setContent {
-            MdcTheme {
-                Text(input)
-            }
-        }
     }
 }

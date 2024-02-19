@@ -90,10 +90,10 @@ class TEIDataPresenter(
             val program = d2.program(it) ?: throw NullPointerException()
             val enrollment = d2.enrollment(enrollmentUid) ?: throw NullPointerException()
             val sectionFlowable = view.observeStageSelection(program, enrollment)
-                .startWith(StageSection("", false))
-                .map { (stageUid, showOptions) ->
+                .startWith(StageSection("", false, false))
+                .map { (stageUid, showOptions, showAllEvents) ->
                     currentStage = if (stageUid == currentStage && !showOptions) "" else stageUid
-                    StageSection(currentStage, showOptions)
+                    StageSection(currentStage, showOptions, showAllEvents)
                 }
             val programHasGrouping = dashboardRepository.getGrouping()
             val groupingFlowable = groupingProcessor.startWith(programHasGrouping)
@@ -110,7 +110,6 @@ class TEIDataPresenter(
                             teiDataRepository.getTEIEnrollmentEvents(
                                 stageAndGrouping.first,
                                 stageAndGrouping.second,
-                                false
                             ).toFlowable(),
                             ruleEngineRepository.updateRuleEngine()
                                 .flatMap { ruleEngineRepository.reCalculate() },
