@@ -162,10 +162,10 @@ class TeiDataRepositoryImpl(
 
                     val canAddEventToEnrollment = enrollmentUid?.let {
                         programStage.access()?.data()?.write() == true &&
-                                d2.eventModule().eventService().blockingCanAddEventToEnrollment(
-                                    it,
-                                    programStage.uid(),
-                                )
+                            d2.eventModule().eventService().blockingCanAddEventToEnrollment(
+                                it,
+                                programStage.uid(),
+                            )
                     } ?: false
 
                     eventViewModels.add(
@@ -186,7 +186,7 @@ class TeiDataRepositoryImpl(
                         ),
                     )
                     checkEventStatus(eventList).take(
-                        if (selectedStage.showAllEvents) eventList.size else maxEventToShow
+                        if (selectedStage.showAllEvents) eventList.size else maxEventToShow,
                     ).forEachIndexed { index, event ->
                         val showTopShadow = index == 0
                         val showBottomShadow = index == eventList.size - 1
@@ -238,7 +238,7 @@ class TeiDataRepositoryImpl(
                                 displayDate = null,
                                 nameCategoryOptionCombo = null,
                                 showAllEvents = selectedStage.showAllEvents,
-                                maxEventsToShow = maxEventToShow
+                                maxEventsToShow = maxEventToShow,
                             ),
                         )
                     }
@@ -249,7 +249,7 @@ class TeiDataRepositoryImpl(
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
-        showAllEvents: Boolean
+        showAllEvents: Boolean,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         val maxEventToShow = 5
@@ -260,7 +260,7 @@ class TeiDataRepositoryImpl(
             .get()
             .map { eventList ->
                 checkEventStatus(eventList).take(
-                    if (showAllEvents) eventList.size else maxEventToShow
+                    if (showAllEvents) eventList.size else maxEventToShow,
                 ).forEachIndexed { _, event ->
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())

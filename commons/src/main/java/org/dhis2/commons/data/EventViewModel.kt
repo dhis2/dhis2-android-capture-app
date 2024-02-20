@@ -38,7 +38,7 @@ data class EventViewModel(
 
     fun isAfterToday(today: Date): Boolean {
         return type == EventViewModelType.EVENT && event?.eventDate() != null &&
-                event.eventDate()?.after(today) == true
+            event.eventDate()?.after(today) == true
     }
 
     fun applyHideStage(hidden: Boolean): EventViewModel? {

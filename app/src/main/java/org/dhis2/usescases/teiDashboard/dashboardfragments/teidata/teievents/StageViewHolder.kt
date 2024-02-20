@@ -82,8 +82,8 @@ internal class StageViewHolder(
                 StageSection(
                     stageUid = stage.uid(),
                     showOptions = true,
-                    showAllEvents = false
-                )
+                    showAllEvents = false,
+                ),
             )
         }
 

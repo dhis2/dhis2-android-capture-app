@@ -16,7 +16,7 @@ class ToggleStageEventsButtonHolder(
     private val stageSelector: FlowableProcessor<StageSection>,
 ) : RecyclerView.ViewHolder(composeView) {
     fun bind(
-        eventViewModel: EventViewModel
+        eventViewModel: EventViewModel,
     ) {
         composeView.setContent {
             MdcTheme {
@@ -27,14 +27,18 @@ class ToggleStageEventsButtonHolder(
                                 StageSection(
                                     stageUid = eventViewModel.stage?.uid() ?: "",
                                     showOptions = false,
-                                    showAllEvents = !eventViewModel.showAllEvents
-                                )
+                                    showAllEvents = !eventViewModel.showAllEvents,
+                                ),
                             )
                         },
-                    text = if (eventViewModel.showAllEvents)
+                    text = if (eventViewModel.showAllEvents) {
                         composeView.context.getString(R.string.show_less_events)
-                    else
-                        composeView.context.getString(R.string.show_more_events, (eventViewModel.eventCount - eventViewModel.maxEventsToShow).toString())
+                    } else {
+                        composeView.context.getString(
+                            R.string.show_more_events,
+                            (eventViewModel.eventCount - eventViewModel.maxEventsToShow).toString(),
+                        )
+                    },
                 )
             }
         }

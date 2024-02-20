@@ -35,7 +35,6 @@ class EventAdapter(
                 oldItem.event!!.uid()
             } else {
                 oldItem.stage!!.uid()
-
             }
             val newItemId = if (newItem.type == EVENT) {
                 newItem.event!!.uid()
@@ -100,7 +99,7 @@ class EventAdapter(
             TOGGLE_BUTTON -> {
                 ToggleStageEventsButtonHolder(
                     ComposeView(parent.context),
-                    stageSelector
+                    stageSelector,
                 )
             }
         }
