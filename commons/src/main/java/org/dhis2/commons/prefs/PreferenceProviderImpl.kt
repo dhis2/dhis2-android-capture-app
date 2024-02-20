@@ -6,8 +6,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import de.adorsys.android.securestoragelibrary.SecureStorageException
-import java.util.Date
 import org.dhis2.commons.date.DateUtils
+import java.util.Date
 
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
@@ -121,6 +121,10 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
         } catch (e: SecureStorageException) {
             e.printStackTrace()
         }
+    }
+
+    override fun updateServerURL(serverUrl: String) {
+        SecurePreferences.setValue(context, SECURE_SERVER_URL, serverUrl)
     }
 
     override fun areCredentialsSet(): Boolean {
