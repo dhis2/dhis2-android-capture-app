@@ -168,6 +168,9 @@ class TeiDataRepositoryImpl(
                             )
                     } ?: false
 
+                    val showAllEvents = selectedStage.showAllEvents &&
+                        selectedStage.stageUid == programStage.uid()
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.STAGE,
@@ -186,7 +189,7 @@ class TeiDataRepositoryImpl(
                         ),
                     )
                     checkEventStatus(eventList).take(
-                        if (selectedStage.showAllEvents) eventList.size else maxEventToShow,
+                        if (showAllEvents) eventList.size else maxEventToShow,
                     ).forEachIndexed { index, event ->
                         val showTopShadow = index == 0
                         val showBottomShadow = index == eventList.size - 1
@@ -237,7 +240,7 @@ class TeiDataRepositoryImpl(
                                 groupedByStage = true,
                                 displayDate = null,
                                 nameCategoryOptionCombo = null,
-                                showAllEvents = selectedStage.showAllEvents,
+                                showAllEvents = showAllEvents,
                                 maxEventsToShow = maxEventToShow,
                             ),
                         )
