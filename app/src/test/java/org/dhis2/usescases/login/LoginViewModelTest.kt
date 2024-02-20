@@ -381,6 +381,24 @@ class LoginViewModelTest {
             userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
                 .blockingExists(),
         ) doReturn false
+
+        whenever(
+            userManager.d2.userModule()
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user()
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user().blockingGet()
+        )doReturn null
+        whenever(
+            userManager.d2.userModule().accountManager()
+        )doReturn mock()
+
+        whenever(
+            userManager.d2.userModule().accountManager().getAccounts()
+        )doReturn listOf()
+
         loginViewModel.handleResponse(response)
         verify(view).saveUsersData(true, false)
     }
