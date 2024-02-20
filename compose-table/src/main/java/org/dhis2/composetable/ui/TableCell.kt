@@ -58,9 +58,11 @@ fun TableCell(
     maxLines: Int,
     headerExtraSize: Int,
     options: List<String>,
+    headerLabel: String,
 ) {
     val localInteraction = LocalInteraction.current
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
+    val (showMultiSelector, setShowMultiSelector) = remember { mutableStateOf(false) }
 
     var cellValue by remember {
         mutableStateOf<String?>(null)
@@ -138,7 +140,10 @@ fun TableCell(
             .fillMaxHeight()
             .clickable(cell.editable) {
                 when {
-                    options.isNotEmpty() -> setExpanded(true)
+                    options.isNotEmpty() -> when {
+                        cell.isMultiText -> setShowMultiSelector(true)
+                        else -> setExpanded(true)
+                    }
                     else -> {
                         localInteraction.onSelectionChange(
                             TableSelection.CellSelection(
@@ -195,6 +200,29 @@ fun TableCell(
                     cellValue = label
                 },
             )
+            if (showMultiSelector) {
+                MultiOptionSelector(
+                    options = options,
+                    cell = cell,
+                    title = headerLabel,
+                    onSave = { codes, values ->
+                        localInteraction.onSelectionChange(
+                            TableSelection.CellSelection(
+                                tableId = tableId,
+                                columnIndex = cell.column,
+                                rowIndex = cell.row ?: -1,
+                                globalIndex = 0,
+                            ),
+                        )
+                        cellValue = values
+                        localInteraction.onOptionSelected(cell, codes, values)
+                        setShowMultiSelector(false)
+                    },
+                    onDismiss = {
+                        setShowMultiSelector(false)
+                    },
+                )
+            }
         }
 
         if (cell.mandatory == true) {

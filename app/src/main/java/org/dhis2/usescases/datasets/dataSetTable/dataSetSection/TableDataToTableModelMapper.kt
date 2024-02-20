@@ -8,6 +8,7 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
+import org.hisp.dhis.android.core.common.ValueType
 import java.util.SortedMap
 
 class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) {
@@ -50,6 +51,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                         mandatory = field.mandatory(),
                         error = field.error(),
                         warning = field.warning(),
+                        isMultiText = dataElement.valueType() == ValueType.MULTI_TEXT,
                     )
                 }.toMap(),
                 isLastRow = rowIndex == (tableData.rows()!!.size - 1),

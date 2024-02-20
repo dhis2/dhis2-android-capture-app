@@ -20,6 +20,7 @@ fun ItemValues(
     overridenValues: Map<Int, TableCell>,
     headerExtraSize: Int,
     options: List<String>,
+    headerLabel: String,
 ) {
     Row(
         modifier = Modifier
@@ -42,6 +43,7 @@ fun ItemValues(
                         maxLines = maxLines,
                         headerExtraSize = headerExtraSize,
                         options = options,
+                        headerLabel = headerLabel,
                     )
                 }
             },
