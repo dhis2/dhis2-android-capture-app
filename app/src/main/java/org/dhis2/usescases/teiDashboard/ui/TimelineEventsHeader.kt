@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
-import org.hisp.dhis.mobile.ui.designsystem.component.SubTitle
+import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
@@ -37,7 +37,7 @@ fun TimelineEventsHeader(
                 .fillMaxWidth(),
         ) {
             Title(text = stringResource(id = R.string.timeline))
-            SubTitle(
+            Description(
                 text = stringResource(
                     id = R.string.event_count,
                     timelineEventsHeaderModel.eventCount,
