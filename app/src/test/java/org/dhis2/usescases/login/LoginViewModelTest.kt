@@ -383,20 +383,20 @@ class LoginViewModelTest {
         ) doReturn false
 
         whenever(
-            userManager.d2.userModule()
+            userManager.d2.userModule(),
         )doReturn mock()
         whenever(
-            userManager.d2.userModule().user()
+            userManager.d2.userModule().user(),
         )doReturn mock()
         whenever(
-            userManager.d2.userModule().user().blockingGet()
+            userManager.d2.userModule().user().blockingGet(),
         )doReturn null
         whenever(
-            userManager.d2.userModule().accountManager()
+            userManager.d2.userModule().accountManager(),
         )doReturn mock()
 
         whenever(
-            userManager.d2.userModule().accountManager().getAccounts()
+            userManager.d2.userModule().accountManager().getAccounts(),
         )doReturn listOf()
 
         loginViewModel.handleResponse(response)
