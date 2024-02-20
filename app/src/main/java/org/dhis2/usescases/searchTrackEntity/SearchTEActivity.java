@@ -173,7 +173,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
+
+        if (OrientationUtilsKt.isPortrait()) {
+            ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
+        } else {
+            ViewExtensionsKt.clipWithTopRightRoundedCorner(binding.mainComponent, ExtensionsKt.getDp(16));
+        }
 
         binding.filterRecyclerLayout.setAdapter(filtersAdapter);
 

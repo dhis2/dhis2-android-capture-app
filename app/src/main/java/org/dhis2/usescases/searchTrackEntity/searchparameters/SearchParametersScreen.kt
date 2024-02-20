@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity.searchparameters
 
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -22,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
@@ -47,6 +51,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelectorItem
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -68,6 +73,7 @@ fun SearchParametersScreen(
     val snackBarHostState = scaffoldState.snackbarHostState
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    val configuration = LocalConfiguration.current
 
     val qrScanLauncher = rememberLauncherForActivityResult(
         contract = ScanContract(),
@@ -138,6 +144,17 @@ fun SearchParametersScreen(
         }
     }
 
+    val backgroundShape = when (configuration.orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> RoundedCornerShape(
+            topStart = CornerSize(Radius.L),
+            topEnd = CornerSize(Radius.NoRounding),
+            bottomEnd = CornerSize(Radius.NoRounding),
+            bottomStart = CornerSize(Radius.NoRounding),
+        )
+
+        else -> Shape.LargeTop
+    }
+
     Scaffold(
         backgroundColor = Color.Transparent,
         scaffoldState = scaffoldState,
@@ -156,7 +173,7 @@ fun SearchParametersScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color.White, shape = Shape.LargeTop)
+                .background(color = Color.White, shape = backgroundShape)
                 .padding(it),
         ) {
             Column(
