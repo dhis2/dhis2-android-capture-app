@@ -67,7 +67,7 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(atenatalCare)
 
         programEventsRobot {
-            clickOnEvent(eventDate, eventOrgUnit)
+            clickOnEvent(eventDate)
         }
 
         eventRobot {
@@ -84,7 +84,7 @@ class ProgramEventTest : BaseTest() {
         disableRecyclerViewAnimations()
 
         programEventsRobot {
-            clickOnEvent(eventDate, eventOrgUnit)
+            clickOnEvent(eventDate)
         }
 
         eventRobot {
@@ -95,7 +95,7 @@ class ProgramEventTest : BaseTest() {
 
         programEventsRobot {
             checkEventIsComplete(eventDate, eventOrgUnit)
-            clickOnEvent(eventDate, eventOrgUnit)
+            clickOnEvent(eventDate)
         }
 
         eventRobot {
@@ -118,7 +118,7 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(atenatalCare)
 
         programEventsRobot {
-            clickOnEvent(eventDate, eventOrgUnit)
+            clickOnEvent(eventDate)
         }
         eventRobot {
             clickOnDetails()
@@ -135,7 +135,7 @@ class ProgramEventTest : BaseTest() {
         disableRecyclerViewAnimations()
 
         programEventsRobot {
-            clickOnEvent(eventDate, eventOrgUnit)
+            clickOnEvent(eventDate)
         }
         eventRobot {
             openMenuMoreOptions()
