@@ -15,12 +15,8 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.DividerItemDecoration
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.google.android.material.snackbar.Snackbar
 import androidx.lifecycle.map
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
@@ -36,7 +32,6 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.ObjectStyleUtils.getIconResource
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
@@ -319,22 +314,25 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun displayScheduleEvent() {
-        SchedulingDialog(
-            enrollment = dashboardModel.currentEnrollment,
-            programStages = eventAdapter?.currentList
-                ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
-                ?.mapNotNull { it.stage }
-                ?: emptyList(),
-            onScheduled = { programStageUid ->
-                showToast(
-                    resourceManager.formatWithEventLabel(
-                        R.string.event_label_created,
-                        programStageUid,
-                    ),
-                )
-                presenter.updateEventList()
-            },
-        ).show(childFragmentManager, SCHEDULING_DIALOG)
+        val model = dashboardViewModel.dashboardModel.value
+        if (model is DashboardEnrollmentModel) {
+            SchedulingDialog(
+                enrollment = model.currentEnrollment,
+                programStages = eventAdapter?.currentList
+                    ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
+                    ?.mapNotNull { it.stage }
+                    ?: emptyList(),
+                onScheduled = { programStageUid ->
+                    showToast(
+                        resourceManager.formatWithEventLabel(
+                            R.string.event_label_created,
+                            programStageUid,
+                        ),
+                    )
+                    presenter.fetchEvents(true)
+                },
+            ).show(childFragmentManager, SCHEDULING_DIALOG)
+        }
     }
 
     override fun showDialogCloseProgram() {

@@ -429,8 +429,4 @@ class TEIDataPresenter(
     fun getEnrollment(): Enrollment? {
         return teiDataRepository.getEnrollment().blockingGet()
     }
-
-    fun updateEventList() {
-        groupingProcessor.onNext(_groupEvents.value)
-    }
 }
