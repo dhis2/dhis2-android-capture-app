@@ -182,21 +182,24 @@ fun SearchParametersScreen(
                     )
                 }
 
-                Button(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally),
-                    style = ButtonStyle.TEXT,
-                    text = resourceManager.getString(R.string.clear_search),
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Cancel,
-                            contentDescription = resourceManager.getString(R.string.clear_search),
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                ) {
-                    focusManager.clearFocus()
-                    onClear()
+                if (uiState.clearSearchEnabled) {
+                    Button(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(16.dp, 24.dp, 16.dp, 8.dp),
+                        style = ButtonStyle.TEXT,
+                        text = resourceManager.getString(R.string.clear_search),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Cancel,
+                                contentDescription = resourceManager.getString(R.string.clear_search),
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                    ) {
+                        focusManager.clearFocus()
+                        onClear()
+                    }
                 }
             }
 

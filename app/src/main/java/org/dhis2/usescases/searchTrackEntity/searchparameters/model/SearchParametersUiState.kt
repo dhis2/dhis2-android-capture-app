@@ -9,6 +9,7 @@ data class SearchParametersUiState(
     val minAttributesMessage: String? = null,
     private val _shouldShowMinAttributeWarning: MutableSharedFlow<Boolean> = MutableSharedFlow(),
     val searchEnabled: Boolean = false,
+    val clearSearchEnabled: Boolean = false,
 ) {
     val shouldShowMinAttributeWarning: SharedFlow<Boolean> = _shouldShowMinAttributeWarning
 

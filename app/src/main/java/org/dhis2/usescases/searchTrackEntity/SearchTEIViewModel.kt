@@ -403,6 +403,7 @@ class SearchTEIViewModel(
         viewModelScope.launch {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
+                uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
                 when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()

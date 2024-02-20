@@ -15,6 +15,7 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
@@ -65,9 +66,25 @@ fun provideParameterSelectorItem(
         },
         status = status,
         onExpand = {
-            fieldUiModel.onItemClick()
+            performOnExpandActions(fieldUiModel, callback)
         },
     )
+}
+
+private fun performOnExpandActions(fieldUiModel: FieldUiModel, callback: FieldUiModel.Callback) {
+    fieldUiModel.onItemClick()
+
+    if (fieldUiModel.renderingType == UiRenderType.QR_CODE ||
+        fieldUiModel.renderingType == UiRenderType.BAR_CODE
+    ) {
+        callback.recyclerViewUiEvents(
+            RecyclerViewUiEvents.ScanQRCode(
+                uid = fieldUiModel.uid,
+                optionSet = fieldUiModel.optionSet,
+                renderingType = fieldUiModel.renderingType,
+            ),
+        )
+    }
 }
 
 @Composable
