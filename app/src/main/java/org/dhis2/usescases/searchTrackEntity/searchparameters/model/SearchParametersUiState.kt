@@ -7,7 +7,9 @@ import org.dhis2.form.model.FieldUiModel
 data class SearchParametersUiState(
     val items: List<FieldUiModel> = listOf(),
     val minAttributesMessage: String? = null,
-    private val _shouldShowMinAttributeWarning: MutableSharedFlow<Boolean> = MutableSharedFlow(),
+    private val _shouldShowMinAttributeWarning: MutableSharedFlow<Boolean> = MutableSharedFlow(
+        replay = Int.MAX_VALUE,
+    ),
     val searchEnabled: Boolean = false,
     val clearSearchEnabled: Boolean = false,
 ) {
