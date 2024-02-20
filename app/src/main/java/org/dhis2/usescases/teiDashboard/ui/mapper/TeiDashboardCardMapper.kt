@@ -151,7 +151,7 @@ class TeiDashboardCardMapper(
                     }
                 }.also { list ->
                     addEnrollmentDate(
-                        item.currentProgram.uid(),
+                        item.currentProgram().uid(),
                         list,
                         item.currentProgram().enrollmentDateLabel(),
                         item.currentEnrollment.enrollmentDate(),

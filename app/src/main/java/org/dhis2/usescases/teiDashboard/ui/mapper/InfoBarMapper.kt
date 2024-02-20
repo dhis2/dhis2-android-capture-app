@@ -32,7 +32,7 @@ class InfoBarMapper(
             return InfoBarUiModel(
                 type = infoBarType,
                 currentEnrollment = this,
-                text = getText(infoBarType, this.aggregatedSyncState()!!, this.status()!!),
+                text = getText(infoBarType, item, this.aggregatedSyncState()!!, this.status()!!),
                 textColor = getTextColor(
                     infoBarType,
                     this.aggregatedSyncState()!!,
@@ -53,6 +53,7 @@ class InfoBarMapper(
 
     private fun getText(
         infoBarType: InfoBarType,
+        item: DashboardEnrollmentModel,
         state: State,
         enrollmentStatus: EnrollmentStatus,
     ): String {
@@ -71,13 +72,13 @@ class InfoBarMapper(
             InfoBarType.ENROLLMENT_STATUS -> {
                 if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
                     resourceManager.formatWithEnrollmentLabel(
-                        item.currentProgram.uid(),
+                        item.currentProgram().uid(),
                         R.string.enrollment_completed_V2,
                         1,
                     )
                 } else {
                     resourceManager.formatWithEnrollmentLabel(
-                        item.currentProgram.uid(),
+                        item.currentProgram().uid(),
                         R.string.enrollment_cancelled_V2,
                         1,
                     )
