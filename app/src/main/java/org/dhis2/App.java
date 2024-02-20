@@ -48,6 +48,8 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
+import org.dhis2.utils.session.ChangeServerURLComponent;
+import org.dhis2.utils.session.ChangeServerURLModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
@@ -94,6 +96,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @Nullable
     private SessionComponent sessionComponent;
+
+    @Nullable
+    private ChangeServerURLComponent changeServerURLComponent;
 
     private boolean fromBackGround = false;
     private boolean recreated;
@@ -274,6 +279,12 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public SessionComponent createSessionComponent(PinModule pinModule) {
         return (sessionComponent = userComponent.plus(pinModule));
     }
+
+    @NotNull
+    public ChangeServerURLComponent createChangeServerULComponent(ChangeServerURLModule changeServerURLModule) {
+        return (changeServerURLComponent = userComponent.plus(changeServerURLModule));
+    }
+
 
     public void releaseSessionComponent() {
         sessionComponent = null;

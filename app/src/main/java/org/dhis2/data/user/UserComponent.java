@@ -78,6 +78,8 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 import org.dhis2.utils.optionset.OptionSetComponent;
 import org.dhis2.utils.optionset.OptionSetModule;
+import org.dhis2.utils.session.ChangeServerURLComponent;
+import org.dhis2.utils.session.ChangeServerURLModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 
@@ -208,4 +210,7 @@ public interface UserComponent extends UserComponentFlavor{
 
     @NonNull
     SessionComponent plus(PinModule pinModule);
+
+    @NonNull
+    ChangeServerURLComponent plus(ChangeServerURLModule changeServerURLModule);
 }
