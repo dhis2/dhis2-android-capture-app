@@ -122,6 +122,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun onDbImportFinished() {
         showLoginProgress(false)
+        blockLoginInfo()
     }
 
     companion object {

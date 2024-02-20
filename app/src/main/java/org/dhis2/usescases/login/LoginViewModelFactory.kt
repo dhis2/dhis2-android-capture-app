@@ -7,6 +7,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.server.UserManager
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -16,6 +17,7 @@ class LoginViewModelFactory(
     private val preferenceProvider: PreferenceProvider,
     private val resources: ResourceManager,
     private val schedulerProvider: SchedulerProvider,
+    private val dispatcherProvider: DispatcherProvider,
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
@@ -28,6 +30,7 @@ class LoginViewModelFactory(
             preferenceProvider,
             resources,
             schedulerProvider,
+            dispatcherProvider,
             fingerPrintController,
             analyticsHelper,
             crashReportController,

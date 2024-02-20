@@ -27,6 +27,7 @@ import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.UserManager
@@ -39,7 +40,6 @@ import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.dhis2.utils.analytics.USER_PROPERTY_SERVER
-import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
@@ -55,6 +55,7 @@ class LoginViewModel(
     private val preferenceProvider: PreferenceProvider,
     private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
+    private val dispatchers: DispatcherProvider,
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
@@ -560,24 +561,26 @@ class LoginViewModel(
     }
 
     fun onImportDataBase(file: File) {
-        viewModelScope.launch {
-            val importResult = async {
-                D2Manager.getD2().maintenanceModule().databaseImportExport().importDatabase(file)
+        userManager?.let {
+            viewModelScope.launch {
+                val importResult = async(dispatchers.io()) {
+                    it.d2.maintenanceModule().databaseImportExport().importDatabase(file)
+                }
+                val importedMetadata = try {
+                    importResult.await()
+                } catch (e: Exception) {
+                    view.displayMessage(resourceManager.parseD2Error(e))
+                    Timber.e(e)
+                    null
+                }
+                importedMetadata?.let {
+                    setAccountInfo(it.serverUrl, it.username)
+                    view.setUrl(it.serverUrl)
+                    view.setUser(it.username)
+                    displayManageAccount()
+                }
+                view.onDbImportFinished()
             }
-            val importedMetadata = try {
-                importResult.await()
-            } catch (e: Exception) {
-                view.displayMessage(resourceManager.parseD2Error(e))
-                Timber.e(e)
-                null
-            }
-            importedMetadata?.let {
-                setAccountInfo(it.serverUrl, it.username)
-                view.setUrl(it.serverUrl)
-                view.setUser(it.username)
-                displayManageAccount()
-            }
-            view.onDbImportFinished()
         }
     }
 }
