@@ -12,6 +12,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.EventViewModelType.EVENT
 import org.dhis2.commons.data.EventViewModelType.STAGE
 import org.dhis2.commons.data.EventViewModelType.TOGGLE_BUTTON
@@ -19,7 +20,6 @@ import org.dhis2.commons.data.EventViewModelType.values
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
-import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
@@ -59,15 +59,10 @@ class EventAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (values()[viewType]) {
+        return when (EventViewModelType.entries[viewType]) {
             STAGE -> {
-                val binding = ItemStageSectionBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false,
-                )
                 StageViewHolder(
-                    binding,
+                    ComposeView(parent.context),
                     stageSelector,
                     presenter,
                     colorUtils,
