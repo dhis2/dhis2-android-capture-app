@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.DatePicker
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -27,8 +26,6 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PROGRAM_STAGE_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
-import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
@@ -319,27 +316,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 showField = eventTemp.active,
             )
         }
-    }
-
-    private fun showCalendarDialog() {
-        val dialog = CalendarPicker(requireContext())
-        dialog.setInitialDate(viewModel.eventDate.value.currentDate)
-        dialog.setMinDate(viewModel.eventDate.value.minDate)
-        dialog.setMaxDate(viewModel.eventDate.value.maxDate)
-        dialog.isFutureDatesAllowed(viewModel.eventDate.value.allowFutureDates)
-        dialog.setListener(
-            object : OnDatePickerListener {
-                override fun onNegativeClick() {}
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    viewModel.onDateSet(
-                        datePicker.year,
-                        datePicker.month,
-                        datePicker.dayOfMonth,
-                    )
-                }
-            },
-        )
-        dialog.show()
     }
 
     private fun showPeriodDialog() {
