@@ -109,9 +109,6 @@ fun Form(
                 }
             }
 
-            val sectionMessage =
-                if (section.fields.isEmpty()) resources.getString(R.string.form_without_fields) else null
-
             Section(
                 title = section.title,
                 isLastSection = getNextSection(section, sections) == null,
@@ -121,7 +118,7 @@ fun Form(
                 state = section.state,
                 errorCount = section.errorCount(),
                 warningCount = section.warningCount(),
-                warningMessage = sectionMessage,
+                warningMessage = section.warningMessage?.let { resources.getString(it) },
                 onNextSection = onNextSection,
                 onSectionClick = {
                     intentHandler.invoke(FormIntent.OnSection(section.uid))
