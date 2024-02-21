@@ -17,6 +17,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -102,16 +104,33 @@ fun SchedulingDialogUi(
                             },
                         )
                     }
-                    val eventDateAction = selectedProgramStage.periodType()?.let { viewModel.showPeriodDialog() }
-                    ProvideInputDate(
-                        EventInputDateUiModel(
-                            eventDate = date,
-                            detailsEnabled = true,
-                            onDateClick = eventDateAction,
-                            onDateSelected = { viewModel.onDateSet(it.year, it.month, it.day) },
-                            onClear = { viewModel.onClearEventReportDate() },
-                        ),
-                    )
+
+                    if (selectedProgramStage.periodType() == null || (selectedProgramStage.periodType() != null && selectedProgramStage.periodType() == PeriodType.Daily)) {
+                        ProvideInputDate(
+                            EventInputDateUiModel(
+                                eventDate = date,
+                                detailsEnabled = true,
+                                onDateClick = {},
+                                onDateSelected = { viewModel.onDateSet(it.year, it.month, it.day) },
+                                onClear = { viewModel.onClearEventReportDate() },
+                            ),
+                        )
+                    } else {
+                        ProvidePeriodSelector(
+                            uiModel = EventInputDateUiModel(
+                                eventDate = date,
+                                detailsEnabled = true,
+                                onDateClick = { viewModel.showPeriodDialog() },
+                                onDateSelected = {},
+                                onClear = { viewModel.onClearEventReportDate() },
+                                required = true,
+                                showField = date.active,
+                                selectableDates = viewModel.getSelectableDates(),
+                            ),
+                            modifier = Modifier,
+                        )
+                    }
+
                     if (!catCombo.isDefault) {
                         catCombo.categories.forEach { category ->
                             ProvideCategorySelector(

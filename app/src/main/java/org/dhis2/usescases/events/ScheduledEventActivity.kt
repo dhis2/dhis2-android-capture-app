@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import org.dhis2.App
@@ -15,6 +16,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
@@ -93,7 +95,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     override fun setStage(programStage: ProgramStage, event: Event) {
         this.stage = programStage
         binding.programStage = programStage
-
         binding.scheduledEventFieldContainer.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -103,43 +104,67 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             ?: getString(R.string.report_date),
                         dateValue = "",
                     )
-
-                    val eventDateAction = programStage.periodType()?.let {
-                        showEventDatePeriodDialog(programStage.periodType())
-                    }
-
-                    ProvideInputDate(
-                        EventInputDateUiModel(
-                            eventDate = eventDate,
-                            allowsManualInput = false,
-                            detailsEnabled = true,
-                            onDateClick = eventDateAction,
-                            onDateSelected = { date -> presenter.setEventDate(presenter.formatDateValues(date)) },
-                            selectableDates = presenter.getSelectableDates(program, false),
-                        ),
-
+                    val dueDate = EventDate(
+                        label = programStage.dueDateLabel() ?: getString(R.string.due_date),
+                        dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
                     )
-                    if (programStage.hideDueDate() == false) {
-                        val dueDate = EventDate(
-                            label = programStage.dueDateLabel() ?: getString(R.string.due_date),
-                            dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
-                        )
-                        val dueDateAction = programStage.periodType().let {
-                            showDueDatePeriodDialog(programStage.periodType())
-                        }
 
+                    if (programStage.periodType() == null || (programStage.periodType() != null && programStage.periodType() == PeriodType.Daily)) {
                         ProvideInputDate(
                             EventInputDateUiModel(
-                                eventDate = dueDate,
+                                eventDate = eventDate,
                                 allowsManualInput = false,
                                 detailsEnabled = true,
-                                onDateClick = dueDateAction,
-                                onDateSelected = { date ->
-                                    presenter.setDueDate(presenter.formatDateValues(date))
-                                },
-                                selectableDates = presenter.getSelectableDates(program, true),
+                                onDateClick = {},
+                                onDateSelected = { date -> presenter.setEventDate(presenter.formatDateValues(date)) },
+                                selectableDates = presenter.getSelectableDates(program, false),
                             ),
                         )
+
+                        if (programStage.hideDueDate() == false) {
+                            ProvideInputDate(
+                                EventInputDateUiModel(
+                                    eventDate = dueDate,
+                                    allowsManualInput = false,
+                                    detailsEnabled = true,
+                                    onDateClick = {},
+                                    onDateSelected = { date ->
+                                        presenter.setDueDate(presenter.formatDateValues(date))
+                                    },
+                                    selectableDates = presenter.getSelectableDates(program, true),
+                                ),
+                            )
+                        }
+                    } else {
+                        ProvidePeriodSelector(
+                            uiModel = EventInputDateUiModel(
+                                eventDate = eventDate,
+                                detailsEnabled = true,
+                                onDateClick = { showEventDatePeriodDialog(programStage.periodType()) },
+                                onDateSelected = {},
+                                onClear = { },
+                                required = true,
+                                showField = true,
+                                selectableDates = presenter.getSelectableDates(program, false),
+                            ),
+                            modifier = Modifier,
+                        )
+
+                        if (programStage.hideDueDate() == false) {
+                            ProvidePeriodSelector(
+                                uiModel = EventInputDateUiModel(
+                                    eventDate = dueDate,
+                                    detailsEnabled = true,
+                                    onDateClick = { showDueDatePeriodDialog(programStage.periodType()) },
+                                    onDateSelected = {},
+                                    onClear = { },
+                                    required = true,
+                                    showField = true,
+                                    selectableDates = presenter.getSelectableDates(program, false),
+                                ),
+                                modifier = Modifier,
+                            )
+                        }
                     }
                 }
             }

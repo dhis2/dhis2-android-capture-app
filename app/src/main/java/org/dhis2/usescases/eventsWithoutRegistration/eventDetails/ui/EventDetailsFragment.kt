@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -49,6 +50,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Prov
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideEmptyCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.customviews.PeriodDialog
@@ -232,25 +234,38 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         coordinates: EventCoordinates,
         eventTemp: EventTemp,
     ) {
-        val eventDateAction = viewModel.getPeriodType()?.let {
-            viewModel.showPeriodDialog()
-        }
-
         Column {
-            ProvideInputDate(
-                EventInputDateUiModel(
-                    eventDate = date,
-                    detailsEnabled = details.enabled,
-                    onDateClick = eventDateAction,
-                    onDateSelected = { dateValues ->
-                        viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
-                    },
-                    onClear = { viewModel.onClearEventReportDate() },
-                    required = true,
-                    showField = date.active,
-                    selectableDates = viewModel.getSelectableDates(date),
-                ),
-            )
+            if (viewModel.getPeriodType() == null || (viewModel.getPeriodType() != null && viewModel.getPeriodType() == PeriodType.Daily)) {
+                ProvideInputDate(
+                    EventInputDateUiModel(
+                        eventDate = date,
+                        detailsEnabled = details.enabled,
+                        onDateClick = {},
+                        onDateSelected = { dateValues ->
+                            viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
+                        },
+                        onClear = { viewModel.onClearEventReportDate() },
+                        required = true,
+                        showField = date.active,
+                        selectableDates = viewModel.getSelectableDates(date),
+                    ),
+                )
+            } else {
+                ProvidePeriodSelector(
+                    uiModel = EventInputDateUiModel(
+                        eventDate = date,
+                        detailsEnabled = details.enabled,
+                        onDateClick = { showPeriodDialog() },
+                        onDateSelected = {},
+                        onClear = { viewModel.onClearEventReportDate() },
+                        required = true,
+                        showField = date.active,
+                        selectableDates = viewModel.getSelectableDates(date),
+                    ),
+                    modifier = Modifier,
+                )
+            }
+
             ProvideOrgUnit(
                 orgUnit = orgUnit,
                 detailsEnabled = details.enabled,

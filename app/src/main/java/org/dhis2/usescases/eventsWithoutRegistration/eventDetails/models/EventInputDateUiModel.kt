@@ -6,7 +6,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 data class EventInputDateUiModel(
     val eventDate: EventDate,
     val detailsEnabled: Boolean,
-    val onDateClick: Unit?,
+    val onDateClick: (() -> Unit)?,
     val allowsManualInput: Boolean = true,
     val onDateSelected: (InputDateValues) -> Unit?,
     val onClear: (() -> Unit)? = null,

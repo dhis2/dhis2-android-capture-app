@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -31,6 +32,7 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownInputField
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
@@ -252,6 +254,45 @@ fun ProvideCategorySelector(
     } else {
         ProvideEmptyCategorySelector(modifier = modifier, name = eventCatComboUiModel.category.name, option = eventCatComboUiModel.noOptionsText)
     }
+}
+
+@Composable
+fun ProvidePeriodSelector(
+    modifier: Modifier = Modifier,
+    uiModel: EventInputDateUiModel,
+) {
+    var selectedItem by with(uiModel) {
+        remember(this) {
+            mutableStateOf(
+                uiModel.eventDate.dateValue,
+            )
+        }
+    }
+    val state = getInputState(uiModel.detailsEnabled)
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    DropdownInputField(
+        modifier = modifier,
+        title = uiModel.eventDate.label ?: "",
+        state = state,
+        selectedItem = DropdownItem(selectedItem ?: ""),
+        onResetButtonClicked = {
+            selectedItem = null
+            uiModel.onClear?.let { it() }
+        },
+        onDropdownIconClick = {
+            uiModel.onDateClick?.invoke()
+        },
+        isRequiredField = uiModel.required,
+        legendData = null,
+        onFocusChanged = {},
+        supportingTextData = null,
+        focusRequester = remember {
+            FocusRequester()
+        },
+        expanded = false,
+    )
 }
 
 @Composable
