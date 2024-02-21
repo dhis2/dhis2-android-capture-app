@@ -72,8 +72,10 @@ class SearchScreenConfigurator(
     }
 
     private fun openFilters() {
-        binding.programSpinner.visibility = View.VISIBLE
-        binding.title.visibility = View.GONE
+        if (isPortrait()) {
+            binding.programSpinner.visibility = View.VISIBLE
+            binding.title.visibility = View.GONE
+        }
         binding.filterRecyclerLayout.visibility = View.VISIBLE
         binding.searchContainer.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.hide()
@@ -82,8 +84,10 @@ class SearchScreenConfigurator(
     }
 
     fun closeBackdrop() {
-        binding.programSpinner.visibility = View.VISIBLE
-        binding.title.visibility = View.GONE
+        if (isPortrait()) {
+            binding.programSpinner.visibility = View.VISIBLE
+            binding.title.visibility = View.GONE
+        }
         binding.filterRecyclerLayout.visibility = View.GONE
         binding.searchContainer.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.show()
@@ -93,8 +97,10 @@ class SearchScreenConfigurator(
 
     private fun openSearch() {
         binding.filterRecyclerLayout.visibility = View.GONE
-        binding.programSpinner.visibility = View.GONE
-        binding.title.visibility = View.VISIBLE
+        if (isPortrait()) {
+            binding.programSpinner.visibility = View.GONE
+            binding.title.visibility = View.VISIBLE
+        }
         binding.searchContainer.visibility = View.VISIBLE
         if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(false)
