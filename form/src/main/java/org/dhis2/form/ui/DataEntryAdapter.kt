@@ -17,7 +17,6 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
 
 class DataEntryAdapter(
-    private val searchStyle: Boolean,
     private val collapsableSections: Boolean,
 ) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -50,21 +49,12 @@ class DataEntryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
         val layoutInflater =
-            if (searchStyle) {
-                LayoutInflater.from(
-                    ContextThemeWrapper(
-                        parent.context,
-                        R.style.searchFormInputText,
-                    ),
-                )
-            } else {
-                LayoutInflater.from(
-                    ContextThemeWrapper(
-                        parent.context,
-                        R.style.formInputText,
-                    ),
-                )
-            }
+            LayoutInflater.from(
+                ContextThemeWrapper(
+                    parent.context,
+                    R.style.formInputText,
+                ),
+            )
         val binding =
             DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false)
         return FormViewHolder(binding)
