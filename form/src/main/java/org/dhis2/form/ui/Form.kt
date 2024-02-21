@@ -85,76 +85,78 @@ fun Form(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
         state = scrollState,
     ) {
-        this.itemsIndexed(
-            items = sections,
-            key = { _, fieldUiModel -> fieldUiModel.uid },
-        ) { _, section ->
-            val isSectionOpen = remember(section.state) {
-                derivedStateOf { section.state == SectionState.OPEN }
-            }
-
-            LaunchIfTrue(isSectionOpen.value) {
-                scrollState.animateScrollToItem(sections.indexOf(section))
-                focusManager.moveFocusNext(focusNext)
-            }
-
-            val onNextSection: () -> Unit = {
-                getNextSection(section, sections)?.let {
-                    intentHandler.invoke(FormIntent.OnSection(it.uid))
-                    scope.launch {
-                        scrollState.animateScrollToItem(sections.indexOf(it))
-                    }
-                } ?: run {
-                    focusManager.clearFocus()
+        if (sections.isNotEmpty()) {
+            this.itemsIndexed(
+                items = sections,
+                key = { _, fieldUiModel -> fieldUiModel.uid },
+            ) { _, section ->
+                val isSectionOpen = remember(section.state) {
+                    derivedStateOf { section.state == SectionState.OPEN }
                 }
-            }
 
-            Section(
-                title = section.title,
-                isLastSection = getNextSection(section, sections) == null,
-                description = if (section.fields.isNotEmpty()) section.description else null,
-                completedFields = section.completedFields(),
-                totalFields = section.fields.size,
-                state = section.state,
-                errorCount = section.errorCount(),
-                warningCount = section.warningCount(),
-                warningMessage = section.warningMessage?.let { resources.getString(it) },
-                onNextSection = onNextSection,
-                onSectionClick = {
-                    intentHandler.invoke(FormIntent.OnSection(section.uid))
-                },
-                content = {
-                    if (section.fields.isNotEmpty()) {
-                        section.fields.forEachIndexed { index, fieldUiModel ->
-                            fieldUiModel.setCallback(callback)
-                            FieldProvider(
-                                modifier = Modifier.animateItemPlacement(
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = LinearOutSlowInEasing,
-                                    ),
-                                ),
-                                fieldUiModel = fieldUiModel,
-                                uiEventHandler = uiEventHandler,
-                                intentHandler = intentHandler,
-                                resources = resources,
-                                focusManager = focusManager,
-                                onNextClicked = {
-                                    if (index == section.fields.size - 1) {
-                                        onNextSection()
-                                        focusNext.value = true
-                                    } else {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                },
-                            )
+                LaunchIfTrue(isSectionOpen.value) {
+                    scrollState.animateScrollToItem(sections.indexOf(section))
+                    focusManager.moveFocusNext(focusNext)
+                }
+
+                val onNextSection: () -> Unit = {
+                    getNextSection(section, sections)?.let {
+                        intentHandler.invoke(FormIntent.OnSection(it.uid))
+                        scope.launch {
+                            scrollState.animateScrollToItem(sections.indexOf(it))
                         }
+                    } ?: run {
+                        focusManager.clearFocus()
                     }
-                },
-            )
-        }
-        item(sections.size - 1) {
-            Spacer(modifier = Modifier.height(Spacing.Spacing120))
+                }
+
+                Section(
+                    title = section.title,
+                    isLastSection = getNextSection(section, sections) == null,
+                    description = if (section.fields.isNotEmpty()) section.description else null,
+                    completedFields = section.completedFields(),
+                    totalFields = section.fields.size,
+                    state = section.state,
+                    errorCount = section.errorCount(),
+                    warningCount = section.warningCount(),
+                    warningMessage = section.warningMessage?.let { resources.getString(it) },
+                    onNextSection = onNextSection,
+                    onSectionClick = {
+                        intentHandler.invoke(FormIntent.OnSection(section.uid))
+                    },
+                    content = {
+                        if (section.fields.isNotEmpty()) {
+                            section.fields.forEachIndexed { index, fieldUiModel ->
+                                fieldUiModel.setCallback(callback)
+                                FieldProvider(
+                                    modifier = Modifier.animateItemPlacement(
+                                        animationSpec = tween(
+                                            durationMillis = 500,
+                                            easing = LinearOutSlowInEasing,
+                                        ),
+                                    ),
+                                    fieldUiModel = fieldUiModel,
+                                    uiEventHandler = uiEventHandler,
+                                    intentHandler = intentHandler,
+                                    resources = resources,
+                                    focusManager = focusManager,
+                                    onNextClicked = {
+                                        if (index == section.fields.size - 1) {
+                                            onNextSection()
+                                            focusNext.value = true
+                                        } else {
+                                            focusManager.moveFocus(FocusDirection.Down)
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                    },
+                )
+            }
+            item(sections.size - 1) {
+                Spacer(modifier = Modifier.height(Spacing.Spacing120))
+            }
         }
     }
     if (shouldDisplayNoFieldsWarning(sections)) {
