@@ -72,121 +72,133 @@ fun Form(
             }
         }
     }
-    if (sections.isNotEmpty()) {
-        val focusNext = remember { mutableStateOf(false) }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null,
-                    onClick = { focusManager.clearFocus() },
-                ),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            state = scrollState,
-        ) {
-            this.itemsIndexed(
-                items = sections,
-                key = { _, fieldUiModel -> fieldUiModel.uid },
-            ) { _, section ->
-                val isSectionOpen = remember(section.state) {
-                    derivedStateOf { section.state == SectionState.OPEN }
-                }
+    val focusNext = remember { mutableStateOf(false) }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = { focusManager.clearFocus() },
+            ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        state = scrollState,
+    ) {
+        this.itemsIndexed(
+            items = sections,
+            key = { _, fieldUiModel -> fieldUiModel.uid },
+        ) { _, section ->
+            val isSectionOpen = remember(section.state) {
+                derivedStateOf { section.state == SectionState.OPEN }
+            }
 
-                LaunchIfTrue(isSectionOpen.value) {
-                    scrollState.animateScrollToItem(sections.indexOf(section))
-                    focusManager.moveFocusNext(focusNext)
-                }
+            LaunchIfTrue(isSectionOpen.value) {
+                scrollState.animateScrollToItem(sections.indexOf(section))
+                focusManager.moveFocusNext(focusNext)
+            }
 
-                val onNextSection: () -> Unit = {
-                    getNextSection(section, sections)?.let {
-                        intentHandler.invoke(FormIntent.OnSection(it.uid))
-                        scope.launch {
-                            scrollState.animateScrollToItem(sections.indexOf(it))
-                        }
-                    } ?: run {
-                        focusManager.clearFocus()
+            val onNextSection: () -> Unit = {
+                getNextSection(section, sections)?.let {
+                    intentHandler.invoke(FormIntent.OnSection(it.uid))
+                    scope.launch {
+                        scrollState.animateScrollToItem(sections.indexOf(it))
                     }
+                } ?: run {
+                    focusManager.clearFocus()
                 }
+            }
 
-                val sectionMessage = if (section.fields.isEmpty()) resources.getString(R.string.form_without_fields) else null
+            val sectionMessage =
+                if (section.fields.isEmpty()) resources.getString(R.string.form_without_fields) else null
 
-                val sectionState = if (section.fields.isEmpty()) SectionState.FIXED else section.state
-
-                Section(
-                    title = section.title,
-                    isLastSection = getNextSection(section, sections) == null,
-                    description = if (section.fields.isNotEmpty()) section.description else null,
-                    completedFields = section.completedFields(),
-                    totalFields = section.fields.size,
-                    state = sectionState,
-                    errorCount = section.errorCount(),
-                    warningCount = section.warningCount(),
-                    warningMessage = sectionMessage,
-                    onNextSection = onNextSection,
-                    onSectionClick = {
-                        intentHandler.invoke(FormIntent.OnSection(section.uid))
-                    },
-                    content = {
-                        if (section.fields.isNotEmpty()) {
-                            section.fields.forEachIndexed { index, fieldUiModel ->
-                                fieldUiModel.setCallback(callback)
-                                FieldProvider(
-                                    modifier = Modifier.animateItemPlacement(
-                                        animationSpec = tween(
-                                            durationMillis = 500,
-                                            easing = LinearOutSlowInEasing,
-                                        ),
+            Section(
+                title = section.title,
+                isLastSection = getNextSection(section, sections) == null,
+                description = if (section.fields.isNotEmpty()) section.description else null,
+                completedFields = section.completedFields(),
+                totalFields = section.fields.size,
+                state = section.state,
+                errorCount = section.errorCount(),
+                warningCount = section.warningCount(),
+                warningMessage = sectionMessage,
+                onNextSection = onNextSection,
+                onSectionClick = {
+                    intentHandler.invoke(FormIntent.OnSection(section.uid))
+                },
+                content = {
+                    if (section.fields.isNotEmpty()) {
+                        section.fields.forEachIndexed { index, fieldUiModel ->
+                            fieldUiModel.setCallback(callback)
+                            FieldProvider(
+                                modifier = Modifier.animateItemPlacement(
+                                    animationSpec = tween(
+                                        durationMillis = 500,
+                                        easing = LinearOutSlowInEasing,
                                     ),
-                                    fieldUiModel = fieldUiModel,
-                                    uiEventHandler = uiEventHandler,
-                                    intentHandler = intentHandler,
-                                    resources = resources,
-                                    focusManager = focusManager,
-                                    onNextClicked = {
-                                        if (index == section.fields.size - 1) {
-                                            onNextSection()
-                                            focusNext.value = true
-                                        } else {
-                                            focusManager.moveFocus(FocusDirection.Down)
-                                        }
-                                    },
-                                )
-                            }
+                                ),
+                                fieldUiModel = fieldUiModel,
+                                uiEventHandler = uiEventHandler,
+                                intentHandler = intentHandler,
+                                resources = resources,
+                                focusManager = focusManager,
+                                onNextClicked = {
+                                    if (index == section.fields.size - 1) {
+                                        onNextSection()
+                                        focusNext.value = true
+                                    } else {
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                    }
+                                },
+                            )
                         }
-                    },
-                )
-            }
-            item(sections.size - 1) {
-                Spacer(modifier = Modifier.height(Spacing.Spacing120))
-            }
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .padding(Spacing.Spacing16),
-        ) {
-            InfoBar(
-                infoBarData = InfoBarData(
-                    text = resources.getString(R.string.form_without_fields),
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.ErrorOutline,
-                            contentDescription = "no fields",
-                            tint = SurfaceColor.Warning,
-                        )
-                    },
-                    color = SurfaceColor.Warning,
-                    backgroundColor = SurfaceColor.WarningContainer,
-                    actionText = null,
-                    onClick = null,
-                ),
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(Radius.Full))
-                    .background(SurfaceColor.WarningContainer),
+                    }
+                },
             )
         }
+        item(sections.size - 1) {
+            Spacer(modifier = Modifier.height(Spacing.Spacing120))
+        }
+    }
+    if (shouldDisplayNoFieldsWarning(sections)) {
+        NoFieldsWarning(resources)
+    }
+}
+
+fun shouldDisplayNoFieldsWarning(sections: List<FormSection>): Boolean {
+    return if (sections.size == 1) {
+        val section = sections.first()
+        section.state == SectionState.NO_HEADER && section.fields.isEmpty()
+    } else {
+        false
+    }
+}
+
+@Composable
+fun NoFieldsWarning(resources: ResourceManager) {
+    Column(
+        modifier = Modifier
+            .padding(Spacing.Spacing16),
+    ) {
+        InfoBar(
+            infoBarData = InfoBarData(
+                text = resources.getString(R.string.form_without_fields),
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.ErrorOutline,
+                        contentDescription = "no fields",
+                        tint = SurfaceColor.Warning,
+                    )
+                },
+                color = SurfaceColor.Warning,
+                backgroundColor = SurfaceColor.WarningContainer,
+                actionText = null,
+                onClick = null,
+            ),
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(Radius.Full))
+                .background(SurfaceColor.WarningContainer),
+        )
     }
 }
 
