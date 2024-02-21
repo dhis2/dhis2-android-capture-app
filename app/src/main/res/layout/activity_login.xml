@@ -17,41 +17,6 @@
         android:layout_height="match_parent"
         android:background="?colorPrimary">
 
-        <!--<androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/logo"
-            android:layout_width="match_parent"
-            android:layout_height="92dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/logo_banner"
-                android:layout_width="wrap_content"
-                android:layout_height="46dp"
-                android:layout_centerInParent="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_dhis_white" />
-
-
-            <TextView
-                android:id="@+id/app_build_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="12dp"
-                android:textColor="?colorAccent"
-                android:textSize="9sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:text="v2.4.X : 2020-09-03 : whatever" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/topbar"
             android:layout_width="match_parent"

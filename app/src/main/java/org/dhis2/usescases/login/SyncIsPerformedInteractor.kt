@@ -15,8 +15,10 @@ class SyncIsPerformedInteractor(private val userManager: UserManager?) {
         val username = userManager.d2.userModule().user().blockingGet()?.username()
 
         val dataBaseIsImport = userManager.d2.userModule().accountManager()
-            .getAccounts().firstOrNull { it.serverUrl() == serverUrl && it.username() == username }
-            ?.importDB() != null
+            .getAccounts()
+            .any {
+                it.serverUrl() == serverUrl && it.username() == username && it.importDB() != null
+            }
 
         return when {
             dataBaseIsImport -> true
