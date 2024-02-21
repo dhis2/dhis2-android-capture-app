@@ -69,7 +69,11 @@ fun ProvideInputDate(
         var state by remember {
             mutableStateOf(getInputState(uiModel.detailsEnabled))
         }
-
+        val yearRange = if (uiModel.selectableDates != null) {
+            IntRange(uiModel.selectableDates.initialDate.substring(4, 8).toInt(), uiModel.selectableDates.endDate.substring(4, 8).toInt())
+        } else {
+            IntRange(1924, 2124)
+        }
         InputDateTime(
             InputDateTimeModel(
                 title = uiModel.eventDate.label ?: "",
@@ -91,6 +95,7 @@ fun ProvideInputDate(
                 },
                 is24hourFormat = uiModel.is24HourFormat,
                 selectableDates = uiModel.selectableDates ?: SelectableDates("01011924", "12312124"),
+                yearRange = yearRange,
             ),
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
         )

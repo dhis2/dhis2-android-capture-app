@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -224,7 +225,7 @@ class EventInitialTest {
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick =  viewModel.showPeriodDialog() ,
+                    onDateClick =  {} ,
                     onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
@@ -257,7 +258,7 @@ class EventInitialTest {
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick =  viewModel.showPeriodDialog(),
+                    onDateClick =  {},
                     onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
@@ -287,7 +288,7 @@ class EventInitialTest {
             val catCombo by viewModel.eventCatCombo.collectAsState()
 
             ProvideCategorySelector(
-                modifier = Modifier,
+                modifier = Modifier.testTag(EMPTY_CATEGORY_SELECTOR),
                 eventCatComboUiModel = EventCatComboUiModel(
                     EventCategory("UID", "NO OPTIONS ", 0, emptyList()),
                     eventCatCombo = catCombo,

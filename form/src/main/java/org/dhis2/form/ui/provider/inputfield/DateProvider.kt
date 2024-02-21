@@ -25,6 +25,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeTransform
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.TimeTransformation
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -52,6 +53,7 @@ fun ProvideInputDate(
             },
         )
     }
+    val yearIntRange = if (fieldUiModel.allowFutureDates == true) IntRange(1924, 2124) else (IntRange(1924, Calendar.getInstance().get(Calendar.YEAR)))
     val selectableDates = if (fieldUiModel.allowFutureDates == true) {
         SelectableDates(initialDate = "12111924", endDate = "12112124")
     } else {
@@ -62,6 +64,7 @@ fun ProvideInputDate(
             ),
         )
     }
+
     InputDateTime(
         InputDateTimeModel(
             title = fieldUiModel.label,
@@ -85,6 +88,7 @@ fun ProvideInputDate(
                 )
             },
             selectableDates = selectableDates,
+            yearRange = yearIntRange,
             inputStyle = inputStyle,
             ),
         modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value.text, fieldUiModel.valueType) },
