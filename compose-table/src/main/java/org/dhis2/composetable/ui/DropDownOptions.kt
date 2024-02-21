@@ -17,8 +17,8 @@ fun DropDownOptions(
         onDismissRequest = onDismiss,
     ) {
         options.forEach { option ->
-            val code = option.split("%")[0]
-            val label = option.split("%")[1]
+            val code = option.split("_")[0]
+            val label = option.split("_")[1]
             DropdownMenuItem(
                 onClick = {
                     onSelected.invoke(code, label)

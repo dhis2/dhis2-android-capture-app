@@ -1035,6 +1035,6 @@ class DataValueRepository(
             .byOptionSetUid().eq(it)
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .blockingGet()
-            .map { option -> "${option.code()}%${option.displayName()}" }
+            .map { option -> "${option.code()}_${option.displayName()}" }
     } ?: emptyList()
 }

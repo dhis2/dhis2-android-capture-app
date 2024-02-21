@@ -17,8 +17,8 @@ fun MultiOptionSelector(
 ) {
     MultiSelectBottomSheet(
         items = options.map { option ->
-            val code = option.split("%")[0]
-            val label = option.split("%")[1]
+            val code = option.split("_")[0]
+            val label = option.split("_")[1]
             CheckBoxData(
                 uid = code,
                 checked = cell.value?.contains(label) == true,
