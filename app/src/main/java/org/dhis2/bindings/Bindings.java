@@ -159,7 +159,6 @@ public class Bindings {
 
         TypedValue typedValue = new TypedValue();
         TypedArray a = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
-        TypedArray b = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
         int colorPrimaryDark = a.getColor(0, 0);
 
         int px = (int) (1 * Resources.getSystem().getDisplayMetrics().density);
