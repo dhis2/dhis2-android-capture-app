@@ -75,8 +75,9 @@ fun SearchParametersScreen(
     val focusManager = LocalFocusManager.current
     val configuration = LocalConfiguration.current
 
+    val scanContract = remember { ScanContract() }
     val qrScanLauncher = rememberLauncherForActivityResult(
-        contract = ScanContract(),
+        contract = scanContract,
     ) { result ->
         result.contents?.let { qrData ->
             val intent = FormIntent.OnSave(
