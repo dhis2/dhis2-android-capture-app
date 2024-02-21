@@ -1,56 +1,128 @@
 package org.dhis2.usescases.settings.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
 @Composable
 fun ExportOption(
-    onClick: () -> Unit,
+    onDownload: () -> Unit,
+    onShare: () -> Unit,
+    displayProgress: Boolean,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(72.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Button(
-            onClick = onClick,
-            style = ButtonStyle.TEXT,
-            text = stringResource(id = R.string.share),
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Share,
-                    contentDescription = "Share",
-                    tint = MaterialTheme.colors.primary,
+    AnimatedContent(
+        targetState = displayProgress,
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(3000),
+            ) togetherWith fadeOut(animationSpec = tween(3000))
+        },
+        label = "import content",
+    ) { targetState ->
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(
+                    start = if (displayProgress) 16.dp else 72.dp,
+                    top = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
+        ) {
+            if (targetState.not()) {
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = onDownload,
+                    style = ButtonStyle.TEXT,
+                    text = stringResource(id = R.string.download),
+                    icon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_file_download),
+                            contentDescription = "Download",
+                            tint = MaterialTheme.colors.primary,
+                        )
+                    },
                 )
-            },
-        )
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = onShare,
+                    style = ButtonStyle.TEXT,
+                    text = stringResource(id = R.string.share),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Share,
+                            contentDescription = "Share",
+                            tint = MaterialTheme.colors.primary,
+                        )
+                    },
+                )
+            } else {
+                ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewExportOption() {
+    Mdc3Theme {
+        ExportOption(onDownload = { }, onShare = { }, false)
+    }
+}
+
+@Preview
+@Composable
+fun PreviewExportOptionProgress() {
+    Mdc3Theme {
+        ExportOption(onDownload = { }, onShare = { }, true)
     }
 }
 
 fun ComposeView.setExportOption(
-    onClick: () -> Unit,
+    onDownload: () -> Unit,
+    onShare: () -> Unit,
+    displayProgressProvider: () -> LiveData<Boolean>,
 ) {
     setContent {
+        val displayProgress by displayProgressProvider().observeAsState(false)
         Mdc3Theme {
-            ExportOption(onClick)
+            ExportOption(onShare, onDownload, displayProgress)
         }
     }
 }

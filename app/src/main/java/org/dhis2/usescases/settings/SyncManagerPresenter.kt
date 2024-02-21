@@ -90,6 +90,9 @@ class SyncManagerPresenter internal constructor(
     private val _exportedDb = MutableLiveData<ExportDbModel>()
     val exportedDb: LiveData<ExportDbModel> = _exportedDb
 
+    private val _exporting = MutableLiveData(false)
+    val exporting: LiveData<Boolean> = _exporting
+
     init {
         checkData = PublishProcessor.create()
         compositeDisposable = CompositeDisposable()
@@ -473,12 +476,26 @@ class SyncManagerPresenter internal constructor(
     }
 
     fun onExportAndShareDB() {
+        exportDB(download = true, share = false)
+    }
+
+    fun onExportAndDownloadDB() {
+        exportDB(download = false, share = true)
+    }
+
+    private fun exportDB(download: Boolean, share: Boolean) {
+        _exporting.value = true
         try {
             val db = d2.maintenanceModule().databaseImportExport()
                 .exportLoggedUserDatabase()
-            _exportedDb.value = ExportDbModel(file = db)
+            _exportedDb.value = ExportDbModel(file = db, share = share, download = download)
         } catch (e: Exception) {
             view.displayMessage(resourceManager.parseD2Error(e))
+            onExportEnd()
         }
+    }
+
+    fun onExportEnd() {
+        _exporting.value = false
     }
 }

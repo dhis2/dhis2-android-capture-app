@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -66,6 +67,7 @@ import org.dhis2.ui.model.ButtonUiModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
+import org.dhis2.usescases.settings.models.ExportDbModel;
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
@@ -138,32 +140,62 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
         binding.setVersionName(BuildConfig.VERSION_NAME);
         FormFileProvider.INSTANCE.init(requireContext());
+
         presenter.getExportedDb().observe(getViewLifecycleOwner(), fileData -> {
-            new FileHandler().copyAndOpen(fileData.getFile(), fileLiveData -> {
-                fileLiveData.observe(getViewLifecycleOwner(), file -> {
-                    Uri contentUri = FileProvider.getUriForFile(requireContext(),
-                            FormFileProvider.fileProviderAuthority,
-                            fileData.getFile());
-                    Intent intentShare = new Intent(Intent.ACTION_SEND)
-                            .setDataAndType(contentUri, requireContext().getContentResolver().getType(contentUri))
-                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            .putExtra(Intent.EXTRA_STREAM, contentUri);
-                    Intent chooser = Intent.createChooser(intentShare, getString(R.string.open_with));
-                    try {
-                        startActivity(chooser);
-                    } catch (Exception e) {
-                        Timber.e(e);
-                    }
-                });
-                return null;
-            });
+            if (fileData.getShare()) {
+                shareDB(fileData);
+            } else {
+                downloadDB(fileData);
+            }
+
         });
 
-        ExportOptionKt.setExportOption(binding.exportShare, () -> {
-            presenter.onExportAndShareDB();
+        ExportOptionKt.setExportOption(
+                binding.exportShare,
+                () -> {
+                    presenter.onExportAndDownloadDB();
+                    return null;
+                },
+                () -> {
+                    presenter.onExportAndShareDB();
+                    return null;
+                },
+                ()-> presenter.getExporting()
+        );
+        return binding.getRoot();
+    }
+
+    private void shareDB(ExportDbModel fileData) {
+        new FileHandler().copyAndOpen(fileData.getFile(), fileLiveData -> {
+            fileLiveData.observe(getViewLifecycleOwner(), file -> {
+                Uri contentUri = FileProvider.getUriForFile(requireContext(),
+                        FormFileProvider.fileProviderAuthority,
+                        fileData.getFile());
+                Intent intentShare = new Intent(Intent.ACTION_SEND)
+                        .setDataAndType(contentUri, requireContext().getContentResolver().getType(contentUri))
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        .putExtra(Intent.EXTRA_STREAM, contentUri);
+                Intent chooser = Intent.createChooser(intentShare, getString(R.string.open_with));
+                try {
+                    startActivity(chooser);
+                } catch (Exception e) {
+                    Timber.e(e);
+                }finally {
+                    presenter.onExportEnd();
+                }
+            });
             return null;
         });
-        return binding.getRoot();
+    }
+
+    private void downloadDB(ExportDbModel fileData) {
+        new FileHandler().copyAndOpen(fileData.getFile(), fileLiveData -> {
+            fileLiveData.observe(getViewLifecycleOwner(), file -> {
+                Toast.makeText(requireContext(), R.string.downloaded_confirm, Toast.LENGTH_SHORT).show();
+                presenter.onExportEnd();
+            });
+            return null;
+        });
     }
 
     @Override
