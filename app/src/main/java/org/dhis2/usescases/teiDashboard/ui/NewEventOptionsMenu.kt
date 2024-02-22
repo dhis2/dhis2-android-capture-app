@@ -12,8 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.dhis2.R
@@ -30,6 +32,7 @@ fun NewEventOptions(
 
     Column {
         IconButton(
+            modifier = Modifier.testTag(TEST_ADD_EVENT_BUTTON),
             style = IconButtonStyle.FILLED,
             icon = {
                 Icon(
@@ -46,6 +49,7 @@ fun NewEventOptions(
         ) {
             options.forEach {
                 DropdownMenuItem(
+                    modifier = Modifier.testTag(it.name),
                     content = { Text(it.name) },
                     onClick = {
                         onOptionSelected.invoke(it.type)
@@ -75,3 +79,5 @@ fun NewEventOptionsPreview() {
 }
 
 data class EventCreationOptions(val type: EventCreationType, val name: String)
+
+const val TEST_ADD_EVENT_BUTTON = "TEST_ADD_EVENT_BUTTON"

@@ -10,14 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.DividerItemDecoration
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import androidx.lifecycle.map
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -25,8 +23,6 @@ import io.reactivex.functions.Consumer
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
-import org.dhis2.commons.animations.collapse
-import org.dhis2.commons.animations.expand
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
@@ -34,24 +30,17 @@ import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
-import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.FilterManager.PeriodRequest
-import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.ObjectStyleUtils.getIconResource
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
+import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.CategoryDialogInteractions
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
@@ -60,20 +49,14 @@ import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
+import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.analytics.CREATE_EVENT_TEI
-import org.dhis2.utils.analytics.TYPE_EVENT_TEI
-import org.dhis2.utils.category.CategoryDialog
-import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
 
 class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
@@ -82,12 +65,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     @Inject
     lateinit var presenter: TEIDataPresenter
-
-    @Inject
-    lateinit var filterManager: FilterManager
-
-    @Inject
-    lateinit var filtersAdapter: FiltersAdapter
 
     @Inject
     lateinit var colorUtils: ColorUtils
@@ -110,7 +87,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
-    private lateinit var dashboardModel: DashboardProgramModel
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
 
     override fun onAttach(context: Context) {
@@ -139,59 +115,131 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     ): View {
         return FragmentTeiDataBinding.inflate(inflater, container, false).also { binding ->
             this.binding = binding
-            binding.presenter = presenter
-            dashboardActivity.observeGrouping()?.observe(viewLifecycleOwner) { group ->
-                showLoadingProgress(true)
+            dashboardViewModel.groupByStage.observe(viewLifecycleOwner) { group ->
+                showLoadingProgress(false)
                 presenter.onGroupingChanged(group)
             }
-            dashboardActivity.observeFilters()?.observe(viewLifecycleOwner, ::showHideFilters)
-            dashboardActivity.updatedEnrollment()?.observe(viewLifecycleOwner, ::updateEnrollment)
 
-            binding.filterLayout.adapter = filtersAdapter
-            presenter.shouldDisplayEventCreationButton.observe(this.viewLifecycleOwner) { showCreateEventButton ->
-                binding.dialFabLayout.visibility = if (showCreateEventButton) {
-                    View.VISIBLE.also { binding.dialFabLayout.setFabVisible(true) }
-                } else {
-                    View.GONE.also { binding.dialFabLayout.setFabVisible(false) }
+            with(dashboardViewModel) {
+                eventUid().observe(viewLifecycleOwner, ::displayGenerateEvent)
+                updateEnrollment.observe(viewLifecycleOwner) { update ->
+                    updateEnrollment(update)
                 }
             }
+
+            presenter.events.observe(viewLifecycleOwner) {
+                setEvents(it)
+                showLoadingProgress(false)
+            }
+
+            binding.detailCard.setContent {
+                val dashboardModel by dashboardViewModel.dashboardModel.observeAsState()
+                val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
+                val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
+                val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
+                val groupingEvents by dashboardViewModel.groupByStage.observeAsState()
+                val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
+                    false,
+                )
+                val eventCount by presenter.events.map { it.count() }.observeAsState(0)
+
+                val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                    infoBarMapper.map(
+                        infoBarType = InfoBarType.SYNC,
+                        item = dashboardModel as DashboardEnrollmentModel,
+                        actionCallback = { dashboardActivity.openSyncDialog() },
+                        showInfoBar = syncNeeded,
+                    )
+                }
+
+                val followUpInfoBar =
+                    dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                        infoBarMapper.map(
+                            infoBarType = InfoBarType.FOLLOW_UP,
+                            item = dashboardModel as DashboardEnrollmentModel,
+                            actionCallback = {
+                                dashboardViewModel.onFollowUp()
+                            },
+                            showInfoBar = followUp,
+                        )
+                    }
+                val enrollmentInfoBar =
+                    dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                        infoBarMapper.map(
+                            infoBarType = InfoBarType.ENROLLMENT_STATUS,
+                            item = dashboardModel as DashboardEnrollmentModel,
+                            actionCallback = { },
+                            showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
+                        )
+                    }
+
+                val card = dashboardModel?.let {
+                    teiDashboardCardMapper.map(
+                        dashboardModel = it,
+                        onImageClick = { fileToShow ->
+                            val intent = ImageDetailActivity.intent(
+                                context = requireActivity(),
+                                title = null,
+                                imagePath = fileToShow.path,
+                            )
+
+                            startActivity(intent)
+                        },
+                        phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
+                        emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
+                        programsCallback = {
+                            startActivity(
+                                TeiDashboardMobileActivity.intent(
+                                    dashboardActivity.context,
+                                    dashboardActivity.teiUid,
+                                    null,
+                                    null,
+                                ),
+                            )
+                        },
+                    )
+                }
+
+                TeiDetailDashboard(
+                    syncData = syncInfoBar,
+                    followUpData = followUpInfoBar,
+                    enrollmentData = enrollmentInfoBar,
+                    card = card,
+                    isGrouped = groupingEvents ?: true,
+                    timelineEventHeaderModel = TimelineEventsHeaderModel(
+                        displayEventCreationButton,
+                        eventCount,
+                        presenter.getNewEventOptionsByStages(null),
+                    ),
+                    timelineOnEventCreationOptionSelected = {
+                        presenter.onAddNewEventOptionSelected(it, null)
+                    },
+                )
+            }
+
+            if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
+                presenter.displayGenerateEvent(
+                    sharedPreferences.getString(
+                        PREF_COMPLETED_EVENT,
+                        null,
+                    ),
+                )
+                sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
+            }
         }.root
-    }
-
-    private fun updateEnrollment(enrollmentUid: String) {
-        presenter.getEnrollment(enrollmentUid)
-    }
-
-    private fun updateFabItems() {
-        val dialItems = presenter.newEventOptionsByTimeline()
-        binding.dialFabLayout.addDialItems(dialItems, presenter::onEventCreationClick)
-    }
-
-    override fun setEnrollment(enrollment: Enrollment) {
-        binding.enrollment = enrollment
-        dashboardViewModel.updateDashboard(dashboardModel)
-        eventAdapter?.setEnrollment(enrollment)
     }
 
     override fun onResume() {
         super.onResume()
         presenter.init()
-        with(dashboardViewModel) {
-            dashboardModel().observe(this@TEIDataFragment, ::setData)
-            eventUid().observe(this@TEIDataFragment, ::displayGenerateEvent)
-        }
     }
 
     override fun onPause() {
-        presenter.setOpeningFilterToNone()
         presenter.onDettach()
         super.onPause()
     }
 
     override fun setEnrollmentData(program: Program?, enrollment: Enrollment?) {
-        binding.program = program
-        binding.enrollment = enrollment
-
         enrollment?.let {
             eventAdapter?.setEnrollment(enrollment)
             followUp.set(
@@ -200,112 +248,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     else -> false
                 },
             )
-
-            binding.followup = followUp
-        }
-    }
-
-    override fun setTrackedEntityInstance(
-        trackedEntityInstance: TrackedEntityInstance,
-        organisationUnit: OrganisationUnit,
-    ) {
-        binding.trackEntity = trackedEntityInstance
-        binding.cardFront.orgUnit.text = organisationUnit.displayName()
-    }
-
-    fun setData(dashboardModel: DashboardProgramModel) {
-        this.dashboardModel = dashboardModel
-        if (dashboardModel.currentEnrollment != null) {
-//            binding.dialFabLayout.setFabVisible(true)
-            presenter.setDashboardProgram(dashboardModel)
-            eventCatComboOptionSelector = EventCatComboOptionSelector(
-                dashboardModel.currentProgram.categoryComboUid(),
-                childFragmentManager,
-                object : CategoryDialogInteractions {},
-            )
-            binding.dashboardModel = dashboardModel
-            updateFabItems()
-            dashboardModel.teiHeader = presenter.getTeiHeader()
-            dashboardModel.avatarPath = presenter.getTeiProfilePath()
-            binding.detailCard?.setContent {
-                val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
-                val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
-                val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
-                val state by dashboardViewModel.state.collectAsState()
-                dashboardModel.currentEnrollmentStatus = enrollmentStatus
-                dashboardModel.enrollmentState = state
-                val syncInfoBar = infoBarMapper.map(
-                    infoBarType = InfoBarType.SYNC,
-                    item = dashboardModel,
-                    actionCallback = { dashboardActivity.openSyncDialog() },
-                    showInfoBar = syncNeeded,
-                )
-                val followUpInfoBar = infoBarMapper.map(
-                    infoBarType = InfoBarType.FOLLOW_UP,
-                    item = dashboardModel,
-                    actionCallback = {
-                        dashboardViewModel.onFollowUp(dashboardModel)
-                    },
-                    showInfoBar = followUp,
-                )
-                val enrollmentInfoBar = infoBarMapper.map(
-                    infoBarType = InfoBarType.ENROLLMENT_STATUS,
-                    item = dashboardModel,
-                    actionCallback = { },
-                    showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
-                )
-                val card = teiDashboardCardMapper.map(
-                    dashboardModel = dashboardModel,
-                    onImageClick = { fileToShow ->
-                        val intent = ImageDetailActivity.intent(
-                            context = requireActivity(),
-                            title = null,
-                            imagePath = fileToShow.path,
-                        )
-
-                        startActivity(intent)
-                    },
-                    phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
-                    emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
-                    programsCallback = {
-                        startActivity(
-                            TeiDashboardMobileActivity.intent(
-                                dashboardActivity.context,
-                                dashboardActivity.teiUid,
-                                null,
-                                null,
-                            ),
-                        )
-                    },
-                )
-                TeiDetailDashboard(
-                    syncData = syncInfoBar,
-                    followUpData = followUpInfoBar,
-                    enrollmentData = enrollmentInfoBar,
-                    card = card,
-                )
-            }
-        } else {
-//            binding.dialFabLayout.setFabVisible(false)
-            binding.teiRecycler.adapter = DashboardProgramAdapter(presenter, dashboardModel)
-            binding.teiRecycler.addItemDecoration(
-                DividerItemDecoration(
-                    abstracContext,
-                    DividerItemDecoration.VERTICAL,
-                ),
-            )
-            binding.dashboardModel = dashboardModel
-            showLoadingProgress(false)
-        }
-        binding.executePendingBindings()
-        if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
-            presenter.displayGenerateEvent(
-                sharedPreferences.getString(
-                    PREF_COMPLETED_EVENT,
-                    null,
-                ),
-            )
-            sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
         }
     }
 
@@ -331,10 +273,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun setFilters(filterItems: List<FilterItem>) {
-        filtersAdapter.submitList(filterItems)
-    }
-
     override fun observeStageSelection(
         currentProgram: Program,
         currentEnrollment: Enrollment,
@@ -351,7 +289,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun setEvents(events: List<EventViewModel>) {
         if (events.isEmpty()) {
             binding.emptyTeis.visibility = View.VISIBLE
-            if (binding.dialFabLayout.isFabVisible()) {
+            if (presenter.shouldDisplayEventCreationButton.value == true) {
                 binding.emptyTeis.setText(R.string.empty_tei_add)
             } else {
                 binding.emptyTeis.setText(R.string.empty_tei_no_add)
@@ -365,7 +303,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 }
             }
         }
-        showLoadingProgress(false)
     }
 
     private fun showLoadingProgress(showProgress: Boolean) {
@@ -377,22 +314,25 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun displayScheduleEvent() {
-        SchedulingDialog(
-            enrollment = dashboardModel.currentEnrollment,
-            programStages = eventAdapter?.currentList
-                ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
-                ?.mapNotNull { it.stage }
-                ?: emptyList(),
-            onScheduled = { programStageUid ->
-                showToast(
-                    resourceManager.formatWithEventLabel(
-                        R.string.event_label_created,
-                        programStageUid,
-                    ),
-                )
-                presenter.updateEventList()
-            },
-        ).show(childFragmentManager, SCHEDULING_DIALOG)
+        val model = dashboardViewModel.dashboardModel.value
+        if (model is DashboardEnrollmentModel) {
+            SchedulingDialog(
+                enrollment = model.currentEnrollment,
+                programStages = eventAdapter?.currentList
+                    ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
+                    ?.mapNotNull { it.stage }
+                    ?: emptyList(),
+                onScheduled = { programStageUid ->
+                    showToast(
+                        resourceManager.formatWithEventLabel(
+                            R.string.event_label_created,
+                            programStageUid,
+                        ),
+                    )
+                    presenter.fetchEvents(true)
+                },
+            ).show(childFragmentManager, SCHEDULING_DIALOG)
+        }
     }
 
     override fun showDialogCloseProgram() {
@@ -440,37 +380,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun enrollmentCompleted(): Consumer<EnrollmentStatus> {
-        return Consumer { enrollmentStatus ->
-            if (enrollmentStatus == EnrollmentStatus.COMPLETED) dashboardActivity.updateStatus()
-        }
-    }
-
-    private fun createEvent(eventCreationType: EventCreationType, scheduleIntervalDays: Int?) {
-        if (isAdded) {
-            analyticsHelper().setEvent(TYPE_EVENT_TEI, eventCreationType.name, CREATE_EVENT_TEI)
-            val bundle = Bundle()
-            bundle.putString(
-                Constants.PROGRAM_UID,
-                dashboardModel?.currentEnrollment?.program(),
-            )
-            bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
-            dashboardModel?.currentOrgUnit?.uid()
-                ?.takeIf { presenter.enrollmentOrgUnitInCaptureScope(it) }?.let {
-                    bundle.putString(Constants.ORG_UNIT, it)
-                }
-
-            bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
-            bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
-            bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays ?: 0)
-            val intent = Intent(context, ProgramStageSelectionActivity::class.java)
-            intent.putExtras(bundle)
-            contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
-                dashboardActivity.presenter.init()
-            }
-        }
-    }
-
     override fun viewLifecycleOwner(): LifecycleOwner {
         return this.viewLifecycleOwner
     }
@@ -498,117 +407,48 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
         contractHandler.scheduleEvent(intent, options).observe(this.viewLifecycleOwner) {
-            dashboardActivity.presenter.init()
+            updateEnrollment(true)
         }
 
     override fun openEventInitial(intent: Intent) =
         contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
-            dashboardActivity.presenter.init()
+            updateEnrollment(true)
         }
 
     override fun openEventCapture(intent: Intent) =
         contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
-            dashboardActivity.presenter.init()
+            updateEnrollment(true)
         }
-
-    override fun showTeiImage(filePath: String, defaultIcon: String) {
-        if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-            binding.cardFront.teiImage.visibility = View.GONE
-        } else {
-            binding.cardFront.teiImage.visibility = View.VISIBLE
-            Glide.with(this)
-                .load(File(filePath))
-                .error(
-                    getIconResource(
-                        requireContext(),
-                        defaultIcon,
-                        R.drawable.photo_temp_gray,
-                        colorUtils,
-                    ),
-                )
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .transform(CircleCrop())
-                .into(binding.cardFront.teiImage)
-            binding.cardFront.teiImage.setOnClickListener {
-                val fileToShow = File(filePath)
-                if (fileToShow.exists()) {
-                    val intent = ImageDetailActivity.intent(
-                        context = requireActivity(),
-                        title = null,
-                        imagePath = fileToShow.path,
-                    )
-
-                    startActivity(intent)
-                }
-            }
-        }
-    }
 
     override fun goToEventInitial(
         eventCreationType: EventCreationType,
         programStage: ProgramStage,
     ) {
-        val intent = Intent(activity, EventInitialActivity::class.java)
-        val bundle = Bundle()
-        bundle.putString(Constants.PROGRAM_UID, dashboardModel?.currentProgram?.uid())
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, dashboardModel?.tei?.uid())
-        dashboardModel?.currentOrgUnit?.uid()?.takeIf(presenter::enrollmentOrgUnitInCaptureScope)
-            ?.let {
-                bundle.putString(Constants.ORG_UNIT, it)
-            }
-        bundle.putString(Constants.ENROLLMENT_UID, dashboardModel?.currentEnrollment?.uid())
-        bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
-        bundle.putBoolean(Constants.EVENT_REPEATABLE, programStage.repeatable() ?: false)
-        bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, programStage.periodType())
-        bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid())
-        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() ?: 0)
-        intent.putExtras(bundle)
-        contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
-            dashboardActivity.presenter.init()
-        }
-    }
+        val model = dashboardViewModel.dashboardModel.value
+        if (model is DashboardEnrollmentModel) {
+            val intent = Intent(activity, EventInitialActivity::class.java)
+            val bundle = Bundle()
 
-    private fun showHideFilters(showFilters: Boolean) {
-        if (showFilters) {
-            binding.filterLayout.expand(false) {
-                binding.teiData.visibility = View.GONE
-                binding.filterLayout.visibility = View.VISIBLE
-            }
-        } else {
-            binding.filterLayout.collapse {
-                binding.teiData.visibility = View.VISIBLE
-                binding.filterLayout.visibility = View.GONE
+            bundle.putString(Constants.PROGRAM_UID, model.currentProgram().uid())
+            bundle.putString(
+                Constants.TRACKED_ENTITY_INSTANCE,
+                model.trackedEntityInstance.uid(),
+            )
+            model.getCurrentOrgUnit().uid()?.takeIf(presenter::enrollmentOrgUnitInCaptureScope)
+                ?.let {
+                    bundle.putString(Constants.ORG_UNIT, it)
+                }
+            bundle.putString(Constants.ENROLLMENT_UID, model.currentEnrollment.uid())
+            bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
+            bundle.putBoolean(Constants.EVENT_REPEATABLE, programStage.repeatable() ?: false)
+            bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, programStage.periodType())
+            bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid())
+            bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() ?: 0)
+            intent.putExtras(bundle)
+            contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
+                updateEnrollment(true)
             }
         }
-    }
-
-    override fun showPeriodRequest(periodRequest: PeriodRequest) {
-        if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(
-                dashboardActivity,
-                FilterManager.getInstance()::addPeriod,
-            )
-        } else {
-            DateUtils.getInstance().showPeriodDialog(
-                dashboardActivity,
-                FilterManager.getInstance()::addPeriod,
-                true,
-            )
-        }
-    }
-
-    override fun openOrgUnitTreeSelector(programUid: String) {
-        OUTreeFragment.Builder()
-            .showAsDialog()
-            .withPreselectedOrgUnits(
-                FilterManager.getInstance().orgUnitUidsFilters,
-            )
-            .onSelection { selectedOrgUnits: List<OrganisationUnit?>? ->
-                presenter.setOrgUnitFilters(
-                    selectedOrgUnits,
-                )
-            }
-            .build().show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun showSyncDialog(eventUid: String, enrollmentUid: String) {
@@ -643,18 +483,12 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun showCatOptComboDialog(catComboUid: String) {
-        CategoryDialog(
-            CategoryDialog.Type.CATEGORY_OPTION_COMBO,
-            catComboUid,
-            false,
-            null,
-        ) { selectedCatOptionCombo ->
-            presenter.filterCatOptCombo(selectedCatOptionCombo)
-        }.show(
-            childFragmentManager,
-            TAG,
-        )
+    override fun updateEnrollment(update: Boolean) {
+        if (update) {
+            presenter.fetchEvents(update)
+            presenter.getEnrollment()?.let { eventAdapter?.setEnrollment(it) }
+            dashboardViewModel.updateDashboard()
+        }
     }
 
     companion object {

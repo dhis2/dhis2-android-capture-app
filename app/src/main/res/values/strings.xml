@@ -950,4 +950,6 @@
     <string name="schedule">Schedule</string>
     <string name="program_stage">Program stage</string>
     <string name="event">event</string>
+    <string name="event_count">%d events</string>
+    <string name="timeline">Timeline</string>
 </resources>
