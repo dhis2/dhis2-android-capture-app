@@ -103,4 +103,5 @@
     <string name="qr_code">QR code</string>
     <string name="bar_code">Bar code</string>
     <string name="add_location">Add location</string>
+    <string name="form_without_fields">This form has no fields configured</string>
 </resources>
