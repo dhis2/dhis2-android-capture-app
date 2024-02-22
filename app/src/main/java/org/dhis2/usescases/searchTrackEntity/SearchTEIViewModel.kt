@@ -647,6 +647,9 @@ class SearchTEIViewModel(
         if (isPortrait && searchOrFilterIsOpen && !searchScreenIsForced) {
             if (keyBoardIsOpen) closeKeyboardCallback()
             closeSearchOrFilterCallback()
+            viewModelScope.launch {
+                uiState.onBackPressed(true)
+            }
         } else if (keyBoardIsOpen) {
             closeKeyboardCallback()
             goBackCallback()

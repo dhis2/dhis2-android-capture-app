@@ -12,10 +12,18 @@ data class SearchParametersUiState(
     ),
     val searchEnabled: Boolean = false,
     val clearSearchEnabled: Boolean = false,
+    private val _isOnBackPressed: MutableSharedFlow<Boolean> = MutableSharedFlow(
+        replay = Int.MAX_VALUE,
+    ),
 ) {
     val shouldShowMinAttributeWarning: SharedFlow<Boolean> = _shouldShowMinAttributeWarning
+    val isOnBackPressed: SharedFlow<Boolean> = _isOnBackPressed
 
     suspend fun updateMinAttributeWarning(showWarning: Boolean) {
         _shouldShowMinAttributeWarning.emit(showWarning)
+    }
+
+    suspend fun onBackPressed(pressed: Boolean) {
+        _isOnBackPressed.emit(pressed)
     }
 }

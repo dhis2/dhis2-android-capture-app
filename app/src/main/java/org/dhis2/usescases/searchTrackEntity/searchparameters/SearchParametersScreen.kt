@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -68,6 +69,7 @@ fun SearchParametersScreen(
     ) -> Unit,
     onSearch: () -> Unit,
     onClear: () -> Unit,
+    onClose: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
     val snackBarHostState = scaffoldState.snackbarHostState
@@ -141,6 +143,15 @@ fun SearchParametersScreen(
                         duration = SnackbarDuration.Short,
                     )
                 }
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.isOnBackPressed) {
+        uiState.isOnBackPressed.collectLatest {
+            if (it) {
+                focusManager.clearFocus()
+                onClose()
             }
         }
     }
@@ -266,6 +277,7 @@ fun SearchFormPreview() {
         onShowOrgUnit = { _, _, _, _ -> },
         onSearch = {},
         onClear = {},
+        onClose = {},
     )
 }
 
@@ -299,6 +311,7 @@ fun initSearchScreen(
                 viewModel.clearQueryData()
                 viewModel.clearFocus()
             },
+            onClose = { viewModel.clearFocus() },
         )
     }
 }
