@@ -204,8 +204,10 @@ fun SearchParametersScreen(
                             fieldUiModel = fieldUiModel,
                             callback = callback,
                             onNextClicked = {
-                                val nextItemIndex = (index + 1) % uiState.items.size
-                                uiState.items[nextItemIndex].onItemClick()
+                                val nextIndex = index + 1
+                                if (nextIndex < uiState.items.size) {
+                                    uiState.items[nextIndex].onItemClick()
+                                }
                             },
                         ),
                     )
