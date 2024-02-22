@@ -14,6 +14,7 @@ import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
+import org.hisp.dhis.android.core.common.ValueType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,6 +40,24 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadCrashControl();
         loadFeatureConfig();
         loadConflicts();
+        loadMultiText();
+    }
+
+    private void loadMultiText() {
+        D2 d2 = D2Manager.getD2();
+        boolean hasMultiText = !d2.dataElementModule().dataElements().byValueType().eq(ValueType.MULTI_TEXT).blockingIsEmpty();
+        binding.multitext.setText(hasMultiText ? "REVERT" : "FORCE MULTITEXT");
+        binding.multitext.setOnClickListener(view -> {
+            if (hasMultiText) {
+                d2.databaseAdapter().execSQL(
+                        "UPDATE DataElement SET valueType = \"TEXT\" WHERE valueType = \"MULTI_TEXT\" AND optionSet IS NOT null"
+                );
+            } else {
+                d2.databaseAdapter().execSQL(
+                        "UPDATE DataElement SET valueType = \"MULTI_TEXT\" WHERE valueType = \"TEXT\" AND optionSet IS NOT null"
+                );
+            }
+        });
     }
 
     private void loadConflicts() {

@@ -191,7 +191,7 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
 
 private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: String): Boolean {
     return when {
-        valueType!= ValueType.MULTI_TEXT && optionSetUid != null -> {
+        valueType != ValueType.MULTI_TEXT && optionSetUid != null -> {
             val optionByCodeExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
                 .byCode().eq(value).one().blockingExists()
             val optionByNameExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)

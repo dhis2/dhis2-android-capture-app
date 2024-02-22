@@ -185,6 +185,32 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="UI Components" />
+
+
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/primaryAlpha"
+                    android:text="Force Multi text"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    style="@style/TextSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Transforms TEXT data elements with option sets into MULTI TEXT."
+                    android:textColor="@color/text_color" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/multitext"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="UPDATE" />
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
