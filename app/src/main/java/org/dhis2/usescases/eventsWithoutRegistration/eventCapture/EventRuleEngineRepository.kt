@@ -1,92 +1,115 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
-import androidx.annotation.NonNull;
+import io.reactivex.Flowable
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.dhis2.data.forms.FormRepository
+import org.dhis2.data.forms.RuleEngineContextData
+import org.dhis2.data.forms.dataentry.RuleEngineRepository
+import org.dhis2.form.bindings.toRuleDataValue
+import org.dhis2.utils.Result
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.rules.api.RuleEngine
+import org.hisp.dhis.rules.models.RuleDataValue
+import org.hisp.dhis.rules.models.RuleEffect
+import org.hisp.dhis.rules.models.RuleEvent
 
-import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.form.bindings.RuleExtensionsKt;
-import org.dhis2.utils.Result;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.rules.RuleEngine;
-import org.hisp.dhis.rules.models.RuleDataValue;
-import org.hisp.dhis.rules.models.RuleEffect;
-import org.hisp.dhis.rules.models.RuleEvent;
+class EventRuleEngineRepository(
+    var d2: D2,
+    var formRepository: FormRepository,
+    var eventUid: String
+) : RuleEngineRepository {
+    private var ruleEvent: RuleEvent? = null
 
-import java.util.List;
-
-import io.reactivex.Flowable;
-
-public final class EventRuleEngineRepository implements RuleEngineRepository {
-
-    D2 d2;
-    FormRepository formRepository;
-    String eventUid;
-    private RuleEvent.Builder eventBuilder;
-
-    public EventRuleEngineRepository(D2 d2, FormRepository formRepository, String eventUid) {
-        this.d2 = d2;
-        this.formRepository = formRepository;
-        this.eventUid = eventUid;
-
-        initData();
+    init {
+        initData()
     }
 
-    public void initData() {
-        eventBuilder = RuleEvent.builder();
-        if (eventUid != null) {
-            Event currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
-            ProgramStage currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
-            OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid(currentEvent.organisationUnit()).blockingGet();
+    fun initData() {
+        val currentEvent = d2.eventModule().events()
+            .withTrackedEntityDataValues()
+            .uid(eventUid)
+            .blockingGet()!!
+        val currentStage = d2.programModule().programStages()
+            .uid(currentEvent.programStage())
+            .blockingGet()
+        val ou = d2.organisationUnitModule().organisationUnits()
+            .uid(currentEvent.organisationUnit())
+            .blockingGet()
 
-            eventBuilder
-                    .event(currentEvent.uid())
-                    .programStage(currentEvent.programStage())
-                    .programStageName(currentStage.displayName())
-                    .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
-                    .eventDate(currentEvent.eventDate())
-                    .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
-                    .organisationUnit(currentEvent.organisationUnit())
-                    .organisationUnitCode(ou.code());
-        }
+        ruleEvent = RuleEvent(
+            currentEvent.uid(),
+            currentEvent.programStage()!!,
+            currentStage!!.displayName()!!,
+            when (currentEvent.status()) {
+                EventStatus.ACTIVE -> RuleEvent.Status.ACTIVE
+                EventStatus.COMPLETED -> RuleEvent.Status.COMPLETED
+                EventStatus.SCHEDULE -> RuleEvent.Status.SCHEDULE
+                EventStatus.SKIPPED -> RuleEvent.Status.SKIPPED
+                EventStatus.VISITED -> RuleEvent.Status.VISITED
+                EventStatus.OVERDUE -> RuleEvent.Status.OVERDUE
+                else -> RuleEvent.Status.ACTIVE
+            },
+            Instant.fromEpochMilliseconds(currentEvent.eventDate()!!.time),
+            Instant.fromEpochMilliseconds(
+                if (currentEvent.dueDate() != null) {
+                    currentEvent.dueDate()!!.time
+                } else {
+                    currentEvent.eventDate()!!.time
+                }
+            ).toLocalDateTime(TimeZone.currentSystemDefault()).date,
+            Instant.fromEpochMilliseconds(
+                currentEvent.completedDate()!!.time
+            ).toLocalDateTime(TimeZone.currentSystemDefault()).date,
+            currentEvent.organisationUnit()!!,
+            ou!!.code(),
+            emptyList()
+        )
     }
 
-    @Override
-    public Flowable<RuleEngine> updateRuleEngine() {
-        return this.formRepository.restartRuleEngine();
+    override fun updateRuleEngine(): Flowable<RuleEngineContextData> {
+        return formRepository.restartRuleEngine()
     }
 
-    @NonNull
-    @Override
-    public Flowable<Result<RuleEffect>> calculate() {
+    override fun calculate(): Flowable<Result<RuleEffect>> {
         return queryDataValues(eventUid)
-                .switchMap(dataValues ->
-                        formRepository.ruleEngine()
-                                .flatMap(ruleEngine ->
-                                        Flowable.fromCallable(
-                                                ruleEngine.evaluate(
-                                                        eventBuilder.dataValues(dataValues).build()
-                                                ))
-                                                .map(Result::success)
-                                                .onErrorReturn(error->Result.failure(new Exception(error)))
-
-                                )
-                );
+            .switchMap { dataValues ->
+                formRepository.ruleEngine()
+                    .map { ruleEngineContextData ->
+                        val ruleEffects = RuleEngine.getInstance().evaluate(
+                            target = ruleEvent!!.copy(dataValues = dataValues),
+                            ruleEnrollment = ruleEngineContextData.ruleEnrollment,
+                            ruleEngineContextData.ruleEvents,
+                            ruleEngineContextData.ruleEngineContext
+                        )
+                        Result.success(ruleEffects)
+                    }
+                    .onErrorReturn { error ->
+                        Result.failure(Exception(error)) as Result<RuleEffect>
+                    }
+            }
     }
 
-    @NonNull
-    @Override
-    public Flowable<Result<RuleEffect>> reCalculate() {
-        initData();
-        return calculate();
+    override fun reCalculate(): Flowable<Result<RuleEffect>> {
+        initData()
+        return calculate()
     }
 
-    @NonNull
-    private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
+    private fun queryDataValues(eventUid: String): Flowable<List<RuleDataValue>> {
         return d2.eventModule().events().uid(eventUid).get()
-                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid).byValue().isNotNull().get()
-                        .map(values -> RuleExtensionsKt.toRuleDataValue(values, event, d2.dataElementModule().dataElements(), d2.programModule().programRuleVariables(), d2.optionModule().options()))).toFlowable();
+            .flatMap { event ->
+                d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid)
+                    .byValue().isNotNull.get()
+                    .map { values ->
+                        values.toRuleDataValue(
+                            event,
+                            d2.dataElementModule().dataElements(),
+                            d2.programModule().programRuleVariables(),
+                            d2.optionModule().options()
+                        )
+                    }
+            }.toFlowable()
     }
 }
