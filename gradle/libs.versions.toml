@@ -12,7 +12,7 @@ hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
 designSystem = "0.2-20240222.160714-31"
 dhis2sdk = "1.10.0-20240219.122222-17"
-ruleEngine = "2.1.9"
+ruleEngine = "3.0.0-20240119.134348-12"
 appcompat = "1.6.1"
 annotation = "1.6.0"
 cardview = "1.0.0"
@@ -101,7 +101,7 @@ kotlinSerialization = { group = "org.jetbrains.kotlin", name = "kotlin-serializa
 hiltPlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco" }
 dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
-dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine", version.ref = "ruleEngine" }
+dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine-jvm", version.ref = "ruleEngine" }
 dhis2-mobile-designsystem = { group = "org.hisp.dhis.mobile", name = "designsystem-android", version.ref = "designSystem" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityCompose" }
