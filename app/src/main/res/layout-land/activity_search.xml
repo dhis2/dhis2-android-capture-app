@@ -208,6 +208,7 @@
                 android:id="@+id/mainComponent"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:animateLayoutChanges="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"
