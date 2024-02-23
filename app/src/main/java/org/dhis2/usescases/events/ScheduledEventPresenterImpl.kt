@@ -4,6 +4,8 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.dhislogic.DhisEventUtils
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MIN_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.InputDateValues
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -111,8 +113,8 @@ class ScheduledEventPresenterImpl(
             null
         }
         val minDateString = if (minDate == null) null else SimpleDateFormat("ddMMyyyy", Locale.US).format(minDate)
-        val maxDateString = if (isDueDate)"12112124" else SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis() - 1000))
-        return SelectableDates(minDateString ?: "12111924", maxDateString)
+        val maxDateString = if (isDueDate) DEFAULT_MAX_DATE else SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis() - 1000))
+        return SelectableDates(minDateString ?: DEFAULT_MIN_DATE, maxDateString)
     }
 
     override fun setDueDate(date: Date) {

@@ -35,6 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
@@ -432,11 +433,12 @@ class SearchTETest : BaseTest() {
         return DateRegistrationUIModel(year, month, day)
     }
 
-    private fun createOverdueDate() = DateRegistrationUIModel(
-        currentDate.year,
-        currentDate.month - 1,
-        currentDate.day
-    )
+    private fun createOverdueDate() : String  {
+        val sdf = SimpleDateFormat(TeiFlowTest.DATE_PICKER_FORMAT)
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, -7)
+        return sdf.format(calendar.time)
+    }
 
     private val dateRegistration = createFirstSpecificDate()
     private val dateEnrollment = createEnrollmentDate()

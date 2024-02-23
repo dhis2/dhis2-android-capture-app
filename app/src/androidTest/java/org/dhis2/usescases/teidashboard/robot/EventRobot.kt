@@ -1,14 +1,17 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withSubstring
@@ -80,8 +83,8 @@ class EventRobot : BaseRobot() {
         onView(withId(R.id.date)).perform(click())
     }
 
-    fun acceptUpdateEventDate() {
-        onView(withId(R.id.acceptBtn)).perform(click())
+    fun acceptUpdateEventDate(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithText("OK",true).performClick()
     }
 
     fun clickOnUpdate() {
@@ -97,12 +100,6 @@ class EventRobot : BaseRobot() {
             )
     }
 
-    fun clickOnFutureAlertDialog(){
-        clickOnChangeDate()
-        clickOnEditDate()
-        acceptUpdateEventDate()
-        clickOnUpdate()
-    }
 
     fun checkDetails(eventDate: String, eventOrgUnit: String) {
         onView(withId(R.id.eventSecundaryInfo)).check(matches(
@@ -133,14 +130,20 @@ class EventRobot : BaseRobot() {
         onView(withId(R.id.possitive)).perform(click())
     }
 
-    fun clickOnEventDueDate(composeTestRule: ComposeTestRule) {
-        composeTestRule.onNodeWithTag("INPUT_DATE_TIME_TEXT").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("INPUT_DATE_TIME_TEXT").performClick()
+    fun clickOnEventReportDate(composeTestRule: ComposeTestRule) {
+
+        composeTestRule.onNode(hasTestTag("INPUT_DATE_TIME_ACTION_BUTTON") and hasAnySibling(
+            hasText("Report date")
+        )).assertIsDisplayed().performClick()
 
     }
 
-    fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.datePicker)).perform(PickerActions.setDate(year, monthOfYear, dayOfMonth))
+    fun selectSpecificDate( composeTestRule: ComposeTestRule, date: String) {
+        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed().printToLog("DATE-PICKER-COMPONENTS")
+
+        composeTestRule.onNodeWithText(date,true).performClick()
+        composeTestRule.onNodeWithTag("DATE_PICKER").printToLog("DATE-PICKER2")
+
     }
 
     fun checkEventDetails(eventDate: String, eventOrgUnit: String, composeTestRule: ComposeTestRule) {

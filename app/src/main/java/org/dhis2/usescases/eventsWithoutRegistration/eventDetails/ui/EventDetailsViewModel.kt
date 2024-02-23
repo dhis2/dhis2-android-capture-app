@@ -24,6 +24,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MIN_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -247,10 +249,10 @@ class EventDetailsViewModel(
 
     fun getSelectableDates(eventDate: EventDate): SelectableDates {
         return if (eventDate.allowFutureDates) {
-            SelectableDates("12111924", "12112124")
+            SelectableDates(DEFAULT_MIN_DATE, DEFAULT_MAX_DATE)
         } else {
             val currentDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis()))
-            SelectableDates("12111924", currentDate)
+            SelectableDates(DEFAULT_MIN_DATE, currentDate)
         }
     }
 
