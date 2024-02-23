@@ -100,7 +100,7 @@ class FormRepositoryImplTest {
             ValueStoreResult.VALUE_CHANGED,
         )
         val result = repository.save("uid001", "testValue", null)
-        assertThat(result?.valueStoreResult, `is`(ValueStoreResult.VALUE_CHANGED))
+        assertThat(result.valueStoreResult, `is`(ValueStoreResult.VALUE_CHANGED))
     }
 
     @Test
