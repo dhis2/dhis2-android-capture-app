@@ -2,7 +2,7 @@ package org.dhis2.data.forms;
 
 import androidx.annotation.NonNull;
 
-import org.hisp.dhis.rules.api.RuleEngine;
+import org.dhis2.commons.rules.RuleEngineContextData;
 
 import io.reactivex.Flowable;
 

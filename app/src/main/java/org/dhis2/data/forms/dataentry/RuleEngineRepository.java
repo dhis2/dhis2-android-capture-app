@@ -2,7 +2,7 @@ package org.dhis2.data.forms.dataentry;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.forms.RuleEngineContextData;
+import org.dhis2.commons.rules.RuleEngineContextData;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.rules.models.RuleEffect;
 

@@ -1,16 +1,18 @@
 package org.dhis2.form.data
 
 import org.dhis2.bindings.blockingGetCheck
+import org.dhis2.commons.rules.RuleEngineContextData
+import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.rules.RuleEngine
-import org.hisp.dhis.rules.RuleEngineContext
+import org.hisp.dhis.rules.api.RuleEngine
+import org.hisp.dhis.rules.api.RuleEngineContext
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEnrollment
-import org.hisp.dhis.rules.models.TriggerEnvironment
+import java.util.Date
 
 class EnrollmentRuleEngineRepository(
     private val d2: D2,
@@ -18,8 +20,7 @@ class EnrollmentRuleEngineRepository(
 ) : RuleEngineRepository {
 
     private val ruleRepository = RulesRepository(d2)
-    private lateinit var ruleEngine: RuleEngine
-    private lateinit var ruleEnrollmentBuilder: RuleEnrollment.Builder
+    private lateinit var ruleEngineData: RuleEngineContextData
 
     private var enrollment: Enrollment =
         d2.enrollmentModule().enrollments()
@@ -45,32 +46,33 @@ class EnrollmentRuleEngineRepository(
         val constants = ruleRepository.queryConstants().blockingGet()
         val events = ruleRepository.enrollmentEvents(enrollmentUid).blockingGet()
 
-        ruleEngine = RuleEngineContext.builder()
-            .rules(rules)
-            .ruleVariables(variables)
-            .supplementaryData(supplData)
-            .constantsValue(constants)
-            .build().toEngineBuilder().apply {
-                triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
-                events(events)
-            }.build()
+        val ruleEngineContext = RuleEngineContext(
+            rules = rules,
+            ruleVariables = variables,
+            supplementaryData = supplData,
+            constantsValues = constants,
+        )
 
-        ruleEnrollmentBuilder = RuleEnrollment.builder()
-            .enrollment(enrollment.uid())
-            .incidentDate(
-                enrollment.incidentDate() ?: enrollment.enrollmentDate(),
-            )
-            .enrollmentDate(enrollment.enrollmentDate())
-            .status(
-                RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
-            )
-            .organisationUnit(enrollment.organisationUnit())
-            .organisationUnitCode(
-                d2.organisationUnitModule().organisationUnits().uid(
-                    enrollment.organisationUnit(),
-                ).blockingGet()?.code(),
-            )
-            .programName(program.displayName())
+        var ruleEnrollment = RuleEnrollment(
+            enrollment = enrollmentUid,
+            programName = program.displayName()!!,
+            incidentDate = enrollment.incidentDate()?.toRuleEngineLocalDate()
+                ?: Date().toRuleEngineLocalDate(),
+            enrollmentDate = enrollment.enrollmentDate()?.toRuleEngineLocalDate()
+                ?: Date().toRuleEngineLocalDate(),
+            status = RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
+            organisationUnit = enrollment.organisationUnit()!!,
+            organisationUnitCode = d2.organisationUnitModule().organisationUnits().uid(
+                enrollment.organisationUnit(),
+            ).blockingGet()?.code()!!,
+            attributeValues = emptyList(),
+        )
+
+        ruleEngineData = RuleEngineContextData(
+            ruleEngineContext = ruleEngineContext,
+            ruleEnrollment = ruleEnrollment,
+            ruleEvents = events,
+        )
     }
 
     override fun calculate(): List<RuleEffect> {
@@ -84,7 +86,11 @@ class EnrollmentRuleEngineRepository(
         }
         val attributes = queryAttributes()
         return try {
-            ruleEngine.evaluate(ruleEnrollmentBuilder.attributeValues(attributes).build()).call()
+            RuleEngine.getInstance().evaluate(
+                ruleEngineData.ruleEnrollment!!.copy(attributeValues = attributes),
+                ruleEngineData.ruleEvents,
+                ruleEngineData.ruleEngineContext,
+            )
         } catch (e: Exception) {
             emptyList()
         }

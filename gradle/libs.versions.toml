@@ -13,6 +13,7 @@ jacoco = '0.8.10'
 designSystem = "0.2-20240222.160714-31"
 dhis2sdk = "1.10.0-20240219.122222-17"
 ruleEngine = "3.0.0-20240119.134348-12"
+expressionParser = "1.1.0-20240219.115041-14"
 appcompat = "1.6.1"
 annotation = "1.6.0"
 cardview = "1.0.0"
@@ -94,6 +95,8 @@ rxrelay = "2.1.1"
 preference_ktx = "1.2.1"
 uiautomator = "2.2.0"
 maplibre = "10.2.0"
+agp = "8.2.0"
+kotlin1921 = "1.9.21"
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -102,6 +105,7 @@ hiltPlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin",
 jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco" }
 dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
 dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine-jvm", version.ref = "ruleEngine" }
+dhis2-expressionparser = { group = "org.hisp.dhis.lib.expression", name = "expression-parser-jvm", version.ref = "expressionParser" }
 dhis2-mobile-designsystem = { group = "org.hisp.dhis.mobile", name = "designsystem-android", version.ref = "designSystem" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityCompose" }
@@ -228,6 +232,8 @@ dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch
 dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
 deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" } #TODO: Remove alongside AutoValue
 [plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin1921" }
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose", "androidx-material3", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-viewbinding", "androidx-compose-livedata", "google-material-themeadapter", "google-material3-themeadapter"]

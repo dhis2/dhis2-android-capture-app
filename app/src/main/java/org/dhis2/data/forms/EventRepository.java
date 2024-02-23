@@ -3,6 +3,7 @@ package org.dhis2.data.forms;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.commons.rules.RuleEngineContextData;
 import org.dhis2.form.data.RulesRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.api.RuleEngineContext;

@@ -4,6 +4,8 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.bindings.blockingGetCheck
 import org.dhis2.bindings.profilePicturePath
+import org.dhis2.commons.rules.RuleEngineContextData
+import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.data.RulesRepository
@@ -13,12 +15,12 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
-import org.hisp.dhis.rules.RuleEngine
-import org.hisp.dhis.rules.RuleEngineContext
+import org.hisp.dhis.rules.api.RuleEngine
+import org.hisp.dhis.rules.api.RuleEngineContext
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEnrollment
-import org.hisp.dhis.rules.models.TriggerEnvironment
+import java.util.Date
 
 class EnrollmentFormRepositoryImpl(
     val d2: D2,
@@ -29,8 +31,9 @@ class EnrollmentFormRepositoryImpl(
     private val enrollmentService: DhisEnrollmentUtils,
 ) : EnrollmentFormRepository {
 
-    private var cachedRuleEngineFlowable: Flowable<RuleEngine>
-    private var ruleEnrollmentBuilder: RuleEnrollment.Builder
+    private val ruleEngine = RuleEngine.getInstance()
+    private var cachedRuleEngineFlowable: Flowable<RuleEngineContextData>
+    private var ruleEnrollment: RuleEnrollment
     private var programUid: String =
         programRepository.blockingGet()?.uid() ?: throw NullPointerException()
     private var enrollmentUid: String =
@@ -50,43 +53,42 @@ class EnrollmentFormRepositoryImpl(
                 rulesRepository.supplementaryData(
                     enrollmentRepository.blockingGet()?.organisationUnit() ?: "",
                 ),
-                { rules, variables, events, constants, supplData ->
-                    val builder = RuleEngineContext.builder()
-                        .rules(rules)
-                        .ruleVariables(variables)
-                        .supplementaryData(supplData)
-                        .constantsValue(constants)
-                        .build().toEngineBuilder()
-                    builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
-                    builder.events(events)
-                    builder.build()
-                },
-            ).toFlowable()
+            ) { rules, variables, events, constants, supplData ->
+                val ruleEngineContext = RuleEngineContext(
+                    rules,
+                    variables,
+                    supplData,
+                    constants,
+                )
+
+                RuleEngineContextData(
+                    ruleEngineContext,
+                    null,
+                    events,
+                )
+            }.toFlowable()
                 .cacheWithInitialCapacity(1)
 
-        this.ruleEnrollmentBuilder = RuleEnrollment.builder()
-            .enrollment(enrollmentRepository.blockingGet()?.uid())
-            .incidentDate(
-                if (enrollmentRepository.blockingGet()?.incidentDate() == null) {
-                    enrollmentRepository.blockingGet()?.enrollmentDate()
-                } else {
-                    enrollmentRepository.blockingGet()?.incidentDate()
-                },
-            )
-            .enrollmentDate(enrollmentRepository.blockingGet()?.enrollmentDate())
-            .status(
+        val enrollment = enrollmentRepository.blockingGet()!!
+        this.ruleEnrollment =
+            RuleEnrollment(
+                enrollment.uid(),
+                programRepository.blockingGet()?.displayName()!!,
+                (
+                    enrollment.incidentDate() ?: enrollment.enrollmentDate()
+                        ?: Date()
+                    ).toRuleEngineLocalDate(),
+                (enrollment.incidentDate() ?: Date()).toRuleEngineLocalDate(),
                 RuleEnrollment.Status.valueOf(enrollmentRepository.blockingGet()?.status()!!.name),
-            )
-            .organisationUnit(enrollmentRepository.blockingGet()?.organisationUnit())
-            .organisationUnitCode(
+                enrollment.organisationUnit()!!,
                 d2.organisationUnitModule().organisationUnits().uid(
                     enrollmentRepository.blockingGet()?.organisationUnit(),
-                ).blockingGet()?.code(),
+                ).blockingGet()?.code()!!,
+                emptyList(),
             )
-            .programName(programRepository.blockingGet()?.displayName())
     }
 
-    override fun ruleEngine(): Flowable<RuleEngine> {
+    override fun ruleEngine(): Flowable<RuleEngineContextData> {
         return cachedRuleEngineFlowable
     }
 
@@ -96,10 +98,16 @@ class EnrollmentFormRepositoryImpl(
 
     override fun calculate(): Flowable<Result<List<RuleEffect>>> {
         return queryAttributes()
-            .map { ruleEnrollmentBuilder.attributeValues(it).build() }
+            .map { ruleEnrollment.copy(attributeValues = it) }
             .switchMap { ruleEnrollment ->
-                ruleEngine().flatMap { ruleEngine ->
-                    Flowable.fromCallable(ruleEngine.evaluate(ruleEnrollment))
+                ruleEngine().flatMap { ruleEngineData ->
+                    Flowable.just(
+                        ruleEngine.evaluate(
+                            target = ruleEnrollment,
+                            ruleEvents = ruleEngineData.ruleEvents,
+                            executionContext = ruleEngineData.ruleEngineContext,
+                        ),
+                    )
                 }
                     .map {
                         Result.success(it)

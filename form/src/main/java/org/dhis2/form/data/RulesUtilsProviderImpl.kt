@@ -272,7 +272,7 @@ class RulesUtilsProviderImpl(
         val programStageSection = hideSection.values["programStageSection"]
         fieldViewModels.filter {
             it.value.programStageSection == programStageSection &&
-                    !it.value.mandatory
+                !it.value.mandatory
         }.keys.forEach { fieldViewModels.remove(it) }
     }
 
@@ -469,7 +469,7 @@ class RulesUtilsProviderImpl(
         val optionGroupUid = showOptionGroup.values["optionGroup"]
 
         if (!optionGroupsToHide.containsKey(fieldUid) ||
-            optionGroupUid!= null && optionGroupsToHide[fieldUid]?.contains(optionGroupUid) == false
+            optionGroupUid != null && optionGroupsToHide[fieldUid]?.contains(optionGroupUid) == false
         ) {
             if (optionGroupsToShow[fieldUid] == null) {
                 optionGroupsToShow[fieldUid] = mutableListOf(optionGroupUid!!)
@@ -477,7 +477,7 @@ class RulesUtilsProviderImpl(
                 optionGroupsToShow[fieldUid]?.add(optionGroupUid!!)
             }
         }
-        if (optionGroupUid!=null && valueStore?.deleteOptionValueIfSelectedInGroup(
+        if (optionGroupUid != null && valueStore?.deleteOptionValueIfSelectedInGroup(
                 fieldUid,
                 optionGroupUid,
                 false,

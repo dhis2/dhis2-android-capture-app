@@ -4,3 +4,4 @@ include(
     ":dhis2_android_maps", ":compose-table", ":ui-components",
     ":stock-usecase"
 )
+include(":mobileprogramrules")

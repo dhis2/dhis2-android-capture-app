@@ -1,100 +1,92 @@
-package org.dhis2.data.forms;
+package org.dhis2.data.forms
 
-import androidx.annotation.NonNull;
+import io.reactivex.Flowable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
+import org.dhis2.commons.rules.RuleEngineContextData
+import org.dhis2.form.data.RulesRepository
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.rules.api.RuleEngineContext
 
-import org.dhis2.form.data.RulesRepository;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.rules.RuleEngine;
-import org.hisp.dhis.rules.RuleEngineContext;
-import org.hisp.dhis.rules.models.TriggerEnvironment;
+class EnrollmentFormRepository(
+    private val rulesRepository: RulesRepository,
+    private val enrollmentUid: String,
+    private val d2: D2,
+) : FormRepository {
+    private var cachedRuleEngineFlowable: Flowable<RuleEngineContextData>
+    private var enrollmentOrgUnitUid: String? = null
 
-import io.reactivex.Flowable;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-
-@SuppressWarnings({
-        "PMD.AvoidDuplicateLiterals"
-})
-public class EnrollmentFormRepository implements FormRepository {
-
-    @NonNull
-    private Flowable<RuleEngine> cachedRuleEngineFlowable;
-
-    @NonNull
-    private final String enrollmentUid;
-    private final String enrollmentOrgUnitUid;
-    private final D2 d2;
-    private final RulesRepository rulesRepository;
-
-    public EnrollmentFormRepository(@NonNull RulesRepository rulesRepository,
-                                    @NonNull String enrollmentUid,
-                                    @NonNull D2 d2) {
-        this.d2 = d2;
-        this.enrollmentUid = enrollmentUid;
-        this.rulesRepository = rulesRepository;
-        if (!enrollmentUid.isEmpty()) {
-            enrollmentOrgUnitUid = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
+    init {
+        enrollmentOrgUnitUid = if (!enrollmentUid.isEmpty()) {
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()!!
+                .organisationUnit()
         } else {
-            enrollmentOrgUnitUid = "";
+            ""
         }
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
-        this.cachedRuleEngineFlowable = enrollmentProgram()
-                .switchMap(program -> Single.zip(
-                        rulesRepository.rulesNew(program, null).subscribeOn(Schedulers.io()),
-                        rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
-                        rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
-                        rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                        rulesRepository.supplementaryData(enrollmentOrgUnitUid).subscribeOn(Schedulers.io()),
-                        (rules, variables, events, constants, supplementaryData) -> {
-                            RuleEngine.Builder builder = RuleEngineContext.builder()
-                                    .rules(rules)
-                                    .ruleVariables(variables)
-                                    .supplementaryData(supplementaryData)
-                                    .constantsValue(constants)
-                                    .build().toEngineBuilder();
-                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
-                            builder.events(events);
-                            return builder.build();
-                        }).toFlowable())
-                .cacheWithInitialCapacity(1);
+        cachedRuleEngineFlowable = enrollmentProgram()
+            .switchMap { program ->
+                Single.zip(
+                    rulesRepository.rulesNew(program, null).subscribeOn(Schedulers.io()),
+                    rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
+                    rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
+                    rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
+                    rulesRepository.supplementaryData(enrollmentOrgUnitUid!!)
+                        .subscribeOn(Schedulers.io()),
+                ) { rules, variables, events, constants, supplementaryData ->
+
+                    val ruleEngineContext = RuleEngineContext(
+                        rules,
+                        variables,
+                        supplementaryData,
+                        constants,
+                    )
+                    RuleEngineContextData(
+                        ruleEngineContext = ruleEngineContext,
+                        ruleEnrollment = null,
+                        ruleEvents = events,
+                    )
+                }.toFlowable()
+            }
+            .cacheWithInitialCapacity(1)
     }
 
-    @Override
-    public Flowable<RuleEngine> restartRuleEngine() {
-        String orgUnit = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
-        return this.cachedRuleEngineFlowable = enrollmentProgram()
-                .switchMap(program -> Single.zip(
-                        rulesRepository.rulesNew(program, null),
-                        rulesRepository.ruleVariables(program),
-                        rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.queryConstants(),
-                        rulesRepository.supplementaryData(orgUnit),
-                        (rules, variables, events, constants, supplementaryData) -> {
-                            RuleEngine.Builder builder = RuleEngineContext.builder()
-                                    .rules(rules)
-                                    .ruleVariables(variables)
-                                    .supplementaryData(supplementaryData)
-                                    .constantsValue(constants)
-                                    .build().toEngineBuilder();
-                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
-                            builder.events(events);
-                            return builder.build();
-                        }).toFlowable())
-                .cacheWithInitialCapacity(1);
+    override fun restartRuleEngine(): Flowable<RuleEngineContextData> {
+        val orgUnit = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()!!
+            .organisationUnit()
+        return enrollmentProgram()
+            .switchMap { program ->
+                Single.zip(
+                    rulesRepository.rulesNew(program, null),
+                    rulesRepository.ruleVariables(program),
+                    rulesRepository.enrollmentEvents(enrollmentUid),
+                    rulesRepository.queryConstants(),
+                    rulesRepository.supplementaryData(orgUnit!!),
+                ) { rules, variables, events, constants, supplementaryData ->
+                    val ruleEngineContext = RuleEngineContext(
+                        rules,
+                        variables,
+                        supplementaryData,
+                        constants,
+                    )
+                    RuleEngineContextData(
+                        ruleEngineContext = ruleEngineContext,
+                        ruleEnrollment = null,
+                        ruleEvents = events,
+                    )
+                }.toFlowable()
+            }
+            .cacheWithInitialCapacity(1).also { cachedRuleEngineFlowable = it }
     }
 
-    @NonNull
-    @Override
-    public Flowable<RuleEngine> ruleEngine() {
-        return cachedRuleEngineFlowable;
+    override fun ruleEngine(): Flowable<RuleEngineContextData> {
+        return cachedRuleEngineFlowable
     }
 
-    @NonNull
-    private Flowable<String> enrollmentProgram() {
+    private fun enrollmentProgram(): Flowable<String> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .map(Enrollment::program)
-                .toFlowable();
+            .map { it.program()!! }
+            .toFlowable()
     }
 }

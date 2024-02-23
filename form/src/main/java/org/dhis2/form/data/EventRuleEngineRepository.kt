@@ -1,15 +1,18 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.rules.RuleEngineContextData
+import org.dhis2.commons.rules.toRuleEngineInstant
+import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.dhis2.form.bindings.toRuleDataValue
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.rules.RuleEngine
-import org.hisp.dhis.rules.RuleEngineContext
+import org.hisp.dhis.rules.api.RuleEngine
+import org.hisp.dhis.rules.api.RuleEngineContext
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEvent
-import org.hisp.dhis.rules.models.TriggerEnvironment
+import java.util.Date
 
 class EventRuleEngineRepository(
     private val d2: D2,
@@ -17,8 +20,8 @@ class EventRuleEngineRepository(
 ) : RuleEngineRepository {
 
     private val ruleRepository = RulesRepository(d2)
-    private val ruleEngine: RuleEngine
-    private val eventBuilder: RuleEvent.Builder
+    private val ruleEngineData: RuleEngineContextData
+    private val ruleEvent: RuleEvent
 
     private val event: Event by lazy {
         d2.eventModule().events()
@@ -41,42 +44,50 @@ class EventRuleEngineRepository(
         val events = ruleRepository.otherEvents(eventUid).blockingGet()
         val ruleEnrollment = ruleRepository.enrollment(eventUid).blockingGet()
 
-        ruleEngine = RuleEngineContext.builder()
-            .rules(rules)
-            .ruleVariables(variables)
-            .supplementaryData(supplData)
-            .constantsValue(constants)
-            .build().toEngineBuilder().apply {
-                triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
-                events(events)
-                if (ruleEnrollment.enrollment().isNotEmpty()) {
-                    enrollment(ruleEnrollment)
-                }
-            }.build()
+        val ruleEngineContext = RuleEngineContext(
+            rules = rules,
+            ruleVariables = variables,
+            supplementaryData = supplData,
+            constantsValues = constants,
+        )
 
-        eventBuilder = RuleEvent.builder()
+        ruleEngineData = RuleEngineContextData(
+            ruleEngineContext = ruleEngineContext,
+            ruleEnrollment = ruleEnrollment,
+            ruleEvents = events,
+        )
+
         val currentStage = d2.programModule().programStages()
             .uid(event.programStage())
             .blockingGet()
         val ou = d2.organisationUnitModule().organisationUnits()
             .uid(event.organisationUnit())
             .blockingGet()
-        eventBuilder
-            .event(eventUid)
-            .programStage(event.programStage())
-            .programStageName(currentStage?.displayName())
-            .status(RuleEvent.Status.valueOf(event.status()!!.name))
-            .eventDate(event.eventDate())
-            .dueDate(if (event.dueDate() != null) event.dueDate() else event.eventDate())
-            .organisationUnit(event.organisationUnit())
-            .organisationUnitCode(ou?.code())
+
+        ruleEvent = RuleEvent(
+            eventUid,
+            event.programStage()!!,
+            currentStage?.displayName()!!,
+            RuleEvent.Status.valueOf(event.status()!!.name),
+            event.eventDate()?.toRuleEngineInstant() ?: Date().toRuleEngineInstant(),
+            event.dueDate()?.toRuleEngineLocalDate(),
+            event.completedDate()?.toRuleEngineLocalDate(),
+            ou?.uid()!!,
+            ou.code()!!,
+            listOf(),
+        )
     }
 
     override fun calculate(): List<RuleEffect> {
         val dataElements = queryDataValues()
-        eventBuilder.dataValues(dataElements)
+
         return try {
-            ruleEngine.evaluate(eventBuilder.build()).call()
+            RuleEngine.getInstance().evaluate(
+                ruleEvent.copy(dataValues = dataElements),
+                ruleEngineData.ruleEnrollment,
+                ruleEngineData.ruleEvents,
+                ruleEngineData.ruleEngineContext,
+            )
         } catch (e: Exception) {
             emptyList()
         }

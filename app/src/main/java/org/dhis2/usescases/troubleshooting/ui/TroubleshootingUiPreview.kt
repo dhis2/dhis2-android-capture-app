@@ -56,13 +56,12 @@ fun ProgramRuleValidations() {
             ),
             validations = listOf(
                 RuleValidation(
-                    rule = Rule.create(
-                        null,
-                        null,
+                    rule = Rule(
                         "#{Hello} == hello",
                         emptyList(),
-                        "Rule 1",
                         "uid1",
+                        "Rule 1",
+                        null,
                     ),
                     conditionError = "Condition error 1",
                     actionsError = listOf("Action error 11", "Action error 12"),

@@ -3,14 +3,11 @@ package org.dhis2.form.data
 import android.os.Build
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
-import java.util.Calendar
-import java.util.Date
-import java.util.Objects
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.dhis2.commons.rules.toRuleEngineInstant
+import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.bindings.toRuleDataValue
 import org.dhis2.form.bindings.toRuleList
@@ -28,6 +25,9 @@ import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
+import java.util.Calendar
+import java.util.Date
+import java.util.Objects
 
 class RulesRepository(private val d2: D2) {
 
@@ -154,7 +154,7 @@ class RulesRepository(private val d2: D2) {
                                 d2.dataElementModule().dataElements(),
                                 d2.programModule().programRuleVariables(),
                                 d2.optionModule().options(),
-                            ) ?: emptyList()
+                            ) ?: emptyList(),
                         )
                     }
                     .toList()
@@ -243,7 +243,7 @@ class RulesRepository(private val d2: D2) {
                         d2.dataElementModule().dataElements(),
                         d2.programModule().programRuleVariables(),
                         d2.optionModule().options(),
-                    ) ?: emptyList()
+                    ) ?: emptyList(),
                 )
             }.toList()
     }

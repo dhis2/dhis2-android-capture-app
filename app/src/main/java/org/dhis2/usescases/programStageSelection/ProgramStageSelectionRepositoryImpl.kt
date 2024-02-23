@@ -2,8 +2,9 @@ package org.dhis2.usescases.programStageSelection
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import io.reactivex.functions.Function5
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.rules.RuleEngineContextData
+import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.data.RulesRepository
 import org.dhis2.utils.Result
@@ -12,15 +13,10 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import org.hisp.dhis.rules.RuleEngine
-import org.hisp.dhis.rules.RuleEngineContext
-import org.hisp.dhis.rules.models.Rule
+import org.hisp.dhis.rules.api.RuleEngine
+import org.hisp.dhis.rules.api.RuleEngineContext
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEnrollment
-import org.hisp.dhis.rules.models.RuleEvent
-import org.hisp.dhis.rules.models.RuleVariable
-import org.hisp.dhis.rules.models.TriggerEnvironment
-import java.util.ArrayList
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -32,7 +28,8 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
     private val eventCreationType: String,
     private val d2: D2,
 ) : ProgramStageSelectionRepository {
-    private val cachedRuleEngineFlowable: Flowable<RuleEngine>
+    private val ruleEngine: RuleEngine = RuleEngine.getInstance()
+    private val cachedRuleEngineFlowable: Flowable<RuleEngineContextData>
 
     init {
         val orgUnitUid =
@@ -43,29 +40,25 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
             rulesRepository.enrollmentEvents(enrollmentUid!!),
             rulesRepository.supplementaryData(orgUnitUid!!),
             rulesRepository.queryConstants(),
-            Function5 { rules: List<Rule>,
-                        variables: List<RuleVariable>,
-                        ruleEvents: List<RuleEvent>,
-                        supplementaryData: Map<String, List<String>>,
-                        constants: Map<String, String>,
-                ->
-                val builder = RuleEngineContext.builder()
-                    .rules(rules)
-                    .ruleVariables(variables)
-                    .constantsValue(constants)
-                    .supplementaryData(supplementaryData)
-                    .build().toEngineBuilder()
-                builder.events(ruleEvents)
-                    .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
-                    .build()
-            },
-        ).toFlowable()
+        ) { rules, variables, ruleEvents, supplementaryData, constants,
+            ->
+            val ruleEngineContext = RuleEngineContext(
+                rules = rules,
+                ruleVariables = variables,
+                supplementaryData = supplementaryData,
+                constantsValues = constants,
+            )
+            RuleEngineContextData(
+                ruleEngineContext,
+                null,
+                ruleEvents,
+            )
+        }.toFlowable()
             .cacheWithInitialCapacity(1)
     }
 
     private fun ruleEnrollment(enrollmentUid: String?): Flowable<RuleEnrollment> {
-        return d2.enrollmentModule().enrollments().uid(enrollmentUid)
-            .get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
             .flatMap { enrollment: Enrollment ->
                 d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(enrollment.program())
@@ -86,20 +79,20 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                             .get()
                     }
                     .map { attributeValues: List<TrackedEntityAttributeValue> ->
-                        RuleEnrollment.create(
+                        RuleEnrollment(
                             enrollment.uid(),
+                            d2.programModule().programs().uid(enrollment.program()).blockingGet()
+                                ?.name()!!,
                             if (enrollment.incidentDate() == null) {
                                 enrollment.enrollmentDate()!!
                             } else {
                                 enrollment.incidentDate()!!
-                            },
-                            enrollment.enrollmentDate()!!,
+                            }.toRuleEngineLocalDate(),
+                            enrollment.enrollmentDate()!!.toRuleEngineLocalDate(),
                             RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
                             enrollment.organisationUnit()!!,
                             getOrgUnitCode(enrollment.organisationUnit()),
                             attributeValues.toRuleAttributeValue(d2, enrollment.program()!!),
-                            d2.programModule().programs().uid(enrollment.program()).blockingGet()
-                                ?.name(),
                         )
                     }
             }.toFlowable()
@@ -139,18 +132,18 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
 
     override fun calculate(): Flowable<Result<RuleEffect>> {
         return ruleEnrollment(enrollmentUid)
-            .flatMap { enrollment: RuleEnrollment? ->
+            .flatMap { enrollment ->
                 cachedRuleEngineFlowable
-                    .switchMap { ruleEngine: RuleEngine ->
-                        Flowable.fromCallable(
+                    .switchMap { ruleEngineData ->
+                        Flowable.just(
                             ruleEngine.evaluate(
-                                enrollment!!,
+                                target = enrollment,
+                                ruleEngineData.ruleEvents,
+                                ruleEngineData.ruleEngineContext,
                             ),
                         )
-                            .map<Result<RuleEffect>> { items: List<RuleEffect?>? ->
-                                Result.success(
-                                    items!!,
-                                )
+                            .map<Result<RuleEffect>> { items ->
+                                Result.success(items)
                             }
                             .onErrorReturn { Result.failure(Exception(it)) as Result<RuleEffect> }
                     }

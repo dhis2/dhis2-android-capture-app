@@ -17,8 +17,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
-import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
-import org.hisp.dhis.rules.models.RuleActionDisplayText
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
@@ -101,30 +99,30 @@ abstract class BaseIndicatorRepository(
         }
 
         for (ruleEffect in calcResult.items()) {
-            val ruleAction = ruleEffect.ruleAction()
-            if (ruleEffect.data()?.contains("#{") == false) {
-                if (ruleAction is RuleActionDisplayKeyValuePair) {
+            val ruleAction = ruleEffect.ruleAction
+            if (ruleEffect.data?.contains("#{") == false) {
+                if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
                             .uid((ruleAction).content())
                             .displayName((ruleAction).content())
                             .build(),
-                        ruleEffect.data(),
+                        ruleEffect.data,
                         "",
-                        ruleAction.location(),
+                        ruleAction.values["location"]!!,
                         resourceManager.defaultIndicatorLabel(),
                     )
 
                     indicators.add(indicator)
-                } else if (ruleAction is RuleActionDisplayText) {
+                } else if (ruleAction.type == ProgramRuleActionType.DISPLAYTEXT.name) {
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
                             .uid(ruleAction.content())
                             .displayName(resourceManager.defaultIndicatorLabel())
                             .build(),
-                        ruleAction.content() + ruleEffect.data(),
+                        ruleAction.content() + ruleEffect.data,
                         "",
-                        ruleAction.location(),
+                        ruleAction.values["location"]!!,
                         resourceManager.defaultIndicatorLabel(),
                     )
 
