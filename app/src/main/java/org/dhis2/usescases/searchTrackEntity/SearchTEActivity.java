@@ -176,7 +176,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         if (OrientationUtilsKt.isLandscape()) {
             viewModel.getFiltersOpened().observe(this, isOpened -> {
-                if (isOpened) {
+                if (Boolean.TRUE.equals(isOpened)) {
                     ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
                 } else {
                     ViewExtensionsKt.clipWithTopRightRoundedCorner(binding.mainComponent, ExtensionsKt.getDp(16));
