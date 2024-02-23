@@ -1,9 +1,8 @@
 package org.dhis2.form.ui.intent
 
-import org.dhis2.form.mvi.MviIntent
 import org.hisp.dhis.android.core.common.ValueType
 
-sealed class FormIntent : MviIntent {
+sealed class FormIntent {
 
     data class OnFinish(
         val extraData: String? = null,
