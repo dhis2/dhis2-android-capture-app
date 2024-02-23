@@ -18,8 +18,8 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
-import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
@@ -99,9 +99,9 @@ fun ProvideInputDate(
             selectableDates = selectableDates,
             yearRange = yearIntRange,
             inputStyle = inputStyle,
-            ),
+        ),
         modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value.text, fieldUiModel.valueType) },
-        )
+    )
 }
 
 private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String {
