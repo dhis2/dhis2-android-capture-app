@@ -44,10 +44,7 @@ class ConfigureEventReportDate(
     }
 
     private fun isActive(): Boolean {
-        if (creationType == SCHEDULE && getProgramStage()?.hideDueDate() == true) {
-            return false
-        }
-        return true
+        return !(creationType == SCHEDULE && getProgramStage()?.hideDueDate() == true)
     }
 
     private fun getLabel(): String {
