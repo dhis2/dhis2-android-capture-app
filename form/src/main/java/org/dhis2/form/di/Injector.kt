@@ -153,6 +153,7 @@ object Injector {
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
             metadataIconProvider = provideMetadataIconProvider(context),
+            provideResourcesManager(context),
         )
     }
 
@@ -197,25 +198,23 @@ object Injector {
     private fun provideFormValueStore(
         context: Context,
         recordUid: String?,
-        entryMode: EntryMode?,
-    ): FormValueStore? {
-        return entryMode?.let { it ->
-            val enrollmentObjectRepository = if (it == EntryMode.ATTR) {
-                provideEnrollmentObjectRepository(recordUid!!)
-            } else {
-                null
-            }
-            FormValueStore(
-                d2 = provideD2(),
-                recordUid = enrollmentObjectRepository?.blockingGet()?.trackedEntityInstance()
-                    ?: recordUid!!,
-                entryMode = it,
-                enrollmentRepository = enrollmentObjectRepository,
-                crashReportController = provideCrashReportController(),
-                networkUtils = provideNetworkUtils(context),
-                resourceManager = provideResourcesManager(context),
-            )
+        entryMode: EntryMode,
+    ): FormValueStore {
+        val enrollmentObjectRepository = if (entryMode == EntryMode.ATTR) {
+            provideEnrollmentObjectRepository(recordUid!!)
+        } else {
+            null
         }
+        return FormValueStore(
+            d2 = provideD2(),
+            recordUid = enrollmentObjectRepository?.blockingGet()?.trackedEntityInstance()
+                ?: recordUid!!,
+            entryMode = entryMode,
+            enrollmentRepository = enrollmentObjectRepository,
+            crashReportController = provideCrashReportController(),
+            networkUtils = provideNetworkUtils(context),
+            resourceManager = provideResourcesManager(context),
+        )
     }
 
     private fun provideEnrollmentObjectRepository(
@@ -244,11 +243,10 @@ object Injector {
     private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
 
     private fun provideRuleEngineRepository(
-        entryMode: EntryMode?,
+        entryMode: EntryMode,
         recordUid: String?,
-    ): RuleEngineHelper? {
-        return recordUid?.let {
-            RuleEngineHelper(
+    ): RuleEngineHelper {
+        return RuleEngineHelper(
                 when (entryMode) {
                     EntryMode.DE -> EvaluationType.Event(recordUid)
                     EntryMode.ATTR -> EvaluationType.Enrollment(recordUid)
@@ -256,7 +254,6 @@ object Injector {
                 },
                 RulesRepository(provideD2()),
             )
-        }
     }
 
     private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(

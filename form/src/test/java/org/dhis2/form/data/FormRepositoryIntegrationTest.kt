@@ -179,7 +179,7 @@ class FormRepositoryIntegrationTest {
             enrollmentFormLabelsProvider,
         )
 
-        val repository = FormRepositoryImpl(
+        return FormRepositoryImpl(
             formValueStore,
             fieldErrorMessageProvider,
             displayNameProvider,
@@ -189,6 +189,5 @@ class FormRepositoryIntegrationTest {
             legendValueProvider,
             false,
         )
-        return repository
     }
 }
