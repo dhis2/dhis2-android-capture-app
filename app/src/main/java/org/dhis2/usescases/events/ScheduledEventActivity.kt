@@ -17,6 +17,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.willShowCalendar
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
@@ -109,7 +110,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                         dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
                     )
 
-                    if (programStage.periodType() == null || (programStage.periodType() != null && programStage.periodType() == PeriodType.Daily)) {
+                    if (willShowCalendar(programStage.periodType())) {
                         ProvideInputDate(
                             EventInputDateUiModel(
                                 eventDate = eventDate,

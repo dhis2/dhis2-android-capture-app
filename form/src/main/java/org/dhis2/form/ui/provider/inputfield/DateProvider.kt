@@ -53,7 +53,9 @@ fun ProvideInputDate(
             },
         )
     }
-    val yearIntRange = if (fieldUiModel.allowFutureDates == true) IntRange(1924, 2124) else (IntRange(1924, Calendar.getInstance().get(Calendar.YEAR)))
+    val yearIntRange = if (fieldUiModel.allowFutureDates == true) IntRange(1924, 2124) else (IntRange(1924,
+        Calendar.getInstance()[Calendar.YEAR]
+    ))
     val selectableDates = if (fieldUiModel.allowFutureDates == true) {
         SelectableDates(initialDate = DEFAULT_MIN_DATE, endDate = DEFAULT_MAX_DATE)
     } else {

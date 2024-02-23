@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownInputField
@@ -437,6 +438,10 @@ fun ProvideRadioButtons(
             },
         )
     }
+}
+
+fun willShowCalendar(periodType: PeriodType?): Boolean {
+    return (periodType == null || periodType == PeriodType.Daily)
 }
 
 const val INPUT_EVENT_INITIAL_DATE = "INPUT_EVENT_INITIAL_DATE"

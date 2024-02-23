@@ -13,12 +13,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import org.dhis2.R
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
-import org.hisp.dhis.android.core.period.PeriodType
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.willShowCalendar
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -91,67 +93,14 @@ fun SchedulingDialogUi(
                     },
                 )
                 if (scheduleNew) {
-                    if (programStages.size > 1) {
-                        InputDropDown(
-                            title = stringResource(id = R.string.program_stage),
-                            state = InputShellState.UNFOCUSED,
-                            dropdownItems = programStages.map { DropdownItem(it.displayName().orEmpty()) },
-                            selectedItem = DropdownItem(selectedProgramStage.displayName().orEmpty()),
-                            onResetButtonClicked = {},
-                            onItemSelected = { item ->
-                                programStages.find { it.displayName() == item.label }
-                                    ?.let { viewModel.updateStage(it) }
-                            },
-                        )
-                    }
-
-                    if (selectedProgramStage.periodType() == null || (selectedProgramStage.periodType() != null && selectedProgramStage.periodType() == PeriodType.Daily)) {
-                        ProvideInputDate(
-                            EventInputDateUiModel(
-                                eventDate = date,
-                                detailsEnabled = true,
-                                onDateClick = {},
-                                onDateSelected = { viewModel.onDateSet(it.year, it.month, it.day) },
-                                onClear = { viewModel.onClearEventReportDate() },
-                            ),
-                        )
-                    } else {
-                        ProvidePeriodSelector(
-                            uiModel = EventInputDateUiModel(
-                                eventDate = date,
-                                detailsEnabled = true,
-                                onDateClick = { viewModel.showPeriodDialog() },
-                                onDateSelected = {},
-                                onClear = { viewModel.onClearEventReportDate() },
-                                required = true,
-                                showField = date.active,
-                                selectableDates = viewModel.getSelectableDates(),
-                            ),
-                            modifier = Modifier,
-                        )
-                    }
-
-                    if (!catCombo.isDefault) {
-                        catCombo.categories.forEach { category ->
-                            ProvideCategorySelector(
-                                eventCatComboUiModel = EventCatComboUiModel(
-                                    category = category,
-                                    eventCatCombo = catCombo,
-                                    detailsEnabled = true,
-                                    currentDate = date.currentDate,
-                                    selectedOrgUnit = orgUnitUid,
-                                    onClearCatCombo = { viewModel.onClearCatCombo() },
-                                    onOptionSelected = {
-                                        val selectedOption = Pair(category.uid, it?.uid())
-                                        viewModel.setUpCategoryCombo(selectedOption)
-                                    },
-                                    required = true,
-                                    noOptionsText = stringResource(R.string.no_options),
-                                    catComboText = stringResource(R.string.cat_combo),
-                                ),
-                            )
-                        }
-                    }
+                    ProvideScheduleNewEventForm(
+                        programStages = programStages,
+                        viewModel = viewModel,
+                        selectedProgramStage = selectedProgramStage,
+                        date = date,
+                        catCombo = catCombo,
+                        orgUnitUid = orgUnitUid,
+                    )
                 }
             }
         },
@@ -171,4 +120,76 @@ fun bottomSheetTitle(programStages: List<ProgramStage>): String =
 fun buttonTitle(scheduleNew: Boolean): String = when (scheduleNew) {
     true -> stringResource(id = R.string.schedule)
     false -> stringResource(id = R.string.done)
+}
+
+@Composable
+fun ProvideScheduleNewEventForm(
+    programStages: List<ProgramStage>,
+    viewModel: SchedulingViewModel,
+    selectedProgramStage: ProgramStage,
+    date: EventDate,
+    catCombo: EventCatCombo,
+    orgUnitUid: String?,
+) {
+    if (programStages.size > 1) {
+        InputDropDown(
+            title = stringResource(id = R.string.program_stage),
+            state = InputShellState.UNFOCUSED,
+            dropdownItems = programStages.map { DropdownItem(it.displayName().orEmpty()) },
+            selectedItem = DropdownItem(selectedProgramStage.displayName().orEmpty()),
+            onResetButtonClicked = {},
+            onItemSelected = { item ->
+                programStages.find { it.displayName() == item.label }
+                    ?.let { viewModel.updateStage(it) }
+            },
+        )
+    }
+
+    if (willShowCalendar(selectedProgramStage.periodType())) {
+        ProvideInputDate(
+            EventInputDateUiModel(
+                eventDate = date,
+                detailsEnabled = true,
+                onDateClick = {},
+                onDateSelected = { viewModel.onDateSet(it.year, it.month, it.day) },
+                onClear = { viewModel.onClearEventReportDate() },
+            ),
+        )
+    } else {
+        ProvidePeriodSelector(
+            uiModel = EventInputDateUiModel(
+                eventDate = date,
+                detailsEnabled = true,
+                onDateClick = { viewModel.showPeriodDialog() },
+                onDateSelected = {},
+                onClear = { viewModel.onClearEventReportDate() },
+                required = true,
+                showField = date.active,
+                selectableDates = viewModel.getSelectableDates(),
+            ),
+            modifier = Modifier,
+        )
+    }
+
+    if (!catCombo.isDefault) {
+        catCombo.categories.forEach { category ->
+            ProvideCategorySelector(
+                eventCatComboUiModel = EventCatComboUiModel(
+                    category = category,
+                    eventCatCombo = catCombo,
+                    detailsEnabled = true,
+                    currentDate = date.currentDate,
+                    selectedOrgUnit = orgUnitUid,
+                    onClearCatCombo = { viewModel.onClearCatCombo() },
+                    onOptionSelected = {
+                        val selectedOption = Pair(category.uid, it?.uid())
+                        viewModel.setUpCategoryCombo(selectedOption)
+                    },
+                    required = true,
+                    noOptionsText = stringResource(R.string.no_options),
+                    catComboText = stringResource(R.string.cat_combo),
+                ),
+            )
+        }
+    }
 }
