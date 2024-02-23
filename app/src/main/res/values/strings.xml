@@ -952,4 +952,6 @@
     <string name="event">event</string>
     <string name="event_count">%d events</string>
     <string name="timeline">Timeline</string>
+    <string name="clear_search">Clear search</string>
+    <string name="optional">Optional</string>
 </resources>

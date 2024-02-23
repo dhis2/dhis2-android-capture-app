@@ -18,6 +18,7 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -27,12 +28,13 @@ import java.util.Locale
 @Composable
 fun ProvideInputAge(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: ResourceManager,
 ) {
-    var inputType by remember(fieldUiModel.value) {
+    var inputType by remember {
         mutableStateOf(
             if (!fieldUiModel.value.isNullOrEmpty()) {
                 formatStoredDateToUI(fieldUiModel.value!!).let {
@@ -71,6 +73,7 @@ fun ProvideInputAge(
     InputAge(
         title = fieldUiModel.label,
         inputType = inputType,
+        inputStyle = inputStyle,
         onCalendarActionClicked = {
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenCustomCalendar(

@@ -11,7 +11,6 @@ import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
 import org.junit.Ignore
 import org.junit.Rule
@@ -241,7 +240,7 @@ class FormTest : BaseTest() {
         val firstSectionPosition = 1
         startSearchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition("optionGroup", 1)
             clickOnSearch()
@@ -285,9 +284,10 @@ class FormTest : BaseTest() {
 
         startSearchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition("abc", 1)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter("abc")
             clickOnSearch()
             clickOnEnroll()
             orgUnitSelectorRobot(composeTestRule) {

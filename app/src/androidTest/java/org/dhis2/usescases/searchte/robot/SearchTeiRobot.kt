@@ -1,9 +1,22 @@
 package org.dhis2.usescases.searchte.robot
 
+import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.filter
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -14,6 +27,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -34,13 +48,16 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 
 
-fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
-    SearchTeiRobot().apply {
+fun searchTeiRobot(
+    composeTestRule: ComposeContentTestRule,
+    searchTeiRobot: SearchTeiRobot.() -> Unit
+) {
+    SearchTeiRobot(composeTestRule).apply {
         searchTeiRobot()
     }
 }
 
-class SearchTeiRobot : BaseRobot() {
+class SearchTeiRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() {
 
     fun closeSearchForm() {
         waitToDebounce(2500)
@@ -85,6 +102,23 @@ class SearchTeiRobot : BaseRobot() {
                     )
                 )
             )
+    }
+
+    fun openNextSearchParameter(parameterValue: String) {
+//        composeTestRule.onAllNodesWithTag("SEARCH_PARAM_ITEM").onFirst().performClick()
+        composeTestRule.onNodeWithText(parameterValue).performClick()
+    }
+
+    fun typeOnNextSearchTextParameter(parameterValue: String) {
+        composeTestRule.apply {
+            onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(parameterValue)
+        }
+    }
+
+    fun typeOnDateParameter(dateValue: String) {
+        composeTestRule.apply {
+            onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextInput(dateValue)
+        }
     }
 
     fun typeAttributeAtPosition(searchWord: String, position: Int) {
@@ -132,7 +166,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun clickOnSearch() {
         closeKeyboard()
-        onView(withId(R.id.searchButton)).perform(click())
+        composeTestRule.onNodeWithTag("SEARCH_BUTTON").performClick()
     }
 
     fun checkListOfSearchTEI(firstSearchWord: String, secondSearchWord: String) {
@@ -178,7 +212,6 @@ class SearchTeiRobot : BaseRobot() {
 
 
     fun checkFieldsFromDisplayList(
-        composeTestRule: ComposeContentTestRule,
         displayListFieldsUIModel: DisplayListFieldsUIModel
     ) {
         //Given the title is the first attribute
@@ -200,7 +233,11 @@ class SearchTeiRobot : BaseRobot() {
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         displayedAttributes.forEach { item ->
             item.key?.let { composeTestRule.onNodeWithText(it).assertIsDisplayed() }
-            composeTestRule.onNodeWithText(item.value).assertIsDisplayed()
+//            composeTestRule.onNodeWithText(item.value).assertIsDisplayed()
+            composeTestRule.onNode(
+                hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
+                        and hasText(item.value), useUnmergedTree = true
+            ).assertIsDisplayed()
         }
     }
 

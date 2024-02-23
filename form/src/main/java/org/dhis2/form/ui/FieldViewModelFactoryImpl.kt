@@ -20,12 +20,9 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 
 class FieldViewModelFactoryImpl(
-    private val noMandatoryFields: Boolean,
     private val uiStyleProvider: UiStyleProvider,
     private val layoutProvider: LayoutProvider,
     private val hintProvider: HintProvider,
@@ -57,9 +54,7 @@ class FieldViewModelFactoryImpl(
         autoCompleteList: List<String>?,
         orgUnitSelectorScope: OrgUnitSelectorScope?,
     ): FieldUiModel {
-        var isMandatory = mandatory
         isNull(valueType, "type must be supplied")
-        if (noMandatoryFields) isMandatory = false
         return FieldUiModelImpl(
             uid = id,
             layoutId = layoutProvider.getLayoutByType(
@@ -73,7 +68,7 @@ class FieldViewModelFactoryImpl(
             error = null,
             editable = editable,
             warning = null,
-            mandatory = isMandatory,
+            mandatory = mandatory,
             label = label,
             programStageSection = programStageSection,
             style = uiStyleProvider.provideStyle(valueType),
@@ -102,39 +97,6 @@ class FieldViewModelFactoryImpl(
             fieldMask = fieldMask,
             autocompleteList = autoCompleteProvider.provideAutoCompleteValues(id),
             orgUnitSelectorScope = orgUnitSelectorScope,
-        )
-    }
-
-    override fun createForAttribute(
-        trackedEntityAttribute: TrackedEntityAttribute,
-        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
-        value: String?,
-        editable: Boolean,
-        optionSetConfiguration: OptionSetConfiguration?,
-    ): FieldUiModel {
-        isNull(trackedEntityAttribute.valueType(), "type must be supplied")
-        return create(
-            id = trackedEntityAttribute.uid(),
-            label = trackedEntityAttribute.displayFormName() ?: "",
-            valueType = trackedEntityAttribute.valueType()!!,
-            mandatory = programTrackedEntityAttribute?.mandatory() == true,
-            optionSet = trackedEntityAttribute.optionSet()?.uid(),
-            value = value,
-            programStageSection = null,
-            allowFutureDates = programTrackedEntityAttribute?.allowFutureDate() ?: true,
-            editable = editable,
-            renderingType = SectionRenderingType.LISTING,
-            description = programTrackedEntityAttribute?.displayDescription()
-                ?: trackedEntityAttribute.displayDescription(),
-            fieldRendering = programTrackedEntityAttribute?.renderType()?.mobile(),
-            objectStyle = trackedEntityAttribute.style() ?: ObjectStyle.builder().build(),
-            fieldMask = trackedEntityAttribute.fieldMask(),
-            optionSetConfiguration = optionSetConfiguration,
-            featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) {
-                FeatureType.POINT
-            } else {
-                null
-            },
         )
     }
 

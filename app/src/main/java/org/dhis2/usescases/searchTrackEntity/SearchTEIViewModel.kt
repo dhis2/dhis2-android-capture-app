@@ -1,5 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,22 +10,27 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -40,6 +48,8 @@ class SearchTEIViewModel(
     private val networkUtils: NetworkUtils,
     private val dispatchers: DispatcherProvider,
     private val mapStyleConfig: MapStyleConfiguration,
+    private val resourceManager: ResourceManager,
+    private val displayNameProvider: DisplayNameProvider,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -75,6 +85,11 @@ class SearchTEIViewModel(
 
     private val _filtersOpened = MutableLiveData(false)
     val filtersOpened: LiveData<Boolean> = _filtersOpened
+
+    var uiState by mutableStateOf(SearchParametersUiState())
+        private set
+
+    private var fetchJob: Job? = null
 
     init {
         viewModelScope.launch(dispatchers.io()) {
@@ -201,23 +216,47 @@ class SearchTEIViewModel(
         performSearch()
     }
 
-    fun updateQueryData(rowAction: RowAction) {
-        if (rowAction.type == ActionType.ON_SAVE || rowAction.type == ActionType.ON_TEXT_CHANGE) {
-            if (rowAction.value != null) {
-                queryData[rowAction.id] = rowAction.value!!
-            } else {
-                queryData.remove(rowAction.id)
-            }
-            updateSearch()
-        } else if (rowAction.type == ActionType.ON_CLEAR) {
-            clearQueryData()
+    private fun updateQuery(uid: String, value: String?) {
+        if (value.isNullOrEmpty()) {
+            queryData.remove(uid)
+        } else {
+            queryData[uid] = value
         }
+
+        updateSearchParameters(uid, value)
+        updateSearch()
     }
 
-    private fun clearQueryData() {
+    private fun updateSearchParameters(uid: String, value: String?) {
+        val updatedItems = uiState.items.map {
+            if (it.uid == uid) {
+                (it as FieldUiModelImpl).copy(
+                    value = value,
+                    displayName = displayNameProvider.provideDisplayName(
+                        valueType = it.valueType,
+                        value = value,
+                        optionSet = it.optionSet,
+                    ),
+                )
+            } else {
+                it
+            }
+        }
+        uiState = uiState.copy(items = updatedItems)
+    }
+
+    fun clearQueryData() {
         queryData.clear()
+        clearSearchParameters()
         updateSearch()
         performSearch()
+    }
+
+    private fun clearSearchParameters() {
+        val updatedItems = uiState.items.map {
+            (it as FieldUiModelImpl).copy(value = null, displayName = null)
+        }
+        uiState = uiState.copy(items = updatedItems)
     }
 
     private fun updateSearch() {
@@ -230,6 +269,7 @@ class SearchTEIViewModel(
                     ),
                 )
         }
+        uiState = uiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
     fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
@@ -354,15 +394,16 @@ class SearchTEIViewModel(
         }
     }
 
-    fun onSearchClick(onMinAttributes: (Int) -> Unit = {}) {
+    fun onSearch() {
         searchRepository.clearFetchedList()
-        performSearch(onMinAttributes)
+        performSearch()
     }
 
-    private fun performSearch(onMinAttributes: (Int) -> Unit = {}) {
+    private fun performSearch() {
         viewModelScope.launch {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
+                uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
                 when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
@@ -380,11 +421,15 @@ class SearchTEIViewModel(
                     else -> searching = false
                 }
             } else {
-                onMinAttributes(
-                    searchRepository.getProgram(initialProgramUid)
-                        ?.minAttributesRequiredToSearch()
-                        ?: 0,
+                val minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                    ?.minAttributesRequiredToSearch()
+                    ?: 0
+                val message = resourceManager.getString(
+                    R.string.search_min_num_attr,
+                    minAttributesToSearch,
                 )
+                uiState = uiState.copy(minAttributesMessage = message)
+                uiState.updateMinAttributeWarning(true)
             }
         }
     }
@@ -395,7 +440,7 @@ class SearchTEIViewModel(
 
     private fun minAttributesToSearchCheck(): Boolean {
         return searchRepository.getProgram(initialProgramUid)?.let { program ->
-            program.minAttributesRequiredToSearch() ?: 0 <= queryData.size
+            (program.minAttributesRequiredToSearch() ?: 0) <= queryData.size
         } ?: true
     }
 
@@ -405,7 +450,7 @@ class SearchTEIViewModel(
         } ?: false
     }
 
-    fun canDisplayResult(itemCount: Int, onlineTooManyResults: Boolean): Boolean {
+    private fun canDisplayResult(itemCount: Int, onlineTooManyResults: Boolean): Boolean {
         return !onlineTooManyResults && when (initialProgramUid) {
             null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
             else ->
@@ -501,7 +546,7 @@ class SearchTEIViewModel(
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OR_CREATE,
-                        searchRepository.getTrackedEntityType().displayName(),
+                        searchRepository.trackedEntityType.displayName(),
                     ),
                 )
 
@@ -602,6 +647,9 @@ class SearchTEIViewModel(
         if (isPortrait && searchOrFilterIsOpen && !searchScreenIsForced) {
             if (keyBoardIsOpen) closeKeyboardCallback()
             closeSearchOrFilterCallback()
+            viewModelScope.launch {
+                uiState.onBackPressed(true)
+            }
         } else if (keyBoardIsOpen) {
             closeKeyboardCallback()
             goBackCallback()
@@ -691,5 +739,68 @@ class SearchTEIViewModel(
 
     fun onLegacyInteractionConsumed() {
         _legacyInteraction.value = null
+    }
+
+    fun fetchSearchParameters(
+        programUid: String?,
+        teiTypeUid: String,
+    ) {
+        fetchJob?.cancel()
+        fetchJob = viewModelScope.launch {
+            val fieldUiModels =
+                searchRepositoryKt.searchParameters(programUid, teiTypeUid)
+            uiState = uiState.copy(items = fieldUiModels)
+        }
+    }
+
+    fun onParameterIntent(formIntent: FormIntent) = when (formIntent) {
+        is FormIntent.OnTextChange -> {
+            updateQuery(
+                formIntent.uid,
+                formIntent.value,
+            )
+        }
+
+        is FormIntent.OnSave -> {
+            updateQuery(
+                formIntent.uid,
+                formIntent.value,
+            )
+        }
+
+        is FormIntent.OnFocus -> {
+            val updatedItems = uiState.items.map {
+                if (it.focused && it.uid != formIntent.uid) {
+                    (it as FieldUiModelImpl).copy(focused = false)
+                } else if (it.uid == formIntent.uid) {
+                    (it as FieldUiModelImpl).copy(focused = true)
+                } else {
+                    it
+                }
+            }
+            uiState = uiState.copy(items = updatedItems)
+        }
+
+        is FormIntent.ClearValue -> {
+            updateQuery(
+                formIntent.uid,
+                null,
+            )
+        }
+
+        else -> {
+            // no-op
+        }
+    }
+
+    fun clearFocus() {
+        val updatedItems = uiState.items.map {
+            if (it.focused) {
+                (it as FieldUiModelImpl).copy(focused = false)
+            } else {
+                it
+            }
+        }
+        uiState = uiState.copy(items = updatedItems)
     }
 }

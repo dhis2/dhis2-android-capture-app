@@ -51,12 +51,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun FieldProvider(
+fun FieldProvider(
     modifier: Modifier,
+    inputStyle: InputStyle = InputStyle.DataInputStyle(),
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
@@ -105,6 +107,7 @@ internal fun FieldProvider(
             ValueType.TEXT -> {
                 ProvideInputsForValueTypeText(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -116,6 +119,7 @@ internal fun FieldProvider(
             ValueType.INTEGER_POSITIVE -> {
                 ProvideIntegerPositive(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -126,6 +130,7 @@ internal fun FieldProvider(
             ValueType.INTEGER_ZERO_OR_POSITIVE -> {
                 ProvideIntegerPositiveOrZero(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -137,6 +142,7 @@ internal fun FieldProvider(
             ValueType.PERCENTAGE -> {
                 ProvidePercentage(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -148,6 +154,7 @@ internal fun FieldProvider(
             ValueType.NUMBER -> {
                 ProvideNumber(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -159,6 +166,7 @@ internal fun FieldProvider(
             ValueType.INTEGER_NEGATIVE -> {
                 ProvideIntegerNegative(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -170,6 +178,7 @@ internal fun FieldProvider(
             ValueType.LONG_TEXT -> {
                 ProvideLongText(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -181,6 +190,7 @@ internal fun FieldProvider(
             ValueType.LETTER -> {
                 ProvideLetter(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -192,6 +202,7 @@ internal fun FieldProvider(
             ValueType.INTEGER -> {
                 ProvideInteger(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusManager = focusManager,
@@ -203,6 +214,7 @@ internal fun FieldProvider(
             ValueType.ORGANISATION_UNIT -> {
                 ProvideOrgUnitInput(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     uiEventHandler = uiEventHandler,
                     intentHandler = intentHandler,
@@ -213,6 +225,7 @@ internal fun FieldProvider(
             ValueType.UNIT_INTERVAL -> {
                 ProvideUnitIntervalInput(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     onNextClicked = onNextClicked,
@@ -222,6 +235,7 @@ internal fun FieldProvider(
             ValueType.EMAIL -> {
                 ProvideEmail(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -243,6 +257,7 @@ internal fun FieldProvider(
             ValueType.URL -> {
                 ProvideInputLink(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -259,6 +274,7 @@ internal fun FieldProvider(
                     -> {
                         ProvideYesNoCheckBoxInput(
                             modifier = modifierWithFocus,
+                            inputStyle = inputStyle,
                             fieldUiModel = fieldUiModel,
                             intentHandler = intentHandler,
                             resources = resources,
@@ -269,6 +285,7 @@ internal fun FieldProvider(
                     else -> {
                         ProvideYesNoRadioButtonInput(
                             modifier = modifierWithFocus,
+                            inputStyle = inputStyle,
                             fieldUiModel = fieldUiModel,
                             intentHandler = intentHandler,
                             resources = resources,
@@ -283,6 +300,7 @@ internal fun FieldProvider(
                     UiRenderType.TOGGLE -> {
                         ProvideYesOnlySwitchInput(
                             modifier = modifierWithFocus,
+                            inputStyle = inputStyle,
                             fieldUiModel = fieldUiModel,
                             intentHandler = intentHandler,
                         )
@@ -291,6 +309,7 @@ internal fun FieldProvider(
                     else -> {
                         ProvideYesOnlyCheckBoxInput(
                             modifier = modifierWithFocus,
+                            inputStyle = inputStyle,
                             fieldUiModel = fieldUiModel,
                             intentHandler = intentHandler,
                             focusRequester = focusRequester,
@@ -302,6 +321,7 @@ internal fun FieldProvider(
             ValueType.PHONE_NUMBER -> {
                 ProvideInputPhoneNumber(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -317,6 +337,7 @@ internal fun FieldProvider(
             -> {
                 ProvideInputDate(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -370,6 +391,7 @@ internal fun FieldProvider(
             ValueType.AGE -> {
                 ProvideInputAge(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     uiEventHandler = uiEventHandler,
@@ -394,6 +416,7 @@ internal fun FieldProvider(
             -> {
                 ProvideRadioButtonInput(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusRequester = focusRequester,
@@ -405,6 +428,7 @@ internal fun FieldProvider(
             -> {
                 ProvideCheckBoxInput(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     focusRequester = focusRequester,
@@ -414,6 +438,7 @@ internal fun FieldProvider(
             UiRenderType.MATRIX -> {
                 ProvideMatrixInput(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     context = context,
@@ -423,6 +448,7 @@ internal fun FieldProvider(
             UiRenderType.SEQUENCIAL -> {
                 ProvideSequentialInput(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
                     context = context,
@@ -434,6 +460,7 @@ internal fun FieldProvider(
             else -> {
                 ProvideDropdownInput(
                     modifier = modifierWithFocus,
+                    inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                 )
             }
@@ -444,6 +471,7 @@ internal fun FieldProvider(
 @Composable
 private fun ProvideIntegerPositive(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -457,6 +485,7 @@ private fun ProvideIntegerPositive(
 
     InputPositiveInteger(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -484,6 +513,7 @@ private fun ProvideIntegerPositive(
 @Composable
 private fun ProvideIntegerPositiveOrZero(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -498,6 +528,7 @@ private fun ProvideIntegerPositiveOrZero(
 
     InputPositiveIntegerOrZero(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -525,6 +556,7 @@ private fun ProvideIntegerPositiveOrZero(
 @Composable
 private fun ProvidePercentage(
     modifier: Modifier = Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -539,6 +571,7 @@ private fun ProvidePercentage(
 
     InputPercentage(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -566,6 +599,7 @@ private fun ProvidePercentage(
 @Composable
 private fun ProvideNumber(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -580,6 +614,7 @@ private fun ProvideNumber(
 
     InputNumber(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -608,6 +643,7 @@ private fun ProvideNumber(
 @Composable
 private fun ProvideIntegerNegative(
     modifier: Modifier = Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -621,6 +657,7 @@ private fun ProvideIntegerNegative(
 
     InputNegativeInteger(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -648,6 +685,7 @@ private fun ProvideIntegerNegative(
 @Composable
 private fun ProvideLongText(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -662,6 +700,7 @@ private fun ProvideLongText(
 
     InputLongText(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -690,6 +729,7 @@ private fun ProvideLongText(
 @Composable
 private fun ProvideLetter(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -703,6 +743,7 @@ private fun ProvideLetter(
 
     InputLetter(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -730,6 +771,7 @@ private fun ProvideLetter(
 @Composable
 private fun ProvideInteger(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
@@ -743,6 +785,7 @@ private fun ProvideInteger(
 
     InputInteger(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -770,6 +813,7 @@ private fun ProvideInteger(
 @Composable
 private fun ProvideEmail(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
@@ -784,6 +828,7 @@ private fun ProvideEmail(
 
     InputEmail(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -820,6 +865,7 @@ private fun ProvideEmail(
 @Composable
 private fun ProvideInputPhoneNumber(
     fieldUiModel: FieldUiModel,
+    inputStyle: InputStyle,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
@@ -835,6 +881,7 @@ private fun ProvideInputPhoneNumber(
 
     InputPhoneNumber(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -871,6 +918,7 @@ private fun ProvideInputPhoneNumber(
 @Composable
 private fun ProvideInputLink(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -886,6 +934,7 @@ private fun ProvideInputLink(
 
     InputLink(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -922,6 +971,7 @@ private fun ProvideInputLink(
 @Composable
 private fun ProvideOrgUnitInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
@@ -935,6 +985,7 @@ private fun ProvideOrgUnitInput(
 
     InputOrgUnit(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),

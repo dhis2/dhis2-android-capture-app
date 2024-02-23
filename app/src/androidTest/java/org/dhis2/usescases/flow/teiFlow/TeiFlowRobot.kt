@@ -19,16 +19,20 @@ fun teiFlowRobot(teiFlowRobot: TeiFlowRobot.() -> Unit) {
 
 class TeiFlowRobot : BaseRobot() {
 
-    fun registerTEI(registrationModel: RegisterTEIUIModel) {
+    fun registerTEI(
+        registrationModel: RegisterTEIUIModel,
+        composeTestRule: ComposeContentTestRule
+    ) {
         val registrationDate = registrationModel.firstSpecificDate
         val enrollmentDate = registrationModel.enrollmentDate
 
-        searchTeiRobot {
-            typeAttributeAtPosition(registrationModel.name, 0)
-            typeAttributeAtPosition(registrationModel.lastName, 1)
-            clickOnDateField()
-            selectSpecificDate(registrationDate.year, registrationDate.month, registrationDate.day)
-            acceptDate()
+        searchTeiRobot(composeTestRule) {
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(registrationModel.name)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(registrationModel.lastName)
+            openNextSearchParameter("Date of birth")
+            typeOnDateParameter("${registrationDate.day}0${registrationDate.month}${registrationDate.year}")
             clickOnSearch()
             clickOnEnroll()
             selectSpecificDate(enrollmentDate.year, enrollmentDate.month, enrollmentDate.day)

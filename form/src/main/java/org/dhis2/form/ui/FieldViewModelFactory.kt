@@ -7,9 +7,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 
 interface FieldViewModelFactory {
     fun create(
@@ -31,14 +29,6 @@ interface FieldViewModelFactory {
         featureType: FeatureType? = null,
         autoCompleteList: List<String>? = null,
         orgUnitSelectorScope: OrgUnitSelectorScope? = null,
-    ): FieldUiModel
-
-    fun createForAttribute(
-        trackedEntityAttribute: TrackedEntityAttribute,
-        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
-        value: String?,
-        editable: Boolean,
-        optionSetConfiguration: OptionSetConfiguration?,
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel

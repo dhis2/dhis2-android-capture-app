@@ -1,21 +1,25 @@
 package org.dhis2.usescases.searchTrackEntity
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import app.cash.turbine.test
 import com.mapbox.geojson.BoundingBox
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.After
@@ -43,6 +47,8 @@ class SearchTEIViewModelTest {
     private val mapDataRepository: MapDataRepository = mock()
     private val networkUtils: NetworkUtils = mock()
     private val mapStyleConfiguration: MapStyleConfiguration = mock()
+    private val resourceManager: ResourceManager = mock()
+    private val displayNameProvider: DisplayNameProvider = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -78,6 +84,8 @@ class SearchTEIViewModelTest {
                 }
             },
             mapStyleConfiguration,
+            resourceManager = resourceManager,
+            displayNameProvider = displayNameProvider,
         )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -169,11 +177,11 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should update query data`() {
-        viewModel.updateQueryData(
-            RowAction(
-                id = "testingUid",
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
                 value = "testingValue",
-                type = ActionType.ON_SAVE,
+                valueType = ValueType.TEXT,
             ),
         )
 
@@ -257,10 +265,11 @@ class SearchTEIViewModelTest {
     }
 
     @Test
-    fun `Should use callback to perform min attributes warning`() {
-        setCurrentProgram(testingProgram())
-        viewModel.onSearchClick {
-            assertTrue(true)
+    fun `Should use callback to perform min attributes warning`() = runTest {
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        viewModel.onSearch()
+        viewModel.uiState.shouldShowMinAttributeWarning.test {
+            assertTrue(awaitItem())
         }
     }
 
@@ -269,16 +278,14 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram())
         viewModel.setListScreen()
         viewModel.setSearchScreen()
-        viewModel.updateQueryData(
-            RowAction(
-                id = "testingUid",
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
                 value = "testingValue",
-                type = ActionType.ON_SAVE,
+                valueType = ValueType.TEXT,
             ),
         )
-        viewModel.onSearchClick {
-            assertTrue(false)
-        }
+        viewModel.onSearch()
 
         assertTrue(viewModel.refreshData.value != null)
     }
@@ -307,16 +314,14 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram())
         viewModel.setMapScreen()
         viewModel.setSearchScreen()
-        viewModel.updateQueryData(
-            RowAction(
-                id = "testingUid",
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
                 value = "testingValue",
-                type = ActionType.ON_SAVE,
+                valueType = ValueType.TEXT,
             ),
         )
-        viewModel.onSearchClick {
-            assertTrue(false)
-        }
+        viewModel.onSearch()
 
         testingDispatcher.scheduler.advanceUntilIdle()
 
@@ -649,16 +654,16 @@ class SearchTEIViewModelTest {
 
     @ExperimentalCoroutinesApi
     private fun performSearch() {
-        viewModel.updateQueryData(
-            RowAction(
-                id = "testingUid",
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
                 value = "testingValue",
-                type = ActionType.ON_SAVE,
+                valueType = ValueType.TEXT,
             ),
         )
         viewModel.setListScreen()
         viewModel.setSearchScreen()
-        viewModel.onSearchClick()
+        viewModel.onSearch()
         testingDispatcher.scheduler.advanceUntilIdle()
     }
 

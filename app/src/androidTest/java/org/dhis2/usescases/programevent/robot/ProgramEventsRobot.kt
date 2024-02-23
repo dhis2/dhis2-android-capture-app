@@ -5,7 +5,11 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
@@ -23,19 +27,14 @@ fun programEventsRobot(programEventsRobot: ProgramEventsRobot.() -> Unit) {
 
 class ProgramEventsRobot : BaseRobot() {
 
-    fun clickOnEvent(eventDate: String, eventOrgUnit: String) {
+    fun clickOnEvent(eventDate: String) {
         onView(withId(R.id.recycler)).perform(
             RecyclerViewActions.scrollTo<EventViewHolder>(
-                allOf(
-                    hasDescendant(withText(eventDate)),
-                    hasDescendant(withText(eventOrgUnit))
-                )
+                hasDescendant(withText(eventDate)),
             ),
             actionOnItem<EventViewHolder>(
-                allOf(
-                    hasDescendant(withText(eventDate)),
-                    hasDescendant(withText(eventOrgUnit))
-                ), click()
+                hasDescendant(withText(eventDate)),
+                click(),
             )
         )
     }

@@ -21,6 +21,7 @@ import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
@@ -35,6 +36,7 @@ import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
+import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
@@ -159,9 +161,17 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchRepositoryKt searchRepositoryKt(
-            SearchRepository searchRepository
+            SearchRepository searchRepository,
+            D2 d2,
+            DispatcherProvider dispatcherProvider,
+            FieldViewModelFactory fieldViewModelFactory
     ) {
-        return new SearchRepositoryImplKt(searchRepository);
+        return new SearchRepositoryImplKt(
+                searchRepository,
+                d2,
+                dispatcherProvider,
+                fieldViewModelFactory
+        );
     }
 
     @Provides
@@ -179,10 +189,9 @@ public class SearchTEModule {
             ColorUtils colorUtils
     ) {
         return new FieldViewModelFactoryImpl(
-                true,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(moduleContext, false, colorUtils),
-                        new LongTextUiColorFactoryImpl(moduleContext, false, colorUtils),
+                        new FormUiModelColorFactoryImpl(moduleContext, colorUtils),
+                        new LongTextUiColorFactoryImpl(moduleContext, colorUtils),
                         false
                 ),
                 new LayoutProviderImpl(),
@@ -272,7 +281,8 @@ public class SearchTEModule {
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2,
-            FilterRepository filterRepository
+            ResourceManager resourceManager,
+            DisplayNameProvider displayNameProvider
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -283,7 +293,19 @@ public class SearchTEModule {
                 mapDataRepository,
                 networkUtils,
                 new SearchDispatchers(),
-                new MapStyleConfiguration(d2)
+                new MapStyleConfiguration(d2),
+                resourceManager,
+                displayNameProvider
+        );
+    }
+
+    @Provides
+    @PerActivity
+    DisplayNameProvider provideDisplayNameProvider(D2 d2) {
+        return new DisplayNameProviderImpl(
+                new OptionSetConfiguration(d2),
+                new OrgUnitConfiguration(d2),
+                new FileResourceConfiguration(d2)
         );
     }
 

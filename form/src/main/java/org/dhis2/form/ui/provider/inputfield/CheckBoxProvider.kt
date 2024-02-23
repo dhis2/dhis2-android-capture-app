@@ -13,11 +13,13 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 
 @Composable
 internal fun ProvideCheckBoxInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusRequester: FocusRequester,
@@ -33,6 +35,7 @@ internal fun ProvideCheckBoxInput(
 
     InputCheckBox(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
@@ -63,6 +66,7 @@ internal fun ProvideCheckBoxInput(
 @Composable
 internal fun ProvideYesNoCheckBoxInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
@@ -85,6 +89,7 @@ internal fun ProvideYesNoCheckBoxInput(
 
     InputCheckBox(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
@@ -130,6 +135,7 @@ internal fun ProvideYesNoCheckBoxInput(
 @Composable
 internal fun ProvideYesOnlyCheckBoxInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusRequester: FocusRequester,
@@ -143,6 +149,7 @@ internal fun ProvideYesOnlyCheckBoxInput(
 
     InputYesOnlyCheckBox(
         modifier = modifier,
+        inputStyle = inputStyle,
         checkBoxData = cbData,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),

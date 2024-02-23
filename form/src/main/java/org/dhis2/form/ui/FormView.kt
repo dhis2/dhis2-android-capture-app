@@ -110,7 +110,6 @@ class FormView : Fragment() {
     private var onFocused: (() -> Unit)? = null
     private var onFinishDataEntry: (() -> Unit)? = null
     private var onActivityForResult: (() -> Unit)? = null
-    private var needToForceUpdate: Boolean = false
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
@@ -350,9 +349,6 @@ class FormView : Fragment() {
                 dataEntryHeaderHelper.checkSectionHeader(recyclerView)
             }
         })
-        if (needToForceUpdate) {
-            retainInstance = true
-        }
         FormFileProvider.init(contextWrapper.applicationContext)
 
         if (useCompose) {
@@ -383,7 +379,6 @@ class FormView : Fragment() {
         FormCountingIdlingResource.increment()
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(
-            needToForceUpdate,
             viewModel.areSectionCollapsable(),
         )
 
@@ -428,14 +423,6 @@ class FormView : Fragment() {
             viewLifecycleOwner,
         ) { rowAction ->
             onItemChangeListener?.let { it(rowAction) }
-        }
-
-        viewModel.queryData.observe(
-            viewLifecycleOwner,
-        ) { rowAction ->
-            if (needToForceUpdate) {
-                onItemChangeListener?.let { it(rowAction) }
-            }
         }
 
         viewModel.items.observe(
@@ -1128,10 +1115,6 @@ class FormView : Fragment() {
         return if (value.isEmpty()) 0 else -Integer.valueOf(value)
     }
 
-    fun clearValues() {
-        intentHandler(FormIntent.OnClear())
-    }
-
     fun onBackPressed() {
         viewModel.runDataIntegrityCheck(backButtonPressed = true)
     }
@@ -1147,7 +1130,6 @@ class FormView : Fragment() {
 
     internal fun setConfiguration(
         locationProvider: LocationProvider?,
-        needToForceUpdate: Boolean,
         completionListener: ((percentage: Float) -> Unit)?,
         resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
         actionIconsActivate: Boolean,
@@ -1155,7 +1137,6 @@ class FormView : Fragment() {
         useCompose: Boolean,
     ) {
         this.locationProvider = locationProvider
-        this.needToForceUpdate = needToForceUpdate
         this.completionListener = completionListener
         this.resultDialogUiProvider = resultDialogUiProvider
         this.actionIconsActivate = actionIconsActivate
@@ -1186,7 +1167,6 @@ class FormView : Fragment() {
         private var fragmentManager: FragmentManager? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
-        private var needToForceUpdate: Boolean = false
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
         private var onFocused: (() -> Unit)? = null
         private var onActivityForResult: (() -> Unit)? = null
@@ -1215,12 +1195,6 @@ class FormView : Fragment() {
          */
         fun locationProvider(locationProvider: LocationProvider) =
             apply { this.locationProvider = locationProvider }
-
-        /**
-         * If it's set to true, any change on the list will make update all of it's items.
-         */
-        fun needToForceUpdate(needToForceUpdate: Boolean) =
-            apply { this.needToForceUpdate = needToForceUpdate }
 
         /**
          * Sets if loading started or finished to handle loadingfeedback
@@ -1280,7 +1254,6 @@ class FormView : Fragment() {
                 FormViewFragmentFactory(
                     locationProvider,
                     onItemChangeListener,
-                    needToForceUpdate,
                     onLoadingListener,
                     onFocused,
                     onFinishDataEntry,

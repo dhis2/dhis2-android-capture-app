@@ -12,11 +12,13 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
 @Composable
 internal fun ProvideRadioButtonInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusRequester: FocusRequester,
@@ -32,6 +34,7 @@ internal fun ProvideRadioButtonInput(
 
     InputRadioButton(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),
@@ -57,6 +60,7 @@ internal fun ProvideRadioButtonInput(
 @Composable
 internal fun ProvideYesNoRadioButtonInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
@@ -79,6 +83,7 @@ internal fun ProvideYesNoRadioButtonInput(
 
     InputRadioButton(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),

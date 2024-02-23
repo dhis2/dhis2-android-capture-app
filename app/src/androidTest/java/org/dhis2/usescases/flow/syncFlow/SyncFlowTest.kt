@@ -58,10 +58,12 @@ class SyncFlowTest : BaseTest() {
 
         prepareTBProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, 0)
-            typeAttributeAtPosition(teiLastName, 1)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(teiName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
             clickOnTEI(teiName, teiLastName)
         }

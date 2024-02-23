@@ -6,7 +6,6 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.ColorUtils
@@ -75,7 +74,6 @@ class EventDetailsModule(
     fun provideEventDetailsRepository(
         d2: D2,
         resourceManager: ResourceManager,
-        networkUtils: NetworkUtils,
         colorUtils: ColorUtils,
     ): EventDetailsRepository {
         return EventDetailsRepository(
@@ -84,10 +82,9 @@ class EventDetailsModule(
             eventUid = eventUid,
             programStageUid = programStageUid,
             fieldFactory = FieldViewModelFactoryImpl(
-                false,
                 UiStyleProviderImpl(
-                    FormUiModelColorFactoryImpl(context, true, colorUtils),
-                    LongTextUiColorFactoryImpl(context, true, colorUtils),
+                    FormUiModelColorFactoryImpl(context, colorUtils),
+                    LongTextUiColorFactoryImpl(context, colorUtils),
                     true,
                 ),
                 LayoutProviderImpl(),

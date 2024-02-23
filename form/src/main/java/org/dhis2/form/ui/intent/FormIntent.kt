@@ -9,10 +9,6 @@ sealed class FormIntent : MviIntent {
         val extraData: String? = null,
     ) : FormIntent()
 
-    data class OnClear(
-        val extraData: String? = null,
-    ) : FormIntent()
-
     data class OnFocus(
         val uid: String,
         val value: String?,

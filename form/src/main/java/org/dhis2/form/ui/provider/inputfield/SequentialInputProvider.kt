@@ -16,11 +16,13 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSequential
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.IconCardData
 
 @Composable
 internal fun ProvideSequentialInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     context: Context,
     intentHandler: (FormIntent) -> Unit,
@@ -76,5 +78,6 @@ internal fun ProvideSequentialInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         modifier = modifier,
+        inputStyle = inputStyle,
     )
 }

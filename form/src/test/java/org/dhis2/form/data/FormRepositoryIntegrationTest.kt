@@ -161,7 +161,6 @@ class FormRepositoryIntegrationTest {
         val autoCompleteProvider: AutoCompleteProvider = mock()
 
         val fieldFactory = FieldViewModelFactoryImpl(
-            false,
             styleProvider,
             layoutProvider,
             hintProvider,

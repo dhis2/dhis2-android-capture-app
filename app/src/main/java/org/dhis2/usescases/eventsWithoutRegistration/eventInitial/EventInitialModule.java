@@ -90,10 +90,9 @@ public class EventInitialModule {
     @PerActivity
     FieldViewModelFactory fieldFactory(Context context, D2 d2, ResourceManager resourceManager, ColorUtils colorUtils) {
         return new FieldViewModelFactoryImpl(
-                false,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(activityContext, true, colorUtils),
-                        new LongTextUiColorFactoryImpl(activityContext, true, colorUtils),
+                        new FormUiModelColorFactoryImpl(activityContext, colorUtils),
+                        new LongTextUiColorFactoryImpl(activityContext, colorUtils),
                         true
                 ),
                 new LayoutProviderImpl(),
