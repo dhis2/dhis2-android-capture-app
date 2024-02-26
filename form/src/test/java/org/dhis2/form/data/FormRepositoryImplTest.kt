@@ -12,10 +12,12 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.rules.models.RuleActionAssign
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
+import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -33,7 +35,7 @@ import org.mockito.kotlin.whenever
 class FormRepositoryImplTest {
 
     private val rulesUtilsProvider: RulesUtilsProvider = mock()
-    private val ruleEngineRepository: RuleEngineRepository = mock()
+    private val ruleEngineHelper: RuleEngineHelper = mock()
     private val dataEntryRepository: DataEntryRepository = mock()
     private val formValueStore: FormValueStore = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
@@ -44,7 +46,7 @@ class FormRepositoryImplTest {
     @Before
     fun setUp() {
         whenever(dataEntryRepository.disableCollapsableSections()) doReturn null
-        whenever(dataEntryRepository.firstSectionToOpen())doReturn mockedSections().first()
+        whenever(dataEntryRepository.firstSectionToOpen()) doReturn mockedSections().first()
         whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
         repository = FormRepositoryImpl(
@@ -52,7 +54,7 @@ class FormRepositoryImplTest {
             fieldErrorMessageProvider,
             displayNameProvider,
             dataEntryRepository,
-            ruleEngineRepository,
+            ruleEngineHelper,
             rulesUtilsProvider,
             legendValueProvider,
             false,
@@ -156,13 +158,13 @@ class FormRepositoryImplTest {
 
     @Test
     fun `Should apply program rules`() {
-        whenever(ruleEngineRepository.calculate()) doReturn listOf(
-            RuleEffect.create(
+        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
+            RuleEffect(
                 "",
-                RuleActionAssign.create(
-                    null,
+                RuleAction(
                     "assignedValue",
-                    "uid001",
+                    ProgramRuleActionType.ASSIGN.name,
+                    mutableMapOf(Pair("field", "uid001")),
                 ),
             ),
         )
@@ -234,7 +236,7 @@ class FormRepositoryImplTest {
     fun `Concurrent crash test`() {
         val ruleEffects = emptyList<RuleEffect>()
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideMandatoryItemList())
-        whenever(ruleEngineRepository.calculate()) doReturn ruleEffects
+        whenever(ruleEngineHelper.evaluate()) doReturn ruleEffects
         whenever(dataEntryRepository.isEvent()) doReturn true
         whenever(
             rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),

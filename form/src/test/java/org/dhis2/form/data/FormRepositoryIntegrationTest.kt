@@ -14,6 +14,7 @@ import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.form.ui.provider.UiStyleProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -34,7 +35,7 @@ import java.util.Date
 
 class FormRepositoryIntegrationTest {
     private val rulesUtilsProvider: RulesUtilsProvider = mock()
-    private val ruleEngineRepository: RuleEngineRepository = mock()
+    private val ruleEngineHelper: RuleEngineHelper = mock()
     private val formValueStore: FormValueStore = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val conf: EnrollmentConfiguration = mock()
@@ -183,7 +184,7 @@ class FormRepositoryIntegrationTest {
             fieldErrorMessageProvider,
             displayNameProvider,
             dataEntryRepository,
-            ruleEngineRepository,
+            ruleEngineHelper,
             rulesUtilsProvider,
             legendValueProvider,
             false,
