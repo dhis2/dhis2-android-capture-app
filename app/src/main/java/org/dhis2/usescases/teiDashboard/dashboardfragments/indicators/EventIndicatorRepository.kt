@@ -8,7 +8,7 @@ import org.hisp.dhis.android.core.D2
 
 class EventIndicatorRepository(
     d2: D2,
-    ruleEngineHelper: RuleEngineHelper,
+    ruleEngineHelper: RuleEngineHelper?,
     programUid: String,
     val eventUid: String,
     resourceManager: ResourceManager,
@@ -24,9 +24,8 @@ class EventIndicatorRepository(
                     )
             },
             getRulesIndicators(),
-            { indicators, ruleIndicators ->
-                arrangeSections(indicators, ruleIndicators)
-            },
-        )
+        ) { indicators, ruleIndicators ->
+            arrangeSections(indicators, ruleIndicators)
+        }
     }
 }

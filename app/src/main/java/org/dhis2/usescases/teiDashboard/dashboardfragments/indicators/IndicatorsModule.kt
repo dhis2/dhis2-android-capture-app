@@ -30,7 +30,7 @@ class IndicatorsModule(
     @PerFragment
     fun provideRepository(
         d2: D2,
-        ruleEngineHelper: RuleEngineHelper,
+        ruleEngineHelper: RuleEngineHelper?,
         charts: Charts?,
         resourceManager: ResourceManager,
     ): IndicatorRepository {

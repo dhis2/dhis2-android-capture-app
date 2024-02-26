@@ -47,6 +47,7 @@ import timber.log.Timber;
 public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final FieldViewModelFactory fieldFactory;
+    @Nullable
     private final RuleEngineHelper ruleEngineHelper;
 
     private final String eventUid;
@@ -57,7 +58,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                String stageUid,
                                D2 d2,
                                FieldViewModelFactory fieldFactory,
-                               RuleEngineHelper ruleEngineHelper) {
+                               @Nullable RuleEngineHelper ruleEngineHelper) {
         this.eventUid = eventUid;
         this.stageUid = stageUid;
         this.d2 = d2;
@@ -294,7 +295,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        return Flowable.just(ruleEngineHelper.evaluate()).map(Result::success);
+        if(ruleEngineHelper!=null) {
+            return Flowable.just(ruleEngineHelper.evaluate()).map(Result::success);
+        }else{
+            return Flowable.just(Result.success(new ArrayList<>()));
+        }
     }
 
     @NonNull

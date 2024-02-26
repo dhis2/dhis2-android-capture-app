@@ -61,7 +61,7 @@ class TEIDataPresenter(
     private val d2: D2,
     private val dashboardRepository: DashboardRepository,
     private val teiDataRepository: TeiDataRepository,
-    private val ruleEngineHelper: RuleEngineHelper,
+    private val ruleEngineHelper: RuleEngineHelper?,
     private var programUid: String?,
     private val teiUid: String,
     private val enrollmentUid: String,
@@ -112,8 +112,9 @@ class TEIDataPresenter(
                                 stageAndGrouping.second,
                             ).toFlowable(),
                             Flowable.fromCallable {
-                                ruleEngineHelper.refreshContext()
-                                ruleEngineHelper.evaluate().let { it -> Result.success(it) }
+                                ruleEngineHelper?.refreshContext()
+                                (ruleEngineHelper?.evaluate() ?: emptyList())
+                                    .let { it -> Result.success(it) }
                             },
                         ) { events, calcResult ->
                             applyEffects(

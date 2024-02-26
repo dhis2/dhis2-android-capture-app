@@ -22,7 +22,7 @@ import timber.log.Timber
 
 abstract class BaseIndicatorRepository(
     open val d2: D2,
-    open val ruleEngineHelper: RuleEngineHelper,
+    open val ruleEngineHelper: RuleEngineHelper?,
     open val programUid: String,
     open val resourceManager: ResourceManager,
 ) : IndicatorRepository {
@@ -82,8 +82,8 @@ abstract class BaseIndicatorRepository(
                     return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
                 } else {
                     return@flatMapPublisher Flowable.fromCallable {
-                        ruleEngineHelper.refreshContext()
-                        ruleEngineHelper.evaluate().let { Result.success(it) }
+                        ruleEngineHelper?.refreshContext()
+                        ruleEngineHelper?.evaluate().let { Result.success(it ?: emptyList()) }
                     }
                         .map { effects ->
                             // Restart rule engine to take into account value changes

@@ -15,7 +15,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class TrackerAnalyticsRepository(
     d2: D2,
-    ruleEngineHelper: RuleEngineHelper,
+    ruleEngineHelper: RuleEngineHelper?,
     val charts: Charts?,
     programUid: String,
     val teiUid: String,

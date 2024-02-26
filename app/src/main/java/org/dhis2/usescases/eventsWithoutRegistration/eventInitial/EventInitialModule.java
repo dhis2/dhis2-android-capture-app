@@ -124,7 +124,7 @@ public class EventInitialModule {
     @PerActivity
     EventInitialRepository eventDetailRepository(D2 d2,
                                                  @NonNull FieldViewModelFactory fieldViewModelFactory,
-                                                 RuleEngineHelper ruleEngineHelper) {
+                                                 @Nullable RuleEngineHelper ruleEngineHelper) {
         return new EventInitialRepositoryImpl(eventUid, stageUid, d2, fieldViewModelFactory, ruleEngineHelper);
     }
 

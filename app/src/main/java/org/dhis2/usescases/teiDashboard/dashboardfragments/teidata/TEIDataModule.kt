@@ -41,7 +41,7 @@ class TEIDataModule(
         d2: D2,
         dashboardRepository: DashboardRepository,
         teiDataRepository: TeiDataRepository,
-        ruleEngineHelper: RuleEngineHelper,
+        ruleEngineHelper: RuleEngineHelper?,
         schedulerProvider: SchedulerProvider,
         analyticsHelper: AnalyticsHelper,
         valueStore: FormValueStore,
