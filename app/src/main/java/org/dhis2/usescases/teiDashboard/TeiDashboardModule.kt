@@ -94,7 +94,8 @@ class TeiDashboardModule(
     @PerActivity
     fun ruleEngineRepository(
         d2: D2,
-    ): RuleEngineHelper {
+    ): RuleEngineHelper? {
+        if (enrollmentUid.isNullOrEmpty()) return null
         return RuleEngineHelper(
             EvaluationType.Enrollment(enrollmentUid),
             org.dhis2.mobileProgramRules.RulesRepository(d2),
