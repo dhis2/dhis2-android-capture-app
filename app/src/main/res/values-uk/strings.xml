@@ -143,7 +143,6 @@
     <string name="delete">Видалити</string>
     <string name="total">Підсумок</string>
     <string name="most_recent_event_date">Дата останнього випадку</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Список реєстрацій</string>
     <string name="active_programs">Активні програми</string>
@@ -674,7 +673,6 @@
     <string name="complete_anyway">Все одно завершити</string>
     <string name="fk_message">Відсутній %s %s від %s %s</string>
     <string name="filters_title_event_status">Статус випадку</string>
-    <string name="filters_title_enrollment_status">Статус реєстрації</string>
     <string name="enrollment_date">Дата реєстрації</string>
     <string name="dataset_empty_list_can_create">Немає даних. Натисніть «+», щоб додати новий запис</string>
     <string name="dataset_emtpy_list_can_not_create">Немає даних. Ви не маєте дозволу додавати нові записи.</string>

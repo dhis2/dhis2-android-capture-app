@@ -137,7 +137,6 @@
     <string name="delete">Apagar</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Data do evento mais recente</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Lista de Inscrições</string>
     <string name="active_programs">Programas activos</string>
@@ -660,7 +659,6 @@
     <string name="complete_anyway">Completar mesmo assim</string>
     <string name="fk_message">Ausência de %s %s de %s %s</string>
     <string name="filters_title_event_status">Estado do evento </string>
-    <string name="filters_title_enrollment_status">Status da inscrição</string>
     <string name="enrollment_date">Data de inscrição</string>
     <string name="dataset_empty_list_can_create">Não existem dados. Clique em \"+\" para adicionar um novo registro</string>
     <string name="dataset_emtpy_list_can_not_create">Não existem dados. Você não tem permissão para adicionar novos registros.</string>
