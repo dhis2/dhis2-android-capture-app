@@ -23,10 +23,10 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.usescases.events.ScheduledEventActivity.Companion.getIntent
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
@@ -61,7 +61,7 @@ class TEIDataPresenter(
     private val d2: D2,
     private val dashboardRepository: DashboardRepository,
     private val teiDataRepository: TeiDataRepository,
-    private val ruleEngineRepository: RuleEngineRepository,
+    private val ruleEngineHelper: RuleEngineHelper,
     private var programUid: String?,
     private val teiUid: String,
     private val enrollmentUid: String,
@@ -111,8 +111,10 @@ class TEIDataPresenter(
                                 stageAndGrouping.first,
                                 stageAndGrouping.second,
                             ).toFlowable(),
-                            ruleEngineRepository.updateRuleEngine()
-                                .flatMap { ruleEngineRepository.reCalculate() },
+                            Flowable.fromCallable {
+                                ruleEngineHelper.refreshContext()
+                                ruleEngineHelper.evaluate().let { it -> Result.success(it) }
+                            },
                         ) { events, calcResult ->
                             applyEffects(
                                 events,

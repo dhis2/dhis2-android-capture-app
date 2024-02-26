@@ -15,7 +15,8 @@ import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.mobileProgramRules.EvaluationType;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.RulesUtilsProvider;
 import org.dhis2.form.data.metadata.FileResourceConfiguration;
@@ -34,7 +35,6 @@ import org.dhis2.form.ui.provider.UiStyleProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventRuleEngineRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -124,13 +124,17 @@ public class EventInitialModule {
     @PerActivity
     EventInitialRepository eventDetailRepository(D2 d2,
                                                  @NonNull FieldViewModelFactory fieldViewModelFactory,
-                                                 RuleEngineRepository ruleEngineRepository) {
-        return new EventInitialRepositoryImpl(eventUid, stageUid, d2, fieldViewModelFactory, ruleEngineRepository);
+                                                 RuleEngineHelper ruleEngineHelper) {
+        return new EventInitialRepositoryImpl(eventUid, stageUid, d2, fieldViewModelFactory, ruleEngineHelper);
     }
 
     @Provides
     @PerActivity
-    RuleEngineRepository ruleEngineRepository(D2 d2, FormRepository formRepository) {
-        return new EventRuleEngineRepository(d2, formRepository, eventUid);
+    RuleEngineHelper ruleEngineRepository(D2 d2) {
+        if(eventUid == null) return null;
+        return new RuleEngineHelper(
+                new EvaluationType.Event(eventUid),
+                new org.dhis2.mobileProgramRules.RulesRepository(d2)
+        );
     }
 }

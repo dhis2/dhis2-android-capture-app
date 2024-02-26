@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.OptionSetConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
@@ -47,7 +47,7 @@ import timber.log.Timber;
 public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final FieldViewModelFactory fieldFactory;
-    private final RuleEngineRepository ruleEngineRepository;
+    private final RuleEngineHelper ruleEngineHelper;
 
     private final String eventUid;
     private final D2 d2;
@@ -57,12 +57,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                String stageUid,
                                D2 d2,
                                FieldViewModelFactory fieldFactory,
-                               RuleEngineRepository ruleEngineRepository) {
+                               RuleEngineHelper ruleEngineHelper) {
         this.eventUid = eventUid;
         this.stageUid = stageUid;
         this.d2 = d2;
         this.fieldFactory = fieldFactory;
-        this.ruleEngineRepository = ruleEngineRepository;
+        this.ruleEngineHelper = ruleEngineHelper;
     }
 
     @NonNull
@@ -294,7 +294,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        return ruleEngineRepository.calculate();
+        return Flowable.just(ruleEngineHelper.evaluate()).map(Result::success);
     }
 
     @NonNull

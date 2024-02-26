@@ -11,7 +11,7 @@ import io.reactivex.Observable
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
@@ -22,7 +22,7 @@ import timber.log.Timber
 
 abstract class BaseIndicatorRepository(
     open val d2: D2,
-    open val ruleEngineRepository: RuleEngineRepository,
+    open val ruleEngineHelper: RuleEngineHelper,
     open val programUid: String,
     open val resourceManager: ResourceManager,
 ) : IndicatorRepository {
@@ -81,8 +81,10 @@ abstract class BaseIndicatorRepository(
                 if (ruleAction.isEmpty()) {
                     return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
                 } else {
-                    return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
-                        .flatMap { ruleEngineRepository.reCalculate() }
+                    return@flatMapPublisher Flowable.fromCallable {
+                        ruleEngineHelper.refreshContext()
+                        ruleEngineHelper.evaluate().let { Result.success(it) }
+                    }
                         .map { effects ->
                             // Restart rule engine to take into account value changes
                             applyRuleEffectForIndicators(effects)

@@ -8,6 +8,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.common.ValueType
@@ -21,7 +22,7 @@ class FormRepositoryImpl(
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
     private val displayNameProvider: DisplayNameProvider,
     private val dataEntryRepository: DataEntryRepository?,
-    private val ruleEngineRepository: RuleEngineRepository?,
+    private val ruleEngineRepository: RuleEngineHelper?,
     private val rulesUtilsProvider: RulesUtilsProvider?,
     private val legendValueProvider: LegendValueProvider?,
     private val useCompose: Boolean,
@@ -104,7 +105,7 @@ class FormRepositoryImpl(
     }
 
     private fun ruleEffects() = try {
-        ruleEngineRepository?.calculate() ?: emptyList()
+        ruleEngineRepository?.evaluate() ?: emptyList()
     } catch (e: Exception) {
         emptyList()
     }

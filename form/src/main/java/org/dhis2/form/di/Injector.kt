@@ -10,14 +10,11 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.data.EnrollmentRepository
-import org.dhis2.form.data.EnrollmentRuleEngineRepository
 import org.dhis2.form.data.EventRepository
-import org.dhis2.form.data.EventRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
-import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
@@ -44,6 +41,9 @@ import org.dhis2.form.ui.provider.UiStyleProviderImpl
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobileProgramRules.EvaluationType
+import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.mobileProgramRules.RulesRepository
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 
@@ -237,19 +237,18 @@ object Injector {
     private fun provideRuleEngineRepository(
         entryMode: EntryMode?,
         recordUid: String?,
-    ): RuleEngineRepository? {
-        return when (entryMode) {
-            EntryMode.ATTR -> provideEnrollmentRuleEngineRepository(recordUid!!)
-            EntryMode.DE -> provideEventRuleEngineRepository(recordUid!!)
-            else -> null
+    ): RuleEngineHelper? {
+        return recordUid?.let {
+            RuleEngineHelper(
+                when (entryMode) {
+                    EntryMode.DE -> EvaluationType.Event(recordUid)
+                    EntryMode.ATTR -> EvaluationType.Enrollment(recordUid)
+                    else -> throw IllegalArgumentException()
+                },
+                RulesRepository(provideD2()),
+            )
         }
     }
-
-    private fun provideEnrollmentRuleEngineRepository(enrollmentUid: String) =
-        EnrollmentRuleEngineRepository(provideD2(), enrollmentUid)
-
-    private fun provideEventRuleEngineRepository(eventUid: String) =
-        EventRuleEngineRepository(provideD2(), eventUid)
 
     private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(
         provideD2(),
@@ -262,8 +261,10 @@ object Injector {
         provideD2(),
         provideResourcesManager(context),
     )
+
     private fun provideAutoCompleteProvider(context: Context) = AutoCompleteProviderImpl(
         providePreferenceProvider(context),
     )
+
     private fun provideColorUtils() = ColorUtils()
 }

@@ -12,10 +12,10 @@ import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.TeiDashboardPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.EventCreationOptionsMapper
@@ -52,7 +52,7 @@ class TeiDataPresenterTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dashboardRepository: DashboardRepository = mock()
     private val teiDataRepository: TeiDataRepository = mock()
-    private val ruleEngineRepository: RuleEngineRepository = mock()
+    private val ruleEngineHelper: RuleEngineHelper = mock()
     private val programUid = "UID"
     private val teiUid = "123"
     private val enrollmentUid = "456"
@@ -74,7 +74,7 @@ class TeiDataPresenterTest {
             d2,
             dashboardRepository,
             teiDataRepository,
-            ruleEngineRepository,
+            ruleEngineHelper,
             programUid,
             teiUid,
             enrollmentUid,
