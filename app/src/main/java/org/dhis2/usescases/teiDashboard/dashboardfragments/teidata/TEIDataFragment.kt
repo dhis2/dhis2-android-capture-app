@@ -387,7 +387,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun displayGenerateEvent(eventUid: String) {
-        // presenter.displayGenerateEvent(eventUid)
+        presenter.displayGenerateEvent(eventUid)
         dashboardViewModel.updateEventUid(null)
     }
 
