@@ -179,7 +179,6 @@ class ProgramRuleTests {
             ),
         )
 
-
         val ruleEffects = RuleEngine.getInstance().evaluate(
             ruleEvent,
             enrollment,
