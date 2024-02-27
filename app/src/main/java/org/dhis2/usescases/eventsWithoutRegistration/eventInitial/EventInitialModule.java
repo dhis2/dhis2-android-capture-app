@@ -130,6 +130,7 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
+    @Nullable
     RuleEngineHelper ruleEngineRepository(D2 d2) {
         if(eventUid == null) return null;
         return new RuleEngineHelper(

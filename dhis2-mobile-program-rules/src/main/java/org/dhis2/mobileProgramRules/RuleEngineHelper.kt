@@ -78,7 +78,7 @@ class RuleEngineHelper(
                 val supplData = async { rulesRepository.supplementaryData(orgUnitUid = orgUnitUid) }
                 val constants = async { rulesRepository.constants() }
                 val ruleEnrollment = async {
-                    if (evaluationType is EvaluationType.Enrollment) {
+                    if (evaluationType !is EvaluationType.Enrollment) {
                         rulesRepository.enrollment(
                             eventUid = targetUid,
                         )
