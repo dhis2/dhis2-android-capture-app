@@ -13,6 +13,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -485,17 +486,21 @@ class SyncManagerPresenter internal constructor(
 
     private fun exportDB(download: Boolean, share: Boolean) {
         _exporting.value = true
-        try {
-            val db = d2.maintenanceModule().databaseImportExport()
-                .exportLoggedUserDatabase()
-            _exportedDb.value = ExportDbModel(file = db, share = share, download = download)
-        } catch (e: Exception) {
-            view.displayMessage(resourceManager.parseD2Error(e))
-            onExportEnd()
+        launch(context = dispatcherProvider.ui()) {
+            try {
+                val db = async(dispatcherProvider.io()) {
+                    d2.maintenanceModule().databaseImportExport()
+                        .exportLoggedUserDatabase()
+                }.await()
+                _exportedDb.postValue(ExportDbModel(file = db, share = share, download = download))
+            } catch (e: Exception) {
+                view.displayMessage(resourceManager.parseD2Error(e))
+                onExportEnd()
+            }
         }
     }
 
     fun onExportEnd() {
-        _exporting.value = false
+        _exporting.postValue(false)
     }
 }

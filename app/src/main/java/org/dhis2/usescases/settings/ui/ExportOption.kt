@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -44,8 +45,8 @@ fun ExportOption(
         targetState = displayProgress,
         transitionSpec = {
             fadeIn(
-                animationSpec = tween(3000),
-            ) togetherWith fadeOut(animationSpec = tween(3000))
+                animationSpec = tween(700),
+            ) togetherWith fadeOut(animationSpec = tween(700))
         },
         label = "import content",
     ) { targetState ->
@@ -121,7 +122,7 @@ fun ComposeView.setExportOption(
 ) {
     setContent {
         val displayProgress by displayProgressProvider().observeAsState(false)
-        Mdc3Theme {
+        MdcTheme {
             ExportOption(onShare, onDownload, displayProgress)
         }
     }
