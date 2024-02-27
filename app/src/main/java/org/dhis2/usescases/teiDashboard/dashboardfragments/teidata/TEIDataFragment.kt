@@ -25,7 +25,6 @@ import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
-import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
@@ -217,14 +216,16 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 )
             }
 
-            if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
-                presenter.displayGenerateEvent(
-                    sharedPreferences.getString(
-                        PREF_COMPLETED_EVENT,
-                        null,
-                    ),
-                )
-                sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
+            dashboardViewModel.dashboardModel.observe(viewLifecycleOwner) {
+                if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
+                    presenter.displayGenerateEvent(
+                        sharedPreferences.getString(
+                            PREF_COMPLETED_EVENT,
+                            null,
+                        ),
+                    )
+                    sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
+                }
             }
         }.root
     }
@@ -318,10 +319,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         if (model is DashboardEnrollmentModel) {
             SchedulingDialog(
                 enrollment = model.currentEnrollment,
-                programStages = eventAdapter?.currentList
-                    ?.filter { it.type == EventViewModelType.STAGE && it.canAddNewEvent }
-                    ?.mapNotNull { it.stage }
-                    ?: emptyList(),
+                programStages = presenter.filterAvailableStages(model.programStages),
                 onScheduled = { programStageUid ->
                     showToast(
                         resourceManager.formatWithEventLabel(
@@ -331,7 +329,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     )
                     presenter.fetchEvents(true)
                 },
-            ).show(childFragmentManager, SCHEDULING_DIALOG)
+            ).show(parentFragmentManager, SCHEDULING_DIALOG)
         }
     }
 
@@ -389,7 +387,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun displayGenerateEvent(eventUid: String) {
-        presenter.displayGenerateEvent(eventUid)
+        // presenter.displayGenerateEvent(eventUid)
         dashboardViewModel.updateEventUid(null)
     }
 
