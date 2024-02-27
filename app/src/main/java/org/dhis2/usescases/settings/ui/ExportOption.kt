@@ -1,5 +1,8 @@
 package org.dhis2.usescases.settings.ui
 
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,10 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -41,6 +46,19 @@ fun ExportOption(
     onShare: () -> Unit,
     displayProgress: Boolean,
 ) {
+    var onPermissionGrantedCallback: () -> Unit = {}
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { isGranted ->
+        if (isGranted) {
+            onPermissionGrantedCallback()
+        }
+        onPermissionGrantedCallback = {}
+    }
+
+    val context = LocalContext.current
+
     AnimatedContent(
         targetState = displayProgress,
         transitionSpec = {
@@ -67,7 +85,18 @@ fun ExportOption(
             ) {
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = onDownload,
+                    onClick = {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            onDownload()
+                        } else {
+                            onPermissionGrantedCallback = onDownload
+                            launcher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        }
+                    },
                     style = ButtonStyle.TEXT,
                     text = stringResource(id = R.string.download),
                     icon = {
@@ -81,7 +110,18 @@ fun ExportOption(
 
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = onShare,
+                    onClick = {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            onShare()
+                        } else {
+                            onPermissionGrantedCallback = onShare
+                            launcher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        }
+                    },
                     style = ButtonStyle.TEXT,
                     text = stringResource(id = R.string.share),
                     icon = {
