@@ -172,7 +172,7 @@ class EventDetailsViewModel(
     }
 
     fun onClearEventReportDate() {
-        _eventDate.value = eventDate.value.copy(currentDate = null)
+        _eventDate.value = eventDate.value.copy(currentDate = null, dateValue = null)
         setUpEventDetails()
     }
 
