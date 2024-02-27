@@ -77,6 +77,10 @@ abstract class DataEntryBaseRepository(
         return optionsFromGroups
     }
 
+    override fun dateFormatConfiguration(): String? {
+        return conf.dateFormatConfiguration()
+    }
+
     fun transformSection(
         sectionUid: String,
         sectionName: String?,

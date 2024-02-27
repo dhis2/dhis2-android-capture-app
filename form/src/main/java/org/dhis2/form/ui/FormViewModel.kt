@@ -57,7 +57,7 @@ class FormViewModel(
     val focused = MutableLiveData<Boolean>()
     val showInfo = MutableLiveData<InfoUiModel>()
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
-
+    var dateFormatConfig: String = "ddMMyyyy"
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
@@ -710,6 +710,9 @@ class FormViewModel(
             val result = async {
                 repository.fetchFormItems(openErrorLocation)
             }
+            dateFormatConfig = async {
+                repository.getDateFormatConfiguration()
+            }.await()
             try {
                 _items.postValue(result.await())
             } catch (e: Exception) {

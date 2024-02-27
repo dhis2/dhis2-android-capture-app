@@ -11,4 +11,7 @@ open class FormBaseConfiguration(private val d2: D2) {
 
     fun disableCollapsableSectionsInProgram(programUid: String) =
         d2.disableCollapsableSectionsInProgram(programUid)
+
+    fun dateFormatConfiguration() =
+        d2.systemInfoModule().systemInfo().blockingGet()?.dateFormat()
 }

@@ -24,13 +24,18 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MIN_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class EventDetailsViewModel(
     private val configureEventDetails: ConfigureEventDetails,
@@ -47,7 +52,6 @@ class EventDetailsViewModel(
     private val resourcesProvider: EventDetailResourcesProvider,
 ) : ViewModel() {
 
-    var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
     var showNoOrgUnits: (() -> Unit)? = null
@@ -168,7 +172,7 @@ class EventDetailsViewModel(
     }
 
     fun onClearEventReportDate() {
-        _eventDate.value = eventDate.value.copy(currentDate = null)
+        _eventDate.value = eventDate.value.copy(currentDate = null, dateValue = null)
         setUpEventDetails()
     }
 
@@ -243,10 +247,19 @@ class EventDetailsViewModel(
         EventDetailIdlingResourceSingleton.decrement()
     }
 
-    fun onDateClick() {
+    fun getSelectableDates(eventDate: EventDate): SelectableDates {
+        return if (eventDate.allowFutureDates) {
+            SelectableDates(DEFAULT_MIN_DATE, DEFAULT_MAX_DATE)
+        } else {
+            val currentDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis()))
+            SelectableDates(DEFAULT_MIN_DATE, currentDate)
+        }
+    }
+
+    fun showPeriodDialog() {
         periodType?.let {
             showPeriods?.invoke()
-        } ?: showCalendar?.invoke()
+        }
     }
 
     fun onDateSet(year: Int, month: Int, day: Int) {
@@ -321,6 +334,10 @@ class EventDetailsViewModel(
                 }
             }
         }
+    }
+
+    fun getPeriodType(): PeriodType? {
+        return periodType
     }
 
     fun onReopenClick() {

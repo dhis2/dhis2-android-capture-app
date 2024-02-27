@@ -485,6 +485,9 @@ class FormRepositoryImpl(
             openedSectionUid = action.id
         }
     }
+    override fun getDateFormatConfiguration(): String {
+        return dataEntryRepository?.dateFormatConfiguration() ?: "ddMMyyyy"
+    }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }

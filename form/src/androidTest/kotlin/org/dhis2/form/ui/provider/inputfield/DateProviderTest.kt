@@ -44,7 +44,6 @@ class DateProviderTest {
                 modifier = Modifier.testTag(INPUT_DATE_TEST_TAG),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                uiEventHandler = {},
                 onNextClicked = {},
             )
 
@@ -70,7 +69,6 @@ class DateProviderTest {
                 modifier = Modifier.testTag(INPUT_DATE_TEST_TAG),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                uiEventHandler = {},
                 onNextClicked = {},
             )
         }
@@ -93,7 +91,6 @@ class DateProviderTest {
                 inputStyle = InputStyle.DataInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                uiEventHandler = {},
                 onNextClicked = {},
             )
         }

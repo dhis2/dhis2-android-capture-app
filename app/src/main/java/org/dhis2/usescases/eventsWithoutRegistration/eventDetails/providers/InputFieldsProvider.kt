@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -29,11 +30,14 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
-import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
+import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownInputField
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPolygon
@@ -41,6 +45,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -54,7 +59,6 @@ fun ProvideInputDate(
     if (uiModel.showField) {
         Spacer(modifier = Modifier.height(16.dp))
         val textSelection = TextRange(if (uiModel.eventDate.dateValue != null) uiModel.eventDate.dateValue.length else 0)
-
         var value by remember(uiModel.eventDate.dateValue) {
             if (uiModel.eventDate.dateValue != null) {
                 mutableStateOf(TextFieldValue(formatStoredDateToUI(uiModel.eventDate.dateValue) ?: "", textSelection))
@@ -66,27 +70,35 @@ fun ProvideInputDate(
         var state by remember {
             mutableStateOf(getInputState(uiModel.detailsEnabled))
         }
-
+        val yearRange = if (uiModel.selectableDates != null) {
+            IntRange(uiModel.selectableDates.initialDate.substring(4, 8).toInt(), uiModel.selectableDates.endDate.substring(4, 8).toInt())
+        } else {
+            IntRange(1924, 2124)
+        }
         InputDateTime(
-            title = uiModel.eventDate.label ?: "",
-            allowsManualInput = uiModel.allowsManualInput,
-            inputTextFieldValue = value,
-            actionIconType = DateTimeActionIconType.DATE,
-            onActionClicked = uiModel.onDateClick,
-            state = state,
-            visualTransformation = DateTransformation(),
-            onValueChanged = {
-                value = it
-                state = getInputShellStateBasedOnValue(it.text)
-                manageActionBasedOnValue(uiModel, it.text)
-            },
-            isRequired = uiModel.required,
+            InputDateTimeModel(
+                title = uiModel.eventDate.label ?: "",
+                allowsManualInput = uiModel.allowsManualInput,
+                inputTextFieldValue = value,
+                actionType = DateTimeActionType.DATE,
+                state = state,
+                visualTransformation = DateTransformation(),
+                onValueChanged = {
+                    value = it ?: TextFieldValue()
+                    state = getInputShellStateBasedOnValue(it?.text)
+                    it?.let { it1 -> manageActionBasedOnValue(uiModel, it1.text) }
+                },
+                isRequired = uiModel.required,
+                onFocusChanged = { focused ->
+                    if (!focused && !isValid(value.text)) {
+                        state = InputShellState.ERROR
+                    }
+                },
+                is24hourFormat = uiModel.is24HourFormat,
+                selectableDates = uiModel.selectableDates ?: SelectableDates("01011924", "12312124"),
+                yearRange = yearRange,
+            ),
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
-            onFocusChanged = { focused ->
-                if (!focused && !isValid(value.text)) {
-                    state = InputShellState.ERROR
-                }
-            },
         )
     }
 }
@@ -124,10 +136,10 @@ fun getInputShellStateBasedOnValue(dateString: String?): InputShellState {
 
 fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String) {
     if (dateString.isEmpty()) {
-        uiModel.onClear()
+        uiModel.onClear?.invoke()
     } else if (isValid(dateString) && isValidDateFormat(dateString)) {
         formatUIDateToStored(dateString)?.let { dateValues ->
-            uiModel.onDateSet(dateValues)
+            uiModel.onDateSelected(dateValues)
         }
     }
 }
@@ -248,6 +260,45 @@ fun ProvideCategorySelector(
     } else {
         ProvideEmptyCategorySelector(modifier = modifier, name = eventCatComboUiModel.category.name, option = eventCatComboUiModel.noOptionsText)
     }
+}
+
+@Composable
+fun ProvidePeriodSelector(
+    modifier: Modifier = Modifier,
+    uiModel: EventInputDateUiModel,
+) {
+    var selectedItem by with(uiModel) {
+        remember(this) {
+            mutableStateOf(
+                uiModel.eventDate.dateValue,
+            )
+        }
+    }
+    val state = getInputState(uiModel.detailsEnabled)
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    DropdownInputField(
+        modifier = modifier,
+        title = uiModel.eventDate.label ?: "",
+        state = state,
+        selectedItem = DropdownItem(selectedItem ?: ""),
+        onResetButtonClicked = {
+            selectedItem = null
+            uiModel.onClear?.let { it() }
+        },
+        onDropdownIconClick = {
+            uiModel.onDateClick?.invoke()
+        },
+        isRequiredField = uiModel.required,
+        legendData = null,
+        onFocusChanged = {},
+        supportingTextData = null,
+        focusRequester = remember {
+            FocusRequester()
+        },
+        expanded = false,
+    )
 }
 
 @Composable
@@ -389,6 +440,12 @@ fun ProvideRadioButtons(
     }
 }
 
+fun willShowCalendar(periodType: PeriodType?): Boolean {
+    return (periodType == null || periodType == PeriodType.Daily)
+}
+
 const val INPUT_EVENT_INITIAL_DATE = "INPUT_EVENT_INITIAL_DATE"
 const val EMPTY_CATEGORY_SELECTOR = "EMPTY_CATEGORY_SELECTOR"
 const val CATEGORY_SELECTOR = "CATEGORY_SELECTOR"
+const val DEFAULT_MIN_DATE = "12111924"
+const val DEFAULT_MAX_DATE = "12112124"
