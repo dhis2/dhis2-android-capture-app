@@ -51,20 +51,20 @@ fun ExportOption(
         label = "import content",
     ) { targetState ->
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(
-                    start = if (displayProgress) 16.dp else 72.dp,
-                    top = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
-        ) {
-            if (targetState.not()) {
+        if (targetState.not()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(
+                        start = 72.dp,
+                        top = 16.dp,
+                        end = 16.dp,
+                        bottom = 16.dp,
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
+            ) {
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = onDownload,
@@ -92,7 +92,16 @@ fun ExportOption(
                         )
                     },
                 )
-            } else {
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
+            ) {
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
             }
         }

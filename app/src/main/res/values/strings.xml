@@ -963,4 +963,5 @@
     <string name="timeline">Timeline</string>
     <string name="clear_search">Clear search</string>
     <string name="optional">Optional</string>
+    <string name="database_export_downloaded">Database downloaded</string>
 </resources>

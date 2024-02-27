@@ -194,7 +194,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private void downloadDB(ExportDbModel fileData) {
         new FileHandler().copyAndOpen(fileData.getFile(), fileLiveData -> {
             fileLiveData.observe(getViewLifecycleOwner(), file -> {
-                Toast.makeText(requireContext(), R.string.downloaded_confirm, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.database_export_downloaded, Toast.LENGTH_SHORT).show();
                 presenter.onExportEnd();
             });
             return null;
