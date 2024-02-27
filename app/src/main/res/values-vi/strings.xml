@@ -138,7 +138,6 @@
     <string name="delete">Xóa</string>
     <string name="total">Tổng số</string>
     <string name="most_recent_event_date">Ngày sự kiện gần nhất</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Danh sách đăng ký</string>
     <string name="active_programs">Các chương trình đang hoạt động</string>
@@ -666,7 +665,6 @@
     <string name="complete_anyway">Hoàn tất luôn</string>
     <string name="fk_message">Thiếu %s %s từ %s %s</string>
     <string name="filters_title_event_status">Trạng thái sự kiện</string>
-    <string name="filters_title_enrollment_status">Trạng thái đăng ký</string>
     <string name="enrollment_date">Ngày đăng ký</string>
     <string name="dataset_empty_list_can_create">Không có dữ liệu. Bấm \"+\" để tạo hồ sơ mới.</string>
     <string name="dataset_emtpy_list_can_not_create">Không có dữ liệu. Bạn không có quyền để tạo hồ sơ mới.</string>

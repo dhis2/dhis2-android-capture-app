@@ -137,7 +137,6 @@
     <string name="delete">Ўчириб ташлаш</string>
     <string name="total">Жами</string>
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Қайд журнали</string>
     <string name="active_programs">Фаол дастурлар</string>
@@ -660,7 +659,6 @@
     <string name="complete_anyway">Барибир тўлдиринг</string>
     <string name="fk_message">%s %s дан %s %s йўқолган</string>
     <string name="filters_title_event_status">Ҳодиса/Тадбир ҳолати</string>
-    <string name="filters_title_enrollment_status">рўйхатга олиш ҳолати</string>
     <string name="enrollment_date">Қайд қилинган сана</string>
     <string name="dataset_empty_list_can_create">Маълумот йўқ. Янги ёзув қўшиш учун \"+\" тугмасини босинг</string>
     <string name="dataset_emtpy_list_can_not_create">Маълумот йўқ. Сизда янги ёзувларни қўшишга рухсат йўқ.</string>
