@@ -179,9 +179,11 @@ class ProgramRuleTests {
             ),
         )
 
+
         val ruleEffects = RuleEngine.getInstance().evaluate(
+            ruleEvent,
             enrollment,
-            listOf(ruleEvent),
+            listOf(),
             ruleEngineContext,
         )
         assertEquals(ruleEffects.find { it.ruleId == "rule1Uid" }?.data, "1")
