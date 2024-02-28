@@ -19,6 +19,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
@@ -124,8 +126,56 @@ class EventRepository(
             add(createEventDetailsSection())
             add(createEventReportDateField())
             add(createEventOrgUnitField())
+            if (shouldShowCoordinates()) {
+                add(createEventCoordinatesField())
+            }
         }
         return eventDataItems
+    }
+
+    private fun shouldShowCoordinates(): Boolean {
+        programStage?.let { programStage ->
+            programStage.featureType()?.let {
+                return it != FeatureType.NONE
+            }
+        }
+        return false
+    }
+
+    private fun createEventCoordinatesField(): FieldUiModel {
+        val nonEditableStatus = ArrayList<EventStatus?>()
+        nonEditableStatus.add(EventStatus.COMPLETED)
+        nonEditableStatus.add(EventStatus.SKIPPED)
+        val shouldBlockEdition = !d2.eventModule().eventService()
+            .blockingIsEditable(eventUid) && nonEditableStatus.contains(
+            d2.eventModule().events().uid(eventUid).blockingGet()?.status(),
+        )
+        val featureType = programStage?.featureType()
+        val accessDataWrite = hasAccessDataWrite() && isEnrollmentOpen()
+        val coordinatesValue =
+            d2.eventModule().events().uid(eventUid).blockingGet()?.geometry()?.coordinates()
+
+        return fieldFactory.create(
+            id = EVENT_COORDINATE_UID,
+            label = resources.getString(R.string.coordinates),
+            valueType = ValueType.COORDINATE,
+            mandatory = false,
+            value = coordinatesValue,
+            programStageSection = EVENT_DETAILS_SECTION_UID,
+            editable = accessDataWrite && !shouldBlockEdition,
+            description = null,
+            featureType = featureType,
+        )
+    }
+
+    private fun isEnrollmentOpen() =
+        event?.enrollment() == null || event?.let {
+            d2.enrollmentModule().enrollments()
+                .uid(it.enrollment()).blockingGet()?.status() == EnrollmentStatus.ACTIVE
+        } ?: false
+
+    private fun hasAccessDataWrite(): Boolean {
+        return d2.eventModule().eventService().isEditable(eventUid).blockingGet()
     }
 
     private fun createEventOrgUnitField(): FieldUiModel {
@@ -391,6 +441,7 @@ class EventRepository(
         const val EVENT_DETAILS_SECTION_UID = "EVENT_DETAILS_SECTION_UID"
         const val EVENT_REPORT_DATE_UID = "EVENT_REPORT_DATE_UID"
         const val EVENT_ORG_UNIT_UID = "EVENT_ORG_UNIT_UID"
+        const val EVENT_COORDINATE_UID = "EVENT_COORDINATE_UID"
         const val EVENT_DATA_SECTION_UID = "EVENT_DATA_SECTION_UID"
     }
 }
