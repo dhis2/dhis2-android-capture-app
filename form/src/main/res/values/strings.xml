@@ -106,4 +106,5 @@
     <string name="form_without_fields">This form has no fields configured</string>
     <string name="event_details_section_title">%s details</string>
     <string name="event_data_section_title">%s data</string>
+    <string name="org_unit">Org unit</string>
 </resources>
