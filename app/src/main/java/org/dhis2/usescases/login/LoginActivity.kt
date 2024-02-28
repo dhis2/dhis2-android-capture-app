@@ -189,7 +189,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.topbar.setContent {
             MdcTheme {
                 LoginTopBar(version = buildInfo(), onImportDatabase = {
-                    showLoginProgress(false, "Importing database")
+                    showLoginProgress(false, getString(R.string.importing_database))
                     val intent = Intent()
                     intent.type = "*/*"
                     intent.action = Intent.ACTION_GET_CONTENT
