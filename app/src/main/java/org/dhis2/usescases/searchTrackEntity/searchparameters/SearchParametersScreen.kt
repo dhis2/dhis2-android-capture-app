@@ -82,10 +82,10 @@ fun SearchParametersScreen(
         contract = scanContract,
     ) { result ->
         result.contents?.let { qrData ->
-            val intent = FormIntent.OnSave(
-                result.originalIntent.getStringExtra(Constants.UID)!!,
-                qrData,
-                ValueType.TEXT,
+            val intent = FormIntent.OnQrCodeScanned(
+                uid = result.originalIntent.getStringExtra(Constants.UID)!!,
+                value = qrData,
+                valueType = ValueType.TEXT,
             )
             intentHandler(intent)
         }

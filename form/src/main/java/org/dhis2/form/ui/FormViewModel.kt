@@ -408,6 +408,20 @@ class FormViewModel(
                 )
             }
 
+            is FormIntent.OnQrCodeScanned -> {
+                val error = checkFieldError(
+                    intent.valueType,
+                    intent.value,
+                )
+
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    error = error,
+                    valueType = intent.valueType,
+                )
+            }
+
             is FormIntent.OnFocus -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,

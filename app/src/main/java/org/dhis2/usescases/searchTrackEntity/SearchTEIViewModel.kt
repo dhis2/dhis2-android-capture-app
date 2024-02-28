@@ -768,6 +768,14 @@ class SearchTEIViewModel(
             )
         }
 
+        is FormIntent.OnQrCodeScanned -> {
+            // TODO: Search based on QR code or update query
+            updateQuery(
+                formIntent.uid,
+                formIntent.value
+            )
+        }
+
         is FormIntent.OnFocus -> {
             val updatedItems = uiState.items.map {
                 if (it.focused && it.uid != formIntent.uid) {
