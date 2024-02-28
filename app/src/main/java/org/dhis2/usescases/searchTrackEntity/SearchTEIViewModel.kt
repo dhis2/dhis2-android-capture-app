@@ -769,11 +769,7 @@ class SearchTEIViewModel(
         }
 
         is FormIntent.OnQrCodeScanned -> {
-            // TODO: Search based on QR code or update query
-            updateQuery(
-                formIntent.uid,
-                formIntent.value
-            )
+            onQrCodeScanned(formIntent)
         }
 
         is FormIntent.OnFocus -> {
@@ -798,6 +794,58 @@ class SearchTEIViewModel(
 
         else -> {
             // no-op
+        }
+    }
+
+    private fun onQrCodeScanned(formIntent: FormIntent.OnQrCodeScanned) {
+        viewModelScope.launch {
+            updateQuery(
+                formIntent.uid,
+                formIntent.value,
+            )
+
+            searching = queryData.isNotEmpty()
+            uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
+
+            val searchParametersModel = SearchParametersModel(
+                selectedProgram = searchRepository.getProgram(initialProgramUid),
+                queryData = queryData,
+            )
+            val isOnline = searching && networkUtils.isOnline()
+            val trackedEntities = withContext(dispatchers.io()) {
+                searchRepositoryKt.searchTrackedEntitiesImmediate(
+                    searchParametersModel = searchParametersModel,
+                    isOnline = isOnline,
+                )
+            }
+
+            if (trackedEntities.isEmpty() || trackedEntities.size > 1) return@launch
+
+            val tei = trackedEntities.first()
+            val searchTeiModel = withContext(dispatchers.io()) {
+                searchRepository.transform(
+                    /* searchItem = */
+                    tei,
+                    /* selectedProgram = */
+                    searchParametersModel.selectedProgram,
+                    /* offlineOnly = */
+                    !(isOnline && FilterManager.getInstance().stateFilters.isEmpty()),
+                    /* sortingItem = */
+                    FilterManager.getInstance().sortingItem,
+                )
+            }
+
+            // Open TEI dashboard for the found TEI
+            onTeiClick(
+                teiUid = searchTeiModel.uid(),
+                enrollmentUid = searchTeiModel.selectedEnrollment.uid(),
+                online = searchTeiModel.isOnline,
+            )
+
+            searching = false
+
+            clearQueryData()
+            clearFocus()
         }
     }
 
