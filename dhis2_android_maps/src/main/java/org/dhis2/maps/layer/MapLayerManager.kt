@@ -28,7 +28,8 @@ class MapLayerManager(
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private var mapStyle: MapStyle? = null
     var styleChangeCallback: ((Style) -> Unit)? = null
-    var currentStylePosition = 0
+    var currentStylePosition =
+        baseMapManager.baseMapStyles.indexOfFirst { it.isDefault }.takeIf { it > -1 } ?: 0
 
     private val relationShipColors =
         mutableListOf(
@@ -77,6 +78,7 @@ class MapLayerManager(
                     mapStyle?.programDarkColor!!,
                     colorUtils,
                 )
+
                 LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
@@ -84,9 +86,11 @@ class MapLayerManager(
                     mapStyle?.programDarkColor!!,
                     colorUtils,
                 )
+
                 LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
                     style,
                 )
+
                 LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
@@ -94,12 +98,14 @@ class MapLayerManager(
                     getNextAvailableDrawable(sourceId)?.second,
                     colorUtils,
                 )
+
                 LayerType.EVENT_LAYER -> EventMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
                     relationShipColors.firstOrNull(),
                     colorUtils,
                 )
+
                 LayerType.TEI_EVENT_LAYER -> TeiEventMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
@@ -107,6 +113,7 @@ class MapLayerManager(
                     mapStyle?.programDarkColor!!,
                     colorUtils,
                 )
+
                 LayerType.FIELD_COORDINATE_LAYER -> FieldMapLayer(
                     style,
                     sourceId!!,
