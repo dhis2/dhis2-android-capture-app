@@ -6,6 +6,9 @@ import io.reactivex.Single
 import org.dhis2.bindings.blockingGetValueCheck
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
@@ -19,12 +22,15 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
+import org.hisp.dhis.android.core.program.SectionRenderingType
+import java.util.Date
 
 class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
     private val d2: D2,
     private val metadataIconProvider: MetadataIconProvider,
+    private val resources: ResourceManager,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
 
     private val event by lazy {
@@ -45,8 +51,21 @@ class EventRepository(
             .toMap()
     }
 
+    private val programStage by lazy {
+        d2.programModule()
+            .programStages()
+            .uid(event?.programStage())
+            .blockingGet()
+    }
+
     override fun sectionUids(): Flowable<List<String>> {
-        return Flowable.just(sectionMap.keys.toList())
+        val sectionUIDs = mutableListOf(EVENT_DETAILS_SECTION_UID)
+        if (sectionMap.keys.isEmpty()) {
+            sectionUIDs.add(EVENT_DATA_SECTION_UID)
+        } else {
+            sectionUIDs.addAll(sectionMap.keys.toList())
+        }
+        return Flowable.just(sectionUIDs)
     }
 
     override fun list(): Flowable<List<FieldUiModel>> {
@@ -57,14 +76,37 @@ class EventRepository(
             .flatMap { programStageSection ->
                 if (programStageSection.isEmpty()) {
                     getFieldsForSingleSection()
+                        .map { singleSectionList ->
+                            val list = getEventDataSectionList()
+                            list.addAll(singleSectionList)
+                            list
+                        }
                 } else {
                     getFieldsForMultipleSections()
                 }
             }.map { list ->
-                val fields = list.toMutableList()
+                val fields = getEventDetails()
+                fields.addAll(list)
                 fields.add(fieldFactory.createClosingSection())
                 fields.toList()
             }.toFlowable()
+    }
+
+    private fun getEventDataSectionList(): MutableList<FieldUiModel> {
+        return mutableListOf(
+            fieldFactory.createSection(
+                sectionUid = EVENT_DATA_SECTION_UID,
+                sectionName = resources.formatWithEventLabel(
+                    stringResource = R.string.event_data_section_title,
+                    programStageUid = event?.programStage(),
+                ),
+                description = null,
+                isOpen = true,
+                totalFields = 0,
+                completedFields = 0,
+                rendering = SectionRenderingType.LISTING.name,
+            ),
+        )
     }
 
     override fun isEvent(): Boolean {
@@ -76,6 +118,68 @@ class EventRepository(
         return emptyList()
     }
 
+    private fun getEventDetails(): MutableList<FieldUiModel> {
+        val eventDataItems = mutableListOf<FieldUiModel>()
+        eventDataItems.apply {
+            add(createEventDetailsSection())
+            add(getEventReportDate())
+        }
+
+        return eventDataItems
+    }
+
+    private fun getEventReportDate(): FieldUiModel {
+        val reportDate = when {
+            event != null -> event?.eventDate()
+            programStage?.periodType() != null -> getDateBasedOnPeriodType()
+            else -> DateUtils.getInstance().today
+        }
+
+        val dateValue = reportDate?.let { date ->
+            DateUtils.oldUiDateFormat().format(date)
+        }
+
+        return fieldFactory.create(
+            id = EVENT_REPORT_DATE_UID,
+            label = programStage?.executionDateLabel() ?: resources.formatWithEventLabel(
+                R.string.event_label_date,
+                programStage?.uid(),
+            ),
+            valueType = ValueType.DATE,
+            mandatory = true,
+            optionSet = null,
+            value = dateValue,
+            programStageSection = EVENT_DETAILS_SECTION_UID,
+            allowFutureDates = false,
+            editable = true,
+            description = null,
+        )
+    }
+
+    private fun getDateBasedOnPeriodType(): Date {
+        return DateUtils.getInstance()
+            .getNextPeriod(
+                programStage?.periodType(),
+                DateUtils.getInstance().today,
+                0,
+            )
+    }
+
+    private fun createEventDetailsSection(): FieldUiModel {
+        return fieldFactory.createSection(
+            sectionUid = EVENT_DETAILS_SECTION_UID,
+            sectionName = resources.formatWithEventLabel(
+                stringResource = R.string.event_details_section_title,
+                programStageUid = event?.programStage(),
+            ),
+            description = programStage?.description(),
+            isOpen = false,
+            totalFields = 0,
+            completedFields = 0,
+            rendering = SectionRenderingType.LISTING.name,
+        )
+    }
+
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {
         return Single.fromCallable {
             val stageDataElements = d2.programModule().programStageDataElements().withRenderType()
@@ -84,7 +188,7 @@ class EventRepository(
                 .blockingGet()
 
             stageDataElements.map { programStageDataElement ->
-                transform(programStageDataElement)
+                transform(programStageDataElement, EVENT_DATA_SECTION_UID)
             }
         }
     }
@@ -106,7 +210,7 @@ class EventRepository(
                         .byDataElement().eq(dataElement.uid())
                         .one().blockingGet()?.let {
                             fields.add(
-                                transform(it),
+                                transform(it, programStageSection.uid()),
                             )
                         }
                 }
@@ -115,7 +219,10 @@ class EventRepository(
         }
     }
 
-    private fun transform(programStageDataElement: ProgramStageDataElement): FieldUiModel {
+    private fun transform(
+        programStageDataElement: ProgramStageDataElement,
+        sectionUid: String,
+    ): FieldUiModel {
         val de = d2.dataElementModule().dataElements().uid(
             programStageDataElement.dataElement()!!.uid(),
         ).blockingGet()
@@ -169,7 +276,7 @@ class EventRepository(
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
         val objectStyle = getObjectStyle(de)
 
-        var (error, warning) = de?.uid()?.let { deUid ->
+        val (error, warning) = de?.uid()?.let { deUid ->
             getConflictErrorsAndWarnings(deUid, dataValue)
         } ?: Pair(null, null)
 
@@ -189,7 +296,7 @@ class EventRepository(
             mandatory,
             optionSet,
             dataValue,
-            programStageSection?.uid(),
+            sectionUid,
             allowFutureDates,
             isEventEditable(),
             renderingType,
@@ -229,7 +336,9 @@ class EventRepository(
         when (conflict?.status()) {
             ImportStatus.WARNING -> warning = getError(conflict, dataValue)
             ImportStatus.ERROR -> error = getError(conflict, dataValue)
-            else -> {}
+            else -> {
+                // no-op
+            }
         }
 
         return Pair(error, warning)
@@ -255,13 +364,9 @@ class EventRepository(
 
     private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
-    private fun checkConflicts(dataElementUid: String): String {
-        return d2.importModule().trackerImportConflicts()
-            .byEventUid().eq(eventUid)
-            .blockingGet()
-            .firstOrNull { conflict ->
-                conflict.event() == eventUid &&
-                    conflict.dataElement() == dataElementUid
-            }?.displayDescription() ?: ""
+    companion object {
+        const val EVENT_DETAILS_SECTION_UID = "EVENT_DETAILS_SECTION_UID"
+        const val EVENT_REPORT_DATE_UID = "EVENT_REPORT_DATE_UID"
+        const val EVENT_DATA_SECTION_UID = "EVENT_DATA_SECTION_UID"
     }
 }

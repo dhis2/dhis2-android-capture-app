@@ -25,6 +25,7 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
@@ -49,6 +50,32 @@ class FormRepositoryImplTest {
         whenever(dataEntryRepository.firstSectionToOpen()) doReturn mockedSections().first()
         whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
         whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
+        whenever(fieldErrorMessageProvider.mandatoryWarning()) doReturn ""
+        whenever(
+            dataEntryRepository.updateField(
+                any<FieldUiModel>(),
+                anyOrNull<String>(),
+                any<List<String>>(),
+                any<List<String>>(),
+                any<List<String>>(),
+            ),
+        ).thenAnswer { invocationOnMock ->
+            invocationOnMock.getArgument(0) as FieldUiModel
+        }
+
+        whenever(
+            dataEntryRepository.updateSection(
+                any<FieldUiModel>(),
+                any<Boolean>(),
+                any<Int>(),
+                any<Int>(),
+                any<Int>(),
+                any<Int>(),
+            ),
+        ).thenAnswer { invocationOnMock ->
+            invocationOnMock.getArgument(0) as FieldUiModel
+        }
+
         repository = FormRepositoryImpl(
             formValueStore,
             fieldErrorMessageProvider,
@@ -315,7 +342,7 @@ class FormRepositoryImplTest {
         selectedField = ObservableField(""),
     )
 
-    private fun provideEmptySectionItemList() = listOf<FieldUiModel>(
+    private fun provideEmptySectionItemList() = listOf(
         section1(),
         FieldUiModelImpl(
             uid = "uid001",
