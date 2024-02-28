@@ -232,7 +232,9 @@ class EnrollmentRepository(
         when (conflict?.status()) {
             ImportStatus.WARNING -> warning = getError(conflict, dataValue)
             ImportStatus.ERROR -> error = getError(conflict, dataValue)
-            else -> {}
+            else -> {
+                // no-op
+            }
         }
 
         return Pair(error, warning)
