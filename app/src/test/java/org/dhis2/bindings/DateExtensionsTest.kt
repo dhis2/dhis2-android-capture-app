@@ -3,7 +3,7 @@ package org.dhis2.bindings
 import android.content.Context
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.date.toOverdueUiText
+import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.junit.Test
@@ -122,7 +122,7 @@ class DateExtensionsTest {
             add(Calendar.HOUR, -20)
         }.time
         whenever(resourceManager.getString(R.string.overdue_today)) doReturn "Today"
-        assert(date.toOverdueUiText(resourceManager, currentDate) == "Today")
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "Today")
     }
 
     @Test
@@ -132,7 +132,7 @@ class DateExtensionsTest {
             add(Calendar.DAY_OF_MONTH, -1)
         }.time
         whenever(resourceManager.getPlural(R.plurals.overdue_days, 1, 1)) doReturn "1 day overdue"
-        assert(date.toOverdueUiText(resourceManager, currentDate) == "1 day overdue")
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "1 day overdue")
     }
 
     @Test
@@ -142,7 +142,7 @@ class DateExtensionsTest {
             add(Calendar.DAY_OF_MONTH, -15)
         }.time
         whenever(resourceManager.getPlural(R.plurals.overdue_days, 15, 15)) doReturn "15 days overdue"
-        assert(date.toOverdueUiText(resourceManager, currentDate) == "15 days overdue")
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "15 days overdue")
     }
 
     @Test
@@ -152,7 +152,7 @@ class DateExtensionsTest {
             add(Calendar.MONTH, -4)
         }.time
         whenever(resourceManager.getPlural(R.plurals.overdue_months, 4, 4)) doReturn "4 months overdue"
-        assert(date.toOverdueUiText(resourceManager, currentDate) == "4 months overdue")
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "4 months overdue")
     }
 
     @Test
@@ -162,7 +162,7 @@ class DateExtensionsTest {
             add(Calendar.YEAR, -1)
         }.time
         whenever(resourceManager.getPlural(R.plurals.overdue_years, 1, 1)) doReturn "1 year overdue"
-        assert(date.toOverdueUiText(resourceManager, currentDate) == "1 year overdue")
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "1 year overdue")
     }
 
     @Test
@@ -172,7 +172,7 @@ class DateExtensionsTest {
             add(Calendar.YEAR, -3)
         }.time
         whenever(resourceManager.getPlural(R.plurals.overdue_years, 3, 3)) doReturn "3 years overdue"
-        assert(date.toOverdueUiText(resourceManager, currentDate) == "3 years overdue")
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "3 years overdue")
     }
 
     private fun currentCalendar() = Calendar.getInstance().apply {

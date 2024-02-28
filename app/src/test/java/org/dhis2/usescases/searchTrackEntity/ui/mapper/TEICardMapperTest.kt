@@ -4,7 +4,7 @@ import android.content.Context
 import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.date.toOverdueUiText
+import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -73,7 +73,7 @@ class TEICardMapperTest {
 
         assertEquals(
             result.additionalInfo[4].value,
-            model.overdueDate.toOverdueUiText(resourceManager),
+            model.overdueDate.toOverdueOrScheduledUiText(resourceManager),
         )
         assertEquals(
             result.additionalInfo[5].value,

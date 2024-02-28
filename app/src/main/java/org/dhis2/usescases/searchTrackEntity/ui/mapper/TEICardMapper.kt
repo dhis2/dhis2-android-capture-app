@@ -20,7 +20,7 @@ import org.dhis2.R
 import org.dhis2.bindings.hasFollowUp
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.date.toOverdueUiText
+import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
 import org.hisp.dhis.android.core.common.State
@@ -297,7 +297,7 @@ class TEICardMapper(
         overdueDate: Date?,
     ) {
         if (hasOverdue) {
-            val text = overdueDate.toOverdueUiText(resourceManager)
+            val text = overdueDate.toOverdueOrScheduledUiText(resourceManager)
             list.add(
                 AdditionalInfoItem(
                     icon = {

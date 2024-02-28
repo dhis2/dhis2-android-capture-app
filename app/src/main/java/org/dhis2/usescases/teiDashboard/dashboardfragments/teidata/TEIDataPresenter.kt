@@ -436,4 +436,14 @@ class TEIDataPresenter(
             .filter { it.repeatable() == true }
             .filter { it.access().data().write() }
             .filter { !stagesToHide.contains(it.uid()) }
+
+    fun isEventEditable(eventUid: String): Boolean {
+        return teiDataRepository.isEventEditable(eventUid)
+    }
+
+    fun displayOrganisationUnit(): Boolean {
+        return programUid?.let {
+            teiDataRepository.displayOrganisationUnit(it)
+        } ?: false
+    }
 }

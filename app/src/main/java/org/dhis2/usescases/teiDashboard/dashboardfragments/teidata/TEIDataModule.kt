@@ -1,13 +1,16 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
+import android.content.Context
 import androidx.activity.result.ActivityResultRegistry
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.reporting.CrashReportControllerImpl
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -19,6 +22,7 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
@@ -144,4 +148,14 @@ class TEIDataModule(
 
     @Provides
     fun provideContractHandler() = TeiDataContractHandler(registry)
+
+    @Provides
+    @PerFragment
+    fun providesTEIEventCardMapper(
+        context: Context,
+        resourceManager: ResourceManager,
+        colorUtils: ColorUtils,
+    ): TEIEventCardMapper {
+        return TEIEventCardMapper(context, resourceManager, colorUtils)
+    }
 }
