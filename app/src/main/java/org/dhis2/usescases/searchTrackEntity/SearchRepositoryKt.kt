@@ -15,5 +15,5 @@ interface SearchRepositoryKt {
 
     suspend fun searchParameters(programUid: String?, teiTypeUid: String): List<FieldUiModel>
 
-    suspend fun trackedEntity(searchParametersModel: SearchParametersModel, isOnline: Boolean): TrackedEntitySearchItem?
+    suspend fun searchTrackedEntitiesImmediate(searchParametersModel: SearchParametersModel, isOnline: Boolean): List<TrackedEntitySearchItem>
 }

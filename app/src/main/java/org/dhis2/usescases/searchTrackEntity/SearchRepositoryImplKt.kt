@@ -85,13 +85,12 @@ class SearchRepositoryImplKt(
             } ?: trackedEntitySearchFields(teiTypeUid)
         }
 
-    override suspend fun trackedEntity(
+    override suspend fun searchTrackedEntitiesImmediate(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
-    ): TrackedEntitySearchItem? {
+    ): List<TrackedEntitySearchItem> {
         return trackedEntitySearchQuery(searchParametersModel, isOnline)
             .blockingGet()
-            .firstOrNull()
     }
 
     private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
