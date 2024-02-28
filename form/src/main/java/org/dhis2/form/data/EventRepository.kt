@@ -122,20 +122,37 @@ class EventRepository(
         val eventDataItems = mutableListOf<FieldUiModel>()
         eventDataItems.apply {
             add(createEventDetailsSection())
-            add(getEventReportDate())
+            add(createEventReportDateField())
+            add(createEventOrgUnitField())
         }
-
         return eventDataItems
     }
 
-    private fun getEventReportDate(): FieldUiModel {
-        val reportDate = when {
-            event != null -> event?.eventDate()
-            programStage?.periodType() != null -> getDateBasedOnPeriodType()
-            else -> DateUtils.getInstance().today
-        }
+    private fun createEventOrgUnitField(): FieldUiModel {
+        return fieldFactory.create(
+            id = EVENT_ORG_UNIT_UID,
+            label = resources.getString(R.string.org_unit),
+            valueType = ValueType.ORGANISATION_UNIT,
+            mandatory = true,
+            optionSet = null,
+            value = getStoredOrgUnit(),
+            programStageSection = EVENT_DETAILS_SECTION_UID,
+            editable = false,
+            description = null,
+        )
+    }
 
-        val dateValue = reportDate?.let { date ->
+    private fun getStoredOrgUnit(): String? {
+        return event?.organisationUnit()?.let { orgUnitUID ->
+            d2.organisationUnitModule().organisationUnits()
+                .byUid()
+                .eq(orgUnitUID)
+                .one().blockingGet()
+        }?.displayName()
+    }
+
+    private fun createEventReportDateField(): FieldUiModel {
+        val dateValue = getEventReportDate()?.let { date ->
             DateUtils.oldUiDateFormat().format(date)
         }
 
@@ -154,6 +171,12 @@ class EventRepository(
             editable = true,
             description = null,
         )
+    }
+
+    private fun getEventReportDate() = when {
+        event != null -> event?.eventDate()
+        programStage?.periodType() != null -> getDateBasedOnPeriodType()
+        else -> DateUtils.getInstance().today
     }
 
     private fun getDateBasedOnPeriodType(): Date {
@@ -367,6 +390,7 @@ class EventRepository(
     companion object {
         const val EVENT_DETAILS_SECTION_UID = "EVENT_DETAILS_SECTION_UID"
         const val EVENT_REPORT_DATE_UID = "EVENT_REPORT_DATE_UID"
+        const val EVENT_ORG_UNIT_UID = "EVENT_ORG_UNIT_UID"
         const val EVENT_DATA_SECTION_UID = "EVENT_DATA_SECTION_UID"
     }
 }
