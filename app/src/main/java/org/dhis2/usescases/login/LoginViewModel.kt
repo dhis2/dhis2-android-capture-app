@@ -563,22 +563,28 @@ class LoginViewModel(
     fun onImportDataBase(file: File) {
         userManager?.let {
             viewModelScope.launch {
-                val importResult = async(dispatchers.io()) {
-                    it.d2.maintenanceModule().databaseImportExport().importDatabase(file)
+                val result = async {
+                    try {
+                        val importedMetadata =
+                            it.d2.maintenanceModule().databaseImportExport().importDatabase(file)
+                        Result.success(importedMetadata)
+                    } catch (e: Exception) {
+                        Result.failure(e)
+                    }
                 }
-                val importedMetadata = try {
-                    importResult.await()
-                } catch (e: Exception) {
-                    view.displayMessage(resourceManager.parseD2Error(e))
-                    Timber.e(e)
-                    null
-                }
-                importedMetadata?.let {
-                    setAccountInfo(it.serverUrl, it.username)
-                    view.setUrl(it.serverUrl)
-                    view.setUser(it.username)
-                    displayManageAccount()
-                }
+
+                result.await().fold(
+                    onSuccess = {
+                        setAccountInfo(it.serverUrl, it.username)
+                        view.setUrl(it.serverUrl)
+                        view.setUser(it.username)
+                        displayManageAccount()
+                    },
+                    onFailure = {
+                        view.displayMessage(resourceManager.parseD2Error(it))
+                    },
+                )
+
                 view.onDbImportFinished()
             }
         }
