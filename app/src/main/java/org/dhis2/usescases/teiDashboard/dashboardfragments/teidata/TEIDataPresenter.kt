@@ -101,7 +101,8 @@ class TEIDataPresenter(
             compositeDisposable.add(
                 Flowable.combineLatest<StageSection?, Boolean?, Pair<StageSection, Boolean>>(
                     sectionFlowable,
-                    groupingFlowable, ::Pair,
+                    groupingFlowable,
+                    ::Pair,
                 )
                     .doOnNext { increment() }
                     .switchMap { stageAndGrouping ->
@@ -429,4 +430,10 @@ class TEIDataPresenter(
     fun getEnrollment(): Enrollment? {
         return teiDataRepository.getEnrollment().blockingGet()
     }
+
+    fun filterAvailableStages(programStages: List<ProgramStage>): List<ProgramStage> =
+        programStages
+            .filter { it.repeatable() == true }
+            .filter { it.access().data().write() }
+            .filter { !stagesToHide.contains(it.uid()) }
 }
