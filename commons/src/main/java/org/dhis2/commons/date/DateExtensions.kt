@@ -84,7 +84,7 @@ fun Date?.toOverdueOrScheduledUiText(
             R.plurals.overdue_days,
             R.plurals.schedule_days,
             days,
-            isOverdue
+            isOverdue,
         )
     }
 
@@ -106,7 +106,7 @@ fun Date?.toOverdueOrScheduledUiText(
                 R.plurals.overdue_years,
                 R.plurals.schedule_years,
                 period.years,
-                isOverdue
+                isOverdue,
             )
         }
 
@@ -116,7 +116,7 @@ fun Date?.toOverdueOrScheduledUiText(
                 R.plurals.overdue_months,
                 R.plurals.schedule_months,
                 period.months,
-                isOverdue
+                isOverdue,
             )
         }
 
@@ -142,7 +142,7 @@ private fun getString(
     @PluralsRes overduePluralResource: Int,
     @PluralsRes scheduledPluralResource: Int,
     duration: Int,
-    isOverdue: Boolean = true
+    isOverdue: Boolean = true,
 ): String {
     return resourceManager.getPlural(
         if (isOverdue) overduePluralResource else scheduledPluralResource,

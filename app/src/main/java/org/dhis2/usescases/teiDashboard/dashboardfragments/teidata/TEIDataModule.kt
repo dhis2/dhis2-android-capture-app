@@ -5,7 +5,6 @@ import androidx.activity.result.ActivityResultRegistry
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EntryMode
-import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController

@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -33,8 +32,6 @@ import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.ui.MetadataIcon
-import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.utils.getAlphaContrastColor
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.ui.NewEventOptions
@@ -67,12 +64,12 @@ internal class StageViewHolder(
                 ProvideAvatar(
                     stage = eventItem.stage,
                     context = itemView.context,
-                    resourceManager = resourceManager
+                    resourceManager = resourceManager,
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(1f),
                 ) {
                     Text(
                         text = stage.displayName() ?: "",
@@ -94,16 +91,18 @@ internal class StageViewHolder(
                     }
                 }
                 if (eventItem.canShowAddButton()) {
-                    Box(modifier = Modifier
-                        .clickable {
-                            stageSelector.onNext(
-                                StageSection(
-                                    stageUid = stage.uid(),
-                                    showOptions = true,
-                                    showAllEvents = false,
-                                ),
-                            )
-                        }) {
+                    Box(
+                        modifier = Modifier
+                            .clickable {
+                                stageSelector.onNext(
+                                    StageSection(
+                                        stageUid = stage.uid(),
+                                        showOptions = true,
+                                        showAllEvents = false,
+                                    ),
+                                )
+                            },
+                    ) {
                         NewEventOptions(presenter.getNewEventOptionsByStages(stage)) {
                             presenter.onAddNewEventOptionSelected(it, stage)
                         }
@@ -121,12 +120,15 @@ internal class StageViewHolder(
     ) {
         val color = colorUtils.getColorFrom(
             stage?.style()?.color(),
-            colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT)
+            colorUtils.getPrimaryColor(
+                context,
+                ColorType.PRIMARY_LIGHT,
+            ),
         )
 
         val imageResource = resourceManager.getObjectStyleDrawableResource(
             stage?.style()?.icon(),
-            R.drawable.ic_default_outline
+            R.drawable.ic_default_outline,
         )
 
         Avatar(

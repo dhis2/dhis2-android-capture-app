@@ -28,7 +28,6 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -73,12 +72,12 @@ class TEIEventCardMapper(
         if (eventItem.groupedByStage != true) {
             val color = colorUtils.getColorFrom(
                 eventItem.stage?.style()?.color(),
-                colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT)
+                colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
             )
 
             val imageResource = resourceManager.getObjectStyleDrawableResource(
                 eventItem.stage?.style()?.icon(),
-                R.drawable.ic_default_outline
+                R.drawable.ic_default_outline,
             )
 
             Avatar(
@@ -362,13 +361,15 @@ class TEIEventCardMapper(
                 Button(
                     style = ButtonStyle.TONAL,
                     text = resourceManager.getString(R.string.enter_event_data).format(
-                        event.stage?.eventLabel() ?: resourceManager.getString(R.string.event)
+                        event.stage?.eventLabel() ?: resourceManager.getString(R.string.event),
                     ),
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
                             contentDescription = resourceManager.getString(R.string.enter_event_data).format(
-                                event.stage?.eventLabel() ?: resourceManager.getString(R.string.event)
+                                event.stage?.eventLabel() ?: resourceManager.getString(
+                                    R.string.event,
+                                ),
                             ),
                             tint = TextColor.OnPrimaryContainer,
                         )
@@ -382,13 +383,15 @@ class TEIEventCardMapper(
                 Button(
                     style = ButtonStyle.TONAL,
                     text = resourceManager.getString(R.string.enter_cancel_event_data).format(
-                        event.stage?.eventLabel() ?: resourceManager.getString(R.string.event)
+                        event.stage?.eventLabel() ?: resourceManager.getString(R.string.event),
                     ),
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
                             contentDescription = resourceManager.getString(R.string.enter_event_data).format(
-                                event.stage?.eventLabel() ?: resourceManager.getString(R.string.event)
+                                event.stage?.eventLabel() ?: resourceManager.getString(
+                                    R.string.event,
+                                ),
                             ),
                             tint = TextColor.OnPrimaryContainer,
                         )

@@ -135,7 +135,7 @@ class EventAdapter(
                                         EventStatus.SCHEDULE, EventStatus.OVERDUE, EventStatus.SKIPPED -> {
                                             presenter.onScheduleSelected(
                                                 event.uid(),
-                                                composeView
+                                                composeView,
                                             )
                                         }
                                         EventStatus.VISITED -> {}
@@ -159,7 +159,7 @@ class EventAdapter(
                                     fontWeight = FontWeight(500),
                                     lineHeight = 20.sp,
                                 ),
-                                color = TextColor.OnSurface
+                                color = TextColor.OnSurface,
                             ),
                             description = ListCardDescriptionModel(
                                 text = card.description,
@@ -168,7 +168,7 @@ class EventAdapter(
                                     fontWeight = FontWeight(400),
                                     lineHeight = 20.sp,
                                 ),
-                                color = TextColor.OnSurface
+                                color = TextColor.OnSurface,
                             ),
                             lastUpdated = card.lastUpdated,
                             additionalInfoList = card.additionalInfo,
