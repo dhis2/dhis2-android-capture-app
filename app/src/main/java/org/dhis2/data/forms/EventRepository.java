@@ -56,9 +56,8 @@ public class EventRepository implements FormRepository {
                                     events
                             );
                         })
-                .doOnSuccess(contextData -> {
-                    this.ruleEngineContextData = contextData;
-                }).toFlowable()
+                .doOnSuccess(contextData -> this.ruleEngineContextData = contextData)
+                .toFlowable()
                 .cacheWithInitialCapacity(1);
     }
 
@@ -86,9 +85,8 @@ public class EventRepository implements FormRepository {
                                     events
                             );
                         })
-                .doOnSuccess(contextData -> {
-                    this.ruleEngineContextData = contextData;
-                }).toFlowable()
+                .doOnSuccess(contextData -> this.ruleEngineContextData = contextData)
+                .toFlowable()
                 .cacheWithInitialCapacity(1);
     }
 

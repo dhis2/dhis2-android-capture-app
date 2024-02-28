@@ -220,7 +220,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
         )
 
         ProgramRuleActionType.SHOWERROR -> {
-            if (field.isEmpty()) throw IllegalArgumentException()
+            require(field.isNotEmpty())
             RuleAction(
                 data = data(),
                 type = ProgramRuleActionType.SHOWERROR.name,

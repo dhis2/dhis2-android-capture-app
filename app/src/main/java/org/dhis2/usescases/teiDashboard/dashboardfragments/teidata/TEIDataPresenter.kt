@@ -114,7 +114,7 @@ class TEIDataPresenter(
                             Flowable.fromCallable {
                                 ruleEngineHelper?.refreshContext()
                                 (ruleEngineHelper?.evaluate() ?: emptyList())
-                                    .let { it -> Result.success(it) }
+                                    .let { ruleEffects -> Result.success(ruleEffects) }
                             },
                         ) { events, calcResult ->
                             applyEffects(

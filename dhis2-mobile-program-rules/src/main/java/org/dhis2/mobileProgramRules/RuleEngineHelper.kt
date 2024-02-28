@@ -56,47 +56,21 @@ class RuleEngineHelper(
 
     private suspend fun buildRuleEngineContextData(targetUid: String) {
         if (::contextData.isInitialized.not() || refreshContext) {
-            val (programUid, orgUnitUid) = if (evaluationType is EvaluationType.Enrollment) {
-                rulesRepository.enrollmentProgram(enrollmentUid = targetUid)
-            } else {
-                rulesRepository.eventProgram(eventUid = targetUid)
-            }
+            val (programUid, orgUnitUid) = getProgramAndOrgUnit(targetUid)
 
             coroutineScope {
                 val rules = async {
                     rulesRepository.rules(
                         programUid = programUid,
-                        eventUid = if (evaluationType !is EvaluationType.Enrollment) {
-                            targetUid
-                        } else {
-                            null
-                        },
+                        eventUid = targetUid.takeIf { evaluationType !is EvaluationType.Enrollment },
                     )
                 }
 
                 val ruleVariables = async { rulesRepository.ruleVariables(programUid = programUid) }
                 val supplData = async { rulesRepository.supplementaryData(orgUnitUid = orgUnitUid) }
                 val constants = async { rulesRepository.constants() }
-                val ruleEnrollment = async {
-                    if (evaluationType !is EvaluationType.Enrollment) {
-                        rulesRepository.enrollment(
-                            eventUid = targetUid,
-                        )
-                    } else {
-                        null
-                    }
-                }
-                val ruleEvents = async {
-                    when (evaluationType) {
-                        is EvaluationType.Enrollment -> rulesRepository.enrollmentEvents(
-                            enrollmentUid = targetUid,
-                        )
-
-                        is EvaluationType.Event -> rulesRepository.otherEvents(
-                            eventUidToEvaluate = targetUid,
-                        )
-                    }
-                }
+                val ruleEnrollment = async { getRuleEnrollment(targetUid) }
+                val ruleEvents = async { getRuleEvents(targetUid) }
 
                 contextData = RuleEngineContextData(
                     ruleEngineContext = RuleEngineContext(
@@ -111,6 +85,30 @@ class RuleEngineHelper(
             }
             refreshContext = false
         }
+    }
+
+    private fun getProgramAndOrgUnit(targetUid: String) =
+        if (evaluationType is EvaluationType.Enrollment) {
+            rulesRepository.enrollmentProgram(enrollmentUid = targetUid)
+        } else {
+            rulesRepository.eventProgram(eventUid = targetUid)
+        }
+
+    private suspend fun getRuleEnrollment(targetUid: String) =
+        if (evaluationType !is EvaluationType.Enrollment) {
+            rulesRepository.enrollment(eventUid = targetUid)
+        } else {
+            null
+        }
+
+    private suspend fun getRuleEvents(targetUid: String) = when (evaluationType) {
+        is EvaluationType.Enrollment -> rulesRepository.enrollmentEvents(
+            enrollmentUid = targetUid,
+        )
+
+        is EvaluationType.Event -> rulesRepository.otherEvents(
+            eventUidToEvaluate = targetUid,
+        )
     }
 
     private fun buildTargetEnrollment(enrollmentUid: String): RuleEnrollment {

@@ -17,7 +17,7 @@ class EnrollmentFormRepository(
     private var enrollmentOrgUnitUid: String? = null
 
     init {
-        enrollmentOrgUnitUid = if (!enrollmentUid.isEmpty()) {
+        enrollmentOrgUnitUid = if (enrollmentUid.isNotEmpty()) {
             d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()!!
                 .organisationUnit()
         } else {

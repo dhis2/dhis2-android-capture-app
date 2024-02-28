@@ -20,6 +20,8 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
+const val default_location = "feedback"
+
 abstract class BaseIndicatorRepository(
     open val d2: D2,
     open val ruleEngineHelper: RuleEngineHelper?,
@@ -111,7 +113,7 @@ abstract class BaseIndicatorRepository(
                             .build(),
                         ruleEffect.data,
                         "",
-                        ruleAction.values["location"]!!,
+                        ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),
                     )
 
@@ -124,7 +126,7 @@ abstract class BaseIndicatorRepository(
                             .build(),
                         ruleAction.content() + ruleEffect.data,
                         "",
-                        ruleAction.values["location"]!!,
+                        ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),
                     )
 
