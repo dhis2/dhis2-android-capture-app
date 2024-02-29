@@ -49,7 +49,7 @@ class EventTest : BaseTest() {
         prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard)
 
         teiDashboardRobot {
-            clickOnStageGroup(tbVisit)
+            clickOnStageGroup(composeTestRule, tbVisit)
             clickOnEventGroupByStage(tbVisitDate)
         }
 
@@ -100,7 +100,7 @@ class EventTest : BaseTest() {
         prepareEventToUpdateIntentAndLaunchActivity(ruleTeiDashboard)
 
         teiDashboardRobot {
-            clickOnStageGroup(labMonitoring)
+            clickOnStageGroup(composeTestRule, labMonitoring)
             clickOnEventGroupByStage(eventDate)
         }
 
@@ -111,7 +111,7 @@ class EventTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            clickOnStageGroup(labMonitoring)
+            clickOnStageGroup(composeTestRule, labMonitoring)
             checkEventStateStageGroup(labMonitoringStatus)
         }
     }

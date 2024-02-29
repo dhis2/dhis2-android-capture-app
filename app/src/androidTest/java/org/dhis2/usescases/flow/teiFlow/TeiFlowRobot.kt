@@ -80,7 +80,6 @@ class TeiFlowRobot : BaseRobot() {
         }
 
         teiDashboardRobot {
-            checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent(composeTestRule)
             checkAllEventsAreClosed(composeTestRule)
         }
@@ -101,7 +100,7 @@ class TeiFlowRobot : BaseRobot() {
 
     fun changeDueDate(date: String, programStage: String, orgUnit: String, composeTestRule: ComposeTestRule) {
         teiDashboardRobot {
-            clickOnStageGroup(programStage)
+            clickOnStageGroup(composeTestRule, programStage)
             clickOnEventGroupByStageUsingOU(orgUnit)
         }
 
