@@ -424,15 +424,7 @@ class TeiDashboardRobot : BaseRobot() {
                         isDisplayed(), isNotEmpty(),
                         atPosition(
                             position, hasDescendant(
-                                withTagValue(
-                                    anyOf(
-                                        equalTo(R.drawable.ic_event_status_open_read),
-                                        equalTo(R.drawable.ic_event_status_overdue_read),
-                                        equalTo(R.drawable.ic_event_status_complete_read),
-                                        equalTo(R.drawable.ic_event_status_skipped_read),
-                                        equalTo(R.drawable.ic_event_status_schedule_read)
-                                    )
-                                )
+                                withText(R.string.view_only)
                             )
                         )
                     )
