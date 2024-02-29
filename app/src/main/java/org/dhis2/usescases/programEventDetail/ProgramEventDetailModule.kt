@@ -14,8 +14,10 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
@@ -112,6 +114,18 @@ class ProgramEventDetailModule(
     ): MapCoordinateFieldToFeature {
         return MapCoordinateFieldToFeature(mapGeometryToFeature)
     }
+
+    @Provides
+    @PerActivity
+    fun provideEventMapper(
+        d2: D2,
+        periodUtils: DhisPeriodUtils,
+        metadataIconProvider: MetadataIconProvider,
+    ) = ProgramEventMapper(
+        d2,
+        periodUtils,
+        metadataIconProvider,
+    )
 
     @Provides
     @PerActivity

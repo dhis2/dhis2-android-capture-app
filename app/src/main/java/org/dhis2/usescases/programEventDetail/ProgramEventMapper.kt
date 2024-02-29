@@ -5,6 +5,7 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -19,16 +20,17 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
-class ProgramEventMapper @Inject constructor(
+class ProgramEventMapper(
     val d2: D2,
     val periodUtils: DhisPeriodUtils,
+    val metadataIconProvider: MetadataIconProvider,
 ) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
         val programStage =
             d2.programModule().programStages().uid(event.programStage()).blockingGet()
+                ?: throw IllegalArgumentException()
 
         val eventDate = event.eventDate() ?: event.dueDate()
 
@@ -48,13 +50,14 @@ class ProgramEventMapper @Inject constructor(
             groupedByStage = true,
             displayDate = eventDate?.let {
                 periodUtils.getPeriodUIString(
-                    programStage?.periodType() ?: PeriodType.Daily,
+                    programStage.periodType() ?: PeriodType.Daily,
                     it,
                     Locale.getDefault(),
                 )
             },
             nameCategoryOptionCombo =
             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+            metadataIconData = metadataIconProvider(programStage.style()),
         )
     }
 

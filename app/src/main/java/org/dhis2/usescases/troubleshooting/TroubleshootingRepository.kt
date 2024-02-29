@@ -1,9 +1,9 @@
 package org.dhis2.usescases.troubleshooting
 
-import org.dhis2.R
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.bindings.toRuleEngineObject
 import org.dhis2.form.bindings.toRuleVariableList
+import org.dhis2.form.model.RuleActionError
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
@@ -27,7 +27,7 @@ import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 
 class TroubleshootingRepository(
     val d2: D2,
-    val resourceManager: ResourceManager,
+    val metadataIconProvider: MetadataIconProvider,
 ) {
 
     fun validateProgramRules(): List<ProgramRuleValidation> {
@@ -82,14 +82,7 @@ class TroubleshootingRepository(
             ProgramRuleValidation(
                 programUid = program.uid(),
                 programName = program.displayName() ?: program.uid(),
-                metadataIconData = MetadataIconData(
-                    programColor = resourceManager.getColorOrDefaultFrom(program.style().color()),
-                    iconResource = resourceManager.getObjectStyleDrawableResource(
-                        program.style().icon(),
-                        R.drawable.ic_default_outline,
-                    ),
-                    sizeInDp = 24,
-                ),
+                metadataIconData = metadataIconProvider(program.style(), sizeInDp = 24),
                 validations = validationList,
             )
         }.sortedBy { it.programName }

@@ -3,6 +3,7 @@ package org.dhis2.data.server;
 import androidx.annotation.NonNull;
 
 import org.dhis2.commons.di.dagger.PerServer;
+import org.dhis2.commons.filters.di.FilterModule;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
@@ -22,7 +23,7 @@ import dagger.Subcomponent;
 import dhis2.org.analytics.charts.Charts;
 
 @PerServer
-@Subcomponent(modules = {ServerModule.class})
+@Subcomponent(modules = {ServerModule.class, FilterModule.class})
 public interface ServerComponent extends Charts.Dependencies {
 
     @NonNull

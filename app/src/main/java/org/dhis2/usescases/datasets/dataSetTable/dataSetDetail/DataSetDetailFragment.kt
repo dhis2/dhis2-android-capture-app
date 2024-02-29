@@ -9,12 +9,10 @@ import android.view.ViewGroup
 import io.reactivex.Flowable
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.FragmentDatasetDetailBinding
-import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.setUpMetadataIcon
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -46,6 +44,9 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
 
     @Inject
     lateinit var colorUtils: ColorUtils
+
+    @Inject
+    lateinit var metadataIconProvider: MetadataIconProvider
 
     companion object {
         @JvmStatic
@@ -146,24 +147,11 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     }
 
     override fun setStyle(style: ObjectStyle?) {
-        val color = colorUtils.getColorFrom(
-            style?.color(),
-            colorUtils.getPrimaryColor(
-                mContext,
-                ColorType.PRIMARY,
-            ),
-        )
-        val imageResource = ResourceManager(mContext, colorUtils).getObjectStyleDrawableResource(
-            style?.icon(),
-            R.drawable.ic_default_outline,
-        )
-
-        binding.composeDataSetIcon.setUpMetadataIcon(
-            MetadataIconData(
-                programColor = color,
-                iconResource = imageResource,
-            ),
-        )
+        style?.let {
+            binding.composeDataSetIcon.setUpMetadataIcon(
+                metadataIconProvider(style),
+            )
+        }
     }
 
     override fun observeReopenChanges(): Flowable<Boolean> {

@@ -19,6 +19,7 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
@@ -145,17 +146,30 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter,
+    SearchRepository searchRepository(@NonNull D2 d2,
+                                      FilterPresenter filterPresenter,
                                       ResourceManager resources,
                                       SearchSortingValueSetter searchSortingValueSetter,
-                                      DhisPeriodUtils periodUtils, Charts charts,
+                                      DhisPeriodUtils periodUtils,
+                                      Charts charts,
                                       CrashReportController crashReportController,
                                       NetworkUtils networkUtils,
                                       SearchTEIRepository searchTEIRepository,
-                                      ThemeManager themeManager) {
-        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
-                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository,
-                themeManager);
+                                      ThemeManager themeManager,
+                                      MetadataIconProvider metadataIconProvider) {
+        return new SearchRepositoryImpl(teiType,
+                initialProgram,
+                d2,
+                filterPresenter,
+                resources,
+                searchSortingValueSetter,
+                periodUtils,
+                charts,
+                crashReportController,
+                networkUtils,
+                searchTEIRepository,
+                themeManager,
+                metadataIconProvider);
     }
 
     @Provides

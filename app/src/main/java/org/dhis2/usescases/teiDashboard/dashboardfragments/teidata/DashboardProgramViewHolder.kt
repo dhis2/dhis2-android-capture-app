@@ -19,7 +19,7 @@ class DashboardProgramViewHolder(
             val enrollment = dashboardProgramModel.getEnrollmentForProgram(program.uid())
             binding.setVariable(BR.presenter, presenter)
             binding.setVariable(BR.program, program)
-            binding.setVariable(BR.style, dashboardProgramModel.getObjectStyleForProgram(program.uid()))
+            binding.metadataIconData = dashboardProgramModel.getIconForProgram(program.uid())
             if (enrollment != null) {
                 binding.setVariable(BR.enrollment, enrollment)
                 binding.setVariable(

@@ -10,6 +10,8 @@ import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
@@ -43,6 +45,7 @@ class DashboardRepositoryImpl(
     private val enrollmentUid: String?,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val preferenceProvider: PreferenceProvider,
+    private val metadataIconProvider: MetadataIconProvider,
 ) : DashboardRepository {
     override fun getTeiHeader(): String? {
         return d2.trackedEntityModule().trackedEntitySearch()
@@ -399,7 +402,7 @@ class DashboardRepositoryImpl(
     override fun getTeiActivePrograms(
         teiUid: String,
         showOnlyActive: Boolean,
-    ): Observable<List<Program>> {
+    ): Observable<List<kotlin.Pair<Program, MetadataIconData>>> {
         val enrollmentRepo = d2.enrollmentModule().enrollments().byTrackedEntityInstance()
             .eq(teiUid).byDeleted().eq(false)
         if (showOnlyActive) enrollmentRepo.byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -410,7 +413,9 @@ class DashboardRepositoryImpl(
             .toList().toObservable()
             .map { programUids ->
                 d2.programModule().programs().byUid()
-                    .`in`(programUids.filterNotNull()).blockingGet()
+                    .`in`(programUids.filterNotNull()).blockingGet().map {
+                        Pair(it, metadataIconProvider(it.style()))
+                    }
             }
     }
 
@@ -546,7 +551,9 @@ class DashboardRepositoryImpl(
             val hasProgramIndicator =
                 !d2.programModule().programIndicators().byProgramUid().eq(programUid)
                     .blockingIsEmpty()
-            val hasCharts = enrollmentUid?.let { charts.geEnrollmentCharts(enrollmentUid).isNotEmpty() } ?: false
+            val hasCharts =
+                enrollmentUid?.let { charts.geEnrollmentCharts(enrollmentUid).isNotEmpty() }
+                    ?: false
             hasDisplayRuleActions || hasProgramIndicator || hasCharts
         } else {
             false

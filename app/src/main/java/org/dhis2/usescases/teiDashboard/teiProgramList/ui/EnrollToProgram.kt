@@ -86,7 +86,7 @@ fun EnrollToProgramDisabledPreview() {
 private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramViewModel(
     uid = "qweqwe",
     title = "A very long long long program title",
-    metadataIconData = MetadataIconData(
+    metadataIconData = MetadataIconData.Resource(
         programColor = android.graphics.Color.parseColor("#00BCD4"),
         iconResource = R.drawable.ic_positive_negative,
     ),

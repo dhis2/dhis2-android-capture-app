@@ -6,6 +6,7 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -28,6 +29,7 @@ class TeiDataRepositoryImpl(
     private val teiUid: String,
     private val enrollmentUid: String?,
     private val periodUtils: DhisPeriodUtils,
+    private val metadataIconProvider: MetadataIconProvider,
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -102,7 +104,7 @@ class TeiDataRepositoryImpl(
                         events.map {
                             val stage = d2.programModule().programStages()
                                 .uid(it.programStage())
-                                .blockingGet()
+                                .blockingGet() ?: throw IllegalArgumentException()
                             EventViewModel(
                                 type = EventViewModelType.EVENT,
                                 stage = stage,
@@ -116,6 +118,7 @@ class TeiDataRepositoryImpl(
                                 dataElementValues = null,
                                 displayDate = null,
                                 nameCategoryOptionCombo = null,
+                                metadataIconData = metadataIconProvider(stage.style()),
                             )
                         }
                     }
@@ -186,45 +189,45 @@ class TeiDataRepositoryImpl(
                             groupedByStage = true,
                             displayDate = null,
                             nameCategoryOptionCombo = null,
+                            metadataIconData = metadataIconProvider(programStage.style()),
                         ),
                     )
                     checkEventStatus(eventList).take(
                         if (showAllEvents) eventList.size else maxEventToShow,
                     ).forEachIndexed { index, event ->
-                        val showTopShadow = index == 0
-                        val showBottomShadow = index == eventList.size - 1
-                        eventViewModels.add(
-                            EventViewModel(
-                                EventViewModelType.EVENT,
-                                programStage,
-                                event,
-                                0,
-                                null,
-                                isSelected = true,
-                                canAddNewEvent = true,
-                                orgUnitName = d2.organisationUnitModule().organisationUnits()
-                                    .uid(event.organisationUnit()).blockingGet()?.displayName()
-                                    ?: "",
-                                catComboName = getCatOptionComboName(event.attributeOptionCombo()),
-                                dataElementValues = getEventValues(
-                                    event.uid(),
-                                    programStage.uid(),
+                            val showTopShadow = index == 0
+                            val showBottomShadow = index == eventList.size - 1
+                            eventViewModels.add(
+                                EventViewModel(
+                                    EventViewModelType.EVENT,
+                                    programStage,
+                                    event,
+                                    0,
+                                    null,
+                                    isSelected = true,
+                                    canAddNewEvent = true,
+                                    orgUnitName = d2.organisationUnitModule().organisationUnits()
+                                        .uid(event.organisationUnit()).blockingGet()?.displayName()
+                                        ?: "",
+                                    catComboName = getCatOptionComboName(event.attributeOptionCombo()),
+                                    dataElementValues = getEventValues(
+                                        event.uid(),
+                                        programStage.uid(),
+                                    ),
+                                    groupedByStage = true,
+                                    showTopShadow = showTopShadow,
+                                    showBottomShadow = showBottomShadow,
+                                    displayDate = periodUtils.getPeriodUIString(
+                                        programStage.periodType() ?: PeriodType.Daily,
+                                        event.eventDate() ?: event.dueDate()!!,
+                                        Locale.getDefault(),
+                                    ),
+                                    nameCategoryOptionCombo =
+                                    getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                                    metadataIconData = metadataIconProvider(programStage.style()),
                                 ),
-                                groupedByStage = true,
-                                showTopShadow = showTopShadow,
-                                showBottomShadow = showBottomShadow,
-                                displayDate = periodUtils.getPeriodUIString(
-                                    programStage.periodType() ?: PeriodType.Daily,
-                                    event.eventDate() ?: event.dueDate()!!,
-                                    Locale.getDefault(),
-                                ),
-                                nameCategoryOptionCombo =
-                                getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
-                            ),
-                        )
-                    }
-
-                    if (eventList.size > maxEventToShow) {
+                            )
+                        }if (eventList.size > maxEventToShow) {
                         eventViewModels.add(
                             EventViewModel(
                                 EventViewModelType.TOGGLE_BUTTON,
@@ -267,7 +270,7 @@ class TeiDataRepositoryImpl(
                 ).forEachIndexed { _, event ->
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
-                        .blockingGet()
+                        .blockingGet() ?: throw IllegalArgumentException()
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
@@ -290,6 +293,7 @@ class TeiDataRepositoryImpl(
                             ),
                             nameCategoryOptionCombo =
                             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                            metadataIconData = metadataIconProvider(programStage.style()),
                         ),
                     )
                 }

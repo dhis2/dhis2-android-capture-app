@@ -2,6 +2,9 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.R;
+import org.dhis2.commons.resources.MetadataIconProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
@@ -26,20 +29,22 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     private final D2 d2;
     private final ProgramViewModelMapper programViewModelMapper;
+    private final MetadataIconProvider metadataIconProvider;
 
-    TeiProgramListRepositoryImpl(D2 d2, ProgramViewModelMapper programViewModelMapper) {
+    TeiProgramListRepositoryImpl(D2 d2, ProgramViewModelMapper programViewModelMapper, MetadataIconProvider metadataIconProvider) {
         this.d2 = d2;
         this.programViewModelMapper = programViewModelMapper;
+        this.metadataIconProvider = metadataIconProvider;
     }
 
     @NonNull
     @Override
     public Observable<List<EnrollmentViewModel>> activeEnrollments(String trackedEntityId) {
         return Observable.fromCallable(() ->
-                d2.enrollmentModule().enrollments()
-                        .byTrackedEntityInstance().eq(trackedEntityId)
-                        .byStatus().eq(EnrollmentStatus.ACTIVE)
-                        .byDeleted().eq(false).blockingGet())
+                        d2.enrollmentModule().enrollments()
+                                .byTrackedEntityInstance().eq(trackedEntityId)
+                                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                .byDeleted().eq(false).blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
                     Program program = d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet();
@@ -47,8 +52,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
-                            program.style() != null ? program.style().color() : null,
-                            program.style() != null ? program.style().icon() : null,
+                            metadataIconProvider.invoke(program.style(),R.drawable.ic_default_outline,40),
                             program.displayName(),
                             orgUnit.displayName(),
                             enrollment.followUp() != null ? enrollment.followUp() : false,
@@ -70,8 +74,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
-                            program.style() != null ? program.style().color() : null,
-                            program.style() != null ? program.style().icon() : null,
+                            metadataIconProvider.invoke(program.style(), R.drawable.ic_default_outline,40),
                             program.displayName(),
                             orgUnit.displayName(),
                             enrollment.followUp() != null ? enrollment.followUp() : false,
@@ -107,7 +110,8 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                                 "",
                                 State.SYNCED,
                                 false,
-                                false
+                                false,
+                                metadataIconProvider.invoke(program.style(), R.drawable.ic_default_outline, 40)
                         )
                 )
                 .toList()
@@ -118,9 +122,9 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<Program>> alreadyEnrolledPrograms(String trackedEntityId) {
         return Observable.fromCallable(() ->
-                d2.enrollmentModule().enrollments()
-                        .byTrackedEntityInstance().eq(trackedEntityId)
-                        .byDeleted().eq(false).blockingGet())
+                        d2.enrollmentModule().enrollments()
+                                .byTrackedEntityInstance().eq(trackedEntityId)
+                                .byDeleted().eq(false).blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet())
                 .toList()
@@ -131,11 +135,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid, Date enrollmentDate) {
         return d2.enrollmentModule().enrollments().add(
-                EnrollmentCreateProjection.builder()
-                        .organisationUnit(orgUnit)
-                        .program(programUid)
-                        .trackedEntityInstance(teiUid)
-                        .build())
+                        EnrollmentCreateProjection.builder()
+                                .organisationUnit(orgUnit)
+                                .program(programUid)
+                                .trackedEntityInstance(teiUid)
+                                .build())
                 .map(enrollmentUid ->
                         d2.enrollmentModule().enrollments().uid(enrollmentUid))
                 .map(enrollmentRepository -> {

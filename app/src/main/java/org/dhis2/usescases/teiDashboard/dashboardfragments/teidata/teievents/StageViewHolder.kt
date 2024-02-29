@@ -19,7 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
@@ -58,7 +57,7 @@ internal class StageViewHolder(
             ) {
                 ProvideAvatar(
                     stage = eventItem.stage,
-                    resourceManager = resourceManager,
+                    resourceManager = eventItem.metadataIconData,
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(

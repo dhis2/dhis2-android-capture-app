@@ -494,7 +494,7 @@ fun ProgramDescriptionDialogPReview() {
 private fun testingProgramModel() = ProgramViewModel(
     uid = "qweqwe",
     title = "Program title",
-    metadataIconData = MetadataIconData(
+    metadataIconData = MetadataIconData.Resource(
         programColor = android.graphics.Color.parseColor("#00BCD4"),
         iconResource = R.drawable.ic_positive_negative,
     ),

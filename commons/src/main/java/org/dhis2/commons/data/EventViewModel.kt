@@ -1,5 +1,6 @@
 package org.dhis2.commons.data
 
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
@@ -23,6 +24,7 @@ data class EventViewModel(
     val maxEventsToShow: Int = 0,
     val displayDate: String?,
     val nameCategoryOptionCombo: String?,
+    val metadataIconData: MetadataIconData,
 ) {
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen

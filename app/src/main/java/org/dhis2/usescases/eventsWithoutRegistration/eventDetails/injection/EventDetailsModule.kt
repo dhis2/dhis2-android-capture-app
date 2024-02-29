@@ -9,6 +9,7 @@ import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
@@ -113,6 +114,7 @@ class EventDetailsModule(
         geometryController: GeometryController,
         locationProvider: LocationProvider,
         eventDetailResourcesProvider: EventDetailResourcesProvider,
+        metadataIconProvider: MetadataIconProvider,
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -120,6 +122,7 @@ class EventDetailsModule(
                 resourcesProvider = resourcesProvider,
                 creationType = eventCreationType,
                 enrollmentStatus = enrollmentStatus,
+                metadataIconProvider = metadataIconProvider,
             ),
             ConfigureEventReportDate(
                 creationType = eventCreationType,

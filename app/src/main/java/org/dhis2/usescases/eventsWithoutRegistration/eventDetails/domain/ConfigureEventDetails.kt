@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventCreationType.REFERAL
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
@@ -20,6 +21,7 @@ class ConfigureEventDetails(
     private val resourcesProvider: EventDetailResourcesProvider,
     private val creationType: EventCreationType,
     private val enrollmentStatus: EnrollmentStatus?,
+    private val metadataIconProvider: MetadataIconProvider,
 ) {
 
     operator fun invoke(
@@ -37,12 +39,12 @@ class ConfigureEventDetails(
             tempCreate = tempCreate,
         )
         val storedEvent = repository.getEvent()
-        val programStage = repository.getProgramStage()
+        val programStage = repository.getProgramStage() ?: throw IllegalArgumentException()
         return flowOf(
             EventDetails(
-                name = programStage?.displayName(),
-                description = programStage?.displayDescription(),
-                style = repository.getObjectStyle(),
+                name = programStage.displayName(),
+                description = programStage.displayDescription(),
+                metadataIconData = metadataIconProvider(programStage.style()),
                 enabled = isEnable(storedEvent),
                 isEditable = isEditable(),
                 editableReason = getEditableReason(),

@@ -1,6 +1,7 @@
 package org.dhis2.commons.data;
 
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.ui.MetadataIconData;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 import org.hisp.dhis.android.core.program.Program;
@@ -12,9 +13,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+
+import kotlin.Pair;
 
 public class SearchTeiModel implements CarouselItemModel {
 
@@ -23,6 +27,7 @@ public class SearchTeiModel implements CarouselItemModel {
 
     private List<Trio<String, String, String>> enrollmentsInfo;
     private List<Program> programInfo;
+    private HashMap<String, MetadataIconData> metadataIconDataMap;
     private boolean hasOverdue;
     private boolean isOnline;
 
@@ -60,15 +65,17 @@ public class SearchTeiModel implements CarouselItemModel {
         this.sortingValue = null;
         this.enrolledOrgUnit = null;
         this.onlineErrorMessage = null;
+        this.metadataIconDataMap = new HashMap<>();
     }
 
     public void addEnrollmentInfo(Trio<String, String, String> enrollmentInfo) {
         enrollmentsInfo.add(enrollmentInfo);
     }
 
-    public void addProgramInfo(Program program) {
+    public void addProgramInfo(Program program, MetadataIconData metadataIconData) {
         if (!programInfo.contains(program)) {
             programInfo.add(program);
+            metadataIconDataMap.put(program.uid(), metadataIconData);
         }
     }
 
@@ -179,6 +186,10 @@ public class SearchTeiModel implements CarouselItemModel {
         } else {
             return programInfo;
         }
+    }
+
+    public MetadataIconData getMetadataIconData(String programUid){
+        return metadataIconDataMap.get(programUid);
     }
 
     public void setOverdueDate(Date dateToShow) {

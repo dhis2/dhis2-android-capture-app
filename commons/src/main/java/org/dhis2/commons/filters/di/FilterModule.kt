@@ -2,24 +2,24 @@ package org.dhis2.commons.filters.di
 
 import dagger.Module
 import dagger.Provides
+import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterResources
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.resources.ResourceManager
-import javax.inject.Singleton
 
 @Module
 class FilterModule {
     @Provides
-    @Singleton
+    @PerServer
     fun filterManager(resourceManager: ResourceManager): FilterManager {
         return FilterManager.initWith(resourceManager)
     }
 
     @Provides
-    @Singleton
+    @PerServer
     fun eventWorkingListMapper(
         resourceManager: FilterResources,
     ): EventFilterToWorkingListItemMapper {
@@ -29,7 +29,7 @@ class FilterModule {
     }
 
     @Provides
-    @Singleton
+    @PerServer
     fun teiWorkingListMapper(resourceManager: FilterResources): TeiFilterToWorkingListItemMapper {
         return TeiFilterToWorkingListItemMapper(
             resourceManager.defaultWorkingListLabel(),
@@ -37,13 +37,13 @@ class FilterModule {
     }
 
     @Provides
-    @Singleton
+    @PerServer
     fun provideFilterResources(resourceManager: ResourceManager): FilterResources {
         return FilterResources(resourceManager)
     }
 
     @Provides
-    @Singleton
+    @PerServer
     fun provideProgramStageToWorkingListItemMapper(
         resourceManager: FilterResources,
     ): ProgramStageToWorkingListItemMapper {

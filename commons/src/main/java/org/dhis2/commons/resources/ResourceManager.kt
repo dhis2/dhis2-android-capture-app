@@ -31,7 +31,7 @@ class ResourceManager(
         getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
 
     fun formatWithEnrollmentLabel(
-        programUid: String,
+        programUid: String?,
         @StringRes stringResource: Int,
         quantity: Int,
         formatWithQuantity: Boolean = false,
