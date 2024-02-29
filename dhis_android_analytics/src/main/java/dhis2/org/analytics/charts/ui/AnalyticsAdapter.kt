@@ -39,6 +39,7 @@ class AnalyticsAdapter :
     var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType) -> Unit)? = null
     var onResetFilterCallback: ((ChartModel, ChartFilter) -> Unit)? = null
     var onChartTypeChanged: () -> Unit = {}
+    var onSearchCallback: ((ChartModel, Int) -> Unit)? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -87,5 +88,9 @@ class AnalyticsAdapter :
 
     override fun resetFilter(chart: ChartModel, filter: ChartFilter) {
         onResetFilterCallback?.invoke(chart, filter)
+    }
+
+    override fun filterColumnValue(chart: ChartModel, column: Int) {
+        onSearchCallback?.invoke(chart, column)
     }
 }

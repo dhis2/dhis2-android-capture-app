@@ -34,6 +34,9 @@ class ChartViewHolder(
         chart.resetFilterCallback = { chartFilter ->
             adapterCallback.resetFilter(chart, chartFilter)
         }
+        chart.searchCallback = {
+            adapterCallback.filterColumnValue(chart, it)
+        }
         binding.chartModel = chart
         chart.observableChartType.addOnPropertyChangedCallback(
             object : Observable.OnPropertyChangedCallback() {
@@ -83,5 +86,6 @@ class ChartViewHolder(
         fun filterPeriod(chart: ChartModel, period: RelativePeriod?, current: RelativePeriod?)
         fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType)
         fun resetFilter(chart: ChartModel, filter: ChartFilter)
+        fun filterColumnValue(chart: ChartModel, column: Int)
     }
 }

@@ -85,6 +85,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
     var orgUnitCallback: ((OrgUnitFilterType) -> Unit)? = null
     var relativePeriodCallback: ((RelativePeriod?, RelativePeriod?) -> Unit)? = null
     var resetFilterCallback: ((ChartFilter) -> Unit)? = null
+    var searchCallback: ((Int) -> Unit)? = null
 
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(
@@ -102,6 +103,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 when (itemId) {
                     R.id.periodFilter -> showPeriodFilters(view)
                     R.id.orgFilter -> showOrgUntFilters(view)
+                    R.id.search -> showColumnsToSearch(view)
                     else -> observableChartType.set(chartToLoad(itemId))
                 }
                 true
@@ -115,6 +117,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 addIconToItem(R.id.orgFilter, R.drawable.ic_orgunit_chart_selected)
             }
         }
+    }
+
+    private fun showSearchColumn(column: Int) {
+        searchCallback?.invoke(column)
     }
 
     fun showFilters(view: View) {
@@ -416,6 +422,33 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         }
     }
 
+    fun showColumnsToSearch(view: View) {
+        val menuBuilder = AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.search_column_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+                when (itemId) {
+                    R.id.back -> {
+                        showVisualizationOptions(view)
+                    }
+                    R.id.reset_search -> {
+                        resetFilterCallback?.invoke(ChartFilter.ORG_UNIT)
+                    }
+                    else -> {
+                        showSearchColumn(itemId)
+                    }
+                }
+                true
+            },
+        ).build()
+        menuBuilder.show()
+
+        graph.series.forEachIndexed { index, column ->
+            menuBuilder.popupMenu.menu.add(R.id.columns, index, index, column.fieldName)
+        }
+    }
+
     private fun idsToHide(originalChartType: ChartType): List<Int> {
         return when (observableChartType.get()) {
             ChartType.NUTRITION,
@@ -469,6 +502,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 R.id.showBarGraph,
                 R.id.showTableValue,
             )
+            ChartType.LINE_LISTING -> listOf(R.id.search)
             else -> emptyList()
         }
     }

@@ -13,6 +13,7 @@ enum class ChartType(@DrawableRes val iconResource: Int) {
     NUTRITION(R.drawable.ic_line_chart),
     RADAR(R.drawable.ic_radar_chart),
     PIE_CHART(R.drawable.ic_pie_chart),
+    LINE_LISTING(R.drawable.ic_table_chart),
 }
 
 enum class NutritionChartType {

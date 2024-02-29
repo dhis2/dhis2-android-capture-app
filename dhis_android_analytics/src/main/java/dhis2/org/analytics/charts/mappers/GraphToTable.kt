@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts.mappers
 
 import android.view.View
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -104,6 +105,7 @@ class GraphToTable {
                         },
                         tableHorizontalPadding = 0.dp,
                         tableVerticalPadding = 0.dp,
+                        defaultRowHeaderWidth = 0,
                         extraWidths = emptyMap(),
                         rowHeaderWidths = emptyMap(),
                         columnWidth = emptyMap(),
@@ -177,6 +179,9 @@ class GraphToTable {
                 ) {
                     DataTable(
                         tableList = listOf(tableModel),
+                        bottomContent = {
+                            Text(text = "Max")
+                        },
                     )
                 }
             }

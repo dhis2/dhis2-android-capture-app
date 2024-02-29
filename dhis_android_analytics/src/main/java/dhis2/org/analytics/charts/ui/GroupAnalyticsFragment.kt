@@ -14,6 +14,7 @@ import dhis2.org.analytics.charts.data.AnalyticGroup
 import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
 import dhis2.org.analytics.charts.extensions.isNotCurrent
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
+import dhis2.org.analytics.charts.ui.dialog.SearchColumnDialog
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
 import org.dhis2.commons.bindings.clipWithRoundedCorners
@@ -141,6 +142,10 @@ class GroupAnalyticsFragment : Fragment() {
             onChartTypeChanged = {
                 groupViewModel.trackChartTypeChanged(mode)
             }
+
+            onSearchCallback = { chartModel, column ->
+                showValueFilter(chartModel, column)
+            }
         }
     }
 
@@ -180,6 +185,13 @@ class GroupAnalyticsFragment : Fragment() {
             }
             .build()
             .show(childFragmentManager, "OUTreeFragment")
+    }
+
+    private fun showValueFilter(chartModel: ChartModel, column: Int) {
+        SearchColumnDialog(
+            chartModel.graph.series[column].fieldName,
+            onSearch = {},
+        ).show(childFragmentManager, SearchColumnDialog.TAG)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
