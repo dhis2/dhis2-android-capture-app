@@ -120,7 +120,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuComplete()
             checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent(composeTestRule)
-            checkAllEventsAreClosed(1)
+            checkAllEventsAreClosed(composeTestRule)
         }
     }
 

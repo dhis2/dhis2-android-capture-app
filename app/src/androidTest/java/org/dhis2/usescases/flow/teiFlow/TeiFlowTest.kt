@@ -36,7 +36,6 @@ class TeiFlowTest: BaseTest() {
     @Test
     fun shouldEnrollToSameProgramAfterClosedIt() {
         val totalEventsPerEnrollment = 3
-        val pastProgramPosition = 4
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()
 
@@ -46,10 +45,10 @@ class TeiFlowTest: BaseTest() {
 
         teiFlowRobot {
             registerTEI(registerTeiDetails, composeTestRule)
-            closeEnrollmentAndCheckEvents(composeTestRule,totalEventsPerEnrollment)
+            closeEnrollmentAndCheckEvents(composeTestRule)
             enrollToProgram(composeTestRule, ADULT_WOMAN_PROGRAM)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
-            checkPastEventsAreClosed(composeTestRule, totalEventsPerEnrollment, pastProgramPosition)
+            checkPastEventsAreClosed(composeTestRule, totalEventsPerEnrollment)
         }
     }
 

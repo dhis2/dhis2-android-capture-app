@@ -73,7 +73,6 @@ class TeiFlowRobot : BaseRobot() {
 
     fun checkPastEventsAreClosed(
         composeTestRule: ComposeContentTestRule,
-        totalEvents: Int,
         programPosition: Int
     ) {
         enrollmentRobot {
@@ -83,13 +82,12 @@ class TeiFlowRobot : BaseRobot() {
         teiDashboardRobot {
             checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent(composeTestRule)
-            checkAllEventsAreClosed(totalEvents)
+            checkAllEventsAreClosed(composeTestRule)
         }
     }
 
     fun closeEnrollmentAndCheckEvents(
         composeTestRule: ComposeContentTestRule,
-        totalEvents: Int
     ) {
         teiDashboardRobot {
             clickOnMenuMoreOptions()
@@ -97,7 +95,7 @@ class TeiFlowRobot : BaseRobot() {
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkCanNotAddEvent(composeTestRule)
-            checkAllEventsAreClosed(totalEvents)
+            checkAllEventsAreClosed(composeTestRule)
         }
     }
 

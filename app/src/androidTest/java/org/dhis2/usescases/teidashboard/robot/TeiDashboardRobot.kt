@@ -2,9 +2,13 @@ package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
 import android.view.View
+import androidx.compose.ui.test.assertAll
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -416,22 +420,6 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    private fun checkEventIsClosed(position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(),
-                        atPosition(
-                            position, hasDescendant(
-                                withText(R.string.view_only)
-                            )
-                        )
-                    )
-                )
-            )
-    }
-
     private fun checkEventIsOpen(position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(
@@ -523,12 +511,12 @@ class TeiDashboardRobot : BaseRobot() {
         }
     }
 
-    fun checkAllEventsAreClosed(totalEvents: Int) {
-        var event = 0
-        while (event < totalEvents) {
-            checkEventIsClosed(event)
-            event++
-        }
+    fun checkAllEventsAreClosed(
+        composeTestRule: ComposeContentTestRule,
+    ) {
+        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val viewOnlyText = targetContext.resources.getString(R.string.view_only)
+        composeTestRule.onAllNodes(hasText(viewOnlyText), useUnmergedTree = false)
     }
 
     fun clickOnStageGroup(programStageName: String) {
