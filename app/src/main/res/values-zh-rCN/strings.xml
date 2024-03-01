@@ -135,7 +135,6 @@
     <string name="delete">删除</string>
     <string name="total">总共</string>
     <string name="most_recent_event_date">最近事件日期</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
@@ -657,7 +656,6 @@
     <string name="complete_anyway">任何都要完成</string>
     <string name="fk_message">遗失 %s %s 从%s %s</string>
     <string name="filters_title_event_status">事件状态</string>
-    <string name="filters_title_enrollment_status">注册状态</string>
     <string name="enrollment_date">注册日期</string>
     <string name="dataset_empty_list_can_create">没有数据，点击“+”添加新的记录</string>
     <string name="dataset_emtpy_list_can_not_create">没有数据，您没有权限添加新记录</string>

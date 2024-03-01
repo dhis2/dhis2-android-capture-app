@@ -137,7 +137,6 @@
     <string name="delete">hapus</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">hal yang paling terbaru</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Data pendaftaran</string>
     <string name="active_programs">Aktifkan program</string>
@@ -769,7 +768,6 @@
     <string name="complete_anyway">Lengkap</string>
     <string name="fk_message">Tidak ada %s %s dari %s %s</string>
     <string name="filters_title_event_status">Status even</string>
-    <string name="filters_title_enrollment_status">Status pendaftaran</string>
     <string name="enrollment_date">Tanggal pendaftaran</string>
     <string name="dataset_empty_list_can_create">Tidak ada data. Klik \"+\" untuk menambahkan catatan baru</string>
     <string name="dataset_emtpy_list_can_not_create">Tidak ada data. Anda tidak memiliki izin untuk menambahkan catatan baru.</string>

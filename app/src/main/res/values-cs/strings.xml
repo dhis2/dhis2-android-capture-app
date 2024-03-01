@@ -143,7 +143,6 @@
     <string name="delete">Smazat</string>
     <string name="total">Celkem</string>
     <string name="most_recent_event_date">Datum poslední události</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Seznam zápisů</string>
     <string name="active_programs">Aktivní programy</string>
@@ -674,7 +673,6 @@
     <string name="complete_anyway">Přesto dokončit</string>
     <string name="fk_message">Chybí %s %s z %s %s</string>
     <string name="filters_title_event_status">Stav události</string>
-    <string name="filters_title_enrollment_status">Stav zápisu</string>
     <string name="enrollment_date">Datum zápisu</string>
     <string name="dataset_empty_list_can_create">Nejsou k dispozici žádná data. Kliknutím na „+“ přidáte nový záznam</string>
     <string name="dataset_emtpy_list_can_not_create">Nejsou k dispozici žádná data. Nemáte oprávnění k přidávání nových záznamů.</string>

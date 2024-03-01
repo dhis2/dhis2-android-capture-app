@@ -140,7 +140,6 @@
     <string name="delete">Supprimer</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Date de l\'événement le plus récent</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Liste d\'admission</string>
     <string name="active_programs">Programmes en cours</string>
@@ -669,7 +668,6 @@
     <string name="complete_anyway">Terminer quand même</string>
     <string name="fk_message">Disparu%s%sde%s%s</string>
     <string name="filters_title_event_status">Statut de l\'événement</string>
-    <string name="filters_title_enrollment_status">Statut de l\'enrôlement</string>
     <string name="enrollment_date">Date d\'enrôlement</string>
     <string name="dataset_empty_list_can_create">Il n\'y a pas de données. Cliquez \"+\" pour ajouter un nouvel enregistrement</string>
     <string name="dataset_emtpy_list_can_not_create">Il n\'y a pas de données. Vous n\'êtes pas autorisé à ajouter de nouveaux enregistrements.</string>

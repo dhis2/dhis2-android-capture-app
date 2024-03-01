@@ -141,7 +141,6 @@
     <string name="delete">Verwijder</string>
     <string name="total">Totaal</string>
     <string name="most_recent_event_date">Datum meest recente evenement</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Inschrijvingslijst</string>
     <string name="active_programs">Actieve programma\'s</string>
@@ -675,7 +674,6 @@
     <string name="complete_anyway">In ieder geval compleet</string>
     <string name="fk_message">Ontbrekende %s %s van %s %s</string>
     <string name="filters_title_event_status">Gebeurtenisstatus</string>
-    <string name="filters_title_enrollment_status">Inschrijving Status</string>
     <string name="enrollment_date">Inschrijvingsdatum</string>
     <string name="dataset_empty_list_can_create">Er zijn geen gegevens. Klik op \"+\" om een nieuw record toe te voegen</string>
     <string name="dataset_emtpy_list_can_not_create">Er zijn geen gegevens. U heeft geen rechten om nieuwe records toe te voegen.</string>

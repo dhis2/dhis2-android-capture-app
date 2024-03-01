@@ -145,7 +145,6 @@
     <string name="delete">حذف</string>
     <string name="total">الإجمالي</string>
     <string name="most_recent_event_date">تاريخ أحدث حدث</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">قائمة التسجيل</string>
     <string name="active_programs">البرامج النشطة</string>
@@ -678,7 +677,6 @@
     <string name="complete_anyway">إكمال على أية حال</string>
     <string name="fk_message">%s%s مفقود من %s%s</string>
     <string name="filters_title_event_status">حالة الحدث</string>
-    <string name="filters_title_enrollment_status">حالة التسجيل</string>
     <string name="enrollment_date">تاريخ التسجيل</string>
     <string name="dataset_empty_list_can_create">لا توجد بيانات. انقر فوق \"+\" لإضافة سجل جديد</string>
     <string name="dataset_emtpy_list_can_not_create">لا توجد بيانات. ليس لديك إذن بإضافة سجلات جديدة.</string>

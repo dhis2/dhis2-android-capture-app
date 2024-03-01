@@ -133,7 +133,6 @@
     <string name="delete">ລົບ</string>
     <string name="total">ລວມ</string>
     <string name="most_recent_event_date">ວັນທີເຫດການຄັ້ງຫຼ້າສຸດ</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">ລາຍລະອຽດການລົງທບຽນ</string>
     <string name="active_programs">ໂປຣແກຣທີ່ເປີດນໍາໃຊ້</string>
@@ -638,7 +637,6 @@
     <string name="formula">Formula</string>
     <string name="fk_message">ບໍ່ຄົບຖ້ວນ%s%sຈາກ%s%s</string>
     <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
-    <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
     <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
     <string name="validation_rules_data_to_review">ຂໍ້ມູນທີ່ຕ້ອງທົບທວນ</string>
     <string name="dataset_saved_completed">ບັນ​ທຶກ​ແລະ​ສໍາ​ເລັດ​!</string>

@@ -136,7 +136,6 @@
     <string name="delete">Slett</string>
     <string name="total">Totalt</string>
     <string name="most_recent_event_date">Siste hendelsesdato</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Registreringsliste</string>
     <string name="active_programs">Aktive programmer</string>
@@ -658,7 +657,6 @@
     <string name="complete_anyway">Fullfør likevel</string>
     <string name="fk_message">Mangler %s%sfra %s%s</string>
     <string name="filters_title_event_status">Hendelsesstatus</string>
-    <string name="filters_title_enrollment_status">Registreringsstatus</string>
     <string name="enrollment_date">Registreringsdato</string>
     <string name="dataset_empty_list_can_create">Det er ingen data. Klikk på \"+\" for å legge til en ny oppføring</string>
     <string name="dataset_emtpy_list_can_not_create">Det er ingen data. Du har ikke tillatelse til å legge til nye oppføringer.</string>

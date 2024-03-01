@@ -129,7 +129,6 @@
     <string name="delete">Oʼchirib tashlash</string>
     <string name="total">Jami</string>
     <string name="most_recent_event_date">Oxirgi tadbir sanasi</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Qayd jurnali</string>
     <string name="active_programs">Faol dasturlar</string>
@@ -637,7 +636,6 @@
     <string name="complete_anyway">Baribir toʼldiring</string>
     <string name="fk_message">%s %s dan %s %s yoʼqolgan</string>
     <string name="filters_title_event_status">Hodisa/Tadbir holati</string>
-    <string name="filters_title_enrollment_status">roʼyxatga olish holati</string>
     <string name="enrollment_date">Qayd qilingan sana</string>
     <string name="dataset_empty_list_can_create">Maʼlumot yoʼq. Yangi yozuv qoʼshish uchun \"+\" tugmasini bosing</string>
     <string name="dataset_emtpy_list_can_not_create">Maʼlumot yoʼq. Sizda yangi yozuvlarni qoʼshishga ruxsat yoʼq.</string>
