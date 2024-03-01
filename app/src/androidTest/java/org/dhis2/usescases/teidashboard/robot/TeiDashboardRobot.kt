@@ -7,6 +7,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -93,7 +95,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnEventWith(composeTestRule: ComposeTestRule, searchParam: String) {
-        composeTestRule.onNodeWithText(searchParam, useUnmergedTree = true).performClick()
+        composeTestRule.onAllNodesWithText(searchParam, useUnmergedTree = true).onFirst().performClick()
     }
 
     fun clickOnEventWith(eventName: String, eventStatus: Int, date: String) {
@@ -344,10 +346,10 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun checkEventWasCreatedAndClosed(composeTestRule: ComposeTestRule, eventName: String) {
-        val event = composeTestRule.onNodeWithText(eventName)
+        composeTestRule.onNodeWithText(eventName).assertIsDisplayed()
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val viewOnlyText = targetContext.resources.getString(R.string.view_only)
-        event.assert(hasText(viewOnlyText))
+        composeTestRule.onNodeWithText(viewOnlyText).assertDoesNotExist()
     }
 
     fun clickOnMenuDeleteEnrollment() {

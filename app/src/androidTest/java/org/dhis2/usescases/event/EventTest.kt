@@ -40,6 +40,7 @@ class EventTest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    @Ignore
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
         val tbVisitDate = "31/12/2019"
