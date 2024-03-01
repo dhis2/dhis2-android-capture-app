@@ -583,18 +583,11 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    fun clickOnEventGroupByStageUsingOU(orgUnit: String) {
-        onView(withId(R.id.tei_recycler))
-            .perform(
-                actionOnItem<EventViewHolder>(
-                    hasDescendant(
-                        allOf(
-                            withText(orgUnit),
-                            withId(R.id.organisationUnit)
-                        )
-                    ), click()
-                )
-            )
+    fun clickOnEventGroupByStageUsingDate(
+        composeTestRule: ComposeTestRule,
+        dueDate: String
+    ) {
+        composeTestRule.onNodeWithText(dueDate).performClick()
     }
 
     fun checkProgramStageIsHidden(stageName: String) {

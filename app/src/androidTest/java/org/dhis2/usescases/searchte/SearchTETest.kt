@@ -179,7 +179,7 @@ class SearchTETest : BaseTest() {
 
         teiFlowRobot {
             registerTEI(registerTeiDetails, composeTestRule)
-            changeDueDate(overdueDate, programStage, orgUnit, composeTestRule)
+            changeDueDate(overdueDate, composeTestRule)
             pressBack()
             composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
             pressBack()

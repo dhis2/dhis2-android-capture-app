@@ -3,11 +3,9 @@ package org.dhis2.usescases.flow.teiFlow
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import org.dhis2.common.BaseRobot
-import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
-import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
@@ -98,10 +96,9 @@ class TeiFlowRobot : BaseRobot() {
         }
     }
 
-    fun changeDueDate(date: String, programStage: String, orgUnit: String, composeTestRule: ComposeTestRule) {
+    fun changeDueDate(date: String, composeTestRule: ComposeTestRule) {
         teiDashboardRobot {
-            clickOnStageGroup(composeTestRule, programStage)
-            clickOnEventGroupByStageUsingOU(orgUnit)
+            clickOnEventGroupByStageUsingDate(composeTestRule, date)
         }
 
         eventRobot {
