@@ -16,6 +16,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.TeiDashboardPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.EventCreationOptionsMapper
@@ -255,6 +256,7 @@ class TeiDataPresenterTest {
             showBottomShadow = false,
             displayDate = "21/11/2023",
             nameCategoryOptionCombo = "Name Category option combo",
+            metadataIconData = MetadataIconData.Resource(1, 1),
         )
     }
 }

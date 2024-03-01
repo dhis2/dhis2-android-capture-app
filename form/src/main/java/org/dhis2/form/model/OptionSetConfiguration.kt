@@ -1,36 +1,43 @@
 package org.dhis2.form.model
 
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.option.Option
 
 sealed class OptionSetConfiguration(
     open val options: List<Option> = emptyList(),
     open val optionsToHide: List<String>,
     open val optionsToShow: List<String>,
+    open val optionMetadataIcon: Map<String, MetadataIconData>,
 ) {
     data class DefaultOptionSet(
         override val options: List<Option>,
         override val optionsToHide: List<String> = emptyList(),
         override val optionsToShow: List<String> = emptyList(),
+        override val optionMetadataIcon: Map<String, MetadataIconData>,
     ) : OptionSetConfiguration(
         options = options,
         optionsToHide = optionsToHide,
         optionsToShow = optionsToShow,
+        optionMetadataIcon = optionMetadataIcon,
     )
 
     data class BigOptionSet(
         override val options: List<Option>,
         override val optionsToHide: List<String> = emptyList(),
         override val optionsToShow: List<String> = emptyList(),
+        override val optionMetadataIcon: Map<String, MetadataIconData>,
     ) : OptionSetConfiguration(
         options = options,
         optionsToHide = optionsToHide,
         optionsToShow = optionsToShow,
+        optionMetadataIcon = optionMetadataIcon,
     )
 
     fun optionsToDisplay() = options.filter { option ->
         when {
             optionsToShow.isNotEmpty() ->
                 optionsToShow.contains(option.uid())
+
             else ->
                 !optionsToHide.contains(option.uid())
         }
@@ -39,16 +46,29 @@ sealed class OptionSetConfiguration(
     companion object {
         fun config(
             optionCount: Int,
-            optionRequestCallback: () -> List<Option>,
+            optionRequestCallback: () -> OptionConfigData,
         ): OptionSetConfiguration {
             return when {
-                optionCount > 15 -> BigOptionSet(options = optionRequestCallback())
-                else -> DefaultOptionSet(
-                    options = optionRequestCallback(),
-                )
+                optionCount > 15 -> with(optionRequestCallback()) {
+                    BigOptionSet(
+                        options = options,
+                        optionMetadataIcon = metadataIconMap,
+                    )
+                }
+                else -> with(optionRequestCallback()) {
+                    DefaultOptionSet(
+                        options = options,
+                        optionMetadataIcon = metadataIconMap,
+                    )
+                }
             }
         }
     }
+
+    data class OptionConfigData(
+        val options: List<Option>,
+        val metadataIconMap: Map<String, MetadataIconData>,
+    )
 
     fun updateOptionsToHideAndShow(
         optionsToHide: List<String>,

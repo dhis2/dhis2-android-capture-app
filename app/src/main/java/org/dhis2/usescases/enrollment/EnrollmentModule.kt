@@ -12,6 +12,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -87,10 +88,11 @@ class EnrollmentModule(
         d2: D2,
         modelFactory: FieldViewModelFactory,
         enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
+        metadataIconProvider: MetadataIconProvider,
     ): EnrollmentRepository {
         return EnrollmentRepository(
             fieldFactory = modelFactory,
-            conf = EnrollmentConfiguration(d2, enrollmentUid),
+            conf = EnrollmentConfiguration(d2, enrollmentUid, metadataIconProvider),
             enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
             enrollmentFormLabelsProvider = enrollmentFormLabelsProvider,
         )

@@ -25,6 +25,7 @@ import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.event.Event
@@ -99,6 +100,7 @@ class ProgramEventDetailPresenterTest {
             valueListIsOpen = false,
             displayDate = "2/01/2021",
             nameCategoryOptionCombo = "Category Option Combo",
+            metadataIconData = MetadataIconData.Resource(1, 1),
         )
         val events =
             MutableLiveData<PagedList<EventViewModel>>().also {

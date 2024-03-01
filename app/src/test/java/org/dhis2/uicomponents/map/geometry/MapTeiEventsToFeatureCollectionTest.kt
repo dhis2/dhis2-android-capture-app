@@ -8,6 +8,7 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCol
 import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.model.EventUiComponentModel
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.uicomponents.map.mocks.GeometryDummy.getGeometryAsPoint
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -72,6 +73,7 @@ class MapTeiEventsToFeatureCollectionTest {
             "image",
             "default",
             "orgUnit",
+            MetadataIconData.Resource(1, 1),
         )
         return listOf(event)
     }

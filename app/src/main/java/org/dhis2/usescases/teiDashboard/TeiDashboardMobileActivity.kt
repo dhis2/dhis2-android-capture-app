@@ -569,8 +569,7 @@ class TeiDashboardMobileActivity :
                 val deleteEnrollmentItem = popupMenu.menu.findItem(R.id.deleteEnrollment)
                 deleteEnrollmentItem.isVisible = if (enrollmentUid != null) {
                     presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
-                } 
-                else {
+                } else {
                     false
                 }
 

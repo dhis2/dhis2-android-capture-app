@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.bindings.blockingGetValueCheck
 import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
@@ -23,6 +24,7 @@ class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
     private val d2: D2,
+    private val metadataIconProvider: MetadataIconProvider,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
 
     private val event by lazy {
@@ -153,8 +155,15 @@ class EventRepository(
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .blockingCount()
             optionSetConfig = OptionSetConfiguration.config(optionCount) {
-                d2.optionModule().options().byOptionSetUid().eq(optionSet)
+                val options = d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
+
+                val metadataIconMap = options.associate { it.uid() to metadataIconProvider(it.style()) }
+
+                OptionSetConfiguration.OptionConfigData(
+                    options = options,
+                    metadataIconMap = metadataIconMap,
+                )
             }
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)

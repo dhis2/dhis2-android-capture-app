@@ -171,7 +171,7 @@ class ProgramPresenterTest {
         return ProgramViewModel(
             "uid",
             "displayName",
-            MetadataIconData(
+            MetadataIconData.Resource(
                 programColor = Color.parseColor("#84FFFF"),
                 iconResource = R.drawable.ic_home_positive,
             ),
@@ -194,7 +194,7 @@ class ProgramPresenterTest {
         return ProgramViewModel(
             "uid",
             "displayName",
-            MetadataIconData(
+            MetadataIconData.Resource(
                 programColor = Color.parseColor("#84FFFF"),
                 iconResource = R.drawable.ic_home_positive,
             ),

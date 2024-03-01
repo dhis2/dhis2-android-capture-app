@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import org.dhis2.R
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.hisp.dhis.android.core.common.State
@@ -36,12 +36,12 @@ class InfoBarMapperTest {
         setPrograms().forEach {
             whenever(
                 resourceManager.formatWithEnrollmentLabel(
-                    it.uid(), R.string.enrollment_completed_V2, 1,
+                    it.first.uid(), R.string.enrollment_completed_V2, 1,
                 ),
             ) doReturn "Enrollment completed"
             whenever(
                 resourceManager.formatWithEnrollmentLabel(
-                    it.uid(), R.string.enrollment_cancelled_V2, 1,
+                    it.first.uid(), R.string.enrollment_cancelled_V2, 1,
                 ),
             ) doReturn "Enrollment cancelled"
         }
@@ -151,14 +151,20 @@ class InfoBarMapperTest {
         .program("Program1Uid")
         .build()
 
-    private fun setPrograms() = listOf<Program>(
-        Program.builder()
-            .uid("Program1Uid")
-            .displayName("Program 1")
-            .build(),
-        Program.builder()
-            .uid("Program2Uid")
-            .displayName("Program 2")
-            .build(),
+    private fun setPrograms() = listOf<kotlin.Pair<Program, MetadataIconData>>(
+        Pair(
+            Program.builder()
+                .uid("Program1Uid")
+                .displayName("Program 1")
+                .build(),
+            MetadataIconData.Resource(-1, -1),
+        ),
+        Pair(
+            Program.builder()
+                .uid("Program2Uid")
+                .displayName("Program 2")
+                .build(),
+            MetadataIconData.Resource(-1, -1),
+        ),
     )
 }

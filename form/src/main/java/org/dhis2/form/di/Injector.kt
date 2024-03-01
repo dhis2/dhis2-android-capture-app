@@ -6,6 +6,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
@@ -74,6 +75,9 @@ object Injector {
         )
     }
 
+    private fun provideMetadataIconProvider(context: Context) =
+        MetadataIconProvider(provideD2(), provideResourcesManager(context))
+
     fun provideDispatchers(): DispatcherProvider {
         return FormDispatcher()
     }
@@ -95,6 +99,7 @@ object Injector {
                 entryMode = repositoryRecords.entryMode,
                 context = context,
                 repositoryRecords = repositoryRecords,
+                metadataIconProvider = provideMetadataIconProvider(context),
             ),
             ruleEngineRepository = provideRuleEngineRepository(
                 repositoryRecords.entryMode,
@@ -110,11 +115,13 @@ object Injector {
         entryMode: EntryMode?,
         context: Context,
         repositoryRecords: FormRepositoryRecords,
+        metadataIconProvider: MetadataIconProvider,
     ): DataEntryRepository {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRepository(
                 context,
                 repositoryRecords as EnrollmentRecords,
+                metadataIconProvider,
             )
 
             else -> provideEventRepository(
@@ -127,10 +134,11 @@ object Injector {
     private fun provideEnrollmentRepository(
         context: Context,
         enrollmentRecords: EnrollmentRecords,
+        metadataIconProvider: MetadataIconProvider,
     ): DataEntryRepository {
         return EnrollmentRepository(
             fieldFactory = provideFieldFactory(context),
-            conf = EnrollmentConfiguration(provideD2(), enrollmentRecords.enrollmentUid),
+            conf = EnrollmentConfiguration(provideD2(), enrollmentRecords.enrollmentUid, metadataIconProvider),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
         )
@@ -144,6 +152,7 @@ object Injector {
             fieldFactory = provideFieldFactory(context),
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
+            metadataIconProvider = provideMetadataIconProvider(context),
         )
     }
 

@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
@@ -24,6 +25,7 @@ class SearchRepositoryImplKt(
     private val d2: D2,
     private val dispatcher: DispatcherProvider,
     private val fieldViewModelFactory: FieldViewModelFactory,
+    private val metadataIconProvider: MetadataIconProvider,
 ) : SearchRepositoryKt {
 
     private lateinit var savedSearchParamenters: SearchParametersModel
@@ -116,10 +118,18 @@ class SearchRepositoryImplKt(
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .blockingCount(),
                         ) {
-                            d2.optionModule().options()
+                            val options = d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet()
+
+                            val metadataIconMap =
+                                options.associate { it.uid() to metadataIconProvider(it.style()) }
+
+                            OptionSetConfiguration.OptionConfigData(
+                                options = options,
+                                metadataIconMap = metadataIconMap,
+                            )
                         }
                     }
                     createField(
@@ -152,10 +162,18 @@ class SearchRepositoryImplKt(
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .blockingCount(),
                         ) {
-                            d2.optionModule().options()
+                            val options = d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet()
+
+                            val metadataIconMap =
+                                options.associate { it.uid() to metadataIconProvider(it.style()) }
+
+                            OptionSetConfiguration.OptionConfigData(
+                                options = options,
+                                metadataIconMap = metadataIconMap,
+                            )
                         }
                     }
 

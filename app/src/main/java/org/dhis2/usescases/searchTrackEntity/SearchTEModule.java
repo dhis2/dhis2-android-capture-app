@@ -178,13 +178,15 @@ public class SearchTEModule {
             SearchRepository searchRepository,
             D2 d2,
             DispatcherProvider dispatcherProvider,
-            FieldViewModelFactory fieldViewModelFactory
+            FieldViewModelFactory fieldViewModelFactory,
+            MetadataIconProvider metadataIconProvider
     ) {
         return new SearchRepositoryImplKt(
                 searchRepository,
                 d2,
                 dispatcherProvider,
-                fieldViewModelFactory
+                fieldViewModelFactory,
+                metadataIconProvider
         );
     }
 
