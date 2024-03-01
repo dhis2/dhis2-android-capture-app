@@ -128,7 +128,7 @@ class EventAdapter(
                             editable = it.event?.uid()
                                 ?.let { presenter.isEventEditable(it) } ?: true,
                             displayOrgUnit = it.event?.program()
-                                ?.let { program -> presenter.displayOrganisationUnit() } ?: true,
+                                ?.let { _ -> presenter.displayOrganisationUnit() } ?: true,
                             onCardClick = {
                                 it.event?.let { event ->
                                     when (event.status()) {
@@ -138,14 +138,12 @@ class EventAdapter(
                                                 composeView,
                                             )
                                         }
-                                        EventStatus.VISITED -> {}
-                                        EventStatus.ACTIVE, EventStatus.COMPLETED -> {
+                                        else -> {
                                             presenter.onEventSelected(
                                                 event.uid(),
                                                 event.status()!!,
                                             )
                                         }
-                                        else -> {}
                                     }
                                 }
                             },

@@ -402,6 +402,7 @@ class TEIEventCardMapper(
             }
 
             else -> {
+                //No action button
             }
         }
     }
