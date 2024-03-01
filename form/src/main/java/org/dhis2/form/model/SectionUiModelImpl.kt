@@ -10,6 +10,7 @@ import org.dhis2.form.ui.intent.FormIntent.OnSection
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 data class SectionUiModelImpl(
     override val uid: String,
@@ -45,6 +46,7 @@ data class SectionUiModelImpl(
     override var optionSetConfiguration: OptionSetConfiguration? = null,
     override val autocompleteList: List<String>? = null,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
+    override val selectableDates: SelectableDates? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0

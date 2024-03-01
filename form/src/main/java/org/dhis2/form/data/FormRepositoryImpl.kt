@@ -72,6 +72,7 @@ class FormRepositoryImpl(
             .setOpenedSection()
             .setFocusedItem()
             .setLastItem()
+        //  .updateEnrollmentDetails() consider updating enrollment details here checking if its an event or if Selectedorgunit has changed
     }
 
     private fun List<FieldUiModel>.setLastItem(): List<FieldUiModel> {

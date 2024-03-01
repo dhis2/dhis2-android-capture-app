@@ -238,7 +238,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                          @NonNull String orgUnit,
                                                          @NonNull String programUid,
                                                          @Nullable String teiUid,
-                                                         HashMap<String, String> queryData, Date enrollmentDate,
+                                                         HashMap<String, String> queryData,
                                                          @Nullable String fromRelationshipUid) {
 
         Single<String> enrollmentInitial;
@@ -284,7 +284,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                             if (!isGenerated) {
                                 valueStore.overrideProgram(programUid);
-                                StoreResult toreResult = valueStore.save(key, dataValue).blockingFirst();
+                                StoreResult storeResult = valueStore.save(key, dataValue).blockingFirst();
                             }
                         }
                         return Single.just(uid);
@@ -298,14 +298,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                                         .organisationUnit(orgUnit)
                                         .build())
                         .map(enrollmentUid -> {
-                            boolean displayIncidentDate = getProgram(programUid).displayIncidentDate();
-                            Date enrollmentDateNoTime = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, enrollmentDate, 0);
+                            //To migrate this to enrollment screen if logic is not maintained
+                            // boolean displayIncidentDate = getProgram(programUid).displayIncidentDate();
+                            /* Date enrollmentDateNoTime = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, enrollmentDate, 0);
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(enrollmentDateNoTime);
                             if (displayIncidentDate) {
                                 d2.enrollmentModule().enrollments().uid(enrollmentUid).setIncidentDate(
                                         DateUtils.getInstance().getToday()
                                 );
-                            }
+                            }*/
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })

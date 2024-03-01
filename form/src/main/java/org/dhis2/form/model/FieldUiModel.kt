@@ -7,6 +7,7 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldUiModel {
 
@@ -73,6 +74,8 @@ interface FieldUiModel {
     val autocompleteList: List<String>?
 
     val orgUnitSelectorScope: OrgUnitSelectorScope?
+
+    val selectableDates: SelectableDates?
 
     fun setCallback(callback: Callback)
 

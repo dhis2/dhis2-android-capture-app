@@ -123,13 +123,22 @@ class FormValueStore(
             }
 
             EnrollmentDetail.ORG_UNIT_UID.name -> {
-                enrollmentRepository?.setOrganisationUnitUid(value)
-                Flowable.just(
-                    StoreResult(
-                        EnrollmentDetail.ORG_UNIT_UID.name,
-                        ValueStoreResult.VALUE_CHANGED,
-                    ),
-                )
+                try {
+                    enrollmentRepository?.setOrganisationUnitUid(value)
+                    Flowable.just(
+                        StoreResult(
+                            EnrollmentDetail.ORG_UNIT_UID.name,
+                            ValueStoreResult.VALUE_CHANGED,
+                        ),
+                    )
+                } catch (e: Exception) {
+                    Flowable.just(
+                        StoreResult(
+                            EnrollmentDetail.ORG_UNIT_UID.name,
+                            ValueStoreResult.ERROR_UPDATING_VALUE,
+                        ),
+                    )
+                }
             }
 
             EnrollmentDetail.TEI_COORDINATES_UID.name -> {

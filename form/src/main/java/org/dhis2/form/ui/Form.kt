@@ -76,7 +76,7 @@ fun Form(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color.White, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 0.dp, bottomEnd = 0.dp))
             .clickable(
                 interactionSource = MutableInteractionSource(),
                 indication = null,

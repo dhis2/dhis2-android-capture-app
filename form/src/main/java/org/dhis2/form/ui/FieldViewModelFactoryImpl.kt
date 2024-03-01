@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 class FieldViewModelFactoryImpl(
     private val uiStyleProvider: UiStyleProvider,
@@ -53,6 +54,7 @@ class FieldViewModelFactoryImpl(
         featureType: FeatureType?,
         autoCompleteList: List<String>?,
         orgUnitSelectorScope: OrgUnitSelectorScope?,
+        selectableDates: SelectableDates?,
     ): FieldUiModel {
         isNull(valueType, "type must be supplied")
         return FieldUiModelImpl(
@@ -97,6 +99,7 @@ class FieldViewModelFactoryImpl(
             fieldMask = fieldMask,
             autocompleteList = autoCompleteProvider.provideAutoCompleteValues(id),
             orgUnitSelectorScope = orgUnitSelectorScope,
+            selectableDates = selectableDates,
         )
     }
 
