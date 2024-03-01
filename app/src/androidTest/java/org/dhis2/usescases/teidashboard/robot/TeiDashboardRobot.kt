@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
 import android.view.View
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -91,8 +92,8 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
-    fun clickOnEventWith(composeTestRule: ComposeTestRule, eventDate: String) {
-        composeTestRule.onNodeWithText(eventDate, useUnmergedTree = true).performClick()
+    fun clickOnEventWith(composeTestRule: ComposeTestRule, searchParam: String) {
+        composeTestRule.onNodeWithText(searchParam, useUnmergedTree = true).performClick()
     }
 
     fun clickOnEventWith(eventName: String, eventStatus: Int, date: String) {
@@ -342,28 +343,11 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(),
-                        atPosition(
-                            position, allOf(
-                                hasDescendant(withText(eventName)),
-                                hasDescendant(
-                                    withTagValue(
-                                        anyOf(
-                                            equalTo(R.drawable.ic_event_status_complete),
-                                            equalTo(R.drawable.ic_event_status_complete_read)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+    fun checkEventWasCreatedAndClosed(composeTestRule: ComposeTestRule, eventName: String) {
+        val event = composeTestRule.onNodeWithText(eventName)
+        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val viewOnlyText = targetContext.resources.getString(R.string.view_only)
+        event.assert(hasText(viewOnlyText))
     }
 
     fun clickOnMenuDeleteEnrollment() {
@@ -407,28 +391,6 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    private fun checkEventIsOpen(position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(),
-                        atPosition(
-                            position,
-                            hasDescendant(
-                                withTagValue(
-                                    anyOf(
-                                        equalTo(R.drawable.ic_event_status_open),
-                                        equalTo(R.drawable.ic_event_status_open_read)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-    }
-
     private fun checkEventIsCompleted(position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(
@@ -449,45 +411,6 @@ class TeiDashboardRobot : BaseRobot() {
                     )
                 )
             )
-    }
-
-    private fun checkEventIsInactivate(position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(), atPosition(
-                            position, hasDescendant(
-                                withTagValue(
-                                    anyOf(
-                                        equalTo(R.drawable.ic_event_status_open_read),
-                                        equalTo(R.drawable.ic_event_status_overdue_read),
-                                        equalTo(R.drawable.ic_event_status_complete_read),
-                                        equalTo(R.drawable.ic_event_status_skipped_read),
-                                        equalTo(R.drawable.ic_event_status_schedule_read)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-    }
-
-    fun checkAllEventsAreInactive(totalEvents: Int) {
-        var event = 0
-        while (event < totalEvents) {
-            checkEventIsInactivate(event)
-            event++
-        }
-    }
-
-    fun checkAllEventsAreOpened(totalEvents: Int) {
-        var event = 0
-        while (event < totalEvents) {
-            checkEventIsOpen(event)
-            event++
-        }
     }
 
     fun checkAllEventsCompleted(totalEvents: Int) {

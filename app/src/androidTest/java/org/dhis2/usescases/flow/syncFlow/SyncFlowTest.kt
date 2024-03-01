@@ -69,7 +69,6 @@ class SyncFlowTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            clickOnGroupEventByName(LAB_MONITORING)
             clickOnEventWith(composeTestRule, LAB_MONITORING_EVENT_DATE)
         }
 
