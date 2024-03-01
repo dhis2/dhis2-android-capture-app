@@ -163,6 +163,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     @Ignore("Test is successful locally but not in browserstack")
     fun shouldSuccessfullyFilterByEventStatusOverdue() {

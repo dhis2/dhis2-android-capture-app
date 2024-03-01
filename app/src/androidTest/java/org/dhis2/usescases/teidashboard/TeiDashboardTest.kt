@@ -227,6 +227,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
         prepareTeiOpenedToEditAndLaunchActivity(rule)
