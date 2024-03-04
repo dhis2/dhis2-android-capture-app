@@ -105,7 +105,7 @@ class TeiFlowTest: BaseTest() {
         const val LASTNAME = "Stuart"
 
         const val DATE_FORMAT = "dd/M/yyyy"
-        const val DATE_PICKER_FORMAT = "EEEE, MMMM d, yyyy"
+        const val DATE_PICKER_FORMAT = "EEEE, d MMMM yyyy"
 
     }
 }
