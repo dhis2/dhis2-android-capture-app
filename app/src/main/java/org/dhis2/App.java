@@ -109,13 +109,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public void onCreate() {
         super.onCreate();
 
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .penaltyDeath()
-                .build()
-        );
-
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         appInspector = new AppInspector(this).init();
