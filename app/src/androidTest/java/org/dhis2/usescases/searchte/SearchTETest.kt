@@ -436,7 +436,7 @@ class SearchTETest : BaseTest() {
     private fun getCurrentDate() : String  {
         val sdf = SimpleDateFormat(TeiFlowTest.DATE_PICKER_FORMAT)
         val calendar = Calendar.getInstance()
-        return "Today, "+ sdf.format(calendar.time)
+        return sdf.format(calendar.time)
     }
 
     private val dateRegistration = createFirstSpecificDate()
