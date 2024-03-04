@@ -75,14 +75,6 @@ class EventRobot : BaseRobot() {
         }
     }
 
-    fun clickOnChangeDate() {
-        onView(withText(R.string.change_event_date)).perform(click())
-    }
-
-    fun clickOnEditDate() {
-        onView(withId(R.id.date)).perform(click())
-    }
-
     fun acceptUpdateEventDate(composeTestRule: ComposeTestRule) {
         composeTestRule.onNodeWithText("OK",true).performClick()
     }
@@ -139,11 +131,8 @@ class EventRobot : BaseRobot() {
     }
 
     fun selectSpecificDate( composeTestRule: ComposeTestRule, date: String) {
-        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed().printToLog("DATE-PICKER-COMPONENTS")
-
-        composeTestRule.onNodeWithText(date,true).performClick()
-        composeTestRule.onNodeWithTag("DATE_PICKER").printToLog("DATE-PICKER2")
-
+        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
+        composeTestRule.onNode(hasText(date, true)).performClick()
     }
 
     fun checkEventDetails(eventDate: String, eventOrgUnit: String, composeTestRule: ComposeTestRule) {
