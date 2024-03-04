@@ -15,6 +15,8 @@ import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
@@ -120,9 +122,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         }
 
-    override fun onDbImportFinished() {
+    override fun onDbImportFinished(isSuccess: Boolean) {
         showLoginProgress(false)
-        blockLoginInfo()
+        if (isSuccess) {
+            blockLoginInfo()
+        }
     }
 
     companion object {
@@ -187,14 +191,19 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
         binding.topbar.setContent {
+            val displayMoreActions by presenter.displayMoreActions().observeAsState(true)
             MdcTheme {
-                LoginTopBar(version = buildInfo(), onImportDatabase = {
-                    showLoginProgress(false, getString(R.string.importing_database))
-                    val intent = Intent()
-                    intent.type = "*/*"
-                    intent.action = Intent.ACTION_GET_CONTENT
-                    filePickerLauncher.launch(intent)
-                })
+                LoginTopBar(
+                    version = buildInfo(),
+                    displayMoreActions = displayMoreActions,
+                    onImportDatabase = {
+                        showLoginProgress(false, getString(R.string.importing_database))
+                        val intent = Intent()
+                        intent.type = "*/*"
+                        intent.action = Intent.ACTION_GET_CONTENT
+                        filePickerLauncher.launch(intent)
+                    },
+                )
             }
         }
 
@@ -540,6 +549,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.userNameEdit.isEnabled = true
         binding.clearUrl.visibility = View.VISIBLE
         binding.clearUserNameButton.visibility = View.VISIBLE
+        presenter.setDisplayMoreActions(true)
     }
 
     private fun blockLoginInfo() {
@@ -549,6 +559,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.userNameEdit.isEnabled = false
         binding.clearUrl.visibility = View.GONE
         binding.clearUserNameButton.visibility = View.GONE
+        presenter.setDisplayMoreActions(false)
     }
 
     /*

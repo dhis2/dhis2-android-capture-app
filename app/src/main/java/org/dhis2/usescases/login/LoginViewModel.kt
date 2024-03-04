@@ -80,6 +80,9 @@ class LoginViewModel(
     private val _hasAccounts = MutableLiveData<Boolean>()
     val hasAccounts: LiveData<Boolean> = _hasAccounts
 
+    private val _displayMoreActions = MutableLiveData<Boolean>(true)
+    val displayMoreActions: LiveData<Boolean> = _displayMoreActions
+
     init {
         this.userManager?.let {
             disposable.add(
@@ -563,7 +566,7 @@ class LoginViewModel(
     fun onImportDataBase(file: File) {
         userManager?.let {
             viewModelScope.launch {
-                val result = async {
+                val resultJob = async {
                     try {
                         val importedMetadata =
                             it.d2.maintenanceModule().databaseImportExport().importDatabase(file)
@@ -573,7 +576,9 @@ class LoginViewModel(
                     }
                 }
 
-                result.await().fold(
+                val result = resultJob.await()
+
+                result.fold(
                     onSuccess = {
                         setAccountInfo(it.serverUrl, it.username)
                         view.setUrl(it.serverUrl)
@@ -585,8 +590,13 @@ class LoginViewModel(
                     },
                 )
 
-                view.onDbImportFinished()
+                view.onDbImportFinished(result.isSuccess)
             }
         }
+    }
+
+    fun displayMoreActions() = displayMoreActions
+    fun setDisplayMoreActions(shouldDisplayMoreActions: Boolean) {
+        _displayMoreActions.postValue(shouldDisplayMoreActions)
     }
 }

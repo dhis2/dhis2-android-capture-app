@@ -1,6 +1,10 @@
 package org.dhis2.usescases.settings.ui
 
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -21,6 +25,9 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,6 +42,8 @@ import androidx.lifecycle.LiveData
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
+import org.dhis2.ui.dialogs.alert.Dhis2AlertDialogUi
+import org.dhis2.ui.model.ButtonUiModel
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
@@ -46,18 +55,31 @@ fun ExportOption(
     onShare: () -> Unit,
     displayProgress: Boolean,
 ) {
-    var onPermissionGrantedCallback: () -> Unit = {}
+    val context = LocalContext.current
 
+    var onPermissionGrantedCallback: () -> Unit = {}
+    var showPermissionDialog by remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { isGranted ->
         if (isGranted) {
             onPermissionGrantedCallback()
+        } else {
+            showPermissionDialog = true
         }
-        onPermissionGrantedCallback = {}
     }
 
-    val context = LocalContext.current
+    val permissionSettingLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                onPermissionGrantedCallback()
+            }
+            onPermissionGrantedCallback = {}
+        }
 
     AnimatedContent(
         targetState = displayProgress,
@@ -86,7 +108,8 @@ fun ExportOption(
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (ContextCompat.checkSelfPermission(
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU ||
+                            ContextCompat.checkSelfPermission(
                                 context,
                                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             ) == PackageManager.PERMISSION_GRANTED
@@ -111,7 +134,8 @@ fun ExportOption(
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (ContextCompat.checkSelfPermission(
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU ||
+                            ContextCompat.checkSelfPermission(
                                 context,
                                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             ) == PackageManager.PERMISSION_GRANTED
@@ -145,6 +169,26 @@ fun ExportOption(
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
             }
         }
+    }
+
+    if (showPermissionDialog) {
+        Dhis2AlertDialogUi(
+            labelText = stringResource(id = R.string.permission_denied),
+            descriptionText = "You need to provide the permission to carry out this action",
+            iconResource = R.drawable.ic_info,
+            dismissButton = ButtonUiModel("Cancel") {
+                showPermissionDialog = false
+                onPermissionGrantedCallback = {}
+            },
+            confirmButton = ButtonUiModel("Change permission") {
+                permissionSettingLauncher.launch(
+                    Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.fromParts("package", context.packageName, null),
+                    ),
+                )
+            },
+        )
     }
 }
 

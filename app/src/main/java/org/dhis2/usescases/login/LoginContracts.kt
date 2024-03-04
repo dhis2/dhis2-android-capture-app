@@ -55,6 +55,6 @@ class LoginContracts {
         fun openAccountsActivity()
         fun showNoConnectionDialog()
         fun initLogin(): UserManager?
-        fun onDbImportFinished()
+        fun onDbImportFinished(isSuccess: Boolean)
     }
 }

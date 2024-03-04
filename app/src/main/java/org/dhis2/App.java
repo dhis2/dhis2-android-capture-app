@@ -4,6 +4,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_STORE_ANALYTICS_
 
 import android.content.Context;
 import android.os.Looper;
+import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -108,6 +109,12 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public void onCreate() {
         super.onCreate();
 
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .penaltyDeath()
+                .build()
+        );
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
@@ -116,7 +123,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         MapController.Companion.init(this);
 
         setUpAppComponent();
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
         }
 

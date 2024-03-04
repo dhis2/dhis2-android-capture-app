@@ -470,7 +470,7 @@ class LoginViewModelTest {
         testingDispatcher.scheduler.advanceUntilIdle()
         verify(view).setUrl("serverUrl")
         verify(view).setUser("userName")
-        verify(view).onDbImportFinished()
+        verify(view).onDbImportFinished(true)
     }
 
     private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {

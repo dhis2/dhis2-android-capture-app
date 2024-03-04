@@ -59,5 +59,7 @@ class FileHandler {
                 Environment.DIRECTORY_DOWNLOADS,
             ),
         )
+    }.also {
+        if (it.exists()) it.delete()
     }
 }

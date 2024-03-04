@@ -38,11 +38,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideFontResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
 fun LoginTopBar(
     version: String,
+    displayMoreActions: Boolean = true,
     onImportDatabase: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -79,49 +80,51 @@ fun LoginTopBar(
                 contentDescription = "dhis2 logo",
             )
 
-            Box {
-                IconButton(
-                    modifier = Modifier
-                        .size(48.dp),
-                    onClick = { expanded = true },
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "More options",
-                        tint = MaterialTheme.colors.onPrimary,
-                    )
-                }
+            if (displayMoreActions) {
+                Box {
+                    IconButton(
+                        modifier = Modifier
+                            .size(48.dp),
+                        onClick = { expanded = true },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "More options",
+                            tint = MaterialTheme.colors.onPrimary,
+                        )
+                    }
 
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    DropdownMenuItem(onClick = {
-                        expanded = false
-                        onImportDatabase()
-                    }) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = spacedBy(16.dp),
-                        ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_import_db),
-                                contentDescription = "Import database",
-                                tint = MaterialTheme.colors.primary,
-                            )
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            onImportDatabase()
+                        }) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = spacedBy(16.dp),
+                            ) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_import_db),
+                                    contentDescription = "Import database",
+                                    tint = MaterialTheme.colors.primary,
+                                )
 
-                            Text(
-                                text = "Import database",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    lineHeight = 24.sp,
-                                    fontFamily = provideFontResource("rubik_medium"),
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.Black,
-                                    letterSpacing = 0.5.sp,
-                                ),
-                            )
+                                Text(
+                                    text = "Import database",
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        lineHeight = 24.sp,
+                                        fontFamily = provideFontResource("rubik_regular"),
+                                        fontWeight = FontWeight.Normal,
+                                        color = Color.Black,
+                                        letterSpacing = 0.5.sp,
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
@@ -137,10 +140,10 @@ fun LoginTopBar(
             style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
-                fontFamily = provideFontResource("rubik_medium"),
-                fontWeight = FontWeight.Medium,
-                color = TextColor.OnPrimary,
-                letterSpacing = 0.5.sp,
+                fontFamily = provideFontResource("rubik_regular"),
+                fontWeight = FontWeight.Normal,
+                color = SurfaceColor.ContainerHighest,
+                letterSpacing = 0.4.sp,
             ),
         )
     }

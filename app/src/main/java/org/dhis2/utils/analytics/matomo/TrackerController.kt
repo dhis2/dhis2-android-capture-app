@@ -10,8 +10,9 @@ const val DEFAULT_EXTERNAL_TRACKER_NAME = "secondaryTracker"
 class TrackerController {
     companion object {
         fun dhis2InternalTracker(matomo: Matomo): Tracker? {
-            return TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID)
-                .build(matomo)
+            return null
+            /*return TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID)
+                .build(matomo)*/
         }
 
         fun dhis2ExternalTracker(
