@@ -77,6 +77,8 @@ interface FieldUiModel {
 
     val selectableDates: SelectableDates?
 
+    val eventCatCombo: EventCategoryCombo?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean

@@ -1,6 +1,7 @@
 package org.dhis2.form.ui
 
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.form.model.EventCategoryCombo
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.hisp.dhis.android.core.common.FeatureType
@@ -31,6 +32,7 @@ interface FieldViewModelFactory {
         autoCompleteList: List<String>? = null,
         orgUnitSelectorScope: OrgUnitSelectorScope? = null,
         selectableDates: SelectableDates? = null,
+        eventCatCombo: EventCategoryCombo? = null,
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel

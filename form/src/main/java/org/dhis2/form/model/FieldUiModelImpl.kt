@@ -38,6 +38,7 @@ data class FieldUiModelImpl(
     override var autocompleteList: List<String>?,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val selectableDates: SelectableDates? = null,
+    override val eventCatCombo: EventCategoryCombo? = null,
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null

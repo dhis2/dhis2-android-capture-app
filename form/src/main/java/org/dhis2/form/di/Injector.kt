@@ -47,6 +47,7 @@ import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.mobileProgramRules.RulesRepository
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.EventObjectRepository
 
 object Injector {
     fun provideFormViewModelFactory(
@@ -205,16 +206,28 @@ object Injector {
         } else {
             null
         }
+
+        val eventObjectRepository = if (entryMode == EntryMode.DE) {
+            provideEventObjectRepository(recordUid!!)
+        } else {
+            null
+        }
+
         return FormValueStore(
             d2 = provideD2(),
             recordUid = enrollmentObjectRepository?.blockingGet()?.trackedEntityInstance()
                 ?: recordUid!!,
             entryMode = entryMode,
             enrollmentRepository = enrollmentObjectRepository,
+            eventRepository = eventObjectRepository,
             crashReportController = provideCrashReportController(),
             networkUtils = provideNetworkUtils(context),
             resourceManager = provideResourcesManager(context),
         )
+    }
+
+    private fun provideEventObjectRepository(recordUid: String): EventObjectRepository {
+        return provideD2().eventModule().events().uid(recordUid)
     }
 
     private fun provideEnrollmentObjectRepository(

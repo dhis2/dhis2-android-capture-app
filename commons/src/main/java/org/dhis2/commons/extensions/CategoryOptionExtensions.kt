@@ -1,4 +1,4 @@
-package org.dhis2.data.dhislogic
+package org.dhis2.commons.extensions
 
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption

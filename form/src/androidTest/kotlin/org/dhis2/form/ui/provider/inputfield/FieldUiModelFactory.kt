@@ -22,5 +22,6 @@ fun generateFieldUiModel(uid: String, value: String, displayName: String = "Test
         displayName = displayName,
         optionSetConfiguration = null,
         autocompleteList = null,
+        eventCatCombo = null,
     )
 }
