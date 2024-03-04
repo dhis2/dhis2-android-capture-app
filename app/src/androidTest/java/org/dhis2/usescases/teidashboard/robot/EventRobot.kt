@@ -131,10 +131,8 @@ class EventRobot : BaseRobot() {
     }
 
     fun selectSpecificDate( composeTestRule: ComposeTestRule, date: String) {
-        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed().printToLog("DATE-PICKER-COMPONENTS")
+        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
         composeTestRule.onNode(hasText(date, true)).performClick()
-        composeTestRule.onNodeWithTag("DATE_PICKER").printToLog("DATE-PICKER2")
-
     }
 
     fun checkEventDetails(eventDate: String, eventOrgUnit: String, composeTestRule: ComposeTestRule) {
