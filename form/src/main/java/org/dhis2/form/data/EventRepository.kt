@@ -10,11 +10,16 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.data.metadata.FormBaseConfiguration
+import org.dhis2.form.model.EventCategory
+import org.dhis2.form.model.EventCategoryCombo
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.Category
+import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -22,6 +27,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.imports.ImportStatus
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
@@ -126,11 +132,127 @@ class EventRepository(
             add(createEventDetailsSection())
             add(createEventReportDateField())
             add(createEventOrgUnitField())
+
             if (shouldShowCoordinates()) {
                 add(createEventCoordinatesField())
             }
+
+            getCatCombo()?.let { categoryCombo ->
+                if (categoryCombo.isDefault == false) {
+                    add(createCategoryComboSection())
+                    addAll(createEventCategoryComboFields(categoryCombo))
+                }
+            }
         }
         return eventDataItems
+    }
+
+    private fun createEventCategoryComboFields(categoryCombo: CategoryCombo): List<FieldUiModel> {
+        val fields = mutableListOf<FieldUiModel>()
+        val categories = getCategories(categoryCombo.categories())
+        val categoryOptions = getOptionsFromCatOptionCombo(categoryCombo)
+
+        val catComboDisplayName = getCatComboDisplayName(categoryCombo.uid() ?: "")
+
+        val eventCatCombo = EventCategoryCombo(
+            categories = categories,
+            categoryOptions = categoryOptions,
+            selectedCategoryOptions = getSelectedCategoryOptions(categories, categoryOptions),
+            displayName = catComboDisplayName,
+            date = getEventReportDate(),
+            orgUnitUID = event?.organisationUnit(),
+        )
+
+        fields.add(
+            fieldFactory.create(
+                id = "$EVENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
+                label = eventCatCombo.displayName ?: "",
+                valueType = ValueType.TEXT,
+                mandatory = true,
+                programStageSection = EVENT_CATEGORY_COMBO_SECTION_UID,
+                editable = isEventEditable(),
+                description = null,
+                eventCatCombo = eventCatCombo,
+            ),
+        )
+        return fields
+    }
+
+    private fun getCatComboDisplayName(categoryComboUid: String): String? {
+        return d2.categoryModule().categoryCombos().uid(categoryComboUid)
+            .blockingGet()?.displayName()
+    }
+
+    private fun getSelectedCategoryOptions(
+        categories: List<EventCategory>,
+        categoryOptions: Map<String, CategoryOption>?,
+    ) = categories.associateBy(EventCategory::uid) { category ->
+        categoryOptions?.get(category.uid)
+    }
+
+    private fun getOptionsFromCatOptionCombo(categoryCombo: CategoryCombo): Map<String, CategoryOption>? {
+        return event?.let { event ->
+            val map = mutableMapOf<String, CategoryOption>()
+            if (categoryCombo.isDefault == false && event.attributeOptionCombo() != null) {
+                val selectedCatOptions = d2.categoryModule()
+                    .categoryOptionCombos()
+                    .withCategoryOptions()
+                    .uid(event.attributeOptionCombo())
+                    .blockingGet()?.categoryOptions()
+                categoryCombo.categories()?.forEach { category ->
+                    selectedCatOptions?.forEach { categoryOption ->
+                        val categoryOptions = d2.categoryModule()
+                            .categoryOptions()
+                            .byCategoryUid(category.uid())
+                            .blockingGet()
+                        if (categoryOptions.contains(categoryOption)) {
+                            map[category.uid()] = categoryOption
+                        }
+                    }
+                }
+            }
+            map
+        }
+    }
+
+    private fun getCategories(categories: MutableList<Category>?): List<EventCategory> {
+        return categories?.map { category ->
+            EventCategory(
+                uid = category.uid(),
+                name = category.displayName() ?: category.uid(),
+                options = getCategoryOptions(category.uid()),
+            )
+        } ?: emptyList()
+    }
+
+    private fun getCategoryOptions(categoryUid: String): List<CategoryOption> {
+        return d2.categoryModule()
+            .categoryOptions()
+            .withOrganisationUnits()
+            .byCategoryUid(categoryUid)
+            .blockingGet()
+    }
+
+    private fun getCatCombo(): CategoryCombo? {
+        return d2.programModule().programs().uid(programUid).get()
+            .flatMap { program: Program ->
+                d2.categoryModule().categoryCombos()
+                    .withCategories()
+                    .uid(program.categoryComboUid())
+                    .get()
+            }.blockingGet()
+    }
+
+    private fun createCategoryComboSection(): FieldUiModel {
+        return fieldFactory.createSection(
+            sectionUid = EVENT_CATEGORY_COMBO_SECTION_UID,
+            sectionName = resources.getString(R.string.category_combo),
+            description = null,
+            isOpen = false,
+            totalFields = 0,
+            completedFields = 0,
+            rendering = SectionRenderingType.LISTING.name,
+        )
     }
 
     private fun shouldShowCoordinates(): Boolean {
@@ -255,10 +377,11 @@ class EventRepository(
 
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {
         return Single.fromCallable {
-            val stageDataElements = d2.programModule().programStageDataElements().withRenderType()
-                .byProgramStage().eq(event?.programStage())
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
+            val stageDataElements =
+                d2.programModule().programStageDataElements().withRenderType()
+                    .byProgramStage().eq(event?.programStage())
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                    .blockingGet()
 
             stageDataElements.map { programStageDataElement ->
                 transform(programStageDataElement, EVENT_DATA_SECTION_UID)
@@ -306,9 +429,10 @@ class EventRepository(
         val optionSet = de?.optionSetUid()
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid)
-        val programStageSection: ProgramStageSection? = sectionMap.values.firstOrNull { section ->
-            section.dataElements()?.map { it.uid() }?.contains(de?.uid()) ?: false
-        }
+        val programStageSection: ProgramStageSection? =
+            sectionMap.values.firstOrNull { section ->
+                section.dataElements()?.map { it.uid() }?.contains(de?.uid()) ?: false
+            }
         var dataValue = when {
             valueRepository.blockingExists() -> valueRepository.blockingGet()?.value()
             else -> null
@@ -321,7 +445,8 @@ class EventRepository(
         val description = de?.displayDescription()
         var optionSetConfig: OptionSetConfiguration? = null
         if (!TextUtils.isEmpty(optionSet)) {
-            if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options().byOptionSetUid()
+            if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options()
+                    .byOptionSetUid()
                     .eq(optionSet).byCode()
                     .eq(dataValue)
                     .one().blockingExists()
@@ -417,7 +542,8 @@ class EventRepository(
         return Pair(error, warning)
     }
 
-    private fun getObjectStyle(de: DataElement?) = de?.style() ?: ObjectStyle.builder().build()
+    private fun getObjectStyle(de: DataElement?) =
+        de?.style() ?: ObjectStyle.builder().build()
 
     private fun getValueTypeDeviceRendering(programStageDataElement: ProgramStageDataElement) =
         if (programStageDataElement.renderType() != null) {
@@ -435,13 +561,16 @@ class EventRepository(
     private fun getSectionRenderingType(programStageSection: ProgramStageSection?) =
         programStageSection?.renderType()?.mobile()?.type()
 
-    private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
+    private fun isEventEditable() =
+        d2.eventModule().eventService().blockingIsEditable(eventUid)
 
     companion object {
         const val EVENT_DETAILS_SECTION_UID = "EVENT_DETAILS_SECTION_UID"
         const val EVENT_REPORT_DATE_UID = "EVENT_REPORT_DATE_UID"
         const val EVENT_ORG_UNIT_UID = "EVENT_ORG_UNIT_UID"
         const val EVENT_COORDINATE_UID = "EVENT_COORDINATE_UID"
+        const val EVENT_CATEGORY_COMBO_SECTION_UID = "EVENT_CATEGORY_COMBO_SECTION_UID"
+        const val EVENT_CATEGORY_COMBO_UID = "EVENT_CATEGORY_COMBO_UID"
         const val EVENT_DATA_SECTION_UID = "EVENT_DATA_SECTION_UID"
     }
 }

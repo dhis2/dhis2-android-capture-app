@@ -3,6 +3,7 @@ package org.dhis2.form.ui
 import androidx.databinding.ObservableField
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.form.model.EventCategoryCombo
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.OptionSetConfiguration
@@ -55,6 +56,7 @@ class FieldViewModelFactoryImpl(
         autoCompleteList: List<String>?,
         orgUnitSelectorScope: OrgUnitSelectorScope?,
         selectableDates: SelectableDates?,
+        eventCatCombo: EventCategoryCombo?,
     ): FieldUiModel {
         isNull(valueType, "type must be supplied")
         return FieldUiModelImpl(
@@ -100,6 +102,7 @@ class FieldViewModelFactoryImpl(
             autocompleteList = autoCompleteProvider.provideAutoCompleteValues(id),
             orgUnitSelectorScope = orgUnitSelectorScope,
             selectableDates = selectableDates,
+            eventCatCombo = eventCatCombo,
         )
     }
 

@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.option.Option
@@ -47,6 +48,7 @@ class FormValueStoreTest {
     private val resourceManager: ResourceManager = mock()
     private val fileController: FileController = mock()
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
+    private val eventRepository: EventObjectRepository = mock()
     private val uniqueAttributeController: UniqueAttributeController = mock()
 
     @Before
@@ -57,6 +59,7 @@ class FormValueStoreTest {
                 "recordUid",
                 EntryMode.ATTR,
                 enrollmentRepository,
+                null,
                 crashReportController,
                 networkUtils,
                 resourceManager,
@@ -69,6 +72,7 @@ class FormValueStoreTest {
                 "recordUid",
                 EntryMode.DE,
                 null,
+                eventRepository,
                 crashReportController,
                 networkUtils,
                 resourceManager,
@@ -80,6 +84,7 @@ class FormValueStoreTest {
                 d2,
                 "recordUid",
                 EntryMode.DV,
+                null,
                 null,
                 crashReportController,
                 networkUtils,
@@ -95,6 +100,7 @@ class FormValueStoreTest {
             d2,
             "recordUid",
             EntryMode.DV,
+            null,
             null,
             crashReportController,
             networkUtils,
