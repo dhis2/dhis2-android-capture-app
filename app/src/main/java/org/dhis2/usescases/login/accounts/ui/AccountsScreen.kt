@@ -73,15 +73,6 @@ fun AccountsScreen(
                         modifier = Modifier
                             .fillMaxWidth(),
                         style = ButtonStyle.ELEVATED,
-                        /*colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(id = R.color.colorPrimary),
-                            contentColor = Color.White,
-                        ),
-                        elevation = ButtonDefaults.elevation(
-                            defaultElevation = 5.dp,
-                            pressedElevation = 15.dp,
-                            disabledElevation = 0.dp,
-                        ),*/
                         onClick = { onAddAccountClicked() },
                     )
                 }
