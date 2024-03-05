@@ -14,4 +14,6 @@ interface SearchRepositoryKt {
     ): Flow<PagingData<TrackedEntitySearchItem>>
 
     suspend fun searchParameters(programUid: String?, teiTypeUid: String): List<FieldUiModel>
+
+    suspend fun searchTrackedEntitiesImmediate(searchParametersModel: SearchParametersModel, isOnline: Boolean): List<TrackedEntitySearchItem>
 }

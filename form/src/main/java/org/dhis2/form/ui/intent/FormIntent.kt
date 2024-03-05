@@ -27,6 +27,12 @@ sealed class FormIntent : MviIntent {
         val fieldMask: String? = null,
     ) : FormIntent()
 
+    data class OnQrCodeScanned(
+        val uid: String,
+        val value: String?,
+        val valueType: ValueType,
+    ) : FormIntent()
+
     data class OnStoreFile(
         val uid: String,
         val filePath: String,

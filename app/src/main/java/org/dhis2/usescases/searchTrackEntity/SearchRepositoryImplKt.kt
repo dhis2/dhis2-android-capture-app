@@ -38,6 +38,14 @@ class SearchRepositoryImplKt(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
     ): Flow<PagingData<TrackedEntitySearchItem>> {
+        return trackedEntitySearchQuery(searchParametersModel, isOnline)
+            .getPagingData(10)
+    }
+
+    private fun trackedEntitySearchQuery(
+        searchParametersModel: SearchParametersModel,
+        isOnline: Boolean,
+    ): TrackedEntitySearchCollectionRepository {
         var allowCache = false
         savedSearchParamenters = searchParametersModel.copy()
         savedFilters = FilterManager.getInstance().copy()
@@ -60,10 +68,8 @@ class SearchRepositoryImplKt(
 
         val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isNotEmpty()) {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
-                .getPagingData(10)
         } else {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
-                .getPagingData(10)
         }
 
         return pagerFlow
@@ -78,6 +84,14 @@ class SearchRepositoryImplKt(
                 programTrackedEntityAttributes(programUid)
             } ?: trackedEntitySearchFields(teiTypeUid)
         }
+
+    override suspend fun searchTrackedEntitiesImmediate(
+        searchParametersModel: SearchParametersModel,
+        isOnline: Boolean,
+    ): List<TrackedEntitySearchItem> {
+        return trackedEntitySearchQuery(searchParametersModel, isOnline)
+            .blockingGet()
+    }
 
     private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
         val searchableAttributes = d2.programModule().programTrackedEntityAttributes()
