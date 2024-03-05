@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -45,6 +44,8 @@ import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -233,18 +234,12 @@ fun CrashGoBackButton(onGoBack: () -> Unit) {
         horizontalArrangement = Arrangement.Center,
     ) {
         Button(
-            onClick = { onGoBack() },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.colorPrimary),
+            text = stringResource(
+                id = R.string.customactivityoncrash_error_activity_restart_app,
             ),
-        ) {
-            Text(
-                text = stringResource(
-                    id = R.string.customactivityoncrash_error_activity_restart_app,
-                ).uppercase(),
-                color = colorResource(id = R.color.primaryBgTextColor),
-            )
-        }
+            onClick = { onGoBack() },
+            colorStyle = ColorStyle.DEFAULT
+        )
     }
 }
 

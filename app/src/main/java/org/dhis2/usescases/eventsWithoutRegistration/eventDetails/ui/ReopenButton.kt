@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -26,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
 
 @ExperimentalAnimationApi
 @Composable
@@ -36,31 +36,24 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
         exit = fadeOut(),
     ) {
         Button(
+            text = "Re-open form",
             onClick = onReopenClickListener,
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_lock_open_white),
+                    contentDescription = "reopen",
+                    tint = Color.White,
+                )
+            },
+            //shape = RoundedCornerShape(24.dp),
+            /*colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.section_warning_color),
-            ),
-            contentPadding = PaddingValues(10.dp),
+            ),*/
+            //contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .height(40.dp)
                 .wrapContentWidth(),
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_lock_open_white),
-                contentDescription = "reopen",
-                tint = Color.White,
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = "Re-open form",
-                fontSize = 14.sp,
-                color = Color.White,
-                style = TextStyle.Default.copy(
-                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                ),
-            )
-        }
+        )
     }
 }
 
