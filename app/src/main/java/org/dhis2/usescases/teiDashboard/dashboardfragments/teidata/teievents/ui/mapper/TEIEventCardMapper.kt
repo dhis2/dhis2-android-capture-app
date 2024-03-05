@@ -123,7 +123,7 @@ class TEIEventCardMapper(
         displayOrgUnit: Boolean,
     ): List<AdditionalInfoItem> {
         val list = event.dataElementValues?.filter {
-            !it.second.isNullOrEmpty()
+            !it.second.isNullOrEmpty() && it.second != "-"
         }?.map {
             AdditionalInfoItem(
                 key = "${it.first}:",
