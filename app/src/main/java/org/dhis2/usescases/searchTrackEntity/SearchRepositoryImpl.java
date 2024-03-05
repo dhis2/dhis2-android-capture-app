@@ -298,15 +298,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                                         .organisationUnit(orgUnit)
                                         .build())
                         .map(enrollmentUid -> {
-                            //To migrate this to enrollment screen if logic is not maintained
-                            // boolean displayIncidentDate = getProgram(programUid).displayIncidentDate();
-                            /* Date enrollmentDateNoTime = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, enrollmentDate, 0);
-                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(enrollmentDateNoTime);
-                            if (displayIncidentDate) {
-                                d2.enrollmentModule().enrollments().uid(enrollmentUid).setIncidentDate(
-                                        DateUtils.getInstance().getToday()
-                                );
-                            }*/
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })
