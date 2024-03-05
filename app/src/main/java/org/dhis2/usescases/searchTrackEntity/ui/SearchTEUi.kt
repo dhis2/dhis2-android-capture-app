@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -56,6 +55,8 @@ import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
@@ -91,17 +92,10 @@ fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit)
 @Composable
 fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
+        text = stringResource(id = R.string.search),
         modifier = modifier,
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-        shape = RoundedCornerShape(24.dp),
-        elevation = ButtonDefaults.elevation(),
-    ) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
@@ -112,13 +106,9 @@ fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
                     ),
                 ),
             )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = stringResource(id = R.string.search),
-                color = colorResource(id = R.color.textSecondary),
-            )
-        }
-    }
+        },
+        style = ButtonStyle.ELEVATED
+    )
 }
 
 @Composable
@@ -236,41 +226,22 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
         )
         Spacer(modifier = Modifier.size(16.dp))
         Button(
+            text = buttonText,
             onClick = onSearchOutsideClick,
-            border = BorderStroke(
-                1.dp,
-                Color(
-                    ColorUtils().getPrimaryColor(
-                        LocalContext.current,
-                        ColorType.PRIMARY,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_search),
+                    contentDescription = "",
+                    tint = Color(
+                        ColorUtils().getPrimaryColor(
+                            LocalContext.current,
+                            ColorType.PRIMARY,
+                        ),
                     ),
-                ),
-            ),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.white),
-            ),
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_search),
-                contentDescription = "",
-                tint = Color(
-                    ColorUtils().getPrimaryColor(
-                        LocalContext.current,
-                        ColorType.PRIMARY,
-                    ),
-                ),
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = buttonText,
-                color = Color(
-                    ColorUtils().getPrimaryColor(
-                        LocalContext.current,
-                        ColorType.PRIMARY,
-                    ),
-                ),
-            )
-        }
+                )
+            },
+            style = ButtonStyle.OUTLINED,
+        )
     }
 }
 
@@ -467,6 +438,7 @@ fun InitSearch(teTypeName: String) {
 @Composable
 fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () -> Unit) {
     Button(
+        text = stringResource(R.string.search_create_new),
         modifier = modifier
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
             .apply {
@@ -477,38 +449,22 @@ fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () ->
                 }
             }
             .height(56.dp),
-        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-        shape = RoundedCornerShape(16.dp),
-        elevation = ButtonDefaults.elevation(),
-    ) {
-        Icon(
-            modifier = Modifier.size(24.dp),
-            painter = painterResource(id = R.drawable.ic_add_accent),
-            contentDescription = "",
-            tint = Color(
-                ColorUtils().getPrimaryColor(
-                    LocalContext.current,
-                    ColorType.PRIMARY,
-                ),
-            ),
-        )
-        AnimatedVisibility(visible = extended) {
-            Row {
-                Spacer(modifier = Modifier.size(12.dp))
-                Text(
-                    text = stringResource(R.string.search_create_new),
-                    color = Color(
-                        ColorUtils().getPrimaryColor(
-                            LocalContext.current,
-                            ColorType.PRIMARY,
-                        ),
+        icon = {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_add_accent),
+                contentDescription = "",
+                tint = Color(
+                    ColorUtils().getPrimaryColor(
+                        LocalContext.current,
+                        ColorType.PRIMARY,
                     ),
-                )
-            }
-        }
-    }
+                ),
+            )
+        },
+        style = ButtonStyle.ELEVATED,
+    )
 }
 
 @ExperimentalAnimationApi

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -35,6 +34,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.dhis2.R
 import org.dhis2.bindings.buildInfo
 import org.dhis2.usescases.login.accounts.AccountModel
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
 @ExperimentalMaterialApi
 @Composable
@@ -68,10 +69,11 @@ fun AccountsScreen(
                 }
                 Column(Modifier.padding(16.dp)) {
                     Button(
+                        text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
                         modifier = Modifier
                             .fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        style = ButtonStyle.ELEVATED,
+                        /*colors = ButtonDefaults.buttonColors(
                             backgroundColor = colorResource(id = R.color.colorPrimary),
                             contentColor = Color.White,
                         ),
@@ -79,16 +81,9 @@ fun AccountsScreen(
                             defaultElevation = 5.dp,
                             pressedElevation = 15.dp,
                             disabledElevation = 0.dp,
-                        ),
+                        ),*/
                         onClick = { onAddAccountClicked() },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
-                            fontFamily = FontFamily(
-                                Font(R.font.rubik_regular, FontWeight.Medium),
-                            ),
-                        )
-                    }
+                    )
                 }
             }
         }

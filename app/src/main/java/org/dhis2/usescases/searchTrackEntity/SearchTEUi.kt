@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -40,6 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 
 @Composable
 fun SearchResult(
@@ -71,29 +73,18 @@ fun SearchResult(
 @Composable
 fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
+        text = stringResource(id = R.string.search),
         modifier = modifier,
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-        shape = RoundedCornerShape(24.dp),
-        elevation = ButtonDefaults.elevation(),
-    ) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
                 tint = colorResource(id = R.color.colorPrimary),
             )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = stringResource(id = R.string.search),
-                color = colorResource(id = R.color.textSecondary),
-            )
-        }
-    }
+        },
+        style = ButtonStyle.ELEVATED
+    )
 }
 
 @Composable
@@ -165,20 +156,16 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
         )
         Spacer(modifier = Modifier.size(16.dp))
         Button(
+            text = buttonText,
             onClick = onSearchOutsideClick,
-            border = BorderStroke(1.dp, colorResource(id = R.color.colorPrimary)),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.white),
-            ),
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_search),
-                contentDescription = "",
-                tint = colorResource(id = R.color.colorPrimary),
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(text = buttonText, color = colorResource(id = R.color.colorPrimary))
-        }
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_search),
+                    contentDescription = "",
+                    tint = colorResource(id = R.color.colorPrimary),
+                )
+            }
+        )
     }
 }
 
@@ -296,31 +283,21 @@ fun SearchOrCreate() {
 @Composable
 fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () -> Unit) {
     Button(
+        text = stringResource(R.string.search_create_new),
         modifier = modifier
             .wrapContentWidth()
             .height(56.dp),
-        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-        shape = RoundedCornerShape(16.dp),
-        elevation = ButtonDefaults.elevation(),
-    ) {
-        Icon(
-            modifier = Modifier.size(24.dp),
-            painter = painterResource(id = R.drawable.ic_add_accent),
-            contentDescription = "",
-            tint = colorResource(id = R.color.colorPrimary),
-        )
-        AnimatedVisibility(visible = extended) {
-            Row {
-                Spacer(modifier = Modifier.size(12.dp))
-                Text(
-                    text = stringResource(R.string.search_create_new),
-                    color = colorResource(id = R.color.colorPrimary),
-                )
-            }
-        }
-    }
+        icon = {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_add_accent),
+                contentDescription = "",
+                tint = colorResource(id = R.color.colorPrimary),
+            )
+        },
+        style = ButtonStyle.ELEVATED,
+    )
 }
 
 @ExperimentalAnimationApi
