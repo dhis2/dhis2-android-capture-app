@@ -3,7 +3,10 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -32,6 +35,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class EventAdapter(
@@ -123,10 +127,11 @@ class EventAdapter(
                     materialView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
+                        val spacing = if (it.groupedByStage == true) Spacing.Spacing56 else Spacing.Spacing8
                         val card = cardMapper.map(
                             event = it,
                             editable = it.event?.uid()
-                                ?.let { presenter.isEventEditable(it) } ?: true,
+                                ?.let { uid -> presenter.isEventEditable(uid) } ?: true,
                             displayOrgUnit = it.event?.program()
                                 ?.let { _ -> presenter.displayOrganisationUnit() } ?: true,
                             onCardClick = {
@@ -138,6 +143,7 @@ class EventAdapter(
                                                 composeView,
                                             )
                                         }
+
                                         else -> {
                                             presenter.onEventSelected(
                                                 event.uid(),
@@ -148,33 +154,40 @@ class EventAdapter(
                                 }
                             },
                         )
-                        ListCard(
-                            listAvatar = card.avatar,
-                            title = ListCardTitleModel(
-                                text = card.title,
-                                style = LocalTextStyle.current.copy(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight(500),
-                                    lineHeight = 20.sp,
+                        Box(
+                            modifier = Modifier
+                                .padding(
+                                    start = spacing
+                                )
+                        ) {
+                            ListCard(
+                                listAvatar = card.avatar,
+                                title = ListCardTitleModel(
+                                    text = card.title,
+                                    style = LocalTextStyle.current.copy(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight(500),
+                                        lineHeight = 20.sp,
+                                    ),
+                                    color = TextColor.OnSurface,
                                 ),
-                                color = TextColor.OnSurface,
-                            ),
-                            description = ListCardDescriptionModel(
-                                text = card.description,
-                                style = LocalTextStyle.current.copy(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight(400),
-                                    lineHeight = 20.sp,
+                                description = ListCardDescriptionModel(
+                                    text = card.description,
+                                    style = LocalTextStyle.current.copy(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight(400),
+                                        lineHeight = 20.sp,
+                                    ),
+                                    color = TextColor.OnSurface,
                                 ),
-                                color = TextColor.OnSurface,
-                            ),
-                            lastUpdated = card.lastUpdated,
-                            additionalInfoList = card.additionalInfo,
-                            actionButton = card.actionButton,
-                            expandLabelText = card.expandLabelText,
-                            shrinkLabelText = card.shrinkLabelText,
-                            onCardClick = card.onCardCLick,
-                        )
+                                lastUpdated = card.lastUpdated,
+                                additionalInfoList = card.additionalInfo,
+                                actionButton = card.actionButton,
+                                expandLabelText = card.expandLabelText,
+                                shrinkLabelText = card.shrinkLabelText,
+                                onCardClick = card.onCardCLick,
+                            )
+                        }
                     }
 
                     holder.bind(it, null) {
