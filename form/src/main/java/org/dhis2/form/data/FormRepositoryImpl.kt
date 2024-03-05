@@ -463,7 +463,7 @@ class FormRepositoryImpl(
 
     override fun updateErrorList(action: RowAction) {
         if (action.error != null) {
-            if (itemsWithError.any { it.id == action.id }) {
+            if (itemsWithError.find { it.id == action.id } == null) {
                 itemsWithError.add(action)
             }
         } else {
