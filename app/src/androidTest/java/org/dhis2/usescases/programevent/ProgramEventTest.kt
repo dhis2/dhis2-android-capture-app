@@ -3,12 +3,12 @@ package org.dhis2.usescases.programevent
 import android.Manifest
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.rule.ActivityTestRule
+import androidx.test.core.app.ApplicationProvider
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
-import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Rule
@@ -16,11 +16,11 @@ import org.junit.Test
 
 class ProgramEventTest : BaseTest() {
 
-    private val atenatalCare = "lxAQ7Zs9VYR"
+    private val antenatalCare = "lxAQ7Zs9VYR"
     private val informationCampaign = "q04UBOqq3rp"
 
     @get:Rule
-    val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+    val rule = lazyActivityScenarioRule<ProgramEventDetailActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -32,10 +32,9 @@ class ProgramEventTest : BaseTest() {
     @Test
     fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
-        prepareProgramAndLaunchActivity(atenatalCare)
-        disableRecyclerViewAnimations()
+        prepareProgramAndLaunchActivity(antenatalCare)
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
             clickOnAddEvent()
         }
         eventRegistrationRobot {
@@ -45,17 +44,8 @@ class ProgramEventTest : BaseTest() {
             clickOnFormFabButton()
             clickOnCompleteButton(composeTestRule)
         }
-        programEventsRobot {
-            checkEventWasCreatedAndClosed(eventOrgUnit, 0)
-        }
-    }
-
-    private fun disableRecyclerViewAnimations() {
-        val activity = rule.activity
-        activity.runOnUiThread {
-            activity.supportFragmentManager.findFragmentByTag("EVENT_LIST").apply {
-                (this as EventListFragment).binding.recycler.itemAnimator = null
-            }
+        programEventsRobot(composeTestRule) {
+            checkEventWasCreatedAndClosed(eventOrgUnit)
         }
     }
 
@@ -64,9 +54,10 @@ class ProgramEventTest : BaseTest() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
-        prepareProgramAndLaunchActivity(atenatalCare)
+        prepareProgramAndLaunchActivity(antenatalCare)
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
+            waitToDebounce(400)
             clickOnEvent(eventDate)
         }
 
@@ -80,10 +71,10 @@ class ProgramEventTest : BaseTest() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
-        prepareProgramAndLaunchActivity(atenatalCare)
-        disableRecyclerViewAnimations()
+        prepareProgramAndLaunchActivity(antenatalCare)
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
+            waitToDebounce(400)
             clickOnEvent(eventDate)
         }
 
@@ -93,8 +84,8 @@ class ProgramEventTest : BaseTest() {
             waitToDebounce(400)
         }
 
-        programEventsRobot {
-            checkEventIsComplete(eventDate, eventOrgUnit)
+        programEventsRobot(composeTestRule) {
+            checkEventIsComplete(eventDate)
             clickOnEvent(eventDate)
         }
 
@@ -104,7 +95,7 @@ class ProgramEventTest : BaseTest() {
             pressBack()
         }
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
             waitToDebounce(800)
             checkEventIsOpen(eventDate, eventOrgUnit)
         }
@@ -115,9 +106,10 @@ class ProgramEventTest : BaseTest() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
-        prepareProgramAndLaunchActivity(atenatalCare)
+        prepareProgramAndLaunchActivity(antenatalCare)
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
+            waitToDebounce(400)
             clickOnEvent(eventDate)
         }
         eventRobot {
@@ -131,10 +123,10 @@ class ProgramEventTest : BaseTest() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
-        prepareProgramAndLaunchActivity(atenatalCare)
-        disableRecyclerViewAnimations()
+        prepareProgramAndLaunchActivity(antenatalCare)
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
+            waitToDebounce(400)
             clickOnEvent(eventDate)
         }
         eventRobot {
@@ -142,10 +134,12 @@ class ProgramEventTest : BaseTest() {
             clickOnDelete()
             clickOnDeleteDialog()
         }
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
             checkEventWasDeleted(eventDate, eventOrgUnit)
         }
-        rule.activity.application.deleteDatabase(DB_TO_IMPORT)
+        rule.getScenario().onActivity {
+            context.applicationContext.deleteDatabase(DB_TO_IMPORT)
+        }
     }
 
     @Test
@@ -153,15 +147,18 @@ class ProgramEventTest : BaseTest() {
 
         prepareProgramAndLaunchActivity(informationCampaign)
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
             clickOnMap()
             checkMapIsDisplayed()
         }
     }
 
     private fun prepareProgramAndLaunchActivity(programUid: String) {
-        Intent().apply {
+        Intent(
+            ApplicationProvider.getApplicationContext(),
+            ProgramEventDetailActivity::class.java,
+        ).apply {
             putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, programUid)
-        }.also { rule.launchActivity(it) }
+        }.also { rule.launch(it) }
     }
 }
