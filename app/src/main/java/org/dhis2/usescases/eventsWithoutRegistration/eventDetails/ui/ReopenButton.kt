@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 
 @ExperimentalAnimationApi
 @Composable
@@ -45,11 +46,7 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
                     tint = Color.White,
                 )
             },
-            //shape = RoundedCornerShape(24.dp),
-            /*colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.section_warning_color),
-            ),*/
-            //contentPadding = PaddingValues(10.dp),
+            colorStyle = ColorStyle.ERROR,
             modifier = Modifier
                 .height(40.dp)
                 .wrapContentWidth(),
