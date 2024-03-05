@@ -173,12 +173,6 @@ class EventAdapter(
                                 ),
                                 description = ListCardDescriptionModel(
                                     text = card.description,
-                                    style = LocalTextStyle.current.copy(
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight(400),
-                                        lineHeight = 20.sp,
-                                    ),
-                                    color = TextColor.OnSurface,
                                 ),
                                 lastUpdated = card.lastUpdated,
                                 additionalInfoList = card.additionalInfo,

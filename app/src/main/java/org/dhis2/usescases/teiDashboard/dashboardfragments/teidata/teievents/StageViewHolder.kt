@@ -22,6 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.recyclerview.widget.RecyclerView
@@ -39,7 +40,10 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.Title
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 internal class StageViewHolder(
     val composeView: ComposeView,
@@ -71,22 +75,11 @@ internal class StageViewHolder(
                     modifier = Modifier
                         .weight(1f),
                 ) {
-                    Text(
-                        text = stage.displayName() ?: "",
-                        color = colorResource(id = R.color.textPrimary),
-                        fontSize = 14.sp,
-                        style = LocalTextStyle.current.copy(
-                            fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                        ),
-                    )
+                    Title(text = stage.displayName() ?: "")
                     if (eventItem.eventCount < 1) {
-                        Text(
+                        Description(
                             text = resourceManager.getString(R.string.no_data),
-                            color = colorResource(id = R.color.textSecondary),
-                            fontSize = 12.sp,
-                            style = LocalTextStyle.current.copy(
-                                fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                            ),
+                            textColor = TextColor.OnSurfaceLight,
                         )
                     }
                 }
