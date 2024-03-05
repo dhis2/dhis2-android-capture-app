@@ -23,7 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class EventTest: BaseTest() {
+class EventTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(EventCaptureActivity::class.java, false, false)
@@ -124,7 +124,7 @@ class EventTest: BaseTest() {
         prepareProgramAndLaunchActivity(atenatalCare)
         disableRecyclerViewAnimations()
 
-        programEventsRobot {
+        programEventsRobot(composeTestRule) {
             clickOnAddEvent()
         }
         eventRegistrationRobot {
@@ -137,9 +137,9 @@ class EventTest: BaseTest() {
         }
     }
 
-    private val tbVisitProgramStage =  createTbVisitStageModel()
-    private val labMonitoringProgramStage =  createLabMonitoringStageModel()
-    private val sputumProgramStage =  createSputumStageModel()
+    private val tbVisitProgramStage = createTbVisitStageModel()
+    private val labMonitoringProgramStage = createLabMonitoringStageModel()
+    private val sputumProgramStage = createSputumStageModel()
     private val labMonitoringStatus = createEventStatusDetails()
 
     private fun createProgramStageModel() = TEIProgramStagesUIModel(
