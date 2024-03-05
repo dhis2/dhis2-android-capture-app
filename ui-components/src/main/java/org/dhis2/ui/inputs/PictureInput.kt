@@ -24,9 +24,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.dhis2.ui.IconTextButton
 import org.dhis2.ui.theme.errorColor
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 
 @Composable
 fun PictureInput(
@@ -39,11 +41,16 @@ fun PictureInput(
     if (imageValue != null) {
         Picture(imageValue.asImageBitmap(), enabled, onClick, onClear)
     } else {
-        IconTextButton(
+        Button(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             text = addButtonData.label,
-            painter = addButtonData.icon,
+            icon = {
+                Icon(
+                    painter = addButtonData.icon,
+                    contentDescription = ""
+                )
+            },
             onClick = addButtonData.onClick,
         )
     }
@@ -85,6 +92,26 @@ fun Picture(image: ImageBitmap, enabled: Boolean, onClick: () -> Unit, onClear: 
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun IconClear() {
+    Icon(
+        imageVector = Icons.Default.Clear,
+        contentDescription = "clear",
+        tint = errorColor,
+    )
+}
+
+@Preview
+@Composable
+fun IconClearUI() {
+    Icon(
+        painter = provideDHIS2Icon(resourceName = "dhis2_microscope_outline"),
+        contentDescription = "clear",
+        tint = errorColor,
+    )
 }
 
 data class AddButtonData(
