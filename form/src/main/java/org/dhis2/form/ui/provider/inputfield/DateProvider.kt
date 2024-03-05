@@ -43,6 +43,8 @@ fun ProvideInputDate(
         else -> DateTimeActionType.DATE to DateTransformation()
     }
     val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+    val yearIntRange = getYearRange(fieldUiModel)
+    val selectableDates = getSelectableDates(fieldUiModel)
 
     var value by remember(fieldUiModel.value) {
         mutableStateOf(
@@ -52,37 +54,6 @@ fun ProvideInputDate(
                 TextFieldValue()
             },
         )
-    }
-    val yearIntRange = if (fieldUiModel.selectableDates == null) {
-        if (fieldUiModel.allowFutureDates == true) {
-            IntRange(1924, 2124)
-        } else {
-            (
-                IntRange(
-                    1924,
-                    Calendar.getInstance()[Calendar.YEAR],
-                )
-                )
-        }
-    } else {
-        IntRange(
-            fieldUiModel.selectableDates!!.initialDate.substring(4, 8).toInt(),
-            fieldUiModel.selectableDates!!.endDate.substring(4, 8).toInt(),
-        )
-    }
-    val selectableDates = if (fieldUiModel.selectableDates == null) {
-        if (fieldUiModel.allowFutureDates == true) {
-            SelectableDates(initialDate = DEFAULT_MIN_DATE, endDate = DEFAULT_MAX_DATE)
-        } else {
-            SelectableDates(
-                initialDate = DEFAULT_MIN_DATE,
-                endDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(
-                    Date(System.currentTimeMillis() - 1000),
-                ),
-            )
-        }
-    } else {
-        fieldUiModel.selectableDates ?: SelectableDates(initialDate = DEFAULT_MIN_DATE, endDate = DEFAULT_MAX_DATE)
     }
 
     InputDateTime(
@@ -115,6 +86,42 @@ fun ProvideInputDate(
     )
 }
 
+private fun getSelectableDates(uiModel: FieldUiModel): SelectableDates {
+    return if (uiModel.selectableDates == null) {
+        if (uiModel.allowFutureDates == true) {
+            SelectableDates(initialDate = DEFAULT_MIN_DATE, endDate = DEFAULT_MAX_DATE)
+        } else {
+            SelectableDates(
+                initialDate = DEFAULT_MIN_DATE,
+                endDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(
+                    Date(System.currentTimeMillis() - 1000),
+                ),
+            )
+        }
+    } else {
+        uiModel.selectableDates ?: SelectableDates(initialDate = DEFAULT_MIN_DATE, endDate = DEFAULT_MAX_DATE)
+    }
+}
+
+private fun getYearRange(uiModel: FieldUiModel): IntRange {
+    return if (uiModel.selectableDates == null) {
+        if (uiModel.allowFutureDates == true) {
+            IntRange(1924, 2124)
+        } else {
+            (
+                IntRange(
+                    1924,
+                    Calendar.getInstance()[Calendar.YEAR],
+                )
+                )
+        }
+    } else {
+        IntRange(
+            uiModel.selectableDates!!.initialDate.substring(4, 8).toInt(),
+            uiModel.selectableDates!!.endDate.substring(4, 8).toInt(),
+        )
+    }
+}
 private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String {
     return when (valueType) {
         ValueType.DATETIME -> {

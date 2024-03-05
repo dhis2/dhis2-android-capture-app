@@ -47,6 +47,16 @@ class EnrollmentRepository(
         val teTypeAccess = conf.trackedEntityType()?.access()?.data()?.write() == true
         return programAccess && teTypeAccess
     }
+    override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
+        return when (uid) {
+            ORG_UNIT_UID -> {
+                getEnrollmentData()
+            }
+            else -> {
+                emptyList()
+            }
+        }
+    }
 
     override fun sectionUids(): Flowable<List<String>> {
         val sectionUids = mutableListOf(ENROLLMENT_DATA_SECTION_UID)
@@ -308,7 +318,7 @@ class EnrollmentRepository(
         return enrollmentDataList
     }
 
-    fun getAllowedDatesForEnrollmentDate(): SelectableDates {
+    private fun getAllowedDatesForEnrollmentDate(): SelectableDates {
         val selectedOrgUnit = conf.enrollment()?.organisationUnit()?.let { conf.orgUnit(it) }
         var minDate: Date? = null
         var maxDate: Date? = null
@@ -316,17 +326,21 @@ class EnrollmentRepository(
 
         val selectedProgram = conf.program()
         if (selectedOrgUnit?.openingDate() != null) minDate = selectedOrgUnit.openingDate()
-
-        if (selectedOrgUnit?.closedDate() == null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) {
-            maxDate = Date(System.currentTimeMillis())
-        } else if (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) {
-            maxDate = if (selectedOrgUnit.closedDate()!!.before(Date(System.currentTimeMillis()))) {
-                selectedOrgUnit.closedDate()
-            } else {
-                Date(System.currentTimeMillis())
+        when {
+            (selectedOrgUnit?.closedDate() == null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = Date(System.currentTimeMillis())
             }
-        } else if (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.TRUE == selectedProgram?.selectEnrollmentDatesInFuture()) {
-            maxDate = selectedOrgUnit.closedDate()
+            (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = if (selectedOrgUnit.closedDate()!!.before(Date(System.currentTimeMillis()))) {
+                    selectedOrgUnit.closedDate()
+                } else {
+                    Date(System.currentTimeMillis())
+                }
+            }
+
+            (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.TRUE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = selectedOrgUnit.closedDate()
+            }
         }
 
         val maxDateString = if (maxDate != null) sdf.format(maxDate) else DEFAULT_MAX_DATE

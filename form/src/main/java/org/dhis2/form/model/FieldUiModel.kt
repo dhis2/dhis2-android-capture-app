@@ -103,6 +103,8 @@ interface FieldUiModel {
 
     fun setValue(value: String?): FieldUiModel
 
+    fun setSelectableDates(selectableDates: SelectableDates?): FieldUiModel
+
     fun setIsLoadingData(isLoadingData: Boolean): FieldUiModel
 
     fun setFocus(): FieldUiModel

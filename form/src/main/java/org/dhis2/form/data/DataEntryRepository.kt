@@ -29,4 +29,5 @@ interface DataEntryRepository {
     fun dateFormatConfiguration(): String?
 
     fun disableCollapsableSections(): Boolean?
+    fun getSpecificDataEntryItems(uid: String): List<FieldUiModel>
 }

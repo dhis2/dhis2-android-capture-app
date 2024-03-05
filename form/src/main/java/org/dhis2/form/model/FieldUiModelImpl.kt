@@ -136,6 +136,8 @@ data class FieldUiModelImpl(
 
     override fun setValue(value: String?) = this.copy(value = value)
 
+    override fun setSelectableDates(selectableDates: SelectableDates?) = this.copy(selectableDates = selectableDates)
+
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)

@@ -56,7 +56,7 @@ data class SectionUiModelImpl(
     private var callback: FieldUiModel.Callback? = null
 
     fun hasToShowDescriptionIcon(isTitleEllipsed: Boolean): Boolean {
-        return description != null && description.isNotEmpty() || isTitleEllipsed
+        return !description.isNullOrEmpty() || isTitleEllipsed
     }
 
     fun isClosingSection(): Boolean = uid == CLOSING_SECTION_UID
@@ -161,19 +161,33 @@ data class SectionUiModelImpl(
     override val isNegativeChecked: Boolean
         get() = false
 
-    override fun onNext() {}
+    override fun onNext() {
+        // Not necessary in this implementation
+    }
 
-    override fun onTextChange(value: CharSequence?) {}
+    override fun onTextChange(value: CharSequence?) {
+        // Not necessary in this implementation
+    }
 
-    override fun onClear() {}
+    override fun onClear() {
+        // Not necessary in this implementation
+    }
 
-    override fun onSave(value: String?) {}
+    override fun onSave(value: String?) {
+        // Not necessary in this implementation
+    }
 
-    override fun onSaveBoolean(boolean: Boolean) {}
+    override fun onSaveBoolean(boolean: Boolean) {
+        // Not necessary in this implementation
+    }
 
-    override fun onSaveOption(option: Option) {}
+    override fun onSaveOption(option: Option) {
+        // Not necessary in this implementation
+    }
 
     override fun setValue(value: String?) = this.copy(value = value)
+
+    override fun setSelectableDates(selectableDates: SelectableDates?): FieldUiModel = this.copy(selectableDates = selectableDates)
 
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
