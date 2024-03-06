@@ -18,6 +18,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
@@ -71,10 +72,12 @@ class ProgramEventDetailModule(
     fun provideViewModelFactory(
         d2: D2,
         eventDetailRepository: ProgramEventDetailRepository,
+        dispatcher: DispatcherProvider,
     ): ProgramEventDetailViewModelFactory {
         return ProgramEventDetailViewModelFactory(
             MapStyleConfiguration(d2),
             eventDetailRepository,
+            dispatcher,
         )
     }
 
