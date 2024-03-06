@@ -3,6 +3,7 @@ package dhis2.org.analytics.charts.mappers
 import android.content.res.Configuration
 import android.view.View
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -11,16 +12,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.material.composethemeadapter.MdcTheme
+import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.table.CellModel
+import kotlin.math.roundToInt
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.model.RowHeader
@@ -38,8 +43,10 @@ import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableSelection
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.compositions.LocalInteraction
+import org.dhis2.ui.theme.descriptionTextStyle
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
-import kotlin.math.roundToInt
+
+private const val LINE_LISTING_MAX_ROWS = 500
 
 class GraphToTable {
 
@@ -106,6 +113,9 @@ class GraphToTable {
                 dimensions = dimensions.resetWidth(tableModel.id ?: "")
             }
 
+            val displayLineListingMaxRowText =
+                shouldDisplayMaxRowText(transpose, tableModel.tableRows)
+
             TableTheme(
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,
@@ -137,13 +147,31 @@ class GraphToTable {
                 ) {
                     Column {
                         DataTable(
-                            tableList = listOf(tableModel),
+                            tableList = if (displayLineListingMaxRowText) {
+                                listOf(
+                                    tableModel.copy(
+                                        tableRows = tableModel.tableRows.subList(
+                                            0,
+                                            LINE_LISTING_MAX_ROWS
+                                        )
+                                    )
+                                )
+                            } else {
+                                listOf(tableModel)
+                            },
                             bottomContent = {
                                 Text(text = "Max")
                             },
                         )
-                        if (!transpose) {
-                            Text(text = "This is a line listing text")
+                        if (displayLineListingMaxRowText) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = stringResource(
+                                    R.string.line_listing_max_results,
+                                    LINE_LISTING_MAX_ROWS
+                                ),
+                                style = descriptionTextStyle
+                            )
                         }
                     }
                 }
@@ -151,41 +179,60 @@ class GraphToTable {
         }
     }
 
-    private fun dimensionsForAnalytics(localDensity: Density, conf: Configuration) = TableDimensions(
-        cellVerticalPadding = 11.dp,
-        maxRowHeaderWidth = with(localDensity) {
-            (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
-                .roundToInt()
-        },
-        tableHorizontalPadding = 0.dp,
-        tableVerticalPadding = 0.dp,
-        defaultRowHeaderWidth = 0,
-        extraWidths = emptyMap(),
-        rowHeaderWidths = emptyMap(),
-        columnWidth = emptyMap(),
-    )
+    private fun shouldDisplayMaxRowText(
+        transpose: Boolean,
+        tableRows: List<TableRowModel>
+    ): Boolean {
+        return when {
+            transpose -> false
+            tableRows.size > LINE_LISTING_MAX_ROWS -> true
+            else -> false
+        }
+    }
 
-    private fun dimensionsForLinelisting(localDensity: Density, conf: Configuration) = TableDimensions(
-        cellVerticalPadding = 0.dp,
-        maxRowHeaderWidth = with(localDensity) {
-            (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
-                .roundToInt()
-        },
-        tableHorizontalPadding = 0.dp,
-        tableVerticalPadding = 0.dp,
-        defaultRowHeaderWidth = 0,
-        defaultCellHeight = 16.dp,
-        extraWidths = emptyMap(),
-        rowHeaderWidths = emptyMap(),
-        columnWidth = emptyMap(),
-        defaultHeaderTextSize = 10.sp,
-        defaultCellTextSize = 10.sp,
-        defaultHeaderHeight = 24,
-    )
+    private fun dimensionsForAnalytics(localDensity: Density, conf: Configuration) =
+        TableDimensions(
+            cellVerticalPadding = 11.dp,
+            maxRowHeaderWidth = with(localDensity) {
+                (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
+                    .roundToInt()
+            },
+            tableHorizontalPadding = 0.dp,
+            tableVerticalPadding = 0.dp,
+            defaultRowHeaderWidth = 0,
+            extraWidths = emptyMap(),
+            rowHeaderWidths = emptyMap(),
+            columnWidth = emptyMap(),
+        )
+
+    private fun dimensionsForLinelisting(localDensity: Density, conf: Configuration) =
+        TableDimensions(
+            cellVerticalPadding = 0.dp,
+            maxRowHeaderWidth = with(localDensity) {
+                (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
+                    .roundToInt()
+            },
+            tableHorizontalPadding = 0.dp,
+            tableVerticalPadding = 0.dp,
+            defaultRowHeaderWidth = 0,
+            defaultCellHeight = 16.dp,
+            extraWidths = emptyMap(),
+            rowHeaderWidths = emptyMap(),
+            columnWidth = emptyMap(),
+            defaultHeaderTextSize = 10.sp,
+            defaultCellTextSize = 10.sp,
+            defaultHeaderHeight = 24,
+        )
 
     private fun tableModelForLineListing(graph: Graph): TableModel {
         val headers = headers(graph, graph.series)
-        val rows = rows(graph.series)
+        val rows = rows(graph.series).let {
+            if (it.size > LINE_LISTING_MAX_ROWS) {
+                it.subList(0, LINE_LISTING_MAX_ROWS)
+            } else {
+                it
+            }
+        }
         val cells = cells(graph, graph.series, headers)
 
         val tableHeader = TableHeader(
