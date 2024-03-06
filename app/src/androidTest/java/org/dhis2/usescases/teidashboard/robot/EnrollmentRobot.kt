@@ -9,6 +9,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.withHint
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -110,7 +111,7 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnDatePicker() {
-        waitForView(withId(R.id.date_picker)).perform(click())
+        onView(allOf(withId(R.id.date_picker), withHint("Date"))).perform(click())
     }
 
     companion object {
