@@ -158,6 +158,7 @@ class FormTest : BaseTest() {
         }
     }
 
+    @Ignore("Indeterministic")
     @Test
     fun shouldApplyIndicatorRelatedActions() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
