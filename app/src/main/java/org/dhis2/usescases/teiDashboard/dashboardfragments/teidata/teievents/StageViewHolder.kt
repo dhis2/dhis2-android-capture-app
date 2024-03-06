@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,29 +10,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
-import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.ui.utils.getAlphaContrastColor
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.ui.NewEventOptions
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -43,6 +33,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 internal class StageViewHolder(
@@ -67,7 +58,6 @@ internal class StageViewHolder(
             ) {
                 ProvideAvatar(
                     stage = eventItem.stage,
-                    context = itemView.context,
                     resourceManager = resourceManager,
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -108,16 +98,14 @@ internal class StageViewHolder(
     @Composable
     private fun ProvideAvatar(
         stage: ProgramStage?,
-        context: Context,
         resourceManager: ResourceManager,
     ) {
-        val color = colorUtils.getColorFrom(
-            stage?.style()?.color(),
-            colorUtils.getPrimaryColor(
-                context,
-                ColorType.PRIMARY_LIGHT,
-            ),
-        )
+        val color = resourceManager.getColorFrom(stage?.style()?.color())
+        val iconColor = if (color == -1) {
+            SurfaceColor.Primary
+        } else {
+            Color(color)
+        }
 
         val imageResource = resourceManager.getObjectStyleDrawableResource(
             stage?.style()?.icon(),
@@ -131,10 +119,10 @@ internal class StageViewHolder(
                         Icon(
                             painter = painterResource(id = imageResource),
                             contentDescription = "Button",
+                            tint = iconColor
                         )
                     },
-                    iconTint = color.getAlphaContrastColor(),
-                    backgroundColor = Color(color),
+                    iconTint = iconColor,
                     size = AvatarSize.Large,
                 )
             },

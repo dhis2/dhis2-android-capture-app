@@ -151,10 +151,8 @@ class TEIDataModule(
     @Provides
     @PerFragment
     fun providesTEIEventCardMapper(
-        context: Context,
         resourceManager: ResourceManager,
-        colorUtils: ColorUtils,
     ): TEIEventCardMapper {
-        return TEIEventCardMapper(context, resourceManager, colorUtils)
+        return TEIEventCardMapper(resourceManager)
     }
 }

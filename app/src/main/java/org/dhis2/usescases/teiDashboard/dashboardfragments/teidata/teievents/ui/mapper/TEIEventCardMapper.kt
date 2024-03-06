@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper
 
-import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -18,11 +17,8 @@ import androidx.compose.ui.res.painterResource
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
-import org.dhis2.commons.resources.ColorType
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
-import org.dhis2.ui.utils.getAlphaContrastColor
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -39,9 +35,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Date
 
 class TEIEventCardMapper(
-    val context: Context,
     val resourceManager: ResourceManager,
-    val colorUtils: ColorUtils,
 ) {
 
     fun map(
@@ -70,10 +64,12 @@ class TEIEventCardMapper(
     @Composable
     private fun ProvideAvatar(eventItem: EventViewModel) {
         if (eventItem.groupedByStage != true) {
-            val color = colorUtils.getColorFrom(
-                eventItem.stage?.style()?.color(),
-                colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
-            )
+            val color = resourceManager.getColorFrom(eventItem.stage?.style()?.color())
+            val iconColor = if (color == -1) {
+                SurfaceColor.Primary
+            } else {
+                Color(color)
+            }
 
             val imageResource = resourceManager.getObjectStyleDrawableResource(
                 eventItem.stage?.style()?.icon(),
@@ -87,10 +83,10 @@ class TEIEventCardMapper(
                             Icon(
                                 painter = painterResource(id = imageResource),
                                 contentDescription = "Button",
+                                tint = iconColor
                             )
                         },
-                        iconTint = color.getAlphaContrastColor(),
-                        backgroundColor = Color(color),
+                        iconTint = iconColor
                     )
                 },
                 style = AvatarStyle.METADATA,
