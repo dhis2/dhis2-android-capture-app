@@ -48,7 +48,7 @@ fun PictureInput(
             icon = {
                 Icon(
                     painter = addButtonData.icon,
-                    contentDescription = ""
+                    contentDescription = "",
                 )
             },
             onClick = addButtonData.onClick,

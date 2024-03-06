@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.ripple.rememberRipple
@@ -53,7 +52,6 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.ui.R
 import org.dhis2.ui.theme.defaultFontFamily
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
-import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 
 @Composable
 fun OrgUnitSelectorDialog(
@@ -88,8 +86,8 @@ fun OrgUnitSelectorDialog(
                 Button(
                     modifier = Modifier.testTag(CLEAR_TEST_TAG),
 
-                        text = stringResource(id = R.string.action_clear_all),
-                        onClick = actions.onClearClick,
+                    text = stringResource(id = R.string.action_clear_all),
+                    onClick = actions.onClearClick,
 
                     icon = {
                         Icon(
@@ -131,13 +129,13 @@ fun OrgUnitSelectorDialog(
             ) {
                 Button(
                     modifier = Modifier.testTag(CANCEL_TEST_TAG),
-                        text = stringResource(id = R.string.action_cancel),
-                        onClick = actions.onCancelClick,
+                    text = stringResource(id = R.string.action_cancel),
+                    onClick = actions.onCancelClick,
                 )
                 Button(
                     modifier = Modifier.testTag(DONE_TEST_TAG),
-                        text = stringResource(id = R.string.action_done),
-                        onClick = actions.onDoneClick,
+                    text = stringResource(id = R.string.action_done),
+                    onClick = actions.onDoneClick,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Check,
