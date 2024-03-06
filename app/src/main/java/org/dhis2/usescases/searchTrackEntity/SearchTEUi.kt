@@ -275,7 +275,7 @@ fun SearchOrCreate() {
 
 @ExperimentalAnimationApi
 @Composable
-fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () -> Unit) {
+fun CreateNewButton(modifier: Modifier, onClick: () -> Unit) {
     Button(
         text = stringResource(R.string.search_create_new),
         modifier = modifier
