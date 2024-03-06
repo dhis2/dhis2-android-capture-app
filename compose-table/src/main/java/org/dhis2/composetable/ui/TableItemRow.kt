@@ -74,6 +74,7 @@ fun TableItemRow(
                     tableModel.tableHeaderModel.hasTotals,
                 ),
                 options = rowModel.dropDownOptions ?: emptyList(),
+                headerLabel = rowModel.rowHeader.title,
             )
         }
         if (!rowModel.isLastRow) {

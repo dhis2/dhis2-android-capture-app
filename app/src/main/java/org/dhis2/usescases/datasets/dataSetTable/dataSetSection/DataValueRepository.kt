@@ -612,13 +612,7 @@ class DataValueRepository(
                 isNumber = dataElement.valueType()!!.isNumeric
             }
 
-            val options = dataElement.optionSetUid()?.let {
-                d2.optionModule().options()
-                    .byOptionSetUid().eq(it)
-                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                    .blockingGet()
-                    .map { option -> "${option.code()}_${option.displayName()}" }
-            } ?: emptyList()
+            val options = getOptionsForOptionSet(dataElement.optionSetUid())
 
             for (
             categoryOptionCombo in categorOptionCombos
@@ -1011,7 +1005,7 @@ class DataValueRepository(
             null,
             dataElement.displayDescription(),
             dataElement.uid(),
-            emptyList(),
+            getOptionsForOptionSet(dataElement.optionSetUid()),
             "android",
             0,
             0,
@@ -1035,4 +1029,12 @@ class DataValueRepository(
     fun getDataSetInfo(): Triple<String, String, String> {
         return Triple(periodId, orgUnitUid, attributeOptionComboUid)
     }
+
+    private fun getOptionsForOptionSet(optionSetUid: String?) = optionSetUid?.let {
+        d2.optionModule().options()
+            .byOptionSetUid().eq(it)
+            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+            .blockingGet()
+            .map { option -> "${option.code()}_${option.displayName()}" }
+    } ?: emptyList()
 }
