@@ -4,12 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
@@ -41,7 +36,6 @@ import org.dhis2.R
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 
 @Composable
 fun SearchResult(
@@ -83,7 +77,7 @@ fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
                 tint = colorResource(id = R.color.colorPrimary),
             )
         },
-        style = ButtonStyle.ELEVATED
+        style = ButtonStyle.ELEVATED,
     )
 }
 
@@ -164,7 +158,7 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
                     contentDescription = "",
                     tint = colorResource(id = R.color.colorPrimary),
                 )
-            }
+            },
         )
     }
 }

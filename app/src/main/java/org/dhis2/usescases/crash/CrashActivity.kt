@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -238,7 +237,7 @@ fun CrashGoBackButton(onGoBack: () -> Unit) {
                 id = R.string.customactivityoncrash_error_activity_restart_app,
             ),
             onClick = { onGoBack() },
-            colorStyle = ColorStyle.DEFAULT
+            colorStyle = ColorStyle.DEFAULT,
         )
     }
 }

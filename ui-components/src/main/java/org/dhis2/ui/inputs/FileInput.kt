@@ -38,7 +38,6 @@ import org.dhis2.ui.theme.defaultFontFamily
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
-import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 
 @Composable
 fun BoxedInput(
@@ -168,7 +167,7 @@ fun FileInputWithoutValue(
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_file),
-                contentDescription = ""
+                contentDescription = "",
             )
         },
         text = label,
@@ -206,7 +205,8 @@ fun FileInputWithValue(
                         contentDescription = "",
                         tint = MaterialTheme.colorScheme.primary,
                     )
-                })
+                },
+            )
 
             IconButton(
                 enabled = enabled,
@@ -217,7 +217,8 @@ fun FileInputWithValue(
                         contentDescription = "",
                         tint = MaterialTheme.colorScheme.primary,
                     )
-                })
+                },
+            )
         },
     ) { modifier ->
         FileDescription(modifier = modifier, fileInputData = fileInputData)
