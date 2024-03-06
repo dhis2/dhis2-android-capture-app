@@ -17,12 +17,12 @@ import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.analytics.charts.ui.dialog.SearchColumnDialog
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
+import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.bindings.scrollToPosition
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.hisp.dhis.android.core.common.RelativePeriod
-import javax.inject.Inject
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -111,26 +111,40 @@ class GroupAnalyticsFragment : Fragment() {
     private fun setUpAdapter() {
         adapter.apply {
             onRelativePeriodCallback =
-                { chartModel, relativePeriod, current ->
+                { chartModel, relativePeriod, current, lineListingColumnId ->
                     groupViewModel.trackAnalyticsPeriodFilter(mode)
                     relativePeriod?.let {
                         if (it.isNotCurrent()) {
-                            showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
+                            showAlertDialogCurrentPeriod(
+                                chartModel,
+                                relativePeriod,
+                                current,
+                                lineListingColumnId
+                            )
                         } else {
-                            groupViewModel.filterByPeriod(chartModel, mutableListOf(it))
+                            groupViewModel.filterByPeriod(
+                                chartModel,
+                                mutableListOf(it),
+                                lineListingColumnId
+                            )
                         }
                     }
                 }
 
             onOrgUnitCallback =
-                { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
+                { chartModel, orgUnitFilterType, lineListingColumnId ->
                     groupViewModel.trackAnalyticsOrgUnitFilter(mode)
                     when (orgUnitFilterType) {
-                        OrgUnitFilterType.SELECTION -> showOUTreeSelector(chartModel)
+                        OrgUnitFilterType.SELECTION -> showOUTreeSelector(
+                            chartModel,
+                            lineListingColumnId
+                        )
+
                         else -> groupViewModel.filterByOrgUnit(
                             chartModel,
                             emptyList(),
                             orgUnitFilterType,
+                            lineListingColumnId
                         )
                     }
                 }
@@ -153,6 +167,7 @@ class GroupAnalyticsFragment : Fragment() {
         chartModel: ChartModel,
         relativePeriod: RelativePeriod?,
         current: RelativePeriod?,
+        lineListingColumnId: Int?
     ) {
         val periodList = mutableListOf<RelativePeriod>()
         AlertBottomDialog.instance
@@ -160,27 +175,28 @@ class GroupAnalyticsFragment : Fragment() {
             .setMessage(getString(R.string.include_this_period_body))
             .setNegativeButton(getString(R.string.no)) {
                 relativePeriod?.let { periodList.add(relativePeriod) }
-                groupViewModel.filterByPeriod(chartModel, periodList)
+                groupViewModel.filterByPeriod(chartModel, periodList, lineListingColumnId)
             }
             .setPositiveButton(getString(R.string.yes)) {
                 relativePeriod?.let { periodList.add(relativePeriod) }
                 current?.let { periodList.add(current) }
-                groupViewModel.filterByPeriod(chartModel, periodList)
+                groupViewModel.filterByPeriod(chartModel, periodList, lineListingColumnId)
             }
             .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
-    private fun showOUTreeSelector(chartModel: ChartModel) {
+    private fun showOUTreeSelector(chartModel: ChartModel, lineListingColumnId: Int?) {
         OUTreeFragment.Builder()
             .showAsDialog()
             .withPreselectedOrgUnits(
-                chartModel.graph.orgUnitsSelected.toMutableList(),
+                chartModel.graph.orgUnitsSelected(lineListingColumnId).toMutableList(),
             )
             .onSelection { selectedOrgUnits ->
                 groupViewModel.filterByOrgUnit(
                     chartModel,
                     selectedOrgUnits,
                     OrgUnitFilterType.SELECTION,
+                    lineListingColumnId,
                 )
             }
             .build()

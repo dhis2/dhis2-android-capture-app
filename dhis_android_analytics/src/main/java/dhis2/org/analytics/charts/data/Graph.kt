@@ -1,12 +1,12 @@
 package dhis2.org.analytics.charts.data
 
-import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.period.PeriodType
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.Date
+import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.period.PeriodType
 
 data class Graph(
     val title: String,
@@ -16,10 +16,7 @@ data class Graph(
     val periodStep: Long,
     val chartType: ChartType? = ChartType.LINE_CHART,
     val categories: List<String> = emptyList(),
-    val orgUnitsDefault: List<String> = emptyList(),
-    val orgUnitsSelected: List<String> = emptyList(),
-    val periodToDisplaySelected: RelativePeriod? = null,
-    val lineListFilters: Map<Int, String> = emptyMap(),
+    val graphFilters: GraphFilters? = null,
     val visualizationUid: String? = null,
     val hasError: Boolean = false,
     val errorMessage: String? = null,
@@ -96,7 +93,7 @@ data class Graph(
         } else {
             Date(
                 baseSeries().first().coordinates.first().eventDate.time +
-                    numberOfSteps * periodStep,
+                        numberOfSteps * periodStep,
             )
         }
     }
@@ -152,14 +149,29 @@ data class Graph(
     }
 
     fun canBeShown(): Boolean {
-        return if (orgUnitsSelected.isNotEmpty() || periodToDisplaySelected != null) {
-            true
-        } else {
-            series.isNotEmpty()
+        return when (graphFilters) {
+            is GraphFilters.Visualization -> {
+                graphFilters.orgUnitsSelected.isNotEmpty() || graphFilters.periodToDisplaySelected != null
+            }
+
+            else -> series.isNotEmpty()
         }
     }
 
     fun isSingleValue() = series.size == 1 && series[0].coordinates.size == 1
+
+    fun orgUnitsSelected(lineListingColumnIndex: Int? = null): List<String> {
+        return when (graphFilters) {
+            is GraphFilters.LineListing ->
+                lineListingColumnIndex?.let { graphFilters.orgUnitsSelected[lineListingColumnIndex] } ?: emptyList()
+
+            is GraphFilters.Visualization ->
+                graphFilters.orgUnitsSelected
+
+            null -> emptyList()
+        }
+    }
+
 }
 
 data class SerieData(

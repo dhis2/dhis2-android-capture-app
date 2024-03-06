@@ -57,20 +57,30 @@ class GroupAnalyticsViewModel(
         chartModel: ChartModel,
         orgUnits: List<OrganisationUnit>,
         orgUnitFilterType: OrgUnitFilterType,
+        lineListingColumnInd: Int?
     ) {
         chartModel.graph.visualizationUid?.let {
             charts.setVisualizationOrgUnits(
                 chartModel.graph.visualizationUid,
+                lineListingColumnInd,
                 orgUnits,
-                orgUnitFilterType,
+                orgUnitFilterType
             )
             fetchAnalytics(currentGroup)
         }
     }
 
-    fun filterByPeriod(chartModel: ChartModel, periods: List<RelativePeriod>) {
+    fun filterByPeriod(
+        chartModel: ChartModel,
+        periods: List<RelativePeriod>,
+        lineListingColumnInd: Int?
+    ) {
         chartModel.graph.visualizationUid?.let {
-            charts.setVisualizationPeriods(chartModel.graph.visualizationUid, periods)
+            charts.setVisualizationPeriods(
+                chartModel.graph.visualizationUid,
+                lineListingColumnInd,
+                periods
+            )
             fetchAnalytics(currentGroup)
         }
     }
@@ -87,14 +97,17 @@ class GroupAnalyticsViewModel(
             when (filterType) {
                 ChartFilter.PERIOD -> charts.setVisualizationPeriods(
                     chartModel.graph.visualizationUid,
-                    emptyList(),
+                    null,
+                    emptyList()
                 )
 
                 ChartFilter.ORG_UNIT -> charts.setVisualizationOrgUnits(
                     chartModel.graph.visualizationUid,
+                    null,
                     emptyList(),
-                    OrgUnitFilterType.NONE,
+                    OrgUnitFilterType.NONE
                 )
+
                 ChartFilter.COLUMN -> charts.setLineListingFilter(
                     chartModel.graph.visualizationUid,
                     -1,

@@ -31,8 +31,12 @@ class IndicatorsPresenter(
     fun onDettach() = compositeDisposable.clear()
 
     fun displayMessage(message: String) = view.displayMessage(message)
-    fun filterByPeriod(chartModel: ChartModel, selectedPeriods: List<RelativePeriod>) {
-        indicatorRepository.filterByPeriod(chartModel, selectedPeriods)
+    fun filterByPeriod(
+        chartModel: ChartModel,
+        selectedPeriods: List<RelativePeriod>,
+        lineListingColumnId: Int?
+    ) {
+        indicatorRepository.filterByPeriod(chartModel, selectedPeriods, lineListingColumnId)
         publishProcessor.onNext(Unit)
     }
 
@@ -40,8 +44,14 @@ class IndicatorsPresenter(
         chartModel: ChartModel,
         selectedPeriods: List<OrganisationUnit>,
         filterType: OrgUnitFilterType,
+        lineListingColumnId: Int?
     ) {
-        indicatorRepository.filterByOrgUnit(chartModel, selectedPeriods, filterType)
+        indicatorRepository.filterByOrgUnit(
+            chartModel,
+            selectedPeriods,
+            filterType,
+            lineListingColumnId
+        )
         publishProcessor.onNext(Unit)
     }
 
@@ -51,11 +61,14 @@ class IndicatorsPresenter(
                 ChartFilter.PERIOD -> indicatorRepository.filterByPeriod(
                     chartModel,
                     emptyList(),
+                    null,
                 )
+
                 ChartFilter.ORG_UNIT -> indicatorRepository.filterByOrgUnit(
                     chartModel,
                     emptyList(),
                     OrgUnitFilterType.NONE,
+                    null,
                 )
 
                 ChartFilter.COLUMN -> indicatorRepository.filterLineListing(

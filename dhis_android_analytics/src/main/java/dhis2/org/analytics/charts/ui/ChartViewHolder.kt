@@ -25,11 +25,11 @@ class ChartViewHolder(
     }
 
     fun bind(chart: ChartModel, adapterCallback: ChartItemCallback) {
-        chart.orgUnitCallback = {
-            adapterCallback.filterOrgUnit(chart, it)
+        chart.orgUnitCallback = { orgUnitType, linelistingColumnId ->
+            adapterCallback.filterOrgUnit(chart, orgUnitType, linelistingColumnId)
         }
-        chart.relativePeriodCallback = { selected: RelativePeriod?, thisCurrent: RelativePeriod? ->
-            adapterCallback.filterPeriod(chart, selected, thisCurrent)
+        chart.relativePeriodCallback = { selected, thisCurrent, linelistingColumnId ->
+            adapterCallback.filterPeriod(chart, selected, thisCurrent, linelistingColumnId)
         }
         chart.resetFilterCallback = { chartFilter ->
             adapterCallback.resetFilter(chart, chartFilter)
@@ -69,7 +69,7 @@ class ChartViewHolder(
 
     private fun rendersAsTable(chart: ChartModel): Boolean {
         return chart.observableChartType.get() == ChartType.TABLE ||
-            chart.observableChartType.get() == ChartType.LINE_LISTING
+                chart.observableChartType.get() == ChartType.LINE_LISTING
     }
 
     private fun loadComposeChart(chart: ChartModel, visible: Boolean = true) {
@@ -88,8 +88,14 @@ class ChartViewHolder(
     }
 
     interface ChartItemCallback {
-        fun filterPeriod(chart: ChartModel, period: RelativePeriod?, current: RelativePeriod?)
-        fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType)
+        fun filterPeriod(
+            chart: ChartModel,
+            period: RelativePeriod?,
+            current: RelativePeriod?,
+            lineListingColumnId: Int?
+        )
+
+        fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType, lineListingColumnId: Int?)
         fun resetFilter(chart: ChartModel, filter: ChartFilter)
         fun filterColumnValue(chart: ChartModel, column: Int)
     }

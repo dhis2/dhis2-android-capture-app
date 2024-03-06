@@ -4,23 +4,23 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.DimensionalVisualization
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphFieldValue
+import dhis2.org.analytics.charts.data.GraphFilters
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.data.toAnalyticsChartType
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
+import java.util.Date
+import java.util.Locale
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
 import org.hisp.dhis.android.core.analytics.aggregated.GridAnalyticsResponse
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
 import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
 import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListResponse
-import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.visualization.TrackerVisualization
 import org.hisp.dhis.android.core.visualization.Visualization
 import org.hisp.dhis.android.core.visualization.VisualizationType
-import java.util.Date
-import java.util.Locale
 
 class VisualizationToGraph(
     private val periodStepProvider: PeriodStepProvider,
@@ -57,8 +57,7 @@ class VisualizationToGraph(
         customTitle: String?,
         visualization: Visualization,
         gridAnalyticsResponse: GridAnalyticsResponse,
-        selectedRelativePeriod: RelativePeriod?,
-        selectedOrgUnits: List<String>?,
+        graphFilters: GraphFilters.Visualization,
     ): Graph {
         val categories = getCategories(visualization.type(), gridAnalyticsResponse)
         val formattedCategory = formatCategories(categories, gridAnalyticsResponse.metadata)
@@ -72,8 +71,7 @@ class VisualizationToGraph(
             chartType = visualization.type().toAnalyticsChartType(),
             categories = formattedCategory,
             visualizationUid = visualization.uid(),
-            periodToDisplaySelected = selectedRelativePeriod,
-            orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+            graphFilters = graphFilters,
         )
     }
 
@@ -81,7 +79,7 @@ class VisualizationToGraph(
         customTitle: String?,
         trackerVisualization: TrackerVisualization?,
         trackerLineListResponse: TrackerLineListResponse,
-        filters: Map<Int, String>,
+        filters: GraphFilters.LineListing,
     ): Graph {
         val formattedCategories = formatLineListCategories(
             trackerLineListResponse.headers,
@@ -96,17 +94,14 @@ class VisualizationToGraph(
             chartType = trackerVisualization?.type().toAnalyticsChartType(),
             categories = formattedCategories,
             visualizationUid = trackerVisualization?.uid(),
-            periodToDisplaySelected = null,
-            orgUnitsSelected = emptyList(),
-            lineListFilters = filters,
+            graphFilters = filters,
         )
     }
 
     fun addErrorGraph(
         customTitle: String?,
         visualization: Visualization,
-        selectedRelativePeriod: RelativePeriod?,
-        selectedOrgUnits: List<String>?,
+        filters: GraphFilters.Visualization,
         errorMessage: String,
     ): Graph {
         return Graph(
@@ -118,8 +113,7 @@ class VisualizationToGraph(
             chartType = visualization.type().toAnalyticsChartType(),
             categories = emptyList(),
             visualizationUid = visualization.uid(),
-            periodToDisplaySelected = selectedRelativePeriod,
-            orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+            graphFilters = filters,
             hasError = true,
             errorMessage = errorMessage,
         )
@@ -129,7 +123,7 @@ class VisualizationToGraph(
         customTitle: String?,
         trackerVisualization: TrackerVisualization?,
         errorMessage: String,
-        filters: Map<Int, String>,
+        filters: GraphFilters.LineListing,
     ): Graph {
         return Graph(
             title = customTitle ?: trackerVisualization?.displayName() ?: "",
@@ -140,9 +134,7 @@ class VisualizationToGraph(
             chartType = trackerVisualization?.type().toAnalyticsChartType(),
             categories = emptyList(),
             visualizationUid = trackerVisualization?.uid(),
-            periodToDisplaySelected = null,
-            orgUnitsSelected = emptyList(),
-            lineListFilters = filters,
+            graphFilters = filters,
             hasError = true,
             errorMessage = errorMessage,
         )

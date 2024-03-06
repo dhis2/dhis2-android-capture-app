@@ -1,9 +1,12 @@
 package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.bindings.hasGroup
+import dhis2.org.analytics.charts.bindings.withDateFilters
 import dhis2.org.analytics.charts.bindings.withFilters
+import dhis2.org.analytics.charts.bindings.withOUFilters
 import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.GraphFilters
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
@@ -144,20 +147,10 @@ class ChartsRepositoryImpl(
             }?.name()
             val analyticsUid = analyticVisualization.uid()
 
-            val selectedRelativePeriod =
-                analyticsFilterProvider.visualizationPeriod(analyticsUid)
-            val selectedOrgUnits = analyticsFilterProvider.visualizationOrgUnits(analyticsUid)
-            val selectedOrgUnitType =
-                analyticsFilterProvider.visualizationOrgUnitsType(analyticsUid)
-            val type = analyticVisualization.type()
-
-            when (type) {
+            when (analyticVisualization.type()) {
                 AnalyticsDhisVisualizationType.VISUALIZATION -> addVisualization(
                     analyticsUid,
                     customTitle,
-                    selectedRelativePeriod,
-                    selectedOrgUnitType,
-                    selectedOrgUnits,
                     graphList,
                 )
 
@@ -173,11 +166,20 @@ class ChartsRepositoryImpl(
     private fun addVisualization(
         visualizationUid: String,
         customTitle: String?,
-        selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnitType: OrgUnitFilterType?,
-        selectedOrgUnits: List<String>?,
         graphList: MutableList<Graph>,
     ) {
+        val selectedRelativePeriod =
+            analyticsFilterProvider.visualizationPeriod(visualizationUid)
+        val selectedOrgUnits = analyticsFilterProvider.visualizationOrgUnits(visualizationUid)
+        val selectedOrgUnitType =
+            analyticsFilterProvider.visualizationOrgUnitsType(visualizationUid)
+
+        val graphFilters = GraphFilters.Visualization(
+            orgUnitsDefault = emptyList(),
+            orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+            periodToDisplaySelected = selectedRelativePeriod?.firstOrNull()
+        )
+
         val visualization = d2.visualizationModule()
             .visualizations()
             .uid(visualizationUid)
@@ -225,8 +227,7 @@ class ChartsRepositoryImpl(
                                 customTitle ?: visualization.displayFormName(),
                                 visualization,
                                 gridAnalyticsResponse,
-                                selectedRelativePeriod?.firstOrNull(),
-                                selectedOrgUnits,
+                                graphFilters
                             ),
                         )
                     }
@@ -238,8 +239,7 @@ class ChartsRepositoryImpl(
                             visualizationToGraph.addErrorGraph(
                                 customTitle ?: visualization.displayFormName(),
                                 visualization,
-                                selectedRelativePeriod?.firstOrNull(),
-                                selectedOrgUnits,
+                                graphFilters,
                                 analyticsResources.analyticsExceptionMessage(analyticException),
                             ),
                         )
@@ -256,12 +256,55 @@ class ChartsRepositoryImpl(
         val filters = analyticsFilterProvider.trackerVisualizationFilters(trackerVisualizationUid)
             ?: emptyMap()
 
+        val periodFilters =
+            analyticsFilterProvider.trackerVisualizationPeriodFilters(trackerVisualizationUid)
+                ?: emptyMap()
+
+        val selectedOrgUnitType =
+            analyticsFilterProvider.trackerVisualizationOrgUnitTypeFilters(trackerVisualizationUid)
+                ?: emptyMap()
+        val selectedOrgUnits: Map<Int, List<String>> =
+            analyticsFilterProvider.trackerVisualizationOrgUnitFilters(trackerVisualizationUid)
+                ?: emptyMap()
+
+        val graphFilters = GraphFilters.LineListing(
+            lineListFilters = filters,
+            orgUnitsSelected = selectedOrgUnits,
+            periodToDisplaySelected = periodFilters
+        )
+
         val trackerVisualization = d2.visualizationModule().trackerVisualizations()
             .uid(trackerVisualizationUid)
             .blockingGet()
 
         d2.analyticsModule().trackerLineList()
             .withTrackerVisualization(trackerVisualizationUid)
+            .run {
+                var filteredRepository = this
+                periodFilters.forEach { (columnIndex, periods) ->
+                    lineListHeaderCache[trackerVisualizationUid]?.get(columnIndex)?.let {
+                        filteredRepository = filteredRepository.withColumn(
+                            column = it.withDateFilters(periods),
+                        )
+                    }
+                }
+                filteredRepository
+            }
+            .run {
+                var filteredRepository = this
+                selectedOrgUnitType.forEach { (columnIndex, orgUnitFilterType) ->
+
+                    lineListHeaderCache[trackerVisualizationUid]?.get(columnIndex)?.let {
+                        filteredRepository = filteredRepository.withColumn(
+                            column = it.withOUFilters(
+                                orgUnitFilterType,
+                                selectedOrgUnits[columnIndex] ?: emptyList()
+                            )
+                        )
+                    }
+                }
+                filteredRepository
+            }
             .run {
                 var filteredRepository = this
                 if (filters.isNotEmpty()) {
@@ -284,7 +327,7 @@ class ChartsRepositoryImpl(
                             customTitle ?: trackerVisualization?.displayName(),
                             trackerVisualization,
                             trackerLineListResponse,
-                            filters,
+                            graphFilters,
                         ),
                     )
                 },
@@ -296,7 +339,7 @@ class ChartsRepositoryImpl(
                             customTitle,
                             trackerVisualization,
                             analyticsResources.analyticsExceptionMessage(analyticException),
-                            filters,
+                            graphFilters,
                         ),
                     )
                 }
@@ -348,14 +391,14 @@ class ChartsRepositoryImpl(
                 val selectedRelativePeriod =
                     analyticsFilterProvider.visualizationPeriod(
                         enrollment.trackedEntityInstance()!! +
-                            programStage.uid() +
-                            dataElement.uid(),
+                                programStage.uid() +
+                                dataElement.uid(),
                     )
                 val selectedOrgUnits =
                     analyticsFilterProvider.visualizationOrgUnits(
                         enrollment.trackedEntityInstance()!! +
-                            programStage.uid() +
-                            dataElement.uid(),
+                                programStage.uid() +
+                                dataElement.uid(),
                     )
                 dataElementToGraph.map(
                     dataElement,
@@ -371,14 +414,14 @@ class ChartsRepositoryImpl(
                     val selectedRelativePeriod =
                         analyticsFilterProvider.visualizationPeriod(
                             enrollment.trackedEntityInstance()!! +
-                                programStage.uid() +
-                                programIndicator.uid(),
+                                    programStage.uid() +
+                                    programIndicator.uid(),
                         )
                     val selectedOrgUnits =
                         analyticsFilterProvider.visualizationOrgUnits(
                             enrollment.trackedEntityInstance()!! +
-                                programStage.uid() +
-                                programIndicator.uid(),
+                                    programStage.uid() +
+                                    programIndicator.uid(),
                         )
                     programIndicatorToGraph.map(
                         programIndicator,
@@ -424,23 +467,37 @@ class ChartsRepositoryImpl(
             .blockingGet()
     }
 
-    override fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>) {
+    override fun setVisualizationPeriods(
+        visualizationUid: String,
+        lineListingColumnId: Int?,
+        periods: List<RelativePeriod>
+    ) {
         if (periods.isNotEmpty()) {
-            analyticsFilterProvider.addPeriodFilter(visualizationUid, periods)
+            analyticsFilterProvider.addPeriodFilter(
+                visualizationUid,
+                lineListingColumnId,
+                periods
+            )
         } else {
-            analyticsFilterProvider.removePeriodFilter(visualizationUid)
+            analyticsFilterProvider.removePeriodFilter(visualizationUid, lineListingColumnId)
         }
     }
 
     override fun setVisualizationOrgUnits(
         visualizationUid: String,
+        lineListingColumnId: Int?,
         orgUnits: List<OrganisationUnit>,
         orgUnitFilterType: OrgUnitFilterType,
     ) {
         when (orgUnitFilterType) {
-            OrgUnitFilterType.NONE -> analyticsFilterProvider.removeOrgUnitFilter(visualizationUid)
+            OrgUnitFilterType.NONE -> analyticsFilterProvider.removeOrgUnitFilter(
+                visualizationUid,
+                lineListingColumnId
+            )
+
             OrgUnitFilterType.ALL -> analyticsFilterProvider.addOrgUnitFilter(
                 visualizationUid,
+                lineListingColumnId,
                 orgUnitFilterType,
                 orgUnits,
             )
@@ -449,11 +506,15 @@ class ChartsRepositoryImpl(
                 if (orgUnits.isNotEmpty()) {
                     analyticsFilterProvider.addOrgUnitFilter(
                         visualizationUid,
+                        lineListingColumnId,
                         orgUnitFilterType,
                         orgUnits,
                     )
                 } else {
-                    analyticsFilterProvider.removeOrgUnitFilter(visualizationUid)
+                    analyticsFilterProvider.removeOrgUnitFilter(
+                        visualizationUid,
+                        lineListingColumnId
+                    )
                 }
             }
         }

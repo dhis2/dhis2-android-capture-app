@@ -36,11 +36,11 @@ class TrackerAnalyticsRepository(
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {
         return Flowable.zip<
-            List<AnalyticsModel>?,
-            List<AnalyticsModel>?,
-            List<AnalyticsModel>,
-            List<AnalyticsModel>,
-            >(
+                List<AnalyticsModel>?,
+                List<AnalyticsModel>?,
+                List<AnalyticsModel>,
+                List<AnalyticsModel>,
+                >(
             getIndicators(
                 !DhisTextUtils.isEmpty(enrollmentUid),
             ) { indicatorUid ->
@@ -60,9 +60,13 @@ class TrackerAnalyticsRepository(
         )
     }
 
-    override fun filterByPeriod(chartModel: ChartModel, selectedPeriods: List<RelativePeriod>) {
+    override fun filterByPeriod(
+        chartModel: ChartModel,
+        selectedPeriods: List<RelativePeriod>,
+        lineListingColumnId: Int?
+    ) {
         chartModel.graph.visualizationUid?.let { visualizationUid ->
-            charts?.setVisualizationPeriods(visualizationUid, selectedPeriods)
+            charts?.setVisualizationPeriods(visualizationUid, lineListingColumnId, selectedPeriods)
         }
     }
 
@@ -70,9 +74,15 @@ class TrackerAnalyticsRepository(
         chartModel: ChartModel,
         selectedOrgUnits: List<OrganisationUnit>,
         filterType: OrgUnitFilterType,
+        lineListingColumnId: Int?
     ) {
         chartModel.graph.visualizationUid?.let { visualizationUid ->
-            charts?.setVisualizationOrgUnits(visualizationUid, selectedOrgUnits, filterType)
+            charts?.setVisualizationOrgUnits(
+                visualizationUid,
+                lineListingColumnId,
+                selectedOrgUnits,
+                filterType
+            )
         }
     }
 
