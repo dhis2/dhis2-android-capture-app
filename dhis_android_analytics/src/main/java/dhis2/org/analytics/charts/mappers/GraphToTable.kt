@@ -135,7 +135,10 @@ class GraphToTable {
                     mutableStateOf(
                         object : TableInteractions {
                             override fun onSelectionChange(newTableSelection: TableSelection) {
-                                tableSelection = newTableSelection
+                                tableSelection = when {
+                                    tableSelection != newTableSelection -> newTableSelection
+                                    else -> TableSelection.Unselected()
+                                }
                             }
                         },
                     )
@@ -152,15 +155,12 @@ class GraphToTable {
                                     tableModel.copy(
                                         tableRows = tableModel.tableRows.subList(
                                             0,
-                                            LINE_LISTING_MAX_ROWS
-                                        )
-                                    )
+                                            LINE_LISTING_MAX_ROWS,
+                                        ),
+                                    ),
                                 )
                             } else {
                                 listOf(tableModel)
-                            },
-                            bottomContent = {
-                                Text(text = "Max")
                             },
                         )
                         if (displayLineListingMaxRowText) {
@@ -168,9 +168,9 @@ class GraphToTable {
                                 modifier = Modifier.fillMaxWidth(),
                                 text = stringResource(
                                     R.string.line_listing_max_results,
-                                    LINE_LISTING_MAX_ROWS
+                                    LINE_LISTING_MAX_ROWS,
                                 ),
-                                style = descriptionTextStyle
+                                style = descriptionTextStyle,
                             )
                         }
                     }
@@ -181,7 +181,7 @@ class GraphToTable {
 
     private fun shouldDisplayMaxRowText(
         transpose: Boolean,
-        tableRows: List<TableRowModel>
+        tableRows: List<TableRowModel>,
     ): Boolean {
         return when {
             transpose -> false
@@ -199,7 +199,6 @@ class GraphToTable {
             },
             tableHorizontalPadding = 0.dp,
             tableVerticalPadding = 0.dp,
-            defaultRowHeaderWidth = 0,
             extraWidths = emptyMap(),
             rowHeaderWidths = emptyMap(),
             columnWidth = emptyMap(),
