@@ -3,6 +3,7 @@ package dhis2.org.analytics.charts.ui
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphFieldValue
+import dhis2.org.analytics.charts.data.GraphFilters
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
 import org.hisp.dhis.android.core.period.PeriodType
@@ -60,8 +61,7 @@ class AnalyticsModelTest {
         chartType = ChartType.LINE_CHART,
         categories = emptyList(),
         visualizationUid = "Visualization Uid",
-        periodToDisplaySelected = null,
-        orgUnitsSelected = emptyList(),
+        graphFilters = null,
         hasError = true,
     )
 
@@ -92,8 +92,6 @@ class AnalyticsModelTest {
         chartType = ChartType.PIE_CHART,
         categories = emptyList(),
         visualizationUid = "Visualization Uid",
-        periodToDisplaySelected = null,
-        orgUnitsSelected = emptyList(),
         hasError = false,
     )
 
@@ -111,8 +109,6 @@ class AnalyticsModelTest {
         chartType = ChartType.LINE_CHART,
         categories = emptyList(),
         visualizationUid = "Visualization Uid",
-        periodToDisplaySelected = null,
-        orgUnitsSelected = emptyList(),
         hasError = false,
     )
 
@@ -130,8 +126,9 @@ class AnalyticsModelTest {
         chartType = ChartType.LINE_CHART,
         categories = emptyList(),
         visualizationUid = "Visualization Uid",
-        periodToDisplaySelected = null,
-        orgUnitsSelected = listOf("selectedOUUid"),
+        graphFilters = GraphFilters.Visualization(
+            orgUnitsSelected = listOf("selectedOUUid")
+        ),
         hasError = false,
     )
 }
