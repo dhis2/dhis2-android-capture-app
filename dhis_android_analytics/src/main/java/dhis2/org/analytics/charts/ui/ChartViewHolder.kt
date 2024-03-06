@@ -69,7 +69,7 @@ class ChartViewHolder(
 
     private fun rendersAsTable(chart: ChartModel): Boolean {
         return chart.observableChartType.get() == ChartType.TABLE ||
-                chart.observableChartType.get() == ChartType.LINE_LISTING
+            chart.observableChartType.get() == ChartType.LINE_LISTING
     }
 
     private fun loadComposeChart(chart: ChartModel, visible: Boolean = true) {
@@ -92,7 +92,7 @@ class ChartViewHolder(
             chart: ChartModel,
             period: RelativePeriod?,
             current: RelativePeriod?,
-            lineListingColumnId: Int?
+            lineListingColumnId: Int?,
         )
 
         fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType, lineListingColumnId: Int?)

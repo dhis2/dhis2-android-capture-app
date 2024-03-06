@@ -34,7 +34,7 @@ class IndicatorsPresenter(
     fun filterByPeriod(
         chartModel: ChartModel,
         selectedPeriods: List<RelativePeriod>,
-        lineListingColumnId: Int?
+        lineListingColumnId: Int?,
     ) {
         indicatorRepository.filterByPeriod(chartModel, selectedPeriods, lineListingColumnId)
         publishProcessor.onNext(Unit)
@@ -44,13 +44,13 @@ class IndicatorsPresenter(
         chartModel: ChartModel,
         selectedPeriods: List<OrganisationUnit>,
         filterType: OrgUnitFilterType,
-        lineListingColumnId: Int?
+        lineListingColumnId: Int?,
     ) {
         indicatorRepository.filterByOrgUnit(
             chartModel,
             selectedPeriods,
             filterType,
-            lineListingColumnId
+            lineListingColumnId,
         )
         publishProcessor.onNext(Unit)
     }

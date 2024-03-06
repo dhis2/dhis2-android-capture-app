@@ -11,13 +11,13 @@ import dhis2.org.analytics.charts.ui.AnalyticsAdapter
 import dhis2.org.analytics.charts.ui.AnalyticsModel
 import dhis2.org.analytics.charts.ui.ChartModel
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.databinding.FragmentIndicatorsBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.common.RelativePeriod
+import javax.inject.Inject
 
 const val VISUALIZATION_TYPE = "VISUALIZATION_TYPE"
 
@@ -32,7 +32,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             onRelativePeriodCallback = { chartModel: ChartModel,
                                          relativePeriod: RelativePeriod?,
                                          current: RelativePeriod?,
-                                         lineListingColumnId: Int?
+                                         lineListingColumnId: Int?,
                 ->
                 relativePeriod?.let {
                     if (it.isNotCurrent()) {
@@ -40,7 +40,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
                             chartModel,
                             relativePeriod,
                             current,
-                            lineListingColumnId
+                            lineListingColumnId,
                         )
                     } else {
                         presenter.filterByPeriod(chartModel, mutableListOf(it), lineListingColumnId)
@@ -50,18 +50,19 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             onOrgUnitCallback =
                 { chartModel: ChartModel,
                   orgUnitFilterType: OrgUnitFilterType,
-                  lineListingColumnId: Int? ->
+                  lineListingColumnId: Int?,
+                    ->
                     when (orgUnitFilterType) {
                         OrgUnitFilterType.SELECTION -> showOUTreeSelector(
                             chartModel,
-                            lineListingColumnId
+                            lineListingColumnId,
                         )
 
                         else -> presenter.filterByOrgUnit(
                             chartModel,
                             emptyList(),
                             orgUnitFilterType,
-                            lineListingColumnId
+                            lineListingColumnId,
                         )
                     }
                 }
@@ -137,7 +138,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
 
     private fun showOUTreeSelector(
         chartModel: ChartModel,
-        lineListingColumnId: Int?
+        lineListingColumnId: Int?,
     ) {
         OUTreeFragment.Builder()
             .showAsDialog()

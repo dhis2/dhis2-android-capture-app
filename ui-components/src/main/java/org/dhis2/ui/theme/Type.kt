@@ -22,5 +22,5 @@ val descriptionTextStyle = TextStyle(
     fontFamily = FontFamily(Font(R.font.roboto_regular)),
     lineHeight = 16.sp,
     letterSpacing = (0.4).sp,
-    textAlign = TextAlign.End
+    textAlign = TextAlign.End,
 )

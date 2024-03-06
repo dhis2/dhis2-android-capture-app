@@ -17,12 +17,12 @@ import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.analytics.charts.ui.dialog.SearchColumnDialog
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
-import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.bindings.scrollToPosition
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.hisp.dhis.android.core.common.RelativePeriod
+import javax.inject.Inject
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -119,13 +119,13 @@ class GroupAnalyticsFragment : Fragment() {
                                 chartModel,
                                 relativePeriod,
                                 current,
-                                lineListingColumnId
+                                lineListingColumnId,
                             )
                         } else {
                             groupViewModel.filterByPeriod(
                                 chartModel,
                                 mutableListOf(it),
-                                lineListingColumnId
+                                lineListingColumnId,
                             )
                         }
                     }
@@ -137,14 +137,14 @@ class GroupAnalyticsFragment : Fragment() {
                     when (orgUnitFilterType) {
                         OrgUnitFilterType.SELECTION -> showOUTreeSelector(
                             chartModel,
-                            lineListingColumnId
+                            lineListingColumnId,
                         )
 
                         else -> groupViewModel.filterByOrgUnit(
                             chartModel,
                             emptyList(),
                             orgUnitFilterType,
-                            lineListingColumnId
+                            lineListingColumnId,
                         )
                     }
                 }
@@ -167,7 +167,7 @@ class GroupAnalyticsFragment : Fragment() {
         chartModel: ChartModel,
         relativePeriod: RelativePeriod?,
         current: RelativePeriod?,
-        lineListingColumnId: Int?
+        lineListingColumnId: Int?,
     ) {
         val periodList = mutableListOf<RelativePeriod>()
         AlertBottomDialog.instance

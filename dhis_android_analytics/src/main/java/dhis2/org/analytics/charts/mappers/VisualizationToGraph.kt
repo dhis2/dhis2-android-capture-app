@@ -10,8 +10,6 @@ import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.data.toAnalyticsChartType
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
-import java.util.Date
-import java.util.Locale
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
 import org.hisp.dhis.android.core.analytics.aggregated.GridAnalyticsResponse
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
@@ -21,6 +19,8 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.visualization.TrackerVisualization
 import org.hisp.dhis.android.core.visualization.Visualization
 import org.hisp.dhis.android.core.visualization.VisualizationType
+import java.util.Date
+import java.util.Locale
 
 class VisualizationToGraph(
     private val periodStepProvider: PeriodStepProvider,

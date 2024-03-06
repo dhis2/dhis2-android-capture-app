@@ -26,7 +26,7 @@ interface Charts {
     fun setVisualizationPeriods(
         visualizationUid: String,
         lineListingColumnId: Int?,
-        periods: List<RelativePeriod>
+        periods: List<RelativePeriod>,
     )
 
     fun setVisualizationOrgUnits(

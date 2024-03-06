@@ -14,7 +14,8 @@ interface ChartsRepository {
     fun getDataSetVisualization(groupUid: String?, dataSetUid: String): List<Graph>
     fun setVisualizationPeriods(
         visualizationUid: String,
-        lineListingColumnId: Int?, periods: List<RelativePeriod>
+        lineListingColumnId: Int?,
+        periods: List<RelativePeriod>,
     )
 
     fun setVisualizationOrgUnits(

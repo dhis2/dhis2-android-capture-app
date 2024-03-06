@@ -11,7 +11,6 @@ import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
-import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.AnalyticsException
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
@@ -44,6 +43,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class ChartsRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -93,8 +93,8 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == mockedSettingsGraphs().size &&
-                    result[0].title == "settings_1",
+                result.size == mockedSettingsGraphs().size &&
+                result[0].title == "settings_1",
         )
     }
 
@@ -123,9 +123,9 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == 2 &&
-                    result[0].title == "de_graph_1" &&
-                    result[1].title == "indicator_graph_1",
+                result.size == 2 &&
+                result[0].title == "de_graph_1" &&
+                result[1].title == "indicator_graph_1",
         )
     }
 
@@ -142,8 +142,8 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == 1 &&
-                    result[0].title == "de_graph_1",
+                result.size == 1 &&
+                result[0].title == "de_graph_1",
         )
     }
 
@@ -162,14 +162,14 @@ class ChartsRepositoryTest {
                 any(),
                 anyOrNull(),
                 anyOrNull(),
-                any()
+                any(),
             ),
         ) doReturn mockedIndicatorGraph()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == 1 &&
-                    result[0].title == "indicator_graph_1",
+                result.size == 1 &&
+                result[0].title == "indicator_graph_1",
         )
     }
 
@@ -352,7 +352,7 @@ class ChartsRepositoryTest {
             "uid",
             null,
             OrgUnitFilterType.ALL,
-            orgUnits
+            orgUnits,
         )
         repository.setVisualizationOrgUnits("uid", null, orgUnits, OrgUnitFilterType.SELECTION)
         verify(analyticsFilterProvider).addOrgUnitFilter(
@@ -374,7 +374,7 @@ class ChartsRepositoryTest {
         val mockedAnalyticsVisualization: AnalyticsDhisVisualization = mock {
             on { name() } doReturn "name"
             on { uid() } doReturn "visualizationUid"
-            on { type() }doReturn AnalyticsDhisVisualizationType.VISUALIZATION
+            on { type() } doReturn AnalyticsDhisVisualizationType.VISUALIZATION
         }
         val mockedVisualizationGroup: AnalyticsDhisVisualizationsGroup = mock {
             on { id() } doReturn "groupUid"
@@ -645,8 +645,8 @@ class ChartsRepositoryTest {
             series = listOf(
                 SerieData(
                     "de_field",
-                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f)))
-                )
+                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                ),
             ),
             periodToDisplayDefault = null,
             eventPeriodType = PeriodType.Daily,
@@ -661,8 +661,8 @@ class ChartsRepositoryTest {
             listOf(
                 SerieData(
                     "indicator_field",
-                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f)))
-                )
+                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                ),
             ),
             null,
             PeriodType.Daily,

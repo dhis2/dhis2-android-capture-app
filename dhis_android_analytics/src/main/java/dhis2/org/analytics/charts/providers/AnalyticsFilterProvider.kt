@@ -21,7 +21,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
                 visualizationUid,
                 lineListingColumnId,
                 filterType,
-                orgUnits
+                orgUnits,
             )
         } else {
             addOrgUnitFilter(visualizationUid, filterType, orgUnits)
@@ -32,7 +32,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
         trackerVisualizationUid: String,
         columnIndex: Int,
         filterType: OrgUnitFilterType,
-        orgUnits: List<OrganisationUnit>
+        orgUnits: List<OrganisationUnit>,
     ) {
         val currentColumnOuFilter =
             trackerVisualizationOrgUnitFilters(trackerVisualizationUid)?.toMutableMap()
@@ -88,7 +88,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
 
     private fun removeTrackerVisualizationOrgUnitFilter(
         trackerVisualizationUid: String,
-        columnIndex: Int
+        columnIndex: Int,
     ) {
         val currentOUTypeColumnFilter =
             trackerVisualizationOrgUnitTypeFilters(trackerVisualizationUid)?.toMutableMap()
@@ -120,7 +120,7 @@ class AnalyticsFilterProvider(private val d2: D2) {
     fun addPeriodFilter(
         visualizationUid: String,
         lineListingColumnId: Int?,
-        periods: List<RelativePeriod>
+        periods: List<RelativePeriod>,
     ) {
         if (lineListingColumnId != null) {
             addTrackerVisualizationPeriodFilter(visualizationUid, lineListingColumnId, periods)
@@ -135,13 +135,12 @@ class AnalyticsFilterProvider(private val d2: D2) {
     private fun addTrackerVisualizationPeriodFilter(
         trackerVisualizationUid: String,
         columnIndex: Int,
-        periods: List<RelativePeriod>
+        periods: List<RelativePeriod>,
     ) {
         val currentColumnFilter =
             trackerVisualizationPeriodFilters(trackerVisualizationUid)?.toMutableMap()
                 ?: mutableMapOf()
         currentColumnFilter[columnIndex] = periods
-
 
         setValue(
             "${trackerVisualizationUid}_p",
@@ -155,12 +154,11 @@ class AnalyticsFilterProvider(private val d2: D2) {
         } else {
             removeValue("${visualizationUid}_p")
         }
-
     }
 
     private fun removeTrackerVisualizationPeriodFilter(
         trackerVisualizationUid: String,
-        columnIndex: Int
+        columnIndex: Int,
     ) {
         val currentOUTypeColumnFilter =
             trackerVisualizationPeriodFilters(trackerVisualizationUid)?.toMutableMap()
@@ -264,7 +262,6 @@ class AnalyticsFilterProvider(private val d2: D2) {
         } catch (e: Exception) {
             null
         }
-
     }
 
     fun trackerVisualizationOrgUnitFilters(trackerVisualizationUid: String): Map<Int, List<String>>? {

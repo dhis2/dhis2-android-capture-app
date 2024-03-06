@@ -124,7 +124,6 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                         addIconToItem(R.id.orgFilter, R.drawable.ic_orgunit_chart_selected)
                     }
                 }
-
             }
         }
     }
@@ -136,13 +135,13 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
     fun showFilters(view: View) {
         when {
             graph.graphFilters is GraphFilters.Visualization &&
-                    graph.graphFilters.periodToDisplaySelected != null &&
-                    graph.orgUnitsSelected().isEmpty() ->
+                graph.graphFilters.periodToDisplaySelected != null &&
+                graph.orgUnitsSelected().isEmpty() ->
                 showPeriodFilters(view)
 
             graph.graphFilters is GraphFilters.Visualization &&
-                    graph.graphFilters.periodToDisplaySelected == null &&
-                    graph.graphFilters.orgUnitsSelected.isNotEmpty() ->
+                graph.graphFilters.periodToDisplaySelected == null &&
+                graph.graphFilters.orgUnitsSelected.isNotEmpty() ->
                 showOrgUntFilters(view)
 
             else -> showVisualizationOptions(view)
@@ -495,7 +494,6 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
 
                             else -> showSearchColumn(itemId)
                         }
-
                     }
                 }
                 true
@@ -619,13 +617,13 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
     }
 
     fun currentFilters(): Int {
-        return graph.graphFilters?.count()?:0
+        return graph.graphFilters?.count() ?: 0
     }
 
     fun hideChart(): Boolean = showNoDataMessage() ||
-            showNoDataForFiltersMessage() ||
-            showError() ||
-            pieChartDataIsZero()
+        showNoDataForFiltersMessage() ||
+        showError() ||
+        pieChartDataIsZero()
 
     fun displayNoData(): Boolean = showNoDataMessage() || showNoDataForFiltersMessage()
 
@@ -634,19 +632,19 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
     fun showError(): Boolean = graph.hasError
 
     fun pieChartDataIsZero(): Boolean = observableChartType.get() == ChartType.PIE_CHART &&
-            !graph.hasError &&
-            graph.series.all { serie -> serie.coordinates.all { point -> point.numericValue() == 0f } }
+        !graph.hasError &&
+        graph.series.all { serie -> serie.coordinates.all { point -> point.numericValue() == 0f } }
 
     fun showNoDataMessage(): Boolean {
         return !graph.hasError && !pieChartDataIsZero() &&
-                graph.series.all { serie -> serie.coordinates.isEmpty() } &&
-                (graph.graphFilters?.count()?:0) == 0
+            graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+            (graph.graphFilters?.count() ?: 0) == 0
     }
 
     fun showNoDataForFiltersMessage(): Boolean {
         return !graph.hasError && !pieChartDataIsZero() &&
-                graph.series.all { serie -> serie.coordinates.isEmpty() } &&
-                ((graph.graphFilters?.count()?:0) > 0)
+            graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+            ((graph.graphFilters?.count() ?: 0) > 0)
     }
 }
 

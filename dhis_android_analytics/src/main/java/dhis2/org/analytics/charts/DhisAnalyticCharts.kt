@@ -3,10 +3,10 @@ package dhis2.org.analytics.charts
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.di.DaggerChartsComponent
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
-import javax.inject.Inject
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
+import javax.inject.Inject
 
 class DhisAnalyticCharts @Inject constructor(
     private val chartsRepository: ChartsRepository,
@@ -50,9 +50,9 @@ class DhisAnalyticCharts @Inject constructor(
     override fun setVisualizationPeriods(
         visualizationUid: String,
         lineListingColumnId: Int?,
-        periods: List<RelativePeriod>
+        periods: List<RelativePeriod>,
     ) {
-        chartsRepository.setVisualizationPeriods(visualizationUid,lineListingColumnId, periods)
+        chartsRepository.setVisualizationPeriods(visualizationUid, lineListingColumnId, periods)
     }
 
     override fun setVisualizationOrgUnits(

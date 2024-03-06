@@ -12,7 +12,7 @@ interface IndicatorRepository {
     fun filterByPeriod(
         chartModel: ChartModel,
         selectedPeriods: List<RelativePeriod>,
-        lineListingColumnId: Int?
+        lineListingColumnId: Int?,
     ) {
     }
 
@@ -20,7 +20,7 @@ interface IndicatorRepository {
         chartModel: ChartModel,
         selectedOrgUnits: List<OrganisationUnit>,
         filterType: OrgUnitFilterType,
-        lineListingColumnId: Int?
+        lineListingColumnId: Int?,
     ) {
     }
 

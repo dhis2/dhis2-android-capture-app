@@ -127,7 +127,7 @@ class AnalyticsModelTest {
         categories = emptyList(),
         visualizationUid = "Visualization Uid",
         graphFilters = GraphFilters.Visualization(
-            orgUnitsSelected = listOf("selectedOUUid")
+            orgUnitsSelected = listOf("selectedOUUid"),
         ),
         hasError = false,
     )

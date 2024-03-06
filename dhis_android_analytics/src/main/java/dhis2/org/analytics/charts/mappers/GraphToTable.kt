@@ -25,7 +25,6 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.table.CellModel
-import kotlin.math.roundToInt
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.model.RowHeader
@@ -45,6 +44,7 @@ import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.compositions.LocalInteraction
 import org.dhis2.ui.theme.descriptionTextStyle
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
+import kotlin.math.roundToInt
 
 private const val LINE_LISTING_MAX_ROWS = 500
 

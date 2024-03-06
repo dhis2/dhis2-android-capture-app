@@ -90,14 +90,11 @@ fun TrackerLineListItem.withDateFilters(periods: List<RelativePeriod>): TrackerL
         is TrackerLineListItem.EventDate ->
             this.copy(filters = periods.map { DateFilter.Relative(it) })
 
-
         is TrackerLineListItem.IncidentDate ->
             this.copy(filters = periods.map { DateFilter.Relative(it) })
 
-
         is TrackerLineListItem.LastUpdated ->
             this.copy(filters = periods.map { DateFilter.Relative(it) })
-
 
         is TrackerLineListItem.ScheduledDate ->
             this.copy(filters = periods.map { DateFilter.Relative(it) })
@@ -108,7 +105,7 @@ fun TrackerLineListItem.withDateFilters(periods: List<RelativePeriod>): TrackerL
 
 fun TrackerLineListItem.withOUFilters(
     orgUnitFilterType: OrgUnitFilterType,
-    orgUnitUids: List<String>
+    orgUnitUids: List<String>,
 ): TrackerLineListItem {
     return when (this) {
         is TrackerLineListItem.OrganisationUnitItem -> when (orgUnitFilterType) {
@@ -117,16 +114,16 @@ fun TrackerLineListItem.withOUFilters(
                 this.copy(
                     filters = listOf(
                         OrganisationUnitFilter.Relative(
-                            RelativeOrganisationUnit.USER_ORGUNIT
-                        )
-                    )
+                            RelativeOrganisationUnit.USER_ORGUNIT,
+                        ),
+                    ),
                 )
 
             OrgUnitFilterType.SELECTION ->
                 this.copy(
                     filters = orgUnitUids.map {
                         OrganisationUnitFilter.Absolute(it)
-                    }
+                    },
                 )
         }
 

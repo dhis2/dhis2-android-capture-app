@@ -68,7 +68,7 @@ class AnalyticsAdapter :
                 ItemSectionTittleBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
-                    false
+                    false,
                 ),
             )
         }

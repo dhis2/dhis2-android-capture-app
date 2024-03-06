@@ -11,7 +11,7 @@ sealed class GraphFilters {
         val periodToDisplaySelected: RelativePeriod? = null,
     ) : GraphFilters() {
         override fun count(): Int {
-            var count = 0;
+            var count = 0
             if (orgUnitsSelected.isNotEmpty()) count++
             if (periodToDisplaySelected != null) count++
             return count
@@ -31,7 +31,7 @@ sealed class GraphFilters {
             lineListFilters.isNotEmpty() || orgUnitsSelected.isNotEmpty() || periodToDisplaySelected.isNotEmpty()
 
         override fun count(): Int {
-            var count = 0;
+            var count = 0
             if (hasFilters()) count++
             return count
         }
