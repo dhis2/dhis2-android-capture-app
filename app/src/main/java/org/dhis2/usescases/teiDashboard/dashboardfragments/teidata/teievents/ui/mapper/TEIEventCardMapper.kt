@@ -236,12 +236,12 @@ class TEIEventCardMapper(
                         Icon(
                             imageVector = Icons.Outlined.EventBusy,
                             contentDescription = resourceManager.getString(R.string.skipped),
-                            tint = AdditionalInfoItemColor.DEFAULT_KEY.color,
+                            tint = AdditionalInfoItemColor.DISABLED.color,
                         )
                     },
                     value = resourceManager.getString(R.string.skipped),
                     isConstantItem = true,
-                    color = AdditionalInfoItemColor.DEFAULT_KEY.color,
+                    color = AdditionalInfoItemColor.DISABLED.color,
                 )
             }
 
