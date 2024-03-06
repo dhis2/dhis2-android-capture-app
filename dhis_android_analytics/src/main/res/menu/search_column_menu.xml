@@ -7,7 +7,9 @@
                 android:title="@string/search"/>
         </group>
         <group android:id="@+id/columns"/>
-        <group android:id="@+id/resetcurrent">
+        <group
+            android:id="@+id/resetcurrent"
+            android:orderInCategory="100">
             <item
                 android:visible="false"
                 android:icon="@drawable/ic_reset_chart"
