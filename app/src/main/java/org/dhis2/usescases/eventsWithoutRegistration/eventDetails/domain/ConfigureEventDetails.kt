@@ -39,12 +39,12 @@ class ConfigureEventDetails(
             tempCreate = tempCreate,
         )
         val storedEvent = repository.getEvent()
-        val programStage = repository.getProgramStage() ?: throw IllegalArgumentException()
+        val programStage = repository.getProgramStage()
         return flowOf(
             EventDetails(
-                name = programStage.displayName(),
-                description = programStage.displayDescription(),
-                metadataIconData = metadataIconProvider(programStage.style()),
+                name = programStage?.displayName(),
+                description = programStage?.displayDescription(),
+                metadataIconData = programStage?.style()?.let { metadataIconProvider(programStage.style()) },
                 enabled = isEnable(storedEvent),
                 isEditable = isEditable(),
                 editableReason = getEditableReason(),

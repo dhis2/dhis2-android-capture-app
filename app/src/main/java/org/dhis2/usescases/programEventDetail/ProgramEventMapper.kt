@@ -1,5 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
+import java.util.Date
+import java.util.Locale
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
@@ -12,14 +14,13 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import java.util.Date
-import java.util.Locale
 
 class ProgramEventMapper(
     val d2: D2,
@@ -30,7 +31,6 @@ class ProgramEventMapper(
     fun eventToEventViewModel(event: Event): EventViewModel {
         val programStage =
             d2.programModule().programStages().uid(event.programStage()).blockingGet()
-                ?: throw IllegalArgumentException()
 
         val eventDate = event.eventDate() ?: event.dueDate()
 
@@ -50,14 +50,16 @@ class ProgramEventMapper(
             groupedByStage = true,
             displayDate = eventDate?.let {
                 periodUtils.getPeriodUIString(
-                    programStage.periodType() ?: PeriodType.Daily,
+                    programStage?.periodType() ?: PeriodType.Daily,
                     it,
                     Locale.getDefault(),
                 )
             },
             nameCategoryOptionCombo =
             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
-            metadataIconData = metadataIconProvider(programStage.style()),
+            metadataIconData = metadataIconProvider(
+                programStage?.style() ?: ObjectStyle.builder().build()
+            ),
         )
     }
 
