@@ -83,10 +83,10 @@ class TEIEventCardMapper(
                             Icon(
                                 painter = painterResource(id = imageResource),
                                 contentDescription = "Button",
-                                tint = iconColor
+                                tint = iconColor,
                             )
                         },
-                        iconTint = iconColor
+                        iconTint = iconColor,
                     )
                 },
                 style = AvatarStyle.METADATA,

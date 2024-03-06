@@ -119,7 +119,7 @@ internal class StageViewHolder(
                         Icon(
                             painter = painterResource(id = imageResource),
                             contentDescription = "Button",
-                            tint = iconColor
+                            tint = iconColor,
                         )
                     },
                     iconTint = iconColor,

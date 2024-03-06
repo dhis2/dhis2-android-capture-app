@@ -157,8 +157,8 @@ class EventAdapter(
                         Box(
                             modifier = Modifier
                                 .padding(
-                                    start = spacing
-                                )
+                                    start = spacing,
+                                ),
                         ) {
                             ListCard(
                                 listAvatar = card.avatar,

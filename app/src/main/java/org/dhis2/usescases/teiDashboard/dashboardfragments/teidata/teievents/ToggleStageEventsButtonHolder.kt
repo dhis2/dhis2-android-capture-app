@@ -26,7 +26,7 @@ class ToggleStageEventsButtonHolder(
                         Spacing.Spacing48
                     } else {
                         Spacing.Spacing0
-                    }
+                    },
                 ),
                 style = ButtonStyle.TEXT,
                 text = if (eventViewModel.showAllEvents) {
