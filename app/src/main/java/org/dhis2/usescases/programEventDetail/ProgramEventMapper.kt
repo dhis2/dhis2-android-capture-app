@@ -1,7 +1,5 @@
 package org.dhis2.usescases.programEventDetail
 
-import java.util.Date
-import java.util.Locale
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
@@ -21,6 +19,8 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import java.util.Date
+import java.util.Locale
 
 class ProgramEventMapper(
     val d2: D2,
@@ -58,7 +58,7 @@ class ProgramEventMapper(
             nameCategoryOptionCombo =
             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
             metadataIconData = metadataIconProvider(
-                programStage?.style() ?: ObjectStyle.builder().build()
+                programStage?.style() ?: ObjectStyle.builder().build(),
             ),
         )
     }
