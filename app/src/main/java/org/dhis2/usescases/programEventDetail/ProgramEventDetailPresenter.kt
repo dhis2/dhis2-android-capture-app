@@ -123,7 +123,7 @@ class ProgramEventDetailPresenter(
     }
 
     fun addEvent() {
-        view.startNewEvent()
+        view.selectOrgUnitForNewEvent()
     }
 
     fun onBackClick() {

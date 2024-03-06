@@ -142,7 +142,7 @@ class ProgramEventDetailPresenterTest {
     fun `Should start new event`() {
         presenter.addEvent()
 
-        verify(view).startNewEvent()
+        verify(view).selectOrgUnitForNewEvent()
     }
 
     @Test
