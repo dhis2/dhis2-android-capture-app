@@ -24,7 +24,7 @@ fun TableTheme(
         LocalTableDimensions provides (tableDimensions ?: TableDimensions()),
         LocalTableConfiguration provides (tableConfiguration ?: TableConfiguration()),
         LocalValidator provides (tableValidator ?: DefaultValidator()),
-        LocalTableResizeActions provides (tableResizeActions ?: object :TableResizeActions {}),
+        LocalTableResizeActions provides (tableResizeActions ?: object : TableResizeActions {}),
     ) {
         MaterialTheme(
             content = content,

@@ -15,4 +15,5 @@ interface IndicatorRepository {
         selectedOrgUnits: List<OrganisationUnit>,
         filterType: OrgUnitFilterType,
     ) {}
+    fun filterLineListing(chartModel: ChartModel, value: String?) {}
 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,9 +39,7 @@ import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dhis2.org.R
 import org.hisp.dhis.mobile.ui.designsystem.component.BasicTextField
-import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
-import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.SquareIconButton
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -95,15 +92,15 @@ fun SearchColumnInput(
 
     Column(
         modifier = Modifier
-        .fillMaxWidth()
-        .background(
-            color = Color.White,
-            shape = RoundedCornerShape(
-                topStart = Spacing.Spacing16,
-                topEnd = Spacing.Spacing16,
-            ),
-        )
-        .padding(Spacing.Spacing8),
+            .fillMaxWidth()
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(
+                    topStart = Spacing.Spacing16,
+                    topEnd = Spacing.Spacing16,
+                ),
+            )
+            .padding(Spacing.Spacing8),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(

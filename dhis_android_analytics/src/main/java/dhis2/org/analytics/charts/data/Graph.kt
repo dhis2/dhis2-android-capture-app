@@ -19,6 +19,7 @@ data class Graph(
     val orgUnitsDefault: List<String> = emptyList(),
     val orgUnitsSelected: List<String> = emptyList(),
     val periodToDisplaySelected: RelativePeriod? = null,
+    val lineListFilters: Map<Int, String> = emptyMap(),
     val visualizationUid: String? = null,
     val hasError: Boolean = false,
     val errorMessage: String? = null,
@@ -134,13 +135,13 @@ data class Graph(
 
     fun maxValue(): Float {
         return series.maxOfOrNull {
-            it.coordinates.maxOfOrNull { points -> points.fieldValue } ?: 0f
+            it.coordinates.maxOfOrNull { points -> points.numericValue() } ?: 0f
         } ?: 0f
     }
 
     fun minValue(): Float {
         return series.minOfOrNull {
-            it.coordinates.minOfOrNull { points -> points.fieldValue } ?: 0f
+            it.coordinates.minOfOrNull { points -> points.numericValue() } ?: 0f
         } ?: 0f
     }
 
@@ -171,10 +172,25 @@ data class LegendValue(val color: Int, val label: String?)
 data class GraphPoint(
     val eventDate: Date,
     val position: Float? = -1f,
-    val fieldValue: Float,
+    private val fieldValue: GraphFieldValue,
     val legend: String? = null,
     val legendValue: LegendValue? = null,
-)
+) {
+    fun numericValue() = when (fieldValue) {
+        is GraphFieldValue.Numeric -> fieldValue.value
+        is GraphFieldValue.Text -> 0f
+    }
+
+    fun textValue() = when (fieldValue) {
+        is GraphFieldValue.Numeric -> fieldValue.value.toString()
+        is GraphFieldValue.Text -> fieldValue.value
+    }
+}
+
+sealed class GraphFieldValue {
+    data class Numeric(val value: Float) : GraphFieldValue()
+    data class Text(val value: String) : GraphFieldValue()
+}
 
 fun Graph.toChartBuilder(): Chart.ChartBuilder {
     return Chart.ChartBuilder()

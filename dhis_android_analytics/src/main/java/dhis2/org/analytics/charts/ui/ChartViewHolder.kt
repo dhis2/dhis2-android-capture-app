@@ -52,9 +52,9 @@ class ChartViewHolder(
     private fun loadChart(chart: ChartModel) {
         loadComposeChart(
             chart = chart,
-            visible = chart.observableChartType.get() == ChartType.TABLE && !chart.hideChart(),
+            visible = rendersAsTable(chart) && !chart.hideChart(),
         )
-        if (chart.observableChartType.get() != ChartType.TABLE) {
+        if (!rendersAsTable(chart)) {
             binding.resetDimensions.visibility = GONE
             val chartView = chart.graph.toChartBuilder()
                 .withType(chart.observableChartType.get()!!)
@@ -65,6 +65,11 @@ class ChartViewHolder(
             binding.chartContainer.removeAllViews()
             binding.chartContainer.addView(chartView)
         }
+    }
+
+    private fun rendersAsTable(chart: ChartModel): Boolean {
+        return chart.observableChartType.get() == ChartType.TABLE ||
+            chart.observableChartType.get() == ChartType.LINE_LISTING
     }
 
     private fun loadComposeChart(chart: ChartModel, visible: Boolean = true) {

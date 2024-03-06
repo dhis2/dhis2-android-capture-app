@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.bindings.hasGroup
+import dhis2.org.analytics.charts.bindings.withFilters
 import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
@@ -11,6 +12,8 @@ import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
+import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
+import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListResponse
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -18,6 +21,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramIndicator
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationType
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsSetting
 
@@ -30,6 +34,8 @@ class ChartsRepositoryImpl(
     private val analyticsResources: AnalyticResources,
     private val analyticsFilterProvider: AnalyticsFilterProvider,
 ) : ChartsRepository {
+
+    private val lineListHeaderCache: MutableMap<String, List<TrackerLineListItem>> = mutableMapOf()
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
         val enrollment = getEnrollment(enrollmentUid)
@@ -136,81 +142,172 @@ class ChartsRepositoryImpl(
             val customTitle = analyticVisualization.takeIf {
                 it.name()?.isNotEmpty() == true
             }?.name()
-            val visualizationUid = analyticVisualization.uid()
-            val visualization = d2.visualizationModule()
-                .visualizations()
-                .uid(visualizationUid)
-                .blockingGet()
-            val selectedRelativePeriod =
-                analyticsFilterProvider.visualizationPeriod(visualizationUid)
-            val selectedOrgUnits = analyticsFilterProvider.visualizationOrgUnits(visualizationUid)
-            val selectedOrgUnitType =
-                analyticsFilterProvider.visualizationOrgUnitsType(visualizationUid)
+            val analyticsUid = analyticVisualization.uid()
 
-            d2.analyticsModule()
-                .visualizations()
-                .withVisualization(visualizationUid)
-                .run {
-                    selectedRelativePeriod?.map { relPeriod: RelativePeriod ->
-                        DimensionItem.PeriodItem.Relative(relPeriod)
-                    }?.let { dimensionPeriods ->
-                        withPeriods(dimensionPeriods)
-                    } ?: this
-                }
-                .run {
-                    when (selectedOrgUnitType) {
-                        OrgUnitFilterType.ALL -> {
-                            withOrganisationUnits(
-                                listOf(
-                                    DimensionItem.OrganisationUnitItem.Relative(
-                                        RelativeOrganisationUnit.USER_ORGUNIT,
-                                    ),
+            val selectedRelativePeriod =
+                analyticsFilterProvider.visualizationPeriod(analyticsUid)
+            val selectedOrgUnits = analyticsFilterProvider.visualizationOrgUnits(analyticsUid)
+            val selectedOrgUnitType =
+                analyticsFilterProvider.visualizationOrgUnitsType(analyticsUid)
+            val type = analyticVisualization.type()
+
+            when (type) {
+                AnalyticsDhisVisualizationType.VISUALIZATION -> addVisualization(
+                    analyticsUid,
+                    customTitle,
+                    selectedRelativePeriod,
+                    selectedOrgUnitType,
+                    selectedOrgUnits,
+                    graphList,
+                )
+
+                AnalyticsDhisVisualizationType.TRACKER_VISUALIZATION -> addLineListing(
+                    analyticsUid,
+                    customTitle,
+                    graphList,
+                )
+            }
+        }
+    }
+
+    private fun addVisualization(
+        visualizationUid: String,
+        customTitle: String?,
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnitType: OrgUnitFilterType?,
+        selectedOrgUnits: List<String>?,
+        graphList: MutableList<Graph>,
+    ) {
+        val visualization = d2.visualizationModule()
+            .visualizations()
+            .uid(visualizationUid)
+            .blockingGet()
+
+        d2.analyticsModule()
+            .visualizations()
+            .withVisualization(visualizationUid)
+            .run {
+                selectedRelativePeriod?.map { relPeriod: RelativePeriod ->
+                    DimensionItem.PeriodItem.Relative(relPeriod)
+                }?.let { dimensionPeriods ->
+                    withPeriods(dimensionPeriods)
+                } ?: this
+            }
+            .run {
+                when (selectedOrgUnitType) {
+                    OrgUnitFilterType.ALL -> {
+                        withOrganisationUnits(
+                            listOf(
+                                DimensionItem.OrganisationUnitItem.Relative(
+                                    RelativeOrganisationUnit.USER_ORGUNIT,
                                 ),
+                            ),
+                        )
+                    }
+
+                    OrgUnitFilterType.SELECTION -> {
+                        selectedOrgUnits?.map { ouUid: String ->
+                            DimensionItem.OrganisationUnitItem.Absolute(ouUid)
+                        }?.let { dimensionOrgUnits ->
+                            withOrganisationUnits(dimensionOrgUnits)
+                        } ?: this
+                    }
+
+                    else -> this
+                }
+            }
+            .blockingEvaluate()
+            .fold(
+                { gridAnalyticsResponse ->
+                    visualization?.let {
+                        graphList.add(
+                            visualizationToGraph.mapToGraph(
+                                customTitle ?: visualization.displayFormName(),
+                                visualization,
+                                gridAnalyticsResponse,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits,
+                            ),
+                        )
+                    }
+                },
+                { analyticException ->
+                    analyticException.printStackTrace()
+                    visualization?.let {
+                        graphList.add(
+                            visualizationToGraph.addErrorGraph(
+                                customTitle ?: visualization.displayFormName(),
+                                visualization,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits,
+                                analyticsResources.analyticsExceptionMessage(analyticException),
+                            ),
+                        )
+                    }
+                },
+            )
+    }
+
+    private fun addLineListing(
+        trackerVisualizationUid: String,
+        customTitle: String?,
+        graphList: MutableList<Graph>,
+    ) {
+        val filters = analyticsFilterProvider.trackerVisualizationFilters(trackerVisualizationUid)
+            ?: emptyMap()
+
+        val trackerVisualization = d2.visualizationModule().trackerVisualizations()
+            .uid(trackerVisualizationUid)
+            .blockingGet()
+
+        d2.analyticsModule().trackerLineList()
+            .withTrackerVisualization(trackerVisualizationUid)
+            .run {
+                var filteredRepository = this
+                if (filters.isNotEmpty()) {
+                    filters.forEach { (columnIndex, value) ->
+                        lineListHeaderCache[trackerVisualizationUid]?.get(columnIndex)?.let {
+                            filteredRepository = filteredRepository.withColumn(
+                                column = it.withFilters(value),
                             )
                         }
-
-                        OrgUnitFilterType.SELECTION -> {
-                            selectedOrgUnits?.map { ouUid: String ->
-                                DimensionItem.OrganisationUnitItem.Absolute(ouUid)
-                            }?.let { dimensionOrgUnits ->
-                                withOrganisationUnits(dimensionOrgUnits)
-                            } ?: this
-                        }
-
-                        else -> this
                     }
                 }
-                .blockingEvaluate()
-                .fold(
-                    { gridAnalyticsResponse ->
-                        visualization?.let {
-                            graphList.add(
-                                visualizationToGraph.mapToGraph(
-                                    customTitle ?: visualization.displayFormName(),
-                                    visualization,
-                                    gridAnalyticsResponse,
-                                    selectedRelativePeriod?.firstOrNull(),
-                                    selectedOrgUnits,
-                                ),
-                            )
-                        }
-                    },
-                    { analyticException ->
-                        analyticException.printStackTrace()
-                        visualization?.let {
-                            graphList.add(
-                                visualizationToGraph.addErrorGraph(
-                                    customTitle ?: visualization.displayFormName(),
-                                    visualization,
-                                    selectedRelativePeriod?.firstOrNull(),
-                                    selectedOrgUnits,
-                                    analyticsResources.analyticsExceptionMessage(analyticException),
-                                ),
-                            )
-                        }
-                    },
-                )
-        }
+                filteredRepository
+            }
+            .blockingEvaluate()
+            .fold(
+                { trackerLineListResponse ->
+                    setLineListHeaderCache(trackerVisualizationUid, trackerLineListResponse)
+                    graphList.add(
+                        visualizationToGraph.mapToGraph(
+                            customTitle ?: trackerVisualization?.displayName(),
+                            trackerVisualization,
+                            trackerLineListResponse,
+                            filters,
+                        ),
+                    )
+                },
+            ) { analyticException ->
+                analyticException.printStackTrace()
+                trackerVisualization?.let {
+                    graphList.add(
+                        visualizationToGraph.addErrorGraph(
+                            customTitle,
+                            trackerVisualization,
+                            analyticsResources.analyticsExceptionMessage(analyticException),
+                            filters,
+                        ),
+                    )
+                }
+            }
+    }
+
+    private fun setLineListHeaderCache(
+        visualisationUid: String,
+        trackerLineListResponse: TrackerLineListResponse,
+    ) {
+        lineListHeaderCache[visualisationUid] = trackerLineListResponse.headers
     }
 
     private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
@@ -359,6 +456,22 @@ class ChartsRepositoryImpl(
                     analyticsFilterProvider.removeOrgUnitFilter(visualizationUid)
                 }
             }
+        }
+    }
+
+    override fun setLineListingFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+        filterValue: String?,
+    ) {
+        if (filterValue.isNullOrEmpty().not()) {
+            analyticsFilterProvider.addColumnFilter(
+                trackerVisualizationUid,
+                columnIndex,
+                filterValue!!,
+            )
+        } else {
+            analyticsFilterProvider.removeColumnFilter(trackerVisualizationUid, columnIndex)
         }
     }
 }

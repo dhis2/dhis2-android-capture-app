@@ -46,7 +46,7 @@ class IndicatorsPresenter(
     }
 
     fun resetFilter(chartModel: ChartModel, filterType: ChartFilter) {
-        chartModel.graph.visualizationUid?.let { visualizationUid ->
+        chartModel.graph.visualizationUid?.let { _ ->
             when (filterType) {
                 ChartFilter.PERIOD -> indicatorRepository.filterByPeriod(
                     chartModel,
@@ -56,6 +56,11 @@ class IndicatorsPresenter(
                     chartModel,
                     emptyList(),
                     OrgUnitFilterType.NONE,
+                )
+
+                ChartFilter.COLUMN -> indicatorRepository.filterLineListing(
+                    chartModel,
+                    null,
                 )
             }
         }

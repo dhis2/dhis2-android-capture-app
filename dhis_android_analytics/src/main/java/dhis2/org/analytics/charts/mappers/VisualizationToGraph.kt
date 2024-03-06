@@ -3,6 +3,8 @@ package dhis2.org.analytics.charts.mappers
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.DimensionalVisualization
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.GraphFieldValue
+import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.data.toAnalyticsChartType
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
@@ -10,10 +12,14 @@ import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
 import org.hisp.dhis.android.core.analytics.aggregated.GridAnalyticsResponse
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
+import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
+import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListResponse
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.visualization.TrackerVisualization
 import org.hisp.dhis.android.core.visualization.Visualization
 import org.hisp.dhis.android.core.visualization.VisualizationType
+import java.util.Date
 import java.util.Locale
 
 class VisualizationToGraph(
@@ -30,6 +36,7 @@ class VisualizationToGraph(
                     visualization.dimensionResponse,
                     Dimension.Data,
                 )
+
                 else -> emptyList()
             }
             val categories = emptyList<String>()
@@ -70,6 +77,31 @@ class VisualizationToGraph(
         )
     }
 
+    fun mapToGraph(
+        customTitle: String?,
+        trackerVisualization: TrackerVisualization?,
+        trackerLineListResponse: TrackerLineListResponse,
+        filters: Map<Int, String>,
+    ): Graph {
+        val formattedCategories = formatLineListCategories(
+            trackerLineListResponse.headers,
+            trackerLineListResponse.metadata,
+        )
+        return Graph(
+            title = customTitle ?: trackerVisualization?.displayName() ?: "",
+            series = getSeries(trackerLineListResponse),
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Monthly,
+            periodStep = periodStepProvider.periodStep(PeriodType.Monthly),
+            chartType = trackerVisualization?.type().toAnalyticsChartType(),
+            categories = formattedCategories,
+            visualizationUid = trackerVisualization?.uid(),
+            periodToDisplaySelected = null,
+            orgUnitsSelected = emptyList(),
+            lineListFilters = filters,
+        )
+    }
+
     fun addErrorGraph(
         customTitle: String?,
         visualization: Visualization,
@@ -93,6 +125,29 @@ class VisualizationToGraph(
         )
     }
 
+    fun addErrorGraph(
+        customTitle: String?,
+        trackerVisualization: TrackerVisualization?,
+        errorMessage: String,
+        filters: Map<Int, String>,
+    ): Graph {
+        return Graph(
+            title = customTitle ?: trackerVisualization?.displayName() ?: "",
+            series = emptyList(),
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Monthly,
+            periodStep = periodStepProvider.periodStep(PeriodType.Monthly),
+            chartType = trackerVisualization?.type().toAnalyticsChartType(),
+            categories = emptyList(),
+            visualizationUid = trackerVisualization?.uid(),
+            periodToDisplaySelected = null,
+            orgUnitsSelected = emptyList(),
+            lineListFilters = filters,
+            hasError = true,
+            errorMessage = errorMessage,
+        )
+    }
+
     private fun getCategories(
         visualizationType: VisualizationType?,
         gridAnalyticsResponse: GridAnalyticsResponse,
@@ -101,6 +156,7 @@ class VisualizationToGraph(
             VisualizationType.PIE -> {
                 listOf("Values")
             }
+
             else -> {
                 val combCategories = mutableListOf<String>()
                 dimensionRowCombinator.combineWithNextItem(
@@ -123,7 +179,38 @@ class VisualizationToGraph(
                     Locale.getDefault(),
                     metadataItem.item,
                 )
+
                 else -> category
+            }
+        }
+    }
+
+    private fun formatLineListCategories(
+        categories: List<TrackerLineListItem>,
+        metadata: Map<String, MetadataItem>,
+    ): List<String> {
+        return categories.map { category ->
+            when (category) {
+                TrackerLineListItem.CreatedBy,
+                is TrackerLineListItem.EnrollmentDate,
+                is TrackerLineListItem.EventDate,
+                is TrackerLineListItem.EventStatusItem,
+                is TrackerLineListItem.IncidentDate,
+                is TrackerLineListItem.LastUpdated,
+                TrackerLineListItem.LastUpdatedBy,
+                is TrackerLineListItem.OrganisationUnitItem,
+                is TrackerLineListItem.ProgramStatusItem,
+                is TrackerLineListItem.ScheduledDate,
+                -> category.id
+
+                is TrackerLineListItem.ProgramAttribute -> metadata[category.uid]?.displayName
+                    ?: category.uid
+
+                is TrackerLineListItem.ProgramDataElement -> metadata[category.dataElement]?.displayName
+                    ?: category.dataElement
+
+                is TrackerLineListItem.ProgramIndicator -> metadata[category.uid]?.displayName
+                    ?: category.uid
             }
         }
     }
@@ -143,6 +230,7 @@ class VisualizationToGraph(
                         Locale.getDefault(),
                         metadataItem.item,
                     )
+
                     else -> gridAnalyticsResponse.metadata[it]?.displayName ?: ""
                 }
             }
@@ -153,6 +241,23 @@ class VisualizationToGraph(
                     gridAnalyticsResponse.metadata,
                     categories,
                 ),
+            )
+        }
+    }
+
+    private fun getSeries(
+        trackerLineListResponse: TrackerLineListResponse,
+    ): List<SerieData> {
+        return trackerLineListResponse.rows.mapIndexed { index, trackerLineListValues ->
+            SerieData(
+                fieldName = "$index",
+                coordinates = trackerLineListValues.mapIndexed { pointIndex, trackerLineListValue ->
+                    GraphPoint(
+                        eventDate = Date(),
+                        position = pointIndex.toFloat(),
+                        fieldValue = GraphFieldValue.Text(trackerLineListValue.value ?: ""),
+                    )
+                },
             )
         }
     }

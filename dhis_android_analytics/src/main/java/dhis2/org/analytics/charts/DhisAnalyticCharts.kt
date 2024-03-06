@@ -27,6 +27,18 @@ class DhisAnalyticCharts @Inject constructor(
         return chartsRepository.getProgramVisualization(groupUid, programUid)
     }
 
+    override fun setLineListingFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+        filterValue: String?,
+    ) {
+        return chartsRepository.setLineListingFilter(
+            trackerVisualizationUid,
+            columnIndex,
+            filterValue,
+        )
+    }
+
     override fun getHomeVisualizations(groupUid: String?): List<Graph> {
         return chartsRepository.getHomeVisualization(groupUid)
     }

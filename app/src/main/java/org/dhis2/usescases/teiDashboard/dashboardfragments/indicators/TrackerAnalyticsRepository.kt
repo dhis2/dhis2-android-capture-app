@@ -75,4 +75,8 @@ class TrackerAnalyticsRepository(
             charts?.setVisualizationOrgUnits(visualizationUid, selectedOrgUnits, filterType)
         }
     }
+
+    override fun filterLineListing(chartModel: ChartModel, value: String?) {
+        charts?.setLineListingFilter(chartModel.uid, -1, value)
+    }
 }

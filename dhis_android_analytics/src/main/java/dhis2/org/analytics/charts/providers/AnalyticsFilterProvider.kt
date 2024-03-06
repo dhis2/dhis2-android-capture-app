@@ -48,6 +48,30 @@ class AnalyticsFilterProvider(private val d2: D2) {
         removeValue("${visualizationUid}_p")
     }
 
+    fun addColumnFilter(trackerVisualizationUid: String, columnIndex: Int, filterValue: String) {
+        val currentColumnFilter =
+            trackerVisualizationFilters(trackerVisualizationUid)?.toMutableMap() ?: mutableMapOf()
+        currentColumnFilter[columnIndex] = filterValue
+        setValue(
+            "${trackerVisualizationUid}_c",
+            Gson().toJson(currentColumnFilter),
+        )
+    }
+
+    fun removeColumnFilter(trackerVisualizationUid: String, columnIndex: Int) {
+        val currentColumnFilter =
+            trackerVisualizationFilters(trackerVisualizationUid)?.toMutableMap() ?: mutableMapOf()
+        if (currentColumnFilter.contains(columnIndex)) {
+            currentColumnFilter.remove(columnIndex)
+            setValue(
+                "${trackerVisualizationUid}_c",
+                Gson().toJson(currentColumnFilter),
+            )
+        } else if (columnIndex == -1 || currentColumnFilter.size == 1) {
+            removeValue("${trackerVisualizationUid}_c")
+        }
+    }
+
     fun visualizationPeriod(visualizationUid: String): List<RelativePeriod>? {
         return if (isValueSaved("${visualizationUid}_p")) {
             val entry = valueFromKey("${visualizationUid}_p")
@@ -73,6 +97,16 @@ class AnalyticsFilterProvider(private val d2: D2) {
             val entry = valueFromKey("${visualizationUid}_ou")
             val type = object : TypeToken<List<String>?>() {}.type
             return entry?.value()?.let { Gson().fromJson(entry.value(), type) }
+        } else {
+            null
+        }
+    }
+
+    fun trackerVisualizationFilters(trackerVisualizationUid: String): Map<Int, String>? {
+        return if (isValueSaved("${trackerVisualizationUid}_c")) {
+            val entry = valueFromKey("${trackerVisualizationUid}_c")
+            val type = object : TypeToken<Map<Int, String>>() {}.type
+            return entry?.value()?.let { Gson().fromJson(it, type) }
         } else {
             null
         }

@@ -31,6 +31,12 @@ interface Charts {
         orgUnitFilterType: OrgUnitFilterType,
     )
 
+    fun setLineListingFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+        filterValue: String?,
+    )
+
     interface Provider {
         fun get(dependencies: Dependencies): Charts
     }

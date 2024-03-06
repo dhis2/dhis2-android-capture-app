@@ -75,6 +75,13 @@ class GroupAnalyticsViewModel(
         }
     }
 
+    fun filterLineListingRows(chartModel: ChartModel, column: Int, filterValue: String?) {
+        chartModel.graph.visualizationUid?.let {
+            charts.setLineListingFilter(it, column, filterValue)
+            fetchAnalytics(currentGroup)
+        }
+    }
+
     fun resetFilter(chartModel: ChartModel, filterType: ChartFilter) {
         chartModel.graph.visualizationUid?.let {
             when (filterType) {
@@ -82,10 +89,16 @@ class GroupAnalyticsViewModel(
                     chartModel.graph.visualizationUid,
                     emptyList(),
                 )
+
                 ChartFilter.ORG_UNIT -> charts.setVisualizationOrgUnits(
                     chartModel.graph.visualizationUid,
                     emptyList(),
                     OrgUnitFilterType.NONE,
+                )
+                ChartFilter.COLUMN -> charts.setLineListingFilter(
+                    chartModel.graph.visualizationUid,
+                    -1,
+                    null,
                 )
             }
             fetchAnalytics(currentGroup)
@@ -101,13 +114,21 @@ class GroupAnalyticsViewModel(
                         charts.geEnrollmentCharts(uid)
                             .map { ChartModel(it) }
                     } ?: emptyList()
-                    AnalyticMode.TRACKER_PROGRAM, AnalyticMode.EVENT_PROGRAM -> uid?.let {
+
+                    AnalyticMode.TRACKER_PROGRAM -> uid?.let {
                         charts.getProgramVisualizations(groupUid, uid)
                             .map { ChartModel(it) }
                     } ?: emptyList()
+
+                    AnalyticMode.EVENT_PROGRAM -> uid?.let {
+                        charts.getProgramVisualizations(groupUid, uid)
+                            .map { ChartModel(it) }
+                    } ?: emptyList()
+
                     AnalyticMode.HOME ->
                         charts.getHomeVisualizations(groupUid)
                             .map { ChartModel(it) }
+
                     AnalyticMode.DATASET -> uid?.let {
                         charts.getDataSetVisualizations(groupUid, uid)
                             .map { ChartModel(it) }

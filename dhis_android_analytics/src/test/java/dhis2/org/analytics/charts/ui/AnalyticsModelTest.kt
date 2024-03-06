@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts.ui
 
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.GraphFieldValue
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
 import org.hisp.dhis.android.core.period.PeriodType
@@ -73,13 +74,13 @@ class AnalyticsModelTest {
                     GraphPoint(
                         GregorianCalendar(2021, 0, 1).time,
                         0f,
-                        0f,
+                        GraphFieldValue.Numeric(0f),
                         null,
                     ),
                     GraphPoint(
                         GregorianCalendar(2021, 0, 1).time,
                         1f,
-                        0f,
+                        GraphFieldValue.Numeric(0f),
                         null,
                     ),
                 ),

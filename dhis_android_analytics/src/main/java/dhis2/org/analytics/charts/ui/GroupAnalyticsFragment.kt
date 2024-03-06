@@ -189,8 +189,10 @@ class GroupAnalyticsFragment : Fragment() {
 
     private fun showValueFilter(chartModel: ChartModel, column: Int) {
         SearchColumnDialog(
-            chartModel.graph.series[column].fieldName,
-            onSearch = {},
+            chartModel.graph.categories[column],
+            onSearch = {
+                groupViewModel.filterLineListingRows(chartModel, column, it)
+            },
         ).show(childFragmentManager, SearchColumnDialog.TAG)
     }
 
@@ -208,6 +210,7 @@ class GroupAnalyticsFragment : Fragment() {
                         addChips(chips)
                     }
                 }
+
                 chipResult.isFailure -> {
                     binding?.progressLayout?.visibility = View.GONE
                     binding?.emptyAnalytics?.apply {
@@ -223,6 +226,7 @@ class GroupAnalyticsFragment : Fragment() {
                 analytics.isSuccess -> adapter.submitList(analytics.getOrDefault(emptyList())) {
                     binding?.progressLayout?.visibility = View.GONE
                 }
+
                 analytics.isFailure -> {
                     binding?.progressLayout?.visibility = View.GONE
                     binding?.emptyAnalytics?.apply {

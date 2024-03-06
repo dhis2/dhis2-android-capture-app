@@ -28,7 +28,7 @@ enum class OrgUnitFilterType {
 }
 
 enum class ChartFilter {
-    PERIOD, ORG_UNIT
+    PERIOD, ORG_UNIT, COLUMN
 }
 
 val periodToId = hashMapOf(
@@ -88,33 +88,37 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
     var searchCallback: ((Int) -> Unit)? = null
 
     fun showVisualizationOptions(view: View) {
-        AppMenuHelper.Builder(
-            context = view.context,
-            menu = R.menu.chart_menu,
-            anchor = view,
-            onMenuInflated = { popupMenu ->
-                idsToHide(graph.chartType ?: ChartType.LINE_CHART).forEach { idToHide ->
-                    if (idToHide != -1) {
-                        popupMenu.menu.findItem(idToHide).isVisible = false
+        if (graph.chartType == ChartType.LINE_LISTING) {
+            showColumnsToSearch(view)
+        } else {
+            AppMenuHelper.Builder(
+                context = view.context,
+                menu = R.menu.chart_menu,
+                anchor = view,
+                onMenuInflated = { popupMenu ->
+                    idsToHide(graph.chartType ?: ChartType.LINE_CHART).forEach { idToHide ->
+                        if (idToHide != -1) {
+                            popupMenu.menu.findItem(idToHide)?.isVisible = false
+                        }
                     }
+                },
+                onMenuItemClicked = { itemId ->
+                    when (itemId) {
+                        R.id.periodFilter -> showPeriodFilters(view)
+                        R.id.orgFilter -> showOrgUntFilters(view)
+                        R.id.search -> showColumnsToSearch(view)
+                        else -> observableChartType.set(chartToLoad(itemId))
+                    }
+                    true
+                },
+            ).build().apply {
+                show()
+                if (graph.periodToDisplaySelected != null) {
+                    addIconToItem(R.id.periodFilter, R.drawable.ic_calendar_chart_selected)
                 }
-            },
-            onMenuItemClicked = { itemId ->
-                when (itemId) {
-                    R.id.periodFilter -> showPeriodFilters(view)
-                    R.id.orgFilter -> showOrgUntFilters(view)
-                    R.id.search -> showColumnsToSearch(view)
-                    else -> observableChartType.set(chartToLoad(itemId))
+                if (graph.orgUnitsSelected.isNotEmpty()) {
+                    addIconToItem(R.id.orgFilter, R.drawable.ic_orgunit_chart_selected)
                 }
-                true
-            },
-        ).build().apply {
-            show()
-            if (graph.periodToDisplaySelected != null) {
-                addIconToItem(R.id.periodFilter, R.drawable.ic_calendar_chart_selected)
-            }
-            if (graph.orgUnitsSelected.isNotEmpty()) {
-                addIconToItem(R.id.orgFilter, R.drawable.ic_orgunit_chart_selected)
             }
         }
     }
@@ -127,8 +131,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         when {
             graph.periodToDisplaySelected != null && graph.orgUnitsSelected.isEmpty() ->
                 showPeriodFilters(view)
+
             graph.periodToDisplaySelected == null && graph.orgUnitsSelected.isNotEmpty() ->
                 showOrgUntFilters(view)
+
             else -> showVisualizationOptions(view)
         }
     }
@@ -143,21 +149,27 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back -> {
                         showVisualizationOptions(view)
                     }
+
                     R.id.daily -> {
                         showDailyPeriodVisualization(view)
                     }
+
                     R.id.weekly -> {
                         showWeeklyPeriodVisualization(view)
                     }
+
                     R.id.monthly -> {
                         showMonthlyPeriodVisualization(view)
                     }
+
                     R.id.yearly -> {
                         showYearlyPeriodVisualization(view)
                     }
+
                     R.id.other -> {
                         showOtherPeriodVisualization(view)
                     }
+
                     R.id.reset_period -> {
                         resetFilterCallback?.invoke(ChartFilter.PERIOD)
                     }
@@ -187,15 +199,19 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
             periodToDisplaySelected.isInDaily() -> {
                 return R.id.daily
             }
+
             periodToDisplaySelected.isInWeekly() -> {
                 return R.id.weekly
             }
+
             periodToDisplaySelected.isInMonthly() -> {
                 return R.id.monthly
             }
+
             periodToDisplaySelected.isInYearly() -> {
                 return R.id.yearly
             }
+
             periodToDisplaySelected.isInOther() -> {
                 return R.id.other
             }
@@ -213,6 +229,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back_other -> {
                         showPeriodFilters(view)
                     }
+
                     else -> {
                         propagateRelativePeriod(itemId)
                     }
@@ -246,6 +263,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back_yearly -> {
                         showPeriodFilters(view)
                     }
+
                     else -> {
                         propagateRelativePeriod(itemId)
                     }
@@ -279,6 +297,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back_monthly -> {
                         showPeriodFilters(view)
                     }
+
                     else -> {
                         propagateRelativePeriod(itemId)
                     }
@@ -312,6 +331,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back_weekly -> {
                         showPeriodFilters(view)
                     }
+
                     else -> {
                         propagateRelativePeriod(itemId)
                     }
@@ -345,6 +365,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back_daily -> {
                         showPeriodFilters(view)
                     }
+
                     else -> {
                         propagateRelativePeriod(itemId)
                     }
@@ -385,15 +406,19 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back -> {
                         showVisualizationOptions(view)
                     }
+
                     R.id.none -> {
                         orgUnitCallback?.invoke(OrgUnitFilterType.NONE)
                     }
+
                     R.id.all -> {
                         orgUnitCallback?.invoke(OrgUnitFilterType.ALL)
                     }
+
                     R.id.reset_orgunit -> {
                         resetFilterCallback?.invoke(ChartFilter.ORG_UNIT)
                     }
+
                     else -> {
                         orgUnitCallback?.invoke(OrgUnitFilterType.SELECTION)
                     }
@@ -432,9 +457,11 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     R.id.back -> {
                         showVisualizationOptions(view)
                     }
+
                     R.id.reset_search -> {
-                        resetFilterCallback?.invoke(ChartFilter.ORG_UNIT)
+                        resetFilterCallback?.invoke(ChartFilter.COLUMN)
                     }
+
                     else -> {
                         showSearchColumn(itemId)
                     }
@@ -444,8 +471,17 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         ).build()
         menuBuilder.show()
 
-        graph.series.forEachIndexed { index, column ->
-            menuBuilder.popupMenu.menu.add(R.id.columns, index, index, column.fieldName)
+        if (graph.lineListFilters.isNotEmpty()) {
+            menuBuilder.showItem(R.id.reset_search)
+        }
+
+        graph.categories.forEachIndexed { index, column ->
+            menuBuilder.popupMenu.menu.add(R.id.columns, index, index, column)
+        }
+
+        graph.lineListFilters.forEach { (columnIndex, _) ->
+            menuBuilder.popupMenu.menu.findItem(columnIndex)
+            menuBuilder.addIconToItem(columnIndex, R.drawable.ic_check_chart)
         }
     }
 
@@ -457,12 +493,16 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 R.id.showRadarGraph,
                 R.id.showPieChart,
                 R.id.showLineGraph,
+                R.id.search,
             )
+
             ChartType.BAR_CHART -> listOf(
                 R.id.showRadarGraph,
                 R.id.showPieChart,
                 R.id.showBarGraph,
+                R.id.search,
             )
+
             ChartType.TABLE -> {
                 if (originalChartType == ChartType.RADAR) {
                     listOf(
@@ -471,6 +511,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                         R.id.showLineGraph,
                         R.id.showBarGraph,
                         R.id.showTableValue,
+                        R.id.search,
                     )
                 } else if (originalChartType == ChartType.PIE_CHART) {
                     listOf(
@@ -479,20 +520,25 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                         R.id.showLineGraph,
                         R.id.showBarGraph,
                         R.id.showTableValue,
+                        R.id.search,
                     )
                 } else {
                     listOf(
                         R.id.showRadarGraph,
                         R.id.showPieChart,
                         R.id.showTableGraph,
+                        R.id.search,
                     )
                 }
             }
+
             ChartType.SINGLE_VALUE -> listOf(
                 R.id.showRadarGraph,
                 R.id.showPieChart,
                 R.id.showTableValue,
+                R.id.search,
             )
+
             ChartType.RADAR,
             ChartType.PIE_CHART,
             -> listOf(
@@ -501,8 +547,21 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 R.id.showLineGraph,
                 R.id.showBarGraph,
                 R.id.showTableValue,
+                R.id.search,
             )
-            ChartType.LINE_LISTING -> listOf(R.id.search)
+
+            ChartType.LINE_LISTING ->
+                listOf(
+                    R.id.showBarGraph,
+                    R.id.showLineGraph,
+                    R.id.showRadarGraph,
+                    R.id.showTableGraph,
+                    R.id.showTableValue,
+                    R.id.showPieChart,
+                    R.id.periodFilter,
+                    R.id.orgFilter,
+                )
+
             else -> emptyList()
         }
     }
@@ -527,6 +586,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         var filterCount = 0
         if (graph.orgUnitsSelected.isNotEmpty()) filterCount++
         if (graph.periodToDisplaySelected != null) filterCount++
+        if (graph.lineListFilters.isNotEmpty())filterCount++
         return filterCount
     }
 
@@ -543,7 +603,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
 
     fun pieChartDataIsZero(): Boolean = observableChartType.get() == ChartType.PIE_CHART &&
         !graph.hasError &&
-        graph.series.all { serie -> serie.coordinates.all { point -> point.fieldValue == 0f } }
+        graph.series.all { serie -> serie.coordinates.all { point -> point.numericValue() == 0f } }
 
     fun showNoDataMessage(): Boolean {
         return !graph.hasError && !pieChartDataIsZero() &&

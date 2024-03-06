@@ -18,4 +18,10 @@ interface ChartsRepository {
         orgUnits: List<OrganisationUnit>,
         orgUnitFilterType: OrgUnitFilterType,
     )
+
+    fun setLineListingFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+        filterValue: String?,
+    )
 }
