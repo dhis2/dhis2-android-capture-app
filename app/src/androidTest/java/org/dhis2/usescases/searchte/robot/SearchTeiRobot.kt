@@ -1,17 +1,11 @@
 package org.dhis2.usescases.searchte.robot
 
-import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.filter
-import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onChildren
-import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -27,7 +21,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -105,7 +98,6 @@ class SearchTeiRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() 
     }
 
     fun openNextSearchParameter(parameterValue: String) {
-//        composeTestRule.onAllNodesWithTag("SEARCH_PARAM_ITEM").onFirst().performClick()
         composeTestRule.onNodeWithText(parameterValue).performClick()
     }
 
@@ -233,7 +225,6 @@ class SearchTeiRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() 
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         displayedAttributes.forEach { item ->
             item.key?.let { composeTestRule.onNodeWithText(it).assertIsDisplayed() }
-//            composeTestRule.onNodeWithText(item.value).assertIsDisplayed()
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
                         and hasText(item.value), useUnmergedTree = true
