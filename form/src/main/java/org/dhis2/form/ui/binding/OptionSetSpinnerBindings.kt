@@ -19,10 +19,10 @@ fun TextInputEditText.addOptions(field: FieldUiModel) {
     }
 }
 
-@BindingAdapter("options")
-fun TextView.addOptions(field: FieldUiModel) {
-    setOnClickListener { view ->
-        showOptions(view, field)
+@BindingAdapter(value = ["options", "anchorView"])
+fun TextView.addOptions(field: FieldUiModel, anchorView: TextInputEditText) {
+    setOnClickListener {
+        showOptions(anchorView, field)
     }
 }
 

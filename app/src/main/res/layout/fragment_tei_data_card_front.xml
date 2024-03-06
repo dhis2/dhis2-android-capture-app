@@ -17,7 +17,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter" />
 
         <variable
             name="dashboardModel"
@@ -226,6 +226,7 @@
                     android:text="@string/enrolling_ou"
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
+                    android:visibility="@{dashboardModel.currentEnrollment == null ? View.GONE : View.VISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/enrollment_date_label" />
 
@@ -271,6 +272,7 @@
                     android:textAlignment="viewEnd"
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
+                    android:visibility="@{dashboardModel.currentEnrollment == null ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/org_unit_label"
                     app:layout_constraintTop_toTopOf="@id/org_unit_label"

@@ -18,10 +18,7 @@ data class SyncStatusData(
             programSyncStatusMap[uid]?.syncStatus == D2ProgressSyncStatus.ERROR
     }
 
-    fun wasProgramDownloading(
-        lastStatus: SyncStatusData?,
-        uid: String
-    ): Boolean {
+    fun wasProgramDownloading(lastStatus: SyncStatusData?, uid: String): Boolean {
         return lastStatus?.programSyncStatusMap?.get(uid)?.isComplete == false &&
             programSyncStatusMap[uid]?.isComplete == true
     }

@@ -51,7 +51,7 @@ interface FieldUiModel {
 
     val textColor: Int?
 
-    val backGroundColor: Pair<Array<Int>, Int>?
+    val backGroundColor: Pair<Array<Int>, Int?>?
 
     val renderingType: UiRenderType?
 

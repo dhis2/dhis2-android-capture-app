@@ -55,7 +55,12 @@ class RadarRenderer(
         if (line.size > 1) {
             Utils.drawXAxisValue(
                 c,
-                line[0], x, y, mAxisLabelPaint, anchor, angleDegrees
+                line[0],
+                x,
+                y,
+                mAxisLabelPaint,
+                anchor,
+                angleDegrees
             )
             Utils.drawXAxisValue(
                 c,

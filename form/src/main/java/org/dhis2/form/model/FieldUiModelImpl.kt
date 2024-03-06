@@ -58,7 +58,7 @@ data class FieldUiModelImpl(
             value?.isEmpty() == true -> null
             else -> value?.toString()
         }
-        callback?.intent(FormIntent.OnTextChange(uid, text))
+        callback?.intent(FormIntent.OnTextChange(uid, text, valueType))
     }
 
     override fun onDescriptionClick() {
@@ -99,7 +99,11 @@ data class FieldUiModelImpl(
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
         callback?.intent(FormIntent.OnRequestCoordinates(uid))
-        if (uiEventType != UiEventType.QR_CODE && !focused) {
+        if (uiEventType != UiEventType.QR_CODE &&
+            uiEventType != UiEventType.EMAIL &&
+            uiEventType != UiEventType.PHONE_NUMBER &&
+            !focused
+        ) {
             onItemClick()
         }
         uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
@@ -114,7 +118,7 @@ data class FieldUiModelImpl(
     override val textColor: Int?
         get() = style?.textColor(error, warning)
 
-    override val backGroundColor: Pair<Array<Int>, Int>?
+    override val backGroundColor: Pair<Array<Int>, Int?>?
         get() = style?.backgroundColor(valueType, error, warning)
 
     override val hasImage: Boolean

@@ -1,5 +1,9 @@
 package dhis2.org.analytics.charts.data
 
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.PeriodType
@@ -19,15 +23,48 @@ data class Graph(
     val hasError: Boolean = false,
     val errorMessage: String? = null
 ) {
+
+    private fun minDate() = series.minOf { serie ->
+        serie.coordinates.minOf { point -> point.eventDate }
+    }.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+
+    private fun maxDate() = series.maxOf { serie ->
+        serie.coordinates.maxOf { point -> point.eventDate }
+    }.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
             categories.size.toFloat() - 1
         } else if (series.isNotEmpty()) {
-            series.maxOf { serie ->
-                try {
-                    serie.coordinates.maxOf { point -> point.position ?: 0f }
-                } catch (e: NoSuchElementException) {
-                    0f
+            val min = minDate()
+            val max = maxDate()
+            return when (eventPeriodType) {
+                PeriodType.Daily,
+                PeriodType.Weekly,
+                PeriodType.WeeklySaturday,
+                PeriodType.WeeklySunday,
+                PeriodType.WeeklyThursday,
+                PeriodType.WeeklyWednesday,
+                PeriodType.BiWeekly,
+                PeriodType.Monthly,
+                PeriodType.BiMonthly,
+                PeriodType.Quarterly,
+                PeriodType.SixMonthly,
+                PeriodType.SixMonthlyApril,
+                PeriodType.SixMonthlyNov -> {
+                    ChronoUnit.MONTHS.between(YearMonth.from(min), YearMonth.from(max)).toFloat()
+                }
+
+                PeriodType.Yearly,
+                PeriodType.FinancialApril,
+                PeriodType.FinancialJuly,
+                PeriodType.FinancialOct,
+                PeriodType.FinancialNov -> {
+                    ChronoUnit.YEARS.between(YearMonth.from(min), YearMonth.from(max)).toFloat()
                 }
             }
         } else {
@@ -62,6 +99,36 @@ data class Graph(
                 baseSeries().first().coordinates.first().eventDate.time +
                     numberOfSteps * periodStep
             )
+        }
+    }
+
+    fun localDateFromSteps(numberOfSteps: Long): LocalDate {
+        return when (eventPeriodType) {
+            PeriodType.Daily,
+            PeriodType.Weekly,
+            PeriodType.WeeklySaturday,
+            PeriodType.WeeklySunday,
+            PeriodType.WeeklyThursday,
+            PeriodType.WeeklyWednesday,
+            PeriodType.BiWeekly,
+            PeriodType.Monthly,
+            PeriodType.BiMonthly,
+            PeriodType.Quarterly,
+            PeriodType.SixMonthly,
+            PeriodType.SixMonthlyApril,
+            PeriodType.SixMonthlyNov -> {
+                val date = minDate().plusMonths(numberOfSteps)
+                YearMonth.from(date).atDay(1)
+            }
+
+            PeriodType.Yearly,
+            PeriodType.FinancialApril,
+            PeriodType.FinancialJuly,
+            PeriodType.FinancialOct,
+            PeriodType.FinancialNov -> {
+                val date = minDate().plusYears(numberOfSteps)
+                YearMonth.from(date).atDay(1)
+            }
         }
     }
 

@@ -6,5 +6,6 @@ enum class SettingItem {
     SYNC_PARAMETERS,
     RESERVED_VALUES,
     DELETE_LOCAL_DATA,
-    SMS
+    SMS,
+    VERSION_UPDATE
 }

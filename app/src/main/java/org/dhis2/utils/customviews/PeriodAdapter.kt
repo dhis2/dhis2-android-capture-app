@@ -145,6 +145,5 @@ private class PeriodAdapter(
         }
     }
 
-    override fun getItemCount() =
-        if (!withInputPeriod) datePeriods.size + 1 else datePeriods.size
+    override fun getItemCount() = if (!withInputPeriod) datePeriods.size + 1 else datePeriods.size
 }

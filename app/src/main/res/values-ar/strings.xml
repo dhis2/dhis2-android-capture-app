@@ -17,8 +17,6 @@
     <string name="error_wrong_credentials">خطأ في الإعتمادات</string>
     <string name="error_unexpected_error">خطأ غير متوقع</string>
     <string name="error_internal_server_error">خطأ داخلي في الخادم</string>
-    <string name="yes">نعم</string>
-    <string name="no">لا</string>
     <string name="no_value">لاتوجد قيمة</string>
     <string name="no_reserved_values">لا يوجد المزيد من القيم المحجوزة. اتصل بمسؤول النظام</string>
     <string name="no_reserved_values_connection">لا يوجد المزيد من القيم المحجوزة. اتصل بالشبكة لإعادة تعبئتها</string>
@@ -215,7 +213,6 @@
     <string name="settings_sms_module_title">وحدة sms: </string>
     <string name="settings_sms_receiver_number">بوابة sms</string>
     <string name="settings_sms_result_sender_number">مرسل نتيجة sms</string>
-    <string name="settings_sms_result_timeout">مهلة نتيجة sms</string>
     <string name="settings_sms_result_timeout_hint">ثواني</string>
     <string name="settings_sms_result_sender_hint">رقم</string>
     <string name="settings_sms_receiver_number_hint">رقم</string>
@@ -507,8 +504,6 @@
     <string name="org_unit_selection_warning">يجب تحديد وحدة تنظيمية واحدة على الأقل</string>
     <string name="send_user_name_title">إرسال البيانات</string>
     <string name="send_user_name_mesage">ساعد DHIS2 في تحسين هذا التطبيق من خلال مشاركة سجلات الأخطاء المرتبطة بمعرف المستخدم الخاص بك.</string>
-    <string name="analytics_crash_name_message">سيرسل هذا التطبيق سجلات الأخطاء المرتبطة بمعرف المستخدم الخاص بك من أجل تحسين أدائه والإحصاءات التي لا يمكن تعقبها لتحسين تجربة المستخدم.</string>
-    <string name="send_user_privacy_policy">لمزيد من المعلومات تحقق من سياسة الخصوصية الخاصة بنا</string>
     <string name="check_mandatory_field">تحقق من الحقول</string>
     <string name="error_no_network_during_sync">فقدان الإتصال بالإنترنت أثناء عملية مزامنة التكوين. يرجى معاودة المحاولة في وقت لاحق</string>
     <string name="action_agree">قبول</string>

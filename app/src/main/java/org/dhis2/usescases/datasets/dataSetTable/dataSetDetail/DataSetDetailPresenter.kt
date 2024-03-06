@@ -41,8 +41,7 @@ class DataSetDetailPresenter(
         disposable.add(
             updateProcessor.startWith(Unit)
                 .switchMap {
-                    Flowable.combineLatest<
-                        DataSetInstance,
+                    Flowable.combineLatest<DataSetInstance,
                         Period,
                         Boolean,
                         Trio<DataSetInstance, Period, Boolean>>(

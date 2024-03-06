@@ -1,10 +1,6 @@
 package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.filters.AssignedFilter
 import org.dhis2.commons.filters.EnrollmentStatusFilter
@@ -17,7 +13,11 @@ import org.dhis2.commons.filters.ProgramType
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.filters.sorting.SortingItem
+import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
+import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMapper
+import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
@@ -27,6 +27,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class FilterRepositoryTest {
 
@@ -48,12 +52,23 @@ class FilterRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val filterResources: FilterResources = mock()
     private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig = mock()
+    private val eventFilterToWorkingListItemMapper: EventFilterToWorkingListItemMapper = mock()
+    private val teiFilterToWorkingListItemMapper: TeiFilterToWorkingListItemMapper =
+        TeiFilterToWorkingListItemMapper("defaultLabel")
+    private val programStageToWorkingListItemMapper: ProgramStageToWorkingListItemMapper = mock()
     private lateinit var filterRepository: FilterRepository
 
     @Before
     fun setUp() {
         mockFilterLabels()
-        filterRepository = FilterRepository(d2, filterResources, getFiltersApplyingWebAppConfig)
+        filterRepository = FilterRepository(
+            d2,
+            filterResources,
+            getFiltersApplyingWebAppConfig,
+            eventFilterToWorkingListItemMapper,
+            teiFilterToWorkingListItemMapper,
+            programStageToWorkingListItemMapper
+        )
     }
 
     private fun mockFilterLabels() {
@@ -170,6 +185,7 @@ class FilterRepositoryTest {
     fun `Should get dashboard filters when webapp is not configured`() {
         val program = Program.builder().uid("random")
             .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
+        val catCombo = CategoryCombo.builder().uid("catCom").isDefault(true).build()
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
         whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
@@ -188,23 +204,73 @@ class FilterRepositoryTest {
             d2.programModule().programStages().byProgramUid().eq(program.uid())
                 .byEnableUserAssignment().eq(true).blockingIsEmpty()
         ) doReturn false
+        whenever(
+            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()
+        ) doReturn catCombo
 
         val result = filterRepository.dashboardFilters(program.uid())
 
         assert(result[0].type == Filters.PERIOD)
-        assert(result[1].type == Filters.ENROLLMENT_DATE)
-        assert(result[2].type == Filters.ORG_UNIT)
-        assert(result[3].type == Filters.SYNC_STATE)
-        assert(result[4].type == Filters.ENROLLMENT_STATUS)
-        assert(result[5].type == Filters.EVENT_STATUS)
-        assert(result[6].type == Filters.ASSIGNED_TO_ME)
-        assert(result.size == 7)
+        assert(result[1].type == Filters.ORG_UNIT)
+        assert(result[2].type == Filters.SYNC_STATE)
+        assert(result[3].type == Filters.EVENT_STATUS)
+        assert(result[4].type == Filters.ASSIGNED_TO_ME)
+        assert(result.size == 5)
+    }
+
+    @Test
+    fun `Should get dashboard filters with catOptCombo when webapp is not configured`() {
+        val program = Program.builder().uid("random")
+            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
+        val catCombo = CategoryCombo.builder().uid("catCom").isDefault(false).build()
+        whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
+        whenever(d2.programModule().programs().uid(any())) doReturn mock()
+        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+        ) doReturn false
+        whenever(
+            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()
+        ) doReturn catCombo
+        whenever(
+            d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catCombo.uid())
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catCombo.uid())
+                .blockingGet()
+        ) doReturn emptyList()
+
+        val result = filterRepository.dashboardFilters(program.uid())
+
+        assert(result[0].type == Filters.PERIOD)
+        assert(result[1].type == Filters.ORG_UNIT)
+        assert(result[2].type == Filters.SYNC_STATE)
+        assert(result[3].type == Filters.EVENT_STATUS)
+        assert(result[4].type == Filters.ASSIGNED_TO_ME)
+        assert(result[5].type == Filters.CAT_OPT_COMB)
+        assert(result.size == 6)
     }
 
     @Test
     fun `Should get dashboard filters when webapp is configured with empty result`() {
         val program = Program.builder().uid("random")
             .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
+        val catCombo = CategoryCombo.builder().uid("catCom").isDefault(true).build()
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
         whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
@@ -232,6 +298,9 @@ class FilterRepositoryTest {
                 any<Map<ProgramFilter, FilterSetting>>()
             )
         ) doReturn emptyList()
+        whenever(
+            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()
+        ) doReturn catCombo
 
         val result = filterRepository.dashboardFilters(program.uid())
 
@@ -298,6 +367,17 @@ class FilterRepositoryTest {
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
                 .blockingGet().displayName()
         ) doReturn program.trackedEntityType()?.displayName()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters().blockingGet()
+        ) doReturn emptyList()
 
         val result = filterRepository.programFilters(program.uid())
 
@@ -368,6 +448,17 @@ class FilterRepositoryTest {
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
                 .blockingGet().displayName()
         ) doReturn program.trackedEntityType()?.displayName()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+                .withAttributeValueFilters().blockingGet()
+        ) doReturn emptyList()
 
         val result = filterRepository.programFilters(program.uid())
 
@@ -450,51 +541,6 @@ class FilterRepositoryTest {
     }
 
     private fun createWebAppTrackedEntityFilters(): Map<ProgramFilter, FilterSetting> {
-        return mapOf(
-            ProgramFilter.EVENT_DATE to createFilterValue(
-                PROGRAM_FILTER,
-                "EVENT_DATE",
-                false
-            ),
-            ProgramFilter.SYNC_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "EVE",
-                false
-            ),
-            ProgramFilter.ORG_UNIT to createFilterValue(
-                PROGRAM_FILTER,
-                "ORG_UNIT",
-                false
-            ),
-            ProgramFilter.ENROLLMENT_DATE to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.ENROLLMENT_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.ASSIGNED_TO_ME to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.EVENT_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false
-            ),
-            ProgramFilter.FOLLOW_UP to createFilterValue(
-                PROGRAM_FILTER,
-                "FOLLOW_UP",
-                false
-            )
-        )
-    }
-
-    private fun createDefaultTrackedEntityFilters(): Map<ProgramFilter, FilterSetting> {
         return mapOf(
             ProgramFilter.EVENT_DATE to createFilterValue(
                 PROGRAM_FILTER,

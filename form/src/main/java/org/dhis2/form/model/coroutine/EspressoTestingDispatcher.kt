@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
-import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 
 const val IDLING_THREAD_POOL = "IdlingThreadPoolDispatcher"
 val NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors()

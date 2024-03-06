@@ -17,7 +17,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
-import java.util.ArrayList
 import kotlin.math.pow
 import org.dhis2.commons.R
 
@@ -57,8 +56,11 @@ fun setFromResBgColor(view: View?, color: Int) {
         if (r == null) r = color else if (g == null) g = color else b = color
     }
     val L = 0.2126 * r!! + 0.7152 * g!! + 0.0722 * b!!
-    tintedColor = if (L > 0.179) "#000000" // bright colors - black font
-    else "#FFFFFF" // dark colors - white font
+    tintedColor = if (L > 0.179) {
+        "#000000" // bright colors - black font
+    } else {
+        "#FFFFFF" // dark colors - white font
+    }
     if (view is TextView) {
         view.setTextColor(Color.parseColor(tintedColor))
     }
@@ -134,4 +136,10 @@ fun HorizontalScrollView.scrollToPosition(viewTag: String) {
         else -> 0
     }
     smoothScrollTo(xScroll, view.top)
+}
+
+fun <T> MutableList<T>.addIf(ifCondition: Boolean, itemToAdd: T, index: Int? = null) {
+    if (ifCondition) {
+        index?.let { add(it, itemToAdd) } ?: add(itemToAdd)
+    }
 }

@@ -38,9 +38,7 @@ class CarouselView @JvmOverloads constructor(
         this.carouselAdapter = adapter
     }
 
-    fun attachToMapManager(
-        manager: MapManager
-    ) {
+    fun attachToMapManager(manager: MapManager) {
         mapManager = manager
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -150,10 +148,7 @@ class CarouselView @JvmOverloads constructor(
             ?.hideNavigateButton()
     }
 
-    private fun showNavFab(
-        feature: Feature?,
-        found: Boolean
-    ) {
+    private fun showNavFab(feature: Feature?, found: Boolean) {
         if (found && feature?.isPoint() == true) {
             showNavigateTo()
         } else {

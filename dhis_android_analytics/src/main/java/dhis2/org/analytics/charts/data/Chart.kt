@@ -14,7 +14,8 @@ import java.lang.IllegalArgumentException
 
 class Chart private constructor(
     private val chartType: ChartType,
-    private val graphData: Graph
+    private val graphData: Graph,
+    private val resetDimensionButton: View?
 ) {
     private val graphToLineChartMapper: GraphToLineChart by lazy { GraphToLineChart() }
     private val graphToNutritionChartMapper: GraphToNutritionChart by lazy {
@@ -41,7 +42,7 @@ class Chart private constructor(
     @Composable
     fun getComposeChart() {
         return when (chartType) {
-            ChartType.TABLE -> graphToTableMapper.mapToCompose(graphData)
+            ChartType.TABLE -> graphToTableMapper.mapToCompose(graphData, resetDimensionButton)
             else -> throw IllegalArgumentException("Not supported")
         }
     }
@@ -49,6 +50,7 @@ class Chart private constructor(
     class ChartBuilder {
         private var chartType: ChartType? = null
         private var graphData: Graph? = null
+        private var resetDimensionButton: View? = null
 
         fun withType(chartType: ChartType): ChartBuilder {
             this.chartType = chartType
@@ -60,8 +62,13 @@ class Chart private constructor(
             return this
         }
 
+        fun withResetDimensions(view: View): ChartBuilder {
+            this.resetDimensionButton = view
+            return this
+        }
+
         fun build(): Chart {
-            return Chart(chartType!!, graphData!!)
+            return Chart(chartType!!, graphData!!, resetDimensionButton)
         }
     }
 }

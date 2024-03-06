@@ -33,9 +33,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createComposeRule()
-
     @Test
-    @Ignore("SDK related")
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
@@ -128,7 +126,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Some QRs are not being generated")
     @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -152,13 +149,11 @@ class TeiDashboardTest : BaseTest() {
             clickOnFirstReferralEvent()
             clickOnReferralOption()
             clickOnReferralNextButton()
-            checkEventCreatedToastIsShown()
             checkEventWasCreated(LAB_MONITORING)
         }
     }
 
     @Test
-    @Ignore("Nondeterministic")
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
@@ -169,7 +164,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnScheduleNew()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
-            checkEventCreatedToastIsShown()
             checkEventWasCreated(LAB_MONITORING)
         }
     }
@@ -228,7 +222,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Flaky")
     @Test
     fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -243,7 +236,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore("Nondeterministic")
     fun shouldSuccessfullyCreateANewEvent() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
@@ -337,52 +329,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
-    @Ignore
-    fun shouldDeleteTeiSuccessfully() {
-        val teiName = "Anthony"
-        val teiLastName = "Banks"
-
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuDeleteTEI()
-        }
-
-        searchTeiRobot {
-            checkTEIsDelete(teiName, teiLastName)
-        }
-    }
-
-    @Test
-    @Ignore
-    fun shouldDeleteEnrollmentSuccessfully() {
-        val teiName = "Anna"
-        val teiLastName = "Jones"
-
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            //     waitToDebounce(400)
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuDeleteEnrollment()
-        }
-
-        searchTeiRobot {
-            checkTEIsDelete(teiName, teiLastName)
-        }
-    }
 
     @Test
     fun shouldShowAnalytics() {

@@ -1,16 +1,12 @@
 package org.dhis2.utils.granularsync
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.Event
@@ -23,6 +19,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class SMSSyncProviderTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -238,27 +239,36 @@ class SMSSyncProviderTest {
 
     fun smsSyncProvider(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
-        conflictType,
-        "uid",
-        null,
-        null,
-        null,
+        when (conflictType) {
+            ConflictType.ALL -> SyncContext.Global()
+            ConflictType.PROGRAM -> SyncContext.TrackerProgram("uid")
+            ConflictType.TEI -> SyncContext.TrackerProgramTei("uid")
+            ConflictType.EVENT -> SyncContext.Event("uid")
+            ConflictType.DATA_SET -> SyncContext.DataSet("uid")
+            ConflictType.DATA_VALUES -> SyncContext.DataSetInstance(
+                "uid",
+                "periodId",
+                "orgUnitUid",
+                "attComboUid"
+            )
+        },
         resources
     )
 
     fun smsSyncProviderDataValue(conflictType: ConflictType) = SMSSyncProviderImpl(
         d2,
-        conflictType,
-        "uid",
-        "orgUnitUid",
-        "attComboUid",
-        "periodId",
+        SyncContext.DataSetInstance(
+            "uid",
+            "periodId",
+            "orgUnitUid",
+            "attComboUid"
+        ),
         resources
     )
 
     private fun mockTrackerSMSVersion(version: SMSVersion) {
         val dhisVersionManager: DHISVersionManager = mock {
-            on { smsVersion } doReturn version
+            on { getSmsVersion() } doReturn version
         }
         whenever(
             d2.systemInfoModule().versionManager()

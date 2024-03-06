@@ -1,8 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
@@ -16,8 +13,11 @@ import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
-import org.mockito.Mockito.mock
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DataSetTableRepositoryTest {
 
@@ -25,7 +25,7 @@ class DataSetTableRepositoryTest {
 
     private val resourceManager: ResourceManager = mock()
 
-    private val d2: D2 = mock(D2::class.java, RETURNS_DEEP_STUBS)
+    private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val dataSetUid = "dataSetUid"
     private val periodId = "periodId"
     private val orgUnitUid = "orgUnitUid"
@@ -211,7 +211,7 @@ class DataSetTableRepositoryTest {
 
     @Test
     fun `Should return the category Combo name`() {
-        val uid = "catComboUid"
+        val uid = catOptCombo
         val name = "CatComboName"
         whenever(d2.categoryModule().categoryOptionCombos().uid(uid)) doReturn mock()
         whenever(
@@ -222,7 +222,7 @@ class DataSetTableRepositoryTest {
                 .uid(uid).blockingGet().displayName()
         ) doReturn name
 
-        val testObserver = repository.getCatComboName(uid).test()
+        val testObserver = repository.getCatComboName().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValue { it == name }
@@ -352,18 +352,17 @@ class DataSetTableRepositoryTest {
             .state(state)
             .deleted(deleted).build()
 
-    private fun dummyDataSetInstance(state: State) =
-        DataSetInstance.builder().period(periodId)
-            .dataSetUid(dataSetUid)
-            .dataSetDisplayName("dataSetName")
-            .organisationUnitUid(orgUnitUid)
-            .organisationUnitDisplayName("orgUnitName")
-            .attributeOptionComboUid(catOptCombo)
-            .attributeOptionComboDisplayName("catComboName")
-            .valueCount(1)
-            .completed(true)
-            .periodType(PeriodType.Daily)
-            .state(state).build()
+    private fun dummyDataSetInstance(state: State) = DataSetInstance.builder().period(periodId)
+        .dataSetUid(dataSetUid)
+        .dataSetDisplayName("dataSetName")
+        .organisationUnitUid(orgUnitUid)
+        .organisationUnitDisplayName("orgUnitName")
+        .attributeOptionComboUid(catOptCombo)
+        .attributeOptionComboDisplayName("catComboName")
+        .valueCount(1)
+        .completed(true)
+        .periodType(PeriodType.Daily)
+        .state(state).build()
 
     private fun dummyCategoryOptionCombos(displayName: String = "default", uid: String = "uid") =
         CategoryOptionCombo.builder()

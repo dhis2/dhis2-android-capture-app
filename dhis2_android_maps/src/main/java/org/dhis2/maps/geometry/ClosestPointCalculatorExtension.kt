@@ -2,9 +2,7 @@ package org.dhis2.maps.geometry
 
 import com.mapbox.mapboxsdk.geometry.LatLng
 
-fun List<List<List<Double>>>.closestPointTo(
-    point: List<Double>
-): List<Double> {
+fun List<List<List<Double>>>.closestPointTo(point: List<Double>): List<Double> {
     val initPoint = point.toLatLn()
     var closestPoint: List<Double>? = null
     var closestDistance: Double? = null

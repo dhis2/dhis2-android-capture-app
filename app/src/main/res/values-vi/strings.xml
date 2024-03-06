@@ -12,8 +12,6 @@
     <string name="error_wrong_credentials">Sai thông tin đăng nhập </string>
     <string name="error_unexpected_error">Lỗi không mong muốn</string>
     <string name="error_internal_server_error">Lỗi máy chủ nội bộ</string>
-    <string name="yes">có</string>
-    <string name="no">không</string>
     <string name="no_value">không có giá trị</string>
     <string name="no_reserved_values">Không còn giá trị dành riêng. Liên hệ với quản trị viên hệ thống của bạn</string>
     <string name="no_reserved_values_connection">Không còn giá trị dành riêng. Kết nối với mạng để nạp thêm</string>
@@ -208,7 +206,6 @@
     <string name="settings_sms_module_title">Mô đun SMS:</string>
     <string name="settings_sms_receiver_number">Cổng SMS</string>
     <string name="settings_sms_result_sender_number">Người gửi kết quả SMS</string>
-    <string name="settings_sms_result_timeout">Hết thời gian trả kết quả SMS</string>
     <string name="settings_sms_result_timeout_hint">giây</string>
     <string name="settings_sms_result_sender_hint">số</string>
     <string name="settings_sms_receiver_number_hint">số</string>
@@ -495,8 +492,6 @@
     <string name="org_unit_selection_warning">Phải chọn ít nhất một đơn vị</string>
     <string name="send_user_name_title">Đã gửi dữ liệu</string>
     <string name="send_user_name_mesage">Giúp DHIS2 cải thiện ứng dụng này bằng việc chia sẻ lịch sử lỗi liên kết với tên đăng nhập của bạn.</string>
-    <string name="analytics_crash_name_message">Ứng dụng này sẽ gửi Lịch sử lỗi liên kết với tên đăng nhập của bạn để cải thiện hoạt động của nó và gửi thống kê không thể theo dõi để cải thiện trải nghiệm người dùng.</string>
-    <string name="send_user_privacy_policy">Để biết thêm chi tiết, hãy kiểm tra chính sách bảo mật của chúng tôi.</string>
     <string name="check_mandatory_field">Kiểm tra các trường dữ liệu</string>
     <string name="error_no_network_during_sync">Bạn đã mất kết nối mạng trong khi đang thực hiện đồng bộ cấu hình. Vui lòng thử lại sau.</string>
     <string name="action_agree">Đồng ý</string>

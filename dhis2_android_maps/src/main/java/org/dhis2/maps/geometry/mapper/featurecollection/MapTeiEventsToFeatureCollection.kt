@@ -17,9 +17,7 @@ class MapTeiEventsToFeatureCollection(
     private val bounds: GetBoundingBox
 ) {
 
-    fun map(
-        events: List<EventUiComponentModel>
-    ): Pair<EventsByProgramStage, BoundingBox> {
+    fun map(events: List<EventUiComponentModel>): Pair<EventsByProgramStage, BoundingBox> {
         val eventsByProgramStage = events
             .groupBy { it.programStage?.displayName()!! }
             .mapValues { eventModel ->

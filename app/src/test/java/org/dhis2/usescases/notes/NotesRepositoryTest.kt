@@ -1,8 +1,5 @@
 package org.dhis2.usescases.notes
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
 import org.hisp.dhis.android.core.D2
@@ -14,6 +11,9 @@ import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class NotesRepositoryTest {
 
@@ -96,11 +96,10 @@ class NotesRepositoryTest {
         assert(repository.hasProgramWritePermission())
     }
 
-    private fun dummyNote(): Note =
-        Note.builder()
-            .uid(UUID.randomUUID().toString())
-            .value("Note")
-            .build()
+    private fun dummyNote(): Note = Note.builder()
+        .uid(UUID.randomUUID().toString())
+        .value("Note")
+        .build()
 
     private fun mockEnrollment(teiUid: String, enrollmentUid: String) {
         whenever(

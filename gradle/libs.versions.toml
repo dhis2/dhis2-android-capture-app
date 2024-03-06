@@ -1,0 +1,295 @@
+[versions]
+ndk = "21.4.7075529"
+sdk = "33"
+minSdk = "21"
+vCode = "128"
+vName = "2.8.2-psi-fork-2"
+kotlinCompilerExtensionVersion = "1.4.7"
+
+
+gradle = '8.0.2'
+kotlin = '1.8.21'
+hilt = '2.43.2'
+hiltCompiler = '1.0.0'
+jacoco = '0.8.10'
+
+dhis2sdk = "1.8.2"
+ruleEngine = "2.1.9"
+appcompat = "1.5.1"
+annotation = "1.4.0"
+cardview = "1.0.0"
+legacysupport = "1.0.0"
+multidex = "2.0.1"
+constraintlayout = "2.1.4"
+lifecycle = "2.5.1"
+lifecycleExtensions = "2.2.0"
+work = "2.7.1"
+exif = "1.3.3"
+corektx = "1.7.0"
+fragmentktx = "1.5.2"
+dynamicanimation = "1.0.0"
+viewpager2 = "1.0.0"
+recyclerview = "1.2.1"
+compose = "1.3.1"
+composeTheme = "1.2.1"
+composeConstraintLayout = "1.0.1"
+activityCompose = "1.6.1"
+viewModelCompose = "2.5.1"
+compose_ui_test = "1.3.3"
+material = "1.8.0"
+flexbox = "3.0.0"
+material3 = "1.0.1"
+themeAdapter = "0.28.0"
+pinlock = "2.1.0"
+fancyshowcase = "1.1.5"
+lottie = "3.4.0"
+rxjava = "2.1.0"
+rxandroid = "2.1.0"
+rxbindings = "2.1.1"
+autovalue = "1.6.6"
+autovalueparcel = "0.2.7"
+mapboxmarkerview = "0.3.0"
+mapboxannotation = "0.8.0"
+matomo = "4.1.2"
+sentry = "6.18.1"
+timber = "5.0.1"
+flipper = "0.161.0"
+flippernoop = "0.161.0"
+soloader = "0.10.4"
+flippernetwork = "0.161.0"
+flipperleak = "0.161.0"
+leakcannary = "2.9.1"
+leakcannarynoop = "1.6.3"
+rxlint = "1.6"
+crashactivity = "2.3.0"
+zxing = "3.5.0"
+zxingbarcode = "1.9.8"
+zxingandroid = "4.3.0"
+root = "0.0.7"
+openid = "0.8.1"
+conscrypt = "2.5.2"
+gson = "2.8.9"
+gsonconverter = "2.9.0"
+okhttp = "3.12.0"
+jodatime = "2.9.9"
+glide = "4.9.0"
+guava = "31.1-android"
+mockito = "4.1.0"
+junit = "4.13.2"
+mockito_inline = "5.2.0"
+javafaker = "1.0.2"
+junit_ext = "1.1.5"
+espresso_core = "3.5.1"
+androidx_test_orchestrator = "1.4.2"
+androidx_test_runner = "1.5.2"
+androidx_test_core = "1.5.0"
+androidx_test = "1.5.0"
+mockito_android = "3.3.3"
+dexmaker-mockito-inline = "2.28.1"
+hamcrest = "2.2"
+kotlinxserialization = "1.3.2"
+desugar_jdk_libs = "2.0.2"
+google_truth = "1.1.2"
+kotlinxcoroutines = "1.6.1"
+kotlinmetadata = "0.5.0"
+rxrelay = "2.1.1"
+preference_ktx = "1.2.0"
+uiautomator = "2.2.0"
+
+#Eyeseetea
+atv = "1.2.9"
+coroutines = "1.3.6"
+markwon = "4.6.0"
+
+[libraries]
+gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
+kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinSerialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
+hiltPlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
+jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco" }
+
+dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
+dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine", version.ref = "ruleEngine" }
+
+desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+
+androidx-activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityCompose" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-fragmentKtx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentktx" }
+androidx-liveDataKtx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidx-viewModelKtx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewModelCompose" }
+androidx-lifecycleExtensions = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycleExtensions" }
+androidx-recyclerView = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+androidx-compose = { group = "androidx.compose.material", name = "material", version.ref = "compose" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
+androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout" }
+androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
+androidx-compose-uitooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
+androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
+androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
+androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacysupport" }
+androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-work = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
+androidx-work-runtimeKtx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+androidx-workrx = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
+androidx-workgcm = { group = "androidx.work", name = "work-gcm", version.ref = "work" }
+androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exif" }
+androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_ktx" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamicanimation" }
+
+kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxserialization" }
+metadata-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-metadata-jvm", version.ref = "kotlinmetadata" } #TODO: Why do we need this?
+
+google-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
+google-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+google-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.2.0" }
+google-auth-apiphone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version = "18.0.1" }
+google-autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autovalue" } #TODO: this should be removed
+google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-material-themeadapter = { group = "com.google.android.material", name = "compose-theme-adapter", version.ref = "composeTheme" }
+google-material3-themeadapter = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "themeAdapter" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+network-gsonconverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gsonconverter" }
+network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
+dates-jodatime = { group = "joda-time", name = "joda-time", version.ref = "jodatime" }
+
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "hilt" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "hilt" }
+dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+dagger-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltCompiler" }
+dagger-hilt-compiler-new = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
+rx-kotlin = { group = "io.reactivex.rxjava2", name = "rxkotlin", version = "2.3.0" }
+rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxjava" }
+rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid" }
+rx-binding = { group = "com.jakewharton.rxbinding2", name = "rxbinding", version.ref = "rxbindings" }
+rx-binding-compat = { group = "com.jakewharton.rxbinding2", name = "rxbinding-appcompat-v7", version.ref = "rxbindings" }
+rx-relay = { group = "com.jakewharton.rxrelay2", name = "rxrelay", version.ref = "rxrelay" }
+
+github-pinlock = { group = "com.github.aritraroy", name = "PinLockView", version.ref = "pinlock" }
+github-fancyshowcase = { group = "com.github.faruktoptas", name = "FancyShowCaseView", version.ref = "fancyshowcase" }
+github-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+github-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+github-charts = { group = "com.github.PhilJay", name = "MPAndroidChart", version = "v3.1.0" }
+github-treeView = { group = "com.github.bmelnychuk", name = "atv", version = "1.2.9" } #TODO: We should remove this
+
+barcodeScanner-zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+barcodeScanner-scanner = { group = "me.dm7.barcodescanner", name = "zxing", version.ref = "zxingbarcode" }
+barcodeScanner-zxing-android = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingandroid" }
+
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+
+analytics-matomo = { group = "com.github.matomo-org", name = "matomo-sdk-android", version.ref = "matomo" }
+analytics-flipper = { group = "com.facebook.flipper", name = "flipper", version.ref = "flipper" }
+analytics-flipper-network = { group = "com.facebook.flipper", name = "flipper-network-plugin", version.ref = "flippernetwork" }
+analytics-flipper-leak = { group = "com.facebook.flipper", name = "flipper-leakcanary-plugin", version.ref = "flipperleak" }
+analytics-flipper-noop = { group = "com.facebook.flipper", name = "flipper-noop", version.ref = "flippernoop" }
+analytics-soloader = { group = "com.facebook.soloader", name = "soloader", version.ref = "soloader" }
+analytics-leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcannary" }
+analytics-leakcanary-noop = { group = "com.squareup.leakcanary", name = "leakcanary-android-no-op", version.ref = "leakcannarynoop" }
+analytics-rxlint = { group = "nl.littlerobots.rxlint", name = "rxlint", version.ref = "rxlint" }
+analytics-customactivityoncrash = { group = "cat.ereza", name = "customactivityoncrash", version.ref = "crashactivity" }
+analytics-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+analytics-sentry = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
+
+security-rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version.ref = "root" }
+security-openId = { group = "net.openid", name = "appauth", version.ref = "openid" }
+security-conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
+
+test-junit = { group = "junit", name = "junit", version.ref = "junit" }
+test-archCoreTesting = { group = "androidx.arch.core", name = "core-testing", version = "2.1.0" }
+test-testCore = { group = "androidx.test", name = "core", version.ref = "androidx_test" }
+test-mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+test-mockitoInline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
+test-mockitoKotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
+test-mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito_android" }
+test-dexmaker-mockitoInline = { group = "com.linkedin.dexmaker", name = "dexmaker-mockito-inline", version.ref = "dexmaker-mockito-inline" }
+test-truth = { group = "com.google.truth", name = "truth", version.ref = "google_truth" }
+test-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "androidx_test_orchestrator" }
+test-testRunner = { group = "androidx.test", name = "runner", version.ref = "androidx_test_runner" }
+test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso_core" }
+test-espresso-idlingresource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espresso_core" }
+test-espresso-idlingconcurrent = { group = "androidx.test.espresso.idling", name = "idling-concurrent", version.ref = "espresso_core" }
+test-espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espresso_core" }
+test-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espresso_core" }
+test-espresso-accessibility = { group = "androidx.test.espresso", name = "espresso-accessibility", version.ref = "espresso_core" }
+test-espresso-web = { group = "androidx.test.espresso", name = "espresso-web", version.ref = "espresso_core" }
+test-uiautomator-v18 = { group = "com.android.support.test.uiautomator", name = "uiautomator-v18", version = "2.1.3" }
+test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx_test" }
+test-coreKtx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx_test_core" }
+test-junitKtx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junit_ext" }
+test-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit_ext" }
+test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+test-support-annotations = { group = "com.android.support", name = "support-annotations", version = "28.0.0" }
+test-okhttp3-idling-resource = { group = "com.jakewharton.espresso", name = "okhttp3-idling-resource", version = "1.0.0" }
+test-rx2-idler = { group = "com.squareup.rx.idler", name = "rx2-idler", version = "0.11.0" }
+test-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
+test-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose_ui_test" }
+test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose_ui_test" }
+test-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
+test-turbine = { group = "app.cash.turbine", name = "turbine", version = "0.12.1" }
+test-javafaker = { group = "com.github.javafaker", name = "javafaker", version.ref = "javafaker" }
+
+maps-maplibre = { group = "org.maplibre.gl", name = "android-sdk", version = "9.5.2" }
+maps-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", version = "5.9.0" }
+maps-markerViewPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-markerview-v8", version.ref = "mapboxmarkerview" }
+maps-annotationPlugin = { group = "com.mapbox.mapboxsdk", name = "mapbox-android-plugin-annotation-v9", version.ref = "mapboxannotation" }
+
+dispatcher-dispatchBOM = { group = "com.rickbusarow.dispatch", name = "dispatch-bom", version = "1.0.0-beta10" } #TODO: I don't know how or why we are using this
+dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch-core" }
+dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
+
+deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" } #TODO: Remove alongside AutoValue
+
+#Eyeseetea
+eyeseetea-atv = { group = "com.github.bmelnychuk", name = "atv", version.ref = "atv" }
+eyeseetea-coroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+eyeseetea-coroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+eyeseetea-markwon = { group = "io.noties.markwon", name = "core", version.ref = "markwon" }
+
+[plugins]
+
+[bundles]
+uicomponents-implementation = ["androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose",
+    "androidx-material3", "google-material"]
+uicomponents-api = ["androidx-compose-constraintlayout", "androidx-compose-preview",
+    "androidx-compose-ui", "androidx-compose-livedata", "google-material-themeadapter", "google-material3-themeadapter"]
+uicomponents-debugapi = ["androidx-compose-uitooling"]
+uicomponents-test = ["test-junit"]
+uicomponents-androidtest = ["test-junit-ext", "test-espresso"]
+analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
+analytics-api = ["github-charts"]
+analytics-kapt = ["dagger-compiler"]
+analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
+form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-testCore",
+    "test-rules", "test-archCoreTesting", "test-kotlinCoroutines"]
+form-androidTest = ["test-espresso-idlingresource"]
+map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
+map-androidTest = ["test-mockito-android", "test-mockitoCore"]
+table-implementation = ["kotlin-serialization-json", "androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose",
+    "androidx-compose", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-livedata",
+    "google-material", "google-material-themeadapter"]
+table-debugImplementation = ["androidx-compose-uitooling", "test-ui-test-manifest"]
+table-test = ["test-junit"]
+table-androidTest = ["test-compose-ui-test", "test-uiautomator", "test-junitKtx", "test-espresso"]
+stock-implementation = ["kotlin-serialization-json", "androidx-activity-compose", "androidx-annotation",
+    "androidx-legacy-support-v4", "androidx-constraintlayout", "rx-relay", "security-openId", "androidx-preferenceKtx",
+    "androidx-work", "androidx-work-runtimeKtx", "androidx-workrx", "androidx-workgcm", "androidx-activityKtx", "androidx-fragmentKtx",
+    "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash", "dagger-hilt-android"]
+stock-core = ["desugar"]
+stock-kapt = ["dagger-hilt-compiler-new"]
+stock-debugImplementation = ["analytics-flipper", "analytics-soloader"]
+stock-releaseImplementation = ["analytics-flipper-noop"]
+stock-test = ["test-junit", "test-mockitoKotlin", "test-mockitoInline", "test-archCoreTesting", "test-javafaker",
+    "test-kotlinCoroutines"]
+stock-androidTest = ["test-junit-ext", "test-espresso", "test-archCoreTesting"]

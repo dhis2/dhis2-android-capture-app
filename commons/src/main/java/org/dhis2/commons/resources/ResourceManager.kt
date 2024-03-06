@@ -2,14 +2,22 @@ package org.dhis2.commons.resources
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.commons.R
+import org.dhis2.commons.network.NetworkUtils
 import org.hisp.dhis.android.core.D2Manager
 
 class ResourceManager(val context: Context) {
 
     fun getString(@StringRes stringResource: Int) = getWrapperContext().getString(stringResource)
+
+    fun getString(@StringRes stringResource: Int, vararg arguments: String) =
+        getWrapperContext().getString(stringResource).format(*arguments)
+
+    fun getPlural(@PluralsRes pluralResource: Int, quantity: Int) =
+        getWrapperContext().resources.getQuantityString(pluralResource, quantity)
 
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
@@ -52,7 +60,8 @@ class ResourceManager(val context: Context) {
     }
 
     fun parseD2Error(throwable: Throwable) =
-        D2ErrorUtils(getWrapperContext()).getErrorMessage(throwable)
+        D2ErrorUtils(getWrapperContext(), NetworkUtils(getWrapperContext()))
+            .getErrorMessage(throwable)
 
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
     fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)

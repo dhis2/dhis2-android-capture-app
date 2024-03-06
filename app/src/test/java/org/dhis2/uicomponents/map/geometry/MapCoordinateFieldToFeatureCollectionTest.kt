@@ -1,8 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
 import org.dhis2.maps.geometry.mapper.featurecollection.MapAttributeToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
@@ -19,6 +16,9 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 class MapCoordinateFieldToFeatureCollectionTest {
 

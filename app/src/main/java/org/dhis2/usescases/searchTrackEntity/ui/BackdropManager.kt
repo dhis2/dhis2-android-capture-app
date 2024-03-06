@@ -10,11 +10,7 @@ import org.dhis2.R
 object BackdropManager {
     private const val changeBoundDuration = 200L
 
-    private fun changeBounds(
-        backdropLayout: ConstraintLayout,
-        endID: Int,
-        margin: Int
-    ) {
+    private fun changeBounds(backdropLayout: ConstraintLayout, endID: Int, margin: Int) {
         val transition: Transition = ChangeBounds()
         transition.duration = changeBoundDuration
         TransitionManager.beginDelayedTransition(backdropLayout, transition)

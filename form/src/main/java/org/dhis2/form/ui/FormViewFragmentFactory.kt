@@ -18,7 +18,9 @@ class FormViewFragmentFactory(
     private val completionListener: ((percentage: Float) -> Unit)?,
     private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
     private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
-    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?
+    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
+    private val actionIconsActivate: Boolean = true,
+    private val openErrorLocation: Boolean = false
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -36,7 +38,9 @@ class FormViewFragmentFactory(
                     locationProvider = locationProvider,
                     needToForceUpdate = needToForceUpdate,
                     completionListener = completionListener,
-                    resultDialogUiProvider = resultDialogUiProvider
+                    resultDialogUiProvider = resultDialogUiProvider,
+                    actionIconsActivate = actionIconsActivate,
+                    openErrorLocation = openErrorLocation
                 )
             }
 

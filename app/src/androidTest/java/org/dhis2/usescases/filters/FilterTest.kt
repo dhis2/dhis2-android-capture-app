@@ -10,6 +10,7 @@ import org.dhis2.usescases.form.formRobot
 import org.dhis2.usescases.main.AVOID_SYNC
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Ignore
 import org.junit.Rule
@@ -86,8 +87,9 @@ class FilterTest: BaseTest() {
         filterRobotCommon {
             openFilterAtPosition(1)
             clickOnOrgUnitTree()
-            selectTreeOrgUnit("OU TEST PARENT")
-            confirmSelection()
+            orgUnitSelectorRobot(composeTestRule){
+                selectTreeOrgUnit("OU TEST PARENT")
+            }
         }
         homeRobot {
             openFilters()

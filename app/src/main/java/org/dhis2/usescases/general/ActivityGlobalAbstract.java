@@ -48,9 +48,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 import kotlin.Unit;
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
 
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
@@ -71,6 +71,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     private boolean comesFromImageSource = false;
 
     private ActivityResultObserver activityResultObserver;
+    private CustomDialog descriptionDialog;
 
     public enum Status {
         ON_PAUSE,
@@ -131,7 +132,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     private void initPinDialog() {
         pinDialog = new PinDialog(PinDialog.Mode.ASK,
                 (this instanceof LoginActivity),
-                aBoolean -> {
+                () -> {
                     startActivity(MainActivity.class, null, true, true, null);
                     return null;
                 },
@@ -365,7 +366,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     public void showDescription(String description) {
-        new CustomDialog(
+        if (descriptionDialog != null) {
+            descriptionDialog.cancel();
+        }
+        descriptionDialog = new CustomDialog(
                 getAbstracContext(),
                 getString(R.string.info),
                 description,
@@ -373,7 +377,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 null,
                 Constants.DESCRIPTION_DIALOG,
                 null
-        ).show();
+        );
+
+        descriptionDialog.show();
     }
 
     @Override

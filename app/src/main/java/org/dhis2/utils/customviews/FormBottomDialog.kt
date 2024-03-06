@@ -53,7 +53,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     }
 
     enum class ActionType {
-        FINISH_ADD_NEW, SKIP, RESCHEDULE, FINISH, COMPLETE_ADD_NEW, COMPLETE, CHECK_FIELDS
+        FINISH_ADD_NEW, SKIP, RESCHEDULE, FINISH, COMPLETE_ADD_NEW, COMPLETE, CHECK_FIELDS, NONE
     }
 
     fun setListener(listener: OnFormBottomDialogItemSelection?): FormBottomDialog {
@@ -90,10 +90,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver
             .addOnGlobalLayoutListener {

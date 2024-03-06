@@ -124,8 +124,10 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                 var repository = d2.programModule().programStages().byProgramUid().eq(
                     programUid
                 )
-                if (eventCreationType == EventCreationType.SCHEDULE.name) repository =
-                    repository.byHideDueDate().eq(false)
+                if (eventCreationType == EventCreationType.SCHEDULE.name) {
+                    repository =
+                        repository.byHideDueDate().eq(false)
+                }
                 repository.get().toFlowable()
                     .flatMapIterable { stages: List<ProgramStage>? -> stages }
                     .filter { programStage: ProgramStage ->

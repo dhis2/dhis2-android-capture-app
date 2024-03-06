@@ -22,9 +22,7 @@ class MatomoAnalyticsModule {
 
     @Provides
     @Singleton
-    fun provideMatomo(
-        context: Context
-    ): Matomo {
+    fun provideMatomo(context: Context): Matomo {
         return Matomo.getInstance(context)
     }
 

@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex
 
-cd buildsystem/
-
 VERSION_SDK=$(cat dependencies.gradle | grep "minSdk" | awk -F':' '{print $2}' | awk -F',' '{print $1}')
 KITKAT_SDK=19
 

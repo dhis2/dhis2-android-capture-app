@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList.ui
 
 import androidx.compose.ui.platform.ComposeView
 import androidx.databinding.BindingAdapter
-import com.google.android.material.composethemeadapter.MdcTheme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract
 
@@ -12,7 +12,7 @@ fun ComposeView.setProgramModel(
     presenter: TeiProgramListContract.Presenter
 ) {
     setContent {
-        MdcTheme {
+        Mdc3Theme {
             EnrollToProgram(program) {
                 presenter.onEnrollClick(program)
             }

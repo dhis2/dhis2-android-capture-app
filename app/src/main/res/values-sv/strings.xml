@@ -8,8 +8,6 @@
     <string name="error_wrong_credentials">Felaktiga uppgifter</string>
     <string name="error_unexpected_error">Oväntat fel</string>
     <string name="error_internal_server_error">Internt serverfel</string>
-    <string name="yes">ja</string>
-    <string name="no">nej</string>
     <string name="no_value">inget värde</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Synkronisera nu</string>

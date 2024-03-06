@@ -30,8 +30,8 @@ class ProgramEventTest : BaseTest() {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    @Test
     @Ignore("Nondeterministic")
+    @Test
     fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
         prepareProgramAndLaunchActivity(atenatalCare)

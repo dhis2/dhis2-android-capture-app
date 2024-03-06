@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.google.android.material.composethemeadapter.MdcTheme
-import hu.supercluster.paperwork.Paperwork
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -80,7 +79,7 @@ class CrashActivity : AppCompatActivity() {
 
     private fun loadCrashReport() = CrashReport(
         buildVersion = BuildConfig.VERSION_NAME,
-        buildDate = Paperwork(this)["buildTime"],
+        buildDate = BuildConfig.BUILD_DATE,
         currentDate = SimpleDateFormat(
             "yyyy-MM-dd HH:mm",
             Locale.getDefault()
@@ -121,10 +120,7 @@ data class CrashReport(
 )
 
 @Composable
-fun CrashScreen(
-    crashReport: CrashReport,
-    onCopy: (textToCopy: String) -> Unit
-) {
+fun CrashScreen(crashReport: CrashReport, onCopy: (textToCopy: String) -> Unit) {
     Column(modifier = Modifier.fillMaxHeight()) {
         CrashHeader()
         CrashDeviceInfo(crashReport)
@@ -194,10 +190,7 @@ fun CrashDeviceInfo(crashReport: CrashReport) {
 }
 
 @Composable
-fun CrashStackTraceInfo(
-    stackTrace: String,
-    onCopy: (textToCopy: String) -> Unit
-) {
+fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier

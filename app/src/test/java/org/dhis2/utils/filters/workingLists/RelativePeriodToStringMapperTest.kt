@@ -1,14 +1,14 @@
 package org.dhis2.utils.filters.workingLists
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
 import org.dhis2.commons.filters.FilterResources
 import org.dhis2.commons.filters.workingLists.RelativePeriodToStringMapper
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class RelativePeriodToStringMapperTest {
 

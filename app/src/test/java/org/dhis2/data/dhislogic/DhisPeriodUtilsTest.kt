@@ -1,8 +1,5 @@
 package org.dhis2.data.dhislogic
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.GregorianCalendar
 import java.util.Locale
 import org.hisp.dhis.android.core.D2
@@ -13,6 +10,9 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DhisPeriodUtilsTest {
 
@@ -46,7 +46,8 @@ class DhisPeriodUtilsTest {
             .build()
 
         Assert.assertEquals(
-            "11/1/2019", periodUtils.getPeriodUIString(null, testDate, Locale.ENGLISH)
+            "11/1/2019",
+            periodUtils.getPeriodUIString(null, testDate, Locale.ENGLISH)
         )
     }
 

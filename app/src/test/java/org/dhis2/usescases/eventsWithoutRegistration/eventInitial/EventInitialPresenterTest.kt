@@ -1,10 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import java.util.Date
@@ -30,6 +25,11 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class EventInitialPresenterTest {
     lateinit var presenter: EventInitialPresenter
@@ -190,7 +190,14 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.createEvent(
-            "enrollment", "stage", date, "orgUnit", "catCombo", "catOption", geometry, "tei"
+            "enrollment",
+            "stage",
+            date,
+            "orgUnit",
+            "catCombo",
+            "catOption",
+            geometry,
+            "tei"
         )
 
         verify(view).onEventCreated("event")
@@ -217,7 +224,14 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.createEvent(
-            "enrollment", "stage", date, "orgUnit", "catCombo", "catOption", geometry, "tei"
+            "enrollment",
+            "stage",
+            date,
+            "orgUnit",
+            "catCombo",
+            "catOption",
+            geometry,
+            "tei"
         )
 
         verify(view).renderError("Error")
@@ -244,7 +258,14 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(
-            "enrollment", "teiUid", "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment",
+            "teiUid",
+            "stage",
+            date,
+            "orgUnit",
+            "catCombo",
+            "catOption",
+            geometry
         )
 
         verify(view).onEventCreated("event")
@@ -272,7 +293,14 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(
-            "enrollment", "teiUid", "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment",
+            "teiUid",
+            "stage",
+            date,
+            "orgUnit",
+            "catCombo",
+            "catOption",
+            geometry
         )
 
         verify(view).renderError("Error")
@@ -299,7 +327,13 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEvent(
-            "enrollment", "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment",
+            "stage",
+            date,
+            "orgUnit",
+            "catCombo",
+            "catOption",
+            geometry
         )
 
         verify(view).onEventCreated("event")
@@ -326,7 +360,13 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEvent(
-            "enrollment", "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment",
+            "stage",
+            date,
+            "orgUnit",
+            "catCombo",
+            "catOption",
+            geometry
         )
 
         verify(view).renderError("Error")

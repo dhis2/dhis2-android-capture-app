@@ -11,18 +11,19 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncStatusController
-import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
 class ProgramPresenter internal constructor(
     private val view: ProgramView,
     private val programRepository: ProgramRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val themeManager: ThemeManager,
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
-    private val syncStatusController: SyncStatusController
+    private val syncStatusController: SyncStatusController,
+    private val identifyProgramType: IdentifyProgramType,
+    private val stockManagementMapper: StockManagementMapper
 ) {
 
     private val programs = MutableLiveData<List<ProgramViewModel>>(emptyList())
@@ -95,12 +96,26 @@ class ProgramPresenter internal constructor(
     }
 
     fun onItemClick(programModel: ProgramViewModel) {
-        if (programModel.programType.isNotEmpty()) {
-            themeManager.setProgramTheme(programModel.uid)
-        } else {
-            themeManager.setDataSetTheme(programModel.uid)
+        when (getHomeItemType(programModel)) {
+            HomeItemType.PROGRAM_STOCK ->
+                view.navigateToStockManagement(stockManagementMapper.map(programModel))
+            else ->
+                view.navigateTo(programModel)
         }
-        view.navigateTo(programModel)
+    }
+
+    private fun getHomeItemType(programModel: ProgramViewModel): HomeItemType {
+        return when (programModel.programType) {
+            ProgramType.WITH_REGISTRATION.name -> {
+                identifyProgramType(programModel.uid)
+            }
+            ProgramType.WITHOUT_REGISTRATION.name -> {
+                HomeItemType.EVENTS
+            }
+            else -> {
+                HomeItemType.DATA_SET
+            }
+        }
     }
 
     fun showDescription(description: String?) {

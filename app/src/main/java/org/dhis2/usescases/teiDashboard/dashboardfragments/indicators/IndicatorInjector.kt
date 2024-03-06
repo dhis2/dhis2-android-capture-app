@@ -35,13 +35,13 @@ class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
 
     private fun injectIndicatorsForEvents(context: Context) {
         val activity = context as EventCaptureActivity
-        activity.eventCaptureComponent.plus(
+        activity.eventCaptureComponent?.plus(
             IndicatorsModule(
                 activity.intent.getStringExtra(Constants.PROGRAM_UID) ?: "",
                 activity.intent.getStringExtra(Constants.EVENT_UID) ?: "",
                 indicatorsFragment,
                 VisualizationType.EVENTS
             )
-        ).inject(indicatorsFragment)
+        )?.inject(indicatorsFragment)
     }
 }

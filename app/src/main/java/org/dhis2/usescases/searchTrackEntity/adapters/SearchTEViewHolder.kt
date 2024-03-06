@@ -21,11 +21,15 @@ class SearchTEViewHolder(
             if (teiModel.tei.deleted()!! ||
                 teiModel.selectedEnrollment != null &&
                 teiModel.selectedEnrollment.deleted()!!
-            ) Toast.makeText(
-                itemView.context,
-                itemView.context.getString(R.string.record_marked_for_deletion),
-                Toast.LENGTH_SHORT
-            ).show() else onSyncIconClick(teiModel.selectedEnrollment.uid())
+            ) {
+                Toast.makeText(
+                    itemView.context,
+                    itemView.context.getString(R.string.record_marked_for_deletion),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                onSyncIconClick(teiModel.selectedEnrollment.uid())
+            }
         }
 
         binding.download.setOnClickListener {

@@ -1,10 +1,5 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.Date
 import org.dhis2.usescases.main.program.ProgramViewModelMapper
@@ -16,6 +11,11 @@ import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class TeiProgramListRepositoryImplTest {
 

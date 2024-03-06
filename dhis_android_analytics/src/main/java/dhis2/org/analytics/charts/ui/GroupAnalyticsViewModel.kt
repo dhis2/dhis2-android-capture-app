@@ -60,7 +60,8 @@ class GroupAnalyticsViewModel(
     ) {
         chartModel.graph.visualizationUid?.let {
             charts.setVisualizationOrgUnits(
-                chartModel.graph.visualizationUid, orgUnits,
+                chartModel.graph.visualizationUid,
+                orgUnits,
                 orgUnitFilterType
             )
             fetchAnalytics(currentGroup)

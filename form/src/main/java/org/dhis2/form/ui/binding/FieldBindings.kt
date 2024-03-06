@@ -90,11 +90,13 @@ fun TextView.setInputStyle(styleItem: FieldUiModel?) {
         uiModel.textColor?.let {
             setTextColor(it)
         }
-        uiModel.backGroundColor?.let {
-            ViewCompat.setBackgroundTintList(
-                this,
-                ColorStateList.valueOf(it.second)
-            )
+        uiModel.backGroundColor?.let { pair ->
+            pair.second?.let { color ->
+                ViewCompat.setBackgroundTintList(
+                    this,
+                    ColorStateList.valueOf(color)
+                )
+            }
         }
     }
 
@@ -440,4 +442,15 @@ fun saveListToPreference(context: Context, uid: String, list: List<String>) {
         Context.MODE_PRIVATE
     )
         .edit().putString(uid, json).apply()
+}
+
+@BindingAdapter("iconIsClickable")
+fun setDescriptionIconVisibility(imageView: View, item: FieldUiModel) {
+    imageView.isClickable = false
+    if (item.style?.getDescriptionIcon() != null &&
+        !item.value.isNullOrEmpty() &&
+        item.error.isNullOrEmpty()
+    ) {
+        imageView.isClickable = true
+    }
 }

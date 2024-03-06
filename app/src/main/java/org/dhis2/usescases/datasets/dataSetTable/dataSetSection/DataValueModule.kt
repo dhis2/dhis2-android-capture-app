@@ -6,16 +6,15 @@ import dagger.Provides
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 
@@ -41,6 +40,7 @@ class DataValueModule(
     internal fun providesPresenter(
         repository: DataValueRepository,
         valueStore: ValueStore,
+        tableDimensionStore: TableDimensionStore,
         schedulerProvider: SchedulerProvider,
         tableDataToTableModelMapper: TableDataToTableModelMapper,
         dispatcherProvider: DispatcherProvider
@@ -49,6 +49,7 @@ class DataValueModule(
             view,
             repository,
             valueStore,
+            tableDimensionStore,
             schedulerProvider,
             tableDataToTableModelMapper,
             dispatcherProvider
@@ -57,20 +58,24 @@ class DataValueModule(
 
     @Provides
     @PerFragment
-    internal fun DataValueRepository(
-        d2: D2,
-        preferenceProvider: PreferenceProvider
-    ): DataValueRepository {
+    internal fun DataValueRepository(d2: D2): DataValueRepository {
         return DataValueRepository(
             d2,
             dataSetUid,
             sectionUid,
             orgUnitUid,
             periodId,
-            attributeOptionComboUid,
-            preferenceProvider
+            attributeOptionComboUid
         )
     }
+
+    @Provides
+    @PerFragment
+    internal fun TableDimensionStore(d2: D2) = TableDimensionStore(
+        d2,
+        dataSetUid,
+        sectionUid
+    )
 
     @Provides
     @PerFragment

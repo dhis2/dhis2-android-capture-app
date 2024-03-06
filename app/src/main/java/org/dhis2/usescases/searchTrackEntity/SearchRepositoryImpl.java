@@ -728,112 +728,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                 downloadRepository
                         .overwrite(true)
                         .download(),
-                d2.fileResourceModule().download()
+                d2.fileResourceModule().fileResourceDownloader().download()
         );
     }
 
     @Override
     public TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, @Nullable String reason) {
         return teiDownloader.download(teiUid, enrollmentUid, reason);
-    }
-
-    private TeiDownloadResult defaultDownload(String teiUid, @Nullable String enrollmentUid) {
-        if (currentProgram != null) {
-            downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
-                    .byUid().eq(teiUid)
-                    .byProgramUid(currentProgram);
-        } else {
-            downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
-                    .byUid().eq(teiUid);
-        }
-
-        try {
-            downloadRepository.overwrite(true).blockingDownload();
-            return checkDownload(teiUid, enrollmentUid);
-        } catch (Exception e) {
-            if (e instanceof D2Error) {
-                return handleD2Error((D2Error) e, teiUid, enrollmentUid);
-            } else if (e.getCause() instanceof D2Error) {
-                return handleD2Error((D2Error) e.getCause(), teiUid, enrollmentUid);
-            } else {
-                return new TeiDownloadResult.ErrorResult(e.getLocalizedMessage());
-            }
-        }
-    }
-
-    private TeiDownloadResult handleD2Error(D2Error d2Error, String teiUid, String enrollmentUid) {
-        switch (d2Error.errorCode()) {
-            case OWNERSHIP_ACCESS_DENIED:
-                return new TeiDownloadResult.BreakTheGlassResult(teiUid, enrollmentUid);
-            default:
-                return new TeiDownloadResult.ErrorResult(resources.parseD2Error(d2Error));
-        }
-    }
-
-    private TeiDownloadResult breakTheGlass(String teiUid, String reason) {
-        if (downloadRepository != null) {
-            d2.trackedEntityModule().ownershipManager().blockingBreakGlass(teiUid, currentProgram, reason);
-            downloadRepository.overwrite(true).blockingDownload();
-            d2.fileResourceModule().blockingDownload();
-            downloadRepository = null;
-            return checkDownload(teiUid, null);
-        } else {
-            return new TeiDownloadResult.TeiNotDownloaded(teiUid);
-        }
-    }
-
-    private TeiDownloadResult checkDownload(String teiUid, @Nullable String enrollmentUid) {
-        if (teiHasBeenDownloaded(teiUid)) {
-            if (hasEnrollmentInCurrentProgram(teiUid)) {
-                String programEnrollment;
-                if (enrollmentUid != null) {
-                    programEnrollment = enrollmentUid;
-                } else {
-                    programEnrollment = getEnrollmentInProgram(teiUid);
-                }
-                return new TeiDownloadResult.DownloadedResult(teiUid, currentProgram, programEnrollment);
-            } else if (canEnrollInCurrentProgram()) {
-                return new TeiDownloadResult.TeiToEnroll(teiUid);
-            } else {
-                return new TeiDownloadResult.DownloadedResult(teiUid, currentProgram, null);
-            }
-        } else {
-            return new TeiDownloadResult.TeiNotDownloaded(teiUid);
-        }
-    }
-
-    private boolean teiHasBeenDownloaded(String teiUid) {
-        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists();
-    }
-
-    private boolean hasEnrollmentInCurrentProgram(String teiUid) {
-        if (currentProgram != null) {
-            return !d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(teiUid)
-                    .byProgram().eq(currentProgram)
-                    .blockingIsEmpty();
-        } else {
-            return false;
-        }
-    }
-
-    private String getEnrollmentInProgram(String teiUid) {
-        return d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(currentProgram)
-                .one()
-                .blockingGet()
-                .uid();
-    }
-
-    private boolean canEnrollInCurrentProgram() {
-        if (currentProgram == null) return false;
-        Program selectedProgram = d2.programModule().programs().uid(currentProgram).blockingGet();
-        boolean programAccess = selectedProgram.access().data().write() != null && selectedProgram.access().data().write();
-        boolean teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
-                selectedProgram.trackedEntityType().uid()
-        ).blockingGet().access().data().write();
-        return programAccess && teTypeAccess;
     }
 
     private SearchTeiModel transformResult(Result<TrackedEntityInstance, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
@@ -889,8 +790,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (selectedProgram != null) {
                 setRelationshipsInfo(searchTei, selectedProgram);
             }
-            if (searchTei.getEnrollments().size() > 0) {
-                searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getEnrollments().get(0).organisationUnit()).blockingGet().name());
+            if (searchTei.getSelectedEnrollment() != null) {
+                searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getSelectedEnrollment().organisationUnit()).blockingGet().name());
             } else {
                 searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getTei().organisationUnit()).blockingGet().name());
             }

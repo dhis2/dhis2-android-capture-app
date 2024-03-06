@@ -58,9 +58,7 @@ fun Pair<String, Int>.calculateHeight(
     return Triple(first, minWidth, minHeight)
 }
 
-fun Pair<String, Int>.calculateHeight(
-    context: Context
-): Triple<String, Int, Int> {
+fun Pair<String, Int>.calculateHeight(context: Context): Triple<String, Int, Int> {
     var minHeight: Int
     TextView(context).apply {
         width = second

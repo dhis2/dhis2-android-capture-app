@@ -1,36 +1,41 @@
 package org.dhis2.usescases.main
 
-import android.app.AlertDialog
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
+import org.dhis2.Bindings.hasPermissions
 import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.prefs.Preference
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
+import org.dhis2.ui.dialogs.alert.AlertDialog
+import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
@@ -79,7 +84,6 @@ class MainActivity :
     private var isPinLayoutVisible = false
     private var isChangeServerURLVisible = false
 
-    private var prefs: SharedPreferences? = null
     private var backDropActive = false
     private var elevation = 0f
     private val mainNavigator = MainNavigator(
@@ -109,15 +113,13 @@ class MainActivity :
             }
         }
 
-        fun bundle(
-            initScreen: MainNavigator.MainScreen? = null,
-            launchDataSync: Boolean = false
-        ) = Bundle().apply {
-            initScreen?.let {
-                putString(FRAGMENT, initScreen.name)
+        fun bundle(initScreen: MainNavigator.MainScreen? = null, launchDataSync: Boolean = false) =
+            Bundle().apply {
+                initScreen?.let {
+                    putString(FRAGMENT, initScreen.name)
+                }
+                putBoolean(INIT_DATA_SYNC, launchDataSync)
             }
-            putBoolean(INIT_DATA_SYNC, launchDataSync)
-        }
     }
 
     //region LIFECYCLE
@@ -143,10 +145,6 @@ class MainActivity :
 
         binding.mainDrawerLayout.addDrawerListener(this)
 
-        prefs = abstracContext.getSharedPreferences(
-            Constants.SHARE_PREFS, Context.MODE_PRIVATE
-        )
-
         binding.filterRecycler.adapter = newAdapter
 
         binding.navigationBar.pageConfiguration(pageConfigurator)
@@ -154,9 +152,11 @@ class MainActivity :
             when (it.itemId) {
                 R.id.navigation_tasks -> {
                 }
+
                 R.id.navigation_programs -> {
                     mainNavigator.openPrograms()
                 }
+
                 R.id.navigation_analytics -> {
                     presenter.trackHomeAnalytics()
                     mainNavigator.openVisualizations()
@@ -191,6 +191,7 @@ class MainActivity :
                         MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
+
             else -> {
                 changeFragment(R.id.menu_home)
                 initCurrentScreen()
@@ -198,9 +199,18 @@ class MainActivity :
         }
 
         observeSyncState()
+        observeVersionUpdate()
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
+        }
+
+        checkNotificationPermission()
+    }
+
+    private fun checkNotificationPermission() {
+        if (!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS))) {
+            requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
@@ -237,10 +247,23 @@ class MainActivity :
         }
     }
 
+    private fun observeVersionUpdate() {
+        presenter.versionToUpdate.observe(this) { versionName ->
+            versionName?.takeIf { it.isNotEmpty() }?.let { showNewVersionAlert(it) }
+        }
+        presenter.downloadingVersion.observe(this) { downloading ->
+            if (downloading) {
+                binding.toolbarProgress.show()
+            } else {
+                binding.toolbarProgress.hide()
+            }
+        }
+    }
+
     override fun showGranularSync() {
         SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.ALL)
-            .setUid("")
+            .withContext(this)
+            .withSyncContext(SyncContext.Global())
             .onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
@@ -248,8 +271,9 @@ class MainActivity :
                             mainNavigator.getCurrentIfProgram()?.presenter?.updateProgramQueries()
                         }
                     }
-                })
-            .build().show(supportFragmentManager, "ALL_SYNC")
+                }
+            )
+            .show("ALL_SYNC")
     }
 
     override fun goToLogin(accountsCount: Int, isDeletion: Boolean) {
@@ -311,7 +335,7 @@ class MainActivity :
     }
 
     override fun onLockClick() {
-        if (prefs!!.getString(Preference.PIN, null) == null) {
+        if (!presenter.isPinStored()) {
             binding.mainDrawerLayout.closeDrawers()
             PinDialog(
                 PinDialog.Mode.SET,
@@ -422,31 +446,39 @@ class MainActivity :
                 presenter.onClickSyncManager()
                 mainNavigator.openSettings()
             }
+
             R.id.qr_scan -> {
                 presenter.trackQRScanner()
                 mainNavigator.openQR()
             }
+
             R.id.menu_jira -> {
                 presenter.trackJiraReport()
                 mainNavigator.openJira()
             }
+
             R.id.menu_about -> {
                 mainNavigator.openAbout()
             }
+
             R.id.block_button -> {
                 presenter.trackPinDialog()
                 onLockClick()
             }
+
             R.id.logout_button -> {
                 analyticsHelper.setEvent(CLOSE_SESSION, CLICK, CLOSE_SESSION)
                 presenter.logOut()
             }
+
             R.id.menu_home -> {
                 mainNavigator.openHome(binding.navigationBar)
             }
+
             R.id.menu_troubleshooting -> {
                 mainNavigator.openTroubleShooting()
             }
+
             R.id.delete_account -> {
                 confirmAccountDelete()
             }
@@ -461,7 +493,7 @@ class MainActivity :
     }
 
     private fun confirmAccountDelete() {
-        AlertDialog.Builder(context, R.style.CustomDialog)
+        MaterialAlertDialogBuilder(this, R.style.MaterialDialog)
             .setTitle(getString(R.string.delete_account))
             .setMessage(getString(R.string.wipe_data_meesage))
             .setView(R.layout.warning_layout)
@@ -513,5 +545,110 @@ class MainActivity :
         val notificationManager: NotificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
+    }
+
+    private fun showNewVersionAlert(version: String) {
+        AlertDialog(
+            labelText = getString(R.string.software_update),
+            descriptionText = getString(R.string.new_version_message).format(version),
+            iconResource = R.drawable.ic_software_update,
+            spanText = version,
+            dismissButton = ButtonUiModel(
+                getString(R.string.remind_me_later),
+                onClick = { presenter.remindLaterAlertNewVersion() }
+            ),
+            confirmButton = ButtonUiModel(
+                getString(R.string.download_now),
+                onClick = {
+                    presenter.downloadVersion(
+                        context = context,
+                        onDownloadCompleted = { installAPK(it) },
+                        onLaunchUrl = { launchUrl(it) }
+                    )
+                }
+            )
+        ).show(supportFragmentManager)
+    }
+
+    private fun installAPK(apkUri: Uri) {
+        when {
+            hasNoPermissionToInstall() ->
+                manageUnknownSources.launch(
+                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                        .setData(Uri.parse(String.format("package:%s", packageName)))
+                )
+
+            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) ->
+                requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+            else -> Intent(Intent.ACTION_VIEW).apply {
+                val mime = MimeTypeMap.getSingleton()
+                val ext = apkUri.path?.substringAfterLast(("."))
+                val type: String? = mime.getMimeTypeFromExtension(ext)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setDataAndType(apkUri, type)
+                startActivity(this)
+            }
+        }
+    }
+
+    private fun hasNoPermissionToInstall(): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            !packageManager.canRequestPackageInstalls()
+
+    private val manageUnknownSources =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (hasNoPermissionToInstall()) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.unknow_sources_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                presenter.downloadVersion(
+                    context,
+                    onDownloadCompleted = { installAPK(it) },
+                    onLaunchUrl = { launchUrl(it) }
+                )
+            }
+        }
+
+    private val requestReadStoragePermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                presenter.downloadVersion(
+                    context,
+                    onDownloadCompleted = { installAPK(it) },
+                    onLaunchUrl = { launchUrl(it) }
+                )
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.storage_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+    private val requestNotificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.permission_notification_granted),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.permission_notification_denied),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+    private fun launchUrl(uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
     }
 }

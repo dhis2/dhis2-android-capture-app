@@ -54,11 +54,7 @@ class EnrollmentEventGenerator(
         return Pair(enrollment.uid(), eventUidToOpen)
     }
 
-    private fun generateScheduledEvent(
-        enrollment: Enrollment,
-        programStage: ProgramStage
-
-    ) {
+    private fun generateScheduledEvent(enrollment: Enrollment, programStage: ProgramStage) {
         try {
             val eventUid = generatorRepository.addEvent(
                 enrollment.uid(),
@@ -101,10 +97,7 @@ class EnrollmentEventGenerator(
         }
     }
 
-    private fun generateOpenEvent(
-        enrollment: Enrollment,
-        programStage: ProgramStage
-    ) {
+    private fun generateOpenEvent(enrollment: Enrollment, programStage: ProgramStage) {
         try {
             val eventUid = generatorRepository.addEvent(
                 enrollment.uid(),

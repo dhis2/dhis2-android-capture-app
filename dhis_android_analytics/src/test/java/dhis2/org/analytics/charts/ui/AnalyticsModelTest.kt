@@ -73,12 +73,14 @@ class AnalyticsModelTest {
                     GraphPoint(
                         GregorianCalendar(2021, 0, 1).time,
                         0f,
-                        0f, null
+                        0f,
+                        null
                     ),
                     GraphPoint(
                         GregorianCalendar(2021, 0, 1).time,
                         1f,
-                        0f, null
+                        0f,
+                        null
                     )
                 )
             )

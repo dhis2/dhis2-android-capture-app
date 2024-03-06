@@ -3,11 +3,7 @@ package org.dhis2.maps.layer.basemaps
 import com.google.gson.annotations.SerializedName
 
 object BaseMapStyleBuilder {
-    fun build(
-        id: String,
-        tileUrls: List<String>,
-        attribution: String
-    ) = BaseMapStyle(
+    fun build(id: String, tileUrls: List<String>, attribution: String) = BaseMapStyle(
         version = 8,
         sources = StyleSources(
             rasterTiles = RasterTiles(

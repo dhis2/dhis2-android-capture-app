@@ -205,7 +205,7 @@ class MapLayerManager(
 
     fun getNextAvailableDrawable(sourceId: String): Pair<Int, Int>? {
         return if (drawableCombinationsUsed.containsKey(sourceId)) {
-            drawableCombinationsUsed[sourceId]!!
+            drawableCombinationsUsed[sourceId]
         } else {
             drawableCombinations.firstOrNull()?.also {
                 drawableCombinationsUsed[sourceId] = it
@@ -227,9 +227,8 @@ class MapLayerManager(
         return combinations
     }
 
-    fun sourcesAndLayersForSearch() =
-        mapLayers.filter { (_, mapLayer) -> mapLayer.visible }
-            .map { (sourceId, mapLayer) ->
-                sourceId to mapLayer.layerIdsToSearch()
-            }.toMap()
+    fun sourcesAndLayersForSearch() = mapLayers.filter { (_, mapLayer) -> mapLayer.visible }
+        .map { (sourceId, mapLayer) ->
+            sourceId to mapLayer.layerIdsToSearch()
+        }.toMap()
 }

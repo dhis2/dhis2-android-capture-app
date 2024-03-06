@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.databinding.DialogChangeServerUrlBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -130,7 +131,7 @@ class ChangeServerUrlDialog() : DialogFragment(), ChangeServerURLView {
     }
 
     override fun renderError(throwable: Throwable) {
-        val error = D2ErrorUtils(getAbstractContext()).getErrorMessage(throwable)
+        val error = D2ErrorUtils(getAbstractContext(), NetworkUtils(getAbstractContext())).getErrorMessage(throwable)
 
         Toast.makeText(
             getAbstractContext(),

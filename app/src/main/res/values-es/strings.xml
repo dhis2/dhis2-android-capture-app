@@ -14,8 +14,6 @@
     <string name="error_wrong_credentials">Credenciales incorrectas</string>
     <string name="error_unexpected_error">Error desconocido</string>
     <string name="error_internal_server_error">Error interno</string>
-    <string name="yes">sí</string>
-    <string name="no">no</string>
     <string name="no_value">sin valor</string>
     <string name="no_reserved_values">No quedan valores reservados. Contacte con el administrador del sistema.</string>
     <string name="no_reserved_values_connection">No quedan valores reservados. Conéctese a internet para recargarlos.</string>
@@ -212,7 +210,6 @@
     <string name="settings_sms_module_title">Modulo SMS:</string>
     <string name="settings_sms_receiver_number">SMS gateway</string>
     <string name="settings_sms_result_sender_number">Emisor del SMS de resultado</string>
-    <string name="settings_sms_result_timeout">Tiempo límite de respuesta</string>
     <string name="settings_sms_result_timeout_hint">segundos</string>
     <string name="settings_sms_result_sender_hint">numero</string>
     <string name="settings_sms_receiver_number_hint">numero</string>
@@ -501,8 +498,6 @@
     <string name="org_unit_selection_warning">Debe seleccionar al menos una unidad organizativa.</string>
     <string name="send_user_name_title">Enviar datos</string>
     <string name="send_user_name_mesage">Ayude a DHIS2 a mejorar esta app compartiendo errores asociados a su usuario.</string>
-    <string name="analytics_crash_name_message">Esta aplicación enviará registros de errores asociados a su usuario para mejorar el rendimiento del aplicación y estadísticas no rastreables para mejorar la experiencia del usuario.</string>
-    <string name="send_user_privacy_policy">Para más información, consulte nuestra política de privacidad</string>
     <string name="check_mandatory_field">Comprobar campos</string>
     <string name="error_no_network_during_sync">Se perdió la conexión a internet durante la sincronización. Inténtelo mas tarde.</string>
     <string name="action_agree">Confirmar</string>

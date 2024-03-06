@@ -5,8 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
-import org.dhis2.commons.Constants.SERVER
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.D2
 import timber.log.Timber
@@ -28,7 +28,7 @@ class ChangeServerURLPresenter(
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
-        val serverURL = preferenceProvider.getString(SERVER) ?: ""
+        val serverURL = preferenceProvider.getString(SECURE_SERVER_URL) ?: ""
 
         this.currentServerURL = serverURL.replace("/api", "")
 
@@ -80,7 +80,7 @@ class ChangeServerURLPresenter(
     }
 
     private fun updateUrlInPreference() {
-        preferenceProvider.setValue(SERVER, newServerURL)
+        //preferenceProvider.setValue(SERVER, newServerURL)
 
         preferenceProvider.updateServerURL(newServerURL)
 

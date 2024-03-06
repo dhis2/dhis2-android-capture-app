@@ -1,18 +1,13 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.data.FilterRepository
-import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -24,6 +19,11 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.validateMockitoUsage
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class SearchTEPresenterTest {
 
@@ -37,11 +37,11 @@ class SearchTEPresenterTest {
     private val initialProgram = "programUid"
     private val teType = "teTypeUid"
     private val preferenceProvider: PreferenceProvider = mock()
-    private val workingListMapper: TeiFilterToWorkingListItemMapper = mock()
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
+    private val resourceManager: ResourceManager = mock()
 
     @Before
     fun setUp() {
@@ -54,7 +54,7 @@ class SearchTEPresenterTest {
 
         whenever(
             repository.getTrackedEntityType(teType)
-        )doReturn Observable.just(
+        ) doReturn Observable.just(
             TrackedEntityType.builder()
                 .uid(teType)
                 .displayName("teTypeName")
@@ -70,11 +70,11 @@ class SearchTEPresenterTest {
             initialProgram,
             teType,
             preferenceProvider,
-            workingListMapper,
             filterRepository,
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,
-            syncStatusController
+            syncStatusController,
+            resourceManager
         )
     }
 

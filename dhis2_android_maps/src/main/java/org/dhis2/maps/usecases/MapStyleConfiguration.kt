@@ -21,10 +21,7 @@ class MapStyleConfiguration(private val d2: D2) {
     }
 }
 
-fun String.mapTileUrls(
-    subdomainPlaceholder: String?,
-    subdomains: List<String>?
-): List<String> {
+fun String.mapTileUrls(subdomainPlaceholder: String?, subdomains: List<String>?): List<String> {
     return subdomains
         .takeIf { subdomainPlaceholder != null && !it.isNullOrEmpty() }
         ?.map { subdomain ->

@@ -8,6 +8,7 @@ import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
@@ -16,11 +17,7 @@ import org.hisp.dhis.android.core.systeminfo.SMSVersion
 interface SMSSyncProvider {
 
     val d2: D2
-    val conflictType: ConflictType
-    val recordUid: String
-    val dvOrgUnit: String?
-    val dvAttrCombo: String?
-    val dvPeriodId: String?
+    val syncContext: SyncContext
     val resourceManager: ResourceManager
     var smsSender: SmsSubmitCase
 
@@ -48,7 +45,7 @@ interface SMSSyncProvider {
 
     fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
         val hasCorrectSmsVersion = if (isTrackerSync) {
-            d2.systemInfoModule().versionManager().smsVersion == SMSVersion.V2
+            d2.systemInfoModule().versionManager().getSmsVersion() == SMSVersion.V2
         } else {
             true
         }
@@ -60,16 +57,20 @@ interface SMSSyncProvider {
     }
 
     fun getConvertTask(): Single<ConvertTaskResult> {
-        return when (conflictType) {
+        return when (syncContext.conflictType()) {
             ConflictType.EVENT -> {
-                if (d2.eventModule().events().uid(recordUid).blockingGet().enrollment() == null) {
+                if (d2.eventModule().events().uid(syncContext.recordUid()).blockingGet()
+                    .enrollment() == null
+                ) {
                     convertSimpleEvent()
                 } else {
                     convertTrackerEvent()
                 }
             }
             ConflictType.TEI -> {
-                if (d2.enrollmentModule().enrollments().uid(recordUid).blockingExists()) {
+                if (d2.enrollmentModule().enrollments().uid(syncContext.recordUid())
+                    .blockingExists()
+                ) {
                     convertEnrollment()
                 } else {
                     Single.error(

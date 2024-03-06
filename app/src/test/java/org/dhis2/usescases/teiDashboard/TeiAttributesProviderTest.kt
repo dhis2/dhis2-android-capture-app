@@ -1,9 +1,5 @@
 package org.dhis2.usescases.teiDashboard
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -15,6 +11,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class TeiAttributesProviderTest {
 
@@ -123,6 +123,45 @@ class TeiAttributesProviderTest {
                     it[1].value() == expectedResult[1] &&
                     it[2].value() == expectedResult[2]
             }
+    }
+
+    @Test
+    fun `Should get list of attributeValues from ProgramTrackedEntityAttributes by programUid`() {
+        val program = "program"
+        val teiUid = "teiUid"
+        val expectedResult = arrayListOf("attrValue1", "attrValue2", "attrValue3")
+
+        mockProgramTrackedEntityAttributes(program)
+        whenever(
+            d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(anyString())
+                .byDisplayInList().isTrue
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(anyString())
+                .byDisplayInList().isTrue
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet()
+        ) doReturn programAttributeValues()
+        mockTrackedEntityAttributeValues(teiUid, program)
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(anyString())
+                .byTrackedEntityAttribute().eq(anyString())
+                .one().blockingGet()
+        ) doReturnConsecutively trackedEntityAttributeValues()
+
+        val attributes =
+            attributesProvider
+                .getListOfValuesFromProgramTrackedEntityAttributesByProgram(program, teiUid)
+
+        assert(
+            attributes[0].value() == expectedResult[0] &&
+                attributes[1].value() == expectedResult[1] &&
+                attributes[2].value() == expectedResult[2]
+        )
     }
 
     private fun mockTrackedEntityTypeAttributes(teType: String) {

@@ -14,8 +14,6 @@
     <string name="error_wrong_credentials">Credenciais erradas</string>
     <string name="error_unexpected_error">Erro inesperado</string>
     <string name="error_internal_server_error">Erro do Servidor Interno</string>
-    <string name="yes">sim</string>
-    <string name="no">não</string>
     <string name="no_value">sem valor</string>
     <string name="no_reserved_values">Não há mais valores reservados. Entre em contato com o administrador do sistema</string>
     <string name="no_reserved_values_connection">Não há mais valores reservados. Conecte-se à rede para recarregá-los</string>
@@ -207,7 +205,6 @@
     <string name="settings_sms_module_title">Módulo SMS:</string>
     <string name="settings_sms_receiver_number">Porta de entrada SMS:</string>
     <string name="settings_sms_result_sender_number">remetente do resultado SMS</string>
-    <string name="settings_sms_result_timeout">tempo limite do resultado SMS</string>
     <string name="settings_sms_result_timeout_hint">segundos</string>
     <string name="settings_sms_result_sender_hint">número</string>
     <string name="settings_sms_receiver_number_hint">número</string>

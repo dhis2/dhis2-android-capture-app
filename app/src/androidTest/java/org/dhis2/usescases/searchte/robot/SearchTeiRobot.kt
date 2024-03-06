@@ -213,11 +213,6 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.search_filter_general)).perform(click())
     }
 
-    fun selectAnOrgUnit(orgUnit: String) {
-        onView(allOf(withId(R.id.checkbox), hasSibling(withText(orgUnit))))
-            .perform(click())
-    }
-
     fun clickOnAcceptButton() {
         onView(withId(R.id.accept_button)).perform(click())
     }

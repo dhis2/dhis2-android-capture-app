@@ -38,6 +38,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
+import org.dhis2.data.service.CheckVersionWorker
 import org.dhis2.data.service.ReservedValuesWorker
 import org.dhis2.data.service.SyncDataWorker
 import org.dhis2.data.service.SyncGranularWorker
@@ -123,8 +124,7 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
     override fun getWorkInfosForUniqueWorkLiveData(workerName: String) =
         workManager.getWorkInfosForUniqueWorkLiveData(workerName)
 
-    override fun getWorkInfosByTagLiveData(tag: String) =
-        workManager.getWorkInfosByTagLiveData(tag)
+    override fun getWorkInfosByTagLiveData(tag: String) = workManager.getWorkInfosByTagLiveData(tag)
 
     override fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>> {
         return MediatorLiveData<List<WorkInfo>>().apply {
@@ -158,6 +158,7 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
             WorkerType.DATA -> OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
             WorkerType.RESERVED -> OneTimeWorkRequest.Builder(ReservedValuesWorker::class.java)
             WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
+            WorkerType.NEW_VERSION -> OneTimeWorkRequest.Builder(CheckVersionWorker::class.java)
         }
 
         syncBuilder.apply {
@@ -207,6 +208,12 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
                     TimeUnit.SECONDS
                 )
             }
+            WorkerType.NEW_VERSION ->
+                PeriodicWorkRequest.Builder(
+                    CheckVersionWorker::class.java,
+                    seconds,
+                    TimeUnit.SECONDS
+                )
         }
 
         syncBuilder.apply {

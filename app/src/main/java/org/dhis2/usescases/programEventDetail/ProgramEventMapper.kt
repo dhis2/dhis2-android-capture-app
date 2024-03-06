@@ -198,11 +198,10 @@ class ProgramEventMapper @Inject constructor(
     private fun getDataElement(dataElement: String?) =
         d2.dataElementModule().dataElements().uid(dataElement).blockingGet()
 
-    private fun getStageSections(programStage: String?) =
-        d2.programModule().programStageSections()
-            .byProgramStageUid().eq(programStage)
-            .withDataElements()
-            .blockingGet()
+    private fun getStageSections(programStage: String?) = d2.programModule().programStageSections()
+        .byProgramStageUid().eq(programStage)
+        .withDataElements()
+        .blockingGet()
 
     private fun getCategoryOptionCombo(attributeOptionCombo: String?) =
         d2.categoryModule().categoryOptionCombos().uid(attributeOptionCombo).blockingGet()

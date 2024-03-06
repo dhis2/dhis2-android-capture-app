@@ -8,7 +8,7 @@ import com.google.zxing.datamatrix.DataMatrixWriter
 import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.QRCodeWriter
 import org.dhis2.form.model.UiRenderType
-import org.hisp.dhis.rules.gs1.GS1Elements
+import org.hisp.dhis.lib.expression.math.GS1Elements
 
 class QRImageControllerImpl(
     private val qrImageSize: Int = 500,
@@ -17,10 +17,7 @@ class QRImageControllerImpl(
 ) : QRImageController {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getWriterFromRendering(
-        value: String,
-        renderingType: UiRenderType
-    ) = when {
+    fun getWriterFromRendering(value: String, renderingType: UiRenderType) = when {
         value.startsWith(GS1Elements.GS1_d2_IDENTIFIER.element) -> Pair(
             DataMatrixWriter(),
             BarcodeFormat.DATA_MATRIX
@@ -34,10 +31,7 @@ class QRImageControllerImpl(
         value.removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
             .removePrefix(GS1Elements.GS1_GROUP_SEPARATOR.element)
 
-    override fun writeDataToImage(
-        value: String,
-        renderingType: UiRenderType
-    ): Bitmap {
+    override fun writeDataToImage(value: String, renderingType: UiRenderType): Bitmap {
         val (writer, format) = getWriterFromRendering(value, renderingType)
 
         val content = formattedContent(value)

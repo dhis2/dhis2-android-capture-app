@@ -41,7 +41,7 @@ class ReservedValueAdapter :
     inner class ReservedValueViewHolder(private val binding: ItemReservedValueBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(reservedValue: ReservedValueModel) {
-            binding.setReservedValue(reservedValue)
+            binding.reservedValueModel = reservedValue
         }
     }
 }

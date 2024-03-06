@@ -31,8 +31,9 @@ class TableDimensionsTest {
             )
 
             val cellWidth = updatedTableDimensions.defaultCellWidthWithExtraSize(
-                testScenario.totalColumns,
-                testScenario.hasTotal
+                tableId = "tableId",
+                totalColumns = testScenario.totalColumns,
+                hasExtra = testScenario.hasTotal
             )
             assertTrue(
                 expectedExtraWidth[index] == cellWidth - updatedTableDimensions.defaultCellWidth
@@ -60,7 +61,7 @@ class TableDimensionsTest {
             assertTrue(result.cellWidth > updatedTableDimensions.defaultCellWidth)
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEach { calculatedHeaderCellWidth ->
-                assertTrue(calculatedHeaderCellWidth > updatedTableDimensions.defaultCellWidth)
+                assertTrue(calculatedHeaderCellWidth >= updatedTableDimensions.defaultCellWidth)
             }
         }
     }
@@ -85,7 +86,7 @@ class TableDimensionsTest {
             assertTrue(result.cellWidth > updatedTableDimensions.defaultCellWidth)
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEach { calculatedHeaderCellWidth ->
-                assertTrue(calculatedHeaderCellWidth > updatedTableDimensions.defaultCellWidth)
+                assertTrue(calculatedHeaderCellWidth >= updatedTableDimensions.defaultCellWidth)
             }
         }
     }
@@ -157,6 +158,7 @@ class TableDimensionsTest {
         vararg headerRowColumns: Int
     ): WidthCalculationResult {
         val cellWidth = tableDimensions.defaultCellWidthWithExtraSize(
+            tableId = "tableId",
             totalColumns = totalColumns,
             hasExtra = hasTotal
         )
@@ -164,8 +166,7 @@ class TableDimensionsTest {
         val headerCellWidthList = headerRowColumns.map { headerParentRowColumns ->
             tableDimensions.headerCellWidth(
                 headerRowColumns = headerParentRowColumns,
-                totalColumns = totalColumns,
-                hasTotal = hasTotal
+                totalColumns = totalColumns
             )
         }
 

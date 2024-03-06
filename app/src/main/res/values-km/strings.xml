@@ -9,8 +9,6 @@
     <string name="error_wrong_credentials">អត្ដសញ្ញាណមិនត្រឹមត្រូវ</string>
     <string name="error_unexpected_error">កំហុសបច្ចេកទេសមិនបានរំពឹងទុក</string>
     <string name="error_internal_server_error">ម៉ាស៊ីនមេខាងក្នុងមានបញ្ហាបច្ចេកទេស</string>
-    <string name="yes">យល់ព្រម</string>
-    <string name="no">មិនព្រម</string>
     <string name="no_value">មិនមានតំលៃ</string>
     <!-- SyncService strings: -->
     <string name="sync_now">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>

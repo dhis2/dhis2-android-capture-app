@@ -3,11 +3,13 @@ package org.dhis2.usescases.searchTrackEntity.adapters
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.addEnrollmentIcons
+import org.dhis2.Bindings.getEnrollmentIconsData
 import org.dhis2.Bindings.hasFollowUp
+import org.dhis2.Bindings.paintAllEnrollmentIcons
 import org.dhis2.Bindings.setAttributeList
 import org.dhis2.Bindings.setStatusText
 import org.dhis2.Bindings.setTeiImage
+import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
@@ -54,10 +56,13 @@ abstract class BaseTeiViewHolder(
 
         teiModel.apply {
             binding.setFollowUp(enrollments.hasFollowUp())
-            programInfo.addEnrollmentIcons(
-                itemView.context,
-                binding.composeProgramList,
-                if (selectedEnrollment != null) selectedEnrollment.program() else null
+            val enrollmentIconDataList: List<EnrollmentIconData> =
+                programInfo.getEnrollmentIconsData(
+                    itemView.context,
+                    if (selectedEnrollment != null) selectedEnrollment.program() else null
+                )
+            enrollmentIconDataList.paintAllEnrollmentIcons(
+                binding.composeProgramList
             )
             if (selectedEnrollment != null) {
                 selectedEnrollment.setStatusText(

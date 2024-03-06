@@ -1,18 +1,17 @@
 package org.dhis2.usescases.datasets
 
-import com.nhaarman.mockitokotlin2.mock
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataTableModel
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.MapFieldValueToUser
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableData
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableDataToTableModelMapper
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableMeasure
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
 
 const val DATAELEMENT_FORM_NAME = "dataElement_formName"
 const val DATAELEMENT_DESCRIPTION = "dataElement_description"
@@ -71,7 +70,6 @@ class TableDataToTableModelMapperTest {
             true,
             showRowTotals = false,
             showColumnTotals = false,
-            overriddenMeasure = TableMeasure(0, 0),
             hasDataElementDecoration = false
         )
 
@@ -105,7 +103,6 @@ class TableDataToTableModelMapperTest {
             false,
             showRowTotals = false,
             showColumnTotals = false,
-            overriddenMeasure = TableMeasure(0, 0),
             hasDataElementDecoration = false
         )
 

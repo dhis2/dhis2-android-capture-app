@@ -1,34 +1,29 @@
 package org.dhis2.usescases.teiDashboard
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
-import org.dhis2.Bindings.toDate
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DashboardRepositoryImplTest {
 
@@ -404,67 +399,6 @@ class DashboardRepositoryImplTest {
                     it[1].value() == expectedResults[1] &&
                     it[2].value() == expectedResults[2]
             }
-    }
-
-    private fun programAttributeValues(): List<ProgramTrackedEntityAttribute> {
-        return arrayListOf(
-            ProgramTrackedEntityAttribute.builder()
-                .uid("programAttr1")
-                .trackedEntityAttribute(ObjectWithUid.create(("attr1")))
-                .build(),
-            ProgramTrackedEntityAttribute.builder()
-                .uid("programAttr2")
-                .trackedEntityAttribute(ObjectWithUid.create(("attr2")))
-                .build(),
-            ProgramTrackedEntityAttribute.builder()
-                .uid("programAttr3")
-                .trackedEntityAttribute(ObjectWithUid.create(("attr3")))
-                .build()
-        )
-    }
-
-    private fun getMockingProgram(): Program {
-        return Program.builder()
-            .uid("programUid")
-            .ignoreOverdueEvents(true)
-            .build()
-    }
-
-    private fun getMockingEventList(): MutableList<Event> {
-        return arrayListOf(
-            Event.builder()
-                .uid("event_uid_1")
-                .programStage("program_stage")
-                .program("program")
-                .enrollment("enrollmentUid")
-                .status(EventStatus.ACTIVE)
-                .eventDate("2019-06-01".toDate())
-                .build(),
-            Event.builder()
-                .uid("event_uid_2")
-                .programStage("program_stage")
-                .program("program")
-                .enrollment("enrollmentUid")
-                .status(EventStatus.ACTIVE)
-                .eventDate("2019-06-05".toDate())
-                .build(),
-            Event.builder()
-                .uid("event_uid_3")
-                .programStage("program_stage")
-                .program("program")
-                .enrollment("enrollmentUid")
-                .status(EventStatus.SCHEDULE)
-                .dueDate("2019-06-02".toDate())
-                .build(),
-            Event.builder()
-                .uid("event_uid_4")
-                .programStage("program_stage")
-                .program("program")
-                .enrollment("enrollmentUid")
-                .status(EventStatus.ACTIVE)
-                .eventDate("2019-06-10".toDate())
-                .build()
-        )
     }
 
     private fun getMockingEnrollment(): Enrollment {

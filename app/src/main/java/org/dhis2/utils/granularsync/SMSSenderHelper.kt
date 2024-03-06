@@ -12,9 +12,9 @@ import java.util.Queue
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import org.dhis2.R
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 
 class SMSSenderHelper(
     private val context: Context,
@@ -40,7 +40,8 @@ class SMSSenderHelper(
     }
 
     private val launcher = registry.register(
-        generateActivityResultKey(), ActivityResultContracts.StartActivityForResult()
+        generateActivityResultKey(),
+        ActivityResultContracts.StartActivityForResult()
     ) {
         onReturningFromSmsApp()
     }

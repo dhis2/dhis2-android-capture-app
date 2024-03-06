@@ -26,7 +26,7 @@ class ValuesD2Repository(
     override fun getByEvent(eventUid: String): List<Value> {
         val feedbackOrderAttributeCode = "FeedbackOrder"
         val feedbackTextAttributeCode = "FeedbackText"
-        val hnqis2MetadataAttributeCode = "HNQIS2 Metadata"
+        val hnqis2MetadataAttributeCode = "PCA Metadata"
         val failLegendSuffix = "FAIL"
 
         val teiDataValues =

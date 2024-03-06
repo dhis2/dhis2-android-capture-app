@@ -18,8 +18,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
         textFilter: TextFilter?
     ): EventQueryCollectionRepository {
         return applyFiltersTo(
-            if(textFilter != null){
-                filterRepository.eventsByProgramAndTextFilter(program.uid(),textFilter)
+            if (textFilter != null) {
+                filterRepository.eventsByProgramAndTextFilter(program.uid(), textFilter)
             } else {
                 filterRepository.eventsByProgram(program.uid())
             }
@@ -147,10 +147,12 @@ class EventProgramFilterSearchHelper @Inject constructor(
                         repository,
                         orderDirection
                     )
+
                     Filters.ORG_UNIT -> filterRepository.sortByOrgUnit(
                         repository,
                         orderDirection
                     )
+
                     else -> repository
                 }
             } ?: repository

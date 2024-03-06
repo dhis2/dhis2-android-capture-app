@@ -27,6 +27,8 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
@@ -37,7 +39,6 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.CatOptionPopUp
-import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -234,18 +235,22 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
     }
 
     private fun showOrgUnitDialog() {
-        val dialog = OrgUnitDialog.getInstace()
-            .setTitle(getString(R.string.org_unit))
-            .setMultiSelection(false)
-            .setOrgUnits(viewModel.eventOrgUnit.value.orgUnits)
-            .setProgram(viewModel.eventOrgUnit.value.programUid)
-
-        dialog.setPossitiveListener {
-            viewModel.setUpOrgUnit(selectedOrgUnit = dialog.selectedOrgUnit)
-            dialog.dismiss()
-        }
-        dialog.setNegativeListener { dialog.dismiss() }
-        dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
+                viewModel.eventOrgUnit.value.selectedOrgUnit
+                    ?.let { listOf(it.uid()) }
+                    ?: emptyList()
+            )
+            .singleSelection()
+            .orgUnitScope(
+                OrgUnitSelectorScope.ProgramCaptureScope(viewModel.eventOrgUnit.value.programUid!!)
+            )
+            .onSelection { selectedOrgUnits ->
+                viewModel.setUpOrgUnit(selectedOrgUnit = selectedOrgUnits.first().uid())
+            }
+            .build()
+            .show(childFragmentManager, "ORG_UNIT_DIALOG")
     }
 
     private fun showNoOrgUnitsDialog() {

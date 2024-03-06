@@ -9,7 +9,7 @@ class EventCaptureResourcesProvider(
 ) {
     fun provideRedAlertIcon() = R.drawable.ic_error_outline
 
-    fun provideYellowAlertIcon() = R.drawable.ic_alert
+    fun provideYellowAlertIcon() = R.drawable.ic_warning_alert
 
     fun provideSavedIcon() = R.drawable.ic_saved_check
 

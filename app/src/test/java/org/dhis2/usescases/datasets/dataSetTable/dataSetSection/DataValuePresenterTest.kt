@@ -1,11 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -15,13 +10,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -32,6 +27,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DataValuePresenterTest {
@@ -46,6 +46,7 @@ class DataValuePresenterTest {
     private val dataValueRepository: DataValueRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
+    private val tableDimensionStore: TableDimensionStore = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider = mock {
         on { io() } doReturn testingDispatcher
@@ -67,6 +68,7 @@ class DataValuePresenterTest {
                 view,
                 dataValueRepository,
                 valueStore,
+                tableDimensionStore,
                 schedulers,
                 mapper,
                 dispatcherProvider
@@ -109,7 +111,7 @@ class DataValuePresenterTest {
             dataValueRepository.getOptionSetViewModel(any(), any())
         ) doReturn mockedSpinnerModel
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
 
         verify(view).showOptionSetDialog(
             mockedDataElement,
@@ -133,7 +135,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -151,7 +153,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -169,7 +171,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showCalendar(mockedDataElement, mockedTableCell, false, updateCellValueMocked)
     }
 
@@ -187,7 +189,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showCalendar(mockedDataElement, mockedTableCell, true, updateCellValueMocked)
     }
 
@@ -205,7 +207,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showTimePicker(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -223,7 +225,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showCoordinatesDialog(
             mockedDataElement,
             mockedTableCell,
@@ -246,7 +248,7 @@ class DataValuePresenterTest {
         val mockedOrgUnits = listOf<OrganisationUnit>()
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
         whenever(dataValueRepository.orgUnits()) doReturn mockedOrgUnits
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showOtgUnitDialog(
             mockedDataElement,
             mockedTableCell,
@@ -269,7 +271,7 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        presenter.onCellClick("tableId", mockedTableCell, updateCellValueMocked)
         verify(view).showAgeDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
@@ -308,7 +310,11 @@ class DataValuePresenterTest {
             whenever(
                 dataValueRepository.getCatOptComboOptions(any())
             ) doReturn listOf("option_${valueType.name}")
-            val textInput = presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+            val textInput = presenter.onCellClick(
+                "tableId",
+                mockedTableCell,
+                updateCellValueMocked
+            )
             assertTrue(textInput != null)
         }
     }
@@ -334,7 +340,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
@@ -389,7 +395,7 @@ class DataValuePresenterTest {
 
         val tableStateValue = presenter.mutableTableData()
         tableStateValue.value = TableScreenState(
-            listOf(mockedTableModel, mockedIndicatorTableModel), false
+            listOf(mockedTableModel, mockedIndicatorTableModel)
         )
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
@@ -441,7 +447,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel))
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(

@@ -292,9 +292,9 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         )
         var featureToReturn: Feature? = null
         mainLoop@ for (
-            source in teiFeatureCollections?.filterKeys {
-                it != ENROLLMENT_SOURCE_ID
-            }?.keys!!
+        source in teiFeatureCollections?.filterKeys {
+            it != ENROLLMENT_SOURCE_ID
+        }?.keys!!
         ) {
             sourceLoop@ for (propertyLabel in mainProperties) {
                 val feature = findFeature(source, propertyLabel, propertyValue)

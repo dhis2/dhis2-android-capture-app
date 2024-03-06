@@ -1,8 +1,5 @@
 package dhis2.org.analytics.charts.providers
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
@@ -13,6 +10,9 @@ import org.hisp.dhis.android.core.period.Period
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class ChartCoordinatesProviderImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)

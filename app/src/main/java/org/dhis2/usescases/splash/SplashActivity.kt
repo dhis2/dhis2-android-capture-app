@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.scottyab.rootbeer.RootBeer
 import javax.inject.Inject
 import javax.inject.Named
@@ -88,7 +89,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
     }
 
     private fun showRootedDialog(title: String, message: String) {
-        alertDialog = AlertDialog.Builder(activity).create()
+        alertDialog = MaterialAlertDialogBuilder(activity, R.style.MaterialDialog).create()
         if (!alertDialog.isShowing) {
             // TITLE
             val titleView =

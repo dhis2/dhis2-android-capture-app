@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 import io.reactivex.Observable
 import java.util.Calendar
 import java.util.Date
-import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.form.model.FieldUiModel
@@ -34,7 +33,7 @@ class EventDetailsRepository(
     private val eventUid: String?,
     private val programStageUid: String?,
     private val fieldFactory: FieldViewModelFactory,
-    private val d2ErrorMapper: D2ErrorUtils
+    private val onError: (Throwable) -> String?
 ) {
 
     fun getProgramStage(): ProgramStage {
@@ -72,7 +71,9 @@ class EventDetailsRepository(
         val programStage = getProgramStage()
         return if (programStage.minDaysFromStart() != null) {
             programStage.minDaysFromStart()!!
-        } else 0
+        } else {
+            0
+        }
     }
 
     fun getStageLastDate(enrollmentUid: String?): Date {
@@ -114,10 +115,7 @@ class EventDetailsRepository(
         return enrollment.enrollmentDate()
     }
 
-    fun getFilteredOrgUnits(
-        date: String?,
-        parentUid: String?
-    ): List<OrganisationUnit> {
+    fun getFilteredOrgUnits(date: String?, parentUid: String?): List<OrganisationUnit> {
         val organisationUnits = parentUid?.let {
             getOrgUnitsByParentUid(it)
         } ?: getOrganisationUnits()
@@ -249,7 +247,6 @@ class EventDetailsRepository(
             .flatMap { program: Program ->
                 d2.categoryModule().categoryCombos()
                     .withCategories()
-                    .withCategoryOptionCombos()
                     .uid(program.categoryComboUid())
                     .get()
             }.blockingGet()
@@ -296,11 +293,10 @@ class EventDetailsRepository(
         it.status() == EventStatus.COMPLETED && hasReopenAuthority()
     } ?: false
 
-    private fun hasReopenAuthority(): Boolean =
-        d2.userModule().authorities()
-            .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
-            .one()
-            .blockingExists()
+    private fun hasReopenAuthority(): Boolean = d2.userModule().authorities()
+        .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
+        .one()
+        .blockingExists()
 
     fun reopenEvent() = try {
         eventUid?.let {
@@ -310,7 +306,7 @@ class EventDetailsRepository(
     } catch (d2Error: D2Error) {
         Result.failure(
             java.lang.Exception(
-                d2ErrorMapper.getErrorMessage(d2Error),
+                onError(d2Error),
                 d2Error
             )
         )

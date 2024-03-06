@@ -8,8 +8,8 @@ import androidx.fragment.app.viewModels
 import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.Constants
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentDataSetListBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -28,6 +28,7 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     var adapter: DataSetListAdapter? = null
 
     private lateinit var activity: DataSetDetailActivity
+
     @Inject
     lateinit var viewModelFactory: DataSetListViewModelFactory
 
@@ -89,6 +90,7 @@ class DataSetListFragment : FragmentGlobalAbstract() {
             else -> View.GONE
         }
     }
+
     private fun startNewDataSet() {
         binding.addDatasetButton.isEnabled = false
         val bundle = Bundle()
@@ -111,20 +113,22 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     }
 
     private fun showSyncDialog(dataSet: DataSetDetailModel) {
-        val dialog = SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.DATA_VALUES)
-            .setUid(dataSetUid)
-            .setOrgUnit(dataSet.orgUnitUid())
-            .setAttributeOptionCombo(dataSet.catOptionComboUid())
-            .setPeriodId(dataSet.periodId())
-            .onDismissListener(object : OnDismissListener {
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(
+                SyncContext.DataSetInstance(
+                    dataSetUid = dataSetUid,
+                    periodId = dataSet.periodId(),
+                    orgUnitUid = dataSet.orgUnitUid(),
+                    attributeOptionComboUid = dataSet.catOptionComboUid()
+                )
+            ).onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) {
                         viewModel.updateData()
                     }
                 }
-            }).build()
-        dialog.show(activity.supportFragmentManager, FRAGMENT_TAG)
+            }).show(FRAGMENT_TAG)
     }
 
     companion object {

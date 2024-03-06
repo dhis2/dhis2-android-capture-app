@@ -99,10 +99,7 @@ class ScheduledEventPresenterImpl(
         view.back()
     }
 
-    override fun setCatOptionCombo(
-        catComboUid: String,
-        arrayList: ArrayList<CategoryOption>
-    ) {
+    override fun setCatOptionCombo(catComboUid: String, arrayList: ArrayList<CategoryOption>) {
         val catOptComboUid = d2
             .categoryModule()
             .categoryOptionCombos()

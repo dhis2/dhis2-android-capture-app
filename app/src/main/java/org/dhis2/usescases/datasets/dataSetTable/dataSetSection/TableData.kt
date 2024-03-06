@@ -10,7 +10,6 @@ data class TableData(
     val accessDataWrite: Boolean,
     val showRowTotals: Boolean = false,
     val showColumnTotals: Boolean = false,
-    val overriddenMeasure: TableMeasure,
     val hasDataElementDecoration: Boolean
 ) {
     fun columnHeaders() = dataTableModel.header
@@ -19,5 +18,3 @@ data class TableData(
     fun maxColumns() = dataTableModel.header!![dataTableModel.header.size - 1].size
     fun rows() = dataTableModel.rows
 }
-
-data class TableMeasure(val width: Int, val height: Int)

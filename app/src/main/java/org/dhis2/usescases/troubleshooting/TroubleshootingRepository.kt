@@ -10,8 +10,9 @@ import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.antlr.Parser
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
+import org.hisp.dhis.lib.expression.Expression
+import org.hisp.dhis.lib.expression.spi.ExpressionData
 import org.hisp.dhis.rules.ItemValueType
 import org.hisp.dhis.rules.RuleVariableValue
 import org.hisp.dhis.rules.models.RuleAction
@@ -30,8 +31,6 @@ import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
-import org.hisp.dhis.rules.parser.expression.CommonExpressionVisitor
-import org.hisp.dhis.rules.parser.expression.ParserUtils
 import org.hisp.dhis.rules.utils.RuleEngineUtils
 
 class TroubleshootingRepository(
@@ -46,7 +45,12 @@ class TroubleshootingRepository(
             val program = program(programAndRule.first?.uid())
             val valueMap: Map<String, RuleVariableValue?> = ruleVariableMap(program.uid())
             var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid()))
-            val ruleConditionResult = process(rule.condition(), valueMap)
+            val ruleConditionResult = process(
+                rule.condition(),
+                valueMap,
+                null,
+                Expression.Mode.RULE_ENGINE_CONDITION
+            )
             if (ruleConditionResult.isNotEmpty()) {
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
             }
@@ -85,7 +89,8 @@ class TroubleshootingRepository(
                 metadataIconData = MetadataIconData(
                     programColor = resourceManager.getColorOrDefaultFrom(program.style().color()),
                     iconResource = resourceManager.getObjectStyleDrawableResource(
-                        program.style().icon(), R.drawable.ic_default_outline
+                        program.style().icon(),
+                        R.drawable.ic_default_outline
                     ),
                     sizeInDp = 24
                 ),
@@ -113,7 +118,8 @@ class TroubleshootingRepository(
             .byProgramUid().eq(programUid)
             .blockingGet().toRuleVariableList(
                 d2.trackedEntityModule().trackedEntityAttributes(),
-                d2.dataElementModule().dataElements()
+                d2.dataElementModule().dataElements(),
+                d2.optionModule().options()
             ).map {
                 val ruleValueType = when (it) {
                     is RuleVariableCalculatedValue -> it.calculatedValueType()
@@ -147,7 +153,7 @@ class TroubleshootingRepository(
                         ItemValueType.BOOLEAN -> RuleValueType.BOOLEAN
                     }
                     this[envLabelKey] = RuleVariableValue.create(
-                        value ?: ruleValueType.defaultValue(),
+                        value ?: ruleValueType.defaultValue().toString(),
                         ruleValueType
                     )
                 }
@@ -159,7 +165,7 @@ class TroubleshootingRepository(
         addDefaultValue: Boolean = false
     ): RuleVariableValue? {
         val valueToUse = if (addDefaultValue) {
-            ruleValueType?.defaultValue()
+            ruleValueType?.defaultValue().toString()
         } else {
             value
         }
@@ -169,7 +175,8 @@ class TroubleshootingRepository(
     private fun process(
         condition: String,
         valueMap: Map<String, RuleVariableValue?>,
-        ruleActionType: String? = null
+        ruleActionType: String? = null,
+        mode: Expression.Mode
     ): String {
         if (condition.isEmpty()) {
             return if (ruleActionType != null) {
@@ -179,17 +186,16 @@ class TroubleshootingRepository(
             }
         }
         return try {
-            val commonExpressionVisitor =
-                CommonExpressionVisitor.newBuilder()
-                    .withFunctionMap(RuleEngineUtils.FUNCTIONS)
-                    .withFunctionMethod(ParserUtils.FUNCTION_EVALUATE)
-                    .withVariablesMap(valueMap)
-                    .withSupplementaryData(HashMap())
-                    .validateCommonProperties()
-            val result = Parser.visit(
-                condition,
-                commonExpressionVisitor,
-                true
+            val expression = Expression(condition, mode)
+            val expressionData = ExpressionData.builder()
+                .supplementaryValues(HashMap())
+                .programRuleVariableValues(valueMap)
+                .build()
+            val result = expression.evaluate(
+                { name ->
+                    throw UnsupportedOperationException(name)
+                },
+                expressionData
             )
             convertInteger(result).toString()
             ""
@@ -203,7 +209,9 @@ class TroubleshootingRepository(
     private fun convertInteger(result: Any): Any {
         return if (result is Double && result % 1 == 0.0) {
             result.toInt()
-        } else result
+        } else {
+            result
+        }
     }
 
     private fun RuleAction.ruleActionType() = this.javaClass.simpleName.removePrefix("AutoValue_")
@@ -222,7 +230,12 @@ class TroubleshootingRepository(
     ): String? {
         return if (ruleAction.needsContent()) {
             val actionConditionResult =
-                process(ruleAction.data(), valueMap, ruleAction.ruleActionType())
+                process(
+                    ruleAction.data(),
+                    valueMap,
+                    ruleAction.ruleActionType(),
+                    Expression.Mode.RULE_ENGINE_ACTION
+                )
             if (actionConditionResult.isNotEmpty()) {
                 actionConditionResult
             } else {

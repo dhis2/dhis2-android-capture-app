@@ -1,22 +1,29 @@
 package org.dhis2.form.ui.provider
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DisplayNameProviderImplTest {
 
     private val optionSetConfiguration: OptionSetConfiguration = mock()
     private val orgUnitConfiguration: OrgUnitConfiguration = mock()
+    private val fileResourceConfiguration: FileResourceConfiguration = mock()
     private val displayNameProvider =
-        DisplayNameProviderImpl(optionSetConfiguration, orgUnitConfiguration)
+        DisplayNameProviderImpl(
+            optionSetConfiguration,
+            orgUnitConfiguration,
+            fileResourceConfiguration
+        )
 
     @Test
     fun `Should return null if value is null`() {
@@ -101,6 +108,31 @@ class DisplayNameProviderImplTest {
         val result =
             displayNameProvider.provideDisplayName(ValueType.ORGANISATION_UNIT, testingOrgUnitUid)
         assertTrue(result == testingOrgUnitUid)
+    }
+
+    @Test
+    fun `Should return file path for valueType IMAGE when value is the file path`() {
+        val value = "filePath"
+        whenever(fileResourceConfiguration.getFilePath(value)) doReturn null
+        val result = displayNameProvider.provideDisplayName(
+            valueType = ValueType.IMAGE,
+            value = value,
+            optionSet = null
+        )
+        assertEquals(value, result)
+    }
+
+    @Test
+    fun `Should return file path for valueType IMAGE when value is the file uid`() {
+        val filePath = "filePath"
+        val value = "uid"
+        whenever(fileResourceConfiguration.getFilePath(value)) doReturn filePath
+        val result = displayNameProvider.provideDisplayName(
+            valueType = ValueType.IMAGE,
+            value = value,
+            optionSet = null
+        )
+        assertEquals(filePath, result)
     }
 
     private fun mockOptionSetByCode(

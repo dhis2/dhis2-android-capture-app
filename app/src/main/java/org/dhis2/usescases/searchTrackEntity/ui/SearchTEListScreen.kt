@@ -29,10 +29,7 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 
 @ExperimentalAnimationApi
 @Composable
-fun SearchTEListScreen(
-    viewModel: SearchTEIViewModel,
-    listAdapter: ConcatAdapter
-) {
+fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -64,11 +61,7 @@ fun SearchTEListScreen(
                     clipToPadding = false
                     adapter = listAdapter
                     addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                        override fun onScrolled(
-                            recyclerView: RecyclerView,
-                            dx: Int,
-                            dy: Int
-                        ) {
+                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                             super.onScrolled(recyclerView, dx, dy)
                             if (dy > 0) {
                                 isScrollingDown = true

@@ -12,5 +12,4 @@ fun Feature?.getPointLatLng(): LatLng {
 fun List<Feature?>.getLatLngPointList() =
     this.filter { it?.geometry() is Point }.map { it.getPointLatLng() }
 
-fun Feature?.isPoint() =
-    this?.geometry() is Point
+fun Feature?.isPoint() = this?.geometry() is Point

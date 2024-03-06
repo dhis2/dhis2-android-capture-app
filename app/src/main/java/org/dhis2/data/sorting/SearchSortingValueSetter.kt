@@ -22,10 +22,7 @@ class SearchSortingValueSetter(
     private val enrollmentUiDataHelper: EnrollmentUiDataHelper
 ) {
 
-    fun setSortingItem(
-        teiModel: SearchTeiModel,
-        sortingItem: SortingItem?
-    ): Pair<String, String>? {
+    fun setSortingItem(teiModel: SearchTeiModel, sortingItem: SortingItem?): Pair<String, String>? {
         val sortingKeyValue: Pair<String, String>?
         return if (
             sortingItem != null && sortingItem.filterSelectedForSorting != Filters.ORG_UNIT

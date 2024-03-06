@@ -6,7 +6,7 @@ class TeiFilterToWorkingListItemMapper(
     private val defaultWorkingListLabel: String
 ) {
     fun map(teiFilter: TrackedEntityInstanceFilter): WorkingListItem {
-        return WorkingListItem(
+        return TrackedEntityInstanceWorkingList(
             teiFilter.uid(),
             teiFilter.displayName() ?: defaultWorkingListLabel
         )

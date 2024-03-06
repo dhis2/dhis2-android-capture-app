@@ -127,7 +127,10 @@ class SearchScreenConfigurator(
 
     private fun changeBounds(endID: Int, margin: Int) {
         changeBoundsIf(
-            isPortrait(), binding.backdropLayout, endID, margin
+            isPortrait(),
+            binding.backdropLayout,
+            endID,
+            margin
         )
     }
 }

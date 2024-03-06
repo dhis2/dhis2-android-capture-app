@@ -14,7 +14,7 @@ import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.FragmentAboutBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.hisp.dhis.android.core.user.UserCredentials
+import org.hisp.dhis.android.core.user.User
 
 class AboutFragment : FragmentGlobalAbstract(), AboutView {
 
@@ -55,9 +55,9 @@ class AboutFragment : FragmentGlobalAbstract(), AboutView {
         super.onPause()
     }
 
-    override fun renderUserCredentials(userCredentialsModel: UserCredentials?) {
+    override fun renderUserCredentials(userModel: User?) {
         aboutBinding.aboutUser.text =
-            getString(R.string.about_user).format(userCredentialsModel?.username())
+            getString(R.string.about_user).format(userModel?.username())
     }
 
     override fun renderServerUrl(serverUrl: String?) {

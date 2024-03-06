@@ -1,10 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
-import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope.OrderByDirection.DESC
@@ -14,6 +10,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class EventDetailsRepositoryTest {
 
@@ -24,7 +23,6 @@ class EventDetailsRepositoryTest {
     }
     private val programStage: ProgramStage = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val d2ErrorMapper: D2ErrorUtils = mock()
 
     private val fieldViewModelFactory: FieldViewModelFactory = mock()
     private lateinit var repository: EventDetailsRepository
@@ -36,9 +34,8 @@ class EventDetailsRepositoryTest {
             PROGRAM_UID,
             EVENT_UID,
             PROGRAM_STAGE_UID,
-            fieldViewModelFactory,
-            d2ErrorMapper
-        )
+            fieldViewModelFactory
+        ) { d2Error -> "" }
 
         whenever(
             d2.programModule().programStages().uid(PROGRAM_STAGE_UID).blockingGet()

@@ -14,6 +14,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -35,6 +36,15 @@ class ValueStoreImpl(
 
     override fun overrideProgram(programUid: String?) {
         overrideProgramUid = programUid
+    }
+
+    override fun validate(dataElementUid: String, value: String?): Result<String, Throwable> {
+        if (value.isNullOrEmpty()) return Result.Success("")
+        val dataElement = d2.dataElementModule()
+            .dataElements()
+            .uid(dataElementUid)
+            .blockingGet()
+        return dataElement.valueType()?.validator?.validate(value) ?: Result.Success("")
     }
 
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
@@ -135,11 +145,24 @@ class ValueStoreImpl(
 
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, teiUid)
-        val valueType =
-            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType()
+        val attr = d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()
+        val valueType = attr.valueType()
+        val optionSet = attr.optionSet()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (valueType == ValueType.IMAGE && value != null) {
-            newValue = saveFileResource(value)
+        if (optionSet == null && isFile(valueType) && value != null) {
+            try {
+                // EyeSeeetea customization no resize
+                //newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+                newValue = saveFileResource(value, false)
+            } catch (e: Exception) {
+                return Flowable.just(
+                    StoreResult(
+                        uid = uid,
+                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                        valueStoreResultMessage = e.localizedMessage
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -168,10 +191,22 @@ class ValueStoreImpl(
     private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
-        val valueType = d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
+        val de = d2.dataElementModule().dataElements().uid(uid).blockingGet()
+        val valueType = de.valueType()
+        val optionSet = de.optionSet()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (valueType == ValueType.IMAGE && value != null) {
-            newValue = saveFileResource(value)
+        if (optionSet == null && isFile(valueType) && value != null) {
+            try {
+                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+            } catch (e: Exception) {
+                return Flowable.just(
+                    StoreResult(
+                        uid = uid,
+                        valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                        valueStoreResultMessage = e.localizedMessage
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -205,10 +240,12 @@ class ValueStoreImpl(
         }
     }
 
-    private fun saveFileResource(path: String): String {
-        //Eyeseetea customization - No resize
-        //val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
-        val file = File(path)
+    private fun saveFileResource(path: String, resize: Boolean): String {
+        val file = if (resize) {
+            FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        } else {
+            File(path)
+        }
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
@@ -351,5 +388,9 @@ class ValueStoreImpl(
             }.forEach {
                 saveAttribute(it.trackedEntityAttribute()!!, null)
             }
+    }
+
+    private fun isFile(valueType: ValueType?): Boolean {
+        return valueType == ValueType.IMAGE || valueType?.isFile == true
     }
 }

@@ -1,13 +1,6 @@
 package org.dhis2.form.data
 
 import androidx.databinding.ObservableField
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
@@ -26,8 +19,16 @@ import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class FormRepositoryImplTest {
 
@@ -157,7 +158,8 @@ class FormRepositoryImplTest {
                 "",
                 RuleActionAssign.create(
                     null,
-                    "assignedValue", "uid001"
+                    "assignedValue",
+                    "uid001"
                 )
             )
         )
@@ -225,19 +227,33 @@ class FormRepositoryImplTest {
         assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
     }
 
-    private fun mockList(listToReturn: List<FieldUiModel>) {
-        whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
-        whenever(dataEntryRepository.list()) doReturn Flowable.just(listToReturn)
-        repository = FormRepositoryImpl(
-            formValueStore,
-            fieldErrorMessageProvider,
-            displayNameProvider,
-            dataEntryRepository,
-            ruleEngineRepository,
-            rulesUtilsProvider,
-            legendValueProvider
+    @Test
+    fun `Concurrent crash test`() {
+        val ruleEffects = emptyList<RuleEffect>()
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(provideMandatoryItemList())
+        whenever(ruleEngineRepository.calculate()) doReturn ruleEffects
+        whenever(dataEntryRepository.isEvent) doReturn true
+        whenever(
+            rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any())
+        ) doReturn RuleUtilsProviderResult(
+            canComplete = true,
+            messageOnComplete = null,
+            fieldsWithErrors = emptyList(),
+            fieldsWithWarnings = emptyList(),
+            unsupportedRules = emptyList(),
+            fieldsToUpdate = listOf(FieldWithNewValue("uid002", "newValue")),
+            configurationErrors = emptyList(),
+            stagesToHide = emptyList(),
+            optionsToHide = emptyMap(),
+            optionGroupsToHide = emptyMap(),
+            optionGroupsToShow = emptyMap()
         )
-        repository.fetchFormItems()
+        try {
+            repository.fetchFormItems()
+            assertTrue(true)
+        } catch (e: Exception) {
+            fail()
+        }
     }
 
     private fun mockedSections() = listOf(

@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -33,16 +35,8 @@ class DataSetInitialRobot : BaseRobot() {
         onView(withId(R.id.actionButton)).perform(click())
     }
 
-    fun clickOnAcceptButton() {
-        onView(withId(R.id.accept_button)).perform(click())
-    }
-
     fun selectPeriod(period: String) {
         onView(withId(R.id.recycler_date))
             .perform(RecyclerViewActions.actionOnItem<DateViewHolder>(hasDescendant(withText(period)), click()))
-    }
-
-    fun selectOrgUnit(orgUnit: String) {
-        onView(allOf(withId(R.id.checkbox), hasSibling(withText(orgUnit)))).perform(click())
     }
 }

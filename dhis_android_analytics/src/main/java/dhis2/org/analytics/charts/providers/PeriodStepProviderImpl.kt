@@ -42,10 +42,7 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
         )
     }
 
-    override fun periodUIString(
-        locale: Locale,
-        period: Period
-    ): String {
+    override fun periodUIString(locale: Locale, period: Period): String {
         val formattedDate: String
         var periodString = DEFAULT_PERIOD
         when (period.periodType()) {
@@ -108,10 +105,7 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
         return WordUtils.capitalize(formattedDate)
     }
 
-    private fun weekOfTheYear(
-        periodType: PeriodType,
-        periodId: String
-    ): Int {
+    private fun weekOfTheYear(periodType: PeriodType, periodId: String): Int {
         val pattern =
             Pattern.compile(periodType.pattern)
         val matcher = pattern.matcher(periodId)

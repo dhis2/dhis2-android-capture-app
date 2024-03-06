@@ -2,11 +2,6 @@ package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
 import org.dhis2.maps.utils.CoordinateDataElementInfo
@@ -20,6 +15,11 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class MapDataElementToFeatureTest {
     private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature = mock()

@@ -171,10 +171,7 @@ class EventDetailsViewModel(
         }
     }
 
-    fun setUpOrgUnit(
-        selectedDate: Date? = null,
-        selectedOrgUnit: String? = null
-    ) {
+    fun setUpOrgUnit(selectedDate: Date? = null, selectedOrgUnit: String? = null) {
         viewModelScope.launch {
             configureOrgUnit(selectedDate, selectedOrgUnit)
                 .flowOn(Dispatchers.IO)

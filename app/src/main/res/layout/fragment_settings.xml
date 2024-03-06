@@ -14,8 +14,8 @@
             type="org.dhis2.usescases.settings.SyncManagerPresenter" />
 
         <variable
-            name="dataSyncMessage"
-            type="androidx.databinding.ObservableField&lt;String&gt;" />
+            name="versionName"
+            type="String" />
 
     </data>
 
@@ -100,21 +100,16 @@
                             app:layout_constraintTop_toBottomOf="@id/dataPeriods" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Button
-                        android:id="@+id/buttonSyncData"
-                        style="@style/TextButton"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/syncDataButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="16dp"
-                        android:fontFamily="@font/rubik_medium"
-                        android:onClick='@{()->presenter.syncData()}'
-                        android:text="@string/SYNC_DATA"
-                        android:textAllCaps="true"
-                        android:textColor="?colorPrimary"
-                        android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/dataOptions" />
+                        app:layout_constraintTop_toBottomOf="@id/dataOptions"
+                        app:addTextButton="@{presenter.syncDataButton}"/>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
@@ -210,21 +205,15 @@
                             app:layout_constraintTop_toBottomOf="@id/metadataPeriods" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Button
-                        android:id="@+id/buttonSyncMeta"
-                        style="@style/TextButton"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/syncMetaDataButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="16dp"
-                        android:fontFamily="@font/rubik_medium"
-                        android:onClick='@{()->presenter.syncMeta()}'
-                        android:text="@string/SYNC_META"
-                        android:textAllCaps="true"
-                        android:textColor="?colorPrimary"
-                        android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/metaOptions" />
+                        app:layout_constraintTop_toBottomOf="@id/metaOptions"
+                        app:addTextButton="@{presenter.syncMetaDataButton}"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
@@ -652,10 +641,66 @@
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/smsContent" />
 
+                <View
+                    android:id="@+id/smsDivider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/gray_afa"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/smsContent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:onClick="@{()->presenter.onItemClick(SettingItem.VERSION_UPDATE)}">
 
+                <include
+                    android:id="@+id/syncVersionLayout"
+                    layout="@layout/fragment_settings_item"
+                    app:icon="@{R.drawable.ic_software_update_menu}"
+                    app:message="@{@string/app_version}"
+                    app:spanMessage="@{versionName}"
+                    app:title="@{@string/settingsCheckVersion}" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/versionButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/form_field_background"
+                    android:padding="16dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/syncVersionLayout">
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:addTextButton="@{presenter.checkVersionsButton}"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/loadingCheckVersion"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:padding="16dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:visibility="invisible"
+                    android:background="@color/form_field_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/syncVersionLayout"
+                    app:progressIndicator="@{@string/checking_for_updates}"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

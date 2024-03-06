@@ -9,9 +9,8 @@
     <string name="error_wrong_credentials">ຄວາມຜິດພາດຈາກຢັ້ງຢືນເອກະລັກບຸກຄົນ</string>
     <string name="error_unexpected_error">ຄໍາຜິດທີ່ເກີດຂື້ນໂດຍບັງເອີນ</string>
     <string name="error_internal_server_error">ຄໍາຜິດທີ່ເກີດຈາກພາຍໃນເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
-    <string name="yes">ແມ່ນ</string>
-    <string name="no">ບໍ່ແມ່ນ</string>
     <string name="no_value">ບໍ່ມີຂໍ້ມູນ</string>
+    <string name="no_reserved_values">ບໍ່ມີຄ່າທີ່ສະຫງວນໃວ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ</string>
     <!-- SyncService strings: -->
     <string name="sync_now">ດຽວນີ້, ລະບົບກໍາລັງທຳງານຮ່ວມກັນ</string>
     <string name="sync_text">ກໍາລັງທໍາງານຮ່ວມກັນກັບຄອມພີວເຕີໜ່ວຍແມ່</string>
@@ -26,7 +25,10 @@
 
     <string name="sync_error_title">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ...</string>
+    <string name="data_sync_warning">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ.ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ສາຍງານ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
     <string name="data_sync_warning_program">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຂໍ້ຄວນລະວັງຍັງຄົງຢູ່ ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ໂປຣແກຣມ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
+    <string name="data_sync_error">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານ ບໍສາມາດຊິ້ງໄດ້. ກວດສອບສະຖານະການຊິ້ງ: ສາຍງານທີ່ມີຂໍ້ຜິດພາດຈະຖຶກໝາຍເປັນ @, TEI\'s ແລະ ເຫດການເປັນ $.</string>
+    <string name="data_sync_error_program">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານບໍສາມາດຊິ້ງໄດ້. ກວດສອບເບີ່ງສະຖານະການຊິ້ງ: TEI\'s ແລະ ເຫດການທີມີຂໍ້ຂັດແຍ້ງທີມີເຄື່ອງໝາຍເປັນ $.</string>
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
     <string name="add_new">ເພີ່ມໃໝ່</string>
     <string name="add">ເພີ່ມ</string>
@@ -69,6 +71,8 @@
     <string name="enter_positive_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າບວກ</string>
     <string name="filter_options">ຄັດກອງເອົາຕົວເລືອກ</string>
     <string name="choose_date">ເລືອກວັນທີ</string>
+    <string name="change_calendar">ປ່ຽນປະຕິທິນ</string>
+
     <!-- Status -->
     <string name="program_completed">ໂປຣແກຣມດໍາເນີນການສໍາເລັດແລ້ວ</string>
     <string name="program_inactive">ໂປຣແກຣມທີ່ບໍ່ໄດ້ເປີດໃຊ້ງານ</string>
@@ -92,6 +96,7 @@
 
     <!-- State -->
     <string name="state_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="state_to_post">ສົ່ງ</string>
     <string name="state_to_update">ຕ້ອງການອັບເດດ</string>
     <string name="state_to_delete">ເພື່ອລືບອອກ</string>
     <string name="state_error">ເກີດການຜິດພາດ</string>
@@ -106,6 +111,7 @@
     <string name="update">ປັບປຸງ</string>
     <string name="date">ວັນທີ່</string>
     <string name="org_unit">ສະຖານທີ່</string>
+    <string name="no_org_units">ບໍ່ມີໜ່ວຍງານໃດທີ່ເປິດຢູ່ສຳລັບວັນທີທີ່ເລືອກ. ກະລຸນາເລືອກວັນທີ່ອື່ນຫຼືໜ່ວຍງານອື່ນ</string>
     <string name="category_option">Category Option</string>
     <string name="latitude">ເສັ້ນຂະໜານ</string>
     <string name="longitude">ເສັ້ນແວງ</string>
@@ -118,6 +124,9 @@
 
     <!--DataSet initial-->
     <string name="report_period">ຊ່ວງເວລາ ການລາຍງານ</string>
+    <string name="field_required">ຖ້າທ່ານຕັ້ງຄ່າ, ແຖວທັ້ງໝົດຕ້ອງໃຊ້ຄ່າທັ້ງໝົດເພື່ອເຮັດໃຫ້ຊຸດຂໍ້ມູນສົມບູນ</string>
+    <string name="field_mandatory">ຄ່າຂໍ້ມູນບາງຄ່າທີ່ຈຳເປັນຫາຍໄປ. ທ່ານຕ້ອງກຳນົດຄ່າບັງຄັບ ເພື່ອໃຫ້ຊຸດຂໍ້ມູນສົມບູນ</string>
+    <string name="datavalue_saved">ປະຫຍັດຄ່າ!</string>
     <string name="there_is_no_available_period">ບໍ່ມີໄລຍະເວລາທີຈະເລືອກ</string>
     <!--Event Detail-->
     <string name="event_date">ວັນທີເຫດການ</string>
@@ -177,11 +186,17 @@
     <string name="SYNC_MANAGER">ຕັ້ງຄ່າ</string>
     <string name="last_data_sync_date">ອັບເດດຂໍ້ມູນຄັ້ງສຸດທ້າຍເມື່ອ:%s</string>
     <string name="last_metadata_sync_date">ອັບເດດຂໍ້ມູນຄັ້ງສຸດທ້າຍເມື່ອ:%s</string>
+    <string name="refill_reserved_values">ໃສ່ອີກ</string>
     <string name="settings_sms_module_title">ໂມດູນ SMS:</string>
+    <string name="settings_sms_receiver_number">ເສັ້ນທາງການນຳສົ່ງຂໍ້ຄວາມ</string>
+    <string name="settings_sms_result_sender_number">ຜູ້ສົ່ງຜົນຂໍ້ຄວາມ</string>
     <string name="settings_sms_result_timeout_hint">ວິນາທີ</string>
     <string name="settings_sms_result_sender_hint">ຈຳນວນ</string>
     <string name="settings_sms_receiver_number_hint">ຈຳນວນ</string>
+    <string name="settings_sms_module_switch">ເປິດໃຊ້ການສົ່ງຂໍ້ຄວາມ</string>
+    <string name="settings_sms_response_wait_switch">ລໍຖ້າການຕອບກັບທາງຂໍ້ຄວາມ</string>
     <string name="settings_sync_period">ໄລຍະເວລາການອັບເດດຂໍ້ມູນ</string>
+    <string name="settings_limit_scope">ຈໍາກັດການຕັ້ງຄ່າ</string>
     <string name="settings_limit_globally">ໃນທົ່ວໂລກ</string>
     <string name="settings_limit_program">ຕໍ່ແຜນງານ</string>
     <string name="settings_limit_ou">ຕໍ່ໜ່ວຍງານ</string>
@@ -191,8 +206,15 @@
     <string name="settingsSyncData">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="settingsSyncMetadata">ການຕັ້ງຄ່າການຊີ້ງຂໍ້ມູນ</string>
     <string name="settingsSyncParameters">ຂອບເຂດການອັບເດດຂໍ້ມູນ</string>
+    <string name="settingsReservedValues">ຄ່າລິຂະສິດ</string>
+    <string name="settingsReservedValues_descr">ທ່ານສາມາດເບີ່ງຈຳນວນຄ່າທີໃຊ້ໄດ້ໃນແບບ ອອຟລາຍ ແລະ ຈອງຄ່າໃໝ່ໄດ້ທີ່ນີ້</string>
+    <string name="settingsErrorLog">ເປິດບັນທຶກຂໍ້ຜິດພາດໃນການຊິ້ງ</string>
+    <string name="settingsErrorLog_descr">ບັນທຶກນີ້ມີຂໍ້ຜິດພາດທັ້ງໝົດທີ່ເກີດຈາກການຊິ້ງຂໍ້ມູນ ແລະ metadata ຂອງທ່ານ.</string>
+    <string name="settingsDeleteLocalData">ລົບຂໍ້ມູນໃນເຄື່ອງ</string>
+    <string name="settingsDeleteLocalData_descr">ຂໍ້ມູນແອັບ Capture ທັງໝົດທີ່ເກັບໄວ້ໃນອຸປະກອນຂອງທ່ານຈະຖືກລຶບອອກ. ຂໍ້​ມູນ​ທີ່​ບໍ່​ໄດ້​ຊິ້ງຂໍ້ມູນກັບຄອມພິວເຕີ້ໜ່ວຍແມ່​ຈະ​ສູນ​ເສຍ​ໄປ.</string>
     <string name="settingsReset">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <string name="settingsReset_descr">ການຕັ້ງຄ່າ ແລະ ຂໍ້ມູນແອັບທີ່ເກັບໄວ້ໃນອຸປະກອນຈະຖືກລຶບອອກ. ທ່ານຈະຖືກຖາມໃຫ້ເຂົ້າສູ່ລະບົບອີກຄັ້ງ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ຊິງຄ໌ກັບເຄື່ອງຄອມພິວເຕີ້ໜ່ວຍແມ່ຈະສູນເສຍໄປ.</string>
+    <string name="settingsSms">ຕັ້ງຄ່າຂໍ້ຄວາມ</string>
     <!--endregion-->
 
     <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>
@@ -210,9 +232,14 @@
     <string name="enroll_in">ຂື້ນທະບຽນມີ %s</string>
     <string name="missing_mandatory_fields_title">ຫ້ອງປ້ອນຂໍ້ມູນທີ່ຈໍາເປັນ ບໍ່ເຫັນ</string>
     <string name="missing_mandatory_fields_text">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ຖ້າທ່ານຕ້ອງການກັບຄືນດຽວນີ້, ຂໍ້ມູນທັງໝົດທີ່ໄດ້ບັນທຶກແລ້ວຈະຖືກລືບ</string>
+    <string name="missing_mandatory_fields_events">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="title_delete_go_back">ຂໍ້ມູນຂອງທ່ານບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="delete_go_back">ຖ້າທ່ານກັບຄືນຕອນນີ້ ຂໍ້ມູນທີ່ປ້ອນທັ້ງໝົດຈະຖຶກລົບ</string>
+    <string name="missing_mandatory_fields_events_2.0">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. \n %s ດຽວນີ້ ທ່ານສາມາດກັບຄືນ, ແຕ່ຂໍ່ມູນຂອງເຫດການນີ້ຈະຍັງບໍ່ສາມາດບັນທຶກໄດ້</string>
     <string name="missing_mandatory_fields_go_back">ລືບຂໍ້ມູນ ແລະ ກັບຄືນ</string>
     <string name="error_fields">ບາງຊ່ອງມີຂໍ້ຜິດພາດ, %s ກະລຸນາກວດສອບ</string>
+    <string name="missing_mandatory_fields_finish">ຊ່ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ທ່ານສາມາດປ້ອນຂໍ້ມູນ ແລະ ອອກໄດ້, ແຕ່ເຫດການຈະບໍ່ສາມາດເຮັດໃຫ້ສຳເລັດໄດ້</string>
+    <string name="enrollment_coordinates">ປະສານງານການລົງທະບຽນ</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>
 
     <!--EVENT SUMMARY-->
@@ -238,6 +265,7 @@
     <string name="date_dialog_clear">ລຶບ</string>
     <string name="period">ໄລຍະ ເວລາ</string>
     <string name="org_unit_filter">(%d) ຂອງ ສະຖານທີ່</string>
+    <string name="org_unit_select_level">ລະດັບ %d</string>
     <string name="tuto_main_1">ຍີນດີຕ້ອນຮັບເຂົ້າສູ່ ລະບົບ DHIS2</string>
     <string name="tuto_main_2">ທີ່ນີ້, ທ່ານສາມາດເບີ່ງກິດຈະກໍາ ຂອງທ່ານໄດ້</string>
     <string name="tuto_main_3">ທ່ານສາມາດນໍາໃຊ້ເຄື່ອງມືຄັດຈ້ອນ...</string>
@@ -249,6 +277,7 @@
     <string name="default_relationship_label">ສ້າງສາຍພົວພັນ</string>
     <string name="next">ຕໍ່ໄປ</string>
     <string name="search_min_num_attr">ທ່ານຕ້ອງປ້ອນຢ່າງໜອຍ %d ຂອງ ຄຸນລັກສະນະເຂົ້າເພື່ອຊອກຫາ</string>
+    <string name="search_attr">ທ່ານຕ້ອງໃສ່ຢ່າງຫນ້ອຍຫນຶ່ງ ຂອງຄຸນລັກສະນະເພື່ອເຮັດການຄົ້ນຫາ</string>
     <string name="search_max_tei_reached">ມີຫຼາຍກ່ວາ %d ຂອງຜົນໄດ້ຮັບ. ກະລຸນາເພີ່ມເງື່ອນໄຂໃນການຄົ້ນຫາເຂົ້າຕື່ມ</string>
     <string name="search_criteria_not_met">ເງື່ອນໄຂການຄົ້ນຫາຂອງທ່ານບໍ່ໄດ້ຜົນຫຍັງກັບຄືນມາໃ\nທົບທວນເບີ່ງເງື່ອນໄຂຂອງທ່ານ ຫຼື ຂື້ນທະບຽນໃໝ່ %s</string>
     <string name="search_init">ປ້ອນເງື່ອນໄຂການຊອກຫາຂອງທ່ານ</string>
@@ -274,6 +303,7 @@
     <string name="about">ກ່ຽວກັບ</string>
     <string name="programs_to_enroll">ໂປຣແກຣມເພື່ອລົງທະບຽນ</string>
     <string name="select_all">ເລືອກທັງໝົດ</string>
+    <string name="clear_all">ລຶບການເລືອກ</string>
     <string name="empty_program_list">ບໍ່ມີຂໍ້ມູນສໍາລັບການຄັດຈ້ອນທີ່ເລືອກມາ. ກະລຸນາພະຍາຍາມປ່ຽນຕົວຄັດຈ້ອນເບີ່ງ</string>
     <string name="share">ແລກປ່ຽນ</string>
     <string name="share_qr">ແລກປ່ຽນ QR</string>
@@ -282,6 +312,7 @@
     <string name="current">ປະຈຸບັນ</string>
     <string name="tei">ຈໍານວນກໍລະນີທີ່ປ້ອນເຂົ້າ</string>
     <string name="limit_by_organisation_unit">ຄັດຈ້ອນຕາມສະຖານທີ</string>
+    <string name="limit_by_program">ຈຳກັດໂດຍສາຍງານ</string>
     <string name="programs_list">ລາຍຊື່ຂອງໂປຣແກຣມ</string>
     <string name="wipe_data">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <string name="add_relationship_error">ເປັນໄປບໍ່ໄດ້ທີ່ຈະຕື່ມສາຍພົວພັນນີ້ເຂົ້າໄປ</string>
@@ -289,6 +320,8 @@
     <string name="warning_on_complete_title">ແຈ້ງເຕືອນ</string>
     <string name="error_on_complete_title">ເກີດການຜິດພາດ</string>
     <string name="save">ບັນທຶກ</string>
+    <string name="reserved_value">ຄ່າລິຂະສິດ</string>
+
     <string name="downloaded_confirm">ທ່ານຕ້ອງການເພີມຂໍ້ມູນຕື່ມຈາກລະຫັດ QR ນີ້ອີກບໍ?</string>
 
     <!--ABOUT-->
@@ -304,6 +337,7 @@
     <string name="login_error_null_pass">ບໍ່ມີລະຫັດຜ່ານ. ກະລຸນາ ໃສ່ລະຫັດຜ່ານ</string>
     <string name="login_error_null_username">ບໍ່ມີຊື່ຜູ້ໃຊ້. ກະລຸນາ ໃສ່ຊື່ຜູ້ໃຊ້</string>
     <string name="login_error_dhis_version">ຄອມພີວເຕີໜ່ວຍແມ່ກໍາລັງທໍາງານກັບລະບົບ DHIS2 ລຸ້ນສູງກ່ວາ 2.29. ກະລຸນາ ນໍາໃຊ້ລຸນທີ່ສູງກ່ວາ ຫຼື ນໍາໃຊ້ລະບົບທົດລອງແທນ</string>
+    <string name="login_error_dhis_version_v2">ຄອມພິວເຕີໜ່ວຍແມ່ເຄື່ອງນີ້ ໃຊ້ເວີຊັ່ນdhisທີ່ແຕກຕ່າງຈາກ %s. ໃຫ້ອັບເດດເວີຊັ່ນຂອງທ່ານ ຫຼື ໃຊ້ສະພາບແວດລ້ອມການທົດລອງ ເພື່ອດຳເນີນການຕໍ່</string>
     <string name="login_error_unsuccessful_response">ມີບາງສີ່ງບາງຢ່າງທໍາງານບໍ່ຖືກຕ້ອງ. ກະລຸນາກວດເບີ່ງ ທີ່ຢູ່ຂອງຄອມພີວເຕີໜ່ວຍແມ່, ຊື່ຜູ້ນໍາໃຊ້ ແລະ ລະຫັດຜ່ານວ່າຖືກຕ້ອງແລ້ວບໍ, ແລ້ວພະຍາຍາມເຂົ້າອີກເບີ່ງ</string>
     <string name="login_error_error_response">ເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່ບໍ່ສາມາດດໍາເນີນການຕາມຄໍາຮ້ອງຂໍນີ້ໄດ້</string>
     <string name="login_error_default">ມີບັນຫາເກີດຂື້ນໃນຂະນະທີ່ພະຍາຍາມເຂົ້າຫາຄອມພີວເຕີໜ່ວຍແມ່</string>
@@ -335,6 +369,7 @@
     <string name="message_generate_new_event">ທ່ານຕ້ອງການປ້ອນຂໍ້ມູນກໍລະນີອື່ນບໍ?</string>
     <string name="event_completed_title">ກໍລະນີໄດ້ປ້ອນເຂົ້າສໍາເລັດແລ້ວ</string>
     <string name="event_completed_message">ກໍລະນີທັງໝົດໃນໂປຣແກຣມນີ້ໄດ້ຖືກດໍາເນີນການສໍາເລັດແລ້ວ. ທ່ານຕ້ອງການປິດໂປຣແກຣມນີ້ບໍ່?</string>
+    <string name="complete_enrollment_message">ທ່ານຕ້ອງການລົງທະບຽນໃຫ້ສຳເລັດຫຼືບໍ?</string>
     <string name="check_event">ກວດເບີ່ງ</string>
 
     <string name="menu_home">ໜ້າຫຼັກ</string>
@@ -344,9 +379,13 @@
     <string name="tuto_settings_1">ສົ່ງຂໍ້ມູນຂອງທ່ານ</string>
     <string name="tuto_settings_2">...ການປັບແລະຕັ້ງຄ່າຂອງທ່ານ...</string>
     <string name="tuto_settings_3">...ຕັ້ງຄ່າຂີດຄວາມສາມາດໃນການບັນທຶກຂອງໂທລະສັບຂອງທ່ານ...</string>
+    <string name="tuto_settings_reserved">ກວດສອບ ແລະ ຈັດການມູນຄ່າສຳລອງທີຍັງເຫຼືອ</string>
     <string name="tuto_settings_errors">ກວດເບິ່ງຄືນການເຊື່ອມຕໍ່ກັບຄອມພິວເຕີໜ່ວຍແມ່ວ່າລົ້ມເຫລວບໍໍ່</string>
     <string name="tuto_settings_4">... ຫຼືລືບທຸກສີ່ງທຸກຢ່າງເພື່ອເລີ່ມໃໝ່</string>
+    <string name="tuto_search_1_v2">ຊອກຫາໜ່ວຍງານຂອງທ່ານ ທັ້ງໃນອຸປະກອນຟື້ນທີ່ຂອງທ່ານ ແລະ ເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່</string>
     <string name="tuto_search_2">ທ່ານສາມາດປ່ຽນໄປເລືອກເອົາໂປຣແກຣມອື່ນ</string>
+    <string name="tuto_search_3_v2">ຄົ້ນຫາ ຫຼືເພີ່ມຫົວໜ່ວຍໃໝ່. ທ່ານຕ້ອງຄົ້ນຫາກ່ອນທ່ານຈື່ງສາມາດເພີ່ມອັນໃຫມ່ໄດ້!</string>
+    <string name="tuto_search_4_v2">ຄລິກບ່ອນນີ້ເພື່ອລ້າງ ແລະ ເລີ່ມການຄົ້ນຫາໃໝ່.</string>
     <string name="tuto_dashboard_1">ນີ້ແມ່ນກະດານຂ່າວສໍາລັບຂໍ້ມູນສ່ວນຕົວ</string>
     <string name="tuto_dashboard_2">ເບີ່ງຂໍ້ມູນກ່ຽວກັບປະຫັວດສ່ວນຕົວ</string>
     <string name="tuto_dashboard_3">...ແບ່ງປັນຂໍ້ມູນຜ່ານທາງ QR ຫຼື ຂໍ້ຄວາມ SMS...</string>
@@ -366,83 +405,213 @@
     <string name="tuto_main_8">ສົ່ງຂໍ້ມູນຂອງທ່ານໄປຫາຄອມພີມເຕີໜ່ວຍແມ່</string>
     <string name="tuto_main_9">ປິດໄລຍະການນໍາໃຊ້ດ້ວຍລະຫັດ4ໂຕ. ຢ່າລືມລະຫັດດັ່ງກ່າວ</string>
     <string name="tuto_main_10">Lອອກຈາກໂປຣແກຣມເພື່ອປ່ຽນຜູ້ໃຊ້ຫຼືທີ່ຢູ່ຂອງຄອມພີວເຕີໜ່ວຍແມ່. ທ່ານຈະສາມາດເຂົ້າໂປຣແກຣມຄືນໄດ້ເຖີງແມ່ນວ່າບໍ່ມີການເຊື່ອມຕໍ່ອີນເຕີແນັດກໍ່ຕາມ.</string>
+    <string name="text_plus_colon">%s:</string>
     <string name="relationships">ສາຍພົວພັນ</string>
+    <string name="empty_relationships">ບໍ່ມີຄວາມສຳພັນ, ຄລິກ \"+\" ເພື່ອເພີ່ມໃໝ່</string>
+    <string name="empty_tei_add">ບໍ່ມີເຫດການທີ່ລົງທະບຽນໃວ້, ຄລິກ \"+\" ເພື່ອເພີ່ມເຫດການໃໝ່</string>
+    <string name="empty_tei_no_add">ບໍໍມີເຫດການທີ່ລົງທະບຽນ</string>
     <string name="qr_data_values">Data values</string>
+    <string name="info">ຂໍ້ມູນ</string>
+    <string name="qr_no_id_error">ອ່ານໄອດີນີ້ບໍໄດ້</string>
+    <string name="delete_local_data">ລົບຂໍ້ມູນໃນເຄື່ອງ</string>
+    <string name="dashboard_overview">ພາບລວມ</string>
     <string name="dashboard_relationships">ສາຍພົວພັນ</string>
     <string name="dashboard_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="empty_indicators">ບໍ່ມີຕົວຊີ້ບອກສຳລັບສາຍງານນີ້</string>
     <string name="dashboard_notes">ຂໍ້ຄວາມ</string>
     <string name="field_errors">ຂໍ້ມູນມີຂໍ້ຜິດພາດ. ກະລຸນາ, ກວດເບິ່ງເພື່ອໃຫ້ສາມາດເຮັດສໍາເລັດ</string>
     <string name="unselect_enrollment">ການລົງທະບຽນທັງໝົດ</string>
+    <string name="unselect_enrollment_description">ສະແດງກະດານຂ່າວພ້ອມສາຍງານທີ່ເຮັດວຽກທັ້ງໝົດ</string>
     <string name="CHECK_SYNC_ERRORS">ເປິດບັນທຶກຂໍ້ຜິດພາດໃນການຊິ້ງ</string>
     <string name="error_dialog_title">ບັນທຶກຂໍ້ຜິດພາດໃນການຊິ້ງ</string>
+    <string name="share_with">ຮ່ວມກັບ</string>
+    <string name="errors_during_sync">ການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນຂອງທ່ານລົ້ມເຫຼວ ອາດມີຂໍ້ຜິດພາດໃນເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່ຂອງທ່ານ. ຄລິກບ່ອນນີ້ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ</string>
+    <string name="sectionSelectorNext">ຕໍ່ໄປ</string>
     <string name="event_overview">ລາຍລະອຽດ</string>
     <string name="event_indicators">ຕົວຊີ້ວັດ</string>
     <string name="event_notes">ຂໍ້ຄວາມ</string>
+    <string name="complete_add_new"><![CDATA[ສໍາເລັດ & ເພີ່ມໃຫມ່]]></string>
+    <string name="complete_later">ສຳເລັດພາຍຫຼັງ</string>
+    <string name="finish_add_new"><![CDATA[ສຳເລັດແລ້ວ ແລະເພີ່ມໃໝ່]]></string>
     <string name="finish">ສີ້ນສຸດ</string>
     <string name="error_fields_title">ຂໍ້ມູນມີຂໍ້ຜິດພາດ</string>
+    <string name="error_fields_events">ບາງຊ່ອງຂໍ້ມູນມີຂໍ້ຜິດພາດ. ຍັງບໍໄດ້ບັນທຶກ ກະລຸນາກວດສອບ</string>
+    <string name="event_reopened">ເຫດການນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້</string>
+    <string name="unique_warning">ຄ່າບໍໍຄວນຊ້ຳກັນ ບັງເອີນໄດ້ຖຶກພົບເຫັນ. ມັນບໍໄດ້ບັນທຶກ. ກະລຸນາກວດສອບ</string>
+    <string name="unique_coincidence_found">ໄດ້ພົບເຫັນຊ່ອງປ້ອນຂໍ້ມູນທີ່ເປັນເອກະລັກ. ກະລຸນາກວດສອບແບບຟອມເພື່ອບັນທຶກການລົງທະບຽນ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
     <string name="reschedule">ກຳນົດເວລາໃໝ່</string>
+    <string name="event_was_skipped">ເຫດການຖຶກໝາຍວ່າໄດ້ຂ້າມແລ້ວ</string>
+    <string name="no_intructions">ບໍ່ມີຂໍ້ມູນສຳລັບໜ້າຈໍນີ້</string>
     <string name="event_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
+    <string name="unsupported_program_rule">ມີກົດລະບຽບຂອງສາຍງານໜື່ງຂໍ້ທີບໍໄດ້ຮອງຮັບ. ກະລຸນາກວດສອບເອກະສານ</string>
+    <string name="delete_event_error">ເຫດການນີ້ຍັງບໍ່ໄດ້ສ້າງ</string>
+    <string name="empty_description">ບໍ່ມີຂໍ້ມູນສຳລັບຫ້ອງຂໍ້ມູນນີ້</string>
+    <string name="biometrics_dialog_title">ຂໍ້ມູນປະຈຳຕົວຫວ່າງເປົ່າ</string>
+    <string name="biometrics_first_use_text">ເພື່ອໃຫ້ສາມາດເຂົ້າສູ່ລະບົບໂດຍໃຊ້ເຄື່ອງສະແກນລາຍນິ້ວມື້ ທ່ານຕ້ອງໃຊ້ວິທີເລີ່ມຕົ້ນກ່ອນ</string>
+    <string name="biometrics_security_text">ໃຊ້ລາຍນິ້ວມືຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບກັບຜູ້ໃຊ້ນີ້ບໍ?</string>
+    <string name="tab_tables">ຕາຕະລາງຂໍ້ມູນ</string>
     <string name="table">ຕາຕະລາງຂໍ້ມູນ</string>
+    <string name="delete_local_data_message">ຂໍ້ມູນທີ່ບໍ່ໄດ້ຮັບການຊິ້ງຈະສູນເສຍໄປ. ທ່ານຕ້ອງການສືບຕໍ່ຫຼືບໍ?</string>
     <string name="local_data_accept">ຍອມຮັບ</string>
+    <string name="delete_local_data_error">ບໍ່ສາມາດລົບຂໍ້ມູນໄດ້ ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
+    <string name="delete_local_data_done">ລົບຂໍ້ມູນໃນເຄື່ອງຮຽບຮ້ອຍແລ້ວ</string>
     <string name="org_unit_selection_warning">ຕ້ອງເລືອກຢ່າງຫນ້ອຍໜື່ງໂຄງຮ່າງການຈັດຕັ້ງ</string>
+    <string name="send_user_name_title">ສົ່ງຂໍ້ມູນ</string>
+    <string name="send_user_name_mesage">ຊ່ວຍ DHIS2 ປັບປຸງແອບນີ້ດ້ວຍການແບ່ງປັນຂໍ້ຜິດພາດທີ່ກຽ່ວຂ້ອງກັບໄອດີຜູ້ໃຊ້ຂອງທ່ານ</string>
+    <string name="check_mandatory_field">ກວດເບີ່ງຫ້ອງປ້ອນຂໍ້ມູນ</string>
+    <string name="error_no_network_during_sync">ທ່ານສູນເສຍການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານໃນຂະນະທີ່ດໍາເນີນການຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
+    <string name="action_agree">ຍິນຍອມ</string>
     <string name="action_continue">ຕໍ່ໄປ</string>
     <string name="login_server_info_title">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
+    <string name="login_server_info_message">ປ້ອນທີ່ຢູ່ຂອງຄອມພິວເຕີໜ່ວຍແມ່ DHIS 2 ສຳລັບອົງກອນຂອງທ່ານ ຕາມທີ່ຜູ້ດູແລລະບົບຂອງທ່ານໃຫ້ມາ ຫຼື ທ່ານສາມາດສະແກນຄິວອາໂຄ້ດທີ່ມີທີ່ຢູ່ຂອງຄອມພິວເຕີໜ່ວຍແມ່ຂອງທ່ານ</string>
+    <string name="forgot_your_code">ລືມລະຫັດຂອງທ່ານ?</string>
     <string name="event_form_end_options_title">ທ່ານຕ້ອງເຮັດຫຍັງສໍາລັບເຫດການນີ້?</string>
+    <string name="sectionSelectorEnd">ສິ້ນສຸດ</string>
     <string name="resource_not_found">%s ບໍ່ພົບເຫັນ</string>
+    <string name="relationship_not_found_message">ບັນທຶກທີ່ທ່ານກຳລັງເຂົ້າເຖີງຍັງບໍ່ສາມາດເຂົ້າໄດ້ ທ່ານຕ້ອງການຄົ້ນຫາຫຼືບໍ?</string>
+    <string name="sync_by_sms">ຊິ້ງຂໍ້ມູນດ້ວຍຂໍ້ຄວາມ</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="state_relationship">ຄວາມສໍາພັນ</string>
     <string name="no_conflicts_message">ສາຍງານນີ້ບໍມີຂໍ້ຂັດແຍ້ງ</string>
+    <string name="network_unavailable_sms">ບໍ່ມີການເຊື່ອຕໍ່ກັບເຄື່ອຂ່າຍ, ແຕ່ເບີ່ງຄືວ່າມີບໍລິການໂທລະສັບ - ທ່ານສາມາດໃຊ້ຂໍ້ຄວາມໄດ້</string>
+    <string name="network_unavailable">ການເຊື່ອມຕໍ່ກັບເຄື່ອຂ່າຍບໍສາມາດໃຊ້ໄດ້</string>
     <string name="action_close">ປິດ</string>
     <string name="tuto_main_11">ຕອນນີ້ທ່ານສາມາດກວດສອບການຊິ້ງຂອງຂໍ້ມູນ ໂດຍການກົດໃສ່</string>
+    <string name="no_conflicts_update_message">ຂໍ້ມູນນີ້ຈັດເກັບໃວ້ໃນອຸປະກອນຂອງທ່ານເທົ່ານັ້ນ, ບໍ່ມີການຊິ້ງກັບເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>
+    <string name="no_conflicts_synced_message">ທ່ານອັບເດດແລ້ວ! ຂໍ້ມູນຂອງທ່ານທັງຫມົດຖືກສົ່ງໄປຫາເຄື່ອງຄອມພິວເຕີ້ໜ່ວຍແມ່.</string>
+    <string name="relationship_error_recursive">ທ່ານບໍ່ສາມາດເຊື່ອມໂຍງບັນທຶກກັບຕົວມັນເອງໄດ້</string>
+    <string name="unblock_session">ໄລຍະເປິດໃຫ້ນຳໃຊ້</string>
     <string name="data_set_complete">ສຳເລັດແລ້ວ</string>
     <string name="data_set_open">ເປີດ</string>
     <string name="unsupported_value_type">ປະເພດຄ່າບໍ່ຮອງຮັບ</string>
     <string name="change_calendar_view">ປ່ຽນຮູບແບບປະຕິທິນ</string>
     <string name="data_every_fifteen_minutes">15 ນາທີ</string>
+    <string name="data_every_hour">ທຸກໆຊົ່ວໂມງ</string>
     <string name="data_every_day">ທຸກໆມື້</string>
     <string name="data_every_week">ເປັນອາທິດ</string>
     <string name="period_week">ອາທິດ</string>
     <string name="sync_setting">ການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ %s</string>
+    <string name="relationship_without_enrollment">ບັນທຶກທີ່ທ່ານພະຍາຍາມເຂົ້າບໍ່ມີການລົງທະບຽນ. ທ່ານບໍສາມາດເຂົ້າເຖີງໜ້າກະດານຂ່າວໄດ້</string>
+    <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
     <string name="dashboard_menu_delete_enrollment">ລົບການລົງທະບຽນເທົ່ານັ້ນ</string>
+    <string name="delete_authority_error">ທ່ານບໍສາມາດທີ່ຈະລົບບັນທຶກນີ້ໄດ້</string>
     <string name="validation_url">ຊື່ url ບໍ່ຖຶກຕ້ອງ</string>
+    <string name="uncomplete_authority_error">ທ່ານບໍສາມາດເປິດເຫດການນີ້ຄືນໄດ້</string>
+    <string name="adjusting_form">ກຳລັງປັບຟອມ...</string>
+
+    <string name="sms_receiver_number">ຕົວເລກຜູ້ຮັບ</string>
+    <string name="sms_amount_question">ທ່ານຍອມຮັບທີ່ຈະສົ່ງ %d ຂໍ້ຄວາມຫຼືບໍ?</string>
+    <string name="sms_sending">ກຳລັງສົ່ງ %1$d/%2$d</string>
     <string name="sms_all_sent">ສົ່ງທັ້ງໝົດ</string>
+    <string name="sms_submission_completed">ການສົ່ງສຳເລັດແລ້ວ</string>
+    <string name="sms_waiting_confirmation">ລໍຖ້າຮັບຂໍ້ຄວາມຢືນຢັນ</string>
     <string name="sms_waiting_timeout">ບໍ່ໄດ້ຮັບຂໍ້ຄວາມຢືນຢັນ</string>
+    <string name="sms_confirmed">ໄດ້ຮັບການຢືນຢັນແລ້ວ</string>
+    <string name="sms_error">ເກີດຂໍ້ຜິດພາດໃນການສົ່ງ</string>
+    <string name="sms_error_item_not_ready">ລາຍການຂໍ້ມູນຍັງບໍ່ພ້ອມທີ່ຈະສົ່ງ</string>
     <string name="sms_error_no_network">ບໍ່ມີສັນຍານ</string>
+    <string name="sms_error_no_check_network_permission">ບໍ່ມີການກວດສອບອະນຸຍາດເຄື່ອຂ່າຍ</string>
+    <string name="sms_error_no_receive_sms_permission">ບໍ່ໄດ້ຮັບຂໍ້ຄວາມທີ່ອານຸຍາດ</string>
+    <string name="sms_error_no_send_sms_permission">ບໍ່ອານຸຍາດໃຫ້ສົ່ງ</string>
+    <string name="sms_error_no_gateway_set">ບໍ່ໄດ້ຕັ້ງຄ່າການນຳສົ່ງ</string>
+    <string name="sms_error_no_user_login">ຜູ້ໃຊ້ບໍໄດ້ເຂົ້າລະບົບ</string>
+    <string name="sms_error_module_disabled">ໂມດູນຂໍ້ຄວາມຖືກປິດໃຊ້ງານ</string>
+    <string name="sms_error_ongoing_sunmission">ການສົ່ງຂໍ້ຄວາມອື່ນກຳລັງດຳເນີນຢູ່</string>
+    <string name="sms_metadata_empty">ບໍ່ໄດ້ເລີ່ມໂມດູນຂອງຂໍ້ຄວາມ ບໍພົບ Metadata ທີ່ຕ້ອງການ</string>
     <string name="sms_completed">ສໍາເລັດແລ້ວ</string>
+    <string name="sms_count_error">ບໍ່ຍອມຮັບການນັບຂໍ້ຄວາມ</string>
+    <string name="sms_state_started">ເລີ່ມສົ່ງຂໍ້ຄວາມ</string>
+    <string name="sms_state_converted">ຂໍ້ມູນການອ່ານ ແລະ ແປງ. ລະຫັດການສົ່ງ: %d</string>
+    <string name="sms_general_error">ເກີດຂໍ້ຜິດພາດໃນການສົ່ງຂໍ້ຄວາມ</string>
+    <string name="sms_title_enrollment">ການລົງທະບຽນ ແລະ ລົງທະບຽນຂໍ້ຄວາມ TEI</string>
+    <string name="sms_title_event">ສົ່ງເຫດການທາງຂໍ້ຄວາມ</string>
+    <string name="sms_title_data_set">ການສົ່ງຊຸດຂໍ້ມູນຂໍ້ຄວາມ</string>
+    <string name="sms_bar_state_starting">ເລີ່ມຕົ້ນ</string>
     <string name="sms_bar_state_sending">ກໍາລັງດໍາເນີນການ</string>
+    <string name="sms_bar_state_sent">ສົ່ງແລ້ວ</string>
     <string name="sms_bar_state_failed">Failed</string>
 
     <string name="start_sync_granular">ກຳລັງເລີ່ມການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ</string>
+    <string name="syncing">ກຳລັງຊິ້ງຂໍ້ມູນ</string>
     <string name="end_sync_granular">ການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນສຳເລັດແລ້ວ</string>
+    <string name="error_sync">ເກີດຂໍ້ຜິດພາດລະຫວ່າງການຊິ້ງຂໍ້ມູນ</string>
+    <string name="cancel_sync">ຍົກເລິກການຊິ້ງຂໍ້ມຸນແລ້ວ</string>
+
+    <string name="copied_text">ສຳເນົາແລ້ວ</string>
+    <string name="image_selected">ເລືອກຮູບແລ້ວ</string>
+    <string name="show_in_map">ສະແດງແຜ່ນທີ</string>
+    <string name="show_list">ສະແດງລາຍການ</string>
+
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
+    <string name="value_required_but_not_provided">%s ບັງຄັບແຕ່ບໍໄດ້ລະບຸໃວ້</string>
     <string name="polygon">Polygon</string>
+    <!--endregion-->
+
+    <string name="fingerprint_title">ລາຍນິ້ວມື</string>
+    <string name="fingerprint_message">ກະລຸນາ, ວາງນິ້ວມືຂອງທ່ານໃນເຄື່ອງອ່ານລາຍນິ້ວມື</string>
+    <string name="security_title">ຄວາມປອດໄພ</string>
+    <string name="fix_error">ມີຂໍ້ຜິດພາດບາງຢ່າງ. ກະລຸນາແກ້ໄຂກ່ອນທີ່ຈະສຶບຕໍ່</string>
+
+    <string name="filters_active">ກຳລັງນຳໃຊ້ຕົວກອງ</string>
+    <string name="filters_disabled">ບໍ່ໄດ້ໃຊ້ຕົວກອງ</string>
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
+    <string name="filters_title_org_unit">ຫົວ​ໜ່ວຍ​ການ​ຈັດ​ຕັ້ງ</string>
     <string name="filters_title_status">ສະຖານະ</string>
     <string name="filters_title_state">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
+    <string name="filters_title_assigned">ມອບໝາຍໃຫ້ຂ້ອຍ</string>
     <string name="filter_period_today">ມື້ນີ້</string>
     <string name="filter_period_yesterday">ມື້ວານນີ</string>
+    <string name="filter_period_tomorrow">ມື້ອື່ນ</string>
     <string name="filter_period_this_week">ທິດນີ້</string>
     <string name="filter_period_last_week">ອາທິດທີ່ຜ່ານມາ</string>
+    <string name="filter_perdior_next_week">ອາທິດໜ້າ</string>
     <string name="filter_period_this_month">ເດືອນນີ້</string>
     <string name="filter_period_last_month">ເດືອນຜ່ານມາ</string>
+    <string name="filter_period_next_month">ເດືອນໜ້າ</string>
+    <string name="filter_period_form_to">ຈາກ - ເຖິງ</string>
     <string name="filter_period_other">ອື່ນໆ</string>
+    <string name="filter_period_any">ທຸກເວລາ</string>
+    <string name="data_values_error_sync_message">ການຊິ້ງລົ້ມເຫຼວ. ການຊິ້ງລົ້ມເຫຼວ. ກວດສອບເບີ່ງຄ່າຂໍ້ມູນເພື່ອລອງແກ້ໄຂບັນຫາ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຫາກຍັງລົ້ມເຫຼວຢູ່ໃຫ້ຕິດຕໍ່ຜູ້ດູແລຮັກສາລະບົບຂອງທ່ານ</string>
+    <string name="sms_synced_message">ຂໍ້ມູນນີ້ຖຶກສົ່ງໄປຫາເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່ແລ້ວ ແຕ່ບໍໄດ້ຮັບປະກັນວ່າຈະໄດ້ຮັບການຮັກສາໃວ້</string>
     <string name="filter_event_status_open">ເປີດ</string>
     <string name="filter_event_status_schedule">ກຳນົດເວລາ</string>
     <string name="filter_event_status_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
+    <string name="filter_event_status_visited">ເຂົ້າຊົມ</string>
     <string name="filter_event_status_completed">ສໍາເລັດແລ້ວ</string>
     <string name="filter_event_status_skipped">ຂ້າມໄປ</string>
     <string name="event_tei_limits">ເຫດການ%sສູງສຸດ%s%sປະຈຸບັນ%sTEI%sສູງສຸດ%s%sປະຈຸບັນ%s</string>
     <string name="event_tei_limits_v2">ຈຳກັດການຕັ້ງຄ່າ%s\nເຫດການ:%s/%sTEI:%s/%s</string>
+    <string name="enrollment_data_hide">ເຊື່ອງຂໍ້ມູນການລົງທະບຽນ</string>
+    <string name="enrollment_data_show">ສະແດງຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
+    <string name="sms_enabled">ເປິດໃຊ້ງານໂມດູນຂໍ້ຄວາມ</string>
+    <string name="sms_disabled">ໂມດູນຂໍ້ຄວາມຖືກປິດໃຊ້ງານ</string>
+    <string name="sms_downloading_data">ກຳລັງດາວໂຫຼດຂໍ້ມູນສຳລັບໂມດູນຂໍ້ຄວາມ. ກະ​ລຸ​ນາ​ລໍ​ຖ້າ</string>
+    <string name="sms_empty_gateway">ເສັ້ນທາງການນຳສົ່ງຂໍ້ຄວາມຕ້ອງບໍ່ຫວ່າງເປົ່າ</string>
+    <string name="granular_sync_enrollments_empty">ບໍ່ມີການລົງທະບຽນທີ່ຈະອັບໂຫຼດ</string>
+    <string name="granular_sync_unsupported_task">ຍັງບໍ່ມີການຮອງຮັບຫນ້າວຽກການແປງນີ້</string>
+    <string name="disable_pin_locked">ບໍ່ຕ້ອງສະແດງລັອກໜ້າຈໍອີກ</string>
     <string name="set_pin">ຕັ້ງລະຫັດຜ່ານ</string>
+    <string name="conflict">ຂັດແຍ້ງ</string>
+    <string name="event_date_in_future_message">ເຫດການນີ້ບໍ່ສາມາດມີວັນທີໃນອະນາຄົດໄດ້. ກະລຸນາປ່ຽນ.</string>
+    <string name="change_event_date">ປ່ຽນວັນທີ</string>
     <string name="go_back">ກັບຄືນ</string>
     <string name="data_sets">ແບບຟອມ</string>
     <string name="no_notes">ບໍ່ຂໍ້ຄວາມ</string>
+    <string name="no_add_notes">ບໍ່ສາມາດເພີ່ມບັນທຶກໄດ້ອີກ</string>
+    <string name="new_note">ບັນທຶກໃໝ່</string>
+    <string name="discard_note">ຍົກເລີກບັນທຶກບໍ?</string>
+    <string name="interval_now">ດຽວນີ້</string>
+    <string name="interval_minute_ago">%dນາທີທີ່ຜ່ານມາ</string>
+    <string name="interval_hour_ago">%dຊົ່ວໂມງທີ່ຜ່ານມາ</string>
     <string name="interval_yesterday">ມື້ວານນີ</string>
+    <string name="program_selector">ການລົງທະບຽນໂປຣແກຣມ</string>
     <string name="choose_ou">ເລືອກຫົວໜ່ວຍອົງກອນ</string>
     <string name="choose_option">ເລືອກຄໍາຕອບ</string>
     <string name="limit_scope_global_trailing">ໃນທົ່ວໂລກ</string>
+    <string name="limit_scope_program_trailing">ຕໍ່ສາຍງານ</string>
     <string name="syncing_period_not_editable">ໄລຍະເວລາການຊິ້ງຂໍ້ມູນແມ່ນບໍ່ສາມາດແກ້ໄຂໄດ້</string>
     <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="dataset_overview">ລາຍລະອຽດ</string>

@@ -64,12 +64,12 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             dataSetUid = it.getString(DATASET_UID, "")
             accessWrite = it.getBoolean(DATASET_ACCESS)
         } ?: throw IllegalArgumentException("Arguments can't be null")
-        context.dataSetTableComponent.plus(
+        context.dataSetTableComponent?.plus(
             DataSetDetailModule(
                 this,
                 dataSetUid
             )
-        ).inject(this)
+        )?.inject(this)
     }
 
     override fun onCreateView(
@@ -163,6 +163,6 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     }
 
     override fun observeReopenChanges(): Flowable<Boolean> {
-        return activity.observeReopenChanges()
+        return activity.observeReopenChanges()!!
     }
 }

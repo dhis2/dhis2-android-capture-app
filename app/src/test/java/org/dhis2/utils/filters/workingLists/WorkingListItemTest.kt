@@ -1,14 +1,14 @@
 package org.dhis2.utils.filters.workingLists
 
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.workingLists.WorkingListItem
+import org.dhis2.commons.filters.workingLists.TrackedEntityInstanceWorkingList
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class WorkingListItemTest() {
 
-    private val workingListItem = WorkingListItem("uid", "displayName")
+    private val workingListItem = TrackedEntityInstanceWorkingList("uid", "displayName")
 
     @After
     fun tearDown() {

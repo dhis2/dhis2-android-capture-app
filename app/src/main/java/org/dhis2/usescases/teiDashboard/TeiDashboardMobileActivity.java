@@ -20,6 +20,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -44,7 +45,7 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.sync.ConflictType;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -58,6 +59,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -195,7 +197,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     networkUtils.performIfOnline(
                             this,
                             () -> {
-                                if (!relationshipMap.getValue()) {
+                                if (Boolean.FALSE.equals(relationshipMap.getValue())) {
                                     binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
                                 } else {
                                     binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
@@ -219,6 +221,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.syncButton.setOnClickListener(v -> {
             openSyncDialog();
         });
+
+        if(SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())){
+            openSyncDialog();
+        }
     }
 
     @Override
@@ -258,9 +264,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void openSyncDialog() {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.TEI)
-                .setUid(enrollmentUid)
+       new SyncStatusDialog.Builder()
+                .withContext(this, null)
+               .withSyncContext(
+                       new SyncContext.Enrollment(enrollmentUid)
+               )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged && !restartingActivity) {
                         restartingActivity = true;
@@ -268,9 +276,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
-                })
-                .build();
-        syncDialog.show(getSupportFragmentManager(), TEI_SYNC);
+                }).show(TEI_SYNC);
     }
 
     private void setViewpagerAdapter() {
@@ -441,8 +447,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
             binding.filterCounter.setVisibility(View.GONE);
             binding.searchFilterGeneral.setVisibility(View.GONE);
-
         }
+        showLoadingProgress(false);
     }
 
     @Override
@@ -481,7 +487,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setTutorial() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (getAbstractActivity() != null)
                 HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.TEI_DASHBOARD, null);
         }, 500);
@@ -554,7 +560,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         int menu;
         if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
-        } else if (groupByStage.getValue()) {
+        } else if (Boolean.TRUE.equals(groupByStage.getValue())) {
             menu = R.menu.dashboard_menu_group;
         } else {
             menu = R.menu.dashboard_menu;

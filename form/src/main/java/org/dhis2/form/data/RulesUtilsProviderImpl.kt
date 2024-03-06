@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.bindings.formatData
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
@@ -23,7 +24,10 @@ import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
-class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
+class RulesUtilsProviderImpl(
+    val d2: D2,
+    private val optionsRepository: OptionsRepository
+) : RulesUtilsProvider {
 
     var applyForEvent = false
     var canComplete = true
@@ -72,64 +76,79 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionShowError -> showError(
                     it.ruleAction() as RuleActionShowError,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionHideField -> hideField(
                     it.ruleAction() as RuleActionHideField,
                     fieldViewModels
                 )
+
                 is RuleActionDisplayText -> displayText(
                     it.ruleAction() as RuleActionDisplayText,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionDisplayKeyValuePair -> displayKeyValuePair(
                     it.ruleAction() as RuleActionDisplayKeyValuePair,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionHideSection -> hideSection(
                     fieldViewModels,
                     it.ruleAction() as RuleActionHideSection
                 )
+
                 is RuleActionAssign -> assign(
                     it.ruleAction() as RuleActionAssign,
                     it,
                     fieldViewModels
                 )
+
                 is RuleActionCreateEvent -> createEvent(
                     it.ruleAction() as RuleActionCreateEvent,
                     fieldViewModels
                 )
+
                 is RuleActionSetMandatoryField -> setMandatory(
                     it.ruleAction() as RuleActionSetMandatoryField,
                     fieldViewModels
                 )
+
                 is RuleActionWarningOnCompletion -> warningOnCompletion(
                     it.ruleAction() as RuleActionWarningOnCompletion,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionErrorOnCompletion -> errorOnCompletion(
                     it.ruleAction() as RuleActionErrorOnCompletion,
                     fieldViewModels,
                     it.data() ?: ""
                 )
+
                 is RuleActionHideProgramStage -> hideProgramStage(
                     it.ruleAction() as RuleActionHideProgramStage
                 )
+
                 is RuleActionHideOption -> hideOption(
                     it.ruleAction() as RuleActionHideOption
                 )
+
                 is RuleActionHideOptionGroup -> hideOptionGroup(
                     it.ruleAction() as RuleActionHideOptionGroup
                 )
+
                 is RuleActionShowOptionGroup -> showOptionGroup(
                     it.ruleAction() as RuleActionShowOptionGroup
                 )
+
                 else -> it.ruleId()?.let { ruleUid -> unsupportedRuleActions.add(ruleUid) }
             }
         }
@@ -268,15 +287,13 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         ruleEffect: RuleEffect,
         fieldViewModels: MutableMap<String, FieldUiModel>
     ) {
-        if (fieldViewModels[assign.field()] != null) {
-            val field = fieldViewModels[assign.field()]!!
-
+        fieldViewModels[assign.field()]?.let { field ->
             val value =
-                if (field.optionSet != null && field.value != null) {
-                    val valueOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
-                            .byDisplayName().eq(field.displayName)
-                            .one().blockingGet()
+                if (field.optionSet != null && field.displayName != null) {
+                    val valueOption = optionsRepository.getOptionByDisplayName(
+                        optionSet = field.optionSet!!,
+                        displayName = field.displayName!!
+                    )
                     if (valueOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(
@@ -293,14 +310,16 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 }
 
             if (value == null || value != ruleEffect.data()) {
-                valuesToChange[assign.field()] = ruleEffect.data()
+                ruleEffect.data()?.formatData(field.valueType)?.let {
+                    valuesToChange[assign.field()] = it
+                }
             }
             val valueToShow =
                 if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
-                    val effectOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
-                            .byCode().eq(ruleEffect.data())
-                            .one().blockingGet()
+                    val effectOption = optionsRepository.getOptionByCode(
+                        optionSet = field.optionSet!!,
+                        code = ruleEffect.data()!!
+                    )
                     if (effectOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(
@@ -320,13 +339,20 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     ruleEffect.data()
                 }
 
-            fieldViewModels[assign.field()] =
-                fieldViewModels[assign.field()]!!
-                    .setValue(ruleEffect.data())
-                    .setDisplayName(valueToShow)
-                    .setEditable(false)
-        } else if (!hiddenFields.contains(assign.field())) {
-            valuesToChange[assign.field()] = ruleEffect.data()
+            ruleEffect.data()?.formatData(field.valueType)?.let { formattedValue ->
+                val updatedField = fieldViewModels[assign.field()]
+                    ?.setValue(formattedValue)
+                    ?.setDisplayName(valueToShow?.formatData(field.valueType))
+                    ?.setEditable(false)
+
+                updatedField?.let {
+                    fieldViewModels[assign.field()] = it
+                }
+            }
+        } ?: {
+            if (!hiddenFields.contains(assign.field())) {
+                valuesToChange[assign.field()] = ruleEffect.data()?.formatData()
+            }
         }
     }
 
@@ -385,9 +411,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         messageOnComplete = message
     }
 
-    private fun hideProgramStage(
-        hideProgramStage: RuleActionHideProgramStage
-    ) {
+    private fun hideProgramStage(hideProgramStage: RuleActionHideProgramStage) {
         stagesToHide.add(hideProgramStage.programStage())
     }
 
@@ -398,9 +422,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         programStages.remove(hideProgramStage.programStage())
     }
 
-    private fun hideOption(
-        hideOption: RuleActionHideOption
-    ) {
+    private fun hideOption(hideOption: RuleActionHideOption) {
         if (!optionsToHide.containsKey(hideOption.field())) {
             optionsToHide[hideOption.field()] = mutableListOf()
         }
@@ -408,18 +430,16 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelected(
-                hideOption.field(),
-                hideOption.option()
-            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                    hideOption.field(),
+                    hideOption.option()
+                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(FieldWithNewValue(hideOption.field(), null))
             }
         }
     }
 
-    private fun hideOptionGroup(
-        hideOptionGroup: RuleActionHideOptionGroup
-    ) {
+    private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup) {
         if (!optionGroupsToHide.containsKey(hideOptionGroup.field())) {
             optionGroupsToHide[hideOptionGroup.field()] = mutableListOf()
         }
@@ -427,19 +447,17 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelectedInGroup(
-                hideOptionGroup.field(),
-                hideOptionGroup.optionGroup(),
-                true
-            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                    hideOptionGroup.field(),
+                    hideOptionGroup.optionGroup(),
+                    true
+                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(FieldWithNewValue(hideOptionGroup.field(), null))
             }
         }
     }
 
-    private fun showOptionGroup(
-        showOptionGroup: RuleActionShowOptionGroup
-    ) {
+    private fun showOptionGroup(showOptionGroup: RuleActionShowOptionGroup) {
         val fieldUid: String = showOptionGroup.field()
         val optionGroupUid: String = showOptionGroup.optionGroup()
 
@@ -449,14 +467,14 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             if (optionGroupsToShow[fieldUid] == null) {
                 optionGroupsToShow[fieldUid] = mutableListOf(optionGroupUid)
             } else {
-                optionGroupsToShow[fieldUid]!!.add(optionGroupUid)
+                optionGroupsToShow[fieldUid]?.add(optionGroupUid)
             }
         }
         if (valueStore?.deleteOptionValueIfSelectedInGroup(
-            fieldUid,
-            optionGroupUid,
-            false
-        )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                fieldUid,
+                optionGroupUid,
+                false
+            )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         ) {
             fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
         }

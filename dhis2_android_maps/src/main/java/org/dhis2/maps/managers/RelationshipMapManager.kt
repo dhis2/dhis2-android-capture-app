@@ -24,10 +24,7 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
     private lateinit var boundingBox: BoundingBox
     private lateinit var featureCollections: Map<String, FeatureCollection>
 
-    fun update(
-        featureCollections: Map<String, FeatureCollection>,
-        boundingBox: BoundingBox
-    ) {
+    fun update(featureCollections: Map<String, FeatureCollection>, boundingBox: BoundingBox) {
         this.featureCollections = featureCollections
         this.boundingBox = boundingBox
         if (isMapReady()) {

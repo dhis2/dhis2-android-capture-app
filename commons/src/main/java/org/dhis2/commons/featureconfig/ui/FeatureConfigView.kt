@@ -25,7 +25,8 @@ class FeatureConfigView : AppCompatActivity() {
             ?.inject(this)
 
         val binding = DataBindingUtil.setContentView<FeatureConfigViewBinding>(
-            this, R.layout.feature_config_view
+            this,
+            R.layout.feature_config_view
         )
 
         binding.lifecycleOwner = this

@@ -1,8 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import dhis2.org.analytics.charts.ui.SectionTitle
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -21,6 +18,9 @@ import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class EventIndicatorRepositoryTest {
 

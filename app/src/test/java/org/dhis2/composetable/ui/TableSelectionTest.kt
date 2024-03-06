@@ -243,4 +243,11 @@ class TableSelectionTest {
             )
         )
     }
+
+    @Test
+    fun `Should return selected cell row index`() {
+        assertTrue(cellSelection.getSelectedCellRowIndex(selectedTableId) == selectedRow)
+        assertTrue(cellSelection.getSelectedCellRowIndex(selectedTableId) != 1)
+        assertTrue(cellSelection.getSelectedCellRowIndex("other table") == -1)
+    }
 }

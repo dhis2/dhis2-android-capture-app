@@ -1,4 +1,5 @@
 package dhis2.org.analytics.charts.di
+
 import android.content.Context
 import dagger.Component
 import dagger.Module
@@ -15,6 +16,7 @@ import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
+import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProviderImpl
 import dhis2.org.analytics.charts.providers.NutritionDataProvider
@@ -44,16 +46,22 @@ class ChartsModule {
         analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
         dataElementToGraph: DataElementToGraph,
         indicatorToGraph: ProgramIndicatorToGraph,
-        analyticsResources: AnalyticResources
-    ): ChartsRepository =
-        ChartsRepositoryImpl(
-            d2,
-            visualizationToGraph,
-            analyticsTeiSettingsToGraph,
-            dataElementToGraph,
-            indicatorToGraph,
-            analyticsResources
-        )
+        analyticsResources: AnalyticResources,
+        analyticsFilterProvider: AnalyticsFilterProvider
+    ): ChartsRepository = ChartsRepositoryImpl(
+        d2,
+        visualizationToGraph,
+        analyticsTeiSettingsToGraph,
+        dataElementToGraph,
+        indicatorToGraph,
+        analyticsResources,
+        analyticsFilterProvider
+    )
+
+    @Provides
+    internal fun provideAnalyticFilters(d2: D2): AnalyticsFilterProvider {
+        return AnalyticsFilterProvider(d2)
+    }
 
     @Provides
     internal fun provideVisualizationToGraph(
@@ -125,9 +133,7 @@ class ChartsModule {
     }
 
     @Provides
-    internal fun provideResourceManager(
-        context: Context
-    ): ResourceManager {
+    internal fun provideResourceManager(context: Context): ResourceManager {
         return ResourceManager(context)
     }
 

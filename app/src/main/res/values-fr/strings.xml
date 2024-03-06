@@ -14,8 +14,6 @@
     <string name="error_wrong_credentials">références incorrectes</string>
     <string name="error_unexpected_error">Erreur inattendue </string>
     <string name="error_internal_server_error">Erreur interne </string>
-    <string name="yes">oui </string>
-    <string name="no">non</string>
     <string name="no_value">pas de valeur</string>
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
     <string name="no_reserved_values_connection">Il n\'y a plus de valeurs réservées. Veuillez vous connecter pour en obtenir d\'autres.</string>
@@ -210,7 +208,6 @@
     <string name="settings_sms_module_title">Module SMS:</string>
     <string name="settings_sms_receiver_number">Passerelle SMS</string>
     <string name="settings_sms_result_sender_number">Résultat de l\'origine du SMS</string>
-    <string name="settings_sms_result_timeout">Résultat du time-out SMS</string>
     <string name="settings_sms_result_timeout_hint">secondes</string>
     <string name="settings_sms_result_sender_hint">nombre</string>
     <string name="settings_sms_receiver_number_hint">nombre</string>
@@ -498,8 +495,6 @@
     <string name="org_unit_selection_warning">Au moins une unité d\'organisation doit être sélectionnée</string>
     <string name="send_user_name_title">Envoyer les données</string>
     <string name="send_user_name_mesage">Aidez DHIS2 à améliorer cette appli en partageant les registres d\'erreurs associés avec votre identifiant utilisateur. </string>
-    <string name="analytics_crash_name_message">Cette application enverra des erreurs du log associés à votre id d\'utilisateur afin d\'améliorer sa performance et des statistiques introuvables pour améliorer l\'expérience utilisateur.</string>
-    <string name="send_user_privacy_policy">Pour plus d\'informations consultez notre politique de confidentialité</string>
     <string name="check_mandatory_field">Vérifier les champs</string>
     <string name="error_no_network_during_sync">Vous avez perdu la connexion lors de la synchronisation de la configuration. Veuillez ressayer plus tard.</string>
     <string name="action_agree">Accord</string>

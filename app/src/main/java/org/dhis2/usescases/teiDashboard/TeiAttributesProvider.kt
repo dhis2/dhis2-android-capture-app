@@ -59,6 +59,23 @@ class TeiAttributesProvider(private val d2: D2) {
         )
     }
 
+    fun getListOfValuesFromProgramTrackedEntityAttributesByProgram(
+        programUid: String,
+        trackedEntityInstanceUid: String
+    ): List<TrackedEntityAttributeValue> {
+        val attrFromProgramTrackedEntityAttribute =
+            d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(programUid).byDisplayInList().isTrue
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet().mapNotNull {
+                    it.trackedEntityAttribute()?.uid() to it
+                }.toMap()
+
+        return attrFromProgramTrackedEntityAttribute.mapNotNull {
+            getTrackedEntityAttributeValue(trackedEntityInstanceUid, it.key)
+        }
+    }
+
     private fun getTrackedEntityAttributeValue(
         trackedEntityInstanceUid: String,
         trackedEntityAttributeUid: String?

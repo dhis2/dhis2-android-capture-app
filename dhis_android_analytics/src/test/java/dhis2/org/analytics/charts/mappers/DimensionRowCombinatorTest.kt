@@ -51,27 +51,26 @@ class DimensionRowCombinatorTest {
         )
     }
 
-    private fun testGridAnalyticsResponse(
-        testingRows: List<List<GridHeaderItem>> = testingRows()
-    ) = GridAnalyticsResponseSamples.sample1.copy(
-        metadata = GridAnalyticsResponseSamples.sample1.metadata.toMutableMap().apply {
-            putAll(
-                mapOf(
-                    row11.uid() to MetadataItem.CategoryOptionItem(row11),
-                    row12.uid() to MetadataItem.CategoryOptionItem(row12),
-                    row21.uid() to MetadataItem.CategoryOptionItem(row21),
-                    row22.uid() to MetadataItem.CategoryOptionItem(row22),
-                    row23.uid() to MetadataItem.CategoryOptionItem(row23),
-                    row31.uid() to MetadataItem.CategoryOptionItem(row31),
-                    row32.uid() to MetadataItem.CategoryOptionItem(row32)
+    private fun testGridAnalyticsResponse(testingRows: List<List<GridHeaderItem>> = testingRows()) =
+        GridAnalyticsResponseSamples.sample1.copy(
+            metadata = GridAnalyticsResponseSamples.sample1.metadata.toMutableMap().apply {
+                putAll(
+                    mapOf(
+                        row11.uid() to MetadataItem.CategoryOptionItem(row11),
+                        row12.uid() to MetadataItem.CategoryOptionItem(row12),
+                        row21.uid() to MetadataItem.CategoryOptionItem(row21),
+                        row22.uid() to MetadataItem.CategoryOptionItem(row22),
+                        row23.uid() to MetadataItem.CategoryOptionItem(row23),
+                        row31.uid() to MetadataItem.CategoryOptionItem(row31),
+                        row32.uid() to MetadataItem.CategoryOptionItem(row32)
+                    )
                 )
+            },
+            headers = GridHeader(
+                columns = GridAnalyticsResponseSamples.sample1.headers.columns,
+                rows = testingRows
             )
-        },
-        headers = GridHeader(
-            columns = GridAnalyticsResponseSamples.sample1.headers.columns,
-            rows = testingRows
         )
-    )
 
     private fun testingRows() = listOf(
         listOf(

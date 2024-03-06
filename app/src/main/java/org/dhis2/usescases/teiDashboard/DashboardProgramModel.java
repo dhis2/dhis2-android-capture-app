@@ -4,6 +4,7 @@ import androidx.databinding.BaseObservable;
 
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -12,6 +13,7 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -104,9 +106,15 @@ public class DashboardProgramModel extends BaseObservable {
         return attributeValue != null ? attributeValue.value() : "";
     }
 
-    public List<Program> getEnrollmentPrograms() {
+    public List<Program> getProgramsWithActiveEnrollment() {
         Collections.sort(enrollmentPrograms, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
-        return enrollmentPrograms;
+        List<Program> listWithActiveEnrollments = new ArrayList<>();
+        for (Program program : enrollmentPrograms) {
+            if (getEnrollmentForProgram(program.uid()) != null) {
+                listWithActiveEnrollments.add(program);
+            }
+        }
+        return listWithActiveEnrollments;
     }
 
     public List<Event> getEvents() {
@@ -128,7 +136,7 @@ public class DashboardProgramModel extends BaseObservable {
 
     public Enrollment getEnrollmentForProgram(String uid) {
         for (Enrollment enrollment : teiEnrollments)
-            if (Objects.equals(enrollment.program(), uid))
+            if (Objects.equals(enrollment.program(), uid) && enrollment.status() == EnrollmentStatus.ACTIVE)
                 return enrollment;
         return null;
     }

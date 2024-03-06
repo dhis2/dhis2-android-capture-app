@@ -332,11 +332,10 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    @Ignore("Unique value exception")
     fun shouldSuccessfullyShowMapAndTeiCard() {
-        val firstName = "Lynn"
+        val firstName = "Filona"
 
-        prepareTBIntentAndLaunchActivity(rule)
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnShowMap()
