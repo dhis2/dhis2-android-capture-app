@@ -227,12 +227,16 @@ fun monthsBetween(startDate: Date?, endDate: Date?): Int {
     require(!(startDate == null || endDate == null)) { "Both startDate and endDate must be provided" }
     val startCalendar = Calendar.getInstance()
     startCalendar.time = startDate
-    val startDateTotalMonths = (12 * startCalendar[Calendar.YEAR]
-            + startCalendar[Calendar.MONTH])
+    val startDateTotalMonths = (
+        12 * startCalendar[Calendar.YEAR] +
+            startCalendar[Calendar.MONTH]
+        )
     val endCalendar = Calendar.getInstance()
     endCalendar.time = endDate
-    val endDateTotalMonths = (12 * endCalendar[Calendar.YEAR]
-            + endCalendar[Calendar.MONTH])
+    val endDateTotalMonths = (
+        12 * endCalendar[Calendar.YEAR] +
+            endCalendar[Calendar.MONTH]
+        )
     return endDateTotalMonths - startDateTotalMonths
 }
 private const val UI_FORMAT = "ddMMyyyy"
