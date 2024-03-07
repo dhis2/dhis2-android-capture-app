@@ -19,6 +19,7 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
@@ -144,4 +145,12 @@ class TEIDataModule(
 
     @Provides
     fun provideContractHandler() = TeiDataContractHandler(registry)
+
+    @Provides
+    @PerFragment
+    fun providesTEIEventCardMapper(
+        resourceManager: ResourceManager,
+    ): TEIEventCardMapper {
+        return TEIEventCardMapper(resourceManager)
+    }
 }

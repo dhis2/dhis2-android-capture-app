@@ -45,6 +45,8 @@
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>
     <string name="add">Add</string>
+    <string name="enter_event_data">Enter %s</string>
+    <string name="enter_cancel_event_data">Enter / Cancel %s</string>
     <string name="schedule_new">Schedule new</string>
     <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
     <string name="referral">Referral</string>
@@ -94,6 +96,7 @@
     <string name="program_inactive">Program inactive</string>
 
     <string name="event_open">Open</string>
+    <string name="event_not_completed">Not completed</string>
     <string name="event_completed">Event completed</string>
     <string name="read_only">Read only</string>
     <string name="finish_and_complete">Finish and complete</string>
@@ -167,11 +170,14 @@
     <string name="program_not_allow_events">This program does not allow more events</string>
 
     <!--DONE TASKS-->
+    <string name="events_no_data">No data</string>
     <string name="events">events</string>
     <string name="done_task">Home</string>
     <string name="app_info">App Info</string>
     <string name="log_out">Log Out</string>
     <string name="block_session">Block Session</string>
+    <string name="show_more_events">Show %s more…</string>
+    <string name="show_less_events">Show less…</string>
 
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>
@@ -931,7 +937,8 @@
     <string name="overdue">Overdue %s</string>
     <string name="registered_in">Registered in:</string>
     <string name="view_only">View only</string>
-    <string name="scheduled">Scheduled: %</string>
+    <string name="scheduled">Scheduled: %s</string>
+    <string name="scheduled_for">Scheduled for %s</string>
     <string name="skipped">Skipped</string>
     <string name="programs">Programs:</string>
     <string name="sync_successful">Sync successful</string>

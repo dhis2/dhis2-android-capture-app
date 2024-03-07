@@ -39,7 +39,7 @@ class TeiDataRepositoryImpl(
         return if (groupedByStage) {
             getGroupedEvents(eventRepo, selectedStage)
         } else {
-            getTimelineEvents(eventRepo)
+            getTimelineEvents(eventRepo, selectedStage.showAllEvents)
         }
     }
 
@@ -145,6 +145,7 @@ class TeiDataRepositoryImpl(
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
+        val maxEventToShow = 3
 
         return d2.programModule().programStages()
             .byProgramUid().eq(programUid)
@@ -159,8 +160,6 @@ class TeiDataRepositoryImpl(
                         .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet()
 
-                    val isSelected = programStage.uid() == selectedStage.stageUid
-
                     val canAddEventToEnrollment = enrollmentUid?.let {
                         programStage.access()?.data()?.write() == true &&
                             d2.eventModule().eventService().blockingCanAddEventToEnrollment(
@@ -169,6 +168,9 @@ class TeiDataRepositoryImpl(
                             )
                     } ?: false
 
+                    val showAllEvents = selectedStage.showAllEvents &&
+                        selectedStage.stageUid == programStage.uid()
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.STAGE,
@@ -176,7 +178,7 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            selectedStage.showOptions && isSelected,
+                            selectedStage.showOptions,
                             canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
@@ -186,40 +188,62 @@ class TeiDataRepositoryImpl(
                             nameCategoryOptionCombo = null,
                         ),
                     )
-                    if (isSelected) {
-                        checkEventStatus(eventList).forEachIndexed { index, event ->
-                            val showTopShadow = index == 0
-                            val showBottomShadow = index == eventList.size - 1
-                            eventViewModels.add(
-                                EventViewModel(
-                                    EventViewModelType.EVENT,
-                                    programStage,
-                                    event,
-                                    0,
-                                    null,
-                                    isSelected = true,
-                                    canAddNewEvent = true,
-                                    orgUnitName = d2.organisationUnitModule().organisationUnits()
-                                        .uid(event.organisationUnit()).blockingGet()?.displayName()
-                                        ?: "",
-                                    catComboName = getCatOptionComboName(event.attributeOptionCombo()),
-                                    dataElementValues = getEventValues(
-                                        event.uid(),
-                                        programStage.uid(),
-                                    ),
-                                    groupedByStage = true,
-                                    showTopShadow = showTopShadow,
-                                    showBottomShadow = showBottomShadow,
-                                    displayDate = periodUtils.getPeriodUIString(
-                                        programStage.periodType() ?: PeriodType.Daily,
-                                        event.eventDate() ?: event.dueDate()!!,
-                                        Locale.getDefault(),
-                                    ),
-                                    nameCategoryOptionCombo =
-                                    getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                    checkEventStatus(eventList).take(
+                        if (showAllEvents) eventList.size else maxEventToShow,
+                    ).forEachIndexed { index, event ->
+                        val showTopShadow = index == 0
+                        val showBottomShadow = index == eventList.size - 1
+                        eventViewModels.add(
+                            EventViewModel(
+                                EventViewModelType.EVENT,
+                                programStage,
+                                event,
+                                0,
+                                null,
+                                isSelected = true,
+                                canAddNewEvent = true,
+                                orgUnitName = d2.organisationUnitModule().organisationUnits()
+                                    .uid(event.organisationUnit()).blockingGet()?.displayName()
+                                    ?: "",
+                                catComboName = getCatOptionComboName(event.attributeOptionCombo()),
+                                dataElementValues = getEventValues(
+                                    event.uid(),
+                                    programStage.uid(),
                                 ),
-                            )
-                        }
+                                groupedByStage = true,
+                                showTopShadow = showTopShadow,
+                                showBottomShadow = showBottomShadow,
+                                displayDate = periodUtils.getPeriodUIString(
+                                    programStage.periodType() ?: PeriodType.Daily,
+                                    event.eventDate() ?: event.dueDate()!!,
+                                    Locale.getDefault(),
+                                ),
+                                nameCategoryOptionCombo =
+                                getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                            ),
+                        )
+                    }
+
+                    if (eventList.size > maxEventToShow) {
+                        eventViewModels.add(
+                            EventViewModel(
+                                EventViewModelType.TOGGLE_BUTTON,
+                                programStage,
+                                null,
+                                eventList.size,
+                                null,
+                                isSelected = false,
+                                canAddNewEvent = false,
+                                orgUnitName = "",
+                                catComboName = "",
+                                dataElementValues = emptyList(),
+                                groupedByStage = true,
+                                displayDate = null,
+                                nameCategoryOptionCombo = null,
+                                showAllEvents = showAllEvents,
+                                maxEventsToShow = maxEventToShow,
+                            ),
+                        )
                     }
                 }
                 eventViewModels
@@ -228,15 +252,19 @@ class TeiDataRepositoryImpl(
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
+        showAllEvents: Boolean,
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
+        val maxEventToShow = 5
 
         return eventRepository
             .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                checkEventStatus(eventList).forEachIndexed { _, event ->
+                checkEventStatus(eventList).take(
+                    if (showAllEvents) eventList.size else maxEventToShow,
+                ).forEachIndexed { _, event ->
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
@@ -262,6 +290,31 @@ class TeiDataRepositoryImpl(
                             ),
                             nameCategoryOptionCombo =
                             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                        ),
+                    )
+                }
+
+                if (eventList.size > maxEventToShow) {
+                    val programStage = d2.programModule().programStages()
+                        .uid(eventList[maxEventToShow - 1].programStage())
+                        .blockingGet()
+                    eventViewModels.add(
+                        EventViewModel(
+                            EventViewModelType.TOGGLE_BUTTON,
+                            programStage,
+                            null,
+                            eventList.size,
+                            null,
+                            isSelected = false,
+                            canAddNewEvent = false,
+                            orgUnitName = "",
+                            catComboName = "",
+                            dataElementValues = emptyList(),
+                            groupedByStage = false,
+                            displayDate = null,
+                            nameCategoryOptionCombo = null,
+                            showAllEvents = showAllEvents,
+                            maxEventsToShow = maxEventToShow,
                         ),
                     )
                 }
@@ -341,5 +394,15 @@ class TeiDataRepositoryImpl(
             d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
                 ?.displayName()
         }
+    }
+
+    override fun isEventEditable(eventUid: String): Boolean {
+        return d2.eventModule().eventService().blockingIsEditable(eventUid)
+    }
+
+    override fun displayOrganisationUnit(programUid: String): Boolean {
+        return d2.organisationUnitModule().organisationUnits()
+            .byProgramUids(listOf(programUid))
+            .blockingGet().size > 1
     }
 }

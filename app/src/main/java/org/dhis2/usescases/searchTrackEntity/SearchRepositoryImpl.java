@@ -651,6 +651,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                             false,
                             false,
                             false,
+                            false,
+                            0,
                             periodUtils.getPeriodUIString(cacheStages.get(event.programStage()).periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
                             null
                     ));

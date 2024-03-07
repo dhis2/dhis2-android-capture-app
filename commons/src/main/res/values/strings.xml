@@ -234,6 +234,20 @@
         <item quantity="one">%d year overdue</item>
         <item quantity="other">%d years overdue</item>
     </plurals>
+
+    <plurals name="schedule_days">
+        <item quantity="one">In %d day</item>
+        <item quantity="other">In %d days</item>
+    </plurals>
+    <plurals name="schedule_months">
+        <item quantity="one">In %d month</item>
+        <item quantity="other">In %d months</item>
+    </plurals>
+    <plurals name="schedule_years">
+        <item quantity="one">In %d year</item>
+        <item quantity="other">In %d years</item>
+    </plurals>
+
     <string name="open_with">Open with</string>
 
     <string name="file_downladed">File downladed successfully</string>

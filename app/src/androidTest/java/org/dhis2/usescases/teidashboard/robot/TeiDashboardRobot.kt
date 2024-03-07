@@ -2,9 +2,13 @@ package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
 import android.view.View
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,7 +38,6 @@ import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.StageViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
@@ -91,17 +94,8 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
-    fun clickOnEventWith(eventDate: String, orgUnit: String) {
-        onView(withId(R.id.tei_recycler))
-            .perform(
-                actionOnItem<DashboardProgramViewHolder>(
-                    allOf(
-                        hasDescendant(withText(eventDate)), hasDescendant(
-                            withText(orgUnit)
-                        )
-                    ), click()
-                )
-            )
+    fun clickOnEventWith(composeTestRule: ComposeTestRule, searchParam: String) {
+        composeTestRule.onAllNodesWithText(searchParam, useUnmergedTree = true).onFirst().performClick()
     }
 
     fun clickOnEventWith(eventName: String, eventStatus: Int, date: String) {
@@ -129,14 +123,14 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnFab(composeTestRule: ComposeTestRule) {
-        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON,useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON, useUnmergedTree = true).performClick()
     }
 
     fun clickOnReferral(composeTestRule: ComposeTestRule) {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val referalTag = targetContext.resources.getString(R.string.referral)
         composeTestRule.onNodeWithTag(referalTag).performClick()
-//        onView(withTagValue(equalTo(referalTag))).perform(click())
+        //        onView(withTagValue(equalTo(referalTag))).perform(click())
     }
 
     fun checkCannotAddMoreEventToastIsShown() {
@@ -314,9 +308,9 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuProgramEnrollments() {
-        with(InstrumentationRegistry.getInstrumentation().targetContext){
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val programSelectorLabel = getString(R.string.program_selector_V2)
-            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment,2)
+            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment, 2)
             val itemLabel = programSelectorLabel.format(enrollmentLabel)
             onView(withText(itemLabel)).perform(click())
         }
@@ -351,34 +345,17 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(),
-                        atPosition(
-                            position, allOf(
-                                hasDescendant(withText(eventName)),
-                                hasDescendant(
-                                    withTagValue(
-                                        anyOf(
-                                            equalTo(R.drawable.ic_event_status_complete),
-                                            equalTo(R.drawable.ic_event_status_complete_read)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+    fun checkEventWasCreatedAndClosed(composeTestRule: ComposeTestRule, eventName: String) {
+        composeTestRule.onNodeWithText(eventName).assertIsDisplayed()
+        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val viewOnlyText = targetContext.resources.getString(R.string.view_only)
+        composeTestRule.onNodeWithText(viewOnlyText).assertDoesNotExist()
     }
 
     fun clickOnMenuDeleteEnrollment() {
-        with(InstrumentationRegistry.getInstrumentation().targetContext){
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val deleteEnrollmentLabel = getString(R.string.dashboard_menu_delete_enrollment_V2)
-            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment,1)
+            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment, 1)
             val itemLabel = deleteEnrollmentLabel.format(enrollmentLabel)
             onView(withText(itemLabel)).perform(click())
         }
@@ -416,52 +393,6 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    private fun checkEventIsClosed(position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(),
-                        atPosition(
-                            position, hasDescendant(
-                                withTagValue(
-                                    anyOf(
-                                        equalTo(R.drawable.ic_event_status_open_read),
-                                        equalTo(R.drawable.ic_event_status_overdue_read),
-                                        equalTo(R.drawable.ic_event_status_complete_read),
-                                        equalTo(R.drawable.ic_event_status_skipped_read),
-                                        equalTo(R.drawable.ic_event_status_schedule_read)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-    }
-
-    private fun checkEventIsOpen(position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(),
-                        atPosition(
-                            position,
-                            hasDescendant(
-                                withTagValue(
-                                    anyOf(
-                                        equalTo(R.drawable.ic_event_status_open),
-                                        equalTo(R.drawable.ic_event_status_open_read)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-    }
-
     private fun checkEventIsCompleted(position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(
@@ -484,45 +415,6 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    private fun checkEventIsInactivate(position: Int) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(), isNotEmpty(), atPosition(
-                            position, hasDescendant(
-                                withTagValue(
-                                    anyOf(
-                                        equalTo(R.drawable.ic_event_status_open_read),
-                                        equalTo(R.drawable.ic_event_status_overdue_read),
-                                        equalTo(R.drawable.ic_event_status_complete_read),
-                                        equalTo(R.drawable.ic_event_status_skipped_read),
-                                        equalTo(R.drawable.ic_event_status_schedule_read)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-    }
-
-    fun checkAllEventsAreInactive(totalEvents: Int) {
-        var event = 0
-        while (event < totalEvents) {
-            checkEventIsInactivate(event)
-            event++
-        }
-    }
-
-    fun checkAllEventsAreOpened(totalEvents: Int) {
-        var event = 0
-        while (event < totalEvents) {
-            checkEventIsOpen(event)
-            event++
-        }
-    }
-
     fun checkAllEventsCompleted(totalEvents: Int) {
         var event = 0
         while (event < totalEvents) {
@@ -531,22 +423,19 @@ class TeiDashboardRobot : BaseRobot() {
         }
     }
 
-    fun checkAllEventsAreClosed(totalEvents: Int) {
-        var event = 0
-        while (event < totalEvents) {
-            checkEventIsClosed(event)
-            event++
-        }
+    fun checkAllEventsAreClosed(
+        composeTestRule: ComposeContentTestRule,
+    ) {
+        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val viewOnlyText = targetContext.resources.getString(R.string.view_only)
+        composeTestRule.onAllNodes(hasText(viewOnlyText), useUnmergedTree = false)
     }
 
-    fun clickOnStageGroup(programStageName: String) {
-        onView(withId(R.id.tei_recycler))
-            .perform(
-                actionOnItem<StageViewHolder>(
-                    hasDescendant(withText(programStageName)),
-                    click()
-                )
-            )
+    fun clickOnStageGroup(
+        composeTestRule: ComposeTestRule,
+        programStageName: String
+    ) {
+        composeTestRule.onNodeWithText(programStageName).performClick()
     }
 
     fun clickOnEventGroupByStage(eventDate: String) {
@@ -619,18 +508,11 @@ class TeiDashboardRobot : BaseRobot() {
             )
     }
 
-    fun clickOnEventGroupByStageUsingOU(orgUnit: String) {
-        onView(withId(R.id.tei_recycler))
-            .perform(
-                actionOnItem<EventViewHolder>(
-                    hasDescendant(
-                        allOf(
-                            withText(orgUnit),
-                            withId(R.id.organisationUnit)
-                        )
-                    ), click()
-                )
-            )
+    fun clickOnEventGroupByStageUsingDate(
+        composeTestRule: ComposeTestRule,
+        dueDate: String
+    ) {
+        composeTestRule.onNodeWithText(dueDate).performClick()
     }
 
     fun checkProgramStageIsHidden(stageName: String) {
