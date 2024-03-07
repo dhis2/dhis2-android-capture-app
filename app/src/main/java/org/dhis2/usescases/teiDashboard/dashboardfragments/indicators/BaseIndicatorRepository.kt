@@ -11,20 +11,21 @@ import io.reactivex.Observable
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
-import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
-import org.hisp.dhis.rules.models.RuleActionDisplayText
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
+const val default_location = "feedback"
+
 abstract class BaseIndicatorRepository(
     open val d2: D2,
-    open val ruleEngineRepository: RuleEngineRepository,
+    open val ruleEngineHelper: RuleEngineHelper?,
     open val programUid: String,
     open val resourceManager: ResourceManager,
 ) : IndicatorRepository {
@@ -83,8 +84,10 @@ abstract class BaseIndicatorRepository(
                 if (ruleAction.isEmpty()) {
                     return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
                 } else {
-                    return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
-                        .flatMap { ruleEngineRepository.reCalculate() }
+                    return@flatMapPublisher Flowable.fromCallable {
+                        ruleEngineHelper?.refreshContext()
+                        ruleEngineHelper?.evaluate().let { Result.success(it ?: emptyList()) }
+                    }
                         .map { effects ->
                             // Restart rule engine to take into account value changes
                             applyRuleEffectForIndicators(effects)
@@ -101,30 +104,30 @@ abstract class BaseIndicatorRepository(
         }
 
         for (ruleEffect in calcResult.items()) {
-            val ruleAction = ruleEffect.ruleAction()
-            if (ruleEffect.data()?.contains("#{") == false) {
-                if (ruleAction is RuleActionDisplayKeyValuePair) {
+            val ruleAction = ruleEffect.ruleAction
+            if (ruleEffect.data?.contains("#{") == false) {
+                if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
-                            .uid((ruleAction).content())
+                            .uid(UidGeneratorImpl().generate())
                             .displayName((ruleAction).content())
                             .build(),
-                        ruleEffect.data(),
+                        ruleEffect.data,
                         "",
-                        ruleAction.location(),
+                        ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),
                     )
 
                     indicators.add(indicator)
-                } else if (ruleAction is RuleActionDisplayText) {
+                } else if (ruleAction.type == ProgramRuleActionType.DISPLAYTEXT.name) {
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
-                            .uid(ruleAction.content())
+                            .uid(UidGeneratorImpl().generate())
                             .displayName(resourceManager.defaultIndicatorLabel())
                             .build(),
-                        ruleAction.content() + ruleEffect.data(),
+                        "${ruleAction.content() ?: ""}${ruleEffect.data}",
                         "",
-                        ruleAction.location(),
+                        ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),
                     )
 

@@ -10,9 +10,9 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.forms.EnrollmentFormRepository
 import org.dhis2.data.forms.FormRepository
-import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.form.data.RulesRepository
+import org.dhis2.mobileProgramRules.EvaluationType
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
@@ -94,13 +94,11 @@ class TeiDashboardModule(
     @PerActivity
     fun ruleEngineRepository(
         d2: D2,
-        formRepository: FormRepository,
-    ): RuleEngineRepository {
-        val enrollmentUidToUse = enrollmentUid ?: ""
-        return EnrollmentRuleEngineRepository(
-            formRepository,
-            enrollmentUidToUse,
-            d2,
+    ): RuleEngineHelper? {
+        if (enrollmentUid.isNullOrEmpty()) return null
+        return RuleEngineHelper(
+            EvaluationType.Enrollment(enrollmentUid),
+            org.dhis2.mobileProgramRules.RulesRepository(d2),
         )
     }
 

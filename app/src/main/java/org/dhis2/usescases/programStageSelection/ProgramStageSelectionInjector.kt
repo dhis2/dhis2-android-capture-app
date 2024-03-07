@@ -5,7 +5,6 @@ import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.form.data.RulesRepository
 import org.dhis2.form.data.RulesUtilsProvider
 import org.hisp.dhis.android.core.D2
 
@@ -46,21 +45,13 @@ class ProgramStageSelectionModule(
     @Provides
     @PerActivity
     fun providesProgramStageSelectionRepository(
-        rulesRepository: RulesRepository,
         d2: D2,
     ): ProgramStageSelectionRepository {
         return ProgramStageSelectionRepositoryImpl(
-            rulesRepository,
             programUid,
             enrollmentUid,
             eventCreationType,
             d2,
         )
-    }
-
-    @Provides
-    @PerActivity
-    fun rulesRepository(d2: D2): RulesRepository {
-        return RulesRepository(d2)
     }
 }

@@ -38,8 +38,9 @@ import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.rules.models.RuleActionHideProgramStage
+import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
 import org.junit.Before
@@ -72,9 +73,15 @@ class ProgramStageSelectionPresenterTest {
         )
         val calcResult = Result.success(
             listOf(
-                RuleEffect.create(
+                RuleEffect(
                     "ruleUid",
-                    RuleActionHideProgramStage.create("programStage"),
+                    RuleAction(
+                        data = null,
+                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                        values = mutableMapOf(
+                            Pair("programStage", "programStage"),
+                        ),
+                    ),
                 ),
             ),
         )
@@ -105,9 +112,15 @@ class ProgramStageSelectionPresenterTest {
         val programStages = listOf(programStage)
         val calcResult = Result.success(
             listOf(
-                RuleEffect.create(
-                    "ruleUid",
-                    RuleActionHideProgramStage.create("programStage"),
+                RuleEffect(
+                    ruleId = "ruleUid",
+                    ruleAction = RuleAction(
+                        data = null,
+                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                        values = mutableMapOf(
+                            Pair("programStage", "programStage"),
+                        ),
+                    ),
                 ),
             ),
         )
@@ -138,9 +151,15 @@ class ProgramStageSelectionPresenterTest {
             mutableListOf(ProgramStage.builder().uid("programStage").build())
         val calcResult = Result.success(
             listOf(
-                RuleEffect.create(
+                RuleEffect(
                     "ruleUid",
-                    RuleActionHideProgramStage.create("programStage"),
+                    RuleAction(
+                        data = null,
+                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                        values = mutableMapOf(
+                            Pair("programStage", "programStage"),
+                        ),
+                    ),
                 ),
             ),
         )

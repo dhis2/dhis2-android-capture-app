@@ -3,31 +3,23 @@ package org.dhis2.data.forms;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.commons.rules.RuleEngineContextData;
 import org.dhis2.form.data.RulesRepository;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.rules.RuleEngine;
-import org.hisp.dhis.rules.RuleEngineContext;
-import org.hisp.dhis.rules.models.TriggerEnvironment;
+import org.hisp.dhis.rules.api.RuleEngineContext;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
-
-@SuppressWarnings({
-        "PMD.AvoidDuplicateLiterals"
-})
 public class EventRepository implements FormRepository {
 
     private final String programUid;
     private final String orgUnit;
 
     @NonNull
-    private Flowable<RuleEngine> cachedRuleEngineFlowable;
+    private Flowable<RuleEngineContextData> cachedRuleEngineFlowable;
 
-    private RuleEngine ruleEngine = null;
+    private RuleEngineContextData ruleEngineContextData = null;
 
     @Nullable
     private final String eventUid;
@@ -44,63 +36,63 @@ public class EventRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = Single.zip(
-                rulesRepository.rulesNew(programUid, eventUid),
-                rulesRepository.ruleVariables(programUid),
-                rulesRepository.otherEvents(this.eventUid),
-                rulesRepository.enrollment(this.eventUid),
-                rulesRepository.queryConstants(),
-                rulesRepository.supplementaryData(orgUnit),
-                (rules, variables, events, enrollment, constants, supplementaryData) -> {
+                        rulesRepository.rulesNew(programUid, eventUid),
+                        rulesRepository.ruleVariables(programUid),
+                        rulesRepository.otherEvents(this.eventUid),
+                        rulesRepository.enrollment(this.eventUid),
+                        rulesRepository.queryConstants(),
+                        rulesRepository.supplementaryData(orgUnit),
+                        (rules, variables, events, enrollment, constants, supplementaryData) -> {
+                            RuleEngineContext ruleEngineContext = new RuleEngineContext(
+                                    rules,
+                                    variables,
+                                    supplementaryData,
+                                    constants
+                            );
 
-                    RuleEngine.Builder builder = RuleEngineContext.builder()
-                            .rules(rules)
-                            .ruleVariables(variables)
-                            .constantsValue(constants)
-                            .supplementaryData(supplementaryData)
-                            .build().toEngineBuilder();
-                    builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
-                    builder.events(events);
-                    if (!isEmpty(enrollment.enrollment()))
-                        builder.enrollment(enrollment);
-                    return builder.build();
-                })
-                .doOnSuccess(ruleEngine -> {
-                    this.ruleEngine = ruleEngine;
-                    Timber.tag("ROGRAMRULEREPOSITORY").d("RULE ENGINE READY AT %s", Thread.currentThread().getName());
-                }).toFlowable()
+                            return new RuleEngineContextData(
+                                    ruleEngineContext,
+                                    enrollment.getEnrollment().isEmpty() ? null : enrollment,
+                                    events
+                            );
+                        })
+                .doOnSuccess(contextData -> this.ruleEngineContextData = contextData)
+                .toFlowable()
                 .cacheWithInitialCapacity(1);
     }
 
 
     @Override
-    public Flowable<RuleEngine> restartRuleEngine() {
+    public Flowable<RuleEngineContextData> restartRuleEngine() {
         return this.cachedRuleEngineFlowable = Single.zip(
-                rulesRepository.rulesNew(programUid,eventUid).subscribeOn(Schedulers.io()),
-                rulesRepository.ruleVariables(programUid).subscribeOn(Schedulers.io()),
-                rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
-                rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
-                rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.supplementaryData(orgUnit).subscribeOn(Schedulers.io()),
-                (rules, variables, events, enrollment, constants, supplementaryData) -> {
+                        rulesRepository.rulesNew(programUid, eventUid),
+                        rulesRepository.ruleVariables(programUid),
+                        rulesRepository.otherEvents(this.eventUid),
+                        rulesRepository.enrollment(this.eventUid),
+                        rulesRepository.queryConstants(),
+                        rulesRepository.supplementaryData(orgUnit),
+                        (rules, variables, events, enrollment, constants, supplementaryData) -> {
+                            RuleEngineContext ruleEngineContext = new RuleEngineContext(
+                                    rules,
+                                    variables,
+                                    supplementaryData,
+                                    constants
+                            );
 
-                    RuleEngine.Builder builder = RuleEngineContext.builder()
-                            .rules(rules)
-                            .ruleVariables(variables)
-                            .constantsValue(constants)
-                            .supplementaryData(supplementaryData)
-                            .build().toEngineBuilder();
-                    builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
-                    builder.events(events);
-                    if (!isEmpty(enrollment.enrollment()))
-                        builder.enrollment(enrollment);
-                    return builder.build();
-                }).toFlowable()
+                            return new RuleEngineContextData(
+                                    ruleEngineContext,
+                                    enrollment.getEnrollment().isEmpty() ? null : enrollment,
+                                    events
+                            );
+                        })
+                .doOnSuccess(contextData -> this.ruleEngineContextData = contextData)
+                .toFlowable()
                 .cacheWithInitialCapacity(1);
     }
 
     @NonNull
     @Override
-    public Flowable<RuleEngine> ruleEngine() {
-        return ruleEngine != null ? Flowable.just(ruleEngine) : cachedRuleEngineFlowable;
+    public Flowable<RuleEngineContextData> ruleEngine() {
+        return ruleEngineContextData != null ? Flowable.just(ruleEngineContextData) : cachedRuleEngineFlowable;
     }
 }

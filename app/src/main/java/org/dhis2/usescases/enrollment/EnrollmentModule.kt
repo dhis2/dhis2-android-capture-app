@@ -20,7 +20,6 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRepository
-import org.dhis2.form.data.RulesRepository
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
@@ -205,15 +204,8 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    internal fun rulesRepository(d2: D2): RulesRepository {
-        return RulesRepository(d2)
-    }
-
-    @Provides
-    @PerActivity
     fun formRepository(
         d2: D2,
-        rulesRepository: RulesRepository,
         enrollmentRepository: EnrollmentObjectRepository,
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         teiRepository: TrackedEntityInstanceObjectRepository,
@@ -221,7 +213,6 @@ class EnrollmentModule(
     ): EnrollmentFormRepository {
         return EnrollmentFormRepositoryImpl(
             d2,
-            rulesRepository,
             enrollmentRepository,
             programRepository,
             teiRepository,

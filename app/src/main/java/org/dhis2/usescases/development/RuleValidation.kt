@@ -16,7 +16,7 @@ data class RuleValidation(
     val conditionError: String? = null,
     val actionsError: List<String>? = null,
 ) {
-    fun uid() = rule?.uid()
+    fun uid() = rule?.uid
     fun hasError() = conditionError != null || actionsError != null
     fun errors(): List<String> {
         return mutableListOf<String>().apply {
@@ -25,5 +25,5 @@ data class RuleValidation(
         }
     }
 
-    fun title() = rule?.name() ?: rule?.uid() ?: "-"
+    fun title() = rule?.name ?: rule?.uid ?: "-"
 }
