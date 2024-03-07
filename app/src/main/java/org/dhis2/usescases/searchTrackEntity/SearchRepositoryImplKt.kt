@@ -96,7 +96,7 @@ class SearchRepositoryImplKt(
     private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
         val searchableAttributes = d2.programModule().programTrackedEntityAttributes()
             .withRenderType()
-            .byProgram().eq(programUid)
+            .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .blockingGet().filter { programAttribute ->
                 val isSearchable = programAttribute.searchable()!!
                 val isUnique = d2.trackedEntityModule().trackedEntityAttributes()

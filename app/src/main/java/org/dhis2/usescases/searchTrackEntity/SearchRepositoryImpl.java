@@ -214,8 +214,10 @@ public class SearchRepositoryImpl implements SearchRepository {
 
             if (searchParametersModel.getSelectedProgram() != null || isTETypeAttribute) {
 
-                boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet().unique();
-                if (isUnique) {
+                TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet();
+                boolean isUnique = attribute.unique();
+                boolean isOptionSet = (attribute.optionSet() != null);
+                if (isUnique || isOptionSet) {
                     trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
                 } else if (dataValue.contains("_os_")) {
                     dataValue = dataValue.split("_os_")[1];
