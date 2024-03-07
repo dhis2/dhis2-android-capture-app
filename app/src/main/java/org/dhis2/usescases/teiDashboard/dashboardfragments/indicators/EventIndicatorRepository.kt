@@ -21,7 +21,7 @@ class EventIndicatorRepository(
                     .programIndicatorEngine().getEventProgramIndicatorValue(
                         eventUid,
                         indicatorUid,
-                    )
+                    ) ?: ""
             },
             getRulesIndicators(),
         ) { indicators, ruleIndicators ->

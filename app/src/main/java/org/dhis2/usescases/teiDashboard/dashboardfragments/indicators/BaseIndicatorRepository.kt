@@ -14,6 +14,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
@@ -108,7 +109,7 @@ abstract class BaseIndicatorRepository(
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
-                            .uid((ruleAction).content())
+                            .uid(UidGeneratorImpl().generate())
                             .displayName((ruleAction).content())
                             .build(),
                         ruleEffect.data,
@@ -121,10 +122,10 @@ abstract class BaseIndicatorRepository(
                 } else if (ruleAction.type == ProgramRuleActionType.DISPLAYTEXT.name) {
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
-                            .uid(ruleAction.content())
+                            .uid(UidGeneratorImpl().generate())
                             .displayName(resourceManager.defaultIndicatorLabel())
                             .build(),
-                        ruleAction.content() + ruleEffect.data,
+                        ruleEffect.data,
                         "",
                         ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),
