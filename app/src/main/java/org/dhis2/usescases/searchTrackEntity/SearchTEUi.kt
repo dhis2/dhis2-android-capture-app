@@ -312,15 +312,8 @@ fun SearchWrapWidthPreview() {
 @ExperimentalAnimationApi
 @Preview
 @Composable
-fun ExtendedCreateNewButtonPreview() {
-    CreateNewButton(modifier = Modifier) {}
-}
-
-@ExperimentalAnimationApi
-@Preview
-@Composable
 fun CreateNewButtonPreview() {
-    CreateNewButton(modifier = Modifier, extended = false) {}
+    CreateNewButton(modifier = Modifier) {}
 }
 
 @Preview(showBackground = true)
