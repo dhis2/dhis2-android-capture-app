@@ -179,7 +179,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.PERCENTAGE -> {
@@ -191,7 +191,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.NUMBER -> {
@@ -203,7 +203,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.INTEGER_NEGATIVE -> {
@@ -215,7 +215,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.LONG_TEXT -> {
@@ -227,7 +227,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.LETTER -> {
@@ -239,7 +239,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.INTEGER -> {
@@ -251,7 +251,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.ORGANISATION_UNIT -> {
@@ -285,7 +285,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.FILE_RESOURCE -> {
@@ -307,7 +307,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.BOOLEAN -> {
@@ -371,7 +371,7 @@ fun ProvideByValueType(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
 
-                )
+            )
         }
 
         ValueType.DATE,
@@ -577,7 +577,7 @@ private fun ProvideIntegerPositiveOrZero(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
@@ -621,7 +621,7 @@ private fun ProvidePercentage(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
@@ -665,7 +665,7 @@ private fun ProvideNumber(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
@@ -710,7 +710,7 @@ private fun ProvideIntegerNegative(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
@@ -753,7 +753,7 @@ private fun ProvideLongText(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
@@ -798,7 +798,7 @@ private fun ProvideLetter(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
@@ -841,7 +841,7 @@ private fun ProvideInteger(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
@@ -938,7 +938,7 @@ private fun ProvideInputPhoneNumber(
     modifier: Modifier = Modifier,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
@@ -992,7 +992,7 @@ private fun ProvideInputLink(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
-    ) {
+) {
     val textSelection =
         TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
 
@@ -1083,8 +1083,8 @@ private fun ProvideOrgUnitInput(
             )
         },
 
-        )
+    )
 }
 
 private fun FieldUiModel.needKeyboard() = optionSet == null &&
-        valueType?.let { it.isText || it.isNumeric || it.isDate } ?: false
+    valueType?.let { it.isText || it.isNumeric || it.isDate } ?: false

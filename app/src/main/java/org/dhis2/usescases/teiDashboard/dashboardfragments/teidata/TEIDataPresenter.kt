@@ -13,6 +13,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
@@ -23,7 +25,9 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
@@ -32,10 +36,10 @@ import org.dhis2.usescases.events.ScheduledEventActivity.Companion.getIntent
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.dhis2.usescases.teiDashboard.DashboardRepository
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
@@ -73,7 +77,9 @@ class TEIDataPresenter(
     private val getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
     private val eventCreationOptionsMapper: EventCreationOptionsMapper,
     private val contractHandler: TeiDataContractHandler,
-    private val dashboardActivityPresenter: TeiDashboardContracts.Presenter,
+    private val dispatcher: DispatcherProvider,
+    private val createEventUseCase: CreateEventUseCase,
+    private val d2ErrorUtils: D2ErrorUtils,
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -295,10 +301,6 @@ class TEIDataPresenter(
         createEventInEnrollment(eventCreationOptionsMapper.getActionType(eventCreationId))
     }
 
-    fun onAcceptScheduleNewEvent(stageStandardInterval: Int) {
-        createEventInEnrollment(EventCreationType.SCHEDULE, stageStandardInterval)
-    }
-
     private fun createEventInEnrollment(
         eventCreationType: EventCreationType,
         scheduleIntervalDays: Int = 0,
@@ -416,11 +418,17 @@ class TEIDataPresenter(
         return teiDataRepository.getOrgUnitName(orgUnitUid)
     }
 
-    fun onAddNewEventOptionSelected(it: EventCreationType, stage: ProgramStage?) {
+    fun onAddNewEventOptionSelected(eventCreationType: EventCreationType, stage: ProgramStage?) {
         if (stage != null) {
-            view.goToEventInitial(it, stage)
+            when (eventCreationType) {
+                EventCreationType.ADDNEW -> programUid?.let { program ->
+                    view.displayOrgUnitSelectorForNewEvent(program, stage.uid())
+                }
+
+                else -> view.goToEventInitial(eventCreationType, stage)
+            }
         } else {
-            createEventInEnrollment(it)
+            createEventInEnrollment(eventCreationType)
         }
     }
 
@@ -459,5 +467,29 @@ class TEIDataPresenter(
         return programUid?.let {
             teiDataRepository.displayOrganisationUnit(it)
         } ?: false
+    }
+
+    fun onOrgUnitForNewEventSelected(orgUnitUid: String, programStageUid: String) {
+        CoroutineScope(dispatcher.io()).launch {
+            programUid?.let {
+                createEventUseCase(
+                    programUid = it,
+                    orgUnitUid = orgUnitUid,
+                    programStageUid = programStageUid,
+                    enrollmentUid = enrollmentUid,
+                ).fold(
+                    onSuccess = { eventUid ->
+                        view.goToEventDetails(
+                            eventUid = eventUid,
+                            eventMode = EventMode.NEW,
+                            programUid = it,
+                        )
+                    },
+                    onFailure = { d2Error ->
+                        view.displayMessage(d2ErrorUtils.getErrorMessage(d2Error))
+                    },
+                )
+            }
+        }
     }
 }

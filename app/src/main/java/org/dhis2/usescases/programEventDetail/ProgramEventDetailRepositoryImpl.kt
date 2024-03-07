@@ -10,7 +10,6 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.ProgramEventViewModel
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
@@ -21,7 +20,6 @@ import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.event.EventCreateProjection
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -156,20 +154,5 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         return d2.organisationUnitModule().organisationUnits()
             .byProgramUids(listOf(programUid))
             .blockingGet().size > 1
-    }
-
-    override fun createEvent(orgUnit: String): String {
-        val eventUID = d2.eventModule().events().blockingAdd(
-            EventCreateProjection.builder()
-                .program(programUid)
-                .programStage(programStage().blockingGet()?.uid())
-                .organisationUnit(orgUnit)
-                .build(),
-        )
-
-        val eventRepository = d2.eventModule().events().uid(eventUID)
-        eventRepository.setEventDate(DateUtils.getInstance().today)
-
-        return eventUID
     }
 }

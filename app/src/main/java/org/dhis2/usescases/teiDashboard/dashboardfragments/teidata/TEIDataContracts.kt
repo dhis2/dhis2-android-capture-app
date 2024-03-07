@@ -10,6 +10,7 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.utils.EventMode
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -40,5 +41,12 @@ class TEIDataContracts {
         fun showProgramRuleErrorMessage()
         fun goToEventInitial(eventCreationType: EventCreationType, programStage: ProgramStage)
         fun updateEnrollment(update: Boolean)
+        fun displayOrgUnitSelectorForNewEvent(programUid: String, programStageUid: String)
+
+        fun goToEventDetails(
+            eventUid: String,
+            eventMode: EventMode,
+            programUid: String,
+        )
     }
 }

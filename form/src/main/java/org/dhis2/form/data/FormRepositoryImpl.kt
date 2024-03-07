@@ -107,7 +107,7 @@ class FormRepositoryImpl(
     }
 
     private fun ruleEffects() = try {
-        ruleEngineRepository.evaluate()
+        ruleEngineRepository?.evaluate() ?: emptyList()
     } catch (e: Exception) {
         emptyList()
     }
