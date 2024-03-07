@@ -48,6 +48,9 @@ class MapFieldValueToUser(
                     field.value()
                 }
             }
+            ValueType.MULTI_TEXT -> field.value()?.split(", ")?.map { code ->
+                field.options().find { it.contains(code) }?.split("_")?.get(1)
+            }?.joinToString(", ")
             else -> field.value()
         }
     }
