@@ -32,7 +32,6 @@ import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.fingerprint.FingerPrintResult
 import org.dhis2.data.fingerprint.Type
@@ -87,6 +86,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     @Inject
     lateinit var openIdProviders: OpenIdProviders
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     private var isPinScreenVisible = false
     private var qrUrl: String? = null
@@ -337,7 +339,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun renderError(throwable: Throwable) {
         showInfoDialog(
             getString(R.string.login_error),
-            ResourceManager(this, ColorUtils()).parseD2Error(throwable),
+            resourceManager.parseD2Error(throwable),
         )
     }
 
