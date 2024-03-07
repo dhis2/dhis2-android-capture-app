@@ -12,7 +12,7 @@ class FeatureConfigRepositoryImpl @Inject constructor(
     val d2: D2,
 ) : FeatureConfigRepository {
 
-    val SET_FROM_DEVELOPMENT = "Set_From_Development"
+    val SET_FROM_DEVELOPMENT = "SET_FROM_DEVELOPMENT"
 
     override val featuresList: List<FeatureState>
         get() = Feature.entries.map {
