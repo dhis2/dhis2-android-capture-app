@@ -125,7 +125,7 @@ abstract class BaseIndicatorRepository(
                             .uid(UidGeneratorImpl().generate())
                             .displayName(resourceManager.defaultIndicatorLabel())
                             .build(),
-                        ruleEffect.data,
+                        "${ruleAction.content() ?: ""}${ruleEffect.data}",
                         "",
                         ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),

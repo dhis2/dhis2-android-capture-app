@@ -97,6 +97,12 @@ class EnrollmentRobot : BaseRobot() {
             )
     }
 
+    fun clickOnInpuAge(label: String) {
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItem<FormViewHolder>(
+                hasDescendant(withText(label)), clickChildViewWithId(R.id.date_picker)))
+    }
+
     fun clickOnInputDate(label: String) {
         onView(withId(R.id.recyclerView))
             .perform(actionOnItem<FormViewHolder>(
