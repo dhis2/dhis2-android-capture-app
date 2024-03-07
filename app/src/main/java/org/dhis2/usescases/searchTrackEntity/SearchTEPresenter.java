@@ -80,7 +80,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final CompositeDisposable compositeDisposable;
     private final TrackedEntityType trackedEntity;
-    private Date selectedEnrollmentDate;
 
     private final String trackedEntityType;
 
@@ -290,7 +289,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void enroll(String programUid, String uid, HashMap<String, String> queryData) {
-        selectedEnrollmentDate = Calendar.getInstance().getTime();
 
         compositeDisposable.add(getOrgUnits()
                 .subscribeOn(schedulerProvider.io())
