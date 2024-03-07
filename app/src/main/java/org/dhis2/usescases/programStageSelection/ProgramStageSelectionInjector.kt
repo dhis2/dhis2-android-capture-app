@@ -3,10 +3,15 @@ package org.dhis2.usescases.programStageSelection
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.hisp.dhis.android.core.D2
 
 @PerActivity
@@ -35,6 +40,9 @@ class ProgramStageSelectionModule(
         ruleUtils: RulesUtilsProvider,
         metadataIconProvider: MetadataIconProvider,
         schedulerProvider: SchedulerProvider,
+        dispatcherProvider: DispatcherProvider,
+        createEventUseCase: CreateEventUseCase,
+        d2ErrorUtils: D2ErrorUtils,
     ): ProgramStageSelectionPresenter {
         return ProgramStageSelectionPresenter(
             view,
@@ -42,6 +50,9 @@ class ProgramStageSelectionModule(
             ruleUtils,
             metadataIconProvider,
             schedulerProvider,
+            dispatcherProvider,
+            createEventUseCase,
+            d2ErrorUtils,
         )
     }
 
@@ -57,4 +68,15 @@ class ProgramStageSelectionModule(
             d2,
         )
     }
+
+    @Provides
+    @PerActivity
+    fun provideCreateEventUseCase(
+        dispatcherProvider: DispatcherProvider,
+        d2: D2,
+    ) = CreateEventUseCase(dispatcherProvider, d2, DateUtils())
+
+    @Provides
+    @PerActivity
+    fun provideD2ErrorUtils() = D2ErrorUtils(view.context, NetworkUtils(view.context))
 }

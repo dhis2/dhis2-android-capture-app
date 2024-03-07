@@ -257,16 +257,16 @@ object Injector {
 
     private fun provideRuleEngineRepository(
         entryMode: EntryMode,
-        recordUid: String?,
+        recordUid: String,
     ): RuleEngineHelper {
         return RuleEngineHelper(
-                when (entryMode) {
-                    EntryMode.DE -> EvaluationType.Event(recordUid)
-                    EntryMode.ATTR -> EvaluationType.Enrollment(recordUid)
-                    else -> throw IllegalArgumentException()
-                },
-                RulesRepository(provideD2()),
-            )
+            when (entryMode) {
+                EntryMode.DE -> EvaluationType.Event(recordUid)
+                EntryMode.ATTR -> EvaluationType.Enrollment(recordUid)
+                else -> throw IllegalArgumentException()
+            },
+            RulesRepository(provideD2()),
+        )
     }
 
     private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(

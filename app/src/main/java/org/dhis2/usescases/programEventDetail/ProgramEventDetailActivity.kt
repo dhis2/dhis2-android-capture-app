@@ -137,11 +137,11 @@ class ProgramEventDetailActivity :
         }
 
         programEventsViewModel.viewModelScope.launch {
-            programEventsViewModel.shouldNavigateToEventDetails.collectLatest { eventUID ->
+            programEventsViewModel.shouldNavigateToEventDetails.collectLatest { eventUid ->
                 analyticsHelper.setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
                 val intent = EventCaptureActivity.intent(
                     context = context,
-                    eventUid = eventUID,
+                    eventUid = eventUid,
                     programUid = programUid,
                     openDetailsAsFirstPage = false,
                     eventMode = EventMode.NEW,
@@ -329,7 +329,13 @@ class ProgramEventDetailActivity :
             )
             .onSelection { selectedOrgUnits ->
                 if (selectedOrgUnits.isNotEmpty()) {
-                    programEventsViewModel.onOrgUnitForNewEventSelected(selectedOrgUnits.first())
+                    presenter.stageUid?.let {
+                        programEventsViewModel.onOrgUnitForNewEventSelected(
+                            programUid = programUid,
+                            orgUnitUid = selectedOrgUnits.first().uid(),
+                            programStageUid = it,
+                        )
+                    }
                 }
             }
             .build()

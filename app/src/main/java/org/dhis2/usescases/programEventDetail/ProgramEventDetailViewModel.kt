@@ -5,19 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 
 class ProgramEventDetailViewModel(
     private val mapStyleConfig: MapStyleConfiguration,
     val eventRepository: ProgramEventDetailRepository,
     val dispatcher: DispatcherProvider,
+    val createEventUseCase: CreateEventUseCase,
 ) : ViewModel() {
     private val progress = MutableLiveData(true)
     val writePermission = MutableLiveData(false)
@@ -42,6 +42,7 @@ class ProgramEventDetailViewModel(
     )
     val shouldNavigateToEventDetails: SharedFlow<String>
         get() = _shouldNavigateToEventDetails
+
     fun setProgress(showProgress: Boolean) {
         progress.value = showProgress
     }
@@ -80,14 +81,20 @@ class ProgramEventDetailViewModel(
         return eventRepository.displayOrganisationUnit(programUid)
     }
 
-    fun onOrgUnitForNewEventSelected(orgUnit: OrganisationUnit) {
+    fun onOrgUnitForNewEventSelected(
+        orgUnitUid: String,
+        programUid: String,
+        programStageUid: String,
+    ) {
         viewModelScope.launch(dispatcher.io()) {
-            val result = async {
-                eventRepository.createEvent(orgUnit.uid())
+            createEventUseCase(
+                programUid = programUid,
+                orgUnitUid = orgUnitUid,
+                programStageUid = programStageUid,
+                enrollmentUid = null,
+            ).getOrNull()?.let { eventUid ->
+                _shouldNavigateToEventDetails.emit(eventUid)
             }
-
-            val eventUID = result.await()
-            _shouldNavigateToEventDetails.emit(eventUID)
         }
     }
 }

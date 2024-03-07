@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.animations.CarouselViewAnimations
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterManager
@@ -31,6 +32,7 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
@@ -73,11 +75,13 @@ class ProgramEventDetailModule(
         d2: D2,
         eventDetailRepository: ProgramEventDetailRepository,
         dispatcher: DispatcherProvider,
+        createEventUseCase: CreateEventUseCase,
     ): ProgramEventDetailViewModelFactory {
         return ProgramEventDetailViewModelFactory(
             MapStyleConfiguration(d2),
             eventDetailRepository,
             dispatcher,
+            createEventUseCase,
         )
     }
 
@@ -189,4 +193,15 @@ class ProgramEventDetailModule(
     ): WorkingListViewModelFactory {
         return WorkingListViewModelFactory(programUid, filterRepository)
     }
+
+    @Provides
+    @PerActivity
+    fun provideCreateEventUseCase(
+        dispatcher: DispatcherProvider,
+        d2: D2,
+    ) = CreateEventUseCase(
+        dispatcher = dispatcher,
+        d2 = d2,
+        dateUtils = DateUtils(),
+    )
 }

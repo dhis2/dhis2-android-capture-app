@@ -30,16 +30,24 @@ package org.dhis2.usescases.programstageselection
 
 import io.reactivex.Flowable
 import org.dhis2.commons.resources.MetadataIconProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.runTest
+import org.dhis2.commons.resources.D2ErrorUtils
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.programStageSelection.ProgramStageData
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
+import org.dhis2.utils.EventMode
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -53,6 +61,7 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class ProgramStageSelectionPresenterTest {
@@ -66,6 +75,11 @@ class ProgramStageSelectionPresenterTest {
     private val metadataIconProvider: MetadataIconProvider = mock {
         on { invoke(any(), any(), any()) } doReturn MetadataIconData.Resource(1, 1)
     }
+    private val dispatcherProvider: DispatcherProvider = mock {
+        on { io() } doReturn Dispatchers.Unconfined
+    }
+    private val createEventUseCase: CreateEventUseCase = mock()
+    private val d2ErrorUtils: D2ErrorUtils = mock()
 
     @Before
     fun setUp() {
@@ -75,6 +89,9 @@ class ProgramStageSelectionPresenterTest {
             rulesUtils,
             metadataIconProvider,
             scheduler,
+            dispatcherProvider,
+            createEventUseCase,
+            d2ErrorUtils,
         )
     }
 
@@ -281,5 +298,67 @@ class ProgramStageSelectionPresenterTest {
         val result = presenter.getStandardInterval("programUid")
 
         assert(result == 0)
+    }
+
+    @Test
+    fun `onOrgUnitForNewEventSelected success`() = runTest {
+        val programUid = "programUid"
+        val orgUnitUid = "orgUnitUid"
+        val programStageUid = "programStageUid"
+        val enrollmentUid = "enrollmentUid"
+        val eventUid = "eventUid"
+
+        whenever(
+            createEventUseCase.invoke(
+                programUid,
+                orgUnitUid,
+                programStageUid,
+                enrollmentUid,
+            ),
+        ) doReturn (kotlin.Result.success(eventUid))
+
+        presenter.onOrgUnitForNewEventSelected(
+            programStageUid,
+            programUid,
+            orgUnitUid,
+            enrollmentUid,
+        )
+
+        verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `onOrgUnitForNewEventSelected failure`() = runTest {
+        val programUid = "programUid"
+        val orgUnitUid = "orgUnitUid"
+        val programStageUid = "programStageUid"
+        val enrollmentUid = "enrollmentUid"
+        val errorMessage = "Error message"
+        val d2Error = D2Error.builder()
+            .errorCode(D2ErrorCode.UNEXPECTED)
+            .errorDescription(errorMessage)
+            .build()
+
+        whenever(
+            createEventUseCase.invoke(
+                programUid,
+                orgUnitUid,
+                programStageUid,
+                enrollmentUid,
+            ),
+        ) doReturn (kotlin.Result.failure(d2Error))
+
+        whenever(d2ErrorUtils.getErrorMessage(d2Error)) doReturn (errorMessage)
+
+        presenter.onOrgUnitForNewEventSelected(
+            programStageUid,
+            programUid,
+            orgUnitUid,
+            enrollmentUid,
+        )
+
+        verify(view).displayMessage(errorMessage)
+        verifyNoMoreInteractions(view)
     }
 }

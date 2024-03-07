@@ -3,7 +3,7 @@ package org.dhis2.form.model
 import org.dhis2.commons.data.EntryMode
 
 sealed class FormRepositoryRecords(
-    val recordUid: String?,
+    val recordUid: String,
     val entryMode: EntryMode,
 ) : java.io.Serializable
 
