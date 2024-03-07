@@ -213,6 +213,8 @@ class SearchTEList : FragmentGlobalAbstract() {
                 val createButtonVisibility by viewModel
                     .createButtonScrollVisibility.observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
+                val teTypeName by viewModel.teTypeName.observeAsState()
+
                 updateLayoutParams<ConstraintLayout.LayoutParams> {
                     val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
                         56.dp
@@ -221,11 +223,12 @@ class SearchTEList : FragmentGlobalAbstract() {
                     }
                     setMargins(0, 0, 0, bottomMargin)
                 }
-                if (createButtonVisibility && !filtersOpened) {
+                if (createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,
                         onClick = viewModel::onEnrollClick,
+                        teTypeName = teTypeName!!,
                     )
                 }
             }

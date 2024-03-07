@@ -854,6 +854,7 @@
     <string name="search_too_many_results">Too many results</string>
     <string name="search_too_many_results_message">Try changing  your search to narrow down the results.</string>
     <string name="search_create_new">Create new</string>
+    <string name="search_new_te_type">New %s</string>
     <string name="search_min_attributes_message">It is necessary to enter at least %s attributes to search</string>
     <string name="action_ok">Ok</string>
     <string name="init_search">Start a search to find any %s</string>

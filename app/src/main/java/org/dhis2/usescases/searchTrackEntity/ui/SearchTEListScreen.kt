@@ -40,6 +40,7 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
         val createButtonVisibility by viewModel.createButtonScrollVisibility.observeAsState(
             true,
         )
+        val teTypeName by viewModel.teTypeName.observeAsState()
 
         var isScrollingDown by remember { mutableStateOf(false) }
 
@@ -87,13 +88,17 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
                 onClick = { viewModel.setSearchScreen() },
             )
         }
-        CreateNewButton(
-            modifier = Modifier.constrainAs(createButton) {
-                end.linkTo(parent.end, margin = 16.dp)
-                bottom.linkTo(parent.bottom, margin = 72.dp)
-            },
-            extended = createButtonVisibility and !isScrollingDown,
-            onClick = viewModel::onEnrollClick,
-        )
+
+        if (!teTypeName.isNullOrBlank()) {
+            CreateNewButton(
+                modifier = Modifier.constrainAs(createButton) {
+                    end.linkTo(parent.end, margin = 16.dp)
+                    bottom.linkTo(parent.bottom, margin = 72.dp)
+                },
+                extended = createButtonVisibility and !isScrollingDown,
+                onClick = viewModel::onEnrollClick,
+                teTypeName = teTypeName!!,
+            )
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInVertically
@@ -10,16 +11,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,7 +54,11 @@ import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
+import org.hisp.dhis.mobile.ui.designsystem.component.FAB
+import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
@@ -465,48 +467,40 @@ fun InitSearch(teTypeName: String) {
 
 @ExperimentalAnimationApi
 @Composable
-fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () -> Unit) {
-    Button(
-        modifier = modifier
-            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-            .apply {
-                if (extended) {
-                    wrapContentWidth()
-                } else {
-                    widthIn(56.dp)
-                }
-            }
-            .height(56.dp),
-        contentPadding = PaddingValues(16.dp),
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-        shape = RoundedCornerShape(16.dp),
-        elevation = ButtonDefaults.elevation(),
-    ) {
+fun CreateNewButton(
+    teTypeName: String,
+    modifier: Modifier = Modifier,
+    extended: Boolean = true,
+    onClick: () -> Unit,
+) {
+    val icon = @Composable {
         Icon(
             modifier = Modifier.size(24.dp),
             painter = painterResource(id = R.drawable.ic_add_accent),
             contentDescription = "",
-            tint = Color(
-                ColorUtils().getPrimaryColor(
-                    LocalContext.current,
-                    ColorType.PRIMARY,
-                ),
-            ),
+            tint = TextColor.OnPrimaryContainer,
         )
-        AnimatedVisibility(visible = extended) {
-            Row {
-                Spacer(modifier = Modifier.size(12.dp))
-                Text(
-                    text = stringResource(R.string.search_create_new),
-                    color = Color(
-                        ColorUtils().getPrimaryColor(
-                            LocalContext.current,
-                            ColorType.PRIMARY,
-                        ),
-                    ),
-                )
-            }
+    }
+
+    AnimatedContent(
+        targetState = extended,
+        label = "FAB_Expansion",
+    ) {
+        if (it) {
+            ExtendedFAB(
+                modifier = modifier,
+                onClick = onClick,
+                text = stringResource(R.string.search_new_te_type, teTypeName),
+                icon = icon,
+                style = FABStyle.SECONDARY,
+            )
+        } else {
+            FAB(
+                modifier = modifier,
+                onClick = onClick,
+                icon = icon,
+                style = FABStyle.SECONDARY,
+            )
         }
     }
 }
@@ -529,14 +523,20 @@ fun SearchWrapWidthPreview() {
 @Preview
 @Composable
 fun ExtendedCreateNewButtonPreview() {
-    CreateNewButton(modifier = Modifier) {}
+    CreateNewButton(
+        teTypeName = "Patient",
+        extended = true,
+    ) {}
 }
 
 @ExperimentalAnimationApi
 @Preview
 @Composable
 fun CreateNewButtonPreview() {
-    CreateNewButton(modifier = Modifier, extended = false) {}
+    CreateNewButton(
+        teTypeName = "Patient",
+        extended = false,
+    ) {}
 }
 
 @Preview(showBackground = true)
