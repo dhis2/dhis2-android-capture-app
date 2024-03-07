@@ -158,13 +158,11 @@
     <string name="deactivate">Deactiveren</string>
     <string name="program_not_allow_events">Dit programma staat niet meer evenementen toe</string>
 
-    <!--DONE TASKS-->
     <string name="events">evenementen</string>
     <string name="done_task">Thuis</string>
     <string name="app_info">App informatie</string>
     <string name="log_out">Uitloggen</string>
     <string name="block_session">Sessie blokkeren</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minuut</string>
     <string name="fifteen_minute">15 minuten</string>

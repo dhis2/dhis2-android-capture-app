@@ -160,13 +160,11 @@
     <string name="deactivate">Deaktivovat</string>
     <string name="program_not_allow_events">Tento program neumožňuje více událostí</string>
 
-    <!--DONE TASKS-->
     <string name="events">události</string>
     <string name="done_task">Úvodní strana</string>
     <string name="app_info">Info o aplikaci</string>
     <string name="log_out">Odhlášení</string>
     <string name="block_session">Blokovat relaci</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minuta</string>
     <string name="fifteen_minute">15 minut</string>

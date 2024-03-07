@@ -152,13 +152,11 @@
     <string name="deactivate">去活</string>
     <string name="program_not_allow_events">该项目不允许更多事件</string>
 
-    <!--DONE TASKS-->
     <string name="events">事件</string>
     <string name="done_task">首页</string>
     <string name="app_info">应用信息</string>
     <string name="log_out">退出</string>
     <string name="block_session">阻止会话</string>
-
     <!-- SYNC -->
     <string name="a_minute">1分钟</string>
     <string name="fifteen_minute">15分钟</string>

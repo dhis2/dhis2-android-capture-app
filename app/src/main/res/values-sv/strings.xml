@@ -113,12 +113,10 @@
     <string name="deactivate">Inaktivera</string>
     <string name="program_not_allow_events">Det här programmet tillåter inte fler händelser</string>
 
-    <!--DONE TASKS-->
     <string name="events">händelser</string>
     <string name="done_task">Hem</string>
     <string name="log_out">Logga ut</string>
     <string name="block_session">Blockera sessionen</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minut</string>
     <string name="fifteen_minute">15 minuter</string>
