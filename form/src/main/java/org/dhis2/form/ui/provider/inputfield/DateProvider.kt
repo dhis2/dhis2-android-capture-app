@@ -108,12 +108,10 @@ private fun getYearRange(uiModel: FieldUiModel): IntRange {
         if (uiModel.allowFutureDates == true) {
             IntRange(1924, 2124)
         } else {
-            (
-                IntRange(
-                    1924,
-                    Calendar.getInstance()[Calendar.YEAR],
-                )
-                )
+            IntRange(
+                1924,
+                Calendar.getInstance()[Calendar.YEAR],
+            )
         }
     } else {
         IntRange(

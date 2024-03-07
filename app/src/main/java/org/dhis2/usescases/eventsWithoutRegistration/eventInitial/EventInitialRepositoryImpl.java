@@ -348,7 +348,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 optionSetConfig,
                 null,
                 null,
-                null, null);
+                null,
+                null);
     }
 
     private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {
