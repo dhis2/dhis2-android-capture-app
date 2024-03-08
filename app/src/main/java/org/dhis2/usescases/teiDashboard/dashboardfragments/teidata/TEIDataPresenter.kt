@@ -441,10 +441,10 @@ class TEIDataPresenter(
             .filter { !stagesToHide.contains(it.uid()) }
             .filter { stage ->
                 stage.repeatable() == true ||
-                        events.value?.none { event ->
-                            event.stage?.uid() == stage.uid() &&
-                                    event.type == EventViewModelType.EVENT
-                        } == true
+                    events.value?.none { event ->
+                        event.stage?.uid() == stage.uid() &&
+                            event.type == EventViewModelType.EVENT
+                    } == true
             }.sortedBy { stage -> stage.sortOrder() }
 
     fun isEventEditable(eventUid: String): Boolean {
