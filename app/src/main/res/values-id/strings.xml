@@ -154,13 +154,11 @@
     <string name="deactivate">Deaktivasi</string>
     <string name="program_not_allow_events">Program ini tidak diperbolehkan menambah even</string>
 
-    <!--DONE TASKS-->
     <string name="events">Even</string>
     <string name="done_task">Beranda</string>
     <string name="app_info">Informasi App</string>
     <string name="log_out">Keluar</string>
     <string name="block_session">Tutup sesi</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Menit</string>
     <string name="fifteen_minute">15 Menit</string>

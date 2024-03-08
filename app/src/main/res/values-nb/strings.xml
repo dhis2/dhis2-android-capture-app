@@ -153,13 +153,11 @@
     <string name="deactivate">Deaktiver</string>
     <string name="program_not_allow_events">Dette programmet tillater ikke flere hendelser</string>
 
-    <!--DONE TASKS-->
     <string name="events">hendelser</string>
     <string name="done_task">Hjem</string>
     <string name="app_info">App Info</string>
     <string name="log_out">Logg ut</string>
     <string name="block_session">Blokker sesjon</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minutt</string>
     <string name="fifteen_minute">15 minutt</string>

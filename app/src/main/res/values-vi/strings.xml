@@ -155,13 +155,11 @@
     <string name="deactivate">Không hoạt động</string>
     <string name="program_not_allow_events">Chương trình này không cho phép thêm sự kiện</string>
 
-    <!--DONE TASKS-->
     <string name="events">sự kiện</string>
     <string name="done_task">Trang chủ</string>
     <string name="app_info">Thông Tin Ứng Dụng</string>
     <string name="log_out">Đăng Xuất</string>
     <string name="block_session">Khóa Phiên</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Phút</string>
     <string name="fifteen_minute">15 Phút</string>

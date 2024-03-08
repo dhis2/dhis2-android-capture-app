@@ -154,13 +154,11 @@
     <string name="deactivate">Фаолсизлантириш</string>
     <string name="program_not_allow_events">Ушбу дастур яна кўпроқ тадбирларни қабул қилмайди</string>
 
-    <!--DONE TASKS-->
     <string name="events">ҳодиса/тадбирлар</string>
     <string name="done_task">Бош саҳифа</string>
     <string name="app_info">Илова ҳақида маълумот</string>
     <string name="log_out">Чиқиш</string>
     <string name="block_session">Сессияни блоклаш</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 дақиқа</string>
     <string name="fifteen_minute">15 дақиқа</string>
