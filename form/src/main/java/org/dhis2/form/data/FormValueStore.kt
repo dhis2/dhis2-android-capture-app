@@ -85,68 +85,95 @@ class FormValueStore(
             }
 
             EVENT_COORDINATE_UID -> {
-                val featureType =
-                    d2.programModule().programStages()
-                        .uid(eventRepository?.blockingGet()?.programStage())
-                        .blockingGet()?.featureType()
-                featureType?.let { type ->
-                    when (type) {
-                        FeatureType.POINT,
-                        FeatureType.POLYGON,
-                        FeatureType.MULTI_POLYGON,
-                        -> {
-                            val geometry = value?.let {
-                                extraData?.let {
-                                    Geometry.builder()
-                                        .coordinates(value)
-                                        .type(FeatureType.valueOf(it))
-                                        .build()
-                                }
-                            }
-                            eventRepository?.setGeometry(geometry)
-                        }
-
-                        else -> {
-                            // no-op
-                        }
-                    }
-                }
-                Flowable.just(
-                    StoreResult(
-                        EVENT_COORDINATE_UID,
-                        ValueStoreResult.VALUE_CHANGED,
-                    ),
-                )
+                storeEventCoordinateAttribute(value, extraData)
             }
 
             else -> {
                 if (uid.contains(EVENT_CATEGORY_COMBO_UID)) {
-                    val categoryOptionComboUID = value?.let {
-                        val categoryComboUid = uid.split("-")[1]
-                        val categoryOptionsUIDs = it.split(",")
-                        if (categoryOptionsUIDs.isNotEmpty()) {
-                            d2.categoryModule().categoryOptionCombos()
-                                .byCategoryComboUid().eq(categoryComboUid)
-                                .byCategoryOptions(categoryOptionsUIDs)
-                                .one().blockingGet()?.uid()
-                        } else {
-                            null
-                        }
-                    }
-
-                    eventRepository?.setAttributeOptionComboUid(categoryOptionComboUID)
-
-                    Flowable.just(
-                        StoreResult(
-                            EVENT_CATEGORY_COMBO_UID,
-                            ValueStoreResult.VALUE_CHANGED,
-                        ),
-                    )
+                    storeEventCategoryComboAttribute(uid, value)
                 } else {
                     saveDataElement(uid, value)
                 }
             }
         }
+    }
+
+    private fun storeEventCategoryComboAttribute(
+        uid: String,
+        value: String?
+    ): Flowable<StoreResult> {
+        val categoryOptionComboUid = if (value.isNullOrEmpty()) {
+            null
+        } else {
+            val categoryComboUid = uid.split("-")[1]
+            val categoryOptionsUids = value.split(",")
+            if (categoryOptionsUids.isNotEmpty()) {
+                d2.categoryModule().categoryOptionCombos()
+                    .byCategoryComboUid().eq(categoryComboUid)
+                    .byCategoryOptions(categoryOptionsUids)
+                    .one().blockingGet()?.uid()
+            } else {
+                null
+            }
+        }
+
+        eventRepository?.setAttributeOptionComboUid(categoryOptionComboUid)
+
+        return Flowable.just(
+            StoreResult(
+                EVENT_CATEGORY_COMBO_UID,
+                ValueStoreResult.VALUE_CHANGED,
+            ),
+        )
+    }
+
+    private fun storeEventCoordinateAttribute(
+        value: String?,
+        extraData: String?
+    ): Flowable<StoreResult> {
+        val featureType =
+            d2.programModule().programStages()
+                .uid(eventRepository?.blockingGet()?.programStage())
+                .blockingGet()?.featureType()
+        return featureType?.let { type ->
+            when (type) {
+                FeatureType.POINT,
+                FeatureType.POLYGON,
+                FeatureType.MULTI_POLYGON,
+                -> {
+                    val geometry = value?.let {
+                        extraData?.let {
+                            Geometry.builder()
+                                .coordinates(value)
+                                .type(FeatureType.valueOf(it))
+                                .build()
+                        }
+                    }
+                    eventRepository?.setGeometry(geometry)
+
+                    Flowable.just(
+                        StoreResult(
+                            EVENT_COORDINATE_UID,
+                            ValueStoreResult.VALUE_CHANGED,
+                        ),
+                    )
+                }
+
+                else -> {
+                    Flowable.just(
+                        StoreResult(
+                            EVENT_COORDINATE_UID,
+                            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                        ),
+                    )
+                }
+            }
+        } ?: Flowable.just(
+            StoreResult(
+                EVENT_COORDINATE_UID,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+            ),
+        )
     }
 
     fun storeFile(uid: String, filePath: String?): StoreResult {
@@ -343,7 +370,7 @@ class FormValueStore(
                     crashReportController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
-                            "" + " value: $_value",
+                                "" + " value: $_value",
                     )
                 }
             } else {
