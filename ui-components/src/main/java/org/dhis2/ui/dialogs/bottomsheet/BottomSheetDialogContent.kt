@@ -153,17 +153,16 @@ fun BottomSheetDialogUi(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                bottomSheetDialogUiModel.secondaryButton?.textLabel?.let {
-                    (bottomSheetDialogUiModel.secondaryButton?.textLabel ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) })?.let {
-                        Button(
-                            modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
-                            style = ButtonStyle.ELEVATED,
-                            onClick = { onSecondaryButtonClicked() },
-                            text = it,
-                            enabled = bottomSheetDialogUiModel.secondaryButton != null,
-                        )
-                    }
+                (bottomSheetDialogUiModel.secondaryButton?.textLabel ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) })?.let {
+                    Button(
+                        modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
+                        style = ButtonStyle.ELEVATED,
+                        onClick = { onSecondaryButtonClicked() },
+                        text = it,
+                        enabled = bottomSheetDialogUiModel.secondaryButton != null,
+                    )
                 }
+
                 (bottomSheetDialogUiModel.mainButton?.textLabel ?: bottomSheetDialogUiModel.mainButton?.textResource?.let { stringResource(id = it) })?.let {
                     Button(
                         modifier = Modifier.testTag(MAIN_BUTTON_TAG),
