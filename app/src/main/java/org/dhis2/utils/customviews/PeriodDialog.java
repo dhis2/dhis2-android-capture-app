@@ -15,7 +15,7 @@ import androidx.fragment.app.DialogFragment;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.databinding.DialogPeriodBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;

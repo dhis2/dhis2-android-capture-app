@@ -35,12 +35,12 @@ import org.dhis2.commons.bindings.teisBy
 import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State

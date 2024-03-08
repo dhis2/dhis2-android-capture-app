@@ -2,6 +2,7 @@ package org.dhis2.form.di
 
 import android.content.Context
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
@@ -155,6 +156,7 @@ object Injector {
             d2 = provideD2(),
             metadataIconProvider = provideMetadataIconProvider(),
             provideResourcesManager(context),
+            DateUtils.getInstance(),
         )
     }
 

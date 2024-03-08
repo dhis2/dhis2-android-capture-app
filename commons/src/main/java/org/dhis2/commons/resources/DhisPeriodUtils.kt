@@ -1,4 +1,4 @@
-package org.dhis2.data.dhislogic
+package org.dhis2.commons.resources
 
 import org.apache.commons.text.WordUtils
 import org.hisp.dhis.android.core.D2

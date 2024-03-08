@@ -2,8 +2,8 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramStage
