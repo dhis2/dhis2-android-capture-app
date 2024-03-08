@@ -3,12 +3,11 @@ package dhis2.org.analytics.charts.bindings
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import org.hisp.dhis.android.core.analytics.trackerlinelist.DataFilter
 import org.hisp.dhis.android.core.analytics.trackerlinelist.DateFilter
+import org.hisp.dhis.android.core.analytics.trackerlinelist.EnumFilter
 import org.hisp.dhis.android.core.analytics.trackerlinelist.OrganisationUnitFilter
 import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.EventStatus
 
 fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
     return when (this) {
@@ -34,7 +33,7 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
 
         is TrackerLineListItem.EventStatusItem -> this.copy(
             filters = listOf(
-                EventStatus.valueOf(value),
+                EnumFilter.Like(value),
             ),
         )
 
@@ -76,7 +75,7 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
 
         is TrackerLineListItem.ProgramStatusItem -> this.copy(
             filters = listOf(
-                EnrollmentStatus.valueOf(value),
+                EnumFilter.Like(value),
             ),
         )
     }
