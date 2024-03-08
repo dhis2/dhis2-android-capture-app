@@ -181,7 +181,6 @@ class FormTest : BaseTest() {
             )
             pressBack()
             goToAnalytics()
-//            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
             goToDataEntry()
         }
@@ -198,7 +197,6 @@ class FormTest : BaseTest() {
             )
             pressBack()
             goToAnalytics()
-//            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
         }
@@ -214,7 +212,7 @@ class FormTest : BaseTest() {
                 WARNING_COMPLETE_POSITION
             )
             scrollToBottomForm()
-//            waitToDebounce(1000)
+            waitToDebounce(1000)
             clickOnSaveForm()
             checkPopUpWithMessageOnCompleteIsShown("WARNING_ON_COMPLETE", composeTestRule)
             pressBack()
@@ -231,7 +229,7 @@ class FormTest : BaseTest() {
                 ERROR_COMPLETE_POSITION
             )
             scrollToBottomForm()
-//            waitToDebounce(1000)
+            waitToDebounce(1000)
             clickOnSaveForm()
             checkPopUpWithMessageOnCompleteIsShown("ERROR_ON_COMPLETE", composeTestRule)
             pressBack()
