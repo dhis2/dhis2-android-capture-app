@@ -505,7 +505,9 @@ class SearchTEIViewModel(
     }
 
     fun onTeiClick(teiUid: String, enrollmentUid: String?, online: Boolean) {
-        _legacyInteraction.value = LegacyInteraction.OnTeiClick(teiUid, enrollmentUid, online)
+        _legacyInteraction.postValue(
+            LegacyInteraction.OnTeiClick(teiUid, enrollmentUid, online),
+        )
     }
 
     fun onDataLoaded(
@@ -812,12 +814,12 @@ class SearchTEIViewModel(
                 queryData = queryData,
             )
             val isOnline = searching && networkUtils.isOnline()
-            val trackedEntities = withContext(dispatchers.io()) {
+            val trackedEntities = async(dispatchers.io()) {
                 searchRepositoryKt.searchTrackedEntitiesImmediate(
                     searchParametersModel = searchParametersModel,
                     isOnline = isOnline,
                 )
-            }
+            }.await()
 
             if (trackedEntities.isEmpty() || trackedEntities.size > 1) return@launch
 
@@ -835,17 +837,17 @@ class SearchTEIViewModel(
                 )
             }
 
+            searching = false
+
+            clearQueryData()
+            clearFocus()
+
             // Open TEI dashboard for the found TEI
             onTeiClick(
                 teiUid = searchTeiModel.uid(),
                 enrollmentUid = searchTeiModel.selectedEnrollment.uid(),
                 online = searchTeiModel.isOnline,
             )
-
-            searching = false
-
-            clearQueryData()
-            clearFocus()
         }
     }
 
