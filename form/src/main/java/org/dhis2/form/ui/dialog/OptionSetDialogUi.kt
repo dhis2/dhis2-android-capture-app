@@ -24,7 +24,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.form.R
 import org.dhis2.form.model.OptionSetDialogViewModel
 import org.hisp.dhis.android.core.option.Option
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @Composable
@@ -207,12 +207,14 @@ private fun DialogButtonActions(onClearClick: () -> Unit, onCancelClick: () -> U
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
     ) {
-        TextButton(onClick = onClearClick) {
-            Text(text = stringResource(id = R.string.clear).uppercase())
-        }
+        Button(
+            text = stringResource(id = R.string.clear).uppercase(),
+            onClick = onClearClick,
+        )
         Spacer(modifier = Modifier.size(8.dp))
-        TextButton(onClick = onCancelClick) {
-            Text(text = stringResource(id = R.string.cancel).uppercase())
-        }
+        Button(
+            text = stringResource(id = R.string.cancel).uppercase(),
+            onClick = onCancelClick,
+        )
     }
 }

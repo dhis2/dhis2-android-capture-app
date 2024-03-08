@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -214,14 +213,10 @@ fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit
                 color = Color.DarkGray,
             )
         }
-        TextButton(onClick = { onCopy(stackTrace) }) {
-            Text(
-                text = stringResource(
-                    id = R.string.customactivityoncrash_error_activity_error_details_copy,
-                ).uppercase(),
-                color = colorResource(id = R.color.colorPrimary),
-            )
-        }
+        Button(
+            text = stringResource(id = R.string.customactivityoncrash_error_activity_error_details_copy,).uppercase(),
+            onClick = { onCopy(stackTrace) },
+        )
     }
 }
 
