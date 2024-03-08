@@ -30,9 +30,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.dhis2.R
 import org.dhis2.bindings.buildInfo
 import org.dhis2.usescases.login.accounts.AccountModel
+import org.dhis2.usescases.login.ui.LoginTopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.dhis2.usescases.login.ui.LoginTopBar
 
 @ExperimentalMaterialApi
 @Composable
