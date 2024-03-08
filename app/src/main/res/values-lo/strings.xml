@@ -150,13 +150,11 @@
     <string name="deactivate">ຢຸດນໍາໃຊ້</string>
     <string name="program_not_allow_events">ໂປຣແກຣມນີ້ບໍ່ອະນຸຍາດຕື່ມກໍລະນີເຂົ້າອີກ</string>
 
-    <!--DONE TASKS-->
     <string name="events">ເຫດການ</string>
     <string name="done_task">ໜ້າຫຼັກ</string>
     <string name="app_info">ຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມ</string>
     <string name="log_out">ອອກຈາກລະບົບ</string>
     <string name="block_session">ໄລຍະປີດການນໍາໃຊ້</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 ນາທີ</string>
     <string name="fifteen_minute">15 ນາທີ</string>

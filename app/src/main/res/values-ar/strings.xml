@@ -162,13 +162,11 @@
     <string name="deactivate">إلغاء التنشيط</string>
     <string name="program_not_allow_events">هذا البرنامج لا يسمح بإضافة أحداث أكثر</string>
 
-    <!--DONE TASKS-->
     <string name="events">الأحداث</string>
     <string name="done_task">الرئيسية</string>
     <string name="app_info">معلومات التطبيق</string>
     <string name="log_out">تسجيل الخروج</string>
     <string name="block_session">حظر الجلسة</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 دقيقة</string>
     <string name="fifteen_minute">15 دقيقة</string>

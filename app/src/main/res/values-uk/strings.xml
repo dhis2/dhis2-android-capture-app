@@ -160,13 +160,11 @@
     <string name="deactivate">Деактивувати</string>
     <string name="program_not_allow_events">Ця програма не дозволяє мати більше випадків</string>
 
-    <!--DONE TASKS-->
     <string name="events">випадки</string>
     <string name="done_task">Головна</string>
     <string name="app_info">Інформація про додаток</string>
     <string name="log_out">Вийти з системи</string>
     <string name="block_session">Заблокувати сесію</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 хвилина</string>
     <string name="fifteen_minute">15 хвилин</string>

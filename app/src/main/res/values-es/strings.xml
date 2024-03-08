@@ -159,13 +159,11 @@
     <string name="deactivate">Desactivar</string>
     <string name="program_not_allow_events">Este programa no admite más eventos</string>
 
-    <!--DONE TASKS-->
     <string name="events">Eventos</string>
     <string name="done_task">Inicio</string>
     <string name="app_info">Información de la App</string>
     <string name="log_out">Cerrar Sesion</string>
     <string name="block_session">Bloquear sesion</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minuto</string>
     <string name="fifteen_minute">15 minutos</string>
