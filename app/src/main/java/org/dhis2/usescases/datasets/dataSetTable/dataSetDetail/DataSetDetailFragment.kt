@@ -11,7 +11,8 @@ import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.FragmentDatasetDetailBinding
 import org.dhis2.ui.setUpMetadataIcon
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity

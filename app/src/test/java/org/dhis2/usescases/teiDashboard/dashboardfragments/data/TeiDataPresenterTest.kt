@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventViewModel
@@ -245,7 +245,7 @@ class TeiDataPresenterTest {
     }
 
     @Test
-    fun `onOrgUnitForNewEventSelected success`() = runTest {
+    fun `onOrgUnitForNewEventSelected success`() = runBlocking {
         val orgUnitUid = "orgUnitUid"
         val programStageUid = "programStageUid"
         val eventUid = "eventUid"
@@ -269,7 +269,7 @@ class TeiDataPresenterTest {
     }
 
     @Test
-    fun `onOrgUnitForNewEventSelected failure`() = runTest {
+    fun `onOrgUnitForNewEventSelected failure`() = runBlocking {
         val orgUnitUid = "orgUnitUid"
         val programStageUid = "programStageUid"
         val errorMessage = "Error message"

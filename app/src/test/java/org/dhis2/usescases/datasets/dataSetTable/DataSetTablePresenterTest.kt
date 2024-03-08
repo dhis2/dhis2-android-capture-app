@@ -12,8 +12,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.validationrules.ValidationRuleResult

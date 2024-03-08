@@ -4,11 +4,11 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.commons.filters.di.FilterModule;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.user.UserComponent;
-import org.dhis2.data.user.UserModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
+import org.dhis2.commons.resources.DhisPeriodUtils;
+import org.dhis2.data.user.UserComponent;
+import org.dhis2.data.user.UserModule;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.login.accounts.AccountsComponent;
 import org.dhis2.usescases.login.accounts.AccountsModule;

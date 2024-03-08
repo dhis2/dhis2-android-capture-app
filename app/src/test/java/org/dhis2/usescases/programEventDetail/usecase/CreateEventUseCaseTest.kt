@@ -1,7 +1,7 @@
 package org.dhis2.usescases.programEventDetail.usecase
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
@@ -53,15 +53,17 @@ class CreateEventUseCaseTest {
     )
 
     @Test
-    fun `create event with enrollment`() = runTest {
+    fun `create event with enrollment`() {
         val enrollmentUid = "enrollmentUid"
 
         whenever(
             d2.eventModule().events().blockingAdd(any<EventCreateProjection>()),
         ) doReturn eventUid
 
-        val result = createEventUseCase(programUid, orgUnitUid, programStageUid, enrollmentUid)
-        assertEquals(Result.success(eventUid), result)
+        runBlocking {
+            val result = createEventUseCase(programUid, orgUnitUid, programStageUid, enrollmentUid)
+            assertEquals(Result.success(eventUid), result)
+        }
 
         verify(eventModule.events()).blockingAdd(
             argThat {
@@ -76,13 +78,15 @@ class CreateEventUseCaseTest {
     }
 
     @Test
-    fun `create event without enrollment`() = runTest {
+    fun `create event without enrollment`() {
         whenever(
             d2.eventModule().events().blockingAdd(any<EventCreateProjection>()),
         ) doReturn eventUid
 
-        val result = createEventUseCase(programUid, orgUnitUid, programStageUid, null)
-        assertEquals(Result.success(eventUid), result)
+        runBlocking {
+            val result = createEventUseCase(programUid, orgUnitUid, programStageUid, null)
+            assertEquals(Result.success(eventUid), result)
+        }
 
         verify(eventModule.events()).blockingAdd(
             argThat {
@@ -97,7 +101,7 @@ class CreateEventUseCaseTest {
     }
 
     @Test
-    fun `create event with error`() = runTest {
+    fun `create event with error`() {
         val enrollmentUid = "enrollmentUid"
         val error = D2Error.builder()
             .errorCode(D2ErrorCode.UNEXPECTED)
@@ -107,7 +111,9 @@ class CreateEventUseCaseTest {
             d2.eventModule().events().blockingAdd(any<EventCreateProjection>()),
         ) doThrow (error)
 
-        val result = createEventUseCase(programUid, orgUnitUid, programStageUid, enrollmentUid)
-        assertEquals(error, result.exceptionOrNull())
+        runBlocking {
+            val result = createEventUseCase(programUid, orgUnitUid, programStageUid, enrollmentUid)
+            assertEquals(error, result.exceptionOrNull())
+        }
     }
 }

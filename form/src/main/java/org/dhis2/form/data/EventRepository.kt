@@ -39,6 +39,7 @@ class EventRepository(
     private val d2: D2,
     private val metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
+    private val dateUtils: DateUtils,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
 
     private val event by lazy {
@@ -348,14 +349,14 @@ class EventRepository(
     private fun getEventReportDate() = when {
         event != null -> event?.eventDate()
         programStage?.periodType() != null -> getDateBasedOnPeriodType()
-        else -> DateUtils.getInstance().today
+        else -> dateUtils.today
     }
 
     private fun getDateBasedOnPeriodType(): Date {
-        return DateUtils.getInstance()
+        return dateUtils
             .getNextPeriod(
                 programStage?.periodType(),
-                DateUtils.getInstance().today,
+                dateUtils.today,
                 0,
             )
     }

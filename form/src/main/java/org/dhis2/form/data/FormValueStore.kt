@@ -100,7 +100,7 @@ class FormValueStore(
 
     private fun storeEventCategoryComboAttribute(
         uid: String,
-        value: String?
+        value: String?,
     ): Flowable<StoreResult> {
         val categoryOptionComboUid = if (value.isNullOrEmpty()) {
             null
@@ -129,7 +129,7 @@ class FormValueStore(
 
     private fun storeEventCoordinateAttribute(
         value: String?,
-        extraData: String?
+        extraData: String?,
     ): Flowable<StoreResult> {
         val featureType =
             d2.programModule().programStages()
@@ -370,7 +370,7 @@ class FormValueStore(
                     crashReportController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
-                                "" + " value: $_value",
+                            "" + " value: $_value",
                     )
                 }
             } else {
