@@ -12,21 +12,37 @@ class FeatureConfigRepositoryImpl @Inject constructor(
     val d2: D2,
 ) : FeatureConfigRepository {
 
+    val SET_FROM_DEVELOPMENT = "SET_FROM_DEVELOPMENT"
+
     override val featuresList: List<FeatureState>
         get() = Feature.entries.map {
             FeatureState(it, isFeatureEnable(it))
         }
 
     override fun updateItem(featureState: FeatureState) {
+        if (featureState.feature.name == Feature.COMPOSE_FORMS.name) {
+            preferences.setValue(SET_FROM_DEVELOPMENT, true)
+        }
         preferences.setValue(featureState.feature.name, !featureState.enable)
     }
 
     override fun isFeatureEnable(feature: Feature): Boolean {
-        return if (preferences.contains(feature.name)) {
-            preferences.getBoolean(feature.name, false)
-        } else {
-            d2.settingModule().generalSetting()
-                .hasExperimentalFeature(ExperimentalFeature.NewFormLayout).blockingGet()
+        return when {
+            feature.name == Feature.COMPOSE_FORMS.name -> {
+                val fromDevelopment = preferences.getBoolean(SET_FROM_DEVELOPMENT, false)
+                if (fromDevelopment) {
+                    preferences.getBoolean(feature.name, false)
+                } else if (d2.settingModule().generalSetting().blockingExists()) {
+                    d2.settingModule().generalSetting()
+                        .hasExperimentalFeature(ExperimentalFeature.NewFormLayout).blockingGet()
+                } else {
+                    true
+                }
+            }
+            preferences.contains(feature.name) -> {
+                preferences.getBoolean(feature.name, false)
+            }
+            else -> false
         }
     }
 }
