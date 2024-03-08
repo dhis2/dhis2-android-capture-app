@@ -1,7 +1,7 @@
 package org.dhis2.android.rtsm.utils
 
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.Rule
-import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEvent
@@ -19,16 +19,16 @@ fun debugRuleEngine(rules: List<Rule>, ruleVariables: List<RuleVariable>, events
     printRuleEngineData(buffer, "Rules:")
     printSeparator(buffer)
     rules.forEach { rule ->
-        printRuleEngineData(buffer, "uid:               ${rule.uid()}")
-        printRuleEngineData(buffer, "name:              ${rule.name()}")
-        printRuleEngineData(buffer, "condition:         ${rule.condition()}")
+        printRuleEngineData(buffer, "uid:               ${rule.uid}")
+        printRuleEngineData(buffer, "name:              ${rule.name}")
+        printRuleEngineData(buffer, "condition:         ${rule.condition}")
         printRuleEngineData(buffer, "actions:")
-        rule.actions().forEach { action ->
+        rule.actions.forEach { action ->
             printRuleEngineData(buffer, "   type:           ${action.javaClass.simpleName}")
-            if (action is RuleActionAssign) {
+            if (action.type == ProgramRuleActionType.ASSIGN.name) {
                 printRuleEngineData(buffer, "   field:          ${action.field()}")
             }
-            printRuleEngineData(buffer, "   data:           ${action.data()}")
+            printRuleEngineData(buffer, "   data:           ${action.data}")
             printEmpty(buffer)
         }
     }
@@ -36,9 +36,9 @@ fun debugRuleEngine(rules: List<Rule>, ruleVariables: List<RuleVariable>, events
     printSeparator(buffer)
     printRuleEngineData(buffer, "Variables:")
     ruleVariables.forEach {
-        var variable = "   name = ${it.name()}"
+        var variable = "   name = ${it.name}"
         if (it is RuleVariableCurrentEvent) {
-            variable += ", DE = ${it.dataElement()}"
+            variable += ", DE = ${it.field}"
         }
 
         printRuleEngineData(buffer, variable)
@@ -50,14 +50,14 @@ fun debugRuleEngine(rules: List<Rule>, ruleVariables: List<RuleVariable>, events
     events.forEach {
         printRuleEngineData(
             buffer,
-            "   Event uid = ${it.event()}, status = ${it.status()}, eventDate = ${it.eventDate()}",
+            "   Event uid = ${it.event}, status = ${it.status}, eventDate = ${it.eventDate}",
         )
 
         printRuleEngineData(buffer, "   Data values:")
-        it.dataValues().forEach { dv ->
+        it.dataValues.forEach { dv ->
             printRuleEngineData(
                 buffer,
-                "      DE = ${dv.dataElement()}, value = ${dv.value()}",
+                "      DE = ${dv.dataElement}, value = ${dv.value}",
             )
         }
 
@@ -79,14 +79,14 @@ fun printRuleEffects(
     printRuleEngineData(buffer, "$label:")
     printSeparator(buffer)
     ruleEffects.forEach { ruleEffect ->
-        when (ruleEffect.ruleAction()) {
-            is RuleActionAssign -> {
-                val ruleAction = ruleEffect.ruleAction() as RuleActionAssign
+        when (ruleEffect.ruleAction.type) {
+            ProgramRuleActionType.ASSIGN.name -> {
+                val ruleAction = ruleEffect.ruleAction
                 printRuleEngineData(
                     buffer,
                     "field = ${ruleAction.field()}, " +
-                        "data = ${ruleEffect.data()}, " +
-                        "rule = ${ruleAction.data()}",
+                        "data = ${ruleEffect.data}, " +
+                        "rule = ${ruleAction.data}",
                 )
             }
         }
@@ -97,7 +97,7 @@ fun printRuleEffects(
     dataValues?.forEach {
         printRuleEngineData(
             buffer,
-            "      DE = ${it.dataElement()}, value = ${it.value()}, eventDate= ${it.eventDate()}",
+            "      DE = ${it.dataElement}, value = ${it.value}, eventDate= ${it.eventDate}",
         )
     }
     printSeparator(buffer)

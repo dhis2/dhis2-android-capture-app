@@ -19,6 +19,8 @@ data class EventViewModel(
     var valueListIsOpen: Boolean = false,
     val showTopShadow: Boolean = false,
     val showBottomShadow: Boolean = false,
+    val showAllEvents: Boolean = false,
+    val maxEventsToShow: Int = 0,
     val displayDate: String?,
     val nameCategoryOptionCombo: String?,
 ) {
@@ -45,6 +47,7 @@ data class EventViewModel(
                 eventCount > 0 -> copy(canAddNewEvent = false)
                 else -> null
             }
+
             else -> this
         }
     }

@@ -22,4 +22,6 @@ interface TeiDataRepository {
     fun getOrgUnitName(orgUnitUid: String): String
     fun getTeiProfilePath(): String?
     fun getTeiHeader(): String?
+    fun isEventEditable(eventUid: String): Boolean
+    fun displayOrganisationUnit(programUid: String): Boolean
 }

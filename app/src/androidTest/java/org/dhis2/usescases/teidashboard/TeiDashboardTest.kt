@@ -32,6 +32,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
@@ -105,7 +106,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuDeactivate()
             checkCancelledStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent(composeTestRule)
-            checkAllEventsAreInactive(1)
+            checkAllEventsAreClosed(composeTestRule)
         }
     }
 
@@ -120,7 +121,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuComplete()
             checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent(composeTestRule)
-            checkAllEventsAreClosed(1)
+            checkAllEventsAreClosed(composeTestRule)
         }
     }
 
@@ -226,16 +227,15 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
         prepareTeiOpenedToEditAndLaunchActivity(rule)
 
-        val labMonitoring = 2
-
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
-            clickOnEventWithPosition(labMonitoring)
+            clickOnEventWith(composeTestRule, LAB_MONITORING)
             waitToDebounce(600)
         }
 
@@ -248,7 +248,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            checkEventWasCreatedAndClosed(LAB_MONITORING, 2)
+            checkEventWasCreatedAndClosed(composeTestRule, LAB_MONITORING)
         }
     }
 

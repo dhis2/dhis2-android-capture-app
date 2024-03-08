@@ -1,8 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
 import io.reactivex.Single
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
@@ -30,7 +30,7 @@ class EventInitialRepositoryImplTest {
     private val stageUid = "stageUid"
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val fieldFactory: FieldViewModelFactory = mock()
-    private val ruleEngineRepository: RuleEngineRepository = mock()
+    private val ruleEngineHelper: RuleEngineHelper = mock()
 
     @Before
     fun setUp() {
@@ -39,7 +39,7 @@ class EventInitialRepositoryImplTest {
             stageUid,
             d2,
             fieldFactory,
-            ruleEngineRepository,
+            ruleEngineHelper,
         )
     }
 

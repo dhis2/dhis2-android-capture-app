@@ -32,6 +32,7 @@ import org.dhis2.bindings.buildInfo
 import org.dhis2.usescases.login.accounts.AccountModel
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.dhis2.usescases.login.ui.LoginTopBar
 
 @ExperimentalMaterialApi
 @Composable
@@ -39,6 +40,7 @@ fun AccountsScreen(
     accounts: List<AccountModel>,
     onAccountClicked: (AccountModel) -> Unit,
     onAddAccountClicked: () -> Unit,
+    onImportDatabase: () -> Unit,
 ) {
     MaterialTheme {
         Column(
@@ -46,7 +48,11 @@ fun AccountsScreen(
                 .fillMaxWidth()
                 .background(colorResource(id = R.color.colorPrimary)),
         ) {
-            LoginHeader()
+            LoginTopBar(
+                version = LocalContext.current.buildInfo(),
+                onImportDatabase = onImportDatabase,
+            )
+
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -54,7 +60,11 @@ fun AccountsScreen(
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     .background(Color.White),
             ) {
-                LazyColumn(Modifier.weight(1f).padding(top = 16.dp)) {
+                LazyColumn(
+                    Modifier
+                        .weight(1f)
+                        .padding(top = 16.dp),
+                ) {
                     items(accounts) {
                         AccountItem(
                             Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -116,6 +126,7 @@ fun AccountsPreview() {
         accounts,
         {},
         {},
+        {},
     )
 }
 
@@ -130,6 +141,7 @@ fun FewAccountsPreview() {
     }
     AccountsScreen(
         accounts,
+        {},
         {},
         {},
     )

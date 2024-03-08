@@ -42,6 +42,7 @@ import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG
 import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
@@ -79,6 +80,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     @Inject
     lateinit var resourceManager: ResourceManager
+
+    @Inject
+    lateinit var cardMapper: TEIEventCardMapper
 
     private var eventAdapter: EventAdapter? = null
     private var dialog: CustomDialog? = null
@@ -279,7 +283,12 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         currentEnrollment: Enrollment,
     ): Flowable<StageSection> {
         if (eventAdapter == null) {
-            eventAdapter = EventAdapter(presenter, currentProgram, colorUtils).also {
+            eventAdapter = EventAdapter(
+                presenter,
+                currentProgram,
+                colorUtils,
+                cardMapper,
+            ).also {
                 it.setEnrollment(currentEnrollment)
             }
             binding.teiRecycler.adapter = eventAdapter

@@ -7,7 +7,7 @@ import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import io.reactivex.Flowable
 import io.reactivex.functions.Function3
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.RelativePeriod
@@ -15,12 +15,12 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class TrackerAnalyticsRepository(
     d2: D2,
-    ruleEngineRepository: RuleEngineRepository,
+    ruleEngineHelper: RuleEngineHelper?,
     val charts: Charts?,
     programUid: String,
     val teiUid: String,
     resourceManager: ResourceManager,
-) : BaseIndicatorRepository(d2, ruleEngineRepository, programUid, resourceManager) {
+) : BaseIndicatorRepository(d2, ruleEngineHelper, programUid, resourceManager) {
 
     val enrollmentUid: String
 

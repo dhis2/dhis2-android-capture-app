@@ -152,8 +152,8 @@ class D2ErrorUtils(
                     context.getString(R.string.error_no_internet_connection)
                 }
 
-            D2ErrorCode.DATABASE_IMPORT_FAILED -> defaultError()
-            D2ErrorCode.DATABASE_IMPORT_INVALID_FILE -> defaultError()
+            D2ErrorCode.DATABASE_IMPORT_FAILED -> "Database import failed"
+            D2ErrorCode.DATABASE_IMPORT_INVALID_FILE -> "Invalid file"
         }
     }
 

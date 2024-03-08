@@ -12,13 +12,14 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
@@ -40,7 +41,7 @@ class TEIDataModule(
         d2: D2,
         dashboardRepository: DashboardRepository,
         teiDataRepository: TeiDataRepository,
-        ruleEngineRepository: RuleEngineRepository,
+        ruleEngineHelper: RuleEngineHelper?,
         schedulerProvider: SchedulerProvider,
         analyticsHelper: AnalyticsHelper,
         valueStore: FormValueStore,
@@ -55,7 +56,7 @@ class TEIDataModule(
             d2,
             dashboardRepository,
             teiDataRepository,
-            ruleEngineRepository,
+            ruleEngineHelper,
             programUid,
             teiUid,
             enrollmentUid,
@@ -144,4 +145,12 @@ class TEIDataModule(
 
     @Provides
     fun provideContractHandler() = TeiDataContractHandler(registry)
+
+    @Provides
+    @PerFragment
+    fun providesTEIEventCardMapper(
+        resourceManager: ResourceManager,
+    ): TEIEventCardMapper {
+        return TEIEventCardMapper(resourceManager)
+    }
 }
