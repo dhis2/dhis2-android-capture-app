@@ -1,33 +1,22 @@
 package org.dhis2.usescases.form
 
+import android.util.Log
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
-import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.searchte.robot.searchTeiRobot
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
-import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.After
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+const val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+const val firstSectionPosition = 1
+
 class FormTest : BaseTest() {
 
     @get:Rule
-    val rule = ActivityTestRule(EventCaptureActivity::class.java, false, false)
+    val ruleEvent = lazyActivityScenarioRule<EventCaptureActivity>(launchActivity = false)
 
-    @get:Rule
-    val ruleTeiDashboard = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
-
-    @get:Rule
-    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -38,13 +27,26 @@ class FormTest : BaseTest() {
         super.teardown()
     }
 
-    @Ignore("indeterminate test")
     @Test
-    fun shouldSuccessfullyUseForm() {
-        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
-        val firstSectionPosition = 1
-        initTest()
+    fun shouldApplyProgramRules() {
+        prepareIntentAndLaunchEventActivity(ruleEvent)
 
+        applyHideField()
+        applyHideSection()
+        applyShowWarning()
+        applyShowError()
+        applySetMandatoryField()
+        applyHideOption()
+        applyHideOptionGroup()
+        applyShowOptionGroup()
+        applyAssignValue()
+        applyDisplayText()
+        applyDisplayKeyValue()
+        applyWarningOnComplete()
+        applyErrorOnComplete()
+    }
+
+    private fun applyHideField() {
         formRobot {
             clickOnSelectOption(
                 rulesFirstSection,
@@ -54,7 +56,9 @@ class FormTest : BaseTest() {
             )
             checkHiddenField("ZZ TEST LONGTEST")
         }
+    }
 
+    private fun applyHideSection() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -65,7 +69,9 @@ class FormTest : BaseTest() {
             )
             checkHiddenSection("Gamma Rules A")
         }
+    }
 
+    private fun applyShowWarning() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -76,7 +82,9 @@ class FormTest : BaseTest() {
             )
             checkWarningIsShown()
         }
+    }
 
+    private fun applyShowError() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -87,7 +95,9 @@ class FormTest : BaseTest() {
             )
             checkErrorIsShown()
         }
+    }
 
+    private fun applySetMandatoryField() {
         formRobot {
             val nonMandatoryLabel = "ZZ TEST NUMBER"
             val mandatoryLabel = "ZZ TEST NUMBER *"
@@ -102,7 +112,9 @@ class FormTest : BaseTest() {
             )
             checkLabel(mandatoryLabel, position)
         }
+    }
 
+    private fun applyHideOption() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -113,7 +125,9 @@ class FormTest : BaseTest() {
             )
             checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
         }
+    }
 
+    private fun applyHideOptionGroup() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -125,7 +139,9 @@ class FormTest : BaseTest() {
             checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
             checkHiddenOption("West", OPTION_SET_FIELD_POSITION)
         }
+    }
 
+    private fun applyShowOptionGroup() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -134,18 +150,14 @@ class FormTest : BaseTest() {
                 SHOW_OPTION_GROUP,
                 SHOW_OPTION_POSITION
             )
-            checkDisplayedOption("North", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
-            checkDisplayedOption("West", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
+
+            val activity = waitForActivityScenario()
+            checkDisplayedOption("North", OPTION_SET_FIELD_POSITION, activity)
+            checkDisplayedOption("West", OPTION_SET_FIELD_POSITION, activity)
         }
     }
 
-    @Ignore("Indeterminate (flaky)")
-    @Test
-    fun shouldApplyAssignAction() {
-        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
-        val firstSectionPosition = 1
-        initTest()
-
+    private fun applyAssignValue() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -158,12 +170,7 @@ class FormTest : BaseTest() {
         }
     }
 
-    @Test
-    fun shouldApplyIndicatorRelatedActions() {
-        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
-        val firstSectionPosition = 1
-        initTest()
-
+    private fun applyDisplayText() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -174,11 +181,12 @@ class FormTest : BaseTest() {
             )
             pressBack()
             goToAnalytics()
-            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
             goToDataEntry()
         }
+    }
 
+    private fun applyDisplayKeyValue() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -189,19 +197,12 @@ class FormTest : BaseTest() {
             )
             pressBack()
             goToAnalytics()
-            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
         }
     }
 
-    @Ignore("indeterminate test")
-    @Test
-    fun shouldApplyWarningAndErrorOnComplete() {
-        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
-        val firstSectionPosition = 1
-        initTest()
-
+    private fun applyWarningOnComplete() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -216,7 +217,9 @@ class FormTest : BaseTest() {
             checkPopUpWithMessageOnCompleteIsShown("WARNING_ON_COMPLETE", composeTestRule)
             pressBack()
         }
+    }
 
+    private fun applyErrorOnComplete() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(
@@ -233,84 +236,15 @@ class FormTest : BaseTest() {
         }
     }
 
-    @Ignore("Indeterminate test")
-    @Test
-    fun shouldApplyOptionRelatedActions() {
-        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
-        val firstSectionPosition = 1
-        startSearchActivity(ruleSearch)
-
-        searchTeiRobot(composeTestRule) {
-            clickOnOpenSearch()
-            typeAttributeAtPosition("optionGroup", 1)
-            clickOnSearch()
-            clickOnEnroll()
-            orgUnitSelectorRobot(composeTestRule) {
-                selectTreeOrgUnit("Ngelehun CHC")
-            }
-            acceptDate()
+    private fun waitForActivityScenario(): EventCaptureActivity {
+        var activity: EventCaptureActivity? = null
+        ruleEvent.getScenario().onActivity {
+            activity = it
         }
-
-        enrollmentRobot {
-            clickOnPersonAttributesUsingButton("Attributes - Person")
-            scrollToBottomProgramForm()
-            clickOnInputDate("DD TEST AGE *")
-            clickOnDatePicker()
-            clickOnAcceptEnrollmentDate()
-            clickOnInputDate("DD TEST DATE *")
-            clickOnAcceptEnrollmentDate()
-            clickOnSaveEnrollment()
+        while (activity == null) {
+            Log.d("FormTest", "Waiting for activity to be initialized")
         }
-
-        eventRobot {
-            clickOnUpdate()
-            waitToDebounce(3000)
-        }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(
-                rulesFirstSection,
-                firstSectionPosition,
-                HIDE_OPTION_GROUP,
-                HIDE_OPTION_GROUP_POSITION
-            )
-            checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
-            checkHiddenOption("West", OPTION_SET_FIELD_POSITION)
-        }
-    }
-
-    private fun initTest() {
-
-        startSearchActivity(ruleSearch)
-
-        searchTeiRobot(composeTestRule) {
-            clickOnOpenSearch()
-            openNextSearchParameter("First name")
-            typeOnNextSearchTextParameter("abc")
-            clickOnSearch()
-            clickOnEnroll()
-            orgUnitSelectorRobot(composeTestRule) {
-                selectTreeOrgUnit("Ngelehun CHC")
-            }
-            acceptDate()
-        }
-
-        enrollmentRobot {
-            waitToDebounce(500)
-            clickOnPersonAttributes("Attributes - Person")
-            scrollToBottomProgramForm()
-            clickOnInpuAge("DD TEST AGE *")
-            clickOnAcceptEnrollmentDate()
-            clickOnInputDate("DD TEST DATE *")
-            clickOnAcceptEnrollmentDate()
-            clickOnSaveEnrollment()
-        }
-
-        eventRobot {
-            clickOnUpdate()
-            waitToDebounce(3000)
-        }
+        return activity!!
     }
 
     companion object {
