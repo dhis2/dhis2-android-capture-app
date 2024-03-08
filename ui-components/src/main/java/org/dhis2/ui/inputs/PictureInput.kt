@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.ui.theme.errorColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 
 @Composable
@@ -83,13 +83,14 @@ fun Picture(image: ImageBitmap, enabled: Boolean, onClick: () -> Unit, onClear: 
                     .size(40.dp)
                     .align(Alignment.TopEnd),
                 onClick = onClear,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "clear",
-                    tint = errorColor,
-                )
-            }
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "clear",
+                        tint = errorColor,
+                    )
+                },
+            )
         }
     }
 }
