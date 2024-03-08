@@ -239,6 +239,8 @@
     <string name="settingsSms_descr">Check and edit parameters related to the sms gateway</string>
     <string name="settingsCheckVersion">Software update</string>
     <string name="settingsCheckVersionMessage">Software</string>
+    <string name="settingsExportDB">Export database</string>
+    <string name="settingsExportDBMessage">Export yout database and share it with your administrator</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>
@@ -961,4 +963,6 @@
     <string name="timeline">Timeline</string>
     <string name="clear_search">Clear search</string>
     <string name="optional">Optional</string>
+    <string name="database_export_downloaded">Database downloaded</string>
+    <string name="importing_database">Importing database</string>
 </resources>
