@@ -129,7 +129,12 @@ public class EventInitialModule {
             @Nullable RuleEngineHelper ruleEngineHelper,
             MetadataIconProvider metadataIconProvider
     ) {
-        return new EventInitialRepositoryImpl(eventUid, stageUid, d2, fieldViewModelFactory, ruleEngineHelper);
+        return new EventInitialRepositoryImpl(eventUid,
+                stageUid,
+                d2,
+                fieldViewModelFactory,
+                ruleEngineHelper,
+                metadataIconProvider);
     }
 
     @Provides

@@ -3,8 +3,6 @@ package org.dhis2.usescases.troubleshooting
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.bindings.toRuleEngineObject
 import org.dhis2.form.bindings.toRuleVariableList
-import org.dhis2.form.model.RuleActionError
-import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
