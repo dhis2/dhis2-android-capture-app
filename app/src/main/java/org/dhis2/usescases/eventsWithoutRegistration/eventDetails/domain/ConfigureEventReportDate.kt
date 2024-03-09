@@ -52,6 +52,7 @@ class ConfigureEventReportDate(
         return when (creationType) {
             SCHEDULE ->
                 programStage?.dueDateLabel() ?: resourceProvider.provideDueDate()
+
             else -> {
                 programStage?.executionDateLabel() ?: resourceProvider.provideEventDate()
             }
@@ -70,6 +71,7 @@ class ConfigureEventReportDate(
         when {
             periodType != null ->
                 periodUtils.getPeriodUIString(periodType, date, Locale.getDefault())
+
             else -> DateUtils.uiDateFormat().format(date)
         }
     }
@@ -84,7 +86,7 @@ class ConfigureEventReportDate(
                 } else {
                     val calendar = DateUtils.getInstance().calendar
                     calendar.add(DAY_OF_YEAR, getScheduleInterval())
-                    org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                    DateUtils.getInstance().getNextPeriod(
                         null,
                         calendar.time,
                         0,
@@ -129,19 +131,19 @@ class ConfigureEventReportDate(
             if (periodType == null) {
                 if (program.expiryPeriodType() != null) {
                     val expiryDays = program.expiryDays() ?: 0
-                    return org.dhis2.utils.DateUtils.getInstance().expDate(
+                    return DateUtils.getInstance().expDate(
                         null,
                         expiryDays,
                         program.expiryPeriodType(),
                     )
                 }
             } else {
-                var minDate = org.dhis2.utils.DateUtils.getInstance().expDate(
+                var minDate = DateUtils.getInstance().expDate(
                     null,
                     program.expiryDays() ?: 0,
                     periodType,
                 )
-                val lastPeriodDate = org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                val lastPeriodDate = DateUtils.getInstance().getNextPeriod(
                     periodType,
                     minDate,
                     -1,
@@ -149,14 +151,14 @@ class ConfigureEventReportDate(
                 )
 
                 if (lastPeriodDate.after(
-                        org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                        DateUtils.getInstance().getNextPeriod(
                             program.expiryPeriodType(),
                             minDate,
                             0,
                         ),
                     )
                 ) {
-                    minDate = org.dhis2.utils.DateUtils.getInstance()
+                    minDate = DateUtils.getInstance()
                         .getNextPeriod(periodType, lastPeriodDate, 0)
                 }
                 return minDate
@@ -171,6 +173,7 @@ class ConfigureEventReportDate(
                 ADDNEW,
                 DEFAULT,
                 -> Date(System.currentTimeMillis() - 1000)
+
                 else -> null
             }
         } else {
@@ -178,6 +181,7 @@ class ConfigureEventReportDate(
                 ADDNEW,
                 DEFAULT,
                 -> DateUtils.getInstance().today
+
                 else -> null
             }
         }

@@ -26,6 +26,7 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PROGRAM_STAGE_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
@@ -50,7 +51,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Prov
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType

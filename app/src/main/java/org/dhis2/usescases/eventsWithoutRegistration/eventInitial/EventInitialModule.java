@@ -12,6 +12,7 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
+import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
@@ -89,7 +90,13 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, D2 d2, ResourceManager resourceManager, ColorUtils colorUtils) {
+    FieldViewModelFactory fieldFactory(
+            Context context,
+            D2 d2,
+            ResourceManager resourceManager,
+            ColorUtils colorUtils,
+            DhisPeriodUtils periodUtils
+    ) {
         return new FieldViewModelFactoryImpl(
                 new UiStyleProviderImpl(
                         new FormUiModelColorFactoryImpl(activityContext, colorUtils),
@@ -101,7 +108,8 @@ public class EventInitialModule {
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
                         new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2)
+                        new FileResourceConfiguration(d2),
+                        periodUtils
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),

@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.commons.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -13,11 +13,11 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
-import org.dhis2.App;
-import org.dhis2.R;
+import org.dhis2.commons.R;
+import org.dhis2.commons.databinding.DialogPeriodBinding;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.resources.DhisPeriodUtils;
-import org.dhis2.databinding.DialogPeriodBinding;
-import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
@@ -38,7 +38,7 @@ public class PeriodDialog extends DialogFragment {
     private PeriodType period;
     private Date minDate;
     private Date maxDate;
-    DhisPeriodUtils periodUtils;
+    public DhisPeriodUtils periodUtils;
 
 
     public PeriodDialog() {
@@ -72,7 +72,12 @@ public class PeriodDialog extends DialogFragment {
 
     @Override
     public void onAttach(Context context) {
-        periodUtils = ((App) context.getApplicationContext()).serverComponent().dhisPeriodUtils();
+        periodUtils = new DhisPeriodUtils(
+                D2Manager.getD2(),
+                context.getString(R.string.period_span_default_label),
+                context.getString(R.string.week_period_span_default_label),
+                context.getString(R.string.biweek_period_span_default_label)
+        );
         super.onAttach(context);
         this.context = context;
     }

@@ -13,6 +13,7 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -116,6 +117,7 @@ class EnrollmentModule(
         d2: D2,
         resourceManager: ResourceManager,
         colorUtils: ColorUtils,
+        periodUtils: DhisPeriodUtils,
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             UiStyleProviderImpl(
@@ -129,6 +131,7 @@ class EnrollmentModule(
                 OptionSetConfiguration(d2),
                 OrgUnitConfiguration(d2),
                 FileResourceConfiguration(d2),
+                periodUtils,
             ),
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl(),

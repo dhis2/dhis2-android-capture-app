@@ -378,13 +378,27 @@ fun ProvideByValueType(
         ValueType.DATETIME,
         ValueType.TIME,
         -> {
-            ProvideInputDate(
-                modifier = modifier,
-                inputStyle = inputStyle,
-                fieldUiModel = fieldUiModel,
-                intentHandler = intentHandler,
-                onNextClicked = onNextClicked,
-            )
+            when (fieldUiModel.periodSelector) {
+                null -> {
+                    ProvideInputDate(
+                        modifier = modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                        onNextClicked = onNextClicked,
+                    )
+                }
+
+                else -> {
+                    ProvidePeriodSelector(
+                        modifier = Modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        focusRequester = focusRequester,
+                        uiEventHandler = uiEventHandler,
+                    )
+                }
+            }
         }
 
         ValueType.IMAGE -> {

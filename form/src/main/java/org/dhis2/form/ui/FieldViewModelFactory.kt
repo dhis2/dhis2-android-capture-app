@@ -4,6 +4,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.EventCategoryCombo
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
+import org.dhis2.form.model.PeriodSelector
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -33,6 +34,7 @@ interface FieldViewModelFactory {
         orgUnitSelectorScope: OrgUnitSelectorScope? = null,
         selectableDates: SelectableDates? = null,
         eventCatCombo: EventCategoryCombo? = null,
+        periodSelector: PeriodSelector? = null,
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel

@@ -202,7 +202,8 @@ public class SearchTEModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            ColorUtils colorUtils
+            ColorUtils colorUtils,
+            DhisPeriodUtils periodUtils
     ) {
         return new FieldViewModelFactoryImpl(
                 new UiStyleProviderImpl(
@@ -215,7 +216,8 @@ public class SearchTEModule {
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
                         new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2)
+                        new FileResourceConfiguration(d2),
+                        periodUtils
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
@@ -317,11 +319,15 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    DisplayNameProvider provideDisplayNameProvider(D2 d2) {
+    DisplayNameProvider provideDisplayNameProvider(
+            D2 d2,
+            DhisPeriodUtils periodUtils
+    ) {
         return new DisplayNameProviderImpl(
                 new OptionSetConfiguration(d2),
                 new OrgUnitConfiguration(d2),
-                new FileResourceConfiguration(d2)
+                new FileResourceConfiguration(d2),
+                periodUtils
         );
     }
 
