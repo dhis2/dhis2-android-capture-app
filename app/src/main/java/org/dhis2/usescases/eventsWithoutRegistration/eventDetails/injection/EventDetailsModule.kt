@@ -76,6 +76,7 @@ class EventDetailsModule(
         d2: D2,
         resourceManager: ResourceManager,
         colorUtils: ColorUtils,
+        periodUtils: DhisPeriodUtils,
     ): EventDetailsRepository {
         return EventDetailsRepository(
             d2 = d2,
@@ -94,6 +95,7 @@ class EventDetailsModule(
                     OptionSetConfiguration(d2),
                     OrgUnitConfiguration(d2),
                     FileResourceConfiguration(d2),
+                    periodUtils,
                 ),
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),

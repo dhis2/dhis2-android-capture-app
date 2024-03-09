@@ -11,6 +11,8 @@ import androidx.databinding.DataBindingUtil
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
@@ -20,9 +22,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Prov
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.willShowCalendar
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.EventMode
-import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
@@ -117,7 +117,13 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                                 allowsManualInput = false,
                                 detailsEnabled = true,
                                 onDateClick = {},
-                                onDateSelected = { date -> presenter.setEventDate(presenter.formatDateValues(date)) },
+                                onDateSelected = { date ->
+                                    presenter.setEventDate(
+                                        presenter.formatDateValues(
+                                            date,
+                                        ),
+                                    )
+                                },
                                 selectableDates = presenter.getSelectableDates(program, false),
                             ),
                         )

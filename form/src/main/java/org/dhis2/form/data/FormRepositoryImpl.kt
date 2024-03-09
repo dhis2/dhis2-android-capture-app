@@ -377,6 +377,7 @@ class FormRepositoryImpl(
                                 valueType,
                                 value,
                                 item.optionSet,
+                                item.periodSelector?.type,
                             ),
                         )
                         .setLegend(
@@ -455,6 +456,8 @@ class FormRepositoryImpl(
                         displayNameProvider.provideDisplayName(
                             action.valueType,
                             action.value,
+                            item.optionSet,
+                            item.periodSelector?.type,
                         ),
                     )
             } ?: item
@@ -507,8 +510,9 @@ class FormRepositoryImpl(
             openedSectionUid = action.id
         }
     }
+
     override fun getDateFormatConfiguration(): String {
-        return dataEntryRepository?.dateFormatConfiguration() ?: "ddMMyyyy"
+        return dataEntryRepository.dateFormatConfiguration() ?: "ddMMyyyy"
     }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =

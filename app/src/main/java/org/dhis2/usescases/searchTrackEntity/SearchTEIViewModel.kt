@@ -246,6 +246,7 @@ class SearchTEIViewModel(
                         valueType = it.valueType,
                         value = value,
                         optionSet = it.optionSet,
+                        periodType = it.periodSelector?.type,
                     ),
                 )
             } else {

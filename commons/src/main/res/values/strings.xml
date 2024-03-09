@@ -292,5 +292,8 @@
     <string name="event_label_updated">%s updated</string>
     <string name="event_label_date_in_future_message">This %s can\'t have a date in the future. Please change it.</string>
     <string name="failed_insert_event_label">Failed to insert new %s</string>
+    <string name="period_span_default_label" translatable="false">%s - %s</string>
+    <string name="week_period_span_default_label">Week %d %s to %s</string>
+    <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
 
 </resources>

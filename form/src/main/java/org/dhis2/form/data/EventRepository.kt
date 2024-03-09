@@ -14,6 +14,7 @@ import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.EventCategoryCombo
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
+import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -27,6 +28,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.imports.ImportStatus
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
@@ -160,7 +162,7 @@ class EventRepository(
             categoryOptions = categoryOptions,
             selectedCategoryOptions = getSelectedCategoryOptions(categories, categoryOptions),
             displayName = catComboDisplayName,
-            date = getEventReportDate(),
+            date = event?.eventDate(),
             orgUnitUID = event?.organisationUnit(),
         )
 
@@ -325,7 +327,7 @@ class EventRepository(
     }
 
     private fun createEventReportDateField(): FieldUiModel {
-        val dateValue = getEventReportDate()?.let { date ->
+        val dateValue = event?.eventDate()?.let { date ->
             DateUtils.oldUiDateFormat().format(date)
         }
 
@@ -343,22 +345,54 @@ class EventRepository(
             allowFutureDates = false,
             editable = true,
             description = null,
+            periodSelector = getPeriodSelector(),
         )
     }
 
-    private fun getEventReportDate() = when {
-        event != null -> event?.eventDate()
-        programStage?.periodType() != null -> getDateBasedOnPeriodType()
-        else -> dateUtils.today
+    private fun getPeriodSelector(): PeriodSelector? {
+        return programStage?.periodType()?.let { periodType ->
+            if (periodType != PeriodType.Daily) {
+                PeriodSelector(
+                    type = periodType,
+                    minDate = getPeriodMinDate(periodType),
+                    maxDate = dateUtils.today,
+                )
+            } else {
+                null
+            }
+        }
     }
 
-    private fun getDateBasedOnPeriodType(): Date {
-        return dateUtils
-            .getNextPeriod(
-                programStage?.periodType(),
-                dateUtils.today,
-                0,
-            )
+    private fun getPeriodMinDate(periodType: PeriodType): Date? {
+        d2.programModule().programs()
+            .withTrackedEntityType()
+            .byUid().eq(programUid)
+            .one().blockingGet()?.let { program ->
+                var minDate = dateUtils.expDate(
+                    null,
+                    program.expiryDays() ?: 0,
+                    periodType,
+                )
+                val lastPeriodDate = dateUtils.getNextPeriod(
+                    periodType,
+                    minDate,
+                    -1,
+                    true,
+                )
+
+                if (lastPeriodDate.after(
+                        dateUtils.getNextPeriod(
+                            program.expiryPeriodType(),
+                            minDate,
+                            0,
+                        ),
+                    )
+                ) {
+                    minDate = dateUtils.getNextPeriod(periodType, lastPeriodDate, 0)
+                }
+                return minDate
+            }
+        return null
     }
 
     private fun createEventDetailsSection(): FieldUiModel {

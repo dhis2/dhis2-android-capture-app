@@ -48,6 +48,7 @@ data class SectionUiModelImpl(
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val selectableDates: SelectableDates? = null,
     override val eventCatCombo: EventCategoryCombo? = null,
+    override val periodSelector: PeriodSelector? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0

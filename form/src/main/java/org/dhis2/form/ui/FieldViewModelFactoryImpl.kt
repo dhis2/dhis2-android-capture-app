@@ -7,6 +7,7 @@ import org.dhis2.form.model.EventCategoryCombo
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.OptionSetConfiguration
+import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProvider
@@ -57,6 +58,7 @@ class FieldViewModelFactoryImpl(
         orgUnitSelectorScope: OrgUnitSelectorScope?,
         selectableDates: SelectableDates?,
         eventCatCombo: EventCategoryCombo?,
+        periodSelector: PeriodSelector?,
     ): FieldUiModel {
         isNull(valueType, "type must be supplied")
         return FieldUiModelImpl(
@@ -90,7 +92,12 @@ class FieldViewModelFactoryImpl(
                 allowFutureDates,
                 optionSet,
             ),
-            displayName = displayNameProvider.provideDisplayName(valueType, value, optionSet),
+            displayName = displayNameProvider.provideDisplayName(
+                valueType,
+                value,
+                optionSet,
+                periodSelector?.type,
+            ),
             renderingType = uiEventTypesProvider.provideUiRenderType(
                 featureType,
                 fieldRendering?.type(),
@@ -103,6 +110,7 @@ class FieldViewModelFactoryImpl(
             orgUnitSelectorScope = orgUnitSelectorScope,
             selectableDates = selectableDates,
             eventCatCombo = eventCatCombo,
+            periodSelector = periodSelector,
         )
     }
 

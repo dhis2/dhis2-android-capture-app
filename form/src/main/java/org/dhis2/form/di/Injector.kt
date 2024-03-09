@@ -1,6 +1,7 @@
 package org.dhis2.form.di
 
 import android.content.Context
+import org.dhis2.commons.R
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.network.NetworkUtils
@@ -8,6 +9,7 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
@@ -96,7 +98,7 @@ object Injector {
                 entryMode = repositoryRecords.entryMode,
             ),
             fieldErrorMessageProvider = provideFieldErrorMessage(context),
-            displayNameProvider = provideDisplayNameProvider(),
+            displayNameProvider = provideDisplayNameProvider(context),
             dataEntryRepository = provideDataEntryRepository(
                 entryMode = repositoryRecords.entryMode,
                 context = context,
@@ -169,7 +171,7 @@ object Injector {
         uiStyleProvider = provideUiStyleProvider(context),
         layoutProvider = provideLayoutProvider(),
         hintProvider = provideHintProvider(context),
-        displayNameProvider = provideDisplayNameProvider(),
+        displayNameProvider = provideDisplayNameProvider(context),
         uiEventTypesProvider = provideUiEventTypesProvider(),
         keyboardActionProvider = provideKeyBoardActionProvider(),
         legendValueProvider = provideLegendValueProvider(context),
@@ -249,10 +251,16 @@ object Injector {
 
     private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
 
-    private fun provideDisplayNameProvider() = DisplayNameProviderImpl(
+    private fun provideDisplayNameProvider(context: Context) = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
         OrgUnitConfiguration(provideD2()),
         FileResourceConfiguration(provideD2()),
+        DhisPeriodUtils(
+            d2 = provideD2(),
+            defaultPeriodLabel = context.getString(R.string.period_span_default_label),
+            defaultWeeklyLabel = context.getString(R.string.week_period_span_default_label),
+            defaultBiWeeklyLabel = context.getString(R.string.biweek_period_span_default_label),
+        ),
     )
 
     private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
