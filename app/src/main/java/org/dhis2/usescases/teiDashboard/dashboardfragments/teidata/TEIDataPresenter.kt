@@ -21,6 +21,7 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.form.data.FormValueStore
@@ -436,9 +437,15 @@ class TEIDataPresenter(
 
     fun filterAvailableStages(programStages: List<ProgramStage>): List<ProgramStage> =
         programStages
-            .filter { it.repeatable() == true }
             .filter { it.access().data().write() }
             .filter { !stagesToHide.contains(it.uid()) }
+            .filter { stage ->
+                stage.repeatable() == true ||
+                    events.value?.none { event ->
+                        event.stage?.uid() == stage.uid() &&
+                            event.type == EventViewModelType.EVENT
+                    } == true
+            }.sortedBy { stage -> stage.sortOrder() }
 
     fun isEventEditable(eventUid: String): Boolean {
         return teiDataRepository.isEventEditable(eventUid)
