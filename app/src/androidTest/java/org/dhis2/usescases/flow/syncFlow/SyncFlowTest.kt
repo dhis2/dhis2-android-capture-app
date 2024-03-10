@@ -97,7 +97,7 @@ class SyncFlowTest : BaseTest() {
     fun shouldSuccessfullySyncSavedEvent() {
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
-        eventWithoutRegistrationRobot {
+        eventWithoutRegistrationRobot(composeTestRule) {
             clickOnEventAtPosition(0)
         }
 
@@ -120,7 +120,7 @@ class SyncFlowTest : BaseTest() {
     fun shouldShowErrorWhenSyncEventFails() {
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
-        eventWithoutRegistrationRobot {
+        eventWithoutRegistrationRobot(composeTestRule) {
             clickOnEventAtPosition(1)
         }
 

@@ -3,7 +3,9 @@ package org.dhis2.usescases.programEventDetail
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.testTag
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.AsyncDifferConfig
@@ -53,7 +55,8 @@ class ProgramEventDetailLiveAdapter(
                     editable = it.event?.uid()
                         ?.let { eventViewModel.isEditable(it) } ?: true,
                     displayOrgUnit = it.event?.program()
-                        ?.let { program -> eventViewModel.displayOrganisationUnit(program) } ?: true,
+                        ?.let { program -> eventViewModel.displayOrganisationUnit(program) }
+                        ?: true,
                     onSyncIconClick = {
                         eventViewModel.eventSyncClicked.value = it.event?.uid()
                     },
@@ -65,6 +68,7 @@ class ProgramEventDetailLiveAdapter(
                     },
                 )
                 ListCard(
+                    modifier = Modifier.testTag("EVENT_ITEM"),
                     listAvatar = card.avatar,
                     title = ListCardTitleModel(text = card.title),
                     lastUpdated = card.lastUpdated,

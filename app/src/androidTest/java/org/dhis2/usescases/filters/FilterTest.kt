@@ -109,7 +109,7 @@ class FilterTest : BaseTest() {
             openProgramByPosition(composeTestRule, 0)
             waitToDebounce(700)
         }
-        eventWithoutRegistrationRobot {
+        eventWithoutRegistrationRobot(composeTestRule) {
             clickOnEventAtPosition(0)
         }
         eventRobot(composeTestRule) {
@@ -141,7 +141,7 @@ class FilterTest : BaseTest() {
         homeRobot {
             openProgramByPosition(composeTestRule, 41)
         }
-        eventWithoutRegistrationRobot {
+        eventWithoutRegistrationRobot(composeTestRule) {
             clickOnEventAtPosition(0)
         }
         formRobot {
