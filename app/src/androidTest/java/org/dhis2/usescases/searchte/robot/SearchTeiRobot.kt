@@ -4,7 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
@@ -37,7 +37,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 
 
 fun searchTeiRobot(
-    composeTestRule: ComposeContentTestRule,
+    composeTestRule: ComposeTestRule,
     searchTeiRobot: SearchTeiRobot.() -> Unit
 ) {
     SearchTeiRobot(composeTestRule).apply {
@@ -45,7 +45,7 @@ fun searchTeiRobot(
     }
 }
 
-class SearchTeiRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() {
+class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnTEI(teiName: String, teiLastName: String) {
         waitForView(

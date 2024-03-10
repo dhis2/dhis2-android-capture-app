@@ -6,10 +6,10 @@ import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import androidx.work.Data
 import androidx.work.WorkInfo
 import org.dhis2.AppTest
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTableRobot
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -31,14 +31,14 @@ import java.util.UUID
 class SyncFlowTest : BaseTest() {
 
     @get:Rule
-    val ruleDataSet = ActivityTestRule(DataSetDetailActivity::class.java, false, false)
+    val ruleDataSet = lazyActivityScenarioRule<DataSetDetailActivity>(launchActivity = false)
 
     @get:Rule
-    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    val ruleSearch = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
 
     @get:Rule
     val ruleEventWithoutRegistration =
-        ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+        lazyActivityScenarioRule<ProgramEventDetailActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -69,7 +69,7 @@ class SyncFlowTest : BaseTest() {
         }
 
         teiDashboardRobot(composeTestRule) {
-            clickOnEventWith(composeTestRule, LAB_MONITORING_EVENT_DATE)
+            clickOnEventWith(LAB_MONITORING_EVENT_DATE)
         }
 
         eventRobot(composeTestRule) {
@@ -82,12 +82,12 @@ class SyncFlowTest : BaseTest() {
             composeTestRule.onNodeWithText("Sync").performClick()
         }
 
-        syncFlowRobot {
+        syncFlowRobot(composeTestRule) {
             waitToDebounce(500)
-            clickOnSyncButton(composeTestRule)
+            clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
-            checkSyncFailed(composeTestRule)
+            checkSyncFailed()
         }
         cleanLocalDatabase()
     }
@@ -106,12 +106,12 @@ class SyncFlowTest : BaseTest() {
             clickOnCompleteButton()
         }
 
-        syncFlowRobot {
-            clickOnEventToSync(0)
-            clickOnSyncButton(composeTestRule)
+        syncFlowRobot(composeTestRule) {
+            clickOnEventToSync()
+            clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            checkSyncWasSuccessfully(composeTestRule)
+            checkSyncWasSuccessfully()
         }
         cleanLocalDatabase()
     }
@@ -129,12 +129,12 @@ class SyncFlowTest : BaseTest() {
             clickOnCompleteButton()
         }
 
-        syncFlowRobot {
-            clickOnEventToSync(1)
-            clickOnSyncButton(composeTestRule)
+        syncFlowRobot(composeTestRule) {
+            clickOnEventToSync()
+            clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
-            checkSyncFailed(composeTestRule)
+            checkSyncFailed()
         }
         cleanLocalDatabase()
     }
@@ -162,12 +162,12 @@ class SyncFlowTest : BaseTest() {
             clickOnNegativeButton()
         }
 
-        syncFlowRobot {
+        syncFlowRobot(composeTestRule) {
             clickOnDataSetToSync(0)
-            clickOnSyncButton(composeTestRule)
+            clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            checkSyncWasSuccessfully(composeTestRule) //sync failed
+            checkSyncWasSuccessfully() //sync failed
         }
         cleanLocalDatabase()
     }
@@ -195,12 +195,12 @@ class SyncFlowTest : BaseTest() {
             clickOnNegativeButton()
         }
 
-        syncFlowRobot {
+        syncFlowRobot(composeTestRule) {
             clickOnDataSetToSync(1)
-            clickOnSyncButton(composeTestRule)
+            clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
-            checkSyncFailed(composeTestRule)
+            checkSyncFailed()
         }
         cleanLocalDatabase()
     }
@@ -218,10 +218,6 @@ class SyncFlowTest : BaseTest() {
     }
 
     companion object {
-        const val ORG_UNIT = "Ngelehun CHC"
-        const val TB_VISIT = "TB visit"
-        const val TB_VISIT_EVENT_DATE = "3/7/2019"
-        const val LAB_MONITORING = "Lab monitoring"
         const val LAB_MONITORING_EVENT_DATE = "28/6/2020"
     }
 }

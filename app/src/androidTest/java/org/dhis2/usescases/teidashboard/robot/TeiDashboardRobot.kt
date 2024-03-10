@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.View
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
@@ -48,7 +47,7 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 
 fun teiDashboardRobot(
-    composeTestRule: ComposeContentTestRule,
+    composeTestRule: ComposeTestRule,
     teiDashboardRobot: TeiDashboardRobot.() -> Unit
 ) {
     TeiDashboardRobot(composeTestRule).apply {
@@ -56,7 +55,7 @@ fun teiDashboardRobot(
     }
 }
 
-class TeiDashboardRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() {
+class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun goToNotes() {
         onView(withId(R.id.navigation_notes)).perform(click())
@@ -90,7 +89,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot
         composeTestRule.onNodeWithText(title).performClick()
     }
 
-    fun clickOnEventWith(composeTestRule: ComposeTestRule, searchParam: String) {
+    fun clickOnEventWith(searchParam: String) {
         composeTestRule.onAllNodesWithText(searchParam, useUnmergedTree = true).onFirst()
             .performClick()
     }

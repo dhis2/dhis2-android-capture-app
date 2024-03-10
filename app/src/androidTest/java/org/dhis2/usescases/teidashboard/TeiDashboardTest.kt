@@ -232,7 +232,7 @@ class TeiDashboardTest : BaseTest() {
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
-            clickOnEventWith(composeTestRule, LAB_MONITORING)
+            clickOnEventWith(LAB_MONITORING)
             waitToDebounce(600)
         }
 

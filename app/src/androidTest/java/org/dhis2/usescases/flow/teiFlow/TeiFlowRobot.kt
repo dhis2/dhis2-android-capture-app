@@ -1,6 +1,6 @@
 package org.dhis2.usescases.flow.teiFlow
 
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
@@ -10,7 +10,7 @@ import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 
 fun teiFlowRobot(
-    composeTestRule: ComposeContentTestRule,
+    composeTestRule: ComposeTestRule,
     teiFlowRobot: TeiFlowRobot.() -> Unit
 ) {
     TeiFlowRobot(composeTestRule).apply {
@@ -18,7 +18,7 @@ fun teiFlowRobot(
     }
 }
 
-class TeiFlowRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() {
+class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun registerTEI(
         registrationModel: RegisterTEIUIModel
@@ -71,7 +71,6 @@ class TeiFlowRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() {
     }
 
     fun checkPastEventsAreClosed(
-        composeTestRule: ComposeContentTestRule,
         programPosition: Int
     ) {
         enrollmentRobot {
@@ -84,9 +83,7 @@ class TeiFlowRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() {
         }
     }
 
-    fun closeEnrollmentAndCheckEvents(
-        composeTestRule: ComposeContentTestRule,
-    ) {
+    fun closeEnrollmentAndCheckEvents() {
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
@@ -97,7 +94,10 @@ class TeiFlowRobot(val composeTestRule: ComposeContentTestRule) : BaseRobot() {
         }
     }
 
-    fun changeDueDate(cardTitle: String, date: String, composeTestRule: ComposeContentTestRule) {
+    fun changeDueDate(
+        cardTitle: String,
+        date: String,
+    ) {
         teiDashboardRobot(composeTestRule) {
             clickOnEventGroupByStageUsingDate(cardTitle)
         }

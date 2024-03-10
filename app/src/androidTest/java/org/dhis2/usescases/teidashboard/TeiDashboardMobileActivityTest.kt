@@ -52,7 +52,7 @@ class TeiDashboardMobileActivityTest {
 
     }
 
-    private var dispatcher:DispatcherProvider = mock()
+    private var dispatcher: DispatcherProvider = mock()
     var tei = Observable.just(
         TrackedEntityInstance.builder()
             .uid(TEI_Uid)
@@ -180,18 +180,11 @@ class TeiDashboardMobileActivityTest {
             d2.trackedEntityModule().trackedEntityTypes().uid("").get().toObservable()
         ) doReturn mock()
 
-        whenever(
-            d2.enrollmentModule().enrollments().uid("").get()
-        )
-
 
         ActivityScenario.launch(TeiDashboardMobileActivity::class.java).onActivity { activity ->
 
             val showMoreOptions = activity.findViewById<View>(R.id.moreOptions)
             showMoreOptions.performClick()
         }
-
-
     }
-
 }

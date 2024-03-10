@@ -45,10 +45,10 @@ class TeiFlowTest : BaseTest() {
 
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
-            closeEnrollmentAndCheckEvents(composeTestRule)
+            closeEnrollmentAndCheckEvents()
             enrollToProgram(ADULT_WOMAN_PROGRAM)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
-            checkPastEventsAreClosed(composeTestRule, totalEventsPerEnrollment)
+            checkPastEventsAreClosed(totalEventsPerEnrollment)
         }
     }
 
