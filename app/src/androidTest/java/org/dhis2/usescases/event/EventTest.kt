@@ -48,8 +48,8 @@ class EventTest : BaseTest() {
 
         prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard)
 
-        teiDashboardRobot {
-            clickOnEventGroupByStageUsingDate(composeTestRule, tbVisitDate)
+        teiDashboardRobot(composeTestRule) {
+            clickOnEventGroupByStageUsingDate(tbVisitDate)
         }
 
         eventRegistrationRobot {
@@ -58,7 +58,7 @@ class EventTest : BaseTest() {
             clickOnDeleteDialog()
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             checkEventWasDeletedStageGroup(tbProgramStages)
         }
     }
@@ -98,19 +98,19 @@ class EventTest : BaseTest() {
 
         prepareEventToUpdateIntentAndLaunchActivity(ruleTeiDashboard)
 
-        teiDashboardRobot {
-            clickOnStageGroup(composeTestRule, labMonitoring)
+        teiDashboardRobot(composeTestRule) {
+            clickOnStageGroup(labMonitoring)
             clickOnEventGroupByStage(eventDate)
         }
 
-        eventRobot {
+        eventRobot(composeTestRule) {
             fillRadioButtonForm(radioFormLength)
             clickOnFormFabButton()
-            clickOnCompleteButton(composeTestRule)
+            clickOnCompleteButton()
         }
 
-        teiDashboardRobot {
-            clickOnStageGroup(composeTestRule, labMonitoring)
+        teiDashboardRobot(composeTestRule) {
+            clickOnStageGroup(labMonitoring)
             checkEventStateStageGroup(labMonitoringStatus)
         }
     }
@@ -129,10 +129,10 @@ class EventTest : BaseTest() {
         eventRegistrationRobot {
             clickNextButton()
         }
-        eventRobot {
+        eventRobot(composeTestRule) {
             typeOnRequiredEventForm("125", 1)
             clickOnFormFabButton()
-            checkSecondaryButtonNotVisible(composeTestRule)
+            checkSecondaryButtonNotVisible()
         }
     }
 

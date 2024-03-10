@@ -2,7 +2,7 @@ package org.dhis2.usescases.teidashboard
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 class TeiDashboardTestNoComposable : BaseTest() {
 
     @get:Rule
-    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    val ruleSearch = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -38,7 +38,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnTEI(teiName, teiLastName)
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             goToRelationships()
         }
 
@@ -82,7 +82,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             //scrollToTEIandClick()
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuDeleteTEI()
         }
@@ -111,7 +111,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnTEI(teiName, teiLastName)
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuDeleteEnrollment()
         }

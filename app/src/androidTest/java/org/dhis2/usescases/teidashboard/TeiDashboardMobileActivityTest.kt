@@ -6,7 +6,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Observable
-import java.util.Calendar
 import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
@@ -29,6 +28,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Calendar
 
 class TeiDashboardMobileActivityTest {
 
@@ -180,7 +180,9 @@ class TeiDashboardMobileActivityTest {
             d2.trackedEntityModule().trackedEntityTypes().uid("").get().toObservable()
         ) doReturn mock()
 
-
+        whenever(
+            d2.enrollmentModule().enrollments().uid("").get()
+        )
 
 
         ActivityScenario.launch(TeiDashboardMobileActivity::class.java).onActivity { activity ->

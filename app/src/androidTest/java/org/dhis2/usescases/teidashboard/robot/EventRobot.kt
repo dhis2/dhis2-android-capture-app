@@ -8,7 +8,6 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -18,7 +17,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withSubstring
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.hasCompletedPercentage
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
@@ -29,13 +27,16 @@ import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.CoreMatchers.allOf
 
-fun eventRobot(eventRobot: EventRobot.() -> Unit) {
-    EventRobot().apply {
+fun eventRobot(
+    composeTestRule: ComposeTestRule,
+    eventRobot: EventRobot.() -> Unit
+) {
+    EventRobot(composeTestRule).apply {
         eventRobot()
     }
 }
 
-class EventRobot : BaseRobot() {
+class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun scrollToBottomForm() {
         onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
@@ -44,15 +45,16 @@ class EventRobot : BaseRobot() {
     fun clickOnFormFabButton() {
         onView(withId(R.id.actionButton)).perform(click())
     }
-    fun clickOnNotNow(composeTestRule: ComposeTestRule) {
+
+    fun clickOnNotNow() {
         composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
     }
 
-    fun clickOnCompleteButton(composeTestRule: ComposeTestRule) {
+    fun clickOnCompleteButton() {
         composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
     }
 
-    fun checkSecondaryButtonNotVisible(composeTestRule: ComposeTestRule) {
+    fun checkSecondaryButtonNotVisible() {
         composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).assertDoesNotExist()
     }
 
@@ -75,8 +77,8 @@ class EventRobot : BaseRobot() {
         }
     }
 
-    fun acceptUpdateEventDate(composeTestRule: ComposeTestRule) {
-        composeTestRule.onNodeWithText("OK",true).performClick()
+    fun acceptUpdateEventDate() {
+        composeTestRule.onNodeWithText("OK", true).performClick()
     }
 
     fun clickOnUpdate() {
@@ -94,16 +96,14 @@ class EventRobot : BaseRobot() {
 
 
     fun checkDetails(eventDate: String, eventOrgUnit: String) {
-        onView(withId(R.id.eventSecundaryInfo)).check(matches(
-            allOf(
-                withSubstring(eventDate),
-                withSubstring(eventOrgUnit)
+        onView(withId(R.id.eventSecundaryInfo)).check(
+            matches(
+                allOf(
+                    withSubstring(eventDate),
+                    withSubstring(eventOrgUnit)
+                )
             )
-        ))
-    }
-
-    fun clickOnNotesTab() {
-        onView(clickOnTab(1)).perform(click())
+        )
     }
 
     fun openMenuMoreOptions() {
@@ -122,20 +122,21 @@ class EventRobot : BaseRobot() {
         onView(withId(R.id.possitive)).perform(click())
     }
 
-    fun clickOnEventReportDate(composeTestRule: ComposeTestRule) {
-
-        composeTestRule.onNode(hasTestTag("INPUT_DATE_TIME_ACTION_BUTTON") and hasAnySibling(
-            hasText("Report date")
-        )).assertIsDisplayed().performClick()
+    fun clickOnEventReportDate() {
+        composeTestRule.onNode(
+            hasTestTag("INPUT_DATE_TIME_ACTION_BUTTON") and hasAnySibling(
+                hasText("Report date")
+            )
+        ).assertIsDisplayed().performClick()
 
     }
 
-    fun selectSpecificDate( composeTestRule: ComposeTestRule, date: String) {
+    fun selectSpecificDate(date: String) {
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
         composeTestRule.onNode(hasText(date, true)).performClick()
     }
 
-    fun checkEventDetails(eventDate: String, eventOrgUnit: String, composeTestRule: ComposeTestRule) {
+    fun checkEventDetails(eventDate: String, eventOrgUnit: String) {
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(100)))
         composeTestRule.onNodeWithText(formatStoredDateToUI(eventDate)).assertIsDisplayed()
         composeTestRule.onNodeWithText(eventOrgUnit).assertIsDisplayed()

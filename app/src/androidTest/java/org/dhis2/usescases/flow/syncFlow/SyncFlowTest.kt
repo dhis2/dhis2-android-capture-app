@@ -68,17 +68,17 @@ class SyncFlowTest : BaseTest() {
             clickOnTEI(teiName, teiLastName)
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             clickOnEventWith(composeTestRule, LAB_MONITORING_EVENT_DATE)
         }
 
-        eventRobot {
+        eventRobot(composeTestRule) {
             fillRadioButtonForm(4)
             clickOnFormFabButton()
-            clickOnCompleteButton(composeTestRule)
+            clickOnCompleteButton()
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             composeTestRule.onNodeWithText("Sync").performClick()
         }
 
@@ -101,9 +101,9 @@ class SyncFlowTest : BaseTest() {
             clickOnEventAtPosition(0)
         }
 
-        eventRobot {
+        eventRobot(composeTestRule) {
             clickOnFormFabButton()
-            clickOnCompleteButton(composeTestRule)
+            clickOnCompleteButton()
         }
 
         syncFlowRobot {
@@ -124,9 +124,9 @@ class SyncFlowTest : BaseTest() {
             clickOnEventAtPosition(1)
         }
 
-        eventRobot {
+        eventRobot(composeTestRule) {
             clickOnFormFabButton()
-            clickOnCompleteButton(composeTestRule)
+            clickOnCompleteButton()
         }
 
         syncFlowRobot {
