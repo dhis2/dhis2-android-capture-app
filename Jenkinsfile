@@ -19,6 +19,27 @@ pipeline {
                 }
             }
         }
+        stage('Lint Check') {
+            steps {
+                script {
+                    echo 'Running Ktlint'
+                    sh './gradlew ktlintCheck'
+                }
+            }
+        }
+        stage('Unit tests') {
+            environment {
+                ANDROID_HOME = '/opt/android-sdk'
+            }
+            steps {
+                script {
+                    echo 'Running unit tests on app module'
+                    sh './gradlew :app:testDhisDebugUnitTest --stacktrace --no-daemon'
+                    echo 'Running unit tests on all other modules'
+                    sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
+                }
+            }
+        }
         stage('Build Test APKs') {
             steps {
                 script {
