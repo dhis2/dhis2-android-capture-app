@@ -6,7 +6,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Observable
-import java.util.Calendar
 import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
@@ -29,6 +28,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Calendar
 
 class TeiDashboardMobileActivityTest {
 
@@ -52,7 +52,7 @@ class TeiDashboardMobileActivityTest {
 
     }
 
-    private var dispatcher:DispatcherProvider = mock()
+    private var dispatcher: DispatcherProvider = mock()
     var tei = Observable.just(
         TrackedEntityInstance.builder()
             .uid(TEI_Uid)
@@ -181,15 +181,10 @@ class TeiDashboardMobileActivityTest {
         ) doReturn mock()
 
 
-
-
         ActivityScenario.launch(TeiDashboardMobileActivity::class.java).onActivity { activity ->
 
             val showMoreOptions = activity.findViewById<View>(R.id.moreOptions)
             showMoreOptions.performClick()
         }
-
-
     }
-
 }

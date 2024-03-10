@@ -40,9 +40,9 @@ class ProgramEventTest : BaseTest() {
         eventRegistrationRobot {
             clickNextButton()
         }
-        eventRobot {
+        eventRobot(composeTestRule) {
             clickOnFormFabButton()
-            clickOnCompleteButton(composeTestRule)
+            clickOnCompleteButton()
         }
         programEventsRobot(composeTestRule) {
             checkEventWasCreatedAndClosed(eventOrgUnit)
@@ -61,7 +61,7 @@ class ProgramEventTest : BaseTest() {
             clickOnEvent(eventDate)
         }
 
-        eventRobot {
+        eventRobot(composeTestRule) {
             checkDetails(eventDate, eventOrgUnit)
         }
     }
@@ -78,9 +78,9 @@ class ProgramEventTest : BaseTest() {
             clickOnEvent(eventDate)
         }
 
-        eventRobot {
+        eventRobot(composeTestRule) {
             clickOnFormFabButton()
-            clickOnCompleteButton(composeTestRule)
+            clickOnCompleteButton()
             waitToDebounce(400)
         }
 
@@ -89,7 +89,7 @@ class ProgramEventTest : BaseTest() {
             clickOnEvent(eventDate)
         }
 
-        eventRobot {
+        eventRobot(composeTestRule) {
             clickOnDetails()
             clickOnReopen()
             pressBack()
@@ -112,9 +112,9 @@ class ProgramEventTest : BaseTest() {
             waitToDebounce(400)
             clickOnEvent(eventDate)
         }
-        eventRobot {
+        eventRobot(composeTestRule) {
             clickOnDetails()
-            checkEventDetails(eventDate, eventOrgUnit, composeTestRule)
+            checkEventDetails(eventDate, eventOrgUnit)
         }
     }
 
@@ -129,7 +129,7 @@ class ProgramEventTest : BaseTest() {
             waitToDebounce(400)
             clickOnEvent(eventDate)
         }
-        eventRobot {
+        eventRobot(composeTestRule) {
             openMenuMoreOptions()
             clickOnDelete()
             clickOnDeleteDialog()

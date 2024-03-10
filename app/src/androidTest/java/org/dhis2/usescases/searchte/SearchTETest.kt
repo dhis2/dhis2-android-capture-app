@@ -9,7 +9,6 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
@@ -18,6 +17,8 @@ import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
+import org.dhis2.data.dhislogic.SIMPLE_DATE_FORMAT
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.TeiFlowTest
@@ -42,7 +43,7 @@ import java.util.Date
 class SearchTETest : BaseTest() {
 
     @get:Rule
-    val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    val rule = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
 
     private var mapIdlingResource: MapIdlingResource? = null
 
@@ -61,7 +62,7 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullySearchByName() {
         val firstName = "Tim"
-        val orgUnit = "Ngelehun CHC"
+        val lastName = "Johnson"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -70,7 +71,10 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("First name")
             typeOnNextSearchTextParameter(firstName)
             clickOnSearch()
-            checkListOfSearchTEI(firstName, orgUnit)
+            checkListOfSearchTEI(
+                title = "First name: $firstName",
+                attributes = mapOf("Last name:" to lastName)
+            )
         }
     }
 
@@ -103,7 +107,10 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(lastName)
             clickOnSearch()
-            checkListOfSearchTEI(firstName, lastName)
+            checkListOfSearchTEI(
+                title = "First name: $firstName",
+                attributes = mapOf("Last name:" to lastName)
+            )
         }
     }
 
@@ -125,7 +132,6 @@ class SearchTETest : BaseTest() {
     fun shouldCheckDisplayInList() {
         val displayInListData = createDisplayListFields()
 
-        setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot(composeTestRule) {
@@ -145,7 +151,10 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
-            .format(context.resources.getQuantityString(R.plurals.enrollment, 1).capitalize(Locale.current))
+            .format(
+                context.resources.getQuantityString(R.plurals.enrollment, 1)
+                    .capitalize(Locale.current)
+            )
         val totalFilterCount = "2"
         val filterCount = "1"
 
@@ -168,18 +177,19 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
-
-        val programStage = "PNC Visit"
-        val orgUnit = "Ngelehun CHC"
         val registerTeiDetails = createRegisterTEI()
         val overdueDate = getCurrentDate()
+        val dateFormat =
+            SimpleDateFormat(SIMPLE_DATE_FORMAT, java.util.Locale.getDefault()).format(Date())
+        val scheduledEventTitle = context.getString(R.string.scheduled_for)
+            .format(dateFormat)
 
         setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
-        teiFlowRobot {
-            registerTEI(registerTeiDetails, composeTestRule)
-            changeDueDate(overdueDate, composeTestRule)
+        teiFlowRobot(composeTestRule) {
+            registerTEI(registerTeiDetails)
+            changeDueDate(scheduledEventTitle, overdueDate)
             pressBack()
             composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
             pressBack()
@@ -289,7 +299,7 @@ class SearchTETest : BaseTest() {
             clickOnTEI(teiName, teiLastName)
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             pressBack()
@@ -311,7 +321,10 @@ class SearchTETest : BaseTest() {
         val name = "Anna"
         val lastName = "Jones"
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
-            .format(context.resources.getQuantityString(R.plurals.enrollment, 1).capitalize(Locale.current))
+            .format(
+                context.resources.getQuantityString(R.plurals.enrollment, 1)
+                    .capitalize(Locale.current)
+            )
         val totalCount = "2"
         val totalFilterCount = "1"
 
@@ -336,7 +349,10 @@ class SearchTETest : BaseTest() {
         }
 
         searchTeiRobot(composeTestRule) {
-            checkListOfSearchTEI(name, lastName)
+            checkListOfSearchTEI(
+                title = "First name: $name",
+                attributes = mapOf("Last name:" to lastName)
+            )
         }
     }
 
@@ -364,12 +380,6 @@ class SearchTETest : BaseTest() {
             IdlingRegistry.getInstance().unregister(mapIdlingResource)
         }
     }
-
-    private fun createDateOfBirthSearch() = DateRegistrationUIModel(
-        2001,
-        1,
-        1
-    )
 
     private fun createDisplayListFields() = DisplayListFieldsUIModel(
         "Sarah",
@@ -424,17 +434,7 @@ class SearchTETest : BaseTest() {
         30
     )
 
-    private fun getSplitCurrentDate(): DateRegistrationUIModel {
-        val sdf = SimpleDateFormat(TeiFlowTest.DATE_FORMAT)
-        val dateFormat = sdf.format(Date())
-        val splitDate: Array<String> = dateFormat.removePrefix("0").split("/").toTypedArray()
-        val day = splitDate[0].toInt()
-        val month = splitDate[1].toInt()
-        val year = splitDate[2].toInt()
-        return DateRegistrationUIModel(year, month, day)
-    }
-
-    private fun getCurrentDate() : String  {
+    private fun getCurrentDate(): String {
         val sdf = SimpleDateFormat(TeiFlowTest.DATE_PICKER_FORMAT)
         val calendar = Calendar.getInstance()
         return sdf.format(calendar.time)
@@ -442,7 +442,6 @@ class SearchTETest : BaseTest() {
 
     private val dateRegistration = createFirstSpecificDate()
     private val dateEnrollment = createEnrollmentDate()
-    private val currentDate = getSplitCurrentDate()
 
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"
