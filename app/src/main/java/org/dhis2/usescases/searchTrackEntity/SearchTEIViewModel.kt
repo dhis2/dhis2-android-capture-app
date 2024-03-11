@@ -149,55 +149,61 @@ class SearchTEIViewModel(
         _screenState.value.takeIf { it?.screenState == SearchScreenState.LIST }?.let {
             searching = (it as SearchList).isSearching
         }
-        _screenState.value = SearchList(
-            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
-            listType = SearchScreenState.MAP,
-            displayFrontPageList = searchRepository.getProgram(initialProgramUid)
-                ?.displayFrontPageList()
-                ?: false,
-            canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
-            isSearching = searching,
-            searchForm = SearchForm(
-                queryHasData = queryData.isNotEmpty(),
-                minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                    ?.minAttributesRequiredToSearch()
-                    ?: 1,
-                isForced = false,
-                isOpened = false,
-            ),
-            searchFilters = SearchFilters(
-                hasActiveFilters = hasActiveFilters(),
-                isOpened = filterIsOpen(),
+        _screenState.postValue(
+            SearchList(
+                previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+                listType = SearchScreenState.MAP,
+                displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+                    ?.displayFrontPageList()
+                    ?: false,
+                canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
+                isSearching = searching,
+                searchForm = SearchForm(
+                    queryHasData = queryData.isNotEmpty(),
+                    minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 1,
+                    isForced = false,
+                    isOpened = false,
+                ),
+                searchFilters = SearchFilters(
+                    hasActiveFilters = hasActiveFilters(),
+                    isOpened = filterIsOpen(),
+                ),
             ),
         )
     }
 
     fun setAnalyticsScreen() {
-        _screenState.value = SearchAnalytics(
-            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+        _screenState.postValue(
+            SearchAnalytics(
+                previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+            ),
         )
     }
 
     fun setSearchScreen() {
-        _screenState.value = SearchList(
-            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
-            listType = _screenState.value?.screenState ?: SearchScreenState.LIST,
-            displayFrontPageList = searchRepository.getProgram(initialProgramUid)
-                ?.displayFrontPageList()
-                ?: false,
-            canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
-            isSearching = searching,
-            searchForm = SearchForm(
-                queryHasData = queryData.isNotEmpty(),
-                minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                    ?.minAttributesRequiredToSearch()
-                    ?: 1,
-                isForced = false,
-                isOpened = true,
-            ),
-            searchFilters = SearchFilters(
-                hasActiveFilters = hasActiveFilters(),
-                isOpened = false,
+        _screenState.postValue(
+            SearchList(
+                previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+                listType = _screenState.value?.screenState ?: SearchScreenState.LIST,
+                displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+                    ?.displayFrontPageList()
+                    ?: false,
+                canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
+                isSearching = searching,
+                searchForm = SearchForm(
+                    queryHasData = queryData.isNotEmpty(),
+                    minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 1,
+                    isForced = false,
+                    isOpened = true,
+                ),
+                searchFilters = SearchFilters(
+                    hasActiveFilters = hasActiveFilters(),
+                    isOpened = false,
+                ),
             ),
         )
     }
@@ -213,7 +219,7 @@ class SearchTEIViewModel(
 
     fun updateActiveFilters(filtersActive: Boolean) {
         if (_filtersActive.value != filtersActive) searchRepository.clearFetchedList()
-        _filtersActive.value = filtersActive
+        _filtersActive.postValue(filtersActive)
     }
 
     fun refreshData() {
@@ -266,60 +272,19 @@ class SearchTEIViewModel(
     private fun updateSearch() {
         if (_screenState.value is SearchList) {
             val currentSearchList = _screenState.value as SearchList
-            _screenState.value =
+            _screenState.postValue(
                 currentSearchList.copy(
                     searchForm = currentSearchList.searchForm.copy(
                         queryHasData = queryData.isNotEmpty(),
                     ),
-                )
+                ),
+            )
         }
         uiState = uiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
     fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
         viewModelScope.launch(dispatchers.io()) {
-            /*val resultPagedList = Pager(
-                config = PagingConfig(
-                    pageSize = 10,
-                    enablePlaceholders = false
-                ),
-                pagingSourceFactory = {
-                    object : PagingSource<Int,SearchTeiModel>(){
-                        override fun getRefreshKey(state: PagingState<Int, SearchTeiModel>): Int? {
-                            return state.anchorPosition?.let {
-                                state.closestPageToPosition(it)?.prevKey
-                            }
-                        }
-
-                        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SearchTeiModel> {
-                            return when (params) {
-                                is LoadParams.Refresh -> {
-                                    LoadResult.Page(
-                                        data = listOf(),
-                                        prevKey = null,
-                                        nextKey = null,
-                                    )
-                                }
-                                is LoadParams.Append -> {
-                                    LoadResult.Page(
-                                        data = emptyList(),
-                                        prevKey = null,
-                                        nextKey = null,
-                                    )
-                                }
-                                is LoadParams.Prepend -> {
-                                    LoadResult.Page(
-                                        data = emptyList(),
-                                        prevKey = null,
-                                        nextKey = null,
-                                    )
-                                }
-                            }
-                        }
-
-                    }
-                }
-            ).flow*/
             val resultPagedList = async {
                 when {
                     searching -> loadSearchResults().cachedIn(viewModelScope)
@@ -440,7 +405,7 @@ class SearchTEIViewModel(
                 )
             }
             try {
-                _mapResults.value = result.await()
+                _mapResults.postValue(result.await())
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -521,19 +486,21 @@ class SearchTEIViewModel(
     }
 
     fun onEnrollClick() {
-        _legacyInteraction.value = LegacyInteraction.OnEnrollClick(queryData)
+        _legacyInteraction.postValue(LegacyInteraction.OnEnrollClick(queryData))
     }
 
     fun onAddRelationship(teiUid: String, relationshipTypeUid: String?, online: Boolean) {
-        _legacyInteraction.value = LegacyInteraction.OnAddRelationship(
-            teiUid,
-            relationshipTypeUid,
-            online,
+        _legacyInteraction.postValue(
+            LegacyInteraction.OnAddRelationship(
+                teiUid,
+                relationshipTypeUid,
+                online,
+            ),
         )
     }
 
     fun onSyncIconClick(teiUid: String) {
-        _legacyInteraction.value = (LegacyInteraction.OnSyncIconClick(teiUid))
+        _legacyInteraction.postValue(LegacyInteraction.OnSyncIconClick(teiUid))
     }
 
     fun onDownloadTei(teiUid: String, enrollmentUid: String?, reason: String? = null) {
@@ -544,10 +511,12 @@ class SearchTEIViewModel(
             try {
                 val downloadResult = result.await()
                 if (downloadResult is TeiDownloadResult.TeiToEnroll) {
-                    _legacyInteraction.value = LegacyInteraction.OnEnroll(
-                        initialProgramUid,
-                        downloadResult.teiUid,
-                        queryData,
+                    _legacyInteraction.postValue(
+                        LegacyInteraction.OnEnroll(
+                            initialProgramUid,
+                            downloadResult.teiUid,
+                            queryData,
+                        ),
                     )
                 } else {
                     _downloadResult.postValue(downloadResult)
@@ -613,7 +582,7 @@ class SearchTEIViewModel(
             setSearchScreen()
         }
 
-        _dataResult.value = result
+        _dataResult.postValue(result)
     }
 
     private fun handleSearchResult(
@@ -660,7 +629,7 @@ class SearchTEIViewModel(
             else ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
         }
-        _dataResult.value = result
+        _dataResult.postValue(result)
     }
 
     fun filtersApplyOnGlobalSearch(): Boolean = searchRepository.filtersApplyOnGlobalSearch()
@@ -681,7 +650,7 @@ class SearchTEIViewModel(
                 ),
             )
         }
-        _dataResult.value = result
+        _dataResult.postValue(result)
     }
 
     fun onBackPressed(
@@ -750,7 +719,7 @@ class SearchTEIViewModel(
     }
 
     fun setFiltersOpened(filtersOpened: Boolean) {
-        _filtersOpened.value = filtersOpened
+        _filtersOpened.postValue(filtersOpened)
     }
 
     fun onFiltersClick(isLandscape: Boolean) {
@@ -771,7 +740,7 @@ class SearchTEIViewModel(
                 ),
             )
         }?.let {
-            _screenState.value = it
+            _screenState.postValue(it)
         }
     }
 
@@ -794,7 +763,7 @@ class SearchTEIViewModel(
     }
 
     fun onLegacyInteractionConsumed() {
-        _legacyInteraction.value = null
+        _legacyInteraction.postValue(null)
     }
 
     fun fetchSearchParameters(
