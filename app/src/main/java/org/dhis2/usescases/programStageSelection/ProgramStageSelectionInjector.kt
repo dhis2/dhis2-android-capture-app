@@ -3,7 +3,6 @@ package org.dhis2.usescases.programStageSelection
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.network.NetworkUtils
@@ -74,7 +73,7 @@ class ProgramStageSelectionModule(
     fun provideCreateEventUseCase(
         dispatcherProvider: DispatcherProvider,
         d2: D2,
-    ) = CreateEventUseCase(dispatcherProvider, d2, DateUtils())
+    ) = CreateEventUseCase(dispatcherProvider, d2)
 
     @Provides
     @PerActivity

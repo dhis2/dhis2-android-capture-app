@@ -2,7 +2,6 @@ package org.dhis2.usescases.programEventDetail.usecase
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.EventCreateProjection
@@ -19,7 +18,6 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.Date
 
 class CreateEventUseCaseTest {
 
@@ -42,14 +40,10 @@ class CreateEventUseCaseTest {
     private val d2: D2 = mock {
         on { eventModule() } doReturn eventModule
     }
-    private val dateUtils: DateUtils = mock {
-        on { today } doReturn Date()
-    }
 
     private val createEventUseCase: CreateEventUseCase = CreateEventUseCase(
         dispatcher = dispatcherProvider,
         d2 = d2,
-        dateUtils = dateUtils,
     )
 
     @Test
@@ -73,8 +67,6 @@ class CreateEventUseCaseTest {
                     this.organisationUnit() == orgUnitUid
             },
         )
-
-        verify(eventRepository).setEventDate(any<Date>())
     }
 
     @Test
@@ -96,8 +88,6 @@ class CreateEventUseCaseTest {
                     this.organisationUnit() == orgUnitUid
             },
         )
-
-        verify(eventRepository).setEventDate(any<Date>())
     }
 
     @Test
