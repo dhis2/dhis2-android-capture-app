@@ -33,6 +33,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -40,7 +41,6 @@ import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel.EventP
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG

@@ -1,8 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import static org.dhis2.commons.Constants.PROGRAM_STAGE_UID;
-import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
 import static org.dhis2.commons.Constants.PROGRAM_UID;
+import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
 
 import android.os.Bundle;
 
@@ -13,13 +13,14 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
+import org.dhis2.form.model.EventMode;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
 import org.dhis2.usescases.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
-import org.dhis2.commons.Constants;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     private final boolean shouldOpenErrorSection;
 
+    private final EventMode eventMode;
+
     public boolean isFormScreenShown(@Nullable Integer currentItem) {
         return currentItem!=null && pages.get(currentItem) == EventPageType.DATA_ENTRY;
     }
@@ -51,7 +54,8 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String programStage,
                                     boolean displayAnalyticScreen,
                                     boolean displayRelationshipScreen,
-                                    boolean openErrorSection
+                                    boolean openErrorSection,
+                                    EventMode eventMode
 
     ) {
         super(fragmentActivity);
@@ -59,6 +63,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         this.eventUid = eventUid;
         this.programStage = programStage;
         this.shouldOpenErrorSection = openErrorSection;
+        this.eventMode = eventMode;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
         pages.add(EventPageType.DATA_ENTRY);
@@ -108,7 +113,11 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                 });
                 return eventDetailsFragment;
             case DATA_ENTRY:
-                formFragment = EventCaptureFormFragment.newInstance(eventUid, shouldOpenErrorSection);
+                formFragment = EventCaptureFormFragment.newInstance(
+                        eventUid,
+                        shouldOpenErrorSection,
+                        eventMode
+                );
                 return formFragment;
             case ANALYTICS:
                 Fragment indicatorFragment = new IndicatorsFragment();

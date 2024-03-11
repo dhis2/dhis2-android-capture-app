@@ -157,8 +157,9 @@ object Injector {
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
             metadataIconProvider = provideMetadataIconProvider(context),
-            provideResourcesManager(context),
-            DateUtils.getInstance(),
+            resources = provideResourcesManager(context),
+            dateUtils = DateUtils.getInstance(),
+            eventMode = eventRecords.eventMode,
         )
     }
 

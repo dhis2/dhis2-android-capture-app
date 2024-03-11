@@ -14,6 +14,7 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.databinding.ActivityEventScheduledBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
@@ -22,7 +23,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Prov
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.willShowCalendar
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.utils.EventMode
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType

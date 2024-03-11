@@ -38,11 +38,11 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.programStageSelection.ProgramStageData
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess

@@ -362,8 +362,8 @@ class FormRepositoryImpl(
     }
 
     override fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
-        val updatedEnrollmentDataList = dataEntryRepository?.getSpecificDataEntryItems(uid)
-        if (updatedEnrollmentDataList?.isNotEmpty() == true) updateEnrollmentDate(updatedEnrollmentDataList)
+        val updatedEnrollmentDataList = dataEntryRepository.getSpecificDataEntryItems(uid)
+        if (updatedEnrollmentDataList.isNotEmpty()) updateEnrollmentDate(updatedEnrollmentDataList)
         itemList.let { list ->
 
             list.find { item ->

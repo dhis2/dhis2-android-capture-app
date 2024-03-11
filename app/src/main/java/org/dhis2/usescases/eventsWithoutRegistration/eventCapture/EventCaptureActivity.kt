@@ -25,6 +25,7 @@ import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
@@ -39,7 +40,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
@@ -127,6 +127,7 @@ class EventCaptureActivity :
             pageConfigurator!!.displayAnalytics(),
             pageConfigurator!!.displayRelationships(),
             intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
+            eventMode,
         )
         binding.eventViewPager.adapter = adapter
         binding.eventViewPager.setCurrentItem(initialPage, false)
