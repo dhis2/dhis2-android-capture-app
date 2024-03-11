@@ -30,6 +30,7 @@ import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.Timeout
 import java.util.concurrent.TimeUnit
+import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 
 open class BaseTest {
 
@@ -78,6 +79,7 @@ open class BaseTest {
 
     private fun registerCountingIdlingResource() {
         IdlingRegistry.getInstance().register(
+            EventListIdlingResourceSingleton.countingIdlingResource,
             CountingIdlingResourceSingleton.countingIdlingResource,
             FormCountingIdlingResource.countingIdlingResource,
             SearchIdlingResourceSingleton.countingIdlingResource,
@@ -88,6 +90,7 @@ open class BaseTest {
     private fun unregisterCountingIdlingResource() {
         IdlingRegistry.getInstance()
             .unregister(
+                EventListIdlingResourceSingleton.countingIdlingResource,
                 CountingIdlingResourceSingleton.countingIdlingResource,
                 FormCountingIdlingResource.countingIdlingResource,
                 SearchIdlingResourceSingleton.countingIdlingResource,

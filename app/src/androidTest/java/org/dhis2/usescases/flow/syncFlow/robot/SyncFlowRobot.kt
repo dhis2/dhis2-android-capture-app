@@ -1,3 +1,4 @@
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -41,7 +42,9 @@ class SyncFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(TITLE, useUnmergedTree = true).assert(hasText(expectedTitle))
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnEventToSync() {
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Sync"))
         composeTestRule.onNodeWithText("Sync", useUnmergedTree = true).performClick()
     }
 
