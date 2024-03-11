@@ -111,30 +111,34 @@ class SearchTEIViewModel(
             !searching &&
             _filtersActive.value == false
 
-        createButtonScrollVisibility.value = if (searching) {
-            true
-        } else {
-            searchRepository.canCreateInProgramWithoutSearch()
-        }
-        _screenState.value = SearchList(
-            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
-            listType = SearchScreenState.LIST,
-            displayFrontPageList = searchRepository.getProgram(initialProgramUid)
-                ?.displayFrontPageList()
-                ?: false,
-            canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
-            isSearching = searching,
-            searchForm = SearchForm(
-                queryHasData = queryData.isNotEmpty(),
-                minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                    ?.minAttributesRequiredToSearch()
-                    ?: 1,
-                isForced = shouldOpenSearch,
-                isOpened = shouldOpenSearch,
-            ),
-            searchFilters = SearchFilters(
-                hasActiveFilters = hasActiveFilters(),
-                isOpened = filterIsOpen(),
+        createButtonScrollVisibility.postValue(
+            if (searching) {
+                true
+            } else {
+                searchRepository.canCreateInProgramWithoutSearch()
+            },
+        )
+        _screenState.postValue(
+            SearchList(
+                previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+                listType = SearchScreenState.LIST,
+                displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+                    ?.displayFrontPageList()
+                    ?: false,
+                canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
+                isSearching = searching,
+                searchForm = SearchForm(
+                    queryHasData = queryData.isNotEmpty(),
+                    minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 1,
+                    isForced = shouldOpenSearch,
+                    isOpened = shouldOpenSearch,
+                ),
+                searchFilters = SearchFilters(
+                    hasActiveFilters = hasActiveFilters(),
+                    isOpened = filterIsOpen(),
+                ),
             ),
         )
     }
@@ -273,13 +277,57 @@ class SearchTEIViewModel(
     }
 
     fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
-        viewModelScope.launch {
-            val resultPagedList = when {
-                searching -> loadSearchResults().cachedIn(viewModelScope)
-                displayFrontPageList() -> loadDisplayInListResults().cachedIn(viewModelScope)
-                else -> null
+        viewModelScope.launch(dispatchers.io()) {
+            /*val resultPagedList = Pager(
+                config = PagingConfig(
+                    pageSize = 10,
+                    enablePlaceholders = false
+                ),
+                pagingSourceFactory = {
+                    object : PagingSource<Int,SearchTeiModel>(){
+                        override fun getRefreshKey(state: PagingState<Int, SearchTeiModel>): Int? {
+                            return state.anchorPosition?.let {
+                                state.closestPageToPosition(it)?.prevKey
+                            }
+                        }
+
+                        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SearchTeiModel> {
+                            return when (params) {
+                                is LoadParams.Refresh -> {
+                                    LoadResult.Page(
+                                        data = listOf(),
+                                        prevKey = null,
+                                        nextKey = null,
+                                    )
+                                }
+                                is LoadParams.Append -> {
+                                    LoadResult.Page(
+                                        data = emptyList(),
+                                        prevKey = null,
+                                        nextKey = null,
+                                    )
+                                }
+                                is LoadParams.Prepend -> {
+                                    LoadResult.Page(
+                                        data = emptyList(),
+                                        prevKey = null,
+                                        nextKey = null,
+                                    )
+                                }
+                            }
+                        }
+
+                    }
+                }
+            ).flow*/
+            val resultPagedList = async {
+                when {
+                    searching -> loadSearchResults().cachedIn(viewModelScope)
+                    displayFrontPageList() -> loadDisplayInListResults().cachedIn(viewModelScope)
+                    else -> null
+                }
             }
-            onPagedListReady(resultPagedList)
+            onPagedListReady(resultPagedList.await())
         }
     }
 
@@ -295,63 +343,7 @@ class SearchTEIViewModel(
 
         return@withContext getPagingData.map { pagingData ->
             pagingData.map { item ->
-                if (
-                    searching && networkUtils.isOnline() &&
-                    FilterManager.getInstance().stateFilters.isEmpty()
-                ) {
-                    searchRepository.transform(
-                        item,
-                        searchParametersModel.selectedProgram,
-                        false,
-                        FilterManager.getInstance().sortingItem,
-                    )
-                } else {
-                    searchRepository.transform(
-                        item,
-                        searchParametersModel.selectedProgram,
-                        true,
-                        FilterManager.getInstance().sortingItem,
-                    )
-                }
-            }
-        }
-    }
-
-    private suspend fun loadDisplayInListResults() = withContext(dispatchers.io()) {
-        val searchParametersModel = SearchParametersModel(
-            selectedProgram = searchRepository.getProgram(initialProgramUid),
-            queryData = queryData,
-        )
-        val getPagingData = searchRepositoryKt.searchTrackedEntities(
-            searchParametersModel,
-            false,
-        )
-
-        return@withContext getPagingData.map { pagingData ->
-            pagingData.map { item ->
-                searchRepository.transform(
-                    item,
-                    searchParametersModel.selectedProgram,
-                    true,
-                    FilterManager.getInstance().sortingItem,
-                )
-            }
-        }
-    }
-
-    suspend fun fetchGlobalResults() = withContext(dispatchers.io()) {
-        val searchParametersModel = SearchParametersModel(
-            selectedProgram = searchRepository.getProgram(initialProgramUid),
-            queryData = queryData,
-        )
-        val getPagingData = searchRepositoryKt.searchTrackedEntities(
-            searchParametersModel,
-            searching && networkUtils.isOnline(),
-        )
-
-        return@withContext if (searching) {
-            getPagingData.map { pagingData ->
-                pagingData.map { item ->
+                withContext(dispatchers.io()) {
                     if (
                         searching && networkUtils.isOnline() &&
                         FilterManager.getInstance().stateFilters.isEmpty()
@@ -369,6 +361,68 @@ class SearchTEIViewModel(
                             true,
                             FilterManager.getInstance().sortingItem,
                         )
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun loadDisplayInListResults() = withContext(dispatchers.io()) {
+        val searchParametersModel = SearchParametersModel(
+            selectedProgram = searchRepository.getProgram(initialProgramUid),
+            queryData = queryData,
+        )
+        val getPagingData = searchRepositoryKt.searchTrackedEntities(
+            searchParametersModel,
+            false,
+        )
+
+        return@withContext getPagingData.map { pagingData ->
+            pagingData.map { item ->
+                withContext(dispatchers.io()) {
+                    searchRepository.transform(
+                        item,
+                        searchParametersModel.selectedProgram,
+                        true,
+                        FilterManager.getInstance().sortingItem,
+                    )
+                }
+            }
+        }
+    }
+
+    suspend fun fetchGlobalResults() = withContext(dispatchers.io()) {
+        val searchParametersModel = SearchParametersModel(
+            selectedProgram = searchRepository.getProgram(initialProgramUid),
+            queryData = queryData,
+        )
+        val getPagingData = searchRepositoryKt.searchTrackedEntities(
+            searchParametersModel,
+            searching && networkUtils.isOnline(),
+        )
+
+        return@withContext if (searching) {
+            getPagingData.map { pagingData ->
+                pagingData.map { item ->
+                    withContext(dispatchers.io()) {
+                        if (
+                            searching && networkUtils.isOnline() &&
+                            FilterManager.getInstance().stateFilters.isEmpty()
+                        ) {
+                            searchRepository.transform(
+                                item,
+                                searchParametersModel.selectedProgram,
+                                false,
+                                FilterManager.getInstance().sortingItem,
+                            )
+                        } else {
+                            searchRepository.transform(
+                                item,
+                                searchParametersModel.selectedProgram,
+                                true,
+                                FilterManager.getInstance().sortingItem,
+                            )
+                        }
                     }
                 }
             }
@@ -400,7 +454,7 @@ class SearchTEIViewModel(
     }
 
     private fun performSearch() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatchers.io()) {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
                 uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
@@ -408,12 +462,12 @@ class SearchTEIViewModel(
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
                         setListScreen()
-                        _refreshData.value = Unit
+                        _refreshData.postValue(Unit)
                     }
 
                     SearchScreenState.MAP -> {
                         SearchIdlingResourceSingleton.increment()
-                        _refreshData.value = Unit
+                        _refreshData.postValue(Unit)
                         setMapScreen()
                         fetchMapResults()
                     }
