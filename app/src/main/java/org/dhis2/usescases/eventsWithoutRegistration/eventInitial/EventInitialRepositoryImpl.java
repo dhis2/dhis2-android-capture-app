@@ -348,6 +348,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 optionSetConfig,
                 null,
                 null,
+                null,
                 null);
     }
 

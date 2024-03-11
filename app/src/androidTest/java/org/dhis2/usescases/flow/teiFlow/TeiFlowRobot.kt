@@ -35,11 +35,14 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             typeOnDateParameter("${registrationDate.day}0${registrationDate.month}${registrationDate.year}")
             clickOnSearch()
             clickOnEnroll()
-            selectSpecificDate(enrollmentDate.year, enrollmentDate.month, enrollmentDate.day)
-            acceptDate()
         }
 
         enrollmentRobot {
+            clickOnInputDate("Date of enrollment *")
+            selectSpecificDate(enrollmentDate.year, enrollmentDate.month, enrollmentDate.day)
+            clickOnAcceptInDatePicker()
+            clickOnInputDate("LMP Date *")
+            clickOnAcceptInDatePicker()
             clickOnSaveEnrollment()
         }
     }
@@ -52,7 +55,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
         enrollmentRobot {
             clickOnAProgramForEnrollment(composeTestRule, program)
-            clickOnAcceptEnrollmentDate()
+            clickOnAcceptInDatePicker()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }

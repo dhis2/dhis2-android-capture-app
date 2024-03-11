@@ -35,6 +35,7 @@ public class DateUtils {
     public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
     public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
     public static final String TIME_12H_EXPRESSION = "hh:mm a";
+    public static final String UI_LIBRARY_FORMAT = "ddMMyyyy";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -172,6 +173,11 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat oldUiDateFormat() {
         return new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat uiLibraryFormat() {
+        return new SimpleDateFormat(UI_LIBRARY_FORMAT, Locale.US);
     }
 
     @NonNull

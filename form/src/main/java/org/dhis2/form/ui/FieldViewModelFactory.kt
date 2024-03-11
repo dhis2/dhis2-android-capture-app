@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldViewModelFactory {
     fun create(
@@ -29,6 +30,7 @@ interface FieldViewModelFactory {
         featureType: FeatureType? = null,
         autoCompleteList: List<String>? = null,
         orgUnitSelectorScope: OrgUnitSelectorScope? = null,
+        selectableDates: SelectableDates? = null,
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel

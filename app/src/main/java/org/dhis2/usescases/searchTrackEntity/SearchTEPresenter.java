@@ -80,7 +80,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final CompositeDisposable compositeDisposable;
     private final TrackedEntityType trackedEntity;
-    private Date selectedEnrollmentDate;
 
     private final String trackedEntityType;
 
@@ -290,7 +289,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void enroll(String programUid, String uid, HashMap<String, String> queryData) {
-        selectedEnrollmentDate = Calendar.getInstance().getTime();
 
         compositeDisposable.add(getOrgUnits()
                 .subscribeOn(schedulerProvider.io())
@@ -303,70 +301,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .singleSelection()
                                         .onSelection(selectedOrgUnits -> {
                                             if (!selectedOrgUnits.isEmpty())
-                                                showCalendar(selectedOrgUnits.get(0), programUid, uid, queryData);
+                                                enrollInOrgUnit(selectedOrgUnits.get(0).uid(), programUid, uid, queryData);
                                             return Unit.INSTANCE;
                                         })
                                         .orgUnitScope(new OrgUnitSelectorScope.ProgramCaptureScope(programUid))
                                         .build()
                                         .show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
                             } else if (allOrgUnits.size() == 1)
-                                showCalendar(allOrgUnits.get(0), programUid, uid, queryData);
+                                enrollInOrgUnit(allOrgUnits.get(0).uid(), programUid, uid, queryData);
                         },
                         Timber::d
                 )
         );
     }
 
-    private void showCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid, HashMap<String, String> queryData) {
-        Date minDate = null;
-        Date maxDate = null;
-
-        if (selectedOrgUnit.openingDate() != null)
-            minDate = selectedOrgUnit.openingDate();
-
-        if (selectedOrgUnit.closedDate() == null && Boolean.FALSE.equals(selectedProgram.selectEnrollmentDatesInFuture())) {
-            maxDate = new Date(System.currentTimeMillis());
-        } else if (selectedOrgUnit.closedDate() != null && Boolean.FALSE.equals(selectedProgram.selectEnrollmentDatesInFuture())) {
-            if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
-                maxDate = selectedOrgUnit.closedDate();
-            } else {
-                maxDate = new Date(System.currentTimeMillis());
-            }
-        } else if (selectedOrgUnit.closedDate() != null && Boolean.TRUE.equals(selectedProgram.selectEnrollmentDatesInFuture())) {
-            maxDate = selectedOrgUnit.closedDate();
-        }
-
-        CalendarPicker dialog = new CalendarPicker(view.getContext());
-        dialog.setTitle(selectedProgram.enrollmentDateLabel());
-        dialog.setMinDate(minDate);
-        dialog.setMaxDate(maxDate);
-        dialog.isFutureDatesAllowed(true);
-        dialog.setListener(new OnDatePickerListener() {
-            @Override
-            public void onNegativeClick() {
-            }
-
-            @Override
-            public void onPositiveClick(@NotNull DatePicker datePicker) {
-                Calendar selectedCalendar = Calendar.getInstance();
-                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                selectedCalendar.set(Calendar.MINUTE, 0);
-                selectedCalendar.set(Calendar.SECOND, 0);
-                selectedCalendar.set(Calendar.MILLISECOND, 0);
-                selectedEnrollmentDate = selectedCalendar.getTime();
-
-                enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate, queryData);
-            }
-        });
-        dialog.show();
-    }
-
-    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate, HashMap<String, String> queryData) {
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid,  HashMap<String, String> queryData) {
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate, view.fromRelationshipTEI())
+                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, view.fromRelationshipTEI())
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {

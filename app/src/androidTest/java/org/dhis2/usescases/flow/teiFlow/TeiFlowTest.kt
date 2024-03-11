@@ -34,7 +34,7 @@ class TeiFlowTest : BaseTest() {
     private val currentDate = getCurrentDate()
 
     @Test
-    fun shouldEnrollToSameProgramAfterClosedIt() {
+    fun shouldEnrollToSameProgramAfterClosingIt() {
         val totalEventsPerEnrollment = 3
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()

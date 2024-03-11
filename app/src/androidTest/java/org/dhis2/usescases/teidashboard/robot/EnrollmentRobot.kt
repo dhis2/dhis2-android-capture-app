@@ -6,9 +6,11 @@ import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.withHint
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -37,7 +39,7 @@ class EnrollmentRobot : BaseRobot() {
             .performClick()
     }
 
-    fun clickOnAcceptEnrollmentDate() {
+    fun clickOnAcceptInDatePicker() {
         waitForView(withId(R.id.acceptBtn)).perform(click())
     }
 
@@ -110,9 +112,18 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnDatePicker() {
-        waitForView(withId(R.id.date_picker)).perform(click())
+        onView(allOf(withId(R.id.date_picker), withHint("Date"))).perform(click())
     }
 
+    fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        onView(withId(R.id.datePicker)).perform(
+            PickerActions.setDate(
+                year,
+                monthOfYear,
+                dayOfMonth
+            )
+        )
+    }
     companion object {
         const val ACTIVE_PROGRAMS = "Active programs"
         const val PAST_PROGRAMS = "Past programs"

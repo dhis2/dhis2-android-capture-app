@@ -271,11 +271,11 @@ class TeiDashboardTest : BaseTest() {
 
         enrollmentRobot {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
-            clickOnAcceptEnrollmentDate()
+            clickOnAcceptInDatePicker()
             clickOnPersonAttributes(personAttribute)
             waitToDebounce(5000)
             clickOnCalendarItem()
-            clickOnAcceptEnrollmentDate()
+            clickOnAcceptInDatePicker()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }

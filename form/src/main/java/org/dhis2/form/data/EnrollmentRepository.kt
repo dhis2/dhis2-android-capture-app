@@ -11,6 +11,8 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
+import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
+import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -20,7 +22,9 @@ import org.hisp.dhis.android.core.program.ProgramSection
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import timber.log.Timber
+import java.util.Date
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -42,6 +46,16 @@ class EnrollmentRepository(
         val programAccess = selectedProgram?.access()?.data()?.write() == true
         val teTypeAccess = conf.trackedEntityType()?.access()?.data()?.write() == true
         return programAccess && teTypeAccess
+    }
+    override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
+        return when (uid) {
+            ORG_UNIT_UID -> {
+                getEnrollmentData()
+            }
+            else -> {
+                emptyList()
+            }
+        }
     }
 
     override fun sectionUids(): Flowable<List<String>> {
@@ -262,7 +276,7 @@ class EnrollmentRepository(
 
     private fun getEnrollmentData(): MutableList<FieldUiModel> {
         val enrollmentDataList = ArrayList<FieldUiModel>()
-        enrollmentDataList.add(getEnrollmentDataSection(conf.program()?.description()))
+        enrollmentDataList.add(getEnrollmentDataSection(conf.program()?.displayName(), conf.program()?.description()))
 
         enrollmentDataList.add(
             getEnrollmentDateField(
@@ -304,12 +318,42 @@ class EnrollmentRepository(
         return enrollmentDataList
     }
 
-    private fun getEnrollmentDataSection(description: String?): FieldUiModel {
+    private fun getAllowedDatesForEnrollmentDate(): SelectableDates {
+        val selectedOrgUnit = conf.enrollment()?.organisationUnit()?.let { conf.orgUnit(it) }
+        var minDate: Date? = null
+        var maxDate: Date? = null
+        val sdf = DateUtils.uiLibraryFormat()
+
+        val selectedProgram = conf.program()
+        if (selectedOrgUnit?.openingDate() != null) minDate = selectedOrgUnit.openingDate()
+        when {
+            (selectedOrgUnit?.closedDate() == null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = Date(System.currentTimeMillis())
+            }
+            (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = if (selectedOrgUnit.closedDate()!!.before(Date(System.currentTimeMillis()))) {
+                    selectedOrgUnit.closedDate()
+                } else {
+                    Date(System.currentTimeMillis())
+                }
+            }
+
+            (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.TRUE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = selectedOrgUnit.closedDate()
+            }
+        }
+
+        val maxDateString = if (maxDate != null) sdf.format(maxDate) else DEFAULT_MAX_DATE
+        val minDateString = if (minDate != null) sdf.format(minDate) else DEFAULT_MIN_DATE
+        return SelectableDates(minDateString, maxDateString)
+    }
+
+    private fun getEnrollmentDataSection(displayName: String?, description: String?): FieldUiModel {
         return fieldFactory.createSection(
             ENROLLMENT_DATA_SECTION_UID,
-            enrollmentFormLabelsProvider.provideEnrollmentDataSectionLabel(programUid!!),
+            displayName,
             description,
-            false,
+            true,
             0,
             0,
             SectionRenderingType.LISTING.name,
@@ -324,7 +368,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATE_UID,
             enrollmentDateLabel,
             ValueType.DATE,
-            true, // check in constructor of dateviewmodel
+            true, // check in constructor of dateViewModel
             null,
             when (val date = conf.enrollment()?.enrollmentDate()) {
                 null -> null
@@ -340,6 +384,7 @@ class EnrollmentRepository(
             null,
             null,
             null,
+            selectableDates = getAllowedDatesForEnrollmentDate(),
         )
     }
 

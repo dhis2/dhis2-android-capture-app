@@ -32,6 +32,8 @@ class EnrollmentConfiguration(private val d2: D2, private val enrollmentUid: Str
         .byProgramUid().eq(enrollment()?.program())
         .blockingGet()
 
+    fun orgUnit(orgUnitUid: String) = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()
+
     fun programAttributes() =
         d2.programModule().programTrackedEntityAttributes()
             .withRenderType()

@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -298,9 +299,9 @@ class FormRepositoryImpl(
         }
 
         val warningCount = ruleEffectsResult?.warningMap()?.filter { warning ->
-            fields.firstOrNull { field ->
+            fields.any { field ->
                 field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
-            } != null
+            }
         }?.size ?: 0
 
         val mandatoryCount = mandatoryItemsWithoutValue.takeIf {
@@ -310,9 +311,9 @@ class FormRepositoryImpl(
         }?.size ?: 0
 
         val errorCount = ruleEffectsResult?.errorMap()?.filter { error ->
-            fields.firstOrNull { field ->
+            fields.any { field ->
                 field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
-            } != null
+            }
         }?.size ?: 0
 
         val errorFields = fields.count {
@@ -360,7 +361,10 @@ class FormRepositoryImpl(
     }
 
     override fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
+        val updatedEnrollmentDataList = dataEntryRepository?.getSpecificDataEntryItems(uid)
+        if (updatedEnrollmentDataList?.isNotEmpty() == true) updateEnrollmentDate(updatedEnrollmentDataList)
         itemList.let { list ->
+
             list.find { item ->
                 item.uid == uid
             }?.let { item ->
@@ -381,6 +385,22 @@ class FormRepositoryImpl(
                             ),
                         ),
                 )
+            }
+        }
+    }
+
+    private fun updateEnrollmentDate(fieldUiModelList: List<FieldUiModel>) {
+        for (element in fieldUiModelList) {
+            itemList.let { list ->
+                list.find { item ->
+                    item.uid == ENROLLMENT_DATE_UID
+                }?.let { item ->
+                    itemList = list.updated(
+                        list.indexOf(item),
+                        item.setSelectableDates(element.selectableDates),
+
+                    )
+                }
             }
         }
     }

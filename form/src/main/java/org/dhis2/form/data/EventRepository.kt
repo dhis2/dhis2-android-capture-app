@@ -69,6 +69,11 @@ class EventRepository(
         return true
     }
 
+    override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
+        // pending implementation in Event Form
+        return emptyList()
+    }
+
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {
         return Single.fromCallable {
             val stageDataElements = d2.programModule().programStageDataElements().withRenderType()
