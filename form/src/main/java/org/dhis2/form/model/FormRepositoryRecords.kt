@@ -17,6 +17,7 @@ class EnrollmentRecords(
 
 class EventRecords(
     val eventUid: String,
+    val eventMode: EventMode,
 ) : FormRepositoryRecords(
     recordUid = eventUid,
     entryMode = EntryMode.DE,

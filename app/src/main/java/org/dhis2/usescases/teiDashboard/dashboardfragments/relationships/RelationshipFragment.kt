@@ -21,6 +21,7 @@ import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.locationprovider.LocationSettingLauncher.requestEnableLocationSetting
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentRelationshipsBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.maps.ExternalMapNavigation
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
@@ -32,7 +33,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.ui.NoRelationships
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.relationship.RelationshipType

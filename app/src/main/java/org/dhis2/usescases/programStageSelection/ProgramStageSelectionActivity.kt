@@ -13,10 +13,10 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.utils.EventMode
 import org.hisp.dhis.android.core.period.PeriodType
 import javax.inject.Inject
 

@@ -19,6 +19,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
+import org.dhis2.form.model.EventMode
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
@@ -29,7 +30,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresen
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataContractHandler
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment

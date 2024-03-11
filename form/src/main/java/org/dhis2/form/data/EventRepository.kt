@@ -12,6 +12,7 @@ import org.dhis2.form.R
 import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.EventCategoryCombo
+import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
@@ -42,6 +43,7 @@ class EventRepository(
     private val metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
     private val dateUtils: DateUtils,
+    private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
 
     private val event by lazy {
@@ -71,6 +73,9 @@ class EventRepository(
 
     override fun sectionUids(): Flowable<List<String>> {
         val sectionUIDs = mutableListOf(EVENT_DETAILS_SECTION_UID)
+        if (shouldAddCategoryComboSection()) {
+            sectionUIDs.add(EVENT_CATEGORY_COMBO_SECTION_UID)
+        }
         if (sectionMap.keys.isEmpty()) {
             sectionUIDs.add(EVENT_DATA_SECTION_UID)
         } else {
@@ -124,11 +129,6 @@ class EventRepository(
         return true
     }
 
-    override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
-        // pending implementation in Event Form
-        return emptyList()
-    }
-
     private fun getEventDetails(): MutableList<FieldUiModel> {
         val eventDataItems = mutableListOf<FieldUiModel>()
         eventDataItems.apply {
@@ -148,6 +148,12 @@ class EventRepository(
             }
         }
         return eventDataItems
+    }
+
+    private fun shouldAddCategoryComboSection(): Boolean {
+        return getCatCombo()?.let { categoryCombo ->
+            categoryCombo.isDefault == false
+        } ?: false
     }
 
     private fun createEventCategoryComboFields(categoryCombo: CategoryCombo): List<FieldUiModel> {
@@ -312,7 +318,7 @@ class EventRepository(
             optionSet = null,
             value = getStoredOrgUnit(),
             programStageSection = EVENT_DETAILS_SECTION_UID,
-            editable = false,
+            editable = eventMode == EventMode.NEW,
             description = null,
         )
     }
@@ -343,7 +349,7 @@ class EventRepository(
             value = dateValue,
             programStageSection = EVENT_DETAILS_SECTION_UID,
             allowFutureDates = false,
-            editable = true,
+            editable = isEventEditable(),
             description = null,
             periodSelector = getPeriodSelector(),
         )
@@ -408,6 +414,18 @@ class EventRepository(
             completedFields = 0,
             rendering = SectionRenderingType.LISTING.name,
         )
+    }
+
+    override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
+        return when (uid) {
+            EVENT_ORG_UNIT_UID -> {
+                getEventDetails()
+            }
+
+            else -> {
+                emptyList()
+            }
+        }
     }
 
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {

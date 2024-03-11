@@ -1,7 +1,7 @@
 package org.dhis2.usescases.programStageSelection
 
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.general.AbstractActivityContracts
-import org.dhis2.utils.EventMode
 import org.hisp.dhis.android.core.period.PeriodType
 
 interface ProgramStageSelectionView : AbstractActivityContracts.View {
