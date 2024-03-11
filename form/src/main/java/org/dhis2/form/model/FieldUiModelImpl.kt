@@ -184,6 +184,7 @@ data class FieldUiModelImpl(
         if (allowFutureDates != item.allowFutureDates) return false
         if (callback != item.callback) return false
         if (selectableDates != item.selectableDates) return false
+        if (eventCatCombo != item.eventCatCombo) return false
 
         return true
     }
