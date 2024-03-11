@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.animations.CarouselViewAnimations
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterManager
@@ -202,6 +201,5 @@ class ProgramEventDetailModule(
     ) = CreateEventUseCase(
         dispatcher = dispatcher,
         d2 = d2,
-        dateUtils = DateUtils(),
     )
 }
