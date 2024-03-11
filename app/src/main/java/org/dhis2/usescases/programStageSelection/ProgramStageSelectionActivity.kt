@@ -125,7 +125,6 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
             context = this,
             eventUid = eventUid,
             programUid = programUid,
-            openDetailsAsFirstPage = false,
             eventMode = eventMode,
         )
         startActivity(intent)
