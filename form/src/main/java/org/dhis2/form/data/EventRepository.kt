@@ -18,6 +18,7 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -177,6 +178,9 @@ class EventRepository(
                 id = "$EVENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
                 label = eventCatCombo.displayName ?: "",
                 valueType = ValueType.TEXT,
+                value = getUidsList(
+                    eventCatCombo.selectedCategoryOptions.toMap().values.filterNotNull(),
+                ).joinToString(","),
                 mandatory = true,
                 programStageSection = EVENT_CATEGORY_COMBO_SECTION_UID,
                 editable = isEventEditable(),
