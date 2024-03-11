@@ -146,7 +146,6 @@ class SyncStatusDialogNavigator(
                 context,
                 eventSyncItem.eventUid,
                 eventSyncItem.programUid,
-                eventSyncItem.hasNullDataElementConflict,
                 EventMode.CHECK,
             )
             intent.openErrorLocation()

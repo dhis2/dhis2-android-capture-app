@@ -143,7 +143,6 @@ class ProgramEventDetailActivity :
                     context = context,
                     eventUid = eventUid,
                     programUid = programUid,
-                    openDetailsAsFirstPage = false,
                     eventMode = EventMode.NEW,
                 )
                 startActivity(intent)

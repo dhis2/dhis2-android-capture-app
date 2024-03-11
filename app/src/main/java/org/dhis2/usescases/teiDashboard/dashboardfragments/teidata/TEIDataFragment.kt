@@ -26,6 +26,7 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
@@ -54,7 +55,6 @@ import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -362,7 +362,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     presenter.completeEnrollment()
                 }
 
-                override fun onNegative() {}
+                override fun onNegative() {
+                    // Not necessary for this implementation
+                }
             },
         )
         dialog?.show()
@@ -383,7 +385,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                             presenter.completeEnrollment()
                         }
 
-                        override fun onNegative() {}
+                        override fun onNegative() {
+                            // Not necessary for this implementation
+                        }
                     },
                 )
                 dialog?.show()
@@ -471,7 +475,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             context = requireContext(),
             eventUid = eventUid,
             programUid = programUid,
-            openDetailsAsFirstPage = false,
             eventMode = eventMode,
         )
         startActivity(intent)
