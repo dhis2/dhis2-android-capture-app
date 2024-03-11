@@ -252,10 +252,10 @@ class SearchTEList : FragmentGlobalAbstract() {
             initLoading(emptyList())
             it.firstOrNull()?.let { searchResult ->
                 if (searchResult.shouldClearProgramData()) {
-                    liveAdapter.refresh()
+//                    liveAdapter.refresh()
                 }
                 if (searchResult.shouldClearGlobalData()) {
-                    globalAdapter.refresh()
+//                    globalAdapter.refresh()
                 }
             }
             displayResult(it)
