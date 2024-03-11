@@ -209,11 +209,7 @@ private fun calculateAgeFromDate(dateString: String, timeUnit: TimeUnitValues): 
             }
 
             TimeUnitValues.MONTHS -> {
-                var diff = calendarCurrentDate[Calendar.MONTH] - calendarBirthDate[Calendar.MONTH]
-                if (calendarCurrentDate[Calendar.DAY_OF_YEAR] < calendarBirthDate[Calendar.DAY_OF_YEAR]) {
-                    diff--
-                }
-                diff.toString()
+                monthsBetween(calendarBirthDate.time, calendarCurrentDate.time).toString()
             }
 
             TimeUnitValues.DAYS -> {
@@ -227,5 +223,21 @@ private fun calculateAgeFromDate(dateString: String, timeUnit: TimeUnitValues): 
     }
 }
 
+fun monthsBetween(startDate: Date?, endDate: Date?): Int {
+    require(!(startDate == null || endDate == null)) { "Both startDate and endDate must be provided" }
+    val startCalendar = Calendar.getInstance()
+    startCalendar.time = startDate
+    val startDateTotalMonths = (
+        12 * startCalendar[Calendar.YEAR] +
+            startCalendar[Calendar.MONTH]
+        )
+    val endCalendar = Calendar.getInstance()
+    endCalendar.time = endDate
+    val endDateTotalMonths = (
+        12 * endCalendar[Calendar.YEAR] +
+            endCalendar[Calendar.MONTH]
+        )
+    return endDateTotalMonths - startDateTotalMonths
+}
 private const val UI_FORMAT = "ddMMyyyy"
 private const val DB_FORMAT = "yyyy-MM-dd"
