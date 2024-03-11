@@ -15,7 +15,6 @@ fun prepareIntentAndLaunchEventActivity(rule: LazyActivityScenarioRule<EventCapt
         ApplicationProvider.getApplicationContext(),
         EVENT_GAMMA,
         PROGRAM_XX_PROGRAM_RULES,
-        false,
         EventMode.CHECK
     ).also { rule.launch(it) }
 }
