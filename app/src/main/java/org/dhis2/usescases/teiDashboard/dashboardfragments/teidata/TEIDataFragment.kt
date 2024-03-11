@@ -144,7 +144,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
                     false,
                 )
-                val eventCount by presenter.events.map { it.count() }.observeAsState(0)
+                val eventCount by presenter.totalTimeLineEvents.map { it }.observeAsState(0)
 
                 val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
                     infoBarMapper.map(
