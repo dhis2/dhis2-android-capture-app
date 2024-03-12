@@ -10,8 +10,10 @@ import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
@@ -25,6 +27,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -47,6 +50,9 @@ class TeiDashboardMobileActivityTest {
     private val teiAttributesProvider: TeiAttributesProvider = mock()
     private val preferences: PreferenceProvider = mock()
 
+    private val metadataIconProvider: MetadataIconProvider = mock {
+        on { invoke(any(), any(), any()) } doReturn MetadataIconData.Resource(1, 1)
+    }
 
     private var repository: DashboardRepositoryImpl = mock {
 
@@ -110,6 +116,7 @@ class TeiDashboardMobileActivityTest {
             ENROLLMENT_UID,
             teiAttributesProvider,
             preferences,
+            metadataIconProvider
         )
 
 

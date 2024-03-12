@@ -5,6 +5,7 @@ import android.content.res.Resources
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Test
@@ -20,6 +21,7 @@ class TEICardExtensionsTest {
     private val resourceManager: ResourceManager = mock()
     private val resources: Resources = mock()
     private val colorUtils: ColorUtils = mock()
+    private val metadataIconData: MetadataIconData = MetadataIconData.Resource(1, 1)
 
     @Test
     fun `Should return list of enrollment data icons that is smaller than four and all icons`() {
@@ -28,7 +30,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData(context, "uid_1", colorUtils)
+        val result = programs.getEnrollmentIconsData("uid_1", metadataIconData)
         assert(result.size == 3)
         result.forEach {
             assert(it.isIcon)
@@ -42,7 +44,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData(context, "uid_1", colorUtils)
+        val result = programs.getEnrollmentIconsData("uid_1", metadataIconData)
         assert(result.size == 4)
         result.forEach {
             assert(it.isIcon)
@@ -56,7 +58,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData(context, "uid_5", colorUtils)
+        val result = programs.getEnrollmentIconsData("uid_5", metadataIconData)
         assert(result.size == 4)
         result.forEachIndexed { index, item ->
             if (index in 0..result.size - 2) {
@@ -76,7 +78,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData(context, null, colorUtils)
+        val result = programs.getEnrollmentIconsData(null, metadataIconData)
         assert(result.size == 4)
         result.forEachIndexed { index, item ->
             if (index in 0..result.size - 2) {
@@ -96,7 +98,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData(context, "uid_100", colorUtils)
+        val result = programs.getEnrollmentIconsData("uid_100", metadataIconData)
         assert(result.size == 4)
         assert(!result.last().isIcon)
         assert(result.last().remainingEnrollments == 99)

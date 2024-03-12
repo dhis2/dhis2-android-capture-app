@@ -9,12 +9,8 @@ import androidx.databinding.BindingAdapter
 import org.dhis2.commons.R
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.resources.ColorType
-import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.setUpMetadataIcon
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -161,27 +157,11 @@ fun TextView.parseDate(date: Date?) {
 }
 
 @BindingAdapter("set_metadata_icon")
-fun ComposeView.setIconStyle(style: ObjectStyle?) {
-    style?.let {
-        val color = ColorUtils().getColorFrom(
-            style.color(),
-            ColorUtils().getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
-        )
-        val resource = ResourceManager(context, ColorUtils()).getObjectStyleDrawableResource(
-            style.icon(),
-            R.drawable.ic_default_outline,
-        )
+fun ComposeView.setIconStyle(metadataIconData: MetadataIconData?) {
+    metadataIconData?.let {
         setUpMetadataIcon(
-            MetadataIconData(color, resource, 48),
+            metadataIconData.withSize(48),
             true,
         )
     }
-}
-
-@BindingAdapter("set_metadata_icon_data")
-fun ComposeView.setIconData(iconData: MetadataIconData) {
-    setUpMetadataIcon(
-        metadataIconData = iconData.copy(sizeInDp = 48),
-        true,
-    )
 }

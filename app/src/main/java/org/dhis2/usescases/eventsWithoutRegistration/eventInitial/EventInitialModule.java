@@ -11,12 +11,11 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.mobileProgramRules.EvaluationType;
-import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.RulesUtilsProvider;
 import org.dhis2.form.data.metadata.FileResourceConfiguration;
@@ -34,6 +33,8 @@ import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.provider.UiStyleProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
+import org.dhis2.mobileProgramRules.EvaluationType;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -122,17 +123,25 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(D2 d2,
-                                                 @NonNull FieldViewModelFactory fieldViewModelFactory,
-                                                 @Nullable RuleEngineHelper ruleEngineHelper) {
-        return new EventInitialRepositoryImpl(eventUid, stageUid, d2, fieldViewModelFactory, ruleEngineHelper);
+    EventInitialRepository eventDetailRepository(
+            D2 d2,
+            @NonNull FieldViewModelFactory fieldViewModelFactory,
+            @Nullable RuleEngineHelper ruleEngineHelper,
+            MetadataIconProvider metadataIconProvider
+    ) {
+        return new EventInitialRepositoryImpl(eventUid,
+                stageUid,
+                d2,
+                fieldViewModelFactory,
+                ruleEngineHelper,
+                metadataIconProvider);
     }
 
     @Provides
     @PerActivity
     @Nullable
     RuleEngineHelper ruleEngineRepository(D2 d2) {
-        if(eventUid == null) return null;
+        if (eventUid == null) return null;
         return new RuleEngineHelper(
                 new EvaluationType.Event(eventUid),
                 new org.dhis2.mobileProgramRules.RulesRepository(d2)

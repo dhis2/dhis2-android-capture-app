@@ -6,6 +6,7 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -28,6 +29,7 @@ class TeiDataRepositoryImpl(
     private val teiUid: String,
     private val enrollmentUid: String?,
     private val periodUtils: DhisPeriodUtils,
+    private val metadataIconProvider: MetadataIconProvider,
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -102,7 +104,7 @@ class TeiDataRepositoryImpl(
                         events.map {
                             val stage = d2.programModule().programStages()
                                 .uid(it.programStage())
-                                .blockingGet()
+                                .blockingGet() ?: throw IllegalArgumentException()
                             EventViewModel(
                                 type = EventViewModelType.EVENT,
                                 stage = stage,
@@ -116,6 +118,7 @@ class TeiDataRepositoryImpl(
                                 dataElementValues = null,
                                 displayDate = null,
                                 nameCategoryOptionCombo = null,
+                                metadataIconData = metadataIconProvider(stage.style()),
                             )
                         }
                     }
@@ -186,6 +189,7 @@ class TeiDataRepositoryImpl(
                             groupedByStage = true,
                             displayDate = null,
                             nameCategoryOptionCombo = null,
+                            metadataIconData = metadataIconProvider(programStage.style()),
                         ),
                     )
                     checkEventStatus(eventList).take(
@@ -220,6 +224,7 @@ class TeiDataRepositoryImpl(
                                 ),
                                 nameCategoryOptionCombo =
                                 getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                                metadataIconData = metadataIconProvider(programStage.style()),
                             ),
                         )
                     }
@@ -242,6 +247,7 @@ class TeiDataRepositoryImpl(
                                 nameCategoryOptionCombo = null,
                                 showAllEvents = showAllEvents,
                                 maxEventsToShow = maxEventToShow,
+                                metadataIconData = metadataIconProvider(programStage.style()),
                             ),
                         )
                     }
@@ -267,7 +273,7 @@ class TeiDataRepositoryImpl(
                 ).forEachIndexed { _, event ->
                     val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
-                        .blockingGet()
+                        .blockingGet() ?: throw IllegalArgumentException()
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
@@ -290,6 +296,7 @@ class TeiDataRepositoryImpl(
                             ),
                             nameCategoryOptionCombo =
                             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+                            metadataIconData = metadataIconProvider(programStage.style()),
                         ),
                     )
                 }
@@ -298,6 +305,7 @@ class TeiDataRepositoryImpl(
                     val programStage = d2.programModule().programStages()
                         .uid(eventList[maxEventToShow - 1].programStage())
                         .blockingGet()
+                        ?: throw IllegalArgumentException()
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.TOGGLE_BUTTON,
@@ -315,6 +323,7 @@ class TeiDataRepositoryImpl(
                             nameCategoryOptionCombo = null,
                             showAllEvents = showAllEvents,
                             maxEventsToShow = maxEventToShow,
+                            metadataIconData = metadataIconProvider(programStage.style()),
                         ),
                     )
                 }

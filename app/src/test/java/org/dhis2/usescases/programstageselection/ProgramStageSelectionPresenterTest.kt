@@ -29,8 +29,11 @@
 package org.dhis2.usescases.programstageselection
 
 import io.reactivex.Flowable
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.programStageSelection.ProgramStageData
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
@@ -45,6 +48,7 @@ import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -59,10 +63,19 @@ class ProgramStageSelectionPresenterTest {
     private val repository: ProgramStageSelectionRepository = mock()
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
+    private val metadataIconProvider: MetadataIconProvider = mock {
+        on { invoke(any(), any(), any()) } doReturn MetadataIconData.Resource(1, 1)
+    }
 
     @Before
     fun setUp() {
-        presenter = ProgramStageSelectionPresenter(view, repository, rulesUtils, scheduler)
+        presenter = ProgramStageSelectionPresenter(
+            view,
+            repository,
+            rulesUtils,
+            metadataIconProvider,
+            scheduler,
+        )
     }
 
     @Test
@@ -70,6 +83,16 @@ class ProgramStageSelectionPresenterTest {
         val programStages = listOf(
             ProgramStage.builder().uid("programStage1").build(),
             ProgramStage.builder().uid("programStage2").build(),
+        )
+        val programStageData = listOf(
+            ProgramStageData(
+                ProgramStage.builder().uid("programStage1").build(),
+                MetadataIconData.Resource(1, 1),
+            ),
+            ProgramStageData(
+                ProgramStage.builder().uid("programStage2").build(),
+                MetadataIconData.Resource(1, 1),
+            ),
         )
         val calcResult = Result.success(
             listOf(
@@ -99,7 +122,7 @@ class ProgramStageSelectionPresenterTest {
 
         presenter.programStages()
 
-        verify(view).setData(programStages)
+        verify(view).setData(programStageData)
     }
 
     @Test

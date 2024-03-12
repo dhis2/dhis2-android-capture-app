@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -70,7 +71,7 @@ interface DashboardRepository {
     fun getTeiActivePrograms(
         teiUid: String,
         showOnlyActive: Boolean,
-    ): Observable<List<Program>>
+    ): Observable<List<kotlin.Pair<Program, MetadataIconData>>>
 
     fun getTEIEnrollments(
         teiUid: String,

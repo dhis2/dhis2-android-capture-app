@@ -47,7 +47,7 @@ class RelationshipViewHolder(
             relationships.displayImage().let { (imagePath, defaultRes) ->
                 if (relationships.isEvent()) {
                     binding.composeToImage.setUpMetadataIcon(
-                        MetadataIconData(
+                        MetadataIconData.Resource(
                             programColor = relationships.ownerDefaultColorResource,
                             iconResource = defaultRes,
                             sizeInDp = 40,

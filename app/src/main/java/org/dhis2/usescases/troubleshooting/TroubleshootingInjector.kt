@@ -6,7 +6,7 @@ import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.LocaleSelector
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.hisp.dhis.android.core.D2
 
 @PerFragment
@@ -34,6 +34,8 @@ class TroubleshootingModule(private val openLanguageSection: Boolean) {
     fun providesLocaleSelector(context: Context, d2: D2) = LocaleSelector(context, d2)
 
     @Provides
-    fun provideRepository(resourceManager: ResourceManager, d2: D2) =
-        TroubleshootingRepository(d2, resourceManager)
+    fun provideRepository(
+        d2: D2,
+        metadataIconProvider: MetadataIconProvider,
+    ) = TroubleshootingRepository(d2, metadataIconProvider)
 }

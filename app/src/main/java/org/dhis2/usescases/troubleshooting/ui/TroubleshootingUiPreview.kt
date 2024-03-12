@@ -48,7 +48,7 @@ fun ProgramRuleValidations() {
         programRuleValidation = ProgramRuleValidation(
             programUid = "programUid",
             programName = "Antenatal care visiting",
-            metadataIconData = MetadataIconData(
+            metadataIconData = MetadataIconData.Resource(
                 programColor = Color.parseColor("#4CAF50"),
                 iconResource = R.drawable.ic_home_outline,
                 sizeInDp = 24,

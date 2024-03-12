@@ -1,11 +1,12 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.database.Cursor;
-import androidx.databinding.BaseObservable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.BaseObservable;
 
 import com.google.auto.value.AutoValue;
+
+import org.dhis2.ui.MetadataIconData;
 
 import java.io.Serializable;
 
@@ -19,10 +20,7 @@ public abstract class EnrollmentViewModel extends BaseObservable implements Seri
     public abstract String enrollmentDate();
 
     @Nullable
-    public abstract String color();
-
-    @Nullable
-    public abstract String icon();
+    public abstract MetadataIconData metadataIconData();
 
     @NonNull
     public abstract String programName();
@@ -37,8 +35,7 @@ public abstract class EnrollmentViewModel extends BaseObservable implements Seri
     public abstract String programUid();
 
     @NonNull
-    public static EnrollmentViewModel create(@NonNull String uid, @NonNull String enrollmentDate, @Nullable String color,
-                                             @Nullable String icon, @NonNull String progranName, @NonNull String orgUnitName, @NonNull Boolean followup, @NonNull String programUid) {
-        return new AutoValue_EnrollmentViewModel(uid, enrollmentDate, color, icon, progranName, orgUnitName, followup,programUid);
+    public static EnrollmentViewModel create(@NonNull String uid, @NonNull String enrollmentDate, @Nullable MetadataIconData metadataIconData, @NonNull String progranName, @NonNull String orgUnitName, @NonNull Boolean followup, @NonNull String programUid) {
+        return new AutoValue_EnrollmentViewModel(uid, enrollmentDate, metadataIconData, progranName, orgUnitName, followup, programUid);
     }
 }

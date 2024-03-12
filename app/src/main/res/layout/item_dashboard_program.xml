@@ -20,8 +20,8 @@
             type="org.hisp.dhis.android.core.enrollment.Enrollment" />
 
         <variable
-            name="style"
-            type="org.hisp.dhis.android.core.common.ObjectStyle" />
+            name="metadataIconData"
+            type="org.dhis2.ui.MetadataIconData" />
 
         <variable
             name="orgUnit"
@@ -40,7 +40,7 @@
             app:layout_constraintBottom_toBottomOf="@id/enrollmentDateLabel"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:set_metadata_icon='@{style}'/>
+            app:set_metadata_icon='@{metadataIconData}'/>
 
         <TextView
             android:id="@+id/program_last_date_label"

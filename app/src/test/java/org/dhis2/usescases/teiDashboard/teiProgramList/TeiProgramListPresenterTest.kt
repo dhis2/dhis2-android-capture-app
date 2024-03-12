@@ -159,7 +159,7 @@ class TeiProgramListPresenterTest {
         return ProgramViewModel(
             "uid",
             "programName",
-            MetadataIconData(
+            MetadataIconData.Resource(
                 programColor = Color.parseColor("#84FFFF"),
                 iconResource = R.drawable.ic_home_positive,
             ),
@@ -182,7 +182,6 @@ class TeiProgramListPresenterTest {
         return EnrollmentViewModel.create(
             "uid",
             "2020-01-01",
-            null,
             null,
             "programName",
             "orgUnit",

@@ -1,6 +1,7 @@
 package org.dhis2.usescases.development;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -15,6 +16,8 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.fileresource.FileResource;
+import org.hisp.dhis.android.core.fileresource.FileResourceDomain;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +44,42 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadFeatureConfig();
         loadConflicts();
         loadMultiText();
+        loadCustomIcons();
+    }
+
+    private void loadCustomIcons() {
+        binding.forceCustomIcon.setOnClickListener(view -> {
+            D2 d2 = D2Manager.getD2();
+            FileResource fileResource = d2.fileResourceModule().fileResources()
+                    .byDomain().eq(FileResourceDomain.DATA_VALUE)
+                    .one().blockingGet();
+            if (fileResource != null) {
+                String uidToInsert = fileResource.uid();
+                d2.databaseAdapter().execSQL(
+                        String.format(
+                                "INSERT INTO CustomIcon (\"key\", \"fileResourceUid\", \"href\") VALUES (\"%s\",\"%s\",\"%s\")",
+                                uidToInsert,
+                                uidToInsert,
+                                uidToInsert
+                        )
+                );
+                d2.databaseAdapter().execSQL(
+                        String.format("UPDATE Program SET icon = \"%s\"", uidToInsert)
+                );
+                d2.databaseAdapter().execSQL(
+                        String.format("UPDATE DataSet SET icon = \"%s\"", uidToInsert)
+                );
+                d2.databaseAdapter().execSQL(
+                        String.format("UPDATE ProgramStage SET icon = \"%s\"", uidToInsert)
+                );
+                d2.databaseAdapter().execSQL(
+                        String.format("UPDATE Option SET icon = \"%s\"", uidToInsert)
+                );
+            } else {
+                Toast.makeText(this, "No file resource found. Add an image in a form and retry", Toast.LENGTH_SHORT).show();
+            }
+
+        });
     }
 
     private void loadMultiText() {

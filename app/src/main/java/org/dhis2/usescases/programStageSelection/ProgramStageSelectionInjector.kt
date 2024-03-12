@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.hisp.dhis.android.core.D2
@@ -32,12 +33,14 @@ class ProgramStageSelectionModule(
     fun providesPresenter(
         programStageSelectionRepository: ProgramStageSelectionRepository,
         ruleUtils: RulesUtilsProvider,
+        metadataIconProvider: MetadataIconProvider,
         schedulerProvider: SchedulerProvider,
     ): ProgramStageSelectionPresenter {
         return ProgramStageSelectionPresenter(
             view,
             programStageSelectionRepository,
             ruleUtils,
+            metadataIconProvider,
             schedulerProvider,
         )
     }

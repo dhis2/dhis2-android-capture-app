@@ -8,6 +8,7 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.reporting.CrashReportControllerImpl
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -79,13 +80,18 @@ class TEIDataModule(
 
     @Provides
     @PerFragment
-    fun providesRepository(d2: D2, periodUtils: DhisPeriodUtils): TeiDataRepository {
+    fun providesRepository(
+        d2: D2,
+        periodUtils: DhisPeriodUtils,
+        metadataIconProvider: MetadataIconProvider,
+    ): TeiDataRepository {
         return TeiDataRepositoryImpl(
             d2,
             programUid,
             teiUid,
             enrollmentUid,
             periodUtils,
+            metadataIconProvider,
         )
     }
 

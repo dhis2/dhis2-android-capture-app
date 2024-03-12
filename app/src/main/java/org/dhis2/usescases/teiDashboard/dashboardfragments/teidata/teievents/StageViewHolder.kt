@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
@@ -24,16 +22,14 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.ui.MetadataIcon
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.ui.NewEventOptions
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
-import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 internal class StageViewHolder(
@@ -57,8 +53,7 @@ internal class StageViewHolder(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ProvideAvatar(
-                    stage = eventItem.stage,
-                    resourceManager = resourceManager,
+                    metadataIconData = eventItem.metadataIconData,
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(
@@ -97,34 +92,11 @@ internal class StageViewHolder(
 
     @Composable
     private fun ProvideAvatar(
-        stage: ProgramStage?,
-        resourceManager: ResourceManager,
+        metadataIconData: MetadataIconData,
     ) {
-        val color = resourceManager.getColorFrom(stage?.style()?.color())
-        val iconColor = if (color == -1) {
-            SurfaceColor.Primary
-        } else {
-            Color(color)
-        }
-
-        val imageResource = resourceManager.getObjectStyleDrawableResource(
-            stage?.style()?.icon(),
-            R.drawable.ic_default_outline,
-        )
-
         Avatar(
             metadataAvatar = {
-                MetadataAvatar(
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = imageResource),
-                            contentDescription = "Button",
-                            tint = iconColor,
-                        )
-                    },
-                    iconTint = iconColor,
-                    size = AvatarSize.Large,
-                )
+                MetadataIcon(metadataIconData = metadataIconData)
             },
             style = AvatarStyle.METADATA,
         )

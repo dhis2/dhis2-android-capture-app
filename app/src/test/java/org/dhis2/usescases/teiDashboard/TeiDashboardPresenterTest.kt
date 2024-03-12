@@ -3,12 +3,12 @@ package org.dhis2.usescases.teiDashboard
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_TEI
@@ -79,7 +79,12 @@ class TeiDashboardPresenterTest {
         )
         val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
-        val programs = listOf(Program.builder().uid(programUid).build())
+        val programs = listOf(
+            Pair(
+                Program.builder().uid(programUid).build(),
+                MetadataIconData.Resource(1, 1),
+            ),
+        )
 
         whenever(
             repository.getTrackedEntityInstance(teiUid),

@@ -81,7 +81,7 @@ class DashboardViewModel(
                 repository.getGrouping()
             }
             try {
-                _groupByStage.value = result.await()
+                _groupByStage.postValue(result.await())
             } catch (e: Exception) {
                 Timber.e(e)
             }

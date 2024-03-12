@@ -5,12 +5,14 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -19,11 +21,11 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
-class ProgramEventMapper @Inject constructor(
+class ProgramEventMapper(
     val d2: D2,
     val periodUtils: DhisPeriodUtils,
+    val metadataIconProvider: MetadataIconProvider,
 ) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
@@ -55,6 +57,9 @@ class ProgramEventMapper @Inject constructor(
             },
             nameCategoryOptionCombo =
             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+            metadataIconData = metadataIconProvider(
+                programStage?.style() ?: ObjectStyle.builder().build(),
+            ),
         )
     }
 

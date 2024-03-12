@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -96,14 +97,20 @@ class TEIDetailMapperTest {
         .program("Program1Uid")
         .build()
 
-    private fun setPrograms() = listOf<Program>(
-        Program.builder()
-            .uid("Program1Uid")
-            .displayName("Program 1")
-            .build(),
-        Program.builder()
-            .uid("Program2Uid")
-            .displayName("Program 2")
-            .build(),
+    private fun setPrograms() = listOf<Pair<Program, MetadataIconData>>(
+        Pair(
+            Program.builder()
+                .uid("Program1Uid")
+                .displayName("Program 1")
+                .build(),
+            MetadataIconData.Resource(-1, -1),
+        ),
+        Pair(
+            Program.builder()
+                .uid("Program2Uid")
+                .displayName("Program 2")
+                .build(),
+            MetadataIconData.Resource(-1, -1),
+        ),
     )
 }

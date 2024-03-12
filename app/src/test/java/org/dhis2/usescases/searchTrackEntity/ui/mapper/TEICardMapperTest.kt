@@ -111,12 +111,14 @@ class TEICardMapperTest {
                     .uid("Program1Uid")
                     .displayName("Program 1")
                     .build(),
+                null,
             )
             addProgramInfo(
                 Program.builder()
                     .uid("Program2Uid")
                     .displayName("Program 2")
                     .build(),
+                null,
             )
             overdueDate = currentDate
             isHasOverdue = true

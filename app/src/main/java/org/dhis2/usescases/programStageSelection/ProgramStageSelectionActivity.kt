@@ -9,12 +9,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.period.PeriodType
-import org.hisp.dhis.android.core.program.ProgramStage
 import javax.inject.Inject
 
 class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSelectionView {
@@ -22,9 +20,6 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
 
     @Inject
     lateinit var presenter: ProgramStageSelectionPresenter
-
-    @Inject
-    lateinit var colorUtils: ColorUtils
 
     private lateinit var adapter: ProgramStageSelectionAdapter
 
@@ -34,7 +29,7 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection)
 
         binding.presenter = presenter
-        adapter = ProgramStageSelectionAdapter(colorUtils) { programStage ->
+        adapter = ProgramStageSelectionAdapter { programStage ->
             presenter.onProgramStageClick(programStage)
         }
         binding.recyclerView.adapter = adapter
@@ -53,7 +48,7 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         super.onPause()
     }
 
-    override fun setData(programStages: List<ProgramStage>) {
+    override fun setData(programStages: List<ProgramStageData>) {
         if (programStages.isNotEmpty()) {
             adapter.submitList(programStages)
         } else {

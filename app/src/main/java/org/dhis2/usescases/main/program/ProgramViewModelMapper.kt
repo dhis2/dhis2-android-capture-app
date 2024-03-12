@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main.program
 
-import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
@@ -16,17 +15,12 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
         state: State,
         hasOverdue: Boolean,
         filtersAreActive: Boolean,
+        metadataIconData: MetadataIconData,
     ): ProgramViewModel {
         return ProgramViewModel(
             uid = program.uid(),
             title = program.displayName()!!,
-            metadataIconData = MetadataIconData(
-                programColor = resourceManager.getColorOrDefaultFrom(program.style()?.color()),
-                iconResource = resourceManager.getObjectStyleDrawableResource(
-                    program.style()?.icon(),
-                    R.drawable.ic_default_outline,
-                ),
-            ),
+            metadataIconData = metadataIconData,
             count = recordCount,
             type = if (program.trackedEntityType() != null) {
                 program.trackedEntityType()!!.uid()
@@ -52,17 +46,12 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
         recordCount: Int,
         dataSetLabel: String,
         filtersAreActive: Boolean,
+        metadataIconData: MetadataIconData,
     ): ProgramViewModel {
         return ProgramViewModel(
             uid = dataSetInstanceSummary.dataSetUid(),
             title = dataSetInstanceSummary.dataSetDisplayName(),
-            metadataIconData = MetadataIconData(
-                programColor = resourceManager.getColorOrDefaultFrom(dataSet.style()?.color()),
-                iconResource = resourceManager.getObjectStyleDrawableResource(
-                    dataSet.style()?.icon(),
-                    R.drawable.ic_default_outline,
-                ),
-            ),
+            metadataIconData = metadataIconData,
             count = recordCount,
             type = null,
             typeName = dataSetLabel,

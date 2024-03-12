@@ -48,6 +48,9 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.ui.MetadataIconData
+import org.mockito.kotlin.any
 
 @ExperimentalCoroutinesApi
 class EventInitialTest {
@@ -74,6 +77,10 @@ class EventInitialTest {
         on { getStageLastDate(ENROLLMENT_UID) } doReturn DateUtils.uiDateFormat()
             .parse("20/8/2023")!!
 
+    }
+
+    private val metadataIconProvider:MetadataIconProvider = mock{
+        on { invoke(any(), any(), any()) }doReturn MetadataIconData.Resource(1,1)
     }
 
     private lateinit var viewModel: EventDetailsViewModel
@@ -154,6 +161,7 @@ class EventInitialTest {
         resourcesProvider = provideEventResourcesProvider(),
         creationType = eventCreationType,
         enrollmentStatus = enrollmentStatus,
+        metadataIconProvider = metadataIconProvider
     )
 
     private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)
