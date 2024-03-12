@@ -149,13 +149,7 @@ data class Graph(
     }
 
     fun canBeShown(): Boolean {
-        return when (graphFilters) {
-            is GraphFilters.Visualization -> {
-                graphFilters.orgUnitsSelected.isNotEmpty() || graphFilters.periodToDisplaySelected != null
-            }
-
-            else -> series.isNotEmpty()
-        }
+        return graphFilters?.canDisplayChart(series.isNotEmpty()) ?: series.isNotEmpty()
     }
 
     fun isSingleValue() = series.size == 1 && series[0].coordinates.size == 1

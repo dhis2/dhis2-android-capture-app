@@ -5,6 +5,8 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 sealed class GraphFilters {
     abstract fun count(): Int
 
+    abstract fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean
+
     data class Visualization(
         val orgUnitsDefault: List<String> = emptyList(),
         val orgUnitsSelected: List<String> = emptyList(),
@@ -15,6 +17,14 @@ sealed class GraphFilters {
             if (orgUnitsSelected.isNotEmpty()) count++
             if (periodToDisplaySelected != null) count++
             return count
+        }
+
+        override fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean {
+            return if (orgUnitsSelected.isNotEmpty() || periodToDisplaySelected != null) {
+                true
+            } else {
+                dataIsNotEmpty
+            }
         }
     }
 
@@ -34,6 +44,10 @@ sealed class GraphFilters {
             var count = 0
             if (hasFilters()) count++
             return count
+        }
+
+        override fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean {
+            return dataIsNotEmpty
         }
     }
 }
