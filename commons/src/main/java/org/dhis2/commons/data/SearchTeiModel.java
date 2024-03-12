@@ -1,5 +1,6 @@
 package org.dhis2.commons.data;
 
+import org.dhis2.commons.R;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.ui.MetadataIconData;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -17,8 +18,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
-
-import kotlin.Pair;
 
 public class SearchTeiModel implements CarouselItemModel {
 
@@ -48,8 +47,10 @@ public class SearchTeiModel implements CarouselItemModel {
 
     private Boolean displayOrgUnit;
     private boolean showNavigationButton = false;
-    @Nullable public String onlineErrorMessage;
-    @Nullable public D2ErrorCode onlineErrorCode;
+    @Nullable
+    public String onlineErrorMessage;
+    @Nullable
+    public D2ErrorCode onlineErrorCode;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -188,8 +189,16 @@ public class SearchTeiModel implements CarouselItemModel {
         }
     }
 
-    public MetadataIconData getMetadataIconData(String programUid){
-        return metadataIconDataMap.get(programUid);
+    public MetadataIconData getMetadataIconData(String programUid) {
+        MetadataIconData iconData = metadataIconDataMap.get(programUid);
+        if (iconData != null) {
+            return iconData;
+        } else {
+            return new MetadataIconData.Resource(
+                    -1,
+                    R.drawable.ic_default_icon,
+                    40);
+        }
     }
 
     public void setOverdueDate(Date dateToShow) {
