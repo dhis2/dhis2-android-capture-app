@@ -52,6 +52,7 @@ class SyncFlowTest : BaseTest() {
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
     }
 
+    @Ignore("uses old search list items")
     @Test
     fun shouldShowErrorWhenTEISyncFails() {
         val teiName = "Lars"

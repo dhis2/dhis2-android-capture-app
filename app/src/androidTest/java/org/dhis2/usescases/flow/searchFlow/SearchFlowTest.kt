@@ -12,6 +12,7 @@ import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,6 +29,7 @@ class SearchFlowTest : BaseTest() {
     private val dateRegistration = createFirstSpecificDate()
     private val dateEnrollment = createEnrollmentDate()
 
+    @Ignore("Duplicated")
     @Test
     fun shouldCreateTEIAndFilterByEnrollment() {
         setDatePicker()

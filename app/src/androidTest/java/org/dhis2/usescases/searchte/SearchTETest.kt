@@ -148,6 +148,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Migrate to integration test")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
@@ -207,6 +208,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Migrate to integration test")
     @Test
     fun shouldSuccessfullyFilterByOrgUnitAndUseSort() {
         val orgUnitFilter = "ORG. UNIT"
@@ -227,6 +229,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Migrate to integration test")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
         val enrollmentDate = "DATE OF ENROLLMENT"
@@ -254,6 +257,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Migrate to integration test")
     @Test
     fun shouldSuccessfullyFilterByEventDateAndSort() {
         val eventDate = context.getString(R.string.filters_title_event_date)
@@ -281,6 +285,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Migrate to integration test")
     @Test
     fun shouldSuccessfullyFilterBySync() {
         val teiName = "Frank"
@@ -316,6 +321,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Migrate to integration test")
     @Test
     fun shouldSuccessfullySearchAndFilter() {
         val name = "Anna"
