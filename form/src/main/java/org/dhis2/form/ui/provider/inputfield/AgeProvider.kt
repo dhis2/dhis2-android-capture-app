@@ -7,17 +7,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
+import org.hisp.dhis.mobile.ui.designsystem.component.InputAgeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import java.text.SimpleDateFormat
@@ -31,7 +30,6 @@ fun ProvideInputAge(
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: ResourceManager,
 ) {
     var inputType by remember {
@@ -47,86 +45,80 @@ fun ProvideInputAge(
     }
 
     DisposableEffect(fieldUiModel.value) {
-        inputType = if (fieldUiModel.value.isNullOrEmpty()) {
-            AgeInputType.None
-        } else {
-            when (inputType) {
-                is AgeInputType.Age ->
-                    calculateAgeFromDate(
-                        fieldUiModel.value!!,
-                        (inputType as AgeInputType.Age).unit,
-                    )?.let {
-                        (inputType as AgeInputType.Age).copy(value = it)
-                    } ?: AgeInputType.None
+        when (inputType) {
+            is AgeInputType.Age ->
+                calculateAgeFromDate(
+                    fieldUiModel.value!!,
+                    (inputType as AgeInputType.Age).unit,
+                )?.let {
+                    (inputType as AgeInputType.Age).copy(value = it)
+                } ?: AgeInputType.None
 
-                is AgeInputType.DateOfBirth ->
-                    formatStoredDateToUI(fieldUiModel.value!!).let {
-                        (inputType as AgeInputType.DateOfBirth).copy(value = it)
-                    }
+            is AgeInputType.DateOfBirth ->
+                formatStoredDateToUI(fieldUiModel.value!!).let {
+                    (inputType as AgeInputType.DateOfBirth).copy(value = it)
+                }
 
-                AgeInputType.None -> inputType
+            AgeInputType.None -> {
+                // no-óp
             }
         }
+
         onDispose { }
     }
 
     InputAge(
-        title = fieldUiModel.label,
-        inputType = inputType,
-        inputStyle = inputStyle,
-        onCalendarActionClicked = {
-            uiEventHandler.invoke(
-                RecyclerViewUiEvents.OpenCustomCalendar(
-                    uid = fieldUiModel.uid,
-                    label = fieldUiModel.label,
-                    date = fieldUiModel.value?.toDate(),
-                    allowFutureDates = fieldUiModel.allowFutureDates ?: false,
-                ),
-            )
-        },
-        modifier = modifier,
-        state = fieldUiModel.inputState(),
-        supportingText = fieldUiModel.supportingText(),
-        isRequired = fieldUiModel.mandatory,
-        dateOfBirthLabel = resources.getString(R.string.date_birth),
-        orLabel = resources.getString(R.string.or),
-        ageLabel = resources.getString(R.string.age),
-        onValueChanged = { ageInputType ->
-            inputType = ageInputType
-            when (val type = inputType) {
-                is AgeInputType.Age -> {
-                    calculateDateFromAge(type)?.let { calculatedDate ->
-                        intentHandler.invoke(
-                            FormIntent.OnTextChange(
-                                fieldUiModel.uid,
-                                calculatedDate,
-                                fieldUiModel.valueType,
-                            ),
+        InputAgeModel(
+            title = fieldUiModel.label,
+            inputType = inputType,
+            inputStyle = inputStyle,
+            state = fieldUiModel.inputState(),
+            supportingText = fieldUiModel.supportingText(),
+            isRequired = fieldUiModel.mandatory,
+            dateOfBirthLabel = resources.getString(R.string.date_birth),
+            orLabel = resources.getString(R.string.or),
+            ageLabel = resources.getString(R.string.age),
+            cancelText = resources.getString(R.string.cancel),
+            acceptText = resources.getString(R.string.ok),
+            onValueChanged = { ageInputType ->
+                inputType = ageInputType
+                when (val type = inputType) {
+                    is AgeInputType.Age -> {
+                        calculateDateFromAge(type)?.let { calculatedDate ->
+                            intentHandler.invoke(
+                                FormIntent.OnTextChange(
+                                    fieldUiModel.uid,
+                                    calculatedDate,
+                                    fieldUiModel.valueType,
+                                ),
+                            )
+                        }
+                    }
+
+                    is AgeInputType.DateOfBirth -> {
+                        saveValue(
+                            intentHandler,
+                            fieldUiModel.uid,
+                            formatUIDateToStored(type.value),
+                            fieldUiModel.valueType,
+                            fieldUiModel.allowFutureDates,
+                        )
+                    }
+
+                    AgeInputType.None -> {
+                        saveValue(
+                            intentHandler,
+                            fieldUiModel.uid,
+                            null,
+                            fieldUiModel.valueType,
+                            fieldUiModel.allowFutureDates,
                         )
                     }
                 }
+            },
+        ),
+        modifier = modifier,
 
-                is AgeInputType.DateOfBirth -> {
-                    saveValue(
-                        intentHandler,
-                        fieldUiModel.uid,
-                        formatUIDateToStored(type.value),
-                        fieldUiModel.valueType,
-                        fieldUiModel.allowFutureDates,
-                    )
-                }
-
-                AgeInputType.None -> {
-                    saveValue(
-                        intentHandler,
-                        fieldUiModel.uid,
-                        null,
-                        fieldUiModel.valueType,
-                        fieldUiModel.allowFutureDates,
-                    )
-                }
-            }
-        },
     )
 }
 

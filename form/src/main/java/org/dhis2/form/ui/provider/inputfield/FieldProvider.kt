@@ -393,7 +393,6 @@ fun FieldProvider(
                     inputStyle = inputStyle,
                     fieldUiModel = fieldUiModel,
                     intentHandler = intentHandler,
-                    uiEventHandler = uiEventHandler,
                     resources = resources,
                 )
             }
