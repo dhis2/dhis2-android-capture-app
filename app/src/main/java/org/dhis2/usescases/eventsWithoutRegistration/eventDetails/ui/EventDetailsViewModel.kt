@@ -32,10 +32,13 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
+import java.security.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.GregorianCalendar
 import java.util.Locale
+import java.util.TimeZone
 
 class EventDetailsViewModel(
     private val configureEventDetails: ConfigureEventDetails,
@@ -266,7 +269,25 @@ class EventDetailsViewModel(
         val calendar = Calendar.getInstance()
         calendar[year, month, day, 0, 0] = 0
         calendar[Calendar.MILLISECOND] = 0
+
+        val currentTimeZone: TimeZone = calendar.getTimeZone()
+        val currentDt: Calendar = GregorianCalendar(currentTimeZone, Locale.getDefault())
+
+        var gmtOffset: Int = currentTimeZone.getOffset(
+            currentDt[Calendar.ERA],
+            currentDt[Calendar.YEAR],
+            currentDt[Calendar.MONTH],
+            currentDt[Calendar.DAY_OF_MONTH],
+            currentDt[Calendar.DAY_OF_WEEK],
+            currentDt[Calendar.MILLISECOND]
+        )
+// convert to hours
+// convert to hours
+        gmtOffset /= (60 * 60 * 1000)
+
+        calendar.add(Calendar.HOUR_OF_DAY, +gmtOffset)
         val selectedDate = calendar.time
+
         setUpEventReportDate(selectedDate)
     }
 
