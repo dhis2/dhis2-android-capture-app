@@ -3,8 +3,8 @@ package org.dhis2.composetable.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
@@ -30,7 +30,7 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState, modifier: Modifier = 
     Box(
         modifier = modifier
             .width(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.width.toDp() })
-            .fillMaxHeight()
+            .height(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.height.toDp() })
             .background(itemHeaderUiState.cellStyle.backgroundColor())
             .testTag(itemHeaderUiState.testTag)
             .semantics {
@@ -46,7 +46,8 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState, modifier: Modifier = 
     ) {
         Text(
             modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 11.dp)
+                .padding(horizontal = 4.dp)
+                .align(Alignment.Center)
                 .fillMaxWidth()
                 .align(Alignment.Center),
             color = itemHeaderUiState.cellStyle.mainColor(),

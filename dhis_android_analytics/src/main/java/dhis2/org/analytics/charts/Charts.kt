@@ -23,12 +23,23 @@ interface Charts {
 
     fun getDataSetVisualizations(groupUid: String?, dataSetUid: String): List<Graph>
 
-    fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>)
+    fun setVisualizationPeriods(
+        visualizationUid: String,
+        lineListingColumnId: Int?,
+        periods: List<RelativePeriod>,
+    )
 
     fun setVisualizationOrgUnits(
         visualizationUid: String,
+        lineListingColumnId: Int?,
         orgUnits: List<OrganisationUnit>,
         orgUnitFilterType: OrgUnitFilterType,
+    )
+
+    fun setLineListingFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+        filterValue: String?,
     )
 
     interface Provider {

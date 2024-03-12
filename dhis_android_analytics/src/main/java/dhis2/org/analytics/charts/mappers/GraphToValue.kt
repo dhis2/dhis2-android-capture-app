@@ -34,7 +34,7 @@ class GraphToValue {
                 addView(
                     ItemSingleValueBinding.inflate(LayoutInflater.from(this.context)).apply {
                         singleValueTitle.text = it.fieldName
-                        singleValue.text = it.coordinates.lastOrNull()?.fieldValue?.toString() ?: ""
+                        singleValue.text = it.coordinates.lastOrNull()?.textValue() ?: ""
 
                         val coordinate = it.coordinates.lastOrNull()
 

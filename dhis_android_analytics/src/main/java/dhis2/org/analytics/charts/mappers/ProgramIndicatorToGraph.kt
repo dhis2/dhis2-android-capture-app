@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts.mappers
 
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.GraphFilters
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
@@ -48,8 +49,10 @@ class ProgramIndicatorToGraph(
             eventPeriodType = stagePeriod,
             periodStep = periodStepProvider.periodStep(stagePeriod),
             visualizationUid = "${teiUid}${stageUid}${programIndicator.uid()}",
-            periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
-            orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+            graphFilters = GraphFilters.Visualization(
+                periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+                orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+            ),
         )
     }
 }

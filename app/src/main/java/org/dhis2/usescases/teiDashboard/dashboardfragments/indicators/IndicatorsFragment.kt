@@ -32,23 +32,37 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             onRelativePeriodCallback = { chartModel: ChartModel,
                                          relativePeriod: RelativePeriod?,
                                          current: RelativePeriod?,
+                                         lineListingColumnId: Int?,
                 ->
                 relativePeriod?.let {
                     if (it.isNotCurrent()) {
-                        showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
+                        showAlertDialogCurrentPeriod(
+                            chartModel,
+                            relativePeriod,
+                            current,
+                            lineListingColumnId,
+                        )
                     } else {
-                        presenter.filterByPeriod(chartModel, mutableListOf(it))
+                        presenter.filterByPeriod(chartModel, mutableListOf(it), lineListingColumnId)
                     }
                 }
             }
             onOrgUnitCallback =
-                { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
+                { chartModel: ChartModel,
+                  orgUnitFilterType: OrgUnitFilterType,
+                  lineListingColumnId: Int?,
+                    ->
                     when (orgUnitFilterType) {
-                        OrgUnitFilterType.SELECTION -> showOUTreeSelector(chartModel)
+                        OrgUnitFilterType.SELECTION -> showOUTreeSelector(
+                            chartModel,
+                            lineListingColumnId,
+                        )
+
                         else -> presenter.filterByOrgUnit(
                             chartModel,
                             emptyList(),
                             orgUnitFilterType,
+                            lineListingColumnId,
                         )
                     }
                 }
@@ -67,7 +81,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_indicators,
@@ -93,7 +107,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         adapter.submitList(analytics)
         binding.spinner.visibility = View.GONE
 
-        if (!analytics.isNullOrEmpty()) {
+        if (analytics.isNotEmpty()) {
             binding.emptyIndicators.visibility = View.GONE
         } else {
             binding.emptyIndicators.visibility = View.VISIBLE
@@ -104,6 +118,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         chartModel: ChartModel,
         relativePeriod: RelativePeriod?,
         current: RelativePeriod?,
+        lineListingColumnId: Int?,
     ) {
         val periodList = mutableListOf<RelativePeriod>()
         AlertBottomDialog.instance
@@ -111,27 +126,31 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             .setMessage(getString(dhis2.org.R.string.include_this_period_body))
             .setNegativeButton(getString(dhis2.org.R.string.no)) {
                 relativePeriod?.let { periodList.add(relativePeriod) }
-                presenter.filterByPeriod(chartModel, periodList)
+                presenter.filterByPeriod(chartModel, periodList, lineListingColumnId)
             }
             .setPositiveButton(getString(dhis2.org.R.string.yes)) {
                 relativePeriod?.let { periodList.add(relativePeriod) }
                 current?.let { periodList.add(current) }
-                presenter.filterByPeriod(chartModel, periodList)
+                presenter.filterByPeriod(chartModel, periodList, lineListingColumnId)
             }
             .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
-    private fun showOUTreeSelector(chartModel: ChartModel) {
+    private fun showOUTreeSelector(
+        chartModel: ChartModel,
+        lineListingColumnId: Int?,
+    ) {
         OUTreeFragment.Builder()
             .showAsDialog()
             .withPreselectedOrgUnits(
-                chartModel.graph.orgUnitsSelected.toMutableList(),
+                chartModel.graph.orgUnitsSelected(lineListingColumnId).toMutableList(),
             )
             .onSelection { selectedOrgUnits ->
                 presenter.filterByOrgUnit(
                     chartModel,
                     selectedOrgUnits,
                     OrgUnitFilterType.SELECTION,
+                    lineListingColumnId,
                 )
             }
             .build()
