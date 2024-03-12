@@ -77,15 +77,6 @@ class EventRegistrationRobot : BaseRobot() {
         onView(withId(R.id.possitive)).perform(click())
     }
 
-    fun clickLocationButton() {
-        onView(withId(R.id.location1)).perform(click())
-    }
-
-    fun selectOrgUnit(orgUnitName: String) {
-        onView(withId(R.id.org_unit)).perform(click())
-        onView(withText(orgUnitName)).perform(click())
-    }
-
     fun clickNextButton() {
         waitForView(withId(R.id.action_button)).perform(click())
     }

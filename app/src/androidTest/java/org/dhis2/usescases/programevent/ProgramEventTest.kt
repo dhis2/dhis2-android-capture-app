@@ -7,11 +7,12 @@ import androidx.test.core.app.ApplicationProvider
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -31,6 +32,12 @@ class ProgramEventTest : BaseTest() {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    @Before
+    override fun setUp() {
+        super.setUp()
+        enableComposeForms()
+    }
+
     @Test
     fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
@@ -39,10 +46,13 @@ class ProgramEventTest : BaseTest() {
         programEventsRobot(composeTestRule) {
             clickOnAddEvent()
         }
-        eventRegistrationRobot {
-            clickNextButton()
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(eventOrgUnit)
         }
         eventRobot(composeTestRule) {
+            typeOnDateParameter(
+                dateValue = "01012001",
+            )
             clickOnFormFabButton()
             clickOnCompleteButton()
         }
@@ -59,12 +69,11 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
-            waitToDebounce(400)
             clickOnEvent(eventDate)
         }
 
         eventRobot(composeTestRule) {
-            checkDetails(eventDate, eventOrgUnit)
+            checkEventDetails(eventDate, eventOrgUnit)
         }
     }
 
@@ -104,18 +113,16 @@ class ProgramEventTest : BaseTest() {
     }
 
     @Test
-    fun shouldOpenDetailsOfExistingEvent() {
+    fun shouldOpenDataEntryOfExistingEvent() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
-            waitToDebounce(400)
             clickOnEvent(eventDate)
         }
         eventRobot(composeTestRule) {
-            clickOnDetails()
             checkEventDetails(eventDate, eventOrgUnit)
         }
     }
@@ -128,7 +135,6 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
-            waitToDebounce(400)
             clickOnEvent(eventDate)
         }
         eventRobot(composeTestRule) {
