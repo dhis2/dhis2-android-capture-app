@@ -6,8 +6,8 @@ import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl

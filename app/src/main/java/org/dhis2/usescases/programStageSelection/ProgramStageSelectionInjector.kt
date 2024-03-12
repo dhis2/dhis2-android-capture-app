@@ -4,9 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.D2ErrorUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider

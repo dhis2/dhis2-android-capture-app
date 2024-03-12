@@ -3,11 +3,10 @@ package org.dhis2.usescases.programStageSelection
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.commons.resources.MetadataIconProvider
-import io.reactivex.functions.BiFunction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.D2ErrorUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
