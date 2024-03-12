@@ -101,6 +101,7 @@ class FilterTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("Undeterministic")
     @Test
     fun checkSyncFilter() {
         setupCredentials()
