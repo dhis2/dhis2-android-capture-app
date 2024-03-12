@@ -14,10 +14,10 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
