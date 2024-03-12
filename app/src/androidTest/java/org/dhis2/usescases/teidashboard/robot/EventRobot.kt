@@ -43,7 +43,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnFormFabButton() {
-        onView(withId(R.id.actionButton)).perform(click())
+        waitForView(withId(R.id.actionButton)).perform(click())
     }
 
     fun clickOnNotNow() {

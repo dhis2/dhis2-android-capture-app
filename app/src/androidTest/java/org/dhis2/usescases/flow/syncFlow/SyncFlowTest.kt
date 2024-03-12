@@ -26,6 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import syncFlowRobot
 import java.util.UUID
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 
 @RunWith(AndroidJUnit4::class)
 class SyncFlowTest : BaseTest() {
@@ -92,7 +93,6 @@ class SyncFlowTest : BaseTest() {
         cleanLocalDatabase()
     }
 
-    @Ignore("Indeterminate (flaky)")
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)

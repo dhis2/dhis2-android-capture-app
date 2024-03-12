@@ -17,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -293,13 +294,14 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun initData() {
         displayLoadingData()
+
         viewModel.fetchListResults {
-            viewModel.viewModelScope.launch {
+            lifecycleScope.launch {
                 it?.takeIf { view != null }?.collectLatest {
                     liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
                     }
-                    liveAdapter.submitData(it)
+                    liveAdapter.submitData(lifecycle, it)
                 } ?: onInitDataLoaded()
             }
         }

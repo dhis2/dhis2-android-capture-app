@@ -1,3 +1,4 @@
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -26,23 +27,25 @@ fun syncFlowRobot(
 class SyncFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnSyncButton() {
-        composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
+        composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG, useUnmergedTree = true).performClick()
     }
 
     fun checkSyncWasSuccessfully() {
         val expectedTitle = InstrumentationRegistry.getInstrumentation()
             .targetContext.getString(R.string.sync_dialog_title_not_synced)
-        composeTestRule.onNodeWithTag(TITLE).assert(hasText(expectedTitle))
+        composeTestRule.onNodeWithTag(TITLE, useUnmergedTree = true).assert(hasText(expectedTitle))
     }
 
     fun checkSyncFailed() {
         val expectedTitle = InstrumentationRegistry.getInstrumentation()
             .targetContext.getString(R.string.sync_dialog_title_not_synced)
-        composeTestRule.onNodeWithTag(TITLE).assert(hasText(expectedTitle))
+        composeTestRule.onNodeWithTag(TITLE, useUnmergedTree = true).assert(hasText(expectedTitle))
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnEventToSync() {
-        composeTestRule.onNodeWithText("Sync").performClick()
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Sync"))
+        composeTestRule.onNodeWithText("Sync", useUnmergedTree = true).performClick()
     }
 
     fun clickOnDataSetToSync(position: Int) {
