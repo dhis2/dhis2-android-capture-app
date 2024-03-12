@@ -21,7 +21,7 @@ fun CellLegendBox(
     modifier: Modifier = Modifier,
     legendColor: Color?,
     content: @Composable
-    BoxScope.() -> Unit
+    BoxScope.() -> Unit,
 ) {
     val boxModifier = legendColor?.let {
         val cornerSize = LocalTableDimensions.current.defaultLegendCornerSize
@@ -32,14 +32,14 @@ fun CellLegendBox(
                 drawRect(
                     color = legendColor,
                     topLeft = Offset(0f, 0f),
-                    size = Size(borderWidth.toPx(), size.height)
+                    size = Size(borderWidth.toPx(), size.height),
                 )
             }
             .background(color = legendColor.copy(alpha = 0.15f))
     } ?: modifier
     Box(
         modifier = boxModifier,
-        content = content
+        content = content,
     )
 }
 
@@ -50,6 +50,6 @@ fun CellLegendPreview() {
         modifier = Modifier
             .width(44.dp)
             .height(16.dp),
-        legendColor = Color(44, 152, 240)
+        legendColor = Color(44, 152, 240),
     ) {}
 }

@@ -20,7 +20,7 @@ import org.hisp.dhis.android.core.program.ProgramIndicator
 
 enum class SectionType {
     MAIN,
-    SUBSECTION
+    SUBSECTION,
 }
 
 enum class OrgUnitFilterType {
@@ -55,14 +55,14 @@ val periodToId = hashMapOf(
     RelativePeriod.QUARTERS_THIS_YEAR to R.id.quarterthisyear,
     RelativePeriod.THIS_YEAR to R.id.thisyear,
     RelativePeriod.LAST_YEAR to R.id.lastyear,
-    RelativePeriod.LAST_5_YEARS to R.id.last5year
+    RelativePeriod.LAST_5_YEARS to R.id.last5year,
 )
 
 sealed class AnalyticsModel(val uid: String)
 
 data class SectionTitle(
     val title: String,
-    val sectionType: SectionType = SectionType.MAIN
+    val sectionType: SectionType = SectionType.MAIN,
 ) : AnalyticsModel(title) {
     fun textStyle(): Int {
         return if (sectionType == SectionType.MAIN) {
@@ -78,7 +78,7 @@ data class SectionTitle(
 data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid ?: graph.title) {
     val observableChartType by lazy {
         ObservableField<ChartType>(
-            graph.chartType ?: ChartType.LINE_CHART
+            graph.chartType ?: ChartType.LINE_CHART,
         )
     }
 
@@ -105,7 +105,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     else -> observableChartType.set(chartToLoad(itemId))
                 }
                 true
-            }
+            },
         ).build().apply {
             show()
             if (graph.periodToDisplaySelected != null) {
@@ -157,7 +157,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     }
                 }
                 true
-            }
+            },
         ).build()
         appMenu.show()
 
@@ -212,7 +212,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     }
                 }
                 true
-            }
+            },
         ).build()
         appMenu.show()
 
@@ -245,7 +245,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     }
                 }
                 true
-            }
+            },
         ).build()
         appMenu.show()
 
@@ -278,7 +278,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     }
                 }
                 true
-            }
+            },
         ).build()
         appMenu.show()
 
@@ -311,7 +311,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     }
                 }
                 true
-            }
+            },
         ).build()
         appMenu.show()
 
@@ -344,7 +344,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     }
                 }
                 true
-            }
+            },
         ).build()
         appMenu.show()
 
@@ -393,7 +393,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                     }
                 }
                 true
-            }
+            },
         ).build()
         menuBuilder.show()
 
@@ -402,7 +402,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
             val selectionText = menuBuilder.getItemText(R.id.selection)
             menuBuilder.changeItemText(
                 R.id.selection,
-                "$selectionText (${graph.orgUnitsSelected.size})"
+                "$selectionText (${graph.orgUnitsSelected.size})",
             )
             menuBuilder.addIconToItem(R.id.selection, R.drawable.ic_check_chart)
             return
@@ -411,7 +411,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
             val selectionText = menuBuilder.getItemText(R.id.selection)
             menuBuilder.changeItemText(
                 R.id.selection,
-                "$selectionText (${graph.orgUnitsDefault.size})"
+                "$selectionText (${graph.orgUnitsDefault.size})",
             )
         }
     }
@@ -419,15 +419,16 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
     private fun idsToHide(originalChartType: ChartType): List<Int> {
         return when (observableChartType.get()) {
             ChartType.NUTRITION,
-            ChartType.LINE_CHART -> listOf(
+            ChartType.LINE_CHART,
+            -> listOf(
                 R.id.showRadarGraph,
                 R.id.showPieChart,
-                R.id.showLineGraph
+                R.id.showLineGraph,
             )
             ChartType.BAR_CHART -> listOf(
                 R.id.showRadarGraph,
                 R.id.showPieChart,
-                R.id.showBarGraph
+                R.id.showBarGraph,
             )
             ChartType.TABLE -> {
                 if (originalChartType == ChartType.RADAR) {
@@ -436,7 +437,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                         R.id.showTableGraph,
                         R.id.showLineGraph,
                         R.id.showBarGraph,
-                        R.id.showTableValue
+                        R.id.showTableValue,
                     )
                 } else if (originalChartType == ChartType.PIE_CHART) {
                     listOf(
@@ -444,28 +445,29 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                         R.id.showTableGraph,
                         R.id.showLineGraph,
                         R.id.showBarGraph,
-                        R.id.showTableValue
+                        R.id.showTableValue,
                     )
                 } else {
                     listOf(
                         R.id.showRadarGraph,
                         R.id.showPieChart,
-                        R.id.showTableGraph
+                        R.id.showTableGraph,
                     )
                 }
             }
             ChartType.SINGLE_VALUE -> listOf(
                 R.id.showRadarGraph,
                 R.id.showPieChart,
-                R.id.showTableValue
+                R.id.showTableValue,
             )
             ChartType.RADAR,
-            ChartType.PIE_CHART -> listOf(
+            ChartType.PIE_CHART,
+            -> listOf(
                 R.id.showRadarGraph,
                 R.id.showPieChart,
                 R.id.showLineGraph,
                 R.id.showBarGraph,
-                R.id.showTableValue
+                R.id.showTableValue,
             )
             else -> emptyList()
         }
@@ -528,7 +530,7 @@ data class IndicatorModel(
     val value: String?,
     val color: String?,
     val location: String,
-    val defaultLabel: String
+    val defaultLabel: String,
 ) : AnalyticsModel(programIndicator?.uid() ?: defaultLabel) {
     fun label(): String {
         return programIndicator?.displayName() ?: defaultLabel

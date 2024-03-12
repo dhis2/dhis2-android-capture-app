@@ -28,15 +28,19 @@
 
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import android.content.Context;
+
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterRepository;
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.usescases.datasets.datasetDetail.datasetList.mapper.DatasetCardMapper;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.D2;
 
@@ -64,7 +68,7 @@ public class DataSetDetailModule {
                                              DisableHomeFiltersFromSettingsApp disableHomeFiltersFromSettingsApp,
                                              MatomoAnalyticsController matomoAnalyticsController) {
         return new DataSetDetailPresenter(view, dataSetDetailRepository, schedulerProvider, filterManager, filterRepository,
-                disableHomeFiltersFromSettingsApp,matomoAnalyticsController);
+                disableHomeFiltersFromSettingsApp, matomoAnalyticsController);
     }
 
     @Provides
@@ -101,5 +105,14 @@ public class DataSetDetailModule {
                 dispatcherProvider,
                 new DataSetPageConfigurator(dataSetDetailRepository)
         );
+    }
+
+    @Provides
+    @PerActivity
+    DatasetCardMapper provideDatasetCardMapper(
+            Context context,
+            ResourceManager resourceManager
+    ) {
+        return new DatasetCardMapper(context, resourceManager);
     }
 }

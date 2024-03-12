@@ -34,7 +34,8 @@ class RelationshipMapLayer(
     val style: Style,
     val featureType: FeatureType,
     val sourceId: String,
-    private val lineColor: Int?
+    private val lineColor: Int?,
+    private val colorUtils: ColorUtils,
 ) : MapLayer {
 
     private val LINE_LAYER_ID: String = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
@@ -91,7 +92,7 @@ class RelationshipMapLayer(
                 .withProperties(
                     lineColor(lineColor ?: LINE_COLOR),
                     lineWidth(LINE_WIDTH),
-                    lineCap(LINE_CAP_SQUARE)
+                    lineCap(LINE_CAP_SQUARE),
                 ).withFilter(isLine())
 
     private val selectedLineLayer: Layer
@@ -100,7 +101,7 @@ class RelationshipMapLayer(
                 .withProperties(
                     lineColor(lineColor ?: LINE_COLOR),
                     lineWidth(SELECTED_LINE_WIDTH),
-                    lineCap(LINE_CAP_SQUARE)
+                    lineCap(LINE_CAP_SQUARE),
                 )
 
     private val arrowLayer: Layer
@@ -110,7 +111,7 @@ class RelationshipMapLayer(
                     PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ARROW),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
                 ).withFilter(isLine())
                 .withFilter(isUnidirectional())
 
@@ -119,11 +120,11 @@ class RelationshipMapLayer(
             ?: SymbolLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID, sourceId)
                 .withProperties(
                     PropertyFactory.iconImage(
-                        RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL
+                        RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL,
                     ),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
                 ).withFilter(isLine())
                 .withFilter(isBiderectional())
     private val selectedArrowLayer: Layer
@@ -134,7 +135,7 @@ class RelationshipMapLayer(
                     PropertyFactory.iconAllowOverlap(true),
                     visibility(Property.NONE),
                     PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
                 ).withFilter(isLine())
 
     private val pointLayer: Layer
@@ -142,11 +143,11 @@ class RelationshipMapLayer(
             ?: SymbolLayer(POINT_LAYER_ID, sourceId)
                 .withProperties(
                     PropertyFactory.iconImage(
-                        "${RelationshipMapManager.RELATIONSHIP_ICON}_$sourceId"
+                        "${RelationshipMapManager.RELATIONSHIP_ICON}_$sourceId",
                     ),
                     PropertyFactory.iconAllowOverlap(true),
                     visibility(Property.NONE),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
                 ).withFilter(isPoint())
 
     private val teiPointLayer: Layer
@@ -168,8 +169,8 @@ class RelationshipMapLayer(
             ?: FillLayer(POLYGON_LAYER_ID, sourceId)
                 .withProperties(
                     PropertyFactory.fillColor(
-                        ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50)
-                    )
+                        colorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50),
+                    ),
                 ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
@@ -177,7 +178,7 @@ class RelationshipMapLayer(
             ?: LineLayer(POLYGON_BORDER_LAYER_ID, sourceId)
                 .withProperties(
                     lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(LINE_WIDTH)
+                    lineWidth(LINE_WIDTH),
                 ).withFilter(isPolygon())
 
     override fun showLayer() {
@@ -216,8 +217,8 @@ class RelationshipMapLayer(
             ?.querySourceFeatures(
                 Expression.eq(
                     Expression.get(MapRelationshipsToFeatureCollection.RELATIONSHIP_UID),
-                    featureUidProperty
-                )
+                    featureUidProperty,
+                ),
             )
             ?.firstOrNull()
             ?.let {
@@ -251,7 +252,7 @@ class RelationshipMapLayer(
 
     override fun layerIdsToSearch(): Array<String> {
         return arrayOf(
-            TEI_POINT_LAYER_ID
+            TEI_POINT_LAYER_ID,
         )
     }
 }

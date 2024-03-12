@@ -37,8 +37,8 @@ class EventCaptureFormPresenterTest {
                 "Uid",
                 "field1",
                 IssueType.ERROR,
-                "message"
-            )
+                "message",
+            ),
         )
         presenter.handleDataIntegrityResult(
             FieldsWithErrorResult(
@@ -47,15 +47,15 @@ class EventCaptureFormPresenterTest {
                 emptyList(),
                 false,
                 null,
-                false
-            )
+                false,
+            ),
         )
         verify(activityPresenter).attemptFinish(
             false,
             null,
             errorFields,
             emptyMap(),
-            emptyList()
+            emptyList(),
         )
     }
 
@@ -66,22 +66,22 @@ class EventCaptureFormPresenterTest {
                 "Uid",
                 "field1",
                 IssueType.WARNING,
-                "message"
-            )
+                "message",
+            ),
         )
         presenter.handleDataIntegrityResult(
             FieldsWithWarningResult(
                 warningFields,
                 true,
-                null
-            )
+                null,
+            ),
         )
         verify(activityPresenter).attemptFinish(
             true,
             null,
             emptyList(),
             emptyMap(),
-            warningFields
+            warningFields,
         )
     }
 
@@ -94,22 +94,22 @@ class EventCaptureFormPresenterTest {
                 emptyList(),
                 false,
                 null,
-                false
-            )
+                false,
+            ),
         )
         verify(activityPresenter).attemptFinish(
             false,
             null,
             emptyList(),
             mapOf(Pair("field1", "section")),
-            emptyList()
+            emptyList(),
         )
     }
 
     @Test
     fun `Should try to finish  successfully`() {
         presenter.handleDataIntegrityResult(
-            SuccessfulResult(null, true, null)
+            SuccessfulResult(null, true, null),
         )
         verify(activityPresenter).attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
     }
@@ -120,7 +120,7 @@ class EventCaptureFormPresenterTest {
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
         whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
-            editableStatus
+            editableStatus,
         )
 
         presenter.showOrHideSaveButton()
@@ -135,7 +135,7 @@ class EventCaptureFormPresenterTest {
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
         whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
-            editableStatus
+            editableStatus,
         )
 
         presenter.showOrHideSaveButton()

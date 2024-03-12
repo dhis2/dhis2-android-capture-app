@@ -19,7 +19,7 @@ class EventCatComboOptionSelectorTest {
     private val eventCatComboOptionSelector = EventCatComboOptionSelector(
         catComboUid,
         fragmentManager,
-        categoryDialogInteractions
+        categoryDialogInteractions,
     )
 
     @Test

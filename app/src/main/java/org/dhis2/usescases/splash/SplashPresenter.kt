@@ -1,7 +1,6 @@
 package org.dhis2.usescases.splash
 
 import io.reactivex.disposables.CompositeDisposable
-import java.util.concurrent.TimeUnit
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -10,13 +9,14 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class SplashPresenter internal constructor(
     private var view: SplashView,
     private val userManager: UserManager?,
     private val schedulerProvider: SchedulerProvider,
     private val preferenceProvider: PreferenceProvider,
-    private val crashReportController: CrashReportController
+    private val crashReportController: CrashReportController,
 ) {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -50,35 +50,35 @@ class SplashPresenter internal constructor(
                                 val systemInfo =
                                     userManager.d2.systemInfoModule().systemInfo().blockingGet()
                                 trackUserInfo(
-                                    serverUrl = systemInfo.contextPath() ?: "",
-                                    serverVersion = systemInfo.version() ?: "",
-                                    userName = userManager.userName().blockingGet()
+                                    serverUrl = systemInfo?.contextPath() ?: "",
+                                    serverVersion = systemInfo?.version() ?: "",
+                                    userName = userManager.userName().blockingGet(),
                                 )
                             }
                             view.goToNextScreen(
                                 userLogged,
                                 preferenceProvider.getBoolean(
                                     Preference.SESSION_LOCKED,
-                                    false
+                                    false,
                                 ),
                                 preferenceProvider.getBoolean(
                                     Preference.INITIAL_METADATA_SYNC_DONE,
-                                    false
+                                    false,
                                 ),
                                 preferenceProvider.getBoolean(
                                     Preference.INITIAL_DATA_SYNC_DONE,
-                                    false
-                                )
+                                    false,
+                                ),
                             )
                         },
-                        { Timber.d(it) }
-                    )
+                        { Timber.d(it) },
+                    ),
             )
         } ?: view.goToNextScreen(
             false,
             sessionLocked = false,
             initialSyncDone = false,
-            initialDataSyncDone = false
+            initialDataSyncDone = false,
         )
     }
 

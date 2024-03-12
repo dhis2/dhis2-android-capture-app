@@ -348,8 +348,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     teiModelBuilder.created(DateUtils.databaseDateFormat().parse(teiJson.getString("created")));
                 if (teiJson.has("lastUpdated"))
                     teiModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(teiJson.getString("lastUpdated")));
-                if (teiJson.has("state"))
-                    teiModelBuilder.state(State.valueOf(teiJson.getString("state")));
+                if (teiJson.has("aggregatedSyncState"))
+                    teiModelBuilder.aggregatedSyncState(State.valueOf(teiJson.getString("aggregatedSyncState")));
                 if (teiJson.has("organisationUnit"))
                     teiModelBuilder.organisationUnit(teiJson.getString("organisationUnit"));
                 if (teiJson.has("trackedEntityType"))
@@ -452,8 +452,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             enrollmentBuilder.created(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("created")));
                         if (enrollmentJson.has("lastUpdated"))
                             enrollmentBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("lastUpdated")));
-                        if (enrollmentJson.has("state"))
-                            enrollmentBuilder.state(State.valueOf(enrollmentJson.getString("state")));
+                        if (enrollmentJson.has("aggregatedSyncState"))
+                            enrollmentBuilder.aggregatedSyncState(State.valueOf(enrollmentJson.getString("aggregatedSyncState")));
                         if (enrollmentJson.has("program"))
                             enrollmentBuilder.program(enrollmentJson.getString("program"));
                         if (enrollmentJson.has("followUp"))
@@ -504,8 +504,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         eventBuilder.created(DateUtils.databaseDateFormat().parse(eventJson.getString("created")));
                     if (eventJson.has("lastUpdated"))
                         eventBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventJson.getString("lastUpdated")));
-                    if (eventJson.has("state"))
-                        eventBuilder.state(State.valueOf(eventJson.getString("state")));
+                    if (eventJson.has("aggregatedSyncState"))
+                        eventBuilder.aggregatedSyncState(State.valueOf(eventJson.getString("aggregatedSyncState")));
                     if (eventJson.has("enrollment"))
                         eventBuilder.enrollment(eventJson.getString("enrollment"));
                     if (eventJson.has("program"))
@@ -681,7 +681,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     eventBuilder.attributeOptionCombo(eventWORegistrationJson.getString("attributeOptionCombo"));
                 }
 
-                eventBuilder.state(State.TO_UPDATE);
+                eventBuilder.aggregatedSyncState(State.TO_UPDATE);
 
                 Event event = eventBuilder
                         .deleted(false)

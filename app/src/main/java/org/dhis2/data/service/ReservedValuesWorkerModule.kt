@@ -32,7 +32,7 @@ class ReservedValuesWorkerModule {
         workManagerController: WorkManagerController,
         analyticsHelper: AnalyticsHelper,
         syncStatusController: SyncStatusController,
-        syncRepository: SyncRepository
+        syncRepository: SyncRepository,
     ): SyncPresenter {
         return SyncPresenterImpl(
             d2,
@@ -40,7 +40,7 @@ class ReservedValuesWorkerModule {
             workManagerController,
             analyticsHelper,
             syncStatusController,
-            syncRepository
+            syncRepository,
         )
     }
 }

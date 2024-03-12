@@ -10,7 +10,7 @@ class TeiAttributesInfoTest {
         val teiInfo = TeiAttributesInfo(
             attributes = listOf("attr1"),
             profileImage = "path",
-            teTypeName = "name"
+            teTypeName = "name",
         )
 
         assertTrue(teiInfo.teiMainLabel(null) == "attr1")
@@ -22,7 +22,7 @@ class TeiAttributesInfoTest {
         val teiInfo = TeiAttributesInfo(
             attributes = listOf("attr1", "attr2"),
             profileImage = "path",
-            teTypeName = "name"
+            teTypeName = "name",
         )
 
         assertTrue(teiInfo.teiMainLabel(null) == "attr1 attr2")
@@ -34,7 +34,7 @@ class TeiAttributesInfoTest {
         val teiInfo = TeiAttributesInfo(
             attributes = listOf("attr1", "attr2", "attr3", "attr4"),
             profileImage = "path",
-            teTypeName = "name"
+            teTypeName = "name",
         )
 
         assertTrue(teiInfo.teiMainLabel(null) == "attr1 attr2")
@@ -46,7 +46,7 @@ class TeiAttributesInfoTest {
         val teiInfo = TeiAttributesInfo(
             attributes = listOf(),
             profileImage = "path",
-            teTypeName = "name"
+            teTypeName = "name",
         )
 
         assertTrue(teiInfo.teiMainLabel(null) == "name")
@@ -58,7 +58,7 @@ class TeiAttributesInfoTest {
         val teiInfo = TeiAttributesInfo(
             attributes = listOf(),
             profileImage = "path",
-            teTypeName = "name"
+            teTypeName = "name",
         )
 
         assertTrue(teiInfo.teiMainLabel("%s details") == "name details")
@@ -70,7 +70,7 @@ class TeiAttributesInfoTest {
         val teiInfo = TeiAttributesInfo(
             attributes = listOf(),
             profileImage = "path",
-            teTypeName = "name"
+            teTypeName = "name",
         )
 
         assertTrue(teiInfo.teiMainLabel("details") == "details")

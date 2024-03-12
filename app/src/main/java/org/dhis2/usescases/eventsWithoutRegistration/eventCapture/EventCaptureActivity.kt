@@ -15,10 +15,8 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import org.dhis2.Bindings.app
-import org.dhis2.Bindings.clipWithRoundedCorners
-import org.dhis2.Bindings.dp
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
@@ -88,8 +86,8 @@ class EventCaptureActivity :
         eventCaptureComponent = this.app().userComponent()!!.plus(
             EventCaptureModule(
                 this,
-                eventUid
-            )
+                eventUid,
+            ),
         )
         eventCaptureComponent!!.inject(this)
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
@@ -123,11 +121,10 @@ class EventCaptureActivity :
             intent.getStringExtra(Constants.EVENT_UID),
             pageConfigurator!!.displayAnalytics(),
             pageConfigurator!!.displayRelationships(),
-            intent.getBooleanExtra(OPEN_ERROR_LOCATION, false)
+            intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
         )
         binding!!.eventViewPager.adapter = adapter
         binding!!.eventViewPager.setCurrentItem(initialPage, false)
-        binding!!.eventViewPager.clipWithRoundedCorners(16.dp)
         binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -179,7 +176,9 @@ class EventCaptureActivity :
         onBackPressed()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        super.onBackPressed()
         if (onEditionListener != null) {
             onEditionListener!!.onEditionListener()
         }
@@ -201,14 +200,14 @@ class EventCaptureActivity :
                 message = getString(R.string.discard_go_back),
                 iconResource = R.drawable.ic_error_outline,
                 mainButton = MainButton(R.string.keep_editing),
-                secondaryButton = DiscardButton()
+                secondaryButton = DiscardButton(),
             )
             val dialog = BottomSheetDialog(
                 bottomSheetDialogUiModel,
                 {
                     /*Unused*/
                 },
-                { presenter!!.deleteEvent() }
+                { presenter!!.deleteEvent() },
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else if (isFormScreen()) {
@@ -232,7 +231,7 @@ class EventCaptureActivity :
     override fun showCompleteActions(
         canComplete: Boolean,
         emptyMandatoryFields: Map<String, String>,
-        eventCompletionDialog: EventCompletionDialog
+        eventCompletionDialog: EventCompletionDialog,
     ) {
         if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
             val dialog = BottomSheetDialog(
@@ -251,7 +250,7 @@ class EventCaptureActivity :
                     }
                 } else {
                     null
-                }
+                },
             )
             dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
@@ -324,8 +323,8 @@ class EventCaptureActivity :
             intent.putExtra(
                 Constants.EVENT_UID,
                 getIntent().getStringExtra(
-                    Constants.EVENT_UID
-                )
+                    Constants.EVENT_UID,
+                ),
             )
         }
         setResult(RESULT_OK, intent)
@@ -336,7 +335,7 @@ class EventCaptureActivity :
         stageName: String,
         eventDate: String,
         orgUnit: String,
-        catOption: String
+        catOption: String,
     ) {
         binding!!.programStageName.text = stageName
         val eventDataString = StringBuilder(String.format("%s | %s", eventDate, orgUnit))
@@ -395,7 +394,7 @@ class EventCaptureActivity :
                 override fun onNegative() {
                     // dismiss
                 }
-            }
+            },
         ).show()
     }
 
@@ -404,7 +403,7 @@ class EventCaptureActivity :
             .setTitle(R.string.conflict)
             .setMessage(R.string.event_date_in_future_message)
             .setPositiveButton(
-                R.string.change_event_date
+                R.string.change_event_date,
             ) { _, _ -> binding!!.navigationBar.selectItemAt(0) }
             .setNegativeButton(R.string.go_back) { _, _ -> back() }
             .setCancelable(false)
@@ -422,7 +421,7 @@ class EventCaptureActivity :
     override fun hideProgress() {
         Handler(Looper.getMainLooper()).postDelayed(
             { runOnUiThread { binding!!.toolbarProgress.hide() } },
-            1000
+            1000,
         )
     }
 
@@ -474,7 +473,7 @@ class EventCaptureActivity :
             eventUid: String,
             programUid: String,
             openDetailsAsFirstPage: Boolean,
-            eventMode: EventMode
+            eventMode: EventMode,
         ): Intent {
             return Intent(context, EventCaptureActivity::class.java).apply {
                 putExtra(Constants.EVENT_UID, eventUid)

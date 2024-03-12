@@ -12,7 +12,7 @@ interface ChartCoordinatesProvider {
         dataElementUid: String,
         selectedRelativePeriod: List<RelativePeriod>?,
         selectedOrgUnits: List<String>?,
-        isDefault: Boolean = false
+        isDefault: Boolean = false,
     ): List<GraphPoint>
 
     fun indicatorCoordinates(
@@ -21,7 +21,7 @@ interface ChartCoordinatesProvider {
         indicatorUid: String,
         selectedRelativePeriod: List<RelativePeriod>?,
         selectedOrgUnits: List<String>?,
-        isDefault: Boolean = false
+        isDefault: Boolean = false,
     ): List<GraphPoint>
 
     fun nutritionCoordinates(
@@ -32,7 +32,7 @@ interface ChartCoordinatesProvider {
         ageOrHeightCountainerUid: String,
         ageOrHeightIsDataElement: Boolean,
         selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
     ): List<GraphPoint>
 
     fun pieChartCoordinates(
@@ -40,12 +40,12 @@ interface ChartCoordinatesProvider {
         teiUid: String,
         dataElementUid: String,
         selectedRelativePeriod: List<RelativePeriod>?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
     ): List<GraphPoint>
 
     fun visualizationCoordinates(
         gridResponseValueList: List<GridResponseValue>,
         metadata: Map<String, MetadataItem>,
-        categories: List<String>
+        categories: List<String>,
     ): List<GraphPoint>
 }

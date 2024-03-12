@@ -5,7 +5,7 @@ import org.dhis2.databinding.ItemDatasetBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 
 class DataSetListViewHolder(private val binding: ItemDatasetBinding) : RecyclerView.ViewHolder(
-    binding.root
+    binding.root,
 ) {
     fun bind(dataSet: DataSetDetailModel, viewModel: DataSetListViewModel) {
         binding.viewModel = viewModel

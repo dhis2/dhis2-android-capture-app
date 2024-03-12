@@ -7,7 +7,7 @@ class AnalyticDataElementToDataElementData {
     fun map(analyticDataElement: AnalyticsTeiDataElement): DataElementData {
         return DataElementData(
             analyticDataElement.programStage()!!,
-            analyticDataElement.dataElement()
+            analyticDataElement.dataElement(),
         )
     }
 }

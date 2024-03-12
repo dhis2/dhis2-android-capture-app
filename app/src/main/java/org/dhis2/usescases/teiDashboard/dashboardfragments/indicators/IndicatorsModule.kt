@@ -14,14 +14,14 @@ class IndicatorsModule(
     val programUid: String,
     val recordUid: String,
     val view: IndicatorsView,
-    private val visualizationType: VisualizationType
+    private val visualizationType: VisualizationType,
 ) {
 
     @Provides
     @PerFragment
     fun providesPresenter(
         schedulerProvider: SchedulerProvider,
-        indicatorRepository: IndicatorRepository
+        indicatorRepository: IndicatorRepository,
     ): IndicatorsPresenter {
         return IndicatorsPresenter(schedulerProvider, view, indicatorRepository)
     }
@@ -32,7 +32,7 @@ class IndicatorsModule(
         d2: D2,
         ruleEngineRepository: RuleEngineRepository,
         charts: Charts?,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): IndicatorRepository {
         return if (visualizationType == VisualizationType.TRACKER) {
             TrackerAnalyticsRepository(
@@ -41,7 +41,7 @@ class IndicatorsModule(
                 charts,
                 programUid,
                 recordUid,
-                resourceManager
+                resourceManager,
             )
         } else {
             EventIndicatorRepository(
@@ -49,7 +49,7 @@ class IndicatorsModule(
                 ruleEngineRepository,
                 programUid,
                 recordUid,
-                resourceManager
+                resourceManager,
             )
         }
     }

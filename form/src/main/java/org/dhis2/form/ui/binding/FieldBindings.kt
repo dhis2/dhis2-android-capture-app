@@ -94,7 +94,7 @@ fun TextView.setInputStyle(styleItem: FieldUiModel?) {
             pair.second?.let { color ->
                 ViewCompat.setBackgroundTintList(
                     this,
-                    ColorStateList.valueOf(color)
+                    ColorStateList.valueOf(color),
                 )
             }
         }
@@ -105,12 +105,12 @@ fun TextView.setInputStyle(styleItem: FieldUiModel?) {
             val colorStateList = ColorStateList(
                 arrayOf(
                     intArrayOf(android.R.attr.state_focused),
-                    intArrayOf(-android.R.attr.state_focused)
+                    intArrayOf(-android.R.attr.state_focused),
                 ),
                 intArrayOf(
                     color,
-                    color
-                )
+                    color,
+                ),
             )
             setHintTextColor(colorStateList)
         }
@@ -124,12 +124,12 @@ fun TextInputLayout.setInputLayoutStyle(style: FormUiModelStyle?) {
             val colorStateList = ColorStateList(
                 arrayOf(
                     intArrayOf(android.R.attr.state_focused),
-                    intArrayOf(-android.R.attr.state_focused)
+                    intArrayOf(-android.R.attr.state_focused),
                 ),
                 intArrayOf(
                     color,
-                    color
-                )
+                    color,
+                ),
             )
             defaultHintTextColor = colorStateList
             boxBackgroundColor = color
@@ -201,11 +201,13 @@ fun EditText.bindInputType(valueType: ValueType) {
                 InputType.TYPE_NUMBER_FLAG_DECIMAL
         ValueType.PERCENTAGE -> InputType.TYPE_CLASS_NUMBER
         ValueType.INTEGER_NEGATIVE,
-        ValueType.INTEGER ->
+        ValueType.INTEGER,
+        ->
             InputType.TYPE_CLASS_NUMBER or
                 InputType.TYPE_NUMBER_FLAG_SIGNED
         ValueType.INTEGER_POSITIVE,
-        ValueType.INTEGER_ZERO_OR_POSITIVE -> InputType.TYPE_CLASS_NUMBER
+        ValueType.INTEGER_ZERO_OR_POSITIVE,
+        -> InputType.TYPE_CLASS_NUMBER
         ValueType.PHONE_NUMBER -> InputType.TYPE_CLASS_PHONE
         ValueType.EMAIL ->
             InputType.TYPE_CLASS_TEXT or
@@ -237,7 +239,7 @@ fun EditText.bindOnTextClearListener(item: FieldUiModel, clearButton: ImageView?
 private fun valueHasChanged(currentValue: Editable, storedValue: String?): Boolean {
     return !equals(
         if (TextUtils.isEmpty(currentValue)) "" else currentValue.toString(),
-        storedValue ?: ""
+        storedValue ?: "",
     )
 }
 
@@ -250,12 +252,12 @@ fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
                     val colorStateList = ColorStateList(
                         arrayOf(
                             intArrayOf(android.R.attr.state_checked),
-                            intArrayOf(-android.R.attr.state_checked)
+                            intArrayOf(-android.R.attr.state_checked),
                         ),
                         intArrayOf(
                             primaryColor,
-                            textPrimaryColor
-                        )
+                            textPrimaryColor,
+                        ),
                     )
                     buttonTintList = colorStateList
                     setTextColor(colorStateList)
@@ -270,7 +272,7 @@ fun setLegendBadge(legendLayout: FrameLayout, legendValue: LegendValue?) {
     legendLayout.visibility = if (legendValue != null) View.VISIBLE else View.GONE
     if (legendValue != null) {
         val legendBinding: DataElementLegendBinding = DataElementLegendBinding.inflate(
-            LayoutInflater.from(legendLayout.context)
+            LayoutInflater.from(legendLayout.context),
         )
         legendBinding.legend = legendValue
         legendLayout.removeAllViews()
@@ -281,7 +283,7 @@ fun setLegendBadge(legendLayout: FrameLayout, legendValue: LegendValue?) {
 @BindingAdapter("legendValue")
 fun TextView.setLegend(legendValue: LegendValue?) {
     legendValue?.let {
-        DrawableCompat.setTint(background, ColorUtils.withAlpha(it.color, 38))
+        DrawableCompat.setTint(background, ColorUtils().withAlpha(it.color, 38))
         compoundDrawables
             .filterNotNull()
             .forEach { drawable -> DrawableCompat.setTint(drawable, it.color) }
@@ -368,7 +370,7 @@ fun EditText.bindSetFilters(valueType: ValueType) {
                             ""
                         }
                     }
-                }
+                },
             )
         }
         else -> arrayOf()
@@ -382,7 +384,7 @@ fun TextInputAutoCompleteTextView.bindRenderingType(item: FieldUiModel) {
         val autoCompleteAdapter = ArrayAdapter(
             context,
             android.R.layout.simple_dropdown_item_1line,
-            autoCompleteValues
+            autoCompleteValues,
         )
         setAdapter(autoCompleteAdapter)
     }
@@ -418,7 +420,7 @@ fun getListFromPreference(context: Context, uid: String): MutableList<String> {
     val gson = Gson()
     val json = context.getSharedPreferences(
         SHARE_PREFS,
-        Context.MODE_PRIVATE
+        Context.MODE_PRIVATE,
     ).getString(uid, "[]")
     val type = object : TypeToken<List<String>>() {}.type
     return gson.fromJson(json, type)
@@ -439,7 +441,7 @@ fun saveListToPreference(context: Context, uid: String, list: List<String>) {
     val json = gson.toJson(list)
     context.getSharedPreferences(
         SHARE_PREFS,
-        Context.MODE_PRIVATE
+        Context.MODE_PRIVATE,
     )
         .edit().putString(uid, json).apply()
 }

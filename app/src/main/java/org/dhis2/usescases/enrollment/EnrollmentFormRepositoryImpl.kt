@@ -2,8 +2,8 @@ package org.dhis2.usescases.enrollment
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.dhis2.Bindings.blockingGetCheck
-import org.dhis2.Bindings.profilePicturePath
+import org.dhis2.commons.bindings.blockingGetCheck
+import org.dhis2.bindings.profilePicturePath
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.data.RulesRepository
@@ -26,14 +26,17 @@ class EnrollmentFormRepositoryImpl(
     private val enrollmentRepository: EnrollmentObjectRepository,
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     teiRepository: TrackedEntityInstanceObjectRepository,
-    private val enrollmentService: DhisEnrollmentUtils
+    private val enrollmentService: DhisEnrollmentUtils,
 ) : EnrollmentFormRepository {
 
     private var cachedRuleEngineFlowable: Flowable<RuleEngine>
     private var ruleEnrollmentBuilder: RuleEnrollment.Builder
-    private var programUid: String = programRepository.blockingGet().uid()
-    private var enrollmentUid: String = enrollmentRepository.blockingGet().uid()!!
-    private val tei: TrackedEntityInstance = teiRepository.blockingGet()
+    private var programUid: String =
+        programRepository.blockingGet()?.uid() ?: throw NullPointerException()
+    private var enrollmentUid: String =
+        enrollmentRepository.blockingGet()?.uid() ?: throw NullPointerException()
+    private val tei: TrackedEntityInstance =
+        teiRepository.blockingGet() ?: throw NullPointerException()
 
     init {
         this.cachedRuleEngineFlowable =
@@ -41,11 +44,11 @@ class EnrollmentFormRepositoryImpl(
                 rulesRepository.rulesNew(programUid),
                 rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
-                    enrollmentRepository.blockingGet().uid()
+                    enrollmentRepository.blockingGet()?.uid() ?: "",
                 ),
                 rulesRepository.queryConstants(),
                 rulesRepository.supplementaryData(
-                    enrollmentRepository.blockingGet().organisationUnit()!!
+                    enrollmentRepository.blockingGet()?.organisationUnit() ?: "",
                 ),
                 { rules, variables, events, constants, supplData ->
                     val builder = RuleEngineContext.builder()
@@ -57,30 +60,30 @@ class EnrollmentFormRepositoryImpl(
                     builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
                     builder.events(events)
                     builder.build()
-                }
+                },
             ).toFlowable()
                 .cacheWithInitialCapacity(1)
 
         this.ruleEnrollmentBuilder = RuleEnrollment.builder()
-            .enrollment(enrollmentRepository.blockingGet().uid())
+            .enrollment(enrollmentRepository.blockingGet()?.uid())
             .incidentDate(
-                if (enrollmentRepository.blockingGet().incidentDate() == null) {
-                    enrollmentRepository.blockingGet().enrollmentDate()
+                if (enrollmentRepository.blockingGet()?.incidentDate() == null) {
+                    enrollmentRepository.blockingGet()?.enrollmentDate()
                 } else {
-                    enrollmentRepository.blockingGet().incidentDate()
-                }
+                    enrollmentRepository.blockingGet()?.incidentDate()
+                },
             )
-            .enrollmentDate(enrollmentRepository.blockingGet().enrollmentDate())
+            .enrollmentDate(enrollmentRepository.blockingGet()?.enrollmentDate())
             .status(
-                RuleEnrollment.Status.valueOf(enrollmentRepository.blockingGet().status()!!.name)
+                RuleEnrollment.Status.valueOf(enrollmentRepository.blockingGet()?.status()!!.name),
             )
-            .organisationUnit(enrollmentRepository.blockingGet().organisationUnit())
+            .organisationUnit(enrollmentRepository.blockingGet()?.organisationUnit())
             .organisationUnitCode(
                 d2.organisationUnitModule().organisationUnits().uid(
-                    enrollmentRepository.blockingGet().organisationUnit()
-                ).blockingGet().code()
+                    enrollmentRepository.blockingGet()?.organisationUnit(),
+                ).blockingGet()?.code(),
             )
-            .programName(programRepository.blockingGet().displayName())
+            .programName(programRepository.blockingGet()?.displayName())
     }
 
     override fun ruleEngine(): Flowable<RuleEngine> {
@@ -116,14 +119,14 @@ class EnrollmentFormRepositoryImpl(
                         d2.trackedEntityModule().trackedEntityAttributeValues()
                             .value(
                                 it.trackedEntityAttribute()!!.uid(),
-                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                                enrollmentRepository.blockingGet()?.trackedEntityInstance()!!,
                             )
                             .blockingExists()
                     }.mapNotNull {
                         d2.trackedEntityModule().trackedEntityAttributeValues()
                             .value(
                                 it.trackedEntityAttribute()!!.uid(),
-                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                                enrollmentRepository.blockingGet()?.trackedEntityInstance()!!,
                             )
                             .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
                     }.toRuleAttributeValue(d2, program.uid())
@@ -133,5 +136,5 @@ class EnrollmentFormRepositoryImpl(
     override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)
 
     override fun getProgramStageUidFromEvent(eventUi: String) =
-        d2.eventModule().events().uid(eventUi).blockingGet().programStage()
+        d2.eventModule().events().uid(eventUi).blockingGet()?.programStage()
 }

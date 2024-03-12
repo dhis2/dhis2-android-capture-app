@@ -28,7 +28,7 @@ class DhisEnrollmentUtilsTest {
         val result = dhisEnrollmentUtils.isEventEnrollmentOpen(
             Event.builder()
                 .uid("eventUid")
-                .build()
+                .build(),
         )
         assertTrue(result)
     }
@@ -38,7 +38,7 @@ class DhisEnrollmentUtilsTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid(anyString())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn Enrollment.builder()
             .uid("enrollmentUid")
             .status(EnrollmentStatus.CANCELLED)
@@ -47,7 +47,7 @@ class DhisEnrollmentUtilsTest {
             Event.builder()
                 .uid("eventUid")
                 .enrollment("enrollmentUid")
-                .build()
+                .build(),
         )
         assertFalse(result)
     }
@@ -57,13 +57,13 @@ class DhisEnrollmentUtilsTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid(anyString())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn null
         val result = dhisEnrollmentUtils.isEventEnrollmentOpen(
             Event.builder()
                 .uid("eventUid")
                 .enrollment("enrollmentUid")
-                .build()
+                .build(),
         )
         assertTrue(result)
     }
@@ -73,7 +73,7 @@ class DhisEnrollmentUtilsTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid("enrollmentUid")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn Enrollment.builder()
             .uid("enrollmentUid")
             .status(EnrollmentStatus.ACTIVE)
@@ -82,7 +82,7 @@ class DhisEnrollmentUtilsTest {
             Event.builder()
                 .uid("eventUid")
                 .enrollment("enrollmentUid")
-                .build()
+                .build(),
         )
         assertTrue(result)
     }

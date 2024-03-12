@@ -31,9 +31,9 @@ class GraphToBarData {
                         serie.coordinates,
                         index,
                         series.size,
-                        serie.fieldName
+                        serie.fieldName,
                     ),
-                    serie.fieldName
+                    serie.fieldName,
                 ).apply {
                     val colorIndex = index % serieColors.size
                     val isHighlighted = serieToHighlight == null || label == serieToHighlight
@@ -43,7 +43,7 @@ class GraphToBarData {
                     setDrawValues(singleSerie || label == serieToHighlight)
                     color = serieColor
                 }
-            }
+            },
         ).withGlobalStyle(barWidthByPeriod(graph))
     }
 
@@ -55,23 +55,27 @@ class GraphToBarData {
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
             PeriodType.WeeklyThursday,
-            PeriodType.WeeklyWednesday ->
+            PeriodType.WeeklyWednesday,
+            ->
                 WEEKLY_BAR_WIDTH
             PeriodType.BiWeekly,
             PeriodType.Monthly,
-            PeriodType.BiMonthly ->
+            PeriodType.BiMonthly,
+            ->
                 MONTHLY_BAR_WIDTH
             PeriodType.Quarterly,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
-            PeriodType.SixMonthlyNov -> {
+            PeriodType.SixMonthlyNov,
+            -> {
                 SIX_MONTHLY_BAR_WIDTH
             }
             PeriodType.Yearly,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
-            PeriodType.FinancialNov -> {
+            PeriodType.FinancialNov,
+            -> {
                 YEARLY_BAR_WIDTH
             }
         }

@@ -20,7 +20,7 @@ class TrackedEntityInstanceConfiguration(private val d2: D2) {
         downloader: TrackedEntityInstanceDownloader,
         teiUid: String,
         programUid: String,
-        reason: String
+        reason: String,
     ) {
         setDownloadReason(teiUid, programUid, reason)
         downloadAndOverwrite(downloader)
@@ -46,12 +46,12 @@ class TrackedEntityInstanceConfiguration(private val d2: D2) {
             .blockingIsEmpty()
     }
 
-    fun enrollmentUid(teiUid: String, programUid: String): String {
+    fun enrollmentUid(teiUid: String, programUid: String): String? {
         return d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq(teiUid)
             .byProgram().eq(programUid)
             .one()
             .blockingGet()
-            .uid()
+            ?.uid()
     }
 }

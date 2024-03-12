@@ -5,5 +5,5 @@ import org.dhis2.utils.customviews.FormBottomDialog
 
 data class EventCompletionButtons(
     val buttonStyle: DialogButtonStyle,
-    val action: FormBottomDialog.ActionType
+    val action: FormBottomDialog.ActionType,
 )

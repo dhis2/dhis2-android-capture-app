@@ -32,7 +32,7 @@ class ScanCaptureManager(val activity: Activity, barcodeView: DecoratedBarcodeVi
                 }
                 intent.putExtra(
                     Intents.Scan.RESULT,
-                    result
+                    result,
                 )
             }
             return intent

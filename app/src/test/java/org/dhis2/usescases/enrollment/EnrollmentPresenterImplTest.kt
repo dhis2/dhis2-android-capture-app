@@ -15,8 +15,6 @@ import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
-import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
@@ -64,7 +62,7 @@ class EnrollmentPresenterImplTest {
             analyticsHelper,
             matomoAnalyticsController,
             eventCollectionRepository,
-            teiAttributesProvider
+            teiAttributesProvider,
         )
     }
 
@@ -99,8 +97,8 @@ class EnrollmentPresenterImplTest {
                 Access.builder()
                     .data(
                         DataAccess.builder().write(true)
-                            .build()
-                    ).build()
+                            .build(),
+                    ).build(),
             ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
         verify(enrollmentRepository).setStatus(EnrollmentStatus.ACTIVE)
@@ -114,8 +112,8 @@ class EnrollmentPresenterImplTest {
                 Access.builder()
                     .data(
                         DataAccess.builder().write(false)
-                            .build()
-                    ).build()
+                            .build(),
+                    ).build(),
             ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
 
@@ -175,7 +173,7 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollmentService()
-                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.WRITE_ACCESS
 
         presenter.showOrHideSaveButton()
@@ -198,7 +196,7 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollmentService()
-                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.NO_ACCESS
 
         presenter.showOrHideSaveButton()
@@ -247,14 +245,14 @@ class EnrollmentPresenterImplTest {
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("")) doReturn mock()
         whenever(
-            d2.programModule().programStages().uid("").blockingGet()
+            d2.programModule().programStages().uid("").blockingGet(),
         ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
 
         whenever(d2.categoryModule()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
         whenever(
-            d2.categoryModule().categoryCombos().uid("").blockingGet()
+            d2.categoryModule().categoryCombos().uid("").blockingGet(),
         ) doReturn CategoryCombo.builder()
             .isDefault(catCombo)
             .uid("")

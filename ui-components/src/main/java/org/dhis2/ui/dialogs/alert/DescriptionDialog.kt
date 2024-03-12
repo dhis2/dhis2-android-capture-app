@@ -15,6 +15,6 @@ fun DescriptionDialog(labelText: String, descriptionText: String, onDismiss: () 
             Button(onClick = onDismiss) {
                 Text(text = "Close")
             }
-        }
+        },
     )
 }

@@ -8,19 +8,19 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import java.util.UUID
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import java.util.UUID
 
 class SearchNavigator(
     val activity: SearchTEActivity,
-    private val searchNavigationConfiguration: SearchNavigationConfiguration
+    private val searchNavigationConfiguration: SearchNavigationConfiguration,
 ) {
 
     private val dashboardLauncher: ActivityResultLauncher<Intent>
         get() = activity.registerActivityResultLauncher(
-            contract = ActivityResultContracts.StartActivityForResult()
+            contract = ActivityResultContracts.StartActivityForResult(),
         ) {
             if (searchNavigationConfiguration.refreshDataOnBackFromDashboard()) {
                 activity.refreshData()
@@ -46,7 +46,7 @@ class SearchNavigator(
     fun changeProgram(
         programUid: String?,
         currentQueryData: Map<String, String>,
-        fromRelationshipTeiUid: String?
+        fromRelationshipTeiUid: String?,
     ) {
         val intent = Intent(activity, SearchTEActivity::class.java).apply {
             fromRelationshipTeiUid?.let { addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT) }
@@ -68,8 +68,8 @@ class SearchNavigator(
                 activity,
                 teiUid,
                 if (enrollmentUid != null) programUid else null,
-                enrollmentUid
-            )
+                enrollmentUid,
+            ),
         )
     }
 
@@ -80,8 +80,8 @@ class SearchNavigator(
                 enrollmentUid,
                 programUid,
                 EnrollmentActivity.EnrollmentMode.NEW,
-                fromRelationshipTeiUid != null
-            )
+                fromRelationshipTeiUid != null,
+            ),
         )
     }
 
@@ -90,11 +90,11 @@ class SearchNavigator(
             putString(SearchTEActivity.Extra.PROGRAM_UID.key(), programUid)
             putStringArrayList(
                 SearchTEActivity.Extra.QUERY_ATTR.key(),
-                ArrayList(currentQueryData.keys)
+                ArrayList(currentQueryData.keys),
             )
             putStringArrayList(
                 SearchTEActivity.Extra.QUERY_VALUES.key(),
-                ArrayList(currentQueryData.values)
+                ArrayList(currentQueryData.values),
             )
         } ?: Bundle()
     }
@@ -102,5 +102,5 @@ class SearchNavigator(
 fun <I, O> ComponentActivity.registerActivityResultLauncher(
     key: String = UUID.randomUUID().toString(),
     contract: ActivityResultContract<I, O>,
-    callback: ActivityResultCallback<O>
+    callback: ActivityResultCallback<O>,
 ): ActivityResultLauncher<I> = activityResultRegistry.register(key, contract, callback)

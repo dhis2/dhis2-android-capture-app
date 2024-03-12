@@ -69,7 +69,7 @@ fun MainContent(
     themeColor: Color,
     viewModel: HomeViewModel,
     manageStockViewModel: ManageStockViewModel,
-    barcodeLauncher: ActivityResultLauncher<ScanOptions>
+    barcodeLauncher: ActivityResultLauncher<ScanOptions>,
 ) {
     val scope = rememberCoroutineScope()
     val resource = painterResource(R.drawable.ic_arrow_up)
@@ -101,19 +101,19 @@ fun MainContent(
             .onSizeChanged { coordinates ->
                 columnHeightDp = with(localDensity) { coordinates.height.toDp() }
             },
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             modifier = Modifier
                 .absolutePadding(
                     left = 16.dp,
                     top = 16.dp,
-                    right = 16.dp
+                    right = 16.dp,
                 )
                 .fillMaxWidth()
                 .size(60.dp),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.Top,
         ) {
             OutlinedTextField(
                 value = search,
@@ -124,7 +124,7 @@ fun MainContent(
                     .shadow(
                         elevation = 3.dp,
                         shape = RoundedCornerShape(30.dp),
-                        clip = false
+                        clip = false,
                     )
                     .offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp))
@@ -142,7 +142,7 @@ fun MainContent(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.White,
-                    cursorColor = themeColor
+                    cursorColor = themeColor,
                 ),
                 textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
                 enabled = isFrontLayerDisabled != true,
@@ -150,7 +150,7 @@ fun MainContent(
                     Icon(
                         painter = searchResource,
                         contentDescription = "",
-                        tint = themeColor
+                        tint = themeColor,
                     )
                 },
                 trailingIcon = {
@@ -160,17 +160,17 @@ fun MainContent(
                         onClick = {
                             manageStockViewModel.onSearchQueryChanged("")
                             closeButtonVisibility = 0f
-                        }
+                        },
                     ) {
                         Icon(
                             painter = closeResource,
-                            contentDescription = ""
+                            contentDescription = "",
                         )
                     }
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
@@ -178,12 +178,12 @@ fun MainContent(
                     },
                     onDone = {
                         focusManager.clearFocus()
-                    }
+                    },
                 ),
                 singleLine = true,
                 placeholder = {
                     Text(text = stringResource(id = R.string.search_placeholder))
-                }
+                },
             )
             IconButton(
                 onClick = {
@@ -193,12 +193,12 @@ fun MainContent(
                     .weight(weightValue)
                     .alignBy(FirstBaseline)
                     .align(alignment = Alignment.CenterVertically),
-                enabled = isFrontLayerDisabled != true
+                enabled = isFrontLayerDisabled != true,
             ) {
                 Icon(
                     painter = qrcodeResource,
                     contentDescription = "",
-                    tint = themeColor
+                    tint = themeColor,
                 )
             }
 
@@ -210,18 +210,18 @@ fun MainContent(
                     modifier = Modifier
                         .weight(weightValue)
                         .alignBy(FirstBaseline)
-                        .align(alignment = Alignment.CenterVertically)
+                        .align(alignment = Alignment.CenterVertically),
                 ) {
                     Icon(
                         painter = resetResize,
                         contentDescription = "",
-                        tint = themeColor
+                        tint = themeColor,
                     )
                 }
             }
 
             AnimatedVisibility(
-                visible = backdropState.isRevealed
+                visible = backdropState.isRevealed,
             ) {
                 IconButton(
                     onClick = {
@@ -230,12 +230,12 @@ fun MainContent(
                     modifier = Modifier
                         .weight(weightValueArrow, weightValueArrowStatus)
                         .alignBy(FirstBaseline)
-                        .align(alignment = Alignment.CenterVertically)
+                        .align(alignment = Alignment.CenterVertically),
                 ) {
                     Icon(
                         resource,
                         contentDescription = null,
-                        tint = themeColor
+                        tint = themeColor,
                     )
                 }
             }
@@ -248,14 +248,14 @@ fun MainContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(bottom = tablePadding)
-                .height(columnHeightDp)
+                .height(columnHeightDp),
         ) {
             if ((
-                manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                    != DataEntryStep.COMPLETED ||
                     manageStockViewModel.dataEntryUiState.collectAsState().value.step
-                    != DataEntryStep.START
-                ) && shouldDisplayTable(settingsUiState)
+                        != DataEntryStep.COMPLETED ||
+                        manageStockViewModel.dataEntryUiState.collectAsState().value.step
+                        != DataEntryStep.START
+                    ) && shouldDisplayTable(settingsUiState)
             ) {
                 manageStockViewModel.setup(viewModel.getData())
                 ManageStockTable(
@@ -266,7 +266,7 @@ fun MainContent(
                     onResized = { actions ->
                         manageStockViewModel.refreshConfig()
                         tableResizeActions = actions
-                    }
+                    },
                 )
             }
         }
@@ -274,7 +274,7 @@ fun MainContent(
 }
 
 private fun shouldDisplayTable(settingsUiState: SettingsUiState): Boolean =
-    when (settingsUiState.transactionType) {
+    when (settingsUiState.selectedTransactionItem.type) {
         TransactionType.DISTRIBUTION ->
             settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()
         else -> settingsUiState.hasFacilitySelected()

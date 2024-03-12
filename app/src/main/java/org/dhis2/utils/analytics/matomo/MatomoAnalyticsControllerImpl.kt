@@ -13,7 +13,7 @@ class MatomoAnalyticsControllerImpl(
     val matomoInstance: Matomo,
     val apkChecksum: ApkChecksum,
     var matomoTracker: Tracker? = TrackerController.dhis2InternalTracker(matomoInstance),
-    var dhisImplementationTracker: Tracker? = null
+    var dhisImplementationTracker: Tracker? = null,
 ) : MatomoAnalyticsController {
 
     override fun setUserId(identification: String?) {
@@ -44,8 +44,8 @@ class MatomoAnalyticsControllerImpl(
         return (
             D2Manager.isD2Instantiated() &&
                 D2Manager.getD2().dataStoreModule().localDataStore()
-                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()?.value()
-                ?.toBoolean() == true
+                    .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()?.value()
+                    ?.toBoolean() == true
             ).also { granted ->
             if (!granted) {
                 Timber.d("Tracking is disabled")
@@ -55,13 +55,13 @@ class MatomoAnalyticsControllerImpl(
 
     private fun updateDhisImplementationTrackerFirstTime() {
         if (dhisImplementationTracker == null && D2Manager.isD2Instantiated() && D2Manager.getD2()
-            .userModule().isLogged().blockingGet()
+                .userModule().isLogged().blockingGet()
         ) {
-            D2Manager.getD2().settingModule()?.let { settingModule ->
+            D2Manager.getD2().settingModule().let { settingModule ->
                 val settings = settingModule.generalSetting().blockingGet()
                 settings?.let {
-                    val url = settingModule.generalSetting().blockingGet().matomoURL()
-                    val id = settingModule.generalSetting().blockingGet().matomoID()
+                    val url = settingModule.generalSetting().blockingGet()?.matomoURL()
+                    val id = settingModule.generalSetting().blockingGet()?.matomoID()
                     if (url != null && id != null) {
                         updateDhisImplementationTracker(url, id, DEFAULT_EXTERNAL_TRACKER_NAME)
                     }
@@ -75,7 +75,7 @@ class MatomoAnalyticsControllerImpl(
         action: String,
         label: String,
         index: Int,
-        dimensionValue: String
+        dimensionValue: String,
     ) {
         if (isAnalyticsPermissionGranted()) {
             matomoTracker?.let {
@@ -106,7 +106,7 @@ class MatomoAnalyticsControllerImpl(
         screen: String,
         title: String,
         index: Int,
-        dimensionValue: String
+        dimensionValue: String,
     ) {
         if (isAnalyticsPermissionGranted()) {
             matomoTracker?.let {
@@ -124,7 +124,7 @@ class MatomoAnalyticsControllerImpl(
     override fun trackScreenViewWithDimensionsAsSeparateEvents(
         screen: String,
         title: String,
-        dimensions: Map<Int, String>
+        dimensions: Map<Int, String>,
     ) {
         if (isAnalyticsPermissionGranted()) {
             matomoTracker?.let {
@@ -147,7 +147,7 @@ class MatomoAnalyticsControllerImpl(
         firstIndex: Int,
         firstValue: String,
         secondIndex: Int,
-        secondValue: String
+        secondValue: String,
     ) {
         if (isAnalyticsPermissionGranted()) {
             matomoTracker?.let {
@@ -181,13 +181,13 @@ class MatomoAnalyticsControllerImpl(
     override fun updateDhisImplementationTracker(
         matomoUrl: String,
         siteId: Int,
-        trackerName: String
+        trackerName: String,
     ) {
         dhisImplementationTracker = TrackerController.dhis2ExternalTracker(
             matomoInstance,
             matomoUrl,
             siteId,
-            trackerName
+            trackerName,
         )
     }
 

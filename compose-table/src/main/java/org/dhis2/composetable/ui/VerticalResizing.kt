@@ -29,10 +29,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlin.math.abs
-import kotlin.math.roundToInt
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.ResizingCell
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @Composable
 fun VerticalResizingView(modifier: Modifier = Modifier, provideResizingCell: () -> ResizingCell?) {
@@ -47,10 +47,10 @@ fun VerticalResizingView(modifier: Modifier = Modifier, provideResizingCell: () 
                     drawRect(
                         color = colorPrimary,
                         topLeft = Offset(0f, 0f),
-                        size = Size(2.dp.toPx(), size.height)
+                        size = Size(2.dp.toPx(), size.height),
                     )
                 }
-                .graphicsLayer(clip = false)
+                .graphicsLayer(clip = false),
         ) {
             Icon(
                 modifier = Modifier
@@ -58,17 +58,17 @@ fun VerticalResizingView(modifier: Modifier = Modifier, provideResizingCell: () 
                     .offset {
                         IntOffset(
                             -15.dp.value.toInt(),
-                            resizingCell.initialPosition.y.roundToInt()
+                            resizingCell.initialPosition.y.roundToInt(),
                         )
                     }
                     .background(
                         color = colorPrimary,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(16.dp),
                     )
                     .size(14.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
                 contentDescription = "",
-                tint = Color.White
+                tint = Color.White,
             )
         }
     }
@@ -79,7 +79,7 @@ fun VerticalResizingRule(
     modifier: Modifier = Modifier,
     checkMaxMinCondition: (dimensions: TableDimensions, currentOffsetX: Float) -> Boolean,
     onHeaderResize: (Float) -> Unit,
-    onResizing: (ResizingCell?) -> Unit
+    onResizing: (ResizingCell?) -> Unit,
 ) {
     var dimensions by remember { mutableStateOf<TableDimensions?>(null) }
     dimensions = TableTheme.dimensions
@@ -101,7 +101,7 @@ fun VerticalResizingRule(
                         }
                         offsetX = minOffset
                         onResizing(null)
-                    }
+                    },
                 ) { change, dragAmount ->
                     change.consume()
                     if (checkMaxMinCondition(dimensions!!, offsetX + dragAmount.x)) {
@@ -109,14 +109,14 @@ fun VerticalResizingRule(
                     }
                     onResizing(ResizingCell(positionInRoot, offsetX))
                 }
-            }
+            },
     ) {
         Icon(
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(
                     color = TableTheme.colors.primary,
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
                 )
                 .size(14.dp)
                 .onGloballyPositioned { coordinates ->
@@ -124,7 +124,7 @@ fun VerticalResizingRule(
                 },
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
             contentDescription = "",
-            tint = Color.White
+            tint = Color.White,
         )
     }
 }

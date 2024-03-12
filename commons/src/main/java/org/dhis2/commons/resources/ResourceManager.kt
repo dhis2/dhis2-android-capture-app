@@ -9,7 +9,10 @@ import org.dhis2.commons.R
 import org.dhis2.commons.network.NetworkUtils
 import org.hisp.dhis.android.core.D2Manager
 
-class ResourceManager(val context: Context) {
+class ResourceManager(
+    val context: Context,
+    private val colorUtils: ColorUtils,
+) {
 
     fun getString(@StringRes stringResource: Int) = getWrapperContext().getString(stringResource)
 
@@ -19,6 +22,9 @@ class ResourceManager(val context: Context) {
     fun getPlural(@PluralsRes pluralResource: Int, quantity: Int) =
         getWrapperContext().resources.getQuantityString(pluralResource, quantity)
 
+    fun getPlural(@PluralsRes pluralResource: Int, quantity: Int, vararg arguments: Any) =
+        getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
+
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"
@@ -26,7 +32,7 @@ class ResourceManager(val context: Context) {
                 getWrapperContext().resources.getIdentifier(
                     iconName,
                     "drawable",
-                    getWrapperContext().packageName
+                    getWrapperContext().packageName,
                 )
             if (iconResource != 0 && iconResource != -1 && drawableExists(iconResource)
             ) {
@@ -48,14 +54,14 @@ class ResourceManager(val context: Context) {
 
     fun getColorFrom(hexColor: String?): Int {
         return hexColor?.let {
-            ColorUtils.parseColor(it)
+            colorUtils.parseColor(it)
         } ?: -1
     }
 
     fun getColorOrDefaultFrom(hexColor: String?): Int {
-        return ColorUtils.getColorFrom(
+        return colorUtils.getColorFrom(
             hexColor,
-            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
+            colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
         )
     }
 

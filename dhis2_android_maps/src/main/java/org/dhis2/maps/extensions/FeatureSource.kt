@@ -8,5 +8,5 @@ enum class FeatureSource {
     RELATIONSHIP,
     TRACKER_EVENT,
     EVENT,
-    FIELD
+    FIELD,
 }

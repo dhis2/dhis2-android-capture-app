@@ -24,8 +24,8 @@ import androidx.core.view.updatePaddingRelative
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.commons.bindings.dp as inDp
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
+import org.dhis2.commons.bindings.dp as inDp
 
 @ExperimentalAnimationApi
 @Composable
@@ -33,12 +33,12 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
     ) {
         val (searchButton, createButton, content) = createRefs()
 
         val createButtonVisibility by viewModel.createButtonScrollVisibility.observeAsState(
-            true
+            true,
         )
 
         var isScrollingDown by remember { mutableStateOf(false) }
@@ -54,7 +54,7 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
                     layoutParams =
                         ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
+                            ViewGroup.LayoutParams.MATCH_PARENT,
                         )
                     layoutManager = LinearLayoutManager(context)
                     updatePaddingRelative(top = 80.inDp, bottom = 80.inDp)
@@ -72,11 +72,11 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
                     })
                 }
             },
-            update = {}
+            update = {},
         )
 
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            FullSearchButton(
+            FullSearchButtonAndWorkingList(
                 modifier = Modifier.constrainAs(searchButton) {
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
@@ -84,7 +84,7 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
                     width = Dimension.fillToConstraints
                 },
                 visible = !isScrollingDown,
-                onClick = { viewModel.setSearchScreen() }
+                onClick = { viewModel.setSearchScreen() },
             )
         }
         CreateNewButton(
@@ -93,7 +93,7 @@ fun SearchTEListScreen(viewModel: SearchTEIViewModel, listAdapter: ConcatAdapter
                 bottom.linkTo(parent.bottom, margin = 72.dp)
             },
             extended = createButtonVisibility and !isScrollingDown,
-            onClick = viewModel::onEnrollClick
+            onClick = viewModel::onEnrollClick,
         )
     }
 }

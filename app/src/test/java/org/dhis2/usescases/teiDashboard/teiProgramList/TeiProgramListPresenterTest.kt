@@ -8,7 +8,6 @@ import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentService
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -36,7 +35,7 @@ class TeiProgramListPresenterTest {
             "teiUid",
             preferenceProvider,
             analyticsHelper,
-            enrollmentService
+            enrollmentService,
         )
     }
 
@@ -57,11 +56,11 @@ class TeiProgramListPresenterTest {
         whenever(
             enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
-                anyString()
-            )
+                anyString(),
+            ),
         ) doReturn EnrollmentAccess.WRITE_ACCESS
         presenter.onEnrollClick(
-            mockedProgramViewModel()
+            mockedProgramViewModel(),
         )
         verify(analyticsHelper).setEvent(anyString(), anyString(), anyString())
         verify(preferenceProvider).removeValue(anyString())
@@ -74,8 +73,8 @@ class TeiProgramListPresenterTest {
         whenever(
             enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
-                anyString()
-            )
+                anyString(),
+            ),
         ) doReturn EnrollmentAccess.CLOSED_PROGRAM_DENIED
         presenter.onEnrollClick(testingProgram)
         verify(view).displayBreakGlassError(testingProgram.typeName)
@@ -87,8 +86,8 @@ class TeiProgramListPresenterTest {
         whenever(
             enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
-                anyString()
-            )
+                anyString(),
+            ),
         ) doReturn EnrollmentAccess.PROTECTED_PROGRAM_DENIED
         presenter.onEnrollClick(testingProgram)
         verify(view).displayBreakGlassError(testingProgram.typeName)
@@ -99,11 +98,11 @@ class TeiProgramListPresenterTest {
         whenever(
             enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
-                anyString()
-            )
+                anyString(),
+            ),
         ) doReturn EnrollmentAccess.NO_ACCESS
         presenter.onEnrollClick(
-            mockedProgramViewModel()
+            mockedProgramViewModel(),
         )
         verify(view).displayAccessError()
     }
@@ -113,11 +112,11 @@ class TeiProgramListPresenterTest {
         whenever(
             enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
-                anyString()
-            )
+                anyString(),
+            ),
         ) doReturn EnrollmentAccess.READ_ACCESS
         presenter.onEnrollClick(
-            mockedProgramViewModel()
+            mockedProgramViewModel(),
         )
         verify(view).displayAccessError()
     }
@@ -161,7 +160,7 @@ class TeiProgramListPresenterTest {
             "programName",
             MetadataIconData(
                 programColor = Color.parseColor("#84FFFF"),
-                iconResource = R.drawable.ic_home_positive
+                iconResource = R.drawable.ic_home_positive,
             ),
             0,
             "type",
@@ -173,7 +172,8 @@ class TeiProgramListPresenterTest {
             state = State.SYNCED,
             hasOverdueEvent = false,
             filtersAreActive = false,
-            downloadState = ProgramDownloadState.NONE
+            downloadState = ProgramDownloadState.NONE,
+            stockConfig = null,
         )
     }
 
@@ -186,7 +186,7 @@ class TeiProgramListPresenterTest {
             "programName",
             "orgUnit",
             false,
-            "programUid"
+            "programUid",
         )
     }
 }

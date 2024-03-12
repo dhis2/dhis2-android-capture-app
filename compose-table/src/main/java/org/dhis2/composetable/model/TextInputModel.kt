@@ -11,7 +11,7 @@ data class TextInputModel(
     val selection: TextRange? = null,
     val error: String? = null,
     val warning: String? = null,
-    private val clearable: Boolean = false
+    private val clearable: Boolean = false,
 ) {
     fun showClearButton() = clearable && currentValue?.isNotEmpty() == true
     fun errorOrWarningMessage() = error ?: warning

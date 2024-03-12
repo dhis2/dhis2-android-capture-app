@@ -65,7 +65,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
             registerSpeechRecognitionStatusObserver(
                 speechAwareViewModel.getSpeechStatus(),
-                speechController
+                speechController,
             )
         }
 
@@ -119,7 +119,7 @@ abstract class BaseActivity : AppCompatActivity() {
         message?.let {
             showInfoMessage(
                 getViewBinding().root,
-                it
+                it,
             )
 
             // Clear the intent payload to prevent persistent notifications
@@ -181,7 +181,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String?>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == AUDIO_RECORDING_REQUEST_CODE && grantResults.isNotEmpty()) {
@@ -202,7 +202,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     open fun registerSpeechRecognitionStatusObserver(
         speechStatus: LiveData<SpeechRecognitionState>,
-        speechController: SpeechController?
+        speechController: SpeechController?,
     ) {
         speechStatus.observe(this) { state: SpeechRecognitionState ->
             Timber.d("SpeechRecognitionState: %s", state)

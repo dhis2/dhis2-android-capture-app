@@ -13,45 +13,45 @@ class DataValueContract {
             dataElement: DataElement,
             cell: TableCell,
             showTimePicker: Boolean,
-            updateCellValue: (TableCell) -> Unit
+            updateCellValue: (TableCell) -> Unit,
         )
 
         fun showTimePicker(
             dataElement: DataElement,
             cell: TableCell,
-            updateCellValue: (TableCell) -> Unit
+            updateCellValue: (TableCell) -> Unit,
         )
 
         fun showBooleanDialog(
             dataElement: DataElement,
             cell: TableCell,
-            updateCellValue: (TableCell) -> Unit
+            updateCellValue: (TableCell) -> Unit,
         )
 
         fun showAgeDialog(
             dataElement: DataElement,
             cell: TableCell,
-            updateCellValue: (TableCell) -> Unit
+            updateCellValue: (TableCell) -> Unit,
         )
 
         fun showCoordinatesDialog(
             dataElement: DataElement,
             cell: TableCell,
-            updateCellValue: (TableCell) -> Unit
+            updateCellValue: (TableCell) -> Unit,
         )
 
         fun showOtgUnitDialog(
             dataElement: DataElement,
             cell: TableCell,
             orgUnits: List<OrganisationUnit>,
-            updateCellValue: (TableCell) -> Unit
+            updateCellValue: (TableCell) -> Unit,
         )
 
         fun showOptionSetDialog(
             dataElement: DataElement,
             cell: TableCell,
             spinnerViewModel: SpinnerViewModel,
-            updateCellValue: (TableCell) -> Unit
+            updateCellValue: (TableCell) -> Unit,
         )
     }
 }

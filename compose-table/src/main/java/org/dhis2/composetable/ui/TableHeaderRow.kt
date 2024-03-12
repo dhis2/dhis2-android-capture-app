@@ -31,10 +31,10 @@ fun TableHeaderRow(
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> },
     onHeaderResize: (Int, Float) -> Unit,
     onResizing: (ResizingCell?) -> Unit,
-    onResetResize: () -> Unit = {}
+    onResetResize: () -> Unit = {},
 ) {
     ConstraintLayout(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) {
         val isHeaderActionEnabled = TableTheme.configuration.headerActionsEnabled
         val (tableActions, tableCorner, header) = createRefs()
@@ -54,14 +54,14 @@ fun TableHeaderRow(
                         IconButton(onClick = onResetResize) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(
-                                    id = R.drawable.ic_restart_alt
+                                    id = R.drawable.ic_restart_alt,
                                 ),
                                 contentDescription = "",
-                                tint = Color.Black.copy(alpha = 0.87f)
+                                tint = Color.Black.copy(alpha = 0.87f),
                             )
                         }
                     }
-                }
+                },
             )
         }
 
@@ -81,7 +81,7 @@ fun TableHeaderRow(
                 .zIndex(1f),
             tableCornerUiState = cornerUiState,
             tableId = tableModel.id ?: "",
-            onClick = onTableCornerClick
+            onClick = onTableCornerClick,
         )
 
         TableHeader(
@@ -102,7 +102,7 @@ fun TableHeaderRow(
             cellStyle = cellStyle,
             onHeaderCellSelected = onHeaderCellClick,
             onHeaderResize = onHeaderResize,
-            onResizing = onResizing
+            onResizing = onResizing,
         )
     }
 }

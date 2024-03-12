@@ -10,11 +10,11 @@ fun DropDownOptions(
     expanded: Boolean,
     options: List<String>,
     onDismiss: () -> Unit,
-    onSelected: (code: String, label: String) -> Unit
+    onSelected: (code: String, label: String) -> Unit,
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
     ) {
         options.forEach { option ->
             val code = option.split("_")[0]
@@ -22,7 +22,7 @@ fun DropDownOptions(
             DropdownMenuItem(
                 onClick = {
                     onSelected.invoke(code, label)
-                }
+                },
             ) {
                 Text(text = label)
             }

@@ -1,7 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models
 
-import java.util.Date
 import org.hisp.dhis.android.core.common.ObjectStyle
+import java.util.Date
 
 data class EventDetails(
     val name: String? = null,
@@ -18,5 +18,5 @@ data class EventDetails(
     val isCompleted: Boolean = false,
     val isActionButtonVisible: Boolean = false,
     val actionButtonText: String? = null,
-    val canReopen: Boolean = false
+    val canReopen: Boolean = false,
 )

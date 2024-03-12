@@ -23,8 +23,8 @@ class MainNavigator(
     private val onScreenChanged: (
         titleRes: Int,
         showFilterButton: Boolean,
-        showBottomNavigation: Boolean
-    ) -> Unit
+        showBottomNavigation: Boolean,
+    ) -> Unit,
 ) {
     enum class MainScreen(@StringRes val title: Int, @IdRes val navViewId: Int) {
         PROGRAMS(R.string.done_task, R.id.menu_home),
@@ -33,7 +33,7 @@ class MainNavigator(
         SETTINGS(R.string.SYNC_MANAGER, R.id.sync_manager),
         TROUBLESHOOTING(R.string.main_menu_troubleshooting, R.id.menu_troubleshooting),
         JIRA(R.string.jira_report, R.id.menu_jira),
-        ABOUT(R.string.about, R.id.menu_about)
+        ABOUT(R.string.about, R.id.menu_about),
     }
 
     private var currentScreen: MainScreen? = null
@@ -75,7 +75,7 @@ class MainNavigator(
         beginTransaction(
             ProgramFragment(),
             MainScreen.PROGRAMS,
-            sharedView
+            sharedView,
         )
     }
 
@@ -105,35 +105,35 @@ class MainNavigator(
         beginTransaction(
             visualizationFragment,
             MainScreen.VISUALIZATIONS,
-            sharedView
+            sharedView,
         )
     }
 
     fun openSettings() {
         beginTransaction(
             SyncManagerFragment(),
-            MainScreen.SETTINGS
+            MainScreen.SETTINGS,
         )
     }
 
     fun openQR() {
         beginTransaction(
             QrReaderFragment(),
-            MainScreen.QR
+            MainScreen.QR,
         )
     }
 
     fun openJira() {
         beginTransaction(
             JiraFragment(),
-            MainScreen.JIRA
+            MainScreen.JIRA,
         )
     }
 
     fun openAbout() {
         beginTransaction(
             AboutFragment(),
-            MainScreen.ABOUT
+            MainScreen.ABOUT,
         )
     }
 
@@ -141,7 +141,7 @@ class MainNavigator(
         beginTransaction(
             fragment = TroubleshootingFragment.instance(languageSelectorOpened),
             screen = MainScreen.TROUBLESHOOTING,
-            useFadeInTransition = languageSelectorOpened
+            useFadeInTransition = languageSelectorOpened,
         )
     }
 
@@ -149,7 +149,7 @@ class MainNavigator(
         fragment: Fragment,
         screen: MainScreen,
         sharedView: View? = null,
-        useFadeInTransition: Boolean = false
+        useFadeInTransition: Boolean = false,
     ) {
         if (currentScreen != screen) {
             onTransitionStart()
@@ -172,7 +172,7 @@ class MainNavigator(
                         enterAnimation,
                         exitAnimation,
                         enterPopAnimation,
-                        exitPopAnimation
+                        exitPopAnimation,
                     )
                 } else {
                     setReorderingAllowed(true)
@@ -185,7 +185,7 @@ class MainNavigator(
             onScreenChanged(
                 screen.title,
                 isPrograms(),
-                isHome()
+                isHome(),
             )
         }
     }

@@ -13,16 +13,17 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.io.File
 import org.dhis2.commons.R
 import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.bindings.widthAndHeight
 import org.dhis2.commons.databinding.DetailImageBottomDialogBinding
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
+import java.io.File
 
 class ImageDetailBottomDialog(
     val label: String?,
-    private val fileToShow: File
+    private val fileToShow: File,
 ) : BottomSheetDialogFragment() {
     companion object {
         const val TAG: String = "IMG_DETAIL_DIALOG"
@@ -30,19 +31,21 @@ class ImageDetailBottomDialog(
 
     private lateinit var binding: DetailImageBottomDialogBinding
 
+    val colorUtils: ColorUtils = ColorUtils()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.detail_image_bottom_dialog, container, false)
-        binding.setTitle(label)
+        binding.title = label
         binding.closeButton.setImageDrawable(
-            ColorUtils.tintDrawableWithColor(
+            colorUtils.tintDrawableWithColor(
                 binding.closeButton.drawable,
-                ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
-            )
+                colorUtils.getPrimaryColor(requireContext(), ColorType.PRIMARY),
+            ),
         )
         binding.closeButton.setOnClickListener { dismiss() }
 
@@ -57,7 +60,7 @@ class ImageDetailBottomDialog(
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED

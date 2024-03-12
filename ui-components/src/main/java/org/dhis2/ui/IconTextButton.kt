@@ -25,7 +25,7 @@ fun IconTextButton(
     enabled: Boolean = true,
     onClick: () -> Unit,
     painter: Painter,
-    text: String
+    text: String,
 ) {
     OutlinedButton(
         modifier = modifier,
@@ -33,18 +33,18 @@ fun IconTextButton(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.White,
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.primary,
         ),
-        border = BorderStroke(1.dp, color = Color.LightGray)
+        border = BorderStroke(1.dp, color = Color.LightGray),
     ) {
         Icon(
             painter = painter,
-            contentDescription = "icon"
+            contentDescription = "icon",
         )
         Spacer(modifier = Modifier.size(8.dp))
         Text(
             text = text,
-            fontSize = 14.sp
+            fontSize = 14.sp,
         )
     }
 }
@@ -58,6 +58,6 @@ fun IconTextButtonPreview() {
         enabled = true,
         onClick = {},
         painter = painterResource(id = R.drawable.ic_add_image),
-        text = "Add image"
+        text = "Add image",
     )
 }

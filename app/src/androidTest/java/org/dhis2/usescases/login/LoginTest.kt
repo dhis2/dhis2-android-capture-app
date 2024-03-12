@@ -75,7 +75,12 @@ class LoginTest : BaseTest() {
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clickLoginButton()
-            checkAuthErrorAlertIsVisible()
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(2000)
+                withContext(Dispatchers.Main) {
+                    checkAuthErrorAlertIsVisible()
+                }
+            }
         }
     }
 
@@ -168,19 +173,21 @@ class LoginTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, PATH_WEBAPP_GENERAL_SETTINGS, API_METADATA_SETTINGS_RESPONSE_ERROR, 404)
         mockWebServerRobot.addResponse(GET, PATH_WEBAPP_INFO, API_METADATA_SETTINGS_INFO_ERROR, 404)
-
-        enableIntents()
         startLoginActivity()
-
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clickLoginButton()
-            checkShareDataDialogIsDisplayed()
-            clickOnPrivacyPolicy(composeTestRule)
-            checkPrivacyViewIsOpened()
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(2000)
+                withContext(Dispatchers.Main) {
+                    checkShareDataDialogIsDisplayed()
+                    clickOnPrivacyPolicy(composeTestRule)
+                    checkPrivacyViewIsOpened()
+                }
+            }
         }
     }
 

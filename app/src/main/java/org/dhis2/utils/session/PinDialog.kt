@@ -11,10 +11,10 @@ import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import javax.inject.Inject
-import org.dhis2.Bindings.app
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.databinding.DialogPinBinding
+import javax.inject.Inject
 
 const val PIN_DIALOG_TAG: String = "PINDIALOG"
 
@@ -22,7 +22,7 @@ class PinDialog(
     val mode: Mode,
     private val canBeClosed: Boolean,
     private val unlockCallback: () -> Unit,
-    private val forgotPinCallback: () -> Unit
+    private val forgotPinCallback: () -> Unit,
 ) : DialogFragment(), PinView {
 
     private lateinit var binding: DialogPinBinding
@@ -56,7 +56,7 @@ class PinDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = DialogPinBinding.inflate(layoutInflater, container, false)
         binding.closeButton.apply {
@@ -95,11 +95,11 @@ class PinDialog(
                             Toast.makeText(
                                 context,
                                 getString(R.string.wrong_pin),
-                                Toast.LENGTH_LONG
+                                Toast.LENGTH_LONG,
                             ).show()
                             binding.pinLockView.resetPinLockView()
                         },
-                        onTwoManyAttempts = { recoverPin() }
+                        onTwoManyAttempts = { recoverPin() },
                     )
             }
         }
@@ -110,7 +110,7 @@ class PinDialog(
     private fun blockSession() {
         Handler().postDelayed(
             { Process.killProcess(Process.myPid()) },
-            1500
+            1500,
         )
     }
 

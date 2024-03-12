@@ -1,22 +1,25 @@
 package org.dhis2.bindings
 
 import android.content.Context
+import org.dhis2.R
+import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.date.toOverdueUiText
+import org.dhis2.commons.date.toUiText
+import org.dhis2.commons.resources.ResourceManager
+import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import org.dhis2.R
-import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.date.toUiText
-import org.junit.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 class DateExtensionsTest {
 
     val context: Context = mock()
+    private val resourceManager: ResourceManager = mock()
     private val dateFormat = SimpleDateFormat("d/M/yyyy", Locale.getDefault())
     private val uiFormat = SimpleDateFormat("dd MMM", Locale.getDefault())
 
@@ -110,6 +113,66 @@ class DateExtensionsTest {
             add(Calendar.YEAR, -2)
         }.time
         assert(date.toUiText(context, currentDate) == dateFormat.format(date))
+    }
+
+    @Test
+    fun `Should return 'Today', when the overdue date is current date`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.HOUR, -20)
+        }.time
+        whenever(resourceManager.getString(R.string.overdue_today)) doReturn "Today"
+        assert(date.toOverdueUiText(resourceManager, currentDate) == "Today")
+    }
+
+    @Test
+    fun `Should return '1 day overdue', when the overdue date is -1 day from the current date`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.DAY_OF_MONTH, -1)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.overdue_days, 1, 1)) doReturn "1 day overdue"
+        assert(date.toOverdueUiText(resourceManager, currentDate) == "1 day overdue")
+    }
+
+    @Test
+    fun `Should return 'x days overdue', when the overdue date is -x days from the current date and less than 90 days`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.DAY_OF_MONTH, -15)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.overdue_days, 15, 15)) doReturn "15 days overdue"
+        assert(date.toOverdueUiText(resourceManager, currentDate) == "15 days overdue")
+    }
+
+    @Test
+    fun `Should return 'x months overdue', when the overdue date is more than 3 months and less than 1 year`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.MONTH, -4)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.overdue_months, 4, 4)) doReturn "4 months overdue"
+        assert(date.toOverdueUiText(resourceManager, currentDate) == "4 months overdue")
+    }
+
+    @Test
+    fun `Should return '1 year overdue', when the overdue date is 1 year`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.YEAR, -1)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.overdue_years, 1, 1)) doReturn "1 year overdue"
+        assert(date.toOverdueUiText(resourceManager, currentDate) == "1 year overdue")
+    }
+
+    @Test
+    fun `Should return 'x years overdue', when the overdue date is more than 1 year`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.YEAR, -3)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.overdue_years, 3, 3)) doReturn "3 years overdue"
+        assert(date.toOverdueUiText(resourceManager, currentDate) == "3 years overdue")
     }
 
     private fun currentCalendar() = Calendar.getInstance().apply {

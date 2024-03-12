@@ -27,6 +27,6 @@ abstract class ServicesModule {
 
     @Binds
     abstract fun provideProgramRuleValidationHelper(
-        impl: RuleValidationHelperImpl
+        impl: RuleValidationHelperImpl,
     ): RuleValidationHelper
 }

@@ -11,13 +11,13 @@ import dhis2.org.analytics.charts.ui.AnalyticsAdapter
 import dhis2.org.analytics.charts.ui.AnalyticsModel
 import dhis2.org.analytics.charts.ui.ChartModel
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.databinding.FragmentIndicatorsBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.common.RelativePeriod
+import javax.inject.Inject
 
 const val VISUALIZATION_TYPE = "VISUALIZATION_TYPE"
 
@@ -30,8 +30,9 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     private val adapter: AnalyticsAdapter by lazy {
         AnalyticsAdapter().apply {
             onRelativePeriodCallback = { chartModel: ChartModel,
-                relativePeriod: RelativePeriod?,
-                current: RelativePeriod? ->
+                                         relativePeriod: RelativePeriod?,
+                                         current: RelativePeriod?,
+                ->
                 relativePeriod?.let {
                     if (it.isNotCurrent()) {
                         showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
@@ -47,7 +48,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
                         else -> presenter.filterByOrgUnit(
                             chartModel,
                             emptyList(),
-                            orgUnitFilterType
+                            orgUnitFilterType,
                         )
                     }
                 }
@@ -65,13 +66,13 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_indicators,
             container,
-            false
+            false,
         )
         binding.indicatorsRecycler.adapter = adapter
         return binding.root
@@ -102,7 +103,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     private fun showAlertDialogCurrentPeriod(
         chartModel: ChartModel,
         relativePeriod: RelativePeriod?,
-        current: RelativePeriod?
+        current: RelativePeriod?,
     ) {
         val periodList = mutableListOf<RelativePeriod>()
         AlertBottomDialog.instance
@@ -124,13 +125,13 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         OUTreeFragment.Builder()
             .showAsDialog()
             .withPreselectedOrgUnits(
-                chartModel.graph.orgUnitsSelected.toMutableList()
+                chartModel.graph.orgUnitsSelected.toMutableList(),
             )
             .onSelection { selectedOrgUnits ->
                 presenter.filterByOrgUnit(
                     chartModel,
                     selectedOrgUnits,
-                    OrgUnitFilterType.SELECTION
+                    OrgUnitFilterType.SELECTION,
                 )
             }
             .build()

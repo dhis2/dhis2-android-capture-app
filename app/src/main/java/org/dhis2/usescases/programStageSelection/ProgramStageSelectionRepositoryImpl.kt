@@ -3,7 +3,6 @@ package org.dhis2.usescases.programStageSelection
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
-import java.util.ArrayList
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.data.RulesRepository
@@ -21,6 +20,7 @@ import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
 import org.hisp.dhis.rules.models.TriggerEnvironment
+import java.util.ArrayList
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -30,29 +30,25 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
     private val programUid: String,
     private val enrollmentUid: String?,
     private val eventCreationType: String,
-    private val d2: D2
+    private val d2: D2,
 ) : ProgramStageSelectionRepository {
     private val cachedRuleEngineFlowable: Flowable<RuleEngine>
 
     init {
         val orgUnitUid =
-            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit()
-        cachedRuleEngineFlowable = Single.zip<List<Rule>,
-            List<RuleVariable>,
-            List<RuleEvent>,
-            Map<String, List<String>>,
-            Map<String, String>,
-            RuleEngine>(
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()?.organisationUnit()
+        cachedRuleEngineFlowable = Single.zip(
             rulesRepository.rulesNew(programUid, null),
             rulesRepository.ruleVariablesProgramStages(programUid),
             rulesRepository.enrollmentEvents(enrollmentUid!!),
             rulesRepository.supplementaryData(orgUnitUid!!),
             rulesRepository.queryConstants(),
             Function5 { rules: List<Rule>,
-                variables: List<RuleVariable>,
-                ruleEvents: List<RuleEvent>,
-                supplementaryData: Map<String, List<String>>,
-                constants: Map<String, String> ->
+                        variables: List<RuleVariable>,
+                        ruleEvents: List<RuleEvent>,
+                        supplementaryData: Map<String, List<String>>,
+                        constants: Map<String, String>,
+                ->
                 val builder = RuleEngineContext.builder()
                     .rules(rules)
                     .ruleVariables(variables)
@@ -62,7 +58,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                 builder.events(ruleEvents)
                     .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
                     .build()
-            }
+            },
         ).toFlowable()
             .cacheWithInitialCapacity(1)
     }
@@ -78,7 +74,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                         val attibuteUids: MutableList<String> = ArrayList()
                         for (programTrackedEntityAttribute in programTrackedEntityAttributes) {
                             attibuteUids.add(
-                                programTrackedEntityAttribute.trackedEntityAttribute()!!.uid()
+                                programTrackedEntityAttribute.trackedEntityAttribute()!!.uid(),
                             )
                         }
                         attibuteUids
@@ -103,7 +99,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                             getOrgUnitCode(enrollment.organisationUnit()),
                             attributeValues.toRuleAttributeValue(d2, enrollment.program()!!),
                             d2.programModule().programs().uid(enrollment.program()).blockingGet()
-                                .name()
+                                ?.name(),
                         )
                     }
             }.toFlowable()
@@ -111,7 +107,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
 
     private fun getOrgUnitCode(orgUnitUid: String?): String {
         return d2.organisationUnitModule().organisationUnits()
-            .uid(orgUnitUid).blockingGet().code() ?: ""
+            .uid(orgUnitUid).blockingGet()?.code() ?: ""
     }
 
     override fun enrollmentProgramStages(): Flowable<List<ProgramStage>> {
@@ -122,7 +118,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
             .toList()
             .flatMap { currentProgramStagesUids: List<String?> ->
                 var repository = d2.programModule().programStages().byProgramUid().eq(
-                    programUid
+                    programUid,
                 )
                 if (eventCreationType == EventCreationType.SCHEDULE.name) {
                     repository =
@@ -148,12 +144,12 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                     .switchMap { ruleEngine: RuleEngine ->
                         Flowable.fromCallable(
                             ruleEngine.evaluate(
-                                enrollment!!
-                            )
+                                enrollment!!,
+                            ),
                         )
                             .map<Result<RuleEffect>> { items: List<RuleEffect?>? ->
                                 Result.success(
-                                    items!!
+                                    items!!,
                                 )
                             }
                             .onErrorReturn { Result.failure(Exception(it)) as Result<RuleEffect> }
@@ -161,7 +157,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
             }
     }
 
-    override fun getStage(programStageUid: String): ProgramStage {
+    override fun getStage(programStageUid: String): ProgramStage? {
         return d2.programModule().programStages().uid(programStageUid).blockingGet()
     }
 }

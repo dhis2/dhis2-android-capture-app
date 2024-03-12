@@ -11,7 +11,7 @@ class TableSelectionTest {
     private val selectedColumn = 3
     private val selectedColumnHeaderRow = 2
     private val childrenOfSelectedHeader = mapOf(
-        selectedColumnHeaderRow to TableSelection.HeaderCellRange(3, 3, 5)
+        selectedColumnHeaderRow to TableSelection.HeaderCellRange(3, 3, 5),
     )
     private val selectedChildColumn = 9
 
@@ -24,19 +24,19 @@ class TableSelectionTest {
     val cornerSelection = TableSelection.AllCellSelection(selectedTableId)
     val rowSelection = TableSelection.RowSelection(
         selectedTableId,
-        selectedRow
+        selectedRow,
     )
     val columnSelection = TableSelection.ColumnSelection(
         selectedTableId,
         selectedColumn,
         selectedColumnHeaderRow,
-        childrenOfSelectedHeader
+        childrenOfSelectedHeader,
     )
     val cellSelection = TableSelection.CellSelection(
         selectedTableId,
         selectedColumn,
         selectedRow,
-        selectedRow
+        selectedRow,
     )
 
     @Test
@@ -55,57 +55,57 @@ class TableSelectionTest {
             cornerSelection.isHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             cornerSelection.isHeaderSelected(
                 otherTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             unselected.isHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             rowSelection.isHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertTrue(
             columnSelection.isHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             columnSelection.isHeaderSelected(
                 selectedTableId,
                 otherSelectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             columnSelection.isHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                otherSelectedColumnHeaderRow
-            )
+                otherSelectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             cellSelection.isHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
     }
 
@@ -115,58 +115,58 @@ class TableSelectionTest {
             cornerSelection.isParentHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             unselected.isParentHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             rowSelection.isParentHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             cellSelection.isParentHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
 
         assertTrue(
             columnSelection.isParentHeaderSelected(
                 selectedTableId,
                 otherSelectedColumn,
-                selectedColumnHeaderRow
-            )
+                selectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             columnSelection.isParentHeaderSelected(
                 selectedTableId,
                 selectedChildColumn,
-                otherSelectedColumnHeaderRow
-            )
+                otherSelectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             columnSelection.isParentHeaderSelected(
                 selectedTableId,
                 selectedColumn,
-                otherSelectedColumnHeaderRow
-            )
+                otherSelectedColumnHeaderRow,
+            ),
         )
         assertFalse(
             columnSelection.isParentHeaderSelected(
                 selectedTableId,
                 otherSelectedRow,
-                otherSelectedColumnHeaderRow
-            )
+                otherSelectedColumnHeaderRow,
+            ),
         )
     }
 
@@ -204,8 +204,8 @@ class TableSelectionTest {
             cornerSelection.isCellParentSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedRow
-            )
+                selectedRow,
+            ),
         )
         assertFalse(unselected.isCellParentSelected(selectedTableId, selectedColumn, selectedRow))
 
@@ -213,34 +213,34 @@ class TableSelectionTest {
             columnSelection.isCellParentSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedRow
-            )
+                selectedRow,
+            ),
         )
         assertFalse(
             columnSelection.isCellParentSelected(
                 selectedTableId,
                 otherSelectedColumn,
-                selectedRow
-            )
+                selectedRow,
+            ),
         )
         assertFalse(
             columnSelection.isCellParentSelected(
                 otherTableId,
                 selectedColumn,
-                selectedRow
-            )
+                selectedRow,
+            ),
         )
 
         assertTrue(
-            rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow)
+            rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow),
         )
 
         assertFalse(
             cellSelection.isCellParentSelected(
                 selectedTableId,
                 selectedColumn,
-                selectedRow
-            )
+                selectedRow,
+            ),
         )
     }
 

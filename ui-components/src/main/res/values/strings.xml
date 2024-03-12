@@ -14,4 +14,12 @@
     <string name="action_cancel">Cancel</string>
     <string name="hint_search">Search</string>
     <string name="action_clear_all">Clear all</string>
+    <plurals name="error_count">
+        <item quantity="one">%s error</item>
+        <item quantity="other">%s errors</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="one">%s warning</item>
+        <item quantity="other">%s warnings</item>
+    </plurals>
 </resources>

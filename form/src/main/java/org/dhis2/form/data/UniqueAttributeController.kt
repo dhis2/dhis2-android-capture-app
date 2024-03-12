@@ -8,13 +8,13 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
 class UniqueAttributeController(
     private val d2: D2,
-    private val crashReportController: CrashReportController
+    private val crashReportController: CrashReportController,
 ) {
     fun checkAttributeLocal(
         orgUnitScope: Boolean,
         teiUid: String,
         attributeUid: String,
-        attributeValue: String
+        attributeValue: String,
     ): Boolean {
         return if (!orgUnitScope) {
             val hasValue =
@@ -36,7 +36,7 @@ class UniqueAttributeController(
         programUid: String,
         teiUid: String,
         attributeUid: String,
-        attributeValue: String
+        attributeValue: String,
     ): Boolean {
         try {
             val teiList = teiCall(
@@ -44,7 +44,7 @@ class UniqueAttributeController(
                 programUid,
                 teiUid,
                 attributeUid,
-                attributeValue
+                attributeValue,
             )
 
             if (teiList.isNullOrEmpty()) {
@@ -62,7 +62,7 @@ class UniqueAttributeController(
         programUid: String,
         teiUid: String,
         attributeUid: String,
-        attributeValue: String
+        attributeValue: String,
     ) = if (orgUnitScope) {
         val orgUnit = getOrgUnit(teiUid)
 
@@ -82,16 +82,17 @@ class UniqueAttributeController(
             .blockingGet()
     }
 
-    private fun getOrgUnit(teiUid: String): String? {
+    private fun getOrgUnit(teiUid: String): String {
         return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
-            .organisationUnit()
+            ?.organisationUnit()
+            ?: throw NoSuchElementException("Organisation unit not found for trackedEntity $teiUid")
     }
 
     private fun trackSentryError(
         e: Exception,
         programUid: String?,
         attributeUid: String,
-        value: String?
+        value: String?,
     ): Boolean {
         val exception = if (e.cause != null && e.cause is D2Error) {
             val d2Error = e.cause as D2Error
@@ -105,7 +106,7 @@ class UniqueAttributeController(
             "SearchTEIRepositoryImpl.isUniqueAttribute",
             "programUid: $programUid ," +
                 " attruid: $attributeUid ," +
-                " attrvalue: $value, $exception"
+                " attrvalue: $value, $exception",
         )
         return true
     }
@@ -113,7 +114,7 @@ class UniqueAttributeController(
     private fun getTrackedEntityAttributeValues(
         uid: String,
         value: String,
-        teiUid: String
+        teiUid: String,
     ): List<TrackedEntityAttributeValue> {
         return d2.trackedEntityModule().trackedEntityAttributeValues()
             .byTrackedEntityAttribute().eq(uid)

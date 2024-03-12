@@ -24,7 +24,7 @@ class SyncDataWorkerModule {
         workManagerController: WorkManagerController,
         analyticsHelper: AnalyticsHelper,
         syncStatusController: SyncStatusController,
-        syncRepository: SyncRepository
+        syncRepository: SyncRepository,
     ): SyncPresenter {
         return SyncPresenterImpl(
             d2,
@@ -32,7 +32,7 @@ class SyncDataWorkerModule {
             workManagerController,
             analyticsHelper,
             syncStatusController,
-            syncRepository
+            syncRepository,
         )
     }
 }

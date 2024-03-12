@@ -26,8 +26,8 @@ class CategoryComboDIalogPresenterTest {
         whenever(
             d2.categoryModule().categoryOptionCombos()
                 .byCategoryOptions(
-                    UidsHelper.getUidsList(getTestingOptions())
-                ).one().blockingGet()
+                    UidsHelper.getUidsList(getTestingOptions()),
+                ).one().blockingGet(),
         ) doReturn getTestingCatOptCombo()
 
         val actualCatOptCombo = presenter.getCatOptionCombo(getTestingOptions())
@@ -39,7 +39,7 @@ class CategoryComboDIalogPresenterTest {
         return CategoryOptionCombo.builder()
             .uid("categoryOptionComboUid")
             .categoryOptions(
-                getTestingOptions()
+                getTestingOptions(),
             )
             .build()
     }
@@ -47,7 +47,7 @@ class CategoryComboDIalogPresenterTest {
     private fun getTestingOptions(): List<CategoryOption> {
         return arrayListOf(
             CategoryOption.builder().uid("option1").name("option1").code("option1").build(),
-            CategoryOption.builder().uid("option2").name("option2").code("option2").build()
+            CategoryOption.builder().uid("option2").name("option2").code("option2").build(),
         )
     }
 }

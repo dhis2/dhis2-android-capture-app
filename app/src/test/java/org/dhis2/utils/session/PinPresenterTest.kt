@@ -35,13 +35,13 @@ class PinPresenterTest {
         whenever(d2.dataStoreModule()) doReturn mock()
         whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN)
+            d2.dataStoreModule().localDataStore().value(Preference.PIN),
         )doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value(),
         ) doReturn testPin
 
         presenter.unlockSession(
@@ -49,7 +49,7 @@ class PinPresenterTest {
             attempts = 0,
             onError = onError,
             onPinCorrect = onPinCorrect,
-            onTwoManyAttempts = onTwoManyAttempts
+            onTwoManyAttempts = onTwoManyAttempts,
         )
 
         verify(preferenceProvider, times(1)).setValue(Preference.SESSION_LOCKED, true)
@@ -64,13 +64,13 @@ class PinPresenterTest {
         whenever(d2.dataStoreModule()) doReturn mock()
         whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN)
+            d2.dataStoreModule().localDataStore().value(Preference.PIN),
         )doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value(),
         ) doReturn testPin
 
         presenter.unlockSession(
@@ -78,7 +78,7 @@ class PinPresenterTest {
             attempts = 0,
             onError = onError,
             onPinCorrect = onPinCorrect,
-            onTwoManyAttempts = onTwoManyAttempts
+            onTwoManyAttempts = onTwoManyAttempts,
         )
 
         verify(onError).invoke()
@@ -92,13 +92,13 @@ class PinPresenterTest {
         whenever(d2.dataStoreModule()) doReturn mock()
         whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN)
+            d2.dataStoreModule().localDataStore().value(Preference.PIN),
         )doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet().value()
+            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value(),
         ) doReturn testPin
 
         presenter.unlockSession(
@@ -106,7 +106,7 @@ class PinPresenterTest {
             attempts = 3,
             onError = onError,
             onPinCorrect = onPinCorrect,
-            onTwoManyAttempts = onTwoManyAttempts
+            onTwoManyAttempts = onTwoManyAttempts,
         )
 
         verify(onTwoManyAttempts).invoke()

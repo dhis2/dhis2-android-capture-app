@@ -39,7 +39,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     override fun getLastKnownLocation(
         onNewLocation: (Location) -> Unit,
         onPermissionNeeded: () -> Unit,
-        onLocationDisabled: () -> Unit
+        onLocationDisabled: () -> Unit,
     ) {
         if (!hasPermission()) {
             onPermissionNeeded()
@@ -73,6 +73,8 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                 override fun onProviderDisabled(provider: String) {
                     // Need implementation for compatibility
                 }
+
+                @Deprecated("Deprecated in Java")
                 override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
                     // Need implementation for compatibility
                 }
@@ -83,7 +85,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                 5f,
                 locationCriteria,
                 locationListener!!,
-                null
+                null,
             )
         }
     }
@@ -91,7 +93,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     private fun hasPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             context,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
         ) == PackageManager.PERMISSION_GRANTED
     }
 

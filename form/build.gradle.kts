@@ -33,8 +33,7 @@ android {
             )
         }
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -62,5 +61,12 @@ dependencies {
     implementation(project(":commons"))
     implementation(project(":dhis2_android_maps"))
     testImplementation(libs.bundles.form.test)
-    androidTestImplementation(libs.bundles.form.androidTest)
+    androidTestImplementation(libs.test.compose.ui.test)
+    implementation(libs.androidx.activity.compose)
+
+    debugImplementation(libs.androidx.compose.uitooling)
+    debugImplementation(libs.test.ui.test.manifest)
+    implementation(libs.androidx.compose.preview)
+
+    coreLibraryDesugaring(libs.desugar)
 }

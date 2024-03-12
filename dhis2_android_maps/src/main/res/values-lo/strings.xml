@@ -2,4 +2,5 @@
 <resources>
     <string name="select_location">ເລືອກສະຖານທີ່</string>
     <string name="action_apply">ນຳໃຊ້</string>
+    <string name="dialog_layer_event">ສະແດງເຫດການ</string>
     </resources>

@@ -1,8 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetInitial
 
 import io.reactivex.Single
-import java.util.Date
-import java.util.UUID
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
@@ -25,6 +23,8 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
+import java.util.UUID
 
 class DataSetInitialRepositoryImplTest {
 
@@ -45,22 +45,22 @@ class DataSetInitialRepositoryImplTest {
             .build()
         val period = dummyPeriod()
         whenever(
-            d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
+            d2.periodModule().periodHelper(),
+        ) doReturn mock()
+
+        whenever(
             d2.periodModule().periodHelper()
+                .getPeriodForPeriodId(dataInputPeriod.period().uid()),
         ) doReturn mock()
 
         whenever(
             d2.periodModule().periodHelper()
                 .getPeriodForPeriodId(dataInputPeriod.period().uid())
-        ) doReturn mock()
-
-        whenever(
-            d2.periodModule().periodHelper()
-                .getPeriodForPeriodId(dataInputPeriod.period().uid())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn period
 
         val dateRangeInputPeriodModel = DateRangeInputPeriodModel.create(
@@ -69,7 +69,7 @@ class DataSetInitialRepositoryImplTest {
             dataInputPeriod.openingDate(),
             dataInputPeriod.closingDate(),
             period.startDate(),
-            period.endDate()
+            period.endDate(),
         )
         val testObserver = repository.dataInputPeriod.test()
 
@@ -85,14 +85,14 @@ class DataSetInitialRepositoryImplTest {
         val dataSet = dummyDataSet()
         val categoryCombo = dummyCategoryCombo()
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
             d2.categoryModule()
                 .categoryCombos().withCategories()
                 .uid(dataSet.categoryCombo()!!.uid())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn categoryCombo
 
         val dataSetInitialModel = DataSetInitialModel.create(
@@ -102,7 +102,7 @@ class DataSetInitialRepositoryImplTest {
             categoryCombo.displayName()!!,
             dataSet.periodType()!!,
             categoryCombo.categories()!!,
-            dataSet.openFuturePeriods()
+            dataSet.openFuturePeriods(),
         )
         val testObserver = repository.dataSet().test()
 
@@ -120,7 +120,7 @@ class DataSetInitialRepositoryImplTest {
             d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(listOf(dataSetUid))
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .get()
+                .get(),
         ) doReturn Single.just(orgUnits)
 
         val testObserver = repository.orgUnits().test()
@@ -138,7 +138,7 @@ class DataSetInitialRepositoryImplTest {
         whenever(
             d2.categoryModule().categories()
                 .withCategoryOptions().uid(category.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(category)
 
         val testObserver = repository.catCombo(category.uid()).test()
@@ -158,7 +158,7 @@ class DataSetInitialRepositoryImplTest {
         whenever(
             d2.categoryModule().categories()
                 .withCategoryOptions().uid(category.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(category)
 
         val testObserver = repository.catCombo(category.uid()).test()
@@ -176,7 +176,7 @@ class DataSetInitialRepositoryImplTest {
         val periodType = PeriodType.Monthly
         val period = dummyPeriod()
         whenever(
-            d2.periodModule().periodHelper().getPeriod(periodType, date)
+            d2.periodModule().periodHelper().getPeriod(periodType, date),
         ) doReturn period
 
         val testObserver = repository.getPeriodId(periodType, date).test()

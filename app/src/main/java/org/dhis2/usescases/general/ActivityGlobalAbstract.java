@@ -23,8 +23,8 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.commons.ActivityResultObservable;
 import org.dhis2.commons.ActivityResultObserver;
 import org.dhis2.commons.Constants;

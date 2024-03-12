@@ -3,8 +3,8 @@ package org.dhis2.maps
 import android.content.Intent
 import android.net.Uri
 import com.mapbox.geojson.Feature
-import javax.inject.Inject
 import org.dhis2.maps.geometry.getPointLatLng
+import javax.inject.Inject
 
 open class ExternalMapNavigation @Inject constructor() {
     fun navigateToMapIntent(feature: Feature): Intent {

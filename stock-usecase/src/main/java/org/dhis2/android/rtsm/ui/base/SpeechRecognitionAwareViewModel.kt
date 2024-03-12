@@ -1,13 +1,13 @@
 package org.dhis2.android.rtsm.ui.base
 
-import javax.inject.Inject
 import org.dhis2.android.rtsm.data.SpeechRecognitionState
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
+import javax.inject.Inject
 
 open class SpeechRecognitionAwareViewModel @Inject constructor(
     schedulerProvider: BaseSchedulerProvider,
-    private val speechRecognitionManager: SpeechRecognitionManager
+    private val speechRecognitionManager: SpeechRecognitionManager,
 ) : BaseViewModel(schedulerProvider) {
     fun startListening() {
         speechRecognitionManager.start()

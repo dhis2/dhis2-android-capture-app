@@ -22,14 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
-import kotlin.math.roundToInt
-import org.dhis2.Bindings.toDate
 import org.dhis2.R
+import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants.ACCESS_DATA
 import org.dhis2.commons.Constants.DATA_SET_SECTION
 import org.dhis2.commons.Constants.DATA_SET_UID
@@ -61,6 +55,12 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import javax.inject.Inject
+import kotlin.math.roundToInt
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -93,15 +93,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 arguments?.getString(ARG_PERIOD_ID)!!,
                 arguments?.getString(ARG_ATTR_OPT_COMB)!!,
                 this,
-                activity
-            )
+                activity,
+            ),
         )?.inject(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -136,8 +136,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                             width.dp.roundToPx()
                                         }
                                     }
-                                } ?: emptyMap()
-                            )
+                                } ?: emptyMap(),
+                            ),
                         )
                     }
 
@@ -147,7 +147,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                 dimensions.tableEndExtraScroll.toPx().toInt()
                             }
                             dimensions = dimensions.copy(
-                                totalWidth = width - tableEndExtraScroll
+                                totalWidth = width - tableEndExtraScroll,
                             )
                         }
 
@@ -163,7 +163,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         override fun onColumnHeaderResize(
                             tableId: String,
                             column: Int,
-                            newValue: Float
+                            newValue: Float,
                         ) {
                             with(localDensity) {
                                 dimensions =
@@ -194,13 +194,13 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             primary = MaterialTheme.colors.primary,
                             primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
                             disabledSelectedBackground = MaterialTheme.colors.primary.copy(
-                                alpha = 0.5f
-                            )
+                                alpha = 0.5f,
+                            ),
                         ),
                         tableDimensions = dimensions,
                         tableConfiguration = TableConfiguration(),
                         tableValidator = presenterFragment,
-                        tableResizeActions = tableResizeActions
+                        tableResizeActions = tableResizeActions,
                     ) {
                         val screenState by presenterFragment.currentState().collectAsState()
 
@@ -208,7 +208,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             tableScreenState = screenState,
                             onCellClick = presenterFragment::onCellClick,
                             onEdition = presenter::editingCellValue,
-                            onSaveValue = presenterFragment::onSaveValueChange
+                            onSaveValue = presenterFragment::onSaveValueChange,
                         )
                     }
                 }
@@ -236,7 +236,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dataElement: DataElement,
         cell: TableCell,
         showTimePicker: Boolean,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         val dialog = CalendarPicker(requireContext())
         dialog.setTitle(dataElement.displayFormName())
@@ -278,7 +278,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dataElement: DataElement,
         cell: TableCell,
         calendar: Calendar,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         val is24HourFormat = DateFormat.is24HourFormat(context)
         MaterialTimePicker.Builder()
@@ -303,7 +303,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun showTimePicker(
         dataElement: DataElement,
         cell: TableCell,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         val c = Calendar.getInstance()
         if (!cell.value.isNullOrEmpty()) {
@@ -348,7 +348,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun showBooleanDialog(
         dataElement: DataElement,
         cell: TableCell,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         val yesNoView = YesNoView(context)
         yesNoView.setIsBgTransparent(true)
@@ -382,7 +382,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 }
 
                 override fun onNegative() {}
-            }
+            },
         ) {
             yesNoView.radioGroup.clearCheck()
         }.show()
@@ -391,7 +391,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun showAgeDialog(
         dataElement: DataElement,
         cell: TableCell,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         val ageView = AgeView(context)
         ageView.setIsBgTransparent()
@@ -419,14 +419,14 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
                 override fun onNegative() {}
             },
-            null
+            null,
         ).show()
     }
 
     override fun showCoordinatesDialog(
         dataElement: DataElement,
         cell: TableCell,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         val coordinatesView = CoordinatesView(context)
         coordinatesView.setIsBgTransparent(true)
@@ -452,7 +452,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
                 override fun onNegative() {}
             },
-            null
+            null,
         ).show()
     }
 
@@ -460,7 +460,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dataElement: DataElement,
         cell: TableCell,
         orgUnits: List<OrganisationUnit>,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         OUTreeFragment.Builder()
             .showAsDialog()
@@ -479,7 +479,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dataElement: DataElement,
         cell: TableCell,
         spinnerViewModel: SpinnerViewModel,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         val dialog = OptionSetDialog()
         dialog.create(requireContext())
@@ -517,7 +517,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             dataSetUid: String,
             orgUnitUid: String,
             periodId: String,
-            attributeOptionComboUid: String
+            attributeOptionComboUid: String,
         ): DataSetSectionFragment {
             val bundle = Bundle()
             bundle.putString(DATA_SET_SECTION, sectionUid)

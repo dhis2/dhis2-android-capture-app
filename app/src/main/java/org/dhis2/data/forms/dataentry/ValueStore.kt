@@ -13,7 +13,7 @@ interface ValueStore {
         attributeOptionComboUid: String,
         dataElementUid: String,
         categoryOptionComboUid: String,
-        value: String?
+        value: String?,
     ): Flowable<StoreResult>
 
     fun deleteOptionValues(optionCodeValuesToDelete: List<String>)
@@ -21,7 +21,7 @@ interface ValueStore {
     fun deleteOptionValueIfSelectedInGroup(
         field: String,
         optionGroupUid: String,
-        isInGroup: Boolean
+        isInGroup: Boolean,
     ): StoreResult
 
     fun overrideProgram(programUid: String?)

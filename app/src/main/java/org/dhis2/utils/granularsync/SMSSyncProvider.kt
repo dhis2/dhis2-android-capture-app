@@ -26,7 +26,7 @@ interface SMSSyncProvider {
         context: Context,
         senderNumber: String,
         onSuccess: () -> Unit,
-        onFailure: () -> Unit
+        onFailure: () -> Unit,
     ) {
         // default behaviour
     }
@@ -36,11 +36,11 @@ interface SMSSyncProvider {
     }
 
     fun expectsResponseSMS(): Boolean {
-        return d2.smsModule().configCase().smsModuleConfig.blockingGet().isWaitingForResult
+        return d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isWaitingForResult
     }
 
     fun getGatewayNumber(): String {
-        return d2.smsModule().configCase().smsModuleConfig.blockingGet().gateway
+        return d2.smsModule().configCase().getSmsModuleConfig().blockingGet().gateway
     }
 
     fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
@@ -51,7 +51,7 @@ interface SMSSyncProvider {
         }
 
         val smsModuleIsEnabled =
-            d2.smsModule().configCase().smsModuleConfig.blockingGet().isModuleEnabled
+            d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isModuleEnabled
 
         return hasCorrectSmsVersion && smsModuleIsEnabled
     }
@@ -60,7 +60,7 @@ interface SMSSyncProvider {
         return when (syncContext.conflictType()) {
             ConflictType.EVENT -> {
                 if (d2.eventModule().events().uid(syncContext.recordUid()).blockingGet()
-                    .enrollment() == null
+                        ?.enrollment() == null
                 ) {
                     convertSimpleEvent()
                 } else {
@@ -69,14 +69,14 @@ interface SMSSyncProvider {
             }
             ConflictType.TEI -> {
                 if (d2.enrollmentModule().enrollments().uid(syncContext.recordUid())
-                    .blockingExists()
+                        .blockingExists()
                 ) {
                     convertEnrollment()
                 } else {
                     Single.error(
                         Exception(
-                            resourceManager.getString(R.string.granular_sync_enrollments_empty)
-                        )
+                            resourceManager.getString(R.string.granular_sync_enrollments_empty),
+                        ),
                     )
                 }
             }
@@ -85,8 +85,8 @@ interface SMSSyncProvider {
             }
             else -> Single.error(
                 Exception(
-                    resourceManager.getString(R.string.granular_sync_unsupported_task)
-                )
+                    resourceManager.getString(R.string.granular_sync_unsupported_task),
+                ),
             )
         }
     }
@@ -98,7 +98,7 @@ interface SMSSyncProvider {
 
     fun sendSms(
         doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
-        doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit
+        doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
     ): Completable = Completable.complete()
 
     fun onSmsNotAccepted(): SmsSendingService.SendingStatus

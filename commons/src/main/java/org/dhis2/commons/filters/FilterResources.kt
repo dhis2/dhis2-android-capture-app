@@ -118,7 +118,7 @@ class FilterResources(val resourceManager: ResourceManager) {
             RelativePeriodToStringMapper(this).span()
                 .format(
                     dateFilterPeriod.startDate().toUiText(resourceManager.getWrapperContext()),
-                    dateFilterPeriod.endDate().toUiText(resourceManager.getWrapperContext())
+                    dateFilterPeriod.endDate().toUiText(resourceManager.getWrapperContext()),
                 )
         }
 

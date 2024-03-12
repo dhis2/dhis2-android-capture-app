@@ -13,9 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.OperationState
-import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
@@ -31,14 +29,14 @@ fun FilterList(
     themeColor: Color,
     supportFragmentManager: FragmentManager,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
-    onTransitionSelected: (transition: TransactionType) -> Unit,
+    onTransitionSelected: (transition: TransactionItem) -> Unit,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
-    onDestinationSelected: (destination: Option) -> Unit
+    onDestinationSelected: (destination: Option) -> Unit,
 ) {
     val facilities = viewModel.facilities.collectAsState().value
     val destinations = viewModel.destinationsList.collectAsState().value
     val settingsUiState by viewModel.settingsUiState.collectAsState()
-    val showDestination = settingsUiState.transactionType == DISTRIBUTION
+    val showDestination = settingsUiState.selectedTransactionItem.type == DISTRIBUTION
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -46,9 +44,9 @@ fun FilterList(
             .animateContentSize(
                 animationSpec = tween(
                     delayMillis = 180,
-                    easing = LinearOutSlowInEasing
-                )
-            )
+                    easing = LinearOutSlowInEasing,
+                ),
+            ),
     ) {
         item {
             DropdownComponentTransactions(
@@ -56,8 +54,7 @@ fun FilterList(
                 onTransitionSelected,
                 dataEntryUiState.hasUnsavedData,
                 themeColor,
-                mapTransaction(),
-                launchDialog
+                launchDialog,
             )
         }
 
@@ -69,33 +66,24 @@ fun FilterList(
                 themeColor,
                 supportFragmentManager,
                 getFacilities(facilities),
-                launchDialog
+                launchDialog,
             )
         }
 
-        if (showDestination) {
-            if (destinations is OperationState.Success<*>) {
-                val result = destinations.result as List<Option>
-                item {
-                    DropdownComponentDistributedTo(
-                        onDestinationSelected,
-                        dataEntryUiState,
-                        themeColor,
-                        result,
-                        launchDialog = launchDialog
-                    )
-                }
+        if (showDestination && destinations is OperationState.Success<*>) {
+            val result = destinations.result as List<Option>
+            item {
+                DropdownComponentDistributedTo(
+                    onDestinationSelected,
+                    dataEntryUiState,
+                    themeColor,
+                    result,
+                    launchDialog = launchDialog,
+                    deliverToLabel = settingsUiState.deliverToLabel.ifEmpty { settingsUiState.deliverToLabel()?.asString() },
+                )
             }
         }
     }
-}
-
-private fun mapTransaction(): MutableList<TransactionItem> {
-    return mutableListOf(
-        TransactionItem(R.drawable.ic_distribution, DISTRIBUTION),
-        TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD),
-        TransactionItem(R.drawable.ic_correction, TransactionType.CORRECTION)
-    )
 }
 
 private fun getFacilities(ou: OperationState<List<OrganisationUnit>>?): List<OrganisationUnit> {

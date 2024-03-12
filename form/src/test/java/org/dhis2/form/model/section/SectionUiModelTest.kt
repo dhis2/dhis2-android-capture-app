@@ -98,7 +98,7 @@ class SectionUiModelTest {
         0,
         0,
         "",
-        ObservableField()
+        ObservableField(),
     )
 
     private fun givenSectionUiModelWithNullDescription() = SectionUiModelImpl(
@@ -130,7 +130,7 @@ class SectionUiModelTest {
         0,
         0,
         "",
-        ObservableField()
+        ObservableField(),
     )
 
     private fun givenSectionUiModelWithEmptyDescription() = SectionUiModelImpl(
@@ -162,7 +162,7 @@ class SectionUiModelTest {
         0,
         0,
         "",
-        ObservableField()
+        ObservableField(),
     )
 
     private fun givenSectionUiModelWithDescription() = SectionUiModelImpl(
@@ -194,6 +194,6 @@ class SectionUiModelTest {
         0,
         0,
         "",
-        ObservableField()
+        ObservableField(),
     )
 }

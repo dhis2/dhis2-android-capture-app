@@ -12,7 +12,7 @@ import org.dhis2.composetable.model.TableDialogModel
 fun TableDialog(
     dialogModel: TableDialogModel,
     onDismiss: () -> Unit,
-    onPrimaryButtonClick: () -> Unit
+    onPrimaryButtonClick: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -26,6 +26,6 @@ fun TableDialog(
             Button(onClick = onPrimaryButtonClick) {
                 Text(stringResource(R.string.dialog_option_accept))
             }
-        }
+        },
     )
 }

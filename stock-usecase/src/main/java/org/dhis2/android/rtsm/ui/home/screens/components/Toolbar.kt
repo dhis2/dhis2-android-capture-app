@@ -47,7 +47,7 @@ fun Toolbar(
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     hasFacilitySelected: Boolean,
-    hasDestinationSelected: Boolean?
+    hasDestinationSelected: Boolean?,
 ) {
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -56,7 +56,7 @@ fun Toolbar(
             Column(
                 modifier = Modifier.offset(x = (-16).dp),
                 verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
                 Text(
                     text = capitalizeText(title).ifBlank {
@@ -65,11 +65,11 @@ fun Toolbar(
                     style = MaterialTheme.typography.subtitle1,
                     maxLines = 1,
                     fontSize = 17.sp,
-                    lineHeight = 24.sp
+                    lineHeight = 24.sp,
                 )
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = from,
@@ -78,7 +78,7 @@ fun Toolbar(
                         maxLines = 1,
                         fontSize = 12.sp,
                         color = colorResource(R.color.toolbar_subtitle),
-                        modifier = Modifier.weight(1f, fill = false)
+                        modifier = Modifier.weight(1f, fill = false),
                     )
                     if (to != null) {
                         Icon(
@@ -87,7 +87,7 @@ fun Toolbar(
                             Modifier
                                 .padding(start = 5.dp, end = 5.dp)
                                 .size(18.dp),
-                            tint = colorResource(R.color.toolbar_subtitle)
+                            tint = colorResource(R.color.toolbar_subtitle),
                         )
                         Text(
                             text = to,
@@ -96,7 +96,7 @@ fun Toolbar(
                             maxLines = 1,
                             fontSize = 12.sp,
                             color = colorResource(R.color.toolbar_subtitle),
-                            modifier = Modifier.weight(1f, fill = false)
+                            modifier = Modifier.weight(1f, fill = false),
                         )
                     }
 
@@ -116,28 +116,28 @@ fun Toolbar(
             IconButton(
                 onClick = {
                     launchBottomSheet.invoke()
-                }
+                },
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.back)
+                    contentDescription = stringResource(R.string.back),
                 )
             }
         },
         actions = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
             ) {
                 IconButton(
                     onClick = {
                         syncAction(scope, scaffoldState)
-                    }
+                    },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_sync),
                         contentDescription = null,
-                        tint = colorResource(id = R.color.white)
+                        tint = colorResource(id = R.color.white),
                     )
                 }
 
@@ -149,19 +149,19 @@ fun Toolbar(
                             scope.launch { backdropState.conceal() }
                         }
                         keyboardController?.hide()
-                    }
+                    },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_filter),
                         contentDescription = null,
-                        tint = colorResource(id = R.color.white)
+                        tint = colorResource(id = R.color.white),
                     )
                 }
             }
         },
         backgroundColor = themeColor,
         contentColor = Color.White,
-        elevation = 0.dp
+        elevation = 0.dp,
     )
 }
 
@@ -173,6 +173,6 @@ private fun AlertIcon() {
         Modifier
             .size(18.dp)
             .padding(start = 5.dp),
-        tint = Color.White
+        tint = Color.White,
     )
 }

@@ -14,7 +14,7 @@ class GraphCoordinatesToBarEntry {
         coordinates: List<GraphPoint>,
         serieIndex: Int,
         seriesCount: Int,
-        serieLabel: String
+        serieLabel: String,
     ): List<BarEntry> {
         var minMonth: YearMonth? = null
         return coordinates.mapIndexed { _, graphPoint ->
@@ -27,13 +27,13 @@ class GraphCoordinatesToBarEntry {
                         graphPoint.position ?: dateToPosition(
                             graphPoint.eventDate,
                             graph.eventPeriodType,
-                            minMonth
+                            minMonth,
                         ) { newValue ->
                             minMonth = newValue
                         }
                 },
                 graphPoint.fieldValue,
-                serieLabel
+                serieLabel,
             )
         }
     }

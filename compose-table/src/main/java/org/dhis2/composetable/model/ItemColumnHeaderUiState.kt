@@ -15,7 +15,7 @@ data class ItemColumnHeaderUiState(
     val onHeaderResize: (Int, Float) -> Unit,
     val onResizing: (ResizingCell?) -> Unit,
     val isLastRow: Boolean,
-    val checkMaxCondition: (TableDimensions, Float) -> Boolean
+    val checkMaxCondition: (TableDimensions, Float) -> Boolean,
 ) {
     val testTag = "$HEADER_CELL$tableId$rowIndex$columnIndex"
 }

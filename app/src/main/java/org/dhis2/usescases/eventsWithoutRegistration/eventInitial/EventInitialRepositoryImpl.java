@@ -342,6 +342,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 objectStyle,
                 dataElement.fieldMask(),
                 optionSetConfig,
+                null,
+                null,
                 null);
     }
 

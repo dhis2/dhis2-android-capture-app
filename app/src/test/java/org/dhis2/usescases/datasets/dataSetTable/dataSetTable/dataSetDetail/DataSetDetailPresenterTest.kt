@@ -37,7 +37,7 @@ class DataSetDetailPresenterTest {
             repository,
             scheduler,
             matomoAnalyticsController,
-            updateProcessor
+            updateProcessor,
         )
     }
 

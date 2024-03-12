@@ -8,5 +8,5 @@ enum class ValueStoreResult {
     ERROR_UPDATING_VALUE,
     FILE_SAVED,
     TEXT_CHANGING,
-    FINISH
+    FINISH,
 }

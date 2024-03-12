@@ -8,14 +8,14 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
-import java.util.Locale
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.SpeechRecognitionState
 import org.dhis2.android.rtsm.utils.Utils
 import timber.log.Timber
+import java.util.Locale
 
 class SpeechRecognitionManagerImpl(
-    private val context: Context
+    private val context: Context,
 ) : SpeechRecognitionManager, RecognitionListener {
     private var speechRecognizer: SpeechRecognizer? = null
     private var readyForSpeech = false
@@ -80,7 +80,7 @@ class SpeechRecognitionManagerImpl(
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(
             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
         )
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
@@ -128,7 +128,7 @@ class SpeechRecognitionManagerImpl(
                 } else {
                     SpeechRecognitionState.Errored(
                         Constants.NON_NUMERIC_SPEECH_INPUT_ERROR,
-                        cleanInputStr
+                        cleanInputStr,
                     )
                 }
             }
@@ -138,7 +138,7 @@ class SpeechRecognitionManagerImpl(
                 } else {
                     SpeechRecognitionState.Errored(
                         Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR,
-                        cleanInputStr
+                        cleanInputStr,
                     )
                 }
             }

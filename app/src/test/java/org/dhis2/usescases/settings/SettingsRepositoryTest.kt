@@ -1,7 +1,7 @@
 package org.dhis2.usescases.settings
 
 import io.reactivex.Single
-import org.dhis2.Bindings.toSeconds
+import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
@@ -211,49 +211,49 @@ class SettingsRepositoryTest {
 
     private fun configurePreferences() {
         whenever(
-            preferencesProvider.getString(Constants.LAST_META_SYNC, "-")
+            preferencesProvider.getString(Constants.LAST_META_SYNC, "-"),
         ) doReturn "2019-02-02"
         whenever(
-            preferencesProvider.getString(Constants.LAST_DATA_SYNC, "-")
+            preferencesProvider.getString(Constants.LAST_DATA_SYNC, "-"),
         ) doReturn "2019-02-02"
         whenever(
             preferencesProvider.getBoolean(
                 Constants.LAST_META_SYNC_STATUS,
-                true
-            )
+                true,
+            ),
         ) doReturn true
         whenever(
             preferencesProvider.getBoolean(
                 Constants.LAST_DATA_SYNC_STATUS,
-                true
-            )
+                true,
+            ),
         ) doReturn true
         whenever(
-            preferencesProvider.getInt(NUMBER_RV, DEFAULT_NUMBER_RV)
+            preferencesProvider.getInt(NUMBER_RV, DEFAULT_NUMBER_RV),
         ) doReturn SETTINGS_PREF_RV
         whenever(
             preferencesProvider.getInt(
                 TIME_META,
-                TIME_WEEKLY
-            )
+                TIME_WEEKLY,
+            ),
         ) doReturn SETTINGS_PREF_METADATA_PERIOD
         whenever(
             preferencesProvider.getInt(
                 TIME_DATA,
-                TIME_DAILY
-            )
+                TIME_DAILY,
+            ),
         ) doReturn SETTINGS_PREF_DATA_PERIOD
         whenever(
             preferencesProvider.getInt(
                 TEI_MAX,
-                TEI_MAX_DEFAULT
-            )
+                TEI_MAX_DEFAULT,
+            ),
         ) doReturn SETTINGS_PREF_TEI_DOWNLOAD
         whenever(
             preferencesProvider.getInt(
                 EVENT_MAX,
-                EVENT_MAX_DEFAULT
-            )
+                EVENT_MAX_DEFAULT,
+            ),
         ) doReturn SETTINGS_PREF_EVENT_DOWNLOAD
         whenever(preferencesProvider.getBoolean(LIMIT_BY_ORG_UNIT, false)) doReturn true
         whenever(preferencesProvider.getBoolean(LIMIT_BY_PROGRAM, false)) doReturn false
@@ -266,137 +266,137 @@ class SettingsRepositoryTest {
 
         whenever(d2.eventModule().events().byAggregatedSyncState()) doReturn mock()
         whenever(
-            d2.eventModule().events().byAggregatedSyncState().`in`(State.ERROR)
+            d2.eventModule().events().byAggregatedSyncState().`in`(State.ERROR),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events().byAggregatedSyncState().`in`(State.WARNING)
+            d2.eventModule().events().byAggregatedSyncState().`in`(State.WARNING),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events().byAggregatedSyncState().`in`(State.ERROR).blockingGet()
+            d2.eventModule().events().byAggregatedSyncState().`in`(State.ERROR).blockingGet(),
         ) doReturn
             emptyList()
         whenever(
-            d2.eventModule().events().byAggregatedSyncState().`in`(State.WARNING).blockingGet()
+            d2.eventModule().events().byAggregatedSyncState().`in`(State.WARNING).blockingGet(),
         ) doReturn
             emptyList()
 
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState()
+                .byAggregatedSyncState(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().`in`(State.ERROR)
+                .byAggregatedSyncState().`in`(State.ERROR),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().`in`(State.WARNING)
+                .byAggregatedSyncState().`in`(State.WARNING),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().`in`(State.ERROR).blockingGet()
+                .byAggregatedSyncState().`in`(State.ERROR).blockingGet(),
         ) doReturn emptyList()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().`in`(State.WARNING).blockingGet()
+                .byAggregatedSyncState().`in`(State.WARNING).blockingGet(),
         ) doReturn emptyList()
 
         whenever(
             d2.dataValueModule().dataValues()
-                .bySyncState()
+                .bySyncState(),
         ) doReturn mock()
         whenever(
             d2.dataValueModule().dataValues()
-                .bySyncState().`in`(State.ERROR)
+                .bySyncState().`in`(State.ERROR),
         ) doReturn mock()
         whenever(
             d2.dataValueModule().dataValues()
-                .bySyncState().`in`(State.WARNING)
+                .bySyncState().`in`(State.WARNING),
         ) doReturn mock()
         whenever(
             d2.dataValueModule().dataValues()
-                .bySyncState().`in`(State.ERROR).blockingGet()
+                .bySyncState().`in`(State.ERROR).blockingGet(),
         ) doReturn emptyList()
         whenever(
             d2.dataValueModule().dataValues()
-                .bySyncState().`in`(State.WARNING).blockingGet()
+                .bySyncState().`in`(State.WARNING).blockingGet(),
         ) doReturn emptyList()
     }
 
     private fun configureDataCount() {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState()
+                .byAggregatedSyncState(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP)
+                .byAggregatedSyncState().neq(State.RELATIONSHIP),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP).byDeleted()
+                .byAggregatedSyncState().neq(State.RELATIONSHIP).byDeleted(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP).byDeleted().isFalse
+                .byAggregatedSyncState().neq(State.RELATIONSHIP).byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP).byDeleted().isFalse.blockingCount()
+                .byAggregatedSyncState().neq(State.RELATIONSHIP).byDeleted().isFalse.blockingCount(),
         ) doReturn 0
 
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid()
+                .byEnrollmentUid(),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().isNull
+                .byEnrollmentUid().isNull,
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().isNull.byDeleted()
+                .byEnrollmentUid().isNull.byDeleted(),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().isNull.byDeleted().isFalse
+                .byEnrollmentUid().isNull.byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().isNull
                 .byDeleted().isFalse
-                .bySyncState()
+                .bySyncState(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().isNull
+                .byDeleted().isFalse
+                .bySyncState().neq(State.RELATIONSHIP),
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
                 .byEnrollmentUid().isNull
                 .byDeleted().isFalse
                 .bySyncState().neq(State.RELATIONSHIP)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().isNull
-                .byDeleted().isFalse
-                .bySyncState().neq(State.RELATIONSHIP)
-                .blockingCount()
+                .blockingCount(),
         ) doReturn 0
     }
 
     private fun configureSMSConfig() {
-        whenever(localDbRepository.isModuleEnabled) doReturn
+        whenever(localDbRepository.isModuleEnabled()) doReturn
             Single.just(true)
-        whenever(localDbRepository.gatewayNumber) doReturn
+        whenever(localDbRepository.getGatewayNumber()) doReturn
             Single.just("gatewaynumber")
-        whenever(localDbRepository.waitingForResultEnabled) doReturn
+        whenever(localDbRepository.getWaitingForResultEnabled()) doReturn
             Single.just(true)
-        whenever(localDbRepository.confirmationSenderNumber) doReturn
+        whenever(localDbRepository.getConfirmationSenderNumber()) doReturn
             Single.just("confirmationNumber")
-        whenever(localDbRepository.waitingResultTimeout) doReturn
+        whenever(localDbRepository.getWaitingResultTimeout()) doReturn
             Single.just(120)
         whenever(d2.smsModule().configCase()) doReturn
             ConfigCase(
                 webApiRepository,
-                localDbRepository
+                localDbRepository,
             )
     }
 
@@ -416,7 +416,7 @@ class SettingsRepositoryTest {
                     .eventsDownload(SETTINGS_TEI_DOWNLOAD)
                     .teiDownload(SETTINGS_EVENT_DOWNLOAD)
                     .settingDownload(SETTINGS_LIMIT_SCOPE)
-                    .build()
+                    .build(),
             )
             .specificSettings(
                 mutableMapOf(
@@ -425,9 +425,9 @@ class SettingsRepositoryTest {
                         ProgramSetting.builder()
                             .eventsDownload(200)
                             .teiDownload(300)
-                            .build()
-                    )
-                )
+                            .build(),
+                    ),
+                ),
             )
             .build()
     }

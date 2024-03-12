@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRep
 
 class OURepositoryConfiguration(
     private val d2: D2,
-    private val orgUnitSelectorScope: OrgUnitSelectorScope
+    private val orgUnitSelectorScope: OrgUnitSelectorScope,
 ) {
     fun orgUnitRepository(name: String?): List<OrganisationUnit> {
         var orgUnitRepository = d2.organisationUnitModule().organisationUnits()
@@ -21,23 +21,28 @@ class OURepositoryConfiguration(
         orgUnitRepository = when (orgUnitSelectorScope) {
             is OrgUnitSelectorScope.DataSetCaptureScope,
             is OrgUnitSelectorScope.ProgramCaptureScope,
-            is OrgUnitSelectorScope.UserCaptureScope ->
+            is OrgUnitSelectorScope.UserCaptureScope,
+            ->
                 applyCaptureFilter(orgUnitRepository)
             is OrgUnitSelectorScope.ProgramSearchScope,
             is OrgUnitSelectorScope.DataSetSearchScope,
-            is OrgUnitSelectorScope.UserSearchScope ->
+            is OrgUnitSelectorScope.UserSearchScope,
+            ->
                 applySearchFilter(orgUnitRepository)
         }
 
         orgUnitRepository = when (orgUnitSelectorScope) {
             is OrgUnitSelectorScope.DataSetCaptureScope,
-            is OrgUnitSelectorScope.DataSetSearchScope ->
-                orgUnitRepository.byDataSetUids(listOf(orgUnitSelectorScope.uid))
+            is OrgUnitSelectorScope.DataSetSearchScope,
+            ->
+                orgUnitRepository.byDataSetUids(listOf(orgUnitSelectorScope.uid!!))
             is OrgUnitSelectorScope.ProgramCaptureScope,
-            is OrgUnitSelectorScope.ProgramSearchScope ->
-                orgUnitRepository.byProgramUids(listOf(orgUnitSelectorScope.uid))
+            is OrgUnitSelectorScope.ProgramSearchScope,
+            ->
+                orgUnitRepository.byProgramUids(listOf(orgUnitSelectorScope.uid!!))
             is OrgUnitSelectorScope.UserCaptureScope,
-            is OrgUnitSelectorScope.UserSearchScope ->
+            is OrgUnitSelectorScope.UserSearchScope,
+            ->
                 orgUnitRepository
         }
         return orgUnitRepository.blockingGet()

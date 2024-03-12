@@ -60,8 +60,8 @@ class MapGeometryToFeatureTest {
         val coordinates = listOf(
             listOf(
                 listOf(longitude1Polygon, latitude1Polygon),
-                listOf(longitude2Polygon, latitude2Polygon)
-            )
+                listOf(longitude2Polygon, latitude2Polygon),
+            ),
         )
 
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)
@@ -90,12 +90,12 @@ class MapGeometryToFeatureTest {
 
         whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(
             featurePoint,
-            boundsGeometry
+            boundsGeometry,
         )
 
         val result = mapGeometryToFeature.map(
             geometry,
-            mapOf(EVENT to EVENT_UID_VALUE)
+            mapOf(EVENT to EVENT_UID_VALUE),
         )
 
         assertEquals(result, null)
@@ -111,8 +111,8 @@ class MapGeometryToFeatureTest {
         val coordinates = listOf(
             listOf(
                 Point.fromLngLat(longitude1Polygon, latitude1Polygon),
-                Point.fromLngLat(longitude2Polygon, latitude2Polygon)
-            )
+                Point.fromLngLat(longitude2Polygon, latitude2Polygon),
+            ),
         )
 
         return Feature.fromGeometry(Polygon.fromLngLats(coordinates))

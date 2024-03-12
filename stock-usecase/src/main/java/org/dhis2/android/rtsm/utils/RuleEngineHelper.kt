@@ -15,7 +15,7 @@ class RuleEngineHelper {
             ruleVariables: List<RuleVariable>,
             constants: Map<String, String>,
             supplementaryData: Map<String, List<String>>,
-            events: List<RuleEvent>
+            events: List<RuleEvent>,
         ): RuleEngine {
             debugRuleEngine(rules, ruleVariables, events)
 

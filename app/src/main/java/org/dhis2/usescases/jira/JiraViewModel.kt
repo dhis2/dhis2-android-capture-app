@@ -18,7 +18,7 @@ const val MAX_RESULTS = 20
 class JiraViewModel(
     private val jiraRepository: JiraRepository,
     private val resources: ResourceManager,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: SchedulerProvider,
 ) : ViewModel() {
 
     private var disposable = CompositeDisposable()
@@ -63,8 +63,8 @@ class JiraViewModel(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { handleSendResponse(true) },
-                    { handleThrowableResponse(it) }
-                )
+                    { handleThrowableResponse(it) },
+                ),
         )
     }
 
@@ -77,8 +77,8 @@ class JiraViewModel(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { handleResponse(it) },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
     }
 
@@ -107,7 +107,7 @@ class JiraViewModel(
     fun onJiraIssueClick(jiraKey: String) {
         clickedIssueData.value = ClickedIssueData(
             jiraKey.toJiraIssueUri(),
-            jiraRepository.getSession() ?: ""
+            jiraRepository.getSession() ?: "",
         )
     }
 

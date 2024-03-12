@@ -46,7 +46,7 @@ class ValueStoreTest {
                 networkUtils,
                 searchTEIRepository,
                 fieldErrorMessageProvider,
-                resourceManager
+                resourceManager,
             )
         deValueStore =
             ValueStoreImpl(
@@ -58,7 +58,7 @@ class ValueStoreTest {
                 networkUtils,
                 searchTEIRepository,
                 fieldErrorMessageProvider,
-                resourceManager
+                resourceManager,
             )
         dvValueStore =
             ValueStoreImpl(
@@ -70,7 +70,7 @@ class ValueStoreTest {
                 networkUtils,
                 searchTEIRepository,
                 fieldErrorMessageProvider,
-                resourceManager
+                resourceManager,
             )
     }
 
@@ -88,63 +88,63 @@ class ValueStoreTest {
 
     private fun mockCheckUniqueFilter() {
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet()
+            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
         ) doReturn mockedUniqueAttribute()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityAttribute().eq("uid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
                 .byTrackedEntityInstance().neq("recordUid")
+                .byValue(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
                 .byTrackedEntityInstance().neq("recordUid")
-                .byValue()
+                .byValue().eq("uniqueValue"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq("uid")
                 .byTrackedEntityInstance().neq("recordUid")
                 .byValue().eq("uniqueValue")
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("recordUid")
-                .byValue().eq("uniqueValue")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn mockedAttributeValueList()
     }
 
     @Test
     fun `Trying to save an attribute should return a valid response`() {
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet()
+            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
         ) doReturn mockedAttribute()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityAttribute().eq("uid"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue()
+                .byTrackedEntityAttribute().eq("uid").byValue(),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue")
+                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue"),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue").blockingGet()
+                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue").blockingGet(),
         ) doReturn mockedAttributeValueList()
 
         val testSubscriber = attrValueStore.save("uid", "uniqueValue").test()
@@ -158,7 +158,7 @@ class ValueStoreTest {
     @Test
     fun `Trying to save a DataElement should return a valid response`() {
         whenever(
-            d2.dataElementModule().dataElements().uid("uid").blockingGet()
+            d2.dataElementModule().dataElements().uid("uid").blockingGet(),
         ) doReturn mockedDataElement()
 
         val testSubscriber = deValueStore.save("uid", "value").test()
@@ -172,25 +172,25 @@ class ValueStoreTest {
     @Test
     fun `Null value should remove`() {
         whenever(
-            d2.dataElementModule().dataElements().uid("uid").blockingGet()
+            d2.dataElementModule().dataElements().uid("uid").blockingGet(),
         ) doReturn mockedDataElement()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
-                "uid"
-            )
+                "uid",
+            ),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
-                "uid"
-            ).blockingExists()
+                "uid",
+            ).blockingExists(),
         ) doReturn true
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
-                "uid"
-            ).blockingGet()
+                "uid",
+            ).blockingGet(),
         ) doReturn mockedDataElementValue()
 
         val testSubscriber = deValueStore.save("uid", null).test()
@@ -204,10 +204,10 @@ class ValueStoreTest {
     @Test
     fun `Uid which is not linked to a DE or an ATTR should end with correct result`() {
         whenever(
-            d2.dataElementModule().dataElements().uid("wrongUid").blockingExists()
+            d2.dataElementModule().dataElements().uid("wrongUid").blockingExists(),
         ) doReturn false
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("wrongUid").blockingExists()
+            d2.trackedEntityModule().trackedEntityAttributes().uid("wrongUid").blockingExists(),
         ) doReturn false
 
         val testSubscriber = deValueStore.saveWithTypeCheck("wrongUid", "test").test()
@@ -229,21 +229,21 @@ class ValueStoreTest {
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
                 "recordUid",
-                "fieldUid"
-            )
+                "fieldUid",
+            ),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
-                "fieldUid"
-            ).blockingExists()
+                "fieldUid",
+            ).blockingExists(),
         ) doReturn true
 
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
-                "fieldUid"
-            ).blockingGet()
+                "fieldUid",
+            ).blockingGet(),
         ) doReturn TrackedEntityDataValue.builder()
             .dataElement("fieldUid")
             .event("recordUid")
@@ -251,7 +251,7 @@ class ValueStoreTest {
             .build()
         whenever(
             d2.dataElementModule().dataElements()
-                .uid("fieldUid").blockingGet()
+                .uid("fieldUid").blockingGet(),
         ) doReturn
             DataElement.builder()
                 .uid("fieldUid")
@@ -259,7 +259,7 @@ class ValueStoreTest {
                 .build()
         val storeResult = deValueStore.deleteOptionValueIfSelected(
             "fieldUid",
-            "optionUid"
+            "optionUid",
         )
         assert(storeResult.valueStoreResult == ValueStoreResult.VALUE_CHANGED)
     }
@@ -275,18 +275,18 @@ class ValueStoreTest {
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
-                "fieldUid"
-            )
+                "fieldUid",
+            ),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
-                "fieldUid"
-            ).blockingExists()
+                "fieldUid",
+            ).blockingExists(),
         ) doReturn false
         val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
         assert(
-            storeResult.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED
+            storeResult.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED,
         )
     }
 
@@ -294,14 +294,14 @@ class ValueStoreTest {
     fun `Should return error when saving null value for a DE and no previous value exist`() {
         val testingUid = "uid"
         whenever(
-            d2.dataElementModule().dataElements().uid(testingUid).blockingExists()
+            d2.dataElementModule().dataElements().uid(testingUid).blockingExists(),
         ) doReturn true
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues()
-                .value("recordUid", testingUid)
+                .value("recordUid", testingUid),
         ) doReturn mock()
         whenever(
-            d2.dataElementModule().dataElements().uid(testingUid).blockingGet()
+            d2.dataElementModule().dataElements().uid(testingUid).blockingGet(),
         ) doReturn DataElement.builder()
             .uid(testingUid)
             .valueType(ValueType.TEXT)
@@ -309,7 +309,7 @@ class ValueStoreTest {
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues()
                 .value("recordUid", testingUid)
-                .blockingExists()
+                .blockingExists(),
         ) doReturn false
         deValueStore.saveWithTypeCheck(testingUid, null)
             .test()
@@ -323,23 +323,23 @@ class ValueStoreTest {
     fun `Should return error when saving null value for an attr and no previous value exist`() {
         val testingUid = "uid"
         whenever(
-            d2.dataElementModule().dataElements().uid(testingUid).blockingExists()
+            d2.dataElementModule().dataElements().uid(testingUid).blockingExists(),
         ) doReturn false
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingExists()
+            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingExists(),
         ) doReturn true
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet()
+            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet(),
         ) doReturn TrackedEntityAttribute.builder()
             .uid(testingUid)
             .unique(false)
             .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .value(testingUid, "recordUid")
+                .value(testingUid, "recordUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet()
+            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet(),
         ) doReturn TrackedEntityAttribute.builder()
             .uid(testingUid)
             .valueType(ValueType.TEXT)
@@ -347,7 +347,7 @@ class ValueStoreTest {
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
                 .value(testingUid, "recordUid")
-                .blockingExists()
+                .blockingExists(),
         ) doReturn false
         deValueStore.saveWithTypeCheck(testingUid, null)
             .test()
@@ -391,7 +391,7 @@ class ValueStoreTest {
                 .trackedEntityAttribute("uid")
                 .trackedEntityInstance("tei")
                 .value("uniqueValue")
-                .build()
+                .build(),
         )
     }
 }

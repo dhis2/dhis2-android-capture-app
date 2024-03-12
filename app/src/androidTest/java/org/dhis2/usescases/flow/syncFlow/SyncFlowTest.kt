@@ -1,6 +1,8 @@
 package org.dhis2.usescases.flow.syncFlow
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -73,7 +75,7 @@ class SyncFlowTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            clickOnSync()
+            composeTestRule.onNodeWithText("Sync").performClick()
         }
         syncFlowRobot {
             waitToDebounce(500)
@@ -112,7 +114,7 @@ class SyncFlowTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            clickOnSync()
+            composeTestRule.onNodeWithText("Sync").performClick()
         }
 
         syncFlowRobot {
@@ -245,6 +247,7 @@ class SyncFlowTest : BaseTest() {
             Data.EMPTY,
             arrayListOf("GRANULAR"),
             Data.EMPTY,
+            0,
             0
         )
     }
