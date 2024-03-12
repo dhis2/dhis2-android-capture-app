@@ -8,6 +8,7 @@ import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.eventRegistrationRobot
+import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -73,9 +74,8 @@ class ProgramEventTest : BaseTest() {
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
-        programEventsRobot(composeTestRule) {
-            waitToDebounce(400)
-            clickOnEvent(eventDate)
+        eventWithoutRegistrationRobot(composeTestRule) {
+            clickOnEventAtPosition(0)
         }
 
         eventRobot(composeTestRule) {

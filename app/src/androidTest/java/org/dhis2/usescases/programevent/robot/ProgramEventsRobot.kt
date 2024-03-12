@@ -1,6 +1,8 @@
 package org.dhis2.usescases.programevent.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -60,7 +62,9 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
         ).check(matches(isDisplayed()))
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkEventIsComplete(eventDate: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(eventDate))
         composeTestRule.onNodeWithText(eventDate).assertIsDisplayed()
         composeTestRule.onNodeWithText("Event completed").assertIsDisplayed()
     }

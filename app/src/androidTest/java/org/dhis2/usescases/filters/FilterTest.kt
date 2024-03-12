@@ -11,6 +11,7 @@ import org.dhis2.usescases.main.AVOID_SYNC
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
+import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Ignore
 import org.junit.Rule
@@ -126,6 +127,7 @@ class FilterTest : BaseTest() {
         }
         homeRobot {
             openFilters()
+            waitToDebounce(1000)
             checkItemsInProgram(composeTestRule, 0, "Antenatal care visit", "1")
             checkItemsInProgram(composeTestRule, 3, "Child Programme", "0")
         }

@@ -93,7 +93,6 @@ class SyncFlowTest : BaseTest() {
         cleanLocalDatabase()
     }
 
-//    @Ignore("Indeterminate (flaky)")
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
