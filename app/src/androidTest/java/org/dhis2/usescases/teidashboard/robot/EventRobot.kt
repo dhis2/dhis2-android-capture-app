@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -81,10 +82,6 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText("OK", true).performClick()
     }
 
-    fun clickOnUpdate() {
-        onView(withId(R.id.action_button)).perform(click())
-    }
-
     fun typeOnRequiredEventForm(text: String, position: Int) {
         onView(withId(R.id.recyclerView))
             .perform(
@@ -134,6 +131,13 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun selectSpecificDate(date: String) {
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
         composeTestRule.onNode(hasText(date, true)).performClick()
+    }
+
+    fun typeOnDateParameter(dateValue: String) {
+        composeTestRule.apply {
+            onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performClick()
+            onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextInput(dateValue)
+        }
     }
 
     fun checkEventDetails(eventDate: String, eventOrgUnit: String) {

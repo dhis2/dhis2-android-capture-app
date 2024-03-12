@@ -14,7 +14,6 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
@@ -120,20 +119,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 )
             )
         closeKeyboard()
-    }
-
-    fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.datePicker)).perform(
-            PickerActions.setDate(
-                year,
-                monthOfYear,
-                dayOfMonth
-            )
-        )
-    }
-
-    fun acceptDate() {
-        onView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun clickOnSearch() {

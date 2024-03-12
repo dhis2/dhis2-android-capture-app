@@ -5,12 +5,9 @@ import android.view.MenuItem
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
@@ -27,15 +24,13 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.form.ui.FormViewHolder
-import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anything
 import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
 
 
@@ -67,10 +62,6 @@ class FormRobot : BaseRobot() {
                     position, clickChildViewWithId(R.id.inputEditText)
                 )
             )
-    }
-
-    fun typeOnSearchInput(searchWord: String) {
-        onView(withId(R.id.txtSearch)).perform(typeText(searchWord))
     }
 
     private fun selectAction(action: String, position: Int) {
@@ -155,10 +146,6 @@ class FormRobot : BaseRobot() {
         selectAction("", 0)
     }
 
-    fun clickOnNotNow(composeTestRule: ComposeTestRule) {
-        composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
-    }
-
     fun clickOnSelectOption(label: String, position: Int, option: String, optionPosition: Int) {
         clickOnSpinner(position)
         selectAction(option, optionPosition)
@@ -166,10 +153,6 @@ class FormRobot : BaseRobot() {
 
     fun scrollToBottomForm() {
         onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
-    }
-
-    fun scrollToPositionForm(position: Int) {
-        onView(withId(R.id.recyclerView)).perform(scrollToPositionRecyclerview(position))
     }
 
     fun goToAnalytics() {
