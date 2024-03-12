@@ -3,7 +3,7 @@ package org.dhis2.usescases.event
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.entity.EventDetailsUIModel
 import org.dhis2.usescases.event.entity.EventStatusUIModel
@@ -26,16 +26,17 @@ import org.junit.runner.RunWith
 class EventTest : BaseTest() {
 
     @get:Rule
-    val rule = ActivityTestRule(EventCaptureActivity::class.java, false, false)
+    val rule = lazyActivityScenarioRule<EventCaptureActivity>(launchActivity = false)
 
     @get:Rule
-    val ruleTeiDashboard = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+    val ruleTeiDashboard =
+        lazyActivityScenarioRule<TeiDashboardMobileActivity>(launchActivity = false)
 
     @get:Rule
-    val ruleEventDetail = ActivityTestRule(EventInitialActivity::class.java, false, false)
+    val ruleEventDetail = lazyActivityScenarioRule<EventInitialActivity>(launchActivity = false)
 
     @get:Rule
-    val eventListRule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+    val eventListRule = lazyActivityScenarioRule<ProgramEventDetailActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -66,12 +67,11 @@ class EventTest : BaseTest() {
     @Test
     fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
         val eventDetails = createEventDetails()
+        enableComposeForms()
 
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot {
-            checkEventFormDetails(eventDetails)
-            clickOnDetails()
             checkEventDetails(eventDetails, composeTestRule)
         }
     }
@@ -164,8 +164,8 @@ class EventTest : BaseTest() {
 
     private fun createEventDetails() = EventDetailsUIModel(
         "Alfa",
-        91,
-        "1/3/2020",
+        92,
+        "Mar 2020",
         "OU TEST PARENT"
     )
 
@@ -179,14 +179,15 @@ class EventTest : BaseTest() {
     private fun prepareProgramAndLaunchActivity(programUid: String) {
         Intent().apply {
             putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, programUid)
-        }.also { eventListRule.launchActivity(it) }
+        }.also { eventListRule.launch(it) }
     }
 
     private fun disableRecyclerViewAnimations() {
-        val activity = eventListRule.activity
-        activity.runOnUiThread {
-            activity.supportFragmentManager.findFragmentByTag("EVENT_LIST").apply {
-                (this as EventListFragment).binding.recycler.itemAnimator = null
+        eventListRule.getScenario().onActivity {
+            it.runOnUiThread {
+                it.supportFragmentManager.findFragmentByTag("EVENT_LIST").apply {
+                    (this as EventListFragment).binding.recycler.itemAnimator = null
+                }
             }
         }
     }
