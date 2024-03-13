@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 internal class StageViewHolder(
@@ -49,7 +51,16 @@ internal class StageViewHolder(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color.White)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(
+                        start = Spacing.Spacing16,
+                        end = Spacing.Spacing16,
+                        top = Spacing.Spacing16,
+                        bottom = if (eventItem.eventCount < 1) {
+                            Spacing.Spacing16
+                        } else {
+                            Spacing.Spacing8
+                        },
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ProvideAvatar(

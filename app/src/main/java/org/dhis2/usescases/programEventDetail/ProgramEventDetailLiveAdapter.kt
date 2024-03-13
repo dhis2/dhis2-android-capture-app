@@ -3,6 +3,8 @@ package org.dhis2.usescases.programEventDetail
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
@@ -19,6 +21,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 class ProgramEventDetailLiveAdapter(
     private val program: Program,
@@ -67,17 +70,26 @@ class ProgramEventDetailLiveAdapter(
                         }
                     },
                 )
-                ListCard(
-                    modifier = Modifier.testTag("EVENT_ITEM"),
-                    listAvatar = card.avatar,
-                    title = ListCardTitleModel(text = card.title),
-                    lastUpdated = card.lastUpdated,
-                    additionalInfoList = card.additionalInfo,
-                    actionButton = card.actionButton,
-                    expandLabelText = card.expandLabelText,
-                    shrinkLabelText = card.shrinkLabelText,
-                    onCardClick = card.onCardCLick,
-                )
+                Box(
+                    modifier = Modifier
+                        .padding(
+                            start = Spacing.Spacing8,
+                            end = Spacing.Spacing8,
+                            bottom = Spacing.Spacing8
+                        )
+                ) {
+                    ListCard(
+                        modifier = Modifier.testTag("EVENT_ITEM"),
+                        listAvatar = card.avatar,
+                        title = ListCardTitleModel(text = card.title),
+                        lastUpdated = card.lastUpdated,
+                        additionalInfoList = card.additionalInfo,
+                        actionButton = card.actionButton,
+                        expandLabelText = card.expandLabelText,
+                        shrinkLabelText = card.shrinkLabelText,
+                        onCardClick = card.onCardCLick,
+                    )
+                }
             }
 
             holder.bind(it, null) {

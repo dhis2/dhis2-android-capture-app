@@ -16,6 +16,7 @@ import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.hisp.dhis.mobile.ui.designsystem.component.CardDetail
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
 fun TeiDetailDashboard(
@@ -99,11 +100,12 @@ fun TeiDetailDashboard(
         }
 
         if (!isGrouped) {
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(Spacing.Spacing16))
             TimelineEventsHeader(
                 timelineEventsHeaderModel = timelineEventHeaderModel,
                 onOptionSelected = timelineOnEventCreationOptionSelected,
             )
+            Spacer(modifier = Modifier.size(Spacing.Spacing8))
         }
     }
 }
