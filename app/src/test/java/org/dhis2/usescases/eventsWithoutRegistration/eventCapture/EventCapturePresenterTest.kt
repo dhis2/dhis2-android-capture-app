@@ -138,6 +138,7 @@ class EventCapturePresenterTest {
     @Test
     fun `Should close form if it could not delete an event`() {
         whenever(eventRepository.deleteEvent()) doReturn Observable.just(false)
+        whenever(eventRepository.programStage()) doReturn Observable.just("programStage")
 
         presenter.deleteEvent()
         verify(view).finishDataEntry()
