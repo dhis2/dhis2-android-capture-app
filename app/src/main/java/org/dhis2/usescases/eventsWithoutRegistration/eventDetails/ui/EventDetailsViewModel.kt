@@ -32,7 +32,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
-import java.security.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -279,12 +278,9 @@ class EventDetailsViewModel(
             currentDt[Calendar.MONTH],
             currentDt[Calendar.DAY_OF_MONTH],
             currentDt[Calendar.DAY_OF_WEEK],
-            currentDt[Calendar.MILLISECOND]
+            currentDt[Calendar.MILLISECOND],
         )
-// convert to hours
-// convert to hours
         gmtOffset /= (60 * 60 * 1000)
-
         calendar.add(Calendar.HOUR_OF_DAY, +gmtOffset)
         val selectedDate = calendar.time
 
