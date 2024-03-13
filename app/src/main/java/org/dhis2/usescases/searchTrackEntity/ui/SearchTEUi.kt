@@ -128,6 +128,42 @@ fun SearchButton(
 }
 
 @Composable
+fun SearchButton_Old(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = modifier,
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+        shape = RoundedCornerShape(24.dp),
+        elevation = ButtonDefaults.elevation(),
+    ) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = "",
+                tint = Color(
+                    ColorUtils().getPrimaryColor(
+                        LocalContext.current,
+                        ColorType.PRIMARY,
+                    ),
+                ),
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(
+                text = stringResource(id = R.string.search),
+                color = colorResource(id = R.color.textSecondary),
+            )
+        }
+    }
+}
+
+@Composable
 fun WrappedSearchButton(
     teTypeName: String,
     onClick: () -> Unit,
