@@ -13,7 +13,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -303,16 +302,12 @@ class EventCaptureActivity :
     }
 
     override fun showSnackBar(messageId: Int, programStage: String) {
-        val mySnackbar =
-            Snackbar.make(
-                binding.root,
-                resourceManager.formatWithEventLabel(
-                    messageId,
-                    programStage,
-                ),
-                BaseTransientBottomBar.LENGTH_SHORT,
-            )
-        mySnackbar.show()
+        showToast(
+            resourceManager.formatWithEventLabel(
+                messageId,
+                programStage,
+            ),
+        )
     }
 
     override fun restartDataEntry() {

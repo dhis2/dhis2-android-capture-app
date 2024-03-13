@@ -180,13 +180,14 @@ class EventCapturePresenterImpl(
     }
 
     override fun deleteEvent() {
+        val programStage = programStage()
         compositeDisposable.add(
             eventCaptureRepository.deleteEvent()
                 .defaultSubscribe(
                     schedulerProvider,
                     { result ->
                         if (result) {
-                            view.showSnackBar(R.string.event_label_was_deleted, programStage())
+                            view.showSnackBar(R.string.event_label_was_deleted, programStage)
                         }
                     },
                     Timber::e,
