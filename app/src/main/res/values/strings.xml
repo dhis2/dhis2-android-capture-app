@@ -80,6 +80,7 @@
 
     <!-- Input hints -->
     <string name="search">Search</string>
+    <string name="search_add_new_te_type">Search / Add new %s</string>
     <string name="enter_text">Enter text</string>
     <string name="enter_long_text">Enter long text</string>
     <string name="enter_number">Enter number</string>

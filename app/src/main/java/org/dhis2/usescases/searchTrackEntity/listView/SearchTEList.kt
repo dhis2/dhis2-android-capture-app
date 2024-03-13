@@ -183,13 +183,17 @@ class SearchTEList : FragmentGlobalAbstract() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
+                val teTypeName by viewModel.teTypeName.observeAsState()
+
                 if (LocalConfiguration.current.orientation ==
-                    Configuration.ORIENTATION_PORTRAIT
+                    Configuration.ORIENTATION_PORTRAIT && !teTypeName.isNullOrBlank()
                 ) {
                     val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
+
                     FullSearchButtonAndWorkingList(
                         modifier = Modifier,
+                        teTypeName = teTypeName!!,
                         visible = !isScrollingDown,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),

@@ -15,8 +15,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -27,6 +28,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -57,8 +59,11 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
@@ -91,51 +96,53 @@ fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit)
 }
 
 @Composable
-fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Button(
-        modifier = modifier,
+fun SearchButton(
+    teTypeName: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    OutlinedButton(
+        modifier = Modifier
+            .requiredHeight(56.dp)
+            .then(modifier),
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-        shape = RoundedCornerShape(24.dp),
-        elevation = ButtonDefaults.elevation(),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = SurfaceColor.Primary,
+        ),
+        border = BorderStroke(1.dp, SurfaceColor.Primary),
+        shape = RoundedCornerShape(Spacing.Spacing16),
     ) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_search),
-                contentDescription = "",
-                tint = Color(
-                    ColorUtils().getPrimaryColor(
-                        LocalContext.current,
-                        ColorType.PRIMARY,
-                    ),
-                ),
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = stringResource(id = R.string.search),
-                color = colorResource(id = R.color.textSecondary),
-            )
-        }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_search),
+            contentDescription = "",
+            tint = SurfaceColor.Primary,
+        )
+
+        Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
+
+        Text(
+            text = stringResource(id = R.string.search_add_new_te_type, teTypeName.lowercase()),
+            style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
+        )
     }
 }
 
 @Composable
-fun WrappedSearchButton(onClick: () -> Unit) {
+fun WrappedSearchButton(
+    teTypeName: String,
+    onClick: () -> Unit,
+) {
     SearchButton(
-        modifier = Modifier
-            .wrapContentWidth(align = Alignment.CenterHorizontally)
-            .height(44.dp),
+        modifier = Modifier.wrapContentWidth(align = Alignment.CenterHorizontally),
         onClick = onClick,
+        teTypeName = teTypeName,
     )
 }
 
 @ExperimentalAnimationApi
 @Composable
 fun FullSearchButtonAndWorkingList(
+    teTypeName: String,
     modifier: Modifier,
     visible: Boolean = true,
     closeFilterVisibility: Boolean = false,
@@ -161,10 +168,9 @@ fun FullSearchButtonAndWorkingList(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 SearchButton(
-                    modifier = Modifier
-                        .weight(weight = 1f)
-                        .height(48.dp),
+                    modifier = Modifier.weight(weight = 1f),
                     onClick = onClick,
+                    teTypeName = teTypeName,
                 )
                 if (!isLandscape && closeFilterVisibility) {
                     Spacer(modifier = Modifier.size(16.dp))
@@ -190,6 +196,7 @@ fun FullSearchButtonAndWorkingList(
                     }
                 }
             }
+
             workingListViewModel?.let {
                 WorkingListChipGroup(workingListViewModel = it)
             }
@@ -506,16 +513,16 @@ fun CreateNewButton(
 }
 
 @ExperimentalAnimationApi
-@Preview(showBackground = true, backgroundColor = 0x2C98F0)
+@Preview(showBackground = true, backgroundColor = 0xFFF)
 @Composable
 fun SearchFullWidthPreview() {
-    FullSearchButtonAndWorkingList(modifier = Modifier)
+    FullSearchButtonAndWorkingList(modifier = Modifier, teTypeName = "Person")
 }
 
-@Preview(showBackground = true, backgroundColor = 0x2C98F0)
+@Preview(showBackground = true, backgroundColor = 0xFFF)
 @Composable
 fun SearchWrapWidthPreview() {
-    WrappedSearchButton {
+    WrappedSearchButton(teTypeName = "Person") {
     }
 }
 
