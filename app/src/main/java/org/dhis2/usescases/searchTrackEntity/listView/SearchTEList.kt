@@ -145,14 +145,6 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun configureList(scrollView: RecyclerView) {
         scrollView.apply {
-            updateLayoutParams<ConstraintLayout.LayoutParams> {
-                val paddingTop = if (isLandscape()) {
-                    0.dp
-                } else {
-                    130.dp
-                }
-                setPaddingRelative(0.dp, paddingTop, 0.dp, 160.dp)
-            }
             adapter = listAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -190,6 +182,8 @@ class SearchTEList : FragmentGlobalAbstract() {
                 ) {
                     val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
+                    val createButtonVisibility by viewModel
+                        .createButtonScrollVisibility.observeAsState(true)
 
                     FullSearchButtonAndWorkingList(
                         modifier = Modifier,
@@ -197,9 +191,11 @@ class SearchTEList : FragmentGlobalAbstract() {
                         visible = !isScrollingDown,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
-                        onClick = { viewModel.setSearchScreen() },
+                        onSearchClick = { viewModel.setSearchScreen() },
+                        onEnrollClick = { viewModel.onEnrollClick() },
                         onCloseFilters = { viewModel.onFiltersClick(isLandscape()) },
                         workingListViewModel = workingListViewModel,
+                        createButtonVisible = createButtonVisibility,
                     )
                 }
             }
@@ -271,15 +267,9 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun updateRecycler() {
-        val paddingTop = if (workingListViewModel.workingListFilter.value != null) 130.dp else 80.dp
         recycler.setPaddingRelative(
             0,
-            when {
-                !isLandscape() && listAdapter.itemCount > 1 -> paddingTop
-                !isLandscape() && liveAdapter.itemCount == 0 &&
-                    resultAdapter.itemCount == 1 -> paddingTop
-                else -> 0.dp
-            },
+            0,
             0,
             when {
                 listAdapter.itemCount > 1 -> 160.dp

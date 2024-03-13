@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,8 +100,15 @@ fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit)
 fun SearchButton(
     teTypeName: String,
     modifier: Modifier = Modifier,
+    createButtonVisible: Boolean = true,
     onClick: () -> Unit,
 ) {
+    val textId = if (createButtonVisible) {
+        R.string.search_te_type
+    } else {
+        R.string.search_add_new_te_type
+    }
+
     OutlinedButton(
         modifier = Modifier
             .requiredHeight(56.dp)
@@ -121,8 +129,44 @@ fun SearchButton(
         Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
 
         Text(
-            text = stringResource(id = R.string.search_add_new_te_type, teTypeName.lowercase()),
+            text = stringResource(id = textId, teTypeName.lowercase()),
             style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
+        )
+    }
+}
+
+@Composable
+fun AddNewButton(
+    teTypeName: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .requiredHeight(44.dp)
+            .then(modifier),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = SurfaceColor.PrimaryContainer,
+            contentColor = TextColor.OnPrimaryContainer,
+        ),
+        shape = RoundedCornerShape(Spacing.Spacing16),
+        elevation = ButtonDefaults.elevation(
+            defaultElevation = 0.dp,
+        ),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_add_primary),
+            contentDescription = "",
+            tint = SurfaceColor.Primary,
+        )
+
+        Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
+
+        Text(
+            text = stringResource(id = R.string.add_te_type, teTypeName.lowercase()),
+            style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
+            color = SurfaceColor.Primary,
         )
     }
 }
@@ -180,10 +224,12 @@ fun WrappedSearchButton(
 fun FullSearchButtonAndWorkingList(
     teTypeName: String,
     modifier: Modifier,
+    createButtonVisible: Boolean = false,
     visible: Boolean = true,
     closeFilterVisibility: Boolean = false,
     isLandscape: Boolean = false,
-    onClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
+    onEnrollClick: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
     workingListViewModel: WorkingListViewModel? = null,
 ) {
@@ -203,11 +249,28 @@ fun FullSearchButtonAndWorkingList(
                 ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                SearchButton(
-                    modifier = Modifier.weight(weight = 1f),
-                    onClick = onClick,
-                    teTypeName = teTypeName,
-                )
+                Column(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    SearchButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onSearchClick,
+                        teTypeName = teTypeName,
+                        createButtonVisible = createButtonVisible,
+                    )
+
+                    if (createButtonVisible) {
+                        AddNewButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            teTypeName = teTypeName,
+                            onClick = onEnrollClick,
+                        )
+                    }
+                }
+
                 if (!isLandscape && closeFilterVisibility) {
                     Spacer(modifier = Modifier.size(16.dp))
                     Box(
