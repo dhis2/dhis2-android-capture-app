@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 
 import static org.dhis2.commons.Constants.EVENT_MODE;
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.NonEditableReasonBlockKt.showNonEditableReasonMessage;
 import static org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt.OPEN_ERROR_LOCATION;
 
 import android.content.Context;
@@ -185,5 +186,23 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onReopen() {
         formView.reload();
+    }
+
+    @Override
+    public void showNonEditableMessage(@NonNull String reason, boolean canBeReOpened) {
+        showNonEditableReasonMessage(
+                binding.editableReasonContainer,
+                reason,
+                canBeReOpened,
+                () -> {
+                    presenter.reOpenEvent();
+                    return Unit.INSTANCE;
+                }
+        );
+    }
+
+    @Override
+    public void hideNonEditableMessage() {
+        binding.editableReasonContainer.removeAllViews();
     }
 }

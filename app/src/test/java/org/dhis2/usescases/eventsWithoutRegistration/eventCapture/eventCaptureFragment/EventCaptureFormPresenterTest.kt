@@ -1,6 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
 import io.reactivex.Single
+import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
@@ -8,6 +11,7 @@ import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.EventEditableStatus
 import org.hisp.dhis.android.core.event.EventNonEditableReason
@@ -24,10 +28,24 @@ class EventCaptureFormPresenterTest {
     private val view: EventCaptureFormView = mock()
     private val d2: D2 = mock()
     private val eventUid: String = "random_ID"
+    private val nonEditableMessage = "Blocked by completion message"
+    private val resourceManager: ResourceManager = mock {
+        on { getString(R.string.blocked_by_completion) } doReturn nonEditableMessage
+    }
+    private val reOpenUseCase: ReOpenEventUseCase = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     @Before
     fun setUp() {
-        presenter = EventCaptureFormPresenter(view, activityPresenter, d2, eventUid)
+        presenter = EventCaptureFormPresenter(
+            view,
+            activityPresenter,
+            d2,
+            eventUid,
+            resourceManager = resourceManager,
+            reOpenEventUseCase = reOpenUseCase,
+            dispatcherProvider = dispatcherProvider,
+        )
     }
 
     @Test
@@ -138,8 +156,12 @@ class EventCaptureFormPresenterTest {
             editableStatus,
         )
 
+        whenever(d2.eventModule().events()) doReturn mock()
+        whenever(d2.eventModule().events().uid(eventUid)) doReturn mock()
+
         presenter.showOrHideSaveButton()
 
         verify(view).hideSaveButton()
+        verify(view).showNonEditableMessage(nonEditableMessage, false)
     }
 }

@@ -969,4 +969,5 @@
     <string name="optional">Optional</string>
     <string name="database_export_downloaded">Database downloaded</string>
     <string name="importing_database">Importing database</string>
+    <string name="re_open_to_edit">Re-open form to edit</string>
 </resources>
