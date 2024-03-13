@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.printToLog
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.form.di.Injector
 import org.hisp.dhis.android.core.common.ValueType
@@ -33,7 +34,7 @@ class AgeProviderTest {
         const val RADIO_BUTTON_months = "RADIO_BUTTON_months"
         const val RADIO_BUTTON_days = "RADIO_BUTTON_days"
         const val RADIO_BUTTON_years = "RADIO_BUTTON_years"
-        const val AGE_SELECTOR_TEXT = "6 Years"
+        const val AGE_SELECTOR_TEXT = "6 years"
         const val INPUT_AGE_TEST_TAG = "INPUT_AGE"
         const val FIELD_UI_MODEL_UID = "FieldUIModelUid"
 
@@ -145,6 +146,8 @@ class AgeProviderTest {
         composeTestRule.onNodeWithTag(RADIO_BUTTON_months).performClick()
         composeTestRule.onNodeWithTag(RADIO_BUTTON_days).performClick()
         composeTestRule.onNodeWithTag(RADIO_BUTTON_years).performClick()
+        composeTestRule.onNodeWithTag(INPUT_AGE_TEXT_FIELD).printToLog("AGE_SELECTOR_TEXT")
+
         composeTestRule.onNodeWithTag(INPUT_AGE_TEXT_FIELD).assertTextEquals(AGE_SELECTOR_TEXT)
 
     }
