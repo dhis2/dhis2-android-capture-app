@@ -1,8 +1,8 @@
 package org.dhis2.form.data
 
 import io.reactivex.Single
-import junit.framework.Assert.assertTrue
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageSection
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -37,6 +38,7 @@ class EventRepositoryTest {
     private val fieldViewModelFactory: FieldViewModelFactory = mock()
     private val resources: ResourceManager = mock()
     private val dateUtil: DateUtils = mock()
+    private val metadataIconProvider: MetadataIconProvider = mock()
 
     private val mockedProgram: Program = mock {
         on { categoryComboUid() } doReturn catComboUid
@@ -139,6 +141,7 @@ class EventRepositoryTest {
         fieldFactory = fieldViewModelFactory,
         eventUid = eventUid,
         d2 = d2,
+        metadataIconProvider = metadataIconProvider,
         resources = resources,
         dateUtils = dateUtil,
         eventMode = eventMode,

@@ -85,10 +85,8 @@ class EventRepository(
     private fun isEventDataCompleted(): Pair<Boolean, Boolean> {
         val eventDateCompleted = event?.eventDate() != null
         val orgUnitCompleted = event?.organisationUnit() != null
-        val hasFeatureType = programStage?.featureType() != null &&
-            programStage?.featureType() == FeatureType.NONE
-        val coordinatesCompleted = if (programStage?.featureType() != null) {
-            hasFeatureType && event?.geometry() != null
+        val coordinatesCompleted = if (shouldShowCoordinates()) {
+            event?.geometry() != null
         } else {
             true
         }
@@ -560,7 +558,8 @@ class EventRepository(
                 val options = d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
 
-                val metadataIconMap = options.associate { it.uid() to metadataIconProvider(it.style()) }
+                val metadataIconMap =
+                    options.associate { it.uid() to metadataIconProvider(it.style()) }
 
                 OptionSetConfiguration.OptionConfigData(
                     options = options,
