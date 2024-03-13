@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -51,7 +52,9 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnCompleteButton() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(MAIN_BUTTON_TAG))
         composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
     }
 
@@ -60,7 +63,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnReopen() {
-        onView(withId(R.id.reopenButton)).perform(click())
+        composeTestRule.onNodeWithTag("REOPEN_BUTTON").performClick()
     }
 
     fun fillRadioButtonForm(numberFields: Int) {
@@ -107,10 +110,6 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.moreOptions)).perform(click())
     }
 
-    fun clickOnDetails() {
-        onView(withId(R.id.navigation_details)).perform(click())
-    }
-
     fun clickOnDelete() {
         onView(withText(R.string.delete)).perform(click())
     }
@@ -140,10 +139,21 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkEventDetails(eventDate: String, eventOrgUnit: String) {
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(100)))
-        composeTestRule.onNodeWithText(formatStoredDateToUI(eventDate)).assertIsDisplayed()
+        val formattedDate = formatStoredDateToUI(eventDate)
+        composeTestRule.waitUntilAtLeastOneExists(hasText(formattedDate))
+        composeTestRule.onNodeWithText(formattedDate).assertIsDisplayed()
         composeTestRule.onNodeWithText(eventOrgUnit).assertIsDisplayed()
+    }
+
+    fun openEventDetailsSection() {
+        composeTestRule.onNodeWithText("Event details").performClick()
+    }
+
+    fun checkEventIsOpen() {
+        composeTestRule.onNodeWithTag("REOPEN_BUTTON").assertDoesNotExist()
     }
 
     private fun formatStoredDateToUI(dateValue: String): String {

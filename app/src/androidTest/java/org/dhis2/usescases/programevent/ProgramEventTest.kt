@@ -7,13 +7,11 @@ import androidx.test.core.app.ApplicationProvider
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -73,11 +71,11 @@ class ProgramEventTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
+            openEventDetailsSection()
             checkEventDetails(eventDate, eventOrgUnit)
         }
     }
 
-    @Ignore("Undeterministic")
     @Test
     fun shouldCompleteAnEventAndReopenIt() {
         val eventDate = "15/3/2020"
@@ -85,14 +83,13 @@ class ProgramEventTest : BaseTest() {
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
-        eventWithoutRegistrationRobot(composeTestRule) {
-            clickOnEventAtPosition(0)
+        programEventsRobot(composeTestRule) {
+            clickOnEvent(eventDate)
         }
 
         eventRobot(composeTestRule) {
             clickOnFormFabButton()
             clickOnCompleteButton()
-            waitToDebounce(400)
         }
 
         programEventsRobot(composeTestRule) {
@@ -101,28 +98,9 @@ class ProgramEventTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            clickOnDetails()
             clickOnReopen()
-            pressBack()
-        }
-
-        programEventsRobot(composeTestRule) {
-            waitToDebounce(800)
-            checkEventIsOpen(eventDate, eventOrgUnit)
-        }
-    }
-
-    @Test
-    fun shouldOpenDataEntryOfExistingEvent() {
-        val eventDate = "15/3/2020"
-        val eventOrgUnit = "Ngelehun CHC"
-
-        prepareProgramAndLaunchActivity(antenatalCare)
-
-        programEventsRobot(composeTestRule) {
-            clickOnEvent(eventDate)
-        }
-        eventRobot(composeTestRule) {
+            checkEventIsOpen()
+            openEventDetailsSection()
             checkEventDetails(eventDate, eventOrgUnit)
         }
     }
@@ -130,7 +108,6 @@ class ProgramEventTest : BaseTest() {
     @Test
     fun shouldDeleteEvent() {
         val eventDate = "15/3/2020"
-        val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
@@ -143,7 +120,7 @@ class ProgramEventTest : BaseTest() {
             clickOnDeleteDialog()
         }
         programEventsRobot(composeTestRule) {
-            checkEventWasDeleted(eventDate, eventOrgUnit)
+            checkEventWasDeleted(eventDate)
         }
         rule.getScenario().onActivity {
             context.applicationContext.deleteDatabase(DB_TO_IMPORT)

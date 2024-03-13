@@ -16,11 +16,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.not
 
 fun programEventsRobot(
     composeTestRule: ComposeContentTestRule,
@@ -69,44 +67,8 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
         composeTestRule.onNodeWithText("Event completed").assertIsDisplayed()
     }
 
-    fun checkEventIsOpen(eventDate: String, eventOrgUnit: String) {
-        onView(withId(R.id.recycler))
-            .check(
-                matches(
-                    allOf(
-                        hasItem(
-                            allOf(
-                                hasDescendant(withText(eventDate)),
-                                hasDescendant(withText(eventOrgUnit)),
-                                hasDescendant(
-                                    withTagValue(
-                                        anyOf(
-                                            equalTo(R.drawable.ic_event_status_open),
-                                            equalTo(R.drawable.ic_event_status_open_read)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-    }
-
-    fun checkEventWasDeleted(eventDate: String, eventOrgUnit: String) {
-        onView(withId(R.id.recycler))
-            .check(
-                matches(
-                    not(
-                        hasItem(
-                            allOf(
-                                hasDescendant(withText(eventDate)),
-                                hasDescendant(withText(eventOrgUnit))
-                            )
-                        )
-                    )
-                )
-            )
+    fun checkEventWasDeleted(eventDate: String) {
+        composeTestRule.onNodeWithText(eventDate).assertDoesNotExist()
     }
 
     fun checkMapIsDisplayed() {

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +55,8 @@ fun NonEditableReasonBlock(
             if (canBeReopened) {
                 Button(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .testTag("REOPEN_BUTTON"),
                     text = stringResource(id = R.string.re_open_to_edit),
                     style = ButtonStyle.FILLED,
                     icon = {
