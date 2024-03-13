@@ -9,8 +9,7 @@ import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
-const val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
-const val firstSectionPosition = 1
+const val firstSectionPosition = 2
 
 class FormTest : BaseTest() {
 
@@ -31,6 +30,9 @@ class FormTest : BaseTest() {
     fun shouldApplyProgramRules() {
         prepareIntentAndLaunchEventActivity(ruleEvent)
 
+        formRobot {
+            clickOnASpecificSection("Gamma Rules A")
+        }
         applyHideField()
         applyHideSection()
         applyShowWarning()
@@ -49,9 +51,7 @@ class FormTest : BaseTest() {
     private fun applyHideField() {
         formRobot {
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                HIDE_FIELD,
                 HIDE_FIELD_POSITION
             )
             checkHiddenField("ZZ TEST LONGTEST")
@@ -60,11 +60,9 @@ class FormTest : BaseTest() {
 
     private fun applyHideSection() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                HIDE_SECTION,
                 HIDE_SECTION_POSITION
             )
             checkHiddenSection("Gamma Rules A")
@@ -73,11 +71,9 @@ class FormTest : BaseTest() {
 
     private fun applyShowWarning() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                SHOW_WARNING,
                 SHOW_WARNING_POSITION
             )
             checkWarningIsShown()
@@ -86,11 +82,9 @@ class FormTest : BaseTest() {
 
     private fun applyShowError() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                SHOW_ERROR,
                 SHOW_ERROR_POSITION
             )
             checkErrorIsShown()
@@ -101,13 +95,11 @@ class FormTest : BaseTest() {
         formRobot {
             val nonMandatoryLabel = "ZZ TEST NUMBER"
             val mandatoryLabel = "ZZ TEST NUMBER *"
-            val position = 4
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            val position = 5
+            resetToNoAction(firstSectionPosition)
             checkLabel(nonMandatoryLabel, position)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                MANDATORY_FIELD,
                 MANDATORY_FIELD_POSITION
             )
             checkLabel(mandatoryLabel, position)
@@ -116,11 +108,9 @@ class FormTest : BaseTest() {
 
     private fun applyHideOption() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                HIDE_OPTION,
                 HIDE_OPTION_POSITION
             )
             checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
@@ -129,11 +119,9 @@ class FormTest : BaseTest() {
 
     private fun applyHideOptionGroup() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                HIDE_OPTION_GROUP,
                 HIDE_OPTION_GROUP_POSITION
             )
             checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
@@ -143,11 +131,9 @@ class FormTest : BaseTest() {
 
     private fun applyShowOptionGroup() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                SHOW_OPTION_GROUP,
                 SHOW_OPTION_POSITION
             )
 
@@ -159,11 +145,9 @@ class FormTest : BaseTest() {
 
     private fun applyAssignValue() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                ASSIGN_VALUE,
                 ASSIGN_VALUE_POSITION
             )
             checkValueWasAssigned(ASSIGNED_VALUE_TEXT)
@@ -172,11 +156,9 @@ class FormTest : BaseTest() {
 
     private fun applyDisplayText() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                DISPLAY_TEXT,
                 DISPLAY_TEXT_POSITION
             )
             pressBack()
@@ -188,11 +170,9 @@ class FormTest : BaseTest() {
 
     private fun applyDisplayKeyValue() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                DISPLAY_KEY,
                 DISPLAY_KEY_POSITION
             )
             pressBack()
@@ -204,11 +184,9 @@ class FormTest : BaseTest() {
 
     private fun applyWarningOnComplete() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                WARNING_COMPLETE,
                 WARNING_COMPLETE_POSITION
             )
             scrollToBottomForm()
@@ -221,11 +199,9 @@ class FormTest : BaseTest() {
 
     private fun applyErrorOnComplete() {
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
-                rulesFirstSection,
                 firstSectionPosition,
-                ERROR_COMPLETE,
                 ERROR_COMPLETE_POSITION
             )
             scrollToBottomForm()
@@ -248,38 +224,21 @@ class FormTest : BaseTest() {
     }
 
     companion object {
-        const val NO_ACTION = "No Action"
         const val NO_ACTION_POSITION = 0
-        const val HIDE_FIELD = "Hide Field"
         const val HIDE_FIELD_POSITION = 1
-        const val HIDE_SECTION = "Hide Section"
         const val HIDE_SECTION_POSITION = 2
-        const val HIDE_OPTION = "Hide Option"
         const val HIDE_OPTION_POSITION = 3
-        const val OPTION_SET_FIELD_POSITION = 5
-        const val HIDE_OPTION_GROUP = "Hide Option Group"
+        const val OPTION_SET_FIELD_POSITION = 6
         const val HIDE_OPTION_GROUP_POSITION = 4
-        const val ASSIGN_VALUE = "Assign Value"
         const val ASSIGN_VALUE_POSITION = 5
         const val ASSIGNED_VALUE_TEXT = "Result for current event"
-        const val SHOW_WARNING = "Show Warning"
         const val SHOW_WARNING_POSITION = 6
-        const val WARNING_COMPLETE = "Warning on Complete"
         const val WARNING_COMPLETE_POSITION = 7
-        const val SHOW_ERROR = "Show Error"
         const val SHOW_ERROR_POSITION = 8
-        const val ERROR_COMPLETE = "Error on Complete"
         const val ERROR_COMPLETE_POSITION = 9
-        const val MANDATORY_FIELD = "Make Field Mandatory"
         const val MANDATORY_FIELD_POSITION = 10
-        const val DISPLAY_TEXT = "Display Text"
         const val DISPLAY_TEXT_POSITION = 11
-        const val DISPLAY_KEY = "Display Key/Value Pair"
         const val DISPLAY_KEY_POSITION = 12
-        const val HIDE_PROGRAM_STAGE = "Hide Program Stage"
-        const val HIDE_PROGRAM_STAGE_POSITION = 13
-        const val SHOW_OPTION_GROUP = "Show Option Group"
         const val SHOW_OPTION_POSITION = 14
     }
-
 }

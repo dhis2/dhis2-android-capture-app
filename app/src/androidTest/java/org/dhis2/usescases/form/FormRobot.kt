@@ -10,7 +10,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
@@ -25,7 +24,6 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.form.ui.FormViewHolder
-import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anything
@@ -42,17 +40,8 @@ fun formRobot(formRobot: FormRobot.() -> Unit) {
 
 class FormRobot : BaseRobot() {
 
-    private fun clickOnASpecificSection(sectionLabel: String) {
-        val perform = onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItem<FormViewHolder>(
-                    allOf(
-                        hasDescendant(withText(sectionLabel)), hasDescendant(
-                            withId(R.id.openIndicator)
-                        )
-                    ), click()
-                )
-            )
+    fun clickOnASpecificSection(sectionLabel: String) {
+        onView(withText(sectionLabel)).perform(click())
     }
 
     private fun clickOnSpinner(position: Int) {
@@ -64,16 +53,16 @@ class FormRobot : BaseRobot() {
             )
     }
 
-    private fun selectAction(action: String, position: Int) {
+    private fun selectAction(position: Int) {
         onData(anything())
             .inRoot(isPlatformPopup())
             .atPosition(position)
             .perform(click())
     }
 
-    fun resetToNoAction(label: String, position: Int) {
+    fun resetToNoAction(position: Int) {
         clickOnSpinner(position)
-        selectAction(NO_ACTION, NO_ACTION_POSITION)
+        selectAction(NO_ACTION_POSITION)
     }
 
     fun checkHiddenField(label: String) {
@@ -82,7 +71,6 @@ class FormRobot : BaseRobot() {
     }
 
     fun checkHiddenSection(label: String) {
-        clickOnASpecificSection(label)
         onView(withId(R.id.recyclerView))
             .check(matches(not(hasItem(withText(label)))))
     }
@@ -135,7 +123,7 @@ class FormRobot : BaseRobot() {
         clickOnSpinner(position)
         onView(allOf(instanceOf(MenuItem::class.java), hasDescendant(withText(label))))
             .check(doesNotExist())
-        selectAction("", 0)
+        selectAction(0)
     }
 
     fun checkDisplayedOption(label: String, position: Int, activity: Activity) {
@@ -143,12 +131,12 @@ class FormRobot : BaseRobot() {
         onView(withText(label))
             .inRoot(withDecorView(not(`is`(activity.window.decorView))))
             .check(matches(isDisplayed()))
-        selectAction("", 0)
+        selectAction(0)
     }
 
-    fun clickOnSelectOption(label: String, position: Int, option: String, optionPosition: Int) {
+    fun clickOnSelectOption(position: Int, optionPosition: Int) {
         clickOnSpinner(position)
-        selectAction(option, optionPosition)
+        selectAction(optionPosition)
     }
 
     fun scrollToBottomForm() {
