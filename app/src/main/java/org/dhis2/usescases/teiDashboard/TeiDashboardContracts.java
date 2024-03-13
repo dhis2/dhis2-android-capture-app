@@ -16,8 +16,6 @@ public class TeiDashboardContracts {
 
         void handleTeiDeletion();
 
-        void handleEnrollmentDeletion(Boolean hasMoreEnrollments);
-
         void authorityErrorMessage();
 
         void updateNoteBadge(int numberOfNotes);
