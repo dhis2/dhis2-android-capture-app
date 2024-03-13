@@ -5,7 +5,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.event.entity.EventDetailsUIModel
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.ProgramStageUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
@@ -66,13 +65,15 @@ class EventTest : BaseTest() {
 
     @Test
     fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
-        val eventDetails = createEventDetails()
+        val completion = 92
+        val email = "mail@mail.com"
+
         enableComposeForms()
 
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot {
-            checkEventDetails(eventDetails, composeTestRule)
+            checkEventDataEntryIsOpened(completion, email, composeTestRule)
         }
     }
 
@@ -160,13 +161,6 @@ class EventTest : BaseTest() {
     private fun createSputumStageModel() = ProgramStageUIModel(
         "Sputum smear microscopy test",
         "4 events"
-    )
-
-    private fun createEventDetails() = EventDetailsUIModel(
-        "Alfa",
-        92,
-        "Mar 2020",
-        "OU TEST PARENT"
     )
 
     private fun createEventStatusDetails() = EventStatusUIModel(

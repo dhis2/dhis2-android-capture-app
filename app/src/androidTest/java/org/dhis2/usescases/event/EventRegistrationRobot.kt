@@ -11,7 +11,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
-import org.dhis2.usescases.event.entity.EventDetailsUIModel
 
 fun eventRegistrationRobot(eventRegistrationRobot: EventRegistrationRobot.() -> Unit) {
     EventRegistrationRobot().apply {
@@ -29,11 +28,9 @@ class EventRegistrationRobot : BaseRobot() {
         onView(withText(R.string.delete)).perform(click())
     }
 
-    fun checkEventDetails(eventDetails: EventDetailsUIModel, composeTestRule: ComposeTestRule) {
-//        onView(withId(R.id.detailsStageName)).check(matches(withText(eventDetails.programStage)))
-        onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
-        composeTestRule.onNodeWithText(eventDetails.eventDate).assertIsDisplayed()
-        composeTestRule.onNodeWithText(eventDetails.orgUnit).assertIsDisplayed()
+    fun checkEventDataEntryIsOpened(completion: Int, email: String, composeTestRule: ComposeTestRule) {
+        onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(completion)))
+        composeTestRule.onNodeWithText(email).assertIsDisplayed()
     }
 
     fun clickOnShare() {
